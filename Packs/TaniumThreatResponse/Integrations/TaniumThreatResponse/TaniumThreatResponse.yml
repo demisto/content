@@ -717,7 +717,7 @@ script:
       description: The image path.
       type: String
     - contextPath: TaniumEvent.CreationTime
-      description: The process creation time
+      description: The process creation time.
       type: Date
     - contextPath: TaniumEvent.EndTime
       description: The process end time.
@@ -726,10 +726,10 @@ script:
       description: The name of the event task.
       type: String
     - contextPath: TaniumEvent.Property.Name
-      description: The name of the event's property
+      description: The name of the event's property.
       type: String
     - contextPath: TaniumEvent.Property.Value
-      description: The value of the event's property
+      description: The value of the event's property.
       type: String
   - arguments:
     - description: The hostname of the downloaded file.
@@ -739,7 +739,7 @@ script:
       name: path
     - description: File download ID.
       name: id
-    description: Gets the metadata of a file download. You must supply either the `path` or `id` agument for the command to run successfully.
+    description: Gets the metadata of a file download. You must supply either the `path` or `id` argument for the command to run successfully.
     name: tanium-tr-get-file-download-info
     outputs:
     - contextPath: Tanium.FileDownload.Size
@@ -1262,7 +1262,7 @@ script:
       description: The event category of the process.
       type: String
   - arguments:
-    - description: 'Date of the download file request, or example: 2019-09-23T12:55:08.622'
+    - description: 'Date of the download file request, or example: 2019-09-23T12:55:08.622.'
       name: request-date
       required: true
     - description: The connection to which the request was made.
@@ -1292,7 +1292,7 @@ script:
       name: entry_id
       required: true
     - auto: PREDEFINED
-      description: The suffix at the end of a filename. (Available file types - yara, stix, ioc)
+      description: The suffix at the end of a filename. (Available file types - yara, stix, ioc).
       name: file_extension
       predefined:
       - ioc
@@ -1346,21 +1346,21 @@ script:
       description: The ID of a Tanium computer group.
       type: number
     - contextPath: Tanium.QuickScan.ID
-      description: The ID of the quick scan
+      description: The ID of the quick scan.
       type: number
     - contextPath: Tanium.QuickScan.AlertCount
-      description: The number of alerts returned from the quick scan
+      description: The number of alerts returned from the quick scan.
       type: number
     - contextPath: Tanium.QuickScan.CreatedAt
-      description: The date the quick scan was created
+      description: The date the quick scan was created.
       type: date
     - contextPath: Tanium.QuickScan.UserID
-      description: The user ID which initiated the quick scan
+      description: The user ID which initiated the quick scan.
       type: number
     - contextPath: Tanium.QuickScan.QuestionID
-      description: The ID of the quick scan question
+      description: The ID of the quick scan question.
       type: number
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.11.9.110419
   isfetch: true
   runonce: false
   script: '-'

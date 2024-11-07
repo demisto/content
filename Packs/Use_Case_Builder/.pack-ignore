@@ -64,7 +64,6 @@ ignore=IF113
 [file:incidentfield-Manual_Steps.json]
 ignore=IF113
 
-
 [file:incidentfield-XSOAR_Incident_Flow.json]
 ignore=IF113
 
@@ -137,3 +136,6 @@ ignore=PB105
 [known_words]
 NGFW
 SEIM
+
+[file:Quick_Start_Investigation.yml]
+ignore=GR107

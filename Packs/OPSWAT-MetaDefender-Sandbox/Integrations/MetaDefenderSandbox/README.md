@@ -126,7 +126,7 @@ Notice: Submitting indicators using this command might make the indicator data p
                                 [],
                                 "verdict":
                                 {
-                                    "verdict": "INFORMATIONAL",
+                                    "verdict": "NO_THREAT",
                                     "threatLevel": 0.1,
                                     "confidence": 1
                                 }
@@ -506,7 +506,7 @@ Search for reports. Finds reports and uploaded files by various tokens.
                                 "synonyms": [],
                                 "descriptions": [],
                                 "verdict": {
-                                    "verdict": "INFORMATIONAL",
+                                    "verdict": "NO_THREAT",
                                     "threatLevel": 0.1,
                                     "confidence": 1
                                 }

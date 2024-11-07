@@ -4752,6 +4752,7 @@ Sends mail using Gmail.
 | --- | --- | --- |
 | to | The email addresses of the receiver. | Required | 
 | from | The email address of the sender. | Optional | 
+| senderDisplayName | The sender Name that appears on the receiver side. | Optional |
 | body | The content (body) of the email to be sent in plain text. | Optional | 
 | subject | The subject for the email to be sent. | Required | 
 | attachIDs | A comma-separated list of IDs of War Room entries that contain the files that need be attached to the email. | Optional | 

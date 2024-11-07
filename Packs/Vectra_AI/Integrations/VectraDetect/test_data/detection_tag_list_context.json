@@ -1,0 +1,10 @@
+{
+    "Vectra.Detection(val.ID && val.ID == obj.ID)": {
+        "ID": 2,
+        "Tags": [
+            "note",
+            "tag_from_xsoar",
+            "tag_from_vectra"
+        ]
+    }
+}

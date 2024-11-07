@@ -12,7 +12,7 @@ import urllib.parse
 import re
 import os
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, UTC
 from devo.sender import Lookup, SenderConfigSSL, Sender
 from functools import partial
 
@@ -179,7 +179,7 @@ def _to_unix(date, milliseconds=False):
         epoch = pd.to_datetime(date).timestamp()
     elif isinstance(date, pd.Timestamp | datetime):
         if date.tzinfo is None:
-            epoch = date.replace(tzinfo=timezone.utc).timestamp()
+            epoch = date.replace(tzinfo=UTC).timestamp()
         else:
             epoch = date.timestamp()
     elif isinstance(date, int | float):

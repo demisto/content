@@ -112,11 +112,298 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.95137
+  dockerimage: demisto/python3:3.11.10.113941
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true
   commands:
+  - arguments:
+    - name: page
+      description: Page number to return. First page is 0.
+      type: integer
+    - name: page_size
+      description: Number of results in a page. Maximum is 1000.
+      type: integer
+    - description: Comma-separated list of names of Git users.
+      isArray: true
+      name: git_users
+    - description: A branch name.
+      isArray: false
+      name: branch
+    - description: Comma-separated list of code issue categories. Is also available as a search criteria (search_scopes).
+      isArray: true
+      name: code_categories
+      auto: PREDEFINED
+      predefined:
+      - IacMisconfiguration
+      - IacExternalModule
+      - ImageReferencerVul
+      - ImageReferencerLicenses
+      - Vulnerabilities
+      - Licenses
+      - Secrets
+    - description: Comma-separated list of categories related to Infrastructure-as-Code (IaC) issues.
+      isArray: true
+      name: iac_categories
+      auto: PREDEFINED
+      predefined:
+      - IAM
+      - Monitoring
+      - Networking
+      - Kubernetes
+      - General
+      - Storage
+      - Public
+      - Drift
+      - Compute
+    - description: Comma-separated list of labels associated with Infrastructure-as-Code (IaC).
+      name: iac_labels
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - CustomPolicy
+      - HasFix
+    - description: Comma-separated list of file types.
+      name: file_types
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - build.gradle
+      - gradle.properties
+      - build.gradle.kts
+      - pom.xml 
+      - requirements.txt
+      - package-lock.json
+      - package.json
+      - bower.json 
+      - go.sum 
+      - go.mod
+      - tf
+      - json 
+      - yml    
+      - yaml 
+      - Template
+      - .checkov.baseline 
+      - Hcl
+      - Dockerfile
+      - gradle-wrapper.properties
+      - METADATA 
+      - Bicep
+      - Pipfile.lock
+      - Pipfile   
+      - Yarn.lock
+      - Gemfile 
+      - Gemfile.lock
+      - gemspec
+      - env
+      - settings.py
+      - main.py 
+      - application.py
+      - config.py
+      - app.js
+      - config.js
+      - dev.js
+      - db.properties
+      - application.properties
+      - private.pem
+      - privatekey.pem
+      - Index.php
+      - config.php
+      - config.xml
+      - strings.xml 
+      - app.module.ts
+      - environment.ts
+      - tpl 
+      - tfvars
+      - unknown 
+      - csproj 
+      - packages.config
+      - Directory.Packages.props
+      - paket.dependencies
+      - paket.references
+      - paket.lock
+      - sln
+      - config      
+      - composer.json
+      - composer.lock
+    - description: Whether to retrieve only fixable issues. Recommended to use this argument with another argument (code_categories, file_types, iac_categories...)
+      name: fixable_only
+      type: Boolean
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Comma-separated list of repository names.
+      name: repositories
+      isArray: true
+    - description: Comma-separated list of risk factors related to secrets.
+      name: secrets_risk_factors
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - PublicRepository
+      - PrivateRepository
+      - User
+      - Privileged
+      - Valid
+      - Invalid
+      - Unknown
+      - FoundInHistory
+    - description: Comma-separated list of specific areas or categories within which to search. When specifying `search_scopes`, `search_term` argument is required.
+      name: search_scopes
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - IacMisconfiguration
+      - IacExternalModule
+      - ImageReferencerVul
+      - ImageReferencerLicenses
+      - Vulnerabilities
+      - Licenses
+      - Secrets
+    - description: Comma-separated list of criticality of issues.
+      name: severities
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - INFO
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+    - description: Comma-separated list of risk factors for vulnerabilities.
+      name: vulnerability_risk_factors
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - AttackComplexity
+      - AttackVector
+      - DoS
+      - HasFix
+      - RemoteExecution
+      - ExploitInTheWild
+      - ExploitPOC
+      - IsUsed
+    - description: A keyword or phrase used to narrow down results within specific scopes (like a particular vulnerability). This argument is require when filtering results by search_scopes.
+      name: search_term
+    - description: An infrastructure-as-code (IaC) resource. Relevant only to IacMisconfiguration, Vulnerabilities.
+      name: iac_tags
+    - description: Comma-separated list of license types.
+      name: license_type
+      isArray: true
+    - description: Status of checks.
+      name: check_status
+      auto: PREDEFINED
+      predefined:
+      - Error
+      - Passed
+      - Suppressed
+      - FixPending
+    - description: The limit of issues to retrieve. If `page` and `page_size` arguments are provided, then the limit argument is ignored.
+      name: limit
+      defaultValue: 50
+    description: Retrieves the code errors detected by Application Security during periodic scans. At least one filtering argument is required, excluding `search_scopes`, `search_term`, and `limit`. For example, `fixable_only` or 'branch`.
+    name: 'prisma-cloud-code-issues-list'
+    outputs:
+    - contextPath: PrismaCloud.CodeIssue.modifiedOn
+      description: The date and time when the code issue was last modified.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.isPublic
+      description: Indicates whether the repository or resource is publicly accessible (true/false).
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.fileType
+      description: The type of file where the issue was detected (e.g., `.js`, `.py`).
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.secretCommitRemove
+      description: The commit identifier where a secret was removed.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.secretCommitAdd
+      description: The commit identifier where a secret was added.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.gitUser
+      description: The username of the person who made the commit associated with the code issue.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.codePath
+      description: The path to the code file where the issue was detected.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.codeCategory
+      description: The category or classification of the detected issue (e.g., security, compliance).
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.author
+      description: The original author of the code where the issue was detected.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.repositoryUuid
+      description: The unique identifier of the repository where the issue was found.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.path
+      description: The path in the repository where the issue was detected.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.repositorySource
+      description: The source of the repository (e.g., GitHub, Bitbucket).
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.firstDetected
+      description: The date and time when the code issue was first detected.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.codeIssueLine
+      description: The line number in the code where the issue was detected.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.labels
+      description: Labels associated with the code issue for classification or categorization.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.labels.label
+      description: A specific label related to the code issue.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.labels.metadata.imageName
+      description: The name of the image associated with the label metadata.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.policy
+      description: The policy that was violated by the detected issue.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.repository
+      description: The name of the repository where the issue was found.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.resourceName
+      description: The name of the resource associated with the code issue.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.resourceScanType
+      description: The type of scan that detected the issue (e.g., static analysis, secret detection).
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.resourceUuid
+      description: The unique identifier of the resource associated with the code issue.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.severity
+      description: The severity level of the detected issue (e.g., High, Medium, Low).
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.violationId
+      description: The unique identifier for the policy violation related to the code issue.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.causePackageId
+      description: The ID of the package that caused the issue.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.causePackageName
+      description: The name of the package that caused the issue.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.cveUuid
+      description: The unique identifier of the Common Vulnerabilities and Exposures (CVE) related to the issue.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.cvss
+      description: The Common Vulnerability Scoring System (CVSS) score for the detected issue.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.fixVersion
+      description: The version of the code or package that contains the fix for the issue.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.pr
+      description: The pull request (PR) associated with resolving the code issue.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.resourceId
+      description: The identifier of the resource related to the code issue.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.riskFactors
+      description: Risk factors associated with the code issue, such as high-impact areas or sensitive data.
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.isIndirectPackage
+      description: Indicates whether the issue is from an indirect package (true/false).
+      type: String
   - arguments:
     - description: Comma-separated list of alert IDs to be dismissed.
       isArray: true
@@ -870,8 +1157,9 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Lists scanned files that contain errors. In order to use this command, the "Code Security" module needs to be enabled and accessible in the Prisma Cloud UI.
+    description: This command is deprecated. Use prisma-cloud-code-issues-list instead.
     name: prisma-cloud-error-file-list
+    deprecated: true
     outputs:
     - contextPath: PrismaCloud.ErrorFile.filePath
       description: Error file path.

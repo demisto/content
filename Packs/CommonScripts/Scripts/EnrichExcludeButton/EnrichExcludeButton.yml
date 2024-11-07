@@ -10,9 +10,10 @@ enabled: true
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.11.9.106403
+dockerimage: demisto/python3:3.11.10.113941
 runas: DBotWeakRole
 engineinfo: {}
 tests:
 - No tests (auto formatted)
 fromversion: 8.8.0
+comment: This script is only meant to be used to disable the Enrich Excluded button in an indicator. It should not be used otherwise.

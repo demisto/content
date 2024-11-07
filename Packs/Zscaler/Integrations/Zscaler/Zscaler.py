@@ -82,8 +82,11 @@ def error_handler(res):
         and "/urlCategories/" in res.request.url
     ):
         raise Exception(
-            "Bad request, This could be due to reaching your organizations quota."
-            " For more info about your quota usage, run the command zscaler-url-quota."
+            f"The request failed with the following error: {res.status_code}.\nMessage: {res.text}\n"
+            f"This error might be due to an invalid URL or exceeding your organization's quota.\n"
+            f"For more information about URL formatting, refer to the Zscaler URL Format Guidelines: "
+            f"https://help.zscaler.com/zia/url-format-guidelines\n"
+            f"To check your quota usage, run the command `zscaler-url-quota`."
         )
     else:
         if res.status_code in ERROR_CODES_DICT:
@@ -165,6 +168,7 @@ def login():
                 f"Zscaler encountered an authentication error.\nError: {str(e)}"
             )
     ts, key = obfuscateApiKey(API_KEY)
+    add_sensitive_log_strs(key)
     data = {"username": USERNAME, "timestamp": ts, "password": PASSWORD, "apiKey": key}
     json_data = json.dumps(data)
     result = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
@@ -889,7 +893,7 @@ def logout_command():
         )
     try:
         DEFAULT_HEADERS["cookie"] = session_id
-        raw_res = logout().json()
+        raw_res = logout()
     except AuthorizationError:
         return CommandResults(
             readable_output="API session is not authenticated. No action was performed."
@@ -901,7 +905,7 @@ def logout_command():
 
 
 def activate_command():
-    raw_res = activate_changes().json()
+    raw_res = activate_changes()
     return CommandResults(
         readable_output="Changes have been activated successfully.",
         raw_response=raw_res,
@@ -1301,6 +1305,9 @@ def delete_ip_destination_groups(args: dict):
 
 def main():  # pragma: no cover
     command = demisto.command()
+
+    add_sensitive_log_strs(USERNAME)
+    add_sensitive_log_strs(PASSWORD)
 
     demisto.debug(f"command is {command}")
     args = demisto.args()

@@ -2,7 +2,7 @@
 ignore=BA108,BA109
 
 [file:GroupIB_TIA_Feed.yml]
-ignore=BA108,BA109,IN122
+ignore=BA108,BA109
 
 [file:classifier-Group-IB_Threat_Intelligence_&_Attribution_(mapper).json]
 ignore=BA101
