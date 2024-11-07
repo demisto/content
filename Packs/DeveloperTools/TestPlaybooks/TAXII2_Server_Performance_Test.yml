@@ -121,14 +121,14 @@ tasks:
         simple: ${inputs.n}
       url:
         complex:
-          root: TAXIIServer.ServerInfo.api_roots
+          root: ServerURL
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: collections/
+                  simple: threatintel/collections/
           - operator: concat
             args:
               prefix: {}
@@ -184,14 +184,14 @@ tasks:
     scriptarguments:
       url:
         complex:
-          root: TAXIIServer.ServerInfo.api_roots
+          root: ServerURL
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: collections/
+                  simple: threatintel/collections/
           - operator: concat
             args:
               prefix: {}
@@ -307,14 +307,14 @@ tasks:
     scriptarguments:
       url:
         complex:
-          root: TAXIIServer.ServerInfo.api_roots
+          root: ServerURL
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: collections/
+                  simple: threatintel/collections/
           - operator: concat
             args:
               prefix: {}
@@ -937,7 +937,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "62"
+      - "28"
     scriptarguments:
       all:
         simple: "yes"
@@ -1155,19 +1155,19 @@ tasks:
       - "30"
     scriptarguments:
       headers:
-        simple: Accept:application/taxii+json,Authorization:Basic dGVzdDE6dGVzdDE=
+        simple: Accept:application/taxii+json
       method:
         simple: GET
       url:
         complex:
-          root: TAXIIServer.ServerInfo.api_roots
+          root: ServerURL
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: collections/
+                  simple: threatintel/collections/
           - operator: concat
             args:
               prefix: {}
@@ -1264,19 +1264,19 @@ tasks:
       - "32"
     scriptarguments:
       headers:
-        simple: Accept:application/taxii+json,Authorization:Basic dGVzdDE6dGVzdDE=
+        simple: Accept:application/taxii+json
       method:
         simple: GET
       url:
         complex:
-          root: TAXIIServer.ServerInfo.api_roots
+          root: ServerURL
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: collections/
+                  simple: threatintel/collections/
           - operator: concat
             args:
               prefix: {}
@@ -1449,19 +1449,19 @@ tasks:
       - "36"
     scriptarguments:
       headers:
-        simple: Accept:application/taxii+json,Authorization:Basic dGVzdDE6dGVzdDE=
+        simple: Accept:application/taxii+json
       method:
         simple: GET
       url:
         complex:
-          root: TAXIIServer.ServerInfo.api_roots
+          root: ServerURL
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: collections/
+                  simple: threatintel/collections/
           - operator: concat
             args:
               prefix: {}
@@ -1558,19 +1558,19 @@ tasks:
       - "39"
     scriptarguments:
       headers:
-        simple: Accept:application/taxii+json,Authorization:Basic dGVzdDE6dGVzdDE=
+        simple: Accept:application/taxii+json
       method:
         simple: GET
       url:
         complex:
-          root: TAXIIServer.ServerInfo.api_roots
+          root: ServerURL
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: collections/
+                  simple: threatintel/collections/
           - operator: concat
             args:
               prefix: {}
@@ -1701,19 +1701,19 @@ tasks:
       - "42"
     scriptarguments:
       headers:
-        simple: Accept:application/taxii+json,Authorization:Basic dGVzdDE6dGVzdDE=
+        simple: Accept:application/taxii+json
       method:
         simple: GET
       url:
         complex:
-          root: TAXIIServer.ServerInfo.api_roots
+          root: ServerURL
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: collections/
+                  simple: threatintel/collections/
           - operator: concat
             args:
               prefix: {}
@@ -1848,19 +1848,19 @@ tasks:
       - "45"
     scriptarguments:
       headers:
-        simple: Accept:application/taxii+json,Authorization:Basic dGVzdDE6dGVzdDE=
+        simple: Accept:application/taxii+json
       method:
         simple: GET
       url:
         complex:
-          root: TAXIIServer.ServerInfo.api_roots
+          root: ServerURL
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: collections/
+                  simple: threatintel/collections/
           - operator: concat
             args:
               prefix: {}
@@ -1957,19 +1957,19 @@ tasks:
       - "49"
     scriptarguments:
       headers:
-        simple: Accept:application/taxii+json,Authorization:Basic dGVzdDE6dGVzdDE=
+        simple: Accept:application/taxii+json
       method:
         simple: GET
       url:
         complex:
-          root: TAXIIServer.ServerInfo.api_roots
+          root: ServerURL
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: collections/
+                  simple: threatintel/collections/
           - operator: concat
             args:
               prefix: {}
@@ -2104,19 +2104,19 @@ tasks:
       - "52"
     scriptarguments:
       headers:
-        simple: Accept:application/taxii+json,Authorization:Basic dGVzdDE6dGVzdDE=
+        simple: Accept:application/taxii+json
       method:
         simple: GET
       url:
         complex:
-          root: TAXIIServer.ServerInfo.api_roots
+          root: ServerURL
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: collections/
+                  simple: threatintel/collections/
           - operator: concat
             args:
               prefix: {}
@@ -2251,19 +2251,19 @@ tasks:
       - "55"
     scriptarguments:
       headers:
-        simple: Accept:application/taxii+json,Authorization:Basic dGVzdDE6dGVzdDE=
+        simple: Accept:application/taxii+json
       method:
         simple: GET
       url:
         complex:
-          root: TAXIIServer.ServerInfo.api_roots
+          root: ServerURL
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: collections/
+                  simple: threatintel/collections/
           - operator: concat
             args:
               prefix: {}
@@ -2675,38 +2675,6 @@ tasks:
         "position": {
           "x": 480,
           "y": 2995
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "62":
-    id: "62"
-    taskid: 9ba7745c-aed4-4a4b-88b3-6ad41a4de9c7
-    type: regular
-    task:
-      id: 9ba7745c-aed4-4a4b-88b3-6ad41a4de9c7
-      version: -1
-      name: taxii-server-info
-      description: Returns the TAXII server info, default URL, title, etc.
-      script: '|||taxii-server-info'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2560
         }
       }
     note: false

@@ -371,7 +371,7 @@ tasks:
       results_map:
         simple: ${inputs.results_map}
       t:
-        simple: "10"
+        simple: "3"
       url:
         complex:
           root: inputs.url
