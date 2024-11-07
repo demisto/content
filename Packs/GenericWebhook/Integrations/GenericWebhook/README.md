@@ -11,8 +11,8 @@ The Generic Webhook integration is used to create incidents on event triggers. T
 | Listen Port | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. <br>Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use.                           | True |
 | username | Username (see [Security](#security) for more details) |  (For Cortex XSOAR 6.x) False <br> (For Cortex XSOAR 8 and Cortex XSIAM)  Optional for engines, otherwise mandatory. Using the `_header:` feature without using an engine will not work.  |
 | password | Password (see [Security](#security) for more details) |  (For Cortex XSOAR 6.x) False <br> (For Cortex XSOAR 8 and Cortex XSIAM)  Optional for engines, otherwise mandatory. Using the `_header:` feature without using an engine will not work.  |
-| certificate | For use with HTTPS - the certificate that the service should use.  | False |
-| Private Key | For use with HTTPS - the private key that the service should use.  | False |
+| certificate | (For Cortex XSOAR 6.x and Cortex XSOAR 8 On-prem) For use with HTTPS - the certificate that the service should use.  <br> (For Cortex XSOAR 8 Cloud and Cortex XSIAM) Custom certificates are supported when running on engine, not on server.  | False |
+| Private Key | (For Cortex XSOAR 6.x and Cortex XSOAR 8 On-prem) For use with HTTPS - the private key that the service should use.  <br> (For Cortex XSOAR 8 Cloud and Cortex XSIAM) Configuring a private API key is supported when running on engine, not on server.  | False |
 | incidentType | Incident type | False |
 | store_samples | Store sample events for mapping (Because this is a push-based integration, it cannot fetch sample events in the mapping wizard). | False |
 
