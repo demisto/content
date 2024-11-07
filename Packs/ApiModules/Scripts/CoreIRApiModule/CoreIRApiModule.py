@@ -3095,34 +3095,35 @@ def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
     return xdr_close_reason
 
 
-def handle_outgoing_issue_closure(command_args):
-    demisto.debug(f"handle_outgoing_issue_closure {command_args.remote_incident_id=} data:{command_args.data}, entries: {command_args.entries}, incident_changed: {command_args.incident_changed}, remote_incident_id: {command_args.remote_incident_id}, inc_status: {command_args.inc_status}, delta: {command_args.delta}") # should be removed
-    xsoar_to_xdr_delta = command_args.delta
+def handle_outgoing_issue_closure(parsed_args):
+    xsoar_to_xdr_delta = parsed_args.delta
+    # closed_reason = xsoar_to_xdr_delta.get('close_reason') or xsoar_to_xdr_delta.get('closeReason') or xsoar_to_xdr_delta.get(
+    #     'closeNotes') or xsoar_to_xdr_delta.get('resolve_comment') or xsoar_to_xdr_delta.get(
+    #     'closingUserId') or parsed_args.data.get('closeReason') or parsed_args.data.get(
+    #     'close_reason') or parsed_args.data.get('closeNotes')  # TODO: check it out if needed these check data and also all these close reason verions
     closed_reason = xsoar_to_xdr_delta.get('close_reason') or xsoar_to_xdr_delta.get('closeReason') or xsoar_to_xdr_delta.get(
-        'closeNotes') or xsoar_to_xdr_delta.get('resolve_comment') or xsoar_to_xdr_delta.get(
-        'closingUserId') or command_args.data.get('closeReason') or command_args.data.get(
-        'close_reason') or command_args.data.get('closeNotes')
-    demisto.debug(f"handle_outgoing_issue_closure: {command_args.remote_incident_id=}  {closed_reason=}")
-    current_xdr_status = command_args.data.get('status') if command_args.data else None
+        'closeNotes') or xsoar_to_xdr_delta.get('resolve_comment') or xsoar_to_xdr_delta.get('closingUserId')
+    demisto.debug(f"handle_outgoing_issue_closure: incident_id: {parsed_args.remote_incident_id} {closed_reason=}")
+    current_xdr_status = parsed_args.data.get('status') if parsed_args.data else None
     #   Closing remote incident if the XSOAR incident is closed and the remote incident isn't already closed
-    if command_args.inc_status == 2 and closed_reason and current_xdr_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
-        demisto.debug(f"itamar - in handle_outgoing_issue_closure inside first if")  # itamar
+    if parsed_args.inc_status == 2 and closed_reason and current_xdr_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
+        demisto.debug(f"itamar - in handle_outgoing_issue_closure inside first if")  # TODO: remove
         if close_notes := xsoar_to_xdr_delta.get('closeNotes'):
-            demisto.debug(f"itamar - in handle_outgoing_issue_closure inside second if")  # itamar
-            demisto.debug(f"handle_outgoing_issue_closure {command_args.remote_incident_id=} {close_notes=}")
+            demisto.debug(f"itamar - in handle_outgoing_issue_closure inside second if")  # TODO: remove
+            demisto.debug(f"handle_outgoing_issue_closure: incident_id: {parsed_args.remote_incident_id} {close_notes=}")
             xsoar_to_xdr_delta['resolve_comment'] = close_notes
 
-        demisto.debug(f"itamar - calling resolve_xdr_close_reason {xsoar_to_xdr_delta=}, {closed_reason=}")  # itamar
-        xsoar_to_xdr_delta['status'] = resolve_xdr_close_reason(closed_reason) # must check if what i pass as argument is right!!!
-        demisto.debug(f"handle_outgoing_issue_closure Closing Remote incident ID: {command_args.remote_incident_id} with status {xsoar_to_xdr_delta['status']}")
+        demisto.debug(f"itamar - calling resolve_xdr_close_reason {xsoar_to_xdr_delta=}, {closed_reason=}")  # TODO: remove
+        xsoar_to_xdr_delta['status'] = resolve_xdr_close_reason(closed_reason)
+        demisto.debug(f"handle_outgoing_issue_closure Closing Remote incident ID: {parsed_args.remote_incident_id} with status {xsoar_to_xdr_delta['status']}")
 
 
-def get_update_args(command_args):
+def get_update_args(parsed_args):
     """Change the updated field names to fit the update command"""
-    handle_outgoing_issue_closure(command_args)
-    handle_outgoing_incident_owner_sync(command_args.delta)
-    handle_user_unassignment(command_args.delta)
-    return command_args.delta
+    handle_outgoing_issue_closure(parsed_args)
+    handle_outgoing_incident_owner_sync(parsed_args.delta)
+    handle_user_unassignment(parsed_args.delta)
+    return parsed_args.delta
 
 
 def get_distribution_versions_command(client, args):
