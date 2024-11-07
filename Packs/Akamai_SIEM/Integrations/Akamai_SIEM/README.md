@@ -41,11 +41,15 @@ A WAF (web application firewall) is a filter that protects against HTTP applicat
     | Incident type | False | |
     | First fetch timestamp | False | |
     | Fetch limit | False | Limit on the number of incidents retrieved in a single fetch. |
-    | Page size | False | The number of events to fetch per request - the maximum is 600k, raise this parameter in case you're getting aggregated delays. |
+    | Page size | False | The number of events to fetch per request. If you're getting aggregated delays, increase the number. The maximum is 600,000. |
     | Trust any certificate (not secure) | False | |
     | Use system proxy settings | False | |
 
 4. Click **Test** to validate the new instance.
+
+## Commands
+
+You can execute these commands from the CLI, as part of a script, or in a playbook.
 
 ## Fetch Incidents
 

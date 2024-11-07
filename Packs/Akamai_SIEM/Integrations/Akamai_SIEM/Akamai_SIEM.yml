@@ -80,7 +80,7 @@ configuration:
   required: false
   section: Collect
   defaultvalue: '50000'
-  additionalinfo: The number of events to fetch per request - the maximum is 600k, raise this parameter in case you're getting aggregated delays.
+  additionalinfo: The number of events to fetch per request. If you're getting aggregated delays, increase the number. The maximum is 600,000.
   hidden:
   - xsoar
 - display: Fetch incidents
