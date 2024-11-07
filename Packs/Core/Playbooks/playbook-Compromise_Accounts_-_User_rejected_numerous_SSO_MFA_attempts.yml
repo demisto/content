@@ -42,10 +42,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3c1c16fa-1ef0-45e5-884c-ab0b666b5bd5
+    taskid: d10d3ef6-73ad-4cde-89a4-c883b892ca51
     type: start
     task:
-      id: 3c1c16fa-1ef0-45e5-884c-ab0b666b5bd5
+      id: d10d3ef6-73ad-4cde-89a4-c883b892ca51
       version: -1
       name: ""
       iscommand: false
@@ -60,7 +60,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": 70
         }
       }
     note: false
@@ -72,10 +72,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 40837361-1189-4780-8e01-5a3ffbed66e7
+    taskid: ebae547a-1c7b-4418-870a-cd2eb588d8dd
     type: regular
     task:
-      id: 40837361-1189-4780-8e01-5a3ffbed66e7
+      id: ebae547a-1c7b-4418-870a-cd2eb588d8dd
       version: -1
       name: Check source IP reputation
       description: Enriches the external source IP of the attack to check if it's known as malicious. Skips on errors for cases where the IP address or the !ip command is empty.
@@ -109,10 +109,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 9b4ff489-973d-4783-8280-7d66e59e4a78
+    taskid: 3aaad26e-4ec4-414c-8235-0b497e728fe1
     type: condition
     task:
-      id: 9b4ff489-973d-4783-8280-7d66e59e4a78
+      id: 3aaad26e-4ec4-414c-8235-0b497e728fe1
       version: -1
       name: Is the IP malicious?
       description: Checks if the external Source IP is malicious (DBotScore above 2).
@@ -188,10 +188,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 8b177482-e4ac-4eeb-8563-b66d104e53c0
+    taskid: 06e82d3f-2b4a-4f6d-84d1-12fc60d876bf
     type: title
     task:
-      id: 8b177482-e4ac-4eeb-8563-b66d104e53c0
+      id: 06e82d3f-2b4a-4f6d-84d1-12fc60d876bf
       version: -1
       name: Early Containment
       type: title
@@ -220,10 +220,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: fc4cb507-de78-46ea-846f-763a27e62066
+    taskid: bf27b93c-08c7-4a4a-84b8-067d4957ad79
     type: playbook
     task:
-      id: fc4cb507-de78-46ea-846f-763a27e62066
+      id: bf27b93c-08c7-4a4a-84b8-067d4957ad79
       version: -1
       name: PAN-OS - Block IP
       description: |-
@@ -257,7 +257,7 @@ tasks:
       {
         "position": {
           "x": 930,
-          "y": 905
+          "y": 855
         }
       }
     note: false
@@ -269,10 +269,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 46b37454-1c80-48d8-8daf-fa93c12bfd31
+    taskid: 7b8e233a-e891-496a-8fae-dce79475f0b5
     type: playbook
     task:
-      id: 46b37454-1c80-48d8-8daf-fa93c12bfd31
+      id: 7b8e233a-e891-496a-8fae-dce79475f0b5
       version: -1
       name: Containment Plan - Clear User Sessions
       description: |-
@@ -303,7 +303,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2370
+          "y": 2180
         }
       }
     note: false
@@ -315,10 +315,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 658cf37d-0923-4faa-8312-ae89c4126a9b
+    taskid: 38d4401c-a37d-4601-822d-552ddd7deecf
     type: regular
     task:
-      id: 658cf37d-0923-4faa-8312-ae89c4126a9b
+      id: 38d4401c-a37d-4601-822d-552ddd7deecf
       version: -1
       name: Collect login information
       description: Returns information about each alert ID.
@@ -340,7 +340,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 710
+          "y": 690
         }
       }
     note: false
@@ -352,10 +352,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 67ef6ccd-768f-42f2-8232-2e5564e82ea6
+    taskid: 6ce6c84b-26c8-48ce-8c4e-fdb9bfe99865
     type: title
     task:
-      id: 67ef6ccd-768f-42f2-8232-2e5564e82ea6
+      id: 6ce6c84b-26c8-48ce-8c4e-fdb9bfe99865
       version: -1
       name: Analyze Alert Data
       type: title
@@ -371,7 +371,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 920
+          "y": 870
         }
       }
     note: false
@@ -383,13 +383,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 98d94edd-6356-4e64-890f-615b45329be0
+    taskid: 2242a45c-8715-41ab-8e7e-9b060920e9ad
     type: condition
     task:
-      id: 98d94edd-6356-4e64-890f-615b45329be0
-      description: Checks whether the alert indicates that there was a successful login or not.
+      id: 2242a45c-8715-41ab-8e7e-9b060920e9ad
       version: -1
       name: Check for successful login
+      description: Checks whether the alert indicates that there was a successful login or not.
       type: condition
       iscommand: false
       brand: ""
@@ -415,7 +415,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2745
+          "y": 2515
         }
       }
     note: false
@@ -427,10 +427,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: f3c46c59-796e-4785-8d2f-d345efa31b3e
+    taskid: 780502a5-9cfe-4d0e-8367-03f2d79595ce
     type: title
     task:
-      id: f3c46c59-796e-4785-8d2f-d345efa31b3e
+      id: 780502a5-9cfe-4d0e-8367-03f2d79595ce
       version: -1
       name: Close Alert
       type: title
@@ -446,7 +446,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3940
+          "y": 3440
         }
       }
     note: false
@@ -458,10 +458,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 05b84a54-2847-4e2d-8689-02344f5e62af
+    taskid: 4c4ce503-367d-4e7c-8811-8eca2f8ab7d2
     type: regular
     task:
-      id: 05b84a54-2847-4e2d-8689-02344f5e62af
+      id: 4c4ce503-367d-4e7c-8811-8eca2f8ab7d2
       version: -1
       name: Close Alert
       description: commands.local.cmd.close.inv
@@ -478,7 +478,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 4080
+          "y": 3580
         }
       }
     note: false
@@ -490,10 +490,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: e8ef5fca-3bae-4fd9-8786-7d781faa967b
+    taskid: c16c6ff7-ff53-48f4-8386-cba54af59585
     type: regular
     task:
-      id: e8ef5fca-3bae-4fd9-8786-7d781faa967b
+      id: c16c6ff7-ff53-48f4-8386-cba54af59585
       version: -1
       name: Expire Okta User's Password
       description: Expires a password for an existing Okta user.
@@ -513,7 +513,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2560
+          "y": 2350
         }
       }
     note: false
@@ -525,10 +525,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: dc13989a-aa91-4d48-829b-7f6a2a6ae43d
+    taskid: a0f06b2f-1df9-4279-88c7-5673237c230c
     type: collection
     task:
-      id: dc13989a-aa91-4d48-829b-7f6a2a6ae43d
+      id: a0f06b2f-1df9-4279-88c7-5673237c230c
       description: ""
       version: -1
       name: Manual task - Suspend user in Okta
@@ -544,7 +544,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3120
+          "y": 2860
         }
       }
     note: false
@@ -593,10 +593,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 270ad864-dbaa-4d8b-841b-b481d7e637c3
+    taskid: 69610310-90da-47b4-8cd3-8953b92c587c
     type: condition
     task:
-      id: 270ad864-dbaa-4d8b-841b-b481d7e637c3
+      id: 69610310-90da-47b4-8cd3-8953b92c587c
       description: ""
       version: -1
       name: Evaluate Analyst Response for Next Action
@@ -626,7 +626,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3300
+          "y": 3030
         }
       }
     note: false
@@ -638,10 +638,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: d167e7f7-097d-4b88-8ab6-ea93935532d2
+    taskid: 3c2da8e6-9226-445a-8514-1fe75124f8b5
     type: regular
     task:
-      id: d167e7f7-097d-4b88-8ab6-ea93935532d2
+      id: 3c2da8e6-9226-445a-8514-1fe75124f8b5
       version: -1
       name: Suspend user in Okta
       description: Suspends a single user. This operation can only be performed on users with an ACTIVE status. After the porcess is completed, the user's status is SUSPENDED.
@@ -661,7 +661,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3565
+          "y": 3235
         }
       }
     note: false
@@ -673,10 +673,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 86ba06cd-663e-43af-81ce-018752dc81b0
+    taskid: 61d2d4db-f2aa-480a-8523-37fb0f3ddc42
     type: regular
     task:
-      id: 86ba06cd-663e-43af-81ce-018752dc81b0
+      id: 61d2d4db-f2aa-480a-8523-37fb0f3ddc42
       version: -1
       name: Get user email
       description: Save the user email from the alert data to a dedicated context field.
@@ -702,7 +702,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1090
+          "y": 1010
         }
       }
     note: false
@@ -714,10 +714,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 2ef41483-3df0-45f2-8e26-60396e063894
+    taskid: 124fea52-e5cd-428a-8655-73b748af6b5f
     type: title
     task:
-      id: 2ef41483-3df0-45f2-8e26-60396e063894
+      id: 124fea52-e5cd-428a-8655-73b748af6b5f
       version: -1
       name: Remediation
       type: title
@@ -733,7 +733,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2230
+          "y": 2040
         }
       }
     note: false
@@ -745,10 +745,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: e1031c82-be46-499f-8421-e7b88fce8d09
+    taskid: af1e2643-4eb2-4bbe-8e2c-01f9e146a5fc
     type: title
     task:
-      id: e1031c82-be46-499f-8421-e7b88fce8d09
+      id: af1e2643-4eb2-4bbe-8e2c-01f9e146a5fc
       version: -1
       name: Successful Login Remediation
       type: title
@@ -764,7 +764,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2950
+          "y": 2720
         }
       }
     note: false
@@ -776,10 +776,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 8a27ccef-05a6-4e17-89a3-fda8d389290c
+    taskid: c63271a9-b73b-4266-8f6b-f02fc553887f
     type: title
     task:
-      id: 8a27ccef-05a6-4e17-89a3-fda8d389290c
+      id: c63271a9-b73b-4266-8f6b-f02fc553887f
       version: -1
       name: Done
       type: title
@@ -792,7 +792,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 4290
+          "y": 3740
         }
       }
     note: false
@@ -804,13 +804,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: b350e54c-6a7a-41ae-88b6-edbfac3a5893
+    taskid: 3e76261c-0241-4a6c-8547-012e233cb46f
     type: condition
     task:
-      id: b350e54c-6a7a-41ae-88b6-edbfac3a5893
-      description: This task analyzes Okta SSO debug logs for suspicious activity. It checks for anomalous behavior, high-risk levels, and unusual geographic patterns in user actions. The task evaluates various risk indicators including new locations, devices, IPs, and velocity anomalies. It also considers the diversity and rarity of countries involved in user actions. Based on these checks, the playbook determines whether to proceed with remediation or continue to the Close Alert section.
+      id: 3e76261c-0241-4a6c-8547-012e233cb46f
       version: -1
       name: Check Okta logs for suspicious activity
+      description: This task analyzes Okta SSO debug logs for suspicious activity. It checks for anomalous behavior, high-risk levels, and unusual geographic patterns in user actions. The task evaluates various risk indicators including new locations, devices, IPs, and velocity anomalies. It also considers the diversity and rarity of countries involved in user actions. Based on these checks, the playbook determines whether to proceed with remediation or continue to the Close Alert section.
       type: condition
       iscommand: false
       brand: ""
@@ -897,7 +897,7 @@ tasks:
       {
         "position": {
           "x": -550,
-          "y": 1660
+          "y": 1530
         }
       }
     note: false
@@ -909,10 +909,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: faf7c203-7af2-49dd-8318-64696ba0fd66
+    taskid: b36615c3-c917-44e9-8a7c-2685027ae22e
     type: title
     task:
-      id: faf7c203-7af2-49dd-8318-64696ba0fd66
+      id: b36615c3-c917-44e9-8a7c-2685027ae22e
       version: -1
       name: Check Okta Debug Logs
       type: title
@@ -928,7 +928,7 @@ tasks:
       {
         "position": {
           "x": -550,
-          "y": 1510
+          "y": 1380
         }
       }
     note: false
@@ -940,10 +940,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 2cadb30a-b596-43aa-8202-4d1bb2f3f534
+    taskid: d2fb6b1c-8f4a-4b8d-8c52-c3a3ad837882
     type: title
     task:
-      id: 2cadb30a-b596-43aa-8202-4d1bb2f3f534
+      id: d2fb6b1c-8f4a-4b8d-8c52-c3a3ad837882
       version: -1
       name: Check Alert Data
       type: title
@@ -959,7 +959,7 @@ tasks:
       {
         "position": {
           "x": -50,
-          "y": 1510
+          "y": 1380
         }
       }
     note: false
@@ -971,13 +971,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 58d4c789-4f97-4a54-8c27-6b1192b5dad6
+    taskid: 58388125-14c9-46c6-8197-72d32fd0c7e8
     type: condition
     task:
-      id: 58d4c789-4f97-4a54-8c27-6b1192b5dad6
-      description: This task evaluates potential security threats by examining multiple factors. It checks for at least 6 instances of invalid credentials, verifies if Okta's threat intelligence has flagged a potentially malicious IP involved in the authentication attempt, and confirms if there have been 5 or more distinct Okta push denials. If these conditions are met, the task initiates remediation steps; if not, it proceeds to the Close Alert section.
+      id: 58388125-14c9-46c6-8197-72d32fd0c7e8
       version: -1
       name: Verify High-Risk Alert with Rare Country Indicators
+      description: This task evaluates potential security threats by examining multiple factors. It checks for at least 6 instances of invalid credentials, verifies if Okta's threat intelligence has flagged a potentially malicious IP involved in the authentication attempt, and confirms if there have been 5 or more distinct Okta push denials. If these conditions are met, the task initiates remediation steps; if not, it proceeds to the Close Alert section.
       type: condition
       iscommand: false
       brand: ""
@@ -1043,7 +1043,7 @@ tasks:
       {
         "position": {
           "x": -50,
-          "y": 1660
+          "y": 1530
         }
       }
     note: false
@@ -1055,10 +1055,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 943219e8-cd9a-4a91-835b-7567d0048d93
+    taskid: bad58157-c03d-446f-88fb-cfcc80a77ce1
     type: regular
     task:
-      id: 943219e8-cd9a-4a91-835b-7567d0048d93
+      id: bad58157-c03d-446f-88fb-cfcc80a77ce1
       version: -1
       name: Parse Okta SSO logs
       description: |-
@@ -1093,7 +1093,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1270
+          "y": 1180
         }
       }
     note: false
@@ -1105,10 +1105,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 4211b24a-e010-46e9-80e4-bf1d1e26b75a
+    taskid: 687e79e6-ced4-4d10-853e-eda14fe423e3
     type: title
     task:
-      id: 4211b24a-e010-46e9-80e4-bf1d1e26b75a
+      id: 687e79e6-ced4-4d10-853e-eda14fe423e3
       version: -1
       name: Get Additional Data
       type: title
@@ -1136,10 +1136,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: d52f741c-18d8-45e9-82e1-74e084d04264
+    taskid: d3b97b69-ddaa-4b3e-82b2-4a209166a1a9
     type: title
     task:
-      id: d52f741c-18d8-45e9-82e1-74e084d04264
+      id: d3b97b69-ddaa-4b3e-82b2-4a209166a1a9
       version: -1
       name: Check If User Is Risky
       type: title
@@ -1155,7 +1155,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1510
+          "y": 1380
         }
       }
     note: false
@@ -1167,10 +1167,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 3944cbb0-fe81-4369-8471-687290537bd8
+    taskid: 93676905-092b-4cf1-8567-9054e8d61ae6
     type: regular
     task:
-      id: 3944cbb0-fe81-4369-8471-687290537bd8
+      id: 93676905-092b-4cf1-8567-9054e8d61ae6
       version: -1
       name: Get user risk score
       description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
@@ -1194,7 +1194,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1660
+          "y": 1530
         }
       }
     note: false
@@ -1206,13 +1206,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 7833a18c-58f0-4863-8b52-94156396f9f0
+    taskid: 070055d5-534b-4a27-817e-d752df2c4b8f
     type: condition
     task:
-      id: 7833a18c-58f0-4863-8b52-94156396f9f0
-      description: This task evaluates if the user's risk level is HIGH. If so, it initiates remediation steps; otherwise, it moves to the Close Alert section.
+      id: 070055d5-534b-4a27-817e-d752df2c4b8f
       version: -1
       name: Check risk score
+      description: This task evaluates if the user's risk level is HIGH. If so, it initiates remediation steps; otherwise, it moves to the Close Alert section.
       type: condition
       iscommand: false
       brand: ""
@@ -1239,7 +1239,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1820
+          "y": 1690
         }
       }
     note: false
@@ -1251,10 +1251,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: cc9fa8ce-96ef-4665-8fc2-78c771bb8faf
+    taskid: b5496eec-b661-4293-8e28-7164fd57e403
     type: title
     task:
-      id: cc9fa8ce-96ef-4665-8fc2-78c771bb8faf
+      id: b5496eec-b661-4293-8e28-7164fd57e403
       version: -1
       name: Close Alert
       type: title
@@ -1270,7 +1270,7 @@ tasks:
       {
         "position": {
           "x": 960,
-          "y": 2230
+          "y": 2040
         }
       }
     note: false
@@ -1282,10 +1282,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 03472527-de67-4e03-8491-e06a0bd3bc16
+    taskid: 2410733b-4efd-46fd-858a-b3e7ed9d1445
     type: title
     task:
-      id: 03472527-de67-4e03-8491-e06a0bd3bc16
+      id: 2410733b-4efd-46fd-858a-b3e7ed9d1445
       version: -1
       name: Check Previous Okta Failed Logins
       type: title
@@ -1301,7 +1301,7 @@ tasks:
       {
         "position": {
           "x": 960,
-          "y": 1510
+          "y": 1380
         }
       }
     note: false
@@ -1313,10 +1313,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: f0183f8d-52ca-4cb7-86fd-d536840c8481
+    taskid: 06fb7cdb-405c-4516-8b2d-dd4458431aa2
     type: title
     task:
-      id: f0183f8d-52ca-4cb7-86fd-d536840c8481
+      id: 06fb7cdb-405c-4516-8b2d-dd4458431aa2
       version: -1
       name: Check for Suspicious User-Agent
       type: title
@@ -1332,7 +1332,7 @@ tasks:
       {
         "position": {
           "x": 1470,
-          "y": 1510
+          "y": 1380
         }
       }
     note: false
@@ -1344,13 +1344,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 58c0faed-8796-4564-88c6-6ba4df658748
+    taskid: c107279a-f23a-45dc-82ce-e016897d6700
     type: condition
     task:
-      id: 58c0faed-8796-4564-88c6-6ba4df658748
-      description: This task examines the user agent strings in the alert for known suspicious patterns. It checks for specific tools often used in automated attacks or scraping. Additionally, it verifies if there's at least one new user agent for this user. If both conditions are met, it triggers remediation; otherwise, it proceeds to close the alert.
+      id: c107279a-f23a-45dc-82ce-e016897d6700
       version: -1
       name: Check for a suspicious user agent
+      description: This task examines the user agent strings in the alert for known suspicious patterns. It checks for specific tools often used in automated attacks or scraping. Additionally, it verifies if there's at least one new user agent for this user. If both conditions are met, it triggers remediation; otherwise, it proceeds to close the alert.
       type: condition
       iscommand: false
       brand: ""
@@ -1393,7 +1393,7 @@ tasks:
       {
         "position": {
           "x": 1470,
-          "y": 1640
+          "y": 1510
         }
       }
     note: false
@@ -1405,10 +1405,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 998bf172-5600-4306-8d9c-cc9eea95baa5
+    taskid: 2a72a190-9db8-4eac-8e77-8b1fd7cdf58d
     type: regular
     task:
-      id: 998bf172-5600-4306-8d9c-cc9eea95baa5
+      id: 2a72a190-9db8-4eac-8e77-8b1fd7cdf58d
       version: -1
       name: Retrieve timestamp for 12 hours window
       description: |
@@ -1429,7 +1429,7 @@ tasks:
       {
         "position": {
           "x": 960,
-          "y": 1640
+          "y": 1510
         }
       }
     note: false
@@ -1441,10 +1441,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 6d6aef9e-f910-4a1f-8f04-af703601cdcd
+    taskid: a6a9262d-e3d6-4b7c-8290-97576811107b
     type: regular
     task:
-      id: 6d6aef9e-f910-4a1f-8f04-af703601cdcd
+      id: a6a9262d-e3d6-4b7c-8290-97576811107b
       version: -1
       name: Get Okta failed logins
       description: Returns failed login events.
@@ -1480,7 +1480,7 @@ tasks:
       {
         "position": {
           "x": 960,
-          "y": 1800
+          "y": 1670
         }
       }
     note: false
@@ -1492,13 +1492,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 1cad129b-ca77-442c-88e1-0545426e7a7a
+    taskid: 7d8c70a2-fbc0-4339-8477-de6d9aaed8b6
     type: condition
     task:
-      id: 1cad129b-ca77-442c-88e1-0545426e7a7a
-      description: This task checks Okta logs for 5 or more failed login attempts by the user within the past 12 hours. If threshold is met, it triggers remediation; otherwise, it closes the alert.
+      id: 7d8c70a2-fbc0-4339-8477-de6d9aaed8b6
       version: -1
       name: Check for 5 failed logins
+      description: This task checks Okta logs for 5 or more failed login attempts by the user within the past 12 hours. If threshold is met, it triggers remediation; otherwise, it closes the alert.
       type: condition
       iscommand: false
       brand: ""
@@ -1537,7 +1537,7 @@ tasks:
       {
         "position": {
           "x": 960,
-          "y": 1960
+          "y": 1830
         }
       }
     note: false
@@ -1549,10 +1549,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: c6b2f1f5-c7f2-49c5-8d6d-ffab80c6205e
+    taskid: 3ee60af9-d489-41ae-8c0a-bbbd3654982a
     type: regular
     task:
-      id: c6b2f1f5-c7f2-49c5-8d6d-ffab80c6205e
+      id: 3ee60af9-d489-41ae-8c0a-bbbd3654982a
       version: -1
       name: Save malicious IPs to be blocked
       description: |-
@@ -1616,7 +1616,7 @@ tasks:
       {
         "position": {
           "x": 930,
-          "y": 710
+          "y": 690
         }
       }
     note: false
@@ -1641,14 +1641,15 @@ view: |-
       "32_28_#default#": 0.34,
       "35_16_REMEDIATION": 0.19,
       "35_28_#default#": 0.26,
+      "8_17_yes": 0.59,
       "8_9_#default#": 0.16
     },
     "paper": {
       "dimensions": {
-        "height": 4305,
+        "height": 3735,
         "width": 2400,
         "x": -550,
-        "y": 50
+        "y": 70
       }
     }
   }
