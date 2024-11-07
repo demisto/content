@@ -21,8 +21,10 @@ This integration was integrated and tested with version 01 of Bitsight for Secur
     | Use system proxy settings |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
+    | Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -474,13 +476,14 @@ Bitsight command to get company details based on the provided GUID. The details 
 
 
 ### bitsight-company-findings-get
+
 ***
 Bitsight command to get company findings.
-
 
 #### Base Command
 
 `bitsight-company-findings-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -491,10 +494,9 @@ Bitsight command to get company findings.
 | severity | Minimum Severity of the findings. Possible values are: minor, moderate, material, severe. | Optional | 
 | grade | Filter by the grade of the findings. Supports comma separated values. Select the values from the list of predefined values: good, fair, warn, bad and, neutral. | Optional | 
 | asset_category | Minimum Asset Category of the findings.<br/><br/>Example: If low is selected from the options then low, medium, high, and critical will be considered in retrieving results. Possible values are: low, medium, high, critical. | Optional | 
-| risk_vector_label | Risk category of the findings. Supports comma separated values. Select the values from the list of predefined values: Web Application Headers, Botnet Infections, Breaches, Desktop Software, DKIM, DNSSEC, File Sharing, Insecure Systems, Malware Servers, Mobile App Publications, Mobile Application Security, Mobile Software, Open Ports, Patching Cadence, Potentially Exploited, Server Software, Spam Propagation, SPF, SSL Certificates, SSL Configurations and, Unsolicited Communications. | Optional | 
+| risk_vector_label | Risk category of the findings. Supports comma separated values. Select the values from the list of predefined values: Web Application Headers, Botnet Infections, Breaches, Desktop Software, DKIM, DNSSEC, File Sharing, Insecure Systems, Malware Servers, Mobile App Publications, Mobile Application Security, Mobile Software, Open Ports, Patching Cadence, Potentially Exploited, Server Software, Spam Propagation, SPF, SSL Certificates, SSL Configurations, Unsolicited Communications, Web Application Security, DMARC. | Optional | 
 | limit | Set the maximum number of results to be retrieved. The maximum value is 1000.<br/><br/>Note: If a negative value is provided then the default value of 100 will be used. Default is 100. | Optional | 
 | offset | Set the starting point of the results to be returned. A 0 (zero) value starts the results from the first record in the result set. Default is 0. | Optional | 
-
 
 #### Context Output
 
@@ -540,142 +542,6 @@ Bitsight command to get company findings.
 | BitSight.Page.next | String | The URL to navigate to the next page of results. | 
 | BitSight.Page.previous | String | The URL to navigate to the previous page of results. | 
 | BitSight.Page.count | Number | The number of findings. | 
-
-#### Command example
-```!bitsight-company-findings-get guid=00000000-0000-0000-0000-000000000001 first_seen=2021-01-01 last_seen=2022-03-01 limit=2```
-#### Context Example
-```json
-{
-    "BitSight": {
-        "Company": {
-            "CompanyFinding": [
-                {
-                    "affectsRating": false,
-                    "assets": [
-                        {
-                            "asset": "X.X.X.1",
-                            "category": "low",
-                            "importance": 0,
-                            "isIp": true
-                        }
-                    ],
-                    "attributedCompanies": [
-                        {
-                            "guid": "00000000-0000-0000-0000-000000000001",
-                            "name": "Saperix, Inc."
-                        }
-                    ],
-                    "details": {
-                        "checkPass": "",
-                        "country": "United States",
-                        "destPort": 22,
-                        "diligenceAnnotations": {
-                            "cPE": [
-                                "a:openbsd:openssh:8.0"
-                            ],
-                            "close-seen": "2022-03-11 16:22:22",
-                            "message": "Detected service: SSH {{(OpenSSH_8.0)}}",
-                            "product": "OpenSSH",
-                            "transport": "tcp",
-                            "version": "8.0"
-                        },
-                        "geoIpLocation": "US",
-                        "grade": "GOOD",
-                        "remediations": [
-                            {
-                                "helpText": "This port was observed running SSH, which is used for sending and receiving secure communication.",
-                                "message": "Detected service: SSH (OpenSSH_8.0)",
-                                "remediationTip": ""
-                            }
-                        ],
-                        "rollupEndDate": "2022-01-28",
-                        "rollupStartDate": "2022-01-28",
-                        "searchableDetails": "Detected service: SSH {{(OpenSSH_8.0)}},tcp,OpenSSH"
-                    },
-                    "evidenceKey": "X.X.X.1:22",
-                    "firstSeen": "2022-01-28",
-                    "lastSeen": "2022-01-28",
-                    "riskCategory": "Diligence",
-                    "riskVector": "open_ports",
-                    "riskVectorLabel": "Open Ports",
-                    "rolledupObservationId": "11A3==",
-                    "severity": 1,
-                    "severityCategory": "minor",
-                    "temporaryId": "A9yq"
-                },
-                {
-                    "affectsRating": true,
-                    "assetOverrides": [
-                        {
-                            "asset": "X.X.X.2",
-                            "importance": "high",
-                            "overrideImportance": "high"
-                        }
-                    ],
-                    "assets": [
-                        {
-                            "asset": "X.X.X.2",
-                            "category": "critical",
-                            "importance": 0.49,
-                            "isIp": true
-                        }
-                    ],
-                    "attributedCompanies": [
-                        {
-                            "guid": "00000000-0000-0000-0000-000000000002",
-                            "name": "Saperix Lab"
-                        },
-                        {
-                            "guid": "00000000-0000-0000-0000-000000000001",
-                            "name": "Saperix, Inc."
-                        }
-                    ],
-                    "details": {
-                        "checkPass": "",
-                        "country": "United States",
-                        "destPort": 143,
-                        "geoIpLocation": "US",
-                        "grade": "GOOD",
-                        "observedIps": [
-                            "X.X.X.2:143"
-                        ],
-                        "rollupEndDate": "2022-03-01",
-                        "rollupStartDate": "2021-01-04"
-                    },
-                    "evidenceKey": "X.X.X.2:143",
-                    "firstSeen": "2021-01-04",
-                    "lastSeen": "2022-03-01",
-                    "remainingDecay": 32,
-                    "riskCategory": "Diligence",
-                    "riskVector": "ssl_configurations",
-                    "riskVectorLabel": "SSL Configurations",
-                    "rolledupObservationId": "10A==",
-                    "severity": 1,
-                    "severityCategory": "minor",
-                    "temporaryId": "A9yq"
-                }
-            ],
-            "guid": "00000000-0000-0000-0000-000000000001"
-        },
-        "Page": {
-            "count": 2441,
-            "name": "bitsight-company-findings-get",
-            "next": "https://api.bitsighttech.com/v1/companies/00000000-0000-0000-0000-000000000001/findings?expand=attributed_companies&first_seen_gte=2021-01-01&last_seen_lte=2022-03-01&limit=2&offset=2&unsampled=true",
-            "previous": null
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Company findings:
->Total Findings: 2441
->|Evidence Key|Risk Vector Label|First Seen|Last Seen|ID|Risk Category|Severity|Asset Category|Finding Grade|
->|---|---|---|---|---|---|---|---|---|
->| X.X.X.1:22 | Open Ports | 2022-01-28 | 2022-01-28 | A9Jq | Diligence | minor | X.X.X.1: Low | Good |
->| X.X.X.2:143 | SSL Configurations | 2021-01-04 | 2022-03-01 | A9yq | Diligence | minor | X.X.X.2: Critical | Good |
-
 
 ### bitsight-companies-guid-get
 ***
@@ -787,4 +653,45 @@ There are no input arguments for this command.
 >|---|---|---|---|
 >| Saperix, Inc. | Saperix | 00000000-0000-0000-0000-000000000001 | 640 |
 >| Saperix Corporate | Saperix Corporate | 00000000-0000-0000-0000-000000000002 | 730 |
+### bitsight-companies-guid-get
 
+***
+Bitsight command to get list of companies and GUID.
+
+#### Base Command
+
+`bitsight-companies-guid-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| BitSight.Company.name | String | Name of this company. | 
+| BitSight.Company.shortname | String | The abbreviated name of this company. | 
+| BitSight.Company.guid | String | The unique identifier of this company. | 
+| BitSight.Company.customId | String | The customizable ID assigned to this company. | 
+| BitSight.Company.networkSizeV4 | Number | The number of IPv4 addresses attributed to this company. | 
+| BitSight.Company.rating | Number | The most recent security rating of this company. | 
+| BitSight.Company.ratingDate | Date | The date when the rating report for this company was generated. | 
+| BitSight.Company.dateAdded | Date | The date when this company was added to your portfolio. | 
+| BitSight.Company.industry | String | The industry of this company. | 
+| BitSight.Company.industrySlug | String | The slug name of this company's industry. | 
+| BitSight.Company.subIndustry | String | The sub-industry of this company. | 
+| BitSight.Company.subIndustrySlug | String | The slug name of this company's sub-industry. | 
+| BitSight.Company.type | String | The rating type. | 
+| BitSight.Company.logo | String | The URL in the Bitsight platform to this company's logo image. | 
+| BitSight.Company.sparkline | String | The URL in the Bitsight platform to this company's historical ratings trend line. | 
+| BitSight.Company.externalId | Number | The external ID assigned to this company. | 
+| BitSight.Company.subscriptionType | String | The subscription type used to monitor this company. | 
+| BitSight.Company.subscriptionTypeKey | String | The slug name of the subscription type used to monitor this company. | 
+| BitSight.Company.primaryDomain | String | The primary domain of this company. | 
+| BitSight.Company.securityGrade | String | For internal Bitsight use. | 
+| BitSight.Company.gradeDate | Date | For internal Bitsight use. | 
+| BitSight.Company.displayURL | String | The URL in the Bitsight platform to this company's overview page. | 
+| BitSight.Company.href | String | The URL in the Bitsight platform to this company's page. | 
+| BitSight.MyCompany.guid | String | The unique identifier of my company. | 

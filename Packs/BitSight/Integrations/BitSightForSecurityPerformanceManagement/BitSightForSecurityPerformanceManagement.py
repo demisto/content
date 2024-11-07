@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 """Main file for BitSightForSecurityPerformanceManagement Integration."""
 import requests
 import urllib3
@@ -61,7 +63,10 @@ RISK_VECTOR_MAPPING = {
     'spf': 'SPF',
     'ssl certificates': 'ssl_certificates',
     'ssl configurations': 'ssl_configurations',
-    'unsolicited communications': 'unsolicited_comm'
+    'unsolicited communications': 'unsolicited_comm',
+    'web application security': 'web_appsec',
+    'dmarc': 'dmarc'
+
 }
 
 # Disable insecure warnings
@@ -225,7 +230,8 @@ def prepare_and_validate_fetch_findings_args(client, args):
     severity = args.get('findings_min_severity', None)
     if severity:
         severity = severity.lower()
-    grade = args.get('findings_grade', None)
+    grade_list = args.get('findings_grade', None)
+    grade = ','.join(grade_list)
     asset_category = args.get('findings_min_asset_category', None)
     if asset_category:
         asset_category = asset_category.lower()
