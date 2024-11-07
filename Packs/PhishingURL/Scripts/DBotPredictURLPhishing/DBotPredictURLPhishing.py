@@ -16,7 +16,7 @@ no_fetch_extract = TLDExtract(suffix_list_urls=None, cache_dir=False)  # type: i
 OOB_MAJOR_VERSION_INFO_KEY = 'major'
 OOB_MINOR_VERSION_INFO_KEY = 'minor'
 MAJOR_VERSION = 1
-MINOR_DEFAULT_VERSION = 0
+MINOR_DEFAULT_VERSION = 1
 
 KEY_IMAGE_RASTERIZE = "image_b64"
 KEY_IMAGE_HTML = "html"
