@@ -182,18 +182,18 @@ To access the Export Indicators service by instance name, make sure ***Instance 
 2.  In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
 3. In a web browser, go to:
     `https://*<xsoar_address>*/instance/execute/*<instance_name>*`
- 
+
+### Set up Authentication
+EDLs running on tenants in Cortex XSOAR 8 require basic authentication. EDLs running on engines do not require basic authentication, but it is recommended.  
+For Cortex 8 On-prem, you can set up authentication using custom certificates. For more information, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate). 
 
 ### Access EDLs on Cortex XSOAR 8 and Cortex XSIAM
-EDLs running on tenants in Cortex XSOAR 8 require basic authentication. EDLs running on engines do not require basic authentication, but it is recommended.  
-For more information on using certificates for authentication with EDLs in Cortex XSOAR 8 On-prem, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate).  
-
 **Note:**  
 For Cortex XSOAR 8 On-prem, you need to add the following DNS records:
 - ext-FQDN - The Cortex XSOAR DNS name mapped to the external IP address. For example, `ext-xsoar.mycompany.com`.
 - API-FQDN - The Cortex XSOAR DNS name mapped to the API IP address. For example, `api-xsoar.mycompany.com`.
   
-For Cortex XSOAR 8 Cloud and Cortex XSIAM, you can only access the Export Indicators Service using a third-party tool such as cURL.
+For Cortex XSOAR 8 and Cortex XSIAM, you can only access the Export Indicators Service using a third-party tool such as cURL.
 - On a tenant, use https://ext-<cortex-xsoar-address\>/xsoar/instance/execute/\<instance-name\>
    
   For example: curl -v -u user:pass https://ext-mytenant.paloaltonetworks.com/xsoar/instance/execute/edl_instance_01\?q\=type:ip
