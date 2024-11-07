@@ -1,15 +1,15 @@
-id: KafkaV3 Test
+id: Elasticsearch_v2_test-v7-v8
 version: -1
-fromversion: 5.0.0
-name: KafkaV3 Test
+name: Elasticsearch_v2_test-v7-v8
+description: 'Tests the Elasticsearch_V2 integration''s commands on Elastic server versions 7 and 8. '
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cd38dd48-d8b9-414b-8d76-14eb12c8b607
+    taskid: 0577512c-da72-471e-8188-0e5f989f2402
     type: start
     task:
-      id: cd38dd48-d8b9-414b-8d76-14eb12c8b607
+      id: 0577512c-da72-471e-8188-0e5f989f2402
       version: -1
       name: ""
       iscommand: false
@@ -19,6 +19,7 @@ tasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -33,26 +34,32 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "1":
     id: "1"
-    taskid: cfcba92c-2ab9-4b1d-84c2-fb5fd917ae0f
+    taskid: 01de6e8b-1a85-4e43-8678-cd2af8229994
     type: regular
     task:
-      id: cfcba92c-2ab9-4b1d-84c2-fb5fd917ae0f
+      id: 01de6e8b-1a85-4e43-8678-cd2af8229994
       version: -1
-      name: DeleteContext
-      script: DeleteContext
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "6"
     scriptarguments:
       all:
         simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -67,147 +74,29 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "2":
     id: "2"
-    taskid: 834e6a32-efca-4dc4-8957-a3020a7dbcdc
+    taskid: a5609a31-9cc6-4e97-8ae0-60f317cdf76a
     type: regular
     task:
-      id: 834e6a32-efca-4dc4-8957-a3020a7dbcdc
+      id: a5609a31-9cc6-4e97-8ae0-60f317cdf76a
       version: -1
-      name: kafka-print-topics
-      script: KafkaV3|||kafka-print-topics
+      name: Run 'es-search' Command
+      description: Queries an index.
+      script: '|||es-search'
       type: regular
       iscommand: true
-      brand: "KafkaV3"
-      description: Prints all topics and their partitions.
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "3":
-    id: "3"
-    taskid: 03755113-3fd8-4572-84ad-a086b1b0a419
-    type: condition
-    task:
-      id: 03755113-3fd8-4572-84ad-a086b1b0a419
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "9"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Kafka.Topic.[0].Name
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Kafka.Topic.[0].Partitions.ID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "4":
-    id: "4"
-    taskid: 1a68f8c2-e15d-4a4c-86f4-88d1a4ab8013
-    type: regular
-    task:
-      id: 1a68f8c2-e15d-4a4c-86f4-88d1a4ab8013
-      version: -1
-      name: kafka-publish-msg
-      script: KafkaV3|||kafka-publish-msg
-      type: regular
-      iscommand: true
-      brand: KafkaV3
-      description: Publishes a message to Kafka.
-    nexttasks:
-      '#none#':
-      - "5"
     scriptarguments:
-      partitioning_key:
-        simple: "0"
-      topic:
-        simple: testsa17
-      value:
-        simple: the_value1
+      index:
+        simple: test
+      query:
+        simple: '*'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
     continueonerrortype: ""
-  "5":
-    id: "5"
-    taskid: a6c71c31-478e-4ce8-8ea0-9b6dd36f6b12
-    type: regular
-    task:
-      id: a6c71c31-478e-4ce8-8ea0-9b6dd36f6b12
-      version: -1
-      name: kafka-consume-msg
-      script: KafkaV3|||kafka-consume-msg
-      type: regular
-      iscommand: true
-      brand: KafkaV3
-      description: Consumes a single Kafka message.
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      offset:
-        simple: latest
-      partition:
-        simple: "0"
-      topic:
-        simple: testsa17
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -222,46 +111,33 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "6":
-    id: "6"
-    taskid: 62692a8e-9df0-4a67-8a3c-35f73183ebb8
+  "3":
+    id: "3"
+    taskid: 8dca5719-9acf-4c0b-844c-9fe069a2670b
     type: condition
     task:
-      id: 62692a8e-9df0-4a67-8a3c-35f73183ebb8
+      id: 8dca5719-9acf-4c0b-844c-9fe069a2670b
       version: -1
-      name: Verify Outputs
+      name: Verify 'es-search' Results
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "7"
+      - "4"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: greaterThan
           left:
             value:
-              simple: Kafka.Topic.Name
+              simple: Elasticsearch.Search.total.value
             iscontext: true
           right:
             value:
-              simple: testsa17
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Kafka.Topic.Message.Value
-            iscontext: true
-          right:
-            value:
-              simple: the_value1
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Kafka.Topic.Message.Offset
-            iscontext: true
+              simple: "0"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -276,27 +152,31 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "7":
-    id: "7"
-    taskid: c61080d3-92ac-4c9c-8c37-df7bf86fc0f9
+  "4":
+    id: "4"
+    taskid: c9f9a4db-90c2-4d45-891d-0cef7189af59
     type: regular
     task:
-      id: c61080d3-92ac-4c9c-8c37-df7bf86fc0f9
+      id: c9f9a4db-90c2-4d45-891d-0cef7189af59
       version: -1
-      name: kafka-fetch-partitions
-      script: KafkaV3|||kafka-fetch-partitions
+      name: Run 'es-index' command
+      description: Indexes a document into an Elasticsearch index.
+      script: '|||es-index'
       type: regular
       iscommand: true
-      brand: KafkaV3
-      description: Fetch partitions for a topic.
+      brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "5"
     scriptarguments:
-      topic:
-        simple: testsa17
+      document:
+        simple: '{"name":"new", "text":"test"}'
+      id:
+        simple: "12345"
+      index_name:
+        simple: test
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -311,21 +191,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "8":
-    id: "8"
-    taskid: 47e4d692-2c02-4f0f-8fb4-226d795cdd6e
+  "5":
+    id: "5"
+    taskid: bd746200-3c6f-4db0-8456-9b9e0a13b972
     type: condition
     task:
-      id: 47e4d692-2c02-4f0f-8fb4-226d795cdd6e
+      id: bd746200-3c6f-4db0-8456-9b9e0a13b972
       version: -1
-      name: Verify Outputs
+      name: Verify 'es-index' command
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "2"
+      - "7"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -333,16 +212,28 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Kafka.Topic.Name
+              simple: Elasticsearch.Index.id
             iscontext: true
           right:
             value:
-              simple: testsa17
-      - - operator: isNotEmpty
+              simple: "12345"
+      - - operator: isEqualString
           left:
             value:
-              simple: Kafka.Topic.Partition
+              simple: Elasticsearch.Index.index
             iscontext: true
+          right:
+            value:
+              simple: test
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Elasticsearch.Index.result
+            iscontext: true
+          right:
+            value:
+              simple: updated
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -357,20 +248,124 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 30fa2bb0-4276-4997-8f68-962d9baf7771
+    type: regular
+    task:
+      id: 30fa2bb0-4276-4997-8f68-962d9baf7771
+      version: -1
+      name: Run 'es-integration-health-check' Command
+      description: Returns the health status of the integration. This commmand should be used for debugging purposes.
+      script: '|||es-integration-health-check'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
     continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 6d5a2c61-e325-490d-8a94-cdcf77404c6f
+    type: regular
+    task:
+      id: 6d5a2c61-e325-490d-8a94-cdcf77404c6f
+      version: -1
+      name: Run 'es-get-indices-statistics' Command
+      description: Returns Elasticsearch indices statistics and information. This command is not supported for client type OpenSearch.
+      script: '|||es-get-indices-statistics'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 51d04c10-c1d2-4683-883d-00692681f19c
+    type: condition
+    task:
+      id: 51d04c10-c1d2-4683-883d-00692681f19c
+      version: -1
+      name: Verify 'es-get-indices-statistics' Command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "YES":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Elasticsearch.IndexStatistics.Name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 82fea5e2-4ea1-4059-829d-6737f04370ba
+    taskid: f6e12e32-43db-4014-8869-c2e977bc934c
     type: title
     task:
-      id: 82fea5e2-4ea1-4059-829d-6737f04370ba
+      id: f6e12e32-43db-4014-8869-c2e977bc934c
       version: -1
-      name: Test Done
+      name: Success
       type: title
       iscommand: false
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -385,7 +380,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
 view: |-
   {
     "linkLabelsPosition": {},
@@ -400,4 +394,5 @@ view: |-
   }
 inputs: []
 outputs: []
-description: ''
+quiet: true
+fromversion: 6.10.0
