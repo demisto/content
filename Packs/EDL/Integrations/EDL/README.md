@@ -186,10 +186,10 @@ To access the Export Indicators service by instance name, make sure ***Instance 
 
 ### Access EDLs on Cortex XSOAR 8 and Cortex XSIAM
 EDLs running on tenants in Cortex XSOAR 8 require basic authentication. EDLs running on engines do not require basic authentication, but it is recommended.  
-For more information on using certificates for authentication with EDLs in Cortex XSOAR 8 OPP, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate).  
+For more information on using certificates for authentication with EDLs in Cortex XSOAR 8 On-prem, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate).  
 
 **Note:**  
-For Cortex XSOAR 8 OPP, you need to add the following DNS records:
+For Cortex XSOAR 8 On-prem, you need to add the following DNS records:
 - ext-FQDN - The Cortex XSOAR DNS name mapped to the external IP address. For example, `ext-xsoar.mycompany.com`.
 - API-FQDN - The Cortex XSOAR DNS name mapped to the API IP address. For example, `api-xsoar.mycompany.com`.
   
