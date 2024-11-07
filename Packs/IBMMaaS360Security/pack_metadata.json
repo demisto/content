@@ -1,6 +1,6 @@
 {
     "name": "IBM MaaS360 Security",
-    "description": "IBM MaaS360 Security event collector for XSIAM.",
+    "description": "The IBM MaaS360 Security pack allows you to monitor security events on your IBM MaaS360 Security environment.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

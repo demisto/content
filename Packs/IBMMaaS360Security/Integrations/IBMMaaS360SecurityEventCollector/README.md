@@ -1,46 +1,62 @@
-This is the Hello World event collector integration for XSIAM.
+This is the IBM MaaS360 Security event collector integration for Cortex XSIAM.
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+## Configure IBMMaaS360SecurityEventCollector on Cortex XSIAM
 
-## Configure HelloWorld Event Collector on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for HelloWorld Event Collector.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.
+2. Search for IBMMaaS360SecurityEventCollector.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | False |
-    | Fetch alerts with status (ACTIVE, CLOSED) | False |
-    | Max number of events per fetch | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Server URL |  | True |
+    | User Name |  | True |
+    | Password |  | True |
+    | App ID |  | True |
+    | App Version |  | True |
+    | Platform ID |  | True |
+    | App Access Key |  | True |
+    | Billing ID |  | True |
+    | Maximum number of Admin Login Reports events per fetch | Rounds up to the nearest page size increment. \(250\) | False |
+    | Maximum number of Admin Changes Audit events per fetch | Rounds up to the nearest page size increment. \(250\) | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### hello-world-get-events
+### ibm-maas360-security-get-events
 
 ***
-Gets events from Hello World.
+Gets events from IBM MaaS360 Security.
 
 #### Base Command
 
-`hello-world-get-events`
+`ibm-maas360-security-get-events`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| status | Filter by alert status. Possible values are: ACTIVE, CLOSED. | Optional | 
-| limit | Maximum number of results to return. | Required | 
-| from_date | Date from which to get events. | Optional | 
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| limit | Maximum number of results to return. | Required |
+| from_date | Date from which to get events. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
+#### Human Readable Output
+
+>### Admin audits
+>
+>|_time|source_log_type|updateDate|performedBy|operationType|ipAddress|administrator|
+>|---|---|---|---|---|---|---|
+>| 2024-10-29T13:39:32Z | admin_changes_audit | 1730209172000 | <test@mail.com> | CHANGE | 1.1.1.1 | email: <test@mail.com><br>username: <test@mail.com><br>firstName: tester<br>middleName: <br>lastName: tester<br>address: <br>phone: <br>jobTitle: <br>watchSubscription: Y<br>accountStatus: Active<br>managedUserGroups: All groups<br>lastLoginTime: <br>rolesAdded: <br>rolesDeleted: <br>previousState:  |
+>| 2024-10-29T13:39:32Z | admin_changes_audit | 1730209172000 | <test@mail.com> | CHANGE | 1.1.1.1 | email: <test@mail.com><br>username: <test@mail.com><br>firstName: tester<br>middleName: <br>lastName: tester<br>address: <br>phone: <br>jobTitle: <br>watchSubscription: Y<br>accountStatus: Active<br>managedUserGroups: All groups<br>lastLoginTime: <br>rolesAdded: Help Desk<br>rolesDeleted: <br>previousState:  |
+>| 2024-10-29T12:53:49Z | admin_changes_audit | 1730206429000 | <test@mail.com> | CHANGE | 1.1.1.1 | email: <test@mail.com><br>username: <test@mail.com><br>firstName: tester<br>middleName: <br>lastName: tester<br>address: <br>phone: <br>jobTitle: <br>watchSubscription: Y<br>accountStatus: Active<br>managedUserGroups: All groups<br>lastLoginTime: <br>rolesAdded: <br>rolesDeleted: <br>previousState:  |
+>| 2024-10-29T12:53:49Z | admin_changes_audit | 1730206429000 | <test@mail.com> | CHANGE | 1.1.1.1 | email: <test@mail.com><br>username: <test@mail.com><br>firstName: tester<br>middleName: <br>lastName: tester<br>address: <br>phone: <br>jobTitle: <br>watchSubscription: Y<br>accountStatus: Active<br>managedUserGroups: All groups<br>lastLoginTime: <br>rolesAdded: <br>rolesDeleted: Help Desk<br>previousState:  |
+>| 2024-10-29T12:41:31Z | admin_changes_audit | 1730205691000 | <test@mail.com> | CHANGE | 1.1.1.1 | email: <test@mail.com><br>username: <test@mail.com><br>firstName: tester<br>middleName: <br>lastName: tester<br>address: <br>phone: <br>jobTitle: <br>watchSubscription: Y<br>accountStatus: Active<br>managedUserGroups: All groups<br>lastLoginTime: <br>rolesAdded: <br>rolesDeleted: <br>previousState:  |

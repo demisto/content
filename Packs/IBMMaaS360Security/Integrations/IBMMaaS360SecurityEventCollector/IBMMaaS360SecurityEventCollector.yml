@@ -47,14 +47,14 @@ configuration:
   hiddenusername: true
 - display: Maximum number of Admin Login Reports events per fetch
   name: max_login_reports_per_fetch
-  additionalinfo: Rounds down to the nearest page size increment. (250)
+  additionalinfo: Rounds up to the nearest page size increment. (250)
   required: false
   type: 0
   section: Collect
   defaultvalue: 1250
 - display: Maximum number of Admin Changes Audit events per fetch
   name: max_admin_change_audits_per_fetch
-  additionalinfo: Rounds down to the nearest page size increment. (250)
+  additionalinfo: Rounds up to the nearest page size increment. (250)
   required: false
   type: 0
   section: Collect
