@@ -122,7 +122,7 @@ configuration:
   defaultvalue: 'true'
   hidden: true
   required: false
-- defaultvalue: '1'
+- defaultvalue: '15'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
@@ -161,6 +161,13 @@ configuration:
   name: feedBypassExclusionList
   type: 8
   required: false
+- display: Extensive logging (for debugging purposes)
+  additionalinfo: Do not use this option unless advised otherwise. Using this parameter may result in increased processing time.
+  name: extensive_logs
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
 description: Use the Cortex XDR - IOCs feed integration to sync indicators from Cortex XSOAR to Cortex XDR and back to Cortex XSOAR. Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
 display: Cortex XDR - IOC
 name: Cortex XDR - IOC
@@ -179,10 +186,10 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Sync your IOC with Cortex XDR and delete the old.
+    description: Sync your IOC with Cortex XDR.
     name: xdr-iocs-sync
   - arguments:
-    - description: IOCs to push. leave empty to push all recently modified IOCs.the indicators.
+    - description: The indicators to be pushed. Leave empty to push all recently modified IOCs.
       name: indicator
       isArray: true
     description: Push modified IOCs to Cortex XDR.

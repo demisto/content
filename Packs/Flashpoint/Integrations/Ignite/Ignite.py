@@ -142,7 +142,7 @@ ALERT_SOURCES_MAPPING = {
 ALERT_RESOURCE_URL = {
     'communities': '/search/context/communities/{}',
     'marketplaces': '/search/context/marketplaces/{}',
-    'media': '/search/results/media?include.media_id={}',
+    'media': '/search/results/media?include.date=all+time&include.media_id={}',
 }
 
 ALERT_STATUS_MAPPING = {
@@ -564,13 +564,15 @@ def remove_duplicate_records(records: List, fetch_type: str, next_run: dict) -> 
     return records
 
 
-def prepare_incidents_from_alerts_data(response: dict, last_run: dict, fetch_params: dict) -> Tuple[dict, list]:
+def prepare_incidents_from_alerts_data(
+        response: dict, last_run: dict, fetch_params: dict, platform_url: str) -> Tuple[dict, list]:
     """
     Prepare incidents from the alerts data.
 
     :param response: Response from the alerts API
     :param last_run: Dictionary to set in last run
     :param fetch_params: Dictionary of fetch parameters
+    :param platform_url: Platform URL
 
     :return: Tuple of dictionary of next run and list of fetched incidents
     """
@@ -589,6 +591,14 @@ def prepare_incidents_from_alerts_data(response: dict, last_run: dict, fetch_par
 
         tags = alert.get('tags', {})
         alert['tag_as_list'] = list(tags.keys())
+
+        origin = alert.get('reason', {}).get('origin')
+        source = alert.get('source')
+        resource_url = alert.get('resource', {}).get('url')
+        if not resource_url and origin == 'searches':
+            resource_url = get_resource_url(source, alert.get('resource', {}).get('id'), platform_url)
+
+        alert['resource'].update({'url': resource_url})
 
         incidents.append({
             'name': alert.get('reason', {}).get('name', '') + ' : ' + str(alert.get('id', '')),
@@ -1151,7 +1161,8 @@ def fetch_incidents(client: Client, last_run: dict, params: dict, is_test: bool 
     elif fetch_type == 'Alerts':
         if is_test:
             return {}, []
-        next_run, incidents = prepare_incidents_from_alerts_data(response, last_run, fetch_params['fetch_params'])
+        next_run, incidents = prepare_incidents_from_alerts_data(
+            response, last_run, fetch_params['fetch_params'], client.platform_url)
 
     demisto.info(f'Fetched {len(incidents)} incidents for {fetch_type}')
     return next_run, incidents
