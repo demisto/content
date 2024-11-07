@@ -74,15 +74,16 @@ configuration:
   required: false
   additionalinfo: Limit on the number of incidents retrieved in a single fetch.
   section: Collect
-- display: Page size
+- display: Akamai Page size
   name: page_size
   type: 0
   required: false
   section: Collect
   defaultvalue: '50000'
-  additionalinfo: The number of events to fetch per request. If you're getting aggregated delays, increase the number. The maximum is 600,000.
+  additionalinfo: The number of events to fetch per request to akamai (multiple requests are made for each fetch). If you're getting aggregated delays, increase the number. The maximum is 600,000.
   hidden:
   - xsoar
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
