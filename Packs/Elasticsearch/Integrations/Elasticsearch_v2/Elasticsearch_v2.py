@@ -27,7 +27,6 @@ elif ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
     from elasticsearch import Elasticsearch, NotFoundError
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
-    from elastic_transport import RequestsHttpNode
 else:  # Elasticsearch (<= v7)
     from elasticsearch7 import Elasticsearch, RequestsHttpConnection, NotFoundError  # type: ignore[assignment]
     from elasticsearch_dsl import Search
@@ -163,14 +162,18 @@ def elasticsearch_builder(proxies):
         # Adding the proxy related parameters to the Elasticsearch client v7 and below or OpenSearch (BC)
         connection_args["connection_class"] = RequestsHttpConnection
         connection_args["proxies"] = proxies
-    else:
-        # Adding the proxy related parameter to the Elasticsearch client v8
-        # Reference- https://github.com/elastic/elastic-transport-python/issues/53#issuecomment-1447903214
-        class CustomHttpNode(RequestsHttpNode):
-            def __init__(self, *args, **kwargs):
-                super().__init__(*args, **kwargs)
-                self.session.proxies = proxies
-        connection_args['node_class'] = CustomHttpNode
+
+    # The input of proxy configuration is currently missing on client v8 - in this case we are dependent on the client using the
+    # proxy environment variables. To add the proxy parameter to the Elasticsearch client v8 - uncomment the following section.
+    # and import the RequestsHttpNode class from elastic_transport (for client v8).
+    # Reference- https://github.com/elastic/elastic-transport-python/issues/53#issuecomment-1447903214
+    # else:
+    #     # Adding the proxy related parameter to the Elasticsearch client v8
+    #     class CustomHttpNode(RequestsHttpNode):
+    #         def __init__(self, *args, **kwargs):
+    #             super().__init__(*args, **kwargs)
+    #             self.session.proxies = proxies
+    #     connection_args['node_class'] = CustomHttpNode
 
     if API_KEY_ID:
         connection_args["api_key"] = API_KEY
