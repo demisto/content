@@ -144,7 +144,7 @@
                 "sections": [
                     {
                         "h": 3,
-                        "i": "default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-relationshipsTable",
+                        "i": "default-main-948860cb-b00d-463c-84a0-543e7a78107e-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-relationshipsTable",
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -153,11 +153,12 @@
                         "type": "relationshipsTable",
                         "w": 2,
                         "x": 0,
-                        "y": 6
+                        "y": 6,
+                        "maxH": null
                     },
                     {
                         "h": 2,
-                        "i": "default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-relatedIncidents",
+                        "i": "default-main-948860cb-b00d-463c-84a0-543e7a78107e-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-relatedIncidents",
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -166,12 +167,13 @@
                         "type": "relatedIncidents",
                         "w": 2,
                         "x": 0,
-                        "y": 9
+                        "y": 9,
+                        "maxH": null
                     },
                     {
                         "displayType": "ROW",
                         "h": 3,
-                        "i": "default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                        "i": "default-main-948860cb-b00d-463c-84a0-543e7a78107e-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -327,12 +329,13 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 3
+                        "y": 3,
+                        "maxH": null
                     },
                     {
                         "displayType": "ROW",
                         "h": 3,
-                        "i": "default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-indicatorTimeline",
+                        "i": "default-main-948860cb-b00d-463c-84a0-543e7a78107e-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-indicatorTimeline",
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -341,11 +344,12 @@
                         "type": "indicatorTimeline",
                         "w": 1,
                         "x": 2,
-                        "y": 6
+                        "y": 6,
+                        "maxH": null
                     },
                     {
                         "h": 2,
-                        "i": "default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-comments",
+                        "i": "default-main-948860cb-b00d-463c-84a0-543e7a78107e-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-comments",
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -354,12 +358,13 @@
                         "type": "comments",
                         "w": 1,
                         "x": 2,
-                        "y": 9
+                        "y": 9,
+                        "maxH": null
                     },
                     {
                         "h": 1,
                         "hideName": true,
-                        "i": "default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-expirationStatus",
+                        "i": "default-main-948860cb-b00d-463c-84a0-543e7a78107e-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-expirationStatus",
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -368,13 +373,14 @@
                         "type": "expirationStatus",
                         "w": 1,
                         "x": 0,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-93c3e790-4293-11ef-8f1a-b9be5629a211",
+                        "i": "default-main-948860cb-b00d-463c-84a0-543e7a78107e-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-93c3e790-4293-11ef-8f1a-b9be5629a211",
                         "items": [
                             {
                                 "endCol": 2,
@@ -422,14 +428,15 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 4
+                        "y": 4,
+                        "maxH": null
                     },
                     {
                         "displayType": "CARD",
                         "h": 6,
                         "hideItemTitleOnlyOne": false,
                         "hideName": false,
-                        "i": "default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-1654e470-4294-11ef-8f1a-b9be5629a211",
+                        "i": "default-main-948860cb-b00d-463c-84a0-543e7a78107e-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-1654e470-4294-11ef-8f1a-b9be5629a211",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -437,7 +444,7 @@
                                 "fieldId": "sigmadetection",
                                 "height": 106,
                                 "id": "1b696620-4294-11ef-8f1a-b9be5629a211",
-                                "index": 0,
+                                "index": 1,
                                 "listId": "default-main-1654e470-4294-11ef-8f1a-b9be5629a211",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -454,7 +461,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "sigmafalsepositives",
-                                "height": 26,
+                                "height": 106,
                                 "id": "769fc4a0-58bd-11ef-985f-5f0ea1744742",
                                 "index": 2,
                                 "sectionItemType": "field",
@@ -468,14 +475,15 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     },
                     {
                         "displayType": "CARD",
                         "h": 1,
                         "hideItemTitleOnlyOne": false,
                         "hideName": false,
-                        "i": "default-main-Sigma Rule Layout-default-main-88188820-53e5-11ef-8590-adf00dd49707",
+                        "i": "default-main-948860cb-b00d-463c-84a0-543e7a78107e-default-main-Sigma Rule Layout-default-main-88188820-53e5-11ef-8590-adf00dd49707",
                         "items": [
                             {
                                 "args": {},
@@ -500,21 +508,33 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     },
                     {
                         "displayType": "CARD",
                         "h": 3,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "default-main-Sigma Rule Layout-default-main-7dca5540-5400-11ef-8590-adf00dd49707",
+                        "i": "default-main-948860cb-b00d-463c-84a0-543e7a78107e-default-main-Sigma Rule Layout-default-main-7dca5540-5400-11ef-8590-adf00dd49707",
                         "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "querylanguage",
+                                "height": 53,
+                                "id": "eb967731-949a-4a8d-bbae-56588ddbe723",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "default-main-948860cb-b00d-463c-84a0-543e7a78107e-default-main-Sigma Rule Layout-default-main-7dca5540-5400-11ef-8590-adf00dd49707"
+                            },
                             {
                                 "endCol": 2,
                                 "fieldId": "sigmaconvertedquery",
                                 "height": 53,
                                 "id": "71497f30-5400-11ef-8590-adf00dd49707",
-                                "index": 0,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -526,14 +546,15 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 1
+                        "y": 1,
+                        "maxH": null
                     },
                     {
                         "displayType": "CARD",
                         "h": 2,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "default-main-6e931d10-5977-11ef-a4cc-a3aa67c8aac6",
+                        "i": "default-main-948860cb-b00d-463c-84a0-543e7a78107e-default-main-6e931d10-5977-11ef-a4cc-a3aa67c8aac6",
                         "items": [
                             {
                                 "endCol": 2,
@@ -554,7 +575,8 @@
                         "w": 1,
                         "wrapLabels": true,
                         "x": 0,
-                        "y": 1
+                        "y": 1,
+                        "maxH": null
                     }
                 ],
                 "type": "custom"

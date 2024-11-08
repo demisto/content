@@ -44,14 +44,14 @@ select = [
     "MR100", "MR101", "MR106", "MR107", "MR108",
     "RN103", "RN108", "RN114",
     "LO107",
-    "GR101", "GR102", "GR103", "GR104", "GR105", "GR106", "GR107", 
+    "GR101", "GR102", "GR103", "GR104", "GR105", "GR106",
     "CR102",
     "PR101",
     "RM102", "RM110",
     "ST110", 
 ]
 
-warning = ["DS107"]
+warning = ["DS107", "GR107"]
 
 [path_based_validations]
 select = [
