@@ -430,7 +430,7 @@ script:
     - contextPath: AWS.Athena.QueryResults
       description: List of query results.
       type: List
-  dockerimage: demisto/boto3py3:1.0.0.89670
+  dockerimage: demisto/boto3py3:1.0.0.115129
   subtype: python3
 tests:
 - No tests

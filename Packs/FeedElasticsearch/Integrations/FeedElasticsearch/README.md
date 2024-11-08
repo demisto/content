@@ -6,6 +6,9 @@ Fetch indicators stored in an Elasticsearch database.
 2. The Cortex XSOAR MT Shared Feed contains indicators shared by a tenant account in a multi-tenant environment. 
 3. The Generic Feed contains a feed in a format specified by the user.
 
+Supports version 6 and later.
+This integration was integrated and tested with versions 6.6.2, 7.3, 8.4.1 of Elasticsearch.
+
 ## Configure Elasticsearch Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -17,7 +20,7 @@ Fetch indicators stored in an Elasticsearch database.
     | Server URL |  | True |
     | Name (see ?-&gt;Authentication) | Provide Username \+ Passoword instead of API key \+ API ID | False |
     | Password |  | False |
-    | Client type | In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type. | False |
+    | Client type | For Elasticsearch version 7 and below, select 'Elasticsearch'. For Elasticsearch server version 8, select 'Elasticsearch_v8'. In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Feed Type | The Cortex XSOAR Feed contains system indicators saved in an Elasticsearch index. The Cortex XSOAR MT Shared Feed contains indicators shared by a tenant account in a multi-tenant environment. Generic Feed contains a feed in a format specified by the user | False |
