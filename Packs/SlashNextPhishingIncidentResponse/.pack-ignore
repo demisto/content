@@ -10,3 +10,9 @@ ignore=IM111
 [file:BrandImpersonationDetection.yml]
 ignore=BA124
 
+[file:Online_Brand_Protection_Detect_and_Respond.yml]
+ignore=GR107
+
+[file:Abuse_Inbox_Management_Detect_&_Respond.yml]
+ignore=GR107
+

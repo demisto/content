@@ -1,6 +1,7 @@
 from CommonServerPython import *
 
 import SekoiaXDR  # type: ignore
+from freezegun import freeze_time
 
 from datetime import datetime
 import pytest
@@ -29,6 +30,7 @@ def client():
 """ TEST HELPER FUNCTIONS """
 
 
+@freeze_time("2024-09-24 11:25:31 UTC")
 def test_arg_to_timestamp():
     assert (
         SekoiaXDR.arg_to_timestamp("2024-04-25T09:20:55", "lastupdate", True)

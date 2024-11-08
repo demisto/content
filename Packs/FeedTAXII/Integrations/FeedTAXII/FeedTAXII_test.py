@@ -165,3 +165,26 @@ def test_client_headers():
     headers = client.headers(protocol='https')
 
     assert headers['X-TAXII-Protocol'] == 'urn:taxii.mitre.org:protocol:https:1.0'
+
+
+def test_fetch_enrichment_excluded(mocker):
+    """
+    Given:
+    - A TAXII client with the enrichmentExcluded parameter set to True.
+    When:
+    - Calling the fetch_indicators command
+    Then:
+    - The indicators returned should have enrichmentExcluded set to True.
+    """
+    client = TAXIIClient(collection='a collection', enrichmentExcluded=True)
+    with open('test_data/raw_indicators.json') as f:
+        raw_indicators = json.load(f)
+        mocker.patch.object(client, 'build_iterator', return_value=raw_indicators)
+        res = fetch_indicators_command(client)
+        with open('test_data/indicators_results.json') as exp_f:
+            expected = json.load(exp_f)
+
+        for ind in expected:
+            ind['enrichmentExcluded'] = True
+
+        assert res == expected

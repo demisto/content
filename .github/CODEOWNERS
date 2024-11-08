@@ -26,6 +26,7 @@
 /Packs/ContentManagement/* @adi88d
 /Packs/TAXIIServer/Integrations/TAXII2Server/* @Ni-Knight
 /Packs/FeedTAXII/Integrations/FeedTAXII2/* @Ni-Knight
+/Packs/rasterize/Integrations/rasterize/* @ilaredo
 
 # Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @altmannyarden
@@ -51,9 +52,6 @@
 /Packs/CommonScripts/Scripts/VerifyIPv6Indicator/* @Ni-Knight
 /Packs/CommonScripts/Scripts/ExtractEmailV2/* @Ni-Knight
 /Packs/CommonScripts/Scripts/UnEscapeIPs/* @Ni-Knight
-
-# Build related
-.circleci/config.yml @yucohen
 
 # SDK Related
 .pre-commit-config_template.yaml @SamuelFain @YuvHayun

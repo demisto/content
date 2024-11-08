@@ -874,7 +874,8 @@ class STIX2XSOARParser(BaseClient):
                  base_url: Optional[str] = None, proxy: bool = False,
                  tlp_color: Optional[str] = None,
                  field_map: Optional[dict] = None, skip_complex_mode: bool = False,
-                 tags: Optional[list] = None, update_custom_fields: bool = False):
+                 tags: Optional[list] = None, update_custom_fields: bool = False,
+                 enrichment_excluded: bool = False):
 
         super().__init__(base_url=base_url, verify=verify,
                          proxy=proxy)
@@ -893,6 +894,7 @@ class STIX2XSOARParser(BaseClient):
         self.update_custom_fields = update_custom_fields
         self.tags = tags if tags else []
         self.last_fetched_indicator__modified = None
+        self.enrichment_excluded = enrichment_excluded
 
     @staticmethod
     def get_indicator_publication(indicator: dict[str, Any], ignore_external_id: bool = False):
@@ -1165,6 +1167,9 @@ class STIX2XSOARParser(BaseClient):
             # For versions less than 6.2 - that only support STIX and not the newer types - Malware, Tool, etc.
             attack_pattern = self.change_attack_pattern_to_stix_attack_pattern(attack_pattern)
 
+        if self.enrichment_excluded:
+            attack_pattern['enrichmentExcluded'] = self.enrichment_excluded
+
         return [attack_pattern]
 
     def create_obj_refs_list(self, obj_refs_list: list):
@@ -1222,6 +1227,10 @@ class STIX2XSOARParser(BaseClient):
         if obj_refs_excluding_relationships_prefix:
             fields['Report Object References'] = self.create_obj_refs_list(obj_refs_excluding_relationships_prefix)
         report["fields"] = fields
+
+        if self.enrichment_excluded:
+            report['enrichmentExcluded'] = self.enrichment_excluded
+
         return [report]
 
     def parse_threat_actor(self, threat_actor_obj: dict[str, Any]) -> list[dict[str, Any]]:
@@ -1260,6 +1269,9 @@ class STIX2XSOARParser(BaseClient):
         fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
         threat_actor["fields"] = fields
 
+        if self.enrichment_excluded:
+            threat_actor['enrichmentExcluded'] = self.enrichment_excluded
+
         return [threat_actor]
 
     def parse_infrastructure(self, infrastructure_obj: dict[str, Any]) -> list[dict[str, Any]]:
@@ -1295,6 +1307,9 @@ class STIX2XSOARParser(BaseClient):
         fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
 
         infrastructure["fields"] = fields
+
+        if self.enrichment_excluded:
+            infrastructure['enrichmentExcluded'] = self.enrichment_excluded
 
         return [infrastructure]
 
@@ -1338,6 +1353,9 @@ class STIX2XSOARParser(BaseClient):
 
         malware["fields"] = fields
 
+        if self.enrichment_excluded:
+            malware['enrichmentExcluded'] = self.enrichment_excluded
+
         return [malware]
 
     def parse_tool(self, tool_obj: dict[str, Any]) -> list[dict[str, Any]]:
@@ -1373,6 +1391,9 @@ class STIX2XSOARParser(BaseClient):
 
         tool["fields"] = fields
 
+        if self.enrichment_excluded:
+            tool['enrichmentExcluded'] = self.enrichment_excluded
+
         return [tool]
 
     def parse_course_of_action(self, coa_obj: dict[str, Any], ignore_external_id: bool = False) -> list[dict[str, Any]]:
@@ -1406,6 +1427,9 @@ class STIX2XSOARParser(BaseClient):
 
         course_of_action["fields"] = fields
 
+        if self.enrichment_excluded:
+            course_of_action['enrichmentExcluded'] = self.enrichment_excluded
+
         return [course_of_action]
 
     def parse_campaign(self, campaign_obj: dict[str, Any]) -> list[dict[str, Any]]:
@@ -1433,6 +1457,9 @@ class STIX2XSOARParser(BaseClient):
                 campaign['score'] = score
         fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
         campaign["fields"] = fields
+
+        if self.enrichment_excluded:
+            campaign['enrichmentExcluded'] = self.enrichment_excluded
 
         return [campaign]
 
@@ -1468,6 +1495,9 @@ class STIX2XSOARParser(BaseClient):
                 intrusion_set['score'] = score
         fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
 
+        if self.enrichment_excluded:
+            intrusion_set['enrichmentExcluded'] = self.enrichment_excluded
+
         intrusion_set["fields"] = fields
 
         return [intrusion_set]
@@ -1499,6 +1529,9 @@ class STIX2XSOARParser(BaseClient):
         fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
 
         sco_indicator['fields'] = fields
+
+        if self.enrichment_excluded:
+            sco_indicator['enrichmentExcluded'] = self.enrichment_excluded
 
         return [sco_indicator]
 
@@ -1632,6 +1665,9 @@ class STIX2XSOARParser(BaseClient):
 
         identity['fields'] = fields
 
+        if self.enrichment_excluded:
+            identity['enrichmentExcluded'] = self.enrichment_excluded
+
         return [identity]
 
     def parse_location(self, location_obj: dict[str, Any]) -> list[dict[str, Any]]:
@@ -1664,6 +1700,9 @@ class STIX2XSOARParser(BaseClient):
         fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
 
         location['fields'] = fields
+
+        if self.enrichment_excluded:
+            location['enrichmentExcluded'] = self.enrichment_excluded
 
         return [location]
 
@@ -1698,6 +1737,9 @@ class STIX2XSOARParser(BaseClient):
         fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
 
         cve['fields'] = fields
+
+        if self.enrichment_excluded:
+            cve['enrichmentExcluded'] = self.enrichment_excluded
 
         return [cve]
 
@@ -1748,6 +1790,9 @@ class STIX2XSOARParser(BaseClient):
                     x509_certificate['score'] = score
             fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
             x509_certificate["fields"] = fields
+
+            if self.enrichment_excluded:
+                x509_certificate['enrichmentExcluded'] = self.enrichment_excluded
 
             return [x509_certificate]
         return []
@@ -1910,6 +1955,10 @@ class STIX2XSOARParser(BaseClient):
 
         indicator["fields"] = fields
         fields["publications"] = self.get_indicator_publication(indicator_obj)
+
+        if self.enrichment_excluded:
+            indicator['enrichmentExcluded'] = self.enrichment_excluded
+
         return indicator
 
     @staticmethod
@@ -2131,7 +2180,8 @@ class Taxii2FeedClient(STIX2XSOARParser):
         certificate: str = None,
         key: str = None,
         default_api_root: str = None,
-        update_custom_fields: bool = False
+        update_custom_fields: bool = False,
+        enrichment_excluded: bool = False,
     ):
         """
         TAXII 2 Client used to poll and parse indicators in XSOAR formar
@@ -2158,6 +2208,7 @@ class Taxii2FeedClient(STIX2XSOARParser):
             skip_complex_mode=skip_complex_mode,
             update_custom_fields=update_custom_fields,
             tags=tags if tags else [],
+            enrichment_excluded=enrichment_excluded,
         )
         self._conn = None
         self.server = None

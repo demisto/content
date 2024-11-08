@@ -1,0 +1,124 @@
+{
+    "count" : 3,
+    "events" : [
+        {
+            "_time": "2024-09-11T00:21:33Z",
+            "bssid": "",
+            "client_mac": "",
+            "description": "Radio output power decreased to 21.0 dBm from 27.0 dBm.",
+            "device_mac": "cc:88:b5:98",
+            "device_serial": "TESTKD5HL4",
+            "device_type": "ACCESS POINT",
+            "event_type": "Radio ARM Decreased Power",
+            "event_uuid": "61c00535-41eb-bfc4-14ba7ae0e815",
+            "group_name": "005 - Test 2021",
+            "has_rowdetail": false,
+            "hostname": "TEST-SLKC02-ANAP01P3",
+            "labels": [
+                {
+                    "id": 11,
+                    "name": "ITD-TEST"
+                }
+            ],
+            "level": "",
+            "number": 21,
+            "sites": [
+                {
+                    "id": 71,
+                    "name": "UT TST TST - 90"
+                }
+            ],
+            "timestamp": 1726014093000
+        },
+        {
+            "_time": "2024-09-11T00:21:33Z",
+            "bssid": "",
+            "client_mac": "",
+            "description": " ports:  ST1-TEST: port 4/5 is now off-line",
+            "device_mac": "64:e8:3a:c0",
+            "device_serial": "TESTK910HN",
+            "device_type": "SWITCH",
+            "event_type": "Ports",
+            "event_uuid": "eeea631d-8e72-6b5a93c5609b",
+            "group_name": "003 - 2021 TEST",
+            "has_rowdetail": false,
+            "hostname": "TEST-LACY02-ANSP3",
+            "labels": [
+                {
+                    "id": 20,
+                    "name": "TEST_IT"
+                }
+            ],
+            "level": "INFO",
+            "number": 7,
+            "sites": [
+                {
+                    "id": 49,
+                    "name": "WA TEST - 18"
+                }
+            ],
+            "timestamp": 1726014093000
+        },
+        {
+            "_time": "2024-09-11T00:36:43Z",
+            "bssid": "6c:d1:51",
+            "client_mac": "96:16:06",
+            "description": "802.11 Disassociation received from client 96:19:06 associated to BSSID 6c:d1:51",
+            "device_mac": "6c:5d:14",
+            "device_serial": "TESTKD5XLB",
+            "device_type": "CLIENT",
+            "event_type": "802.11 Disassociation from Client",
+            "event_uuid": "4e485938-a41c-2cd6f08a9203",
+            "events_details": [
+                {
+                    "bssid": "6c:d1:51"
+                },
+                {
+                    "reason": "Client left the access point"
+                },
+                {
+                    "ssid": "TEST-Private"
+                },
+                {
+                    "band": "5 GHz (A)"
+                },
+                {
+                    "mode": "HE"
+                },
+                {
+                    "guard_interval": "Long"
+                },
+                {
+                    "channel_width": "80 MHz"
+                },
+                {
+                    "spatial_streams": "2ss"
+                },
+                {
+                    "snr": "64"
+                },
+                {
+                    "vlan": "70"
+                }
+            ],
+            "group_name": "007 - TEST 2022",
+            "has_rowdetail": true,
+            "hostname": "TEST-ANAP01P3",
+            "labels": [
+                {
+                    "id": 307,
+                    "name": "TEST_IT"
+                }
+            ],
+            "level": "neutral",
+            "number": 5,
+            "sites": [
+                {
+                    "id": 360,
+                    "name": "HI TEST - 84"
+                }
+            ],
+            "timestamp": 1726015003000
+        }
+    ]
+}

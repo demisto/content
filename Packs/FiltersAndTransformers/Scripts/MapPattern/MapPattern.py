@@ -347,8 +347,12 @@ class Translator:
 
             value = '' if value is None else str(value)
             if pattern not in self.__wildcards:
-                if pattern != value:
-                    return False
+                if (self.__regex_flags & re.IGNORECASE) != 0:
+                    if pattern.lower() != value.lower():
+                        return False
+                else:
+                    if pattern != value:
+                        return False
 
             if any(x == value for x in exclusions):
                 return False
