@@ -3080,6 +3080,24 @@ script:
     - contextPath: Core.TerminateCausality.action_id
       description: The action id.
       type: String 
+  - arguments:
+    - description: The ID of the installation package. Copy the distribution ID from the "id" field on the Endpoints > Agent Installation page.
+      name: distribution_id
+      required: true
+    - auto: PREDEFINED
+      description: The installation package type. Validvalues are:• upgrade• sh - For Linux• rpm - For Linux• deb - For Linux• pkg - For Mac• x86 - For Windows• x64 - For Windows.
+      name: package_type
+      predefined:
+      - upgrade
+      - sh
+      - rpm
+      - deb
+      - pkg
+      - x86
+      - x64
+      required: true
+    description: Downloads an installation package file.
+    name: core-download-distribution
   runonce: false
   script: '-'
   subtype: python3
