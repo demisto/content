@@ -397,8 +397,9 @@ def perform_long_running_loop(client: Client):
         except NextPointingNotAvailable:
 
             demisto.debug(
-                "Next is pointing to older event which is not available for streaming."
-                "Clearing next_fetch, The integration's dedup mechanism will make sure we don't insert duplicate events. We will eventually get a different pointer and fetching will overcome this edge case"
+                "Next is pointing to older event which is not available for streaming. "
+                "Clearing next_fetch, The integration's dedup mechanism will make sure we don't insert duplicate events. "
+                "We will eventually get a different pointer and fetching will overcome this edge case"
             )
             integration_context.pop("next_fetch")
             set_integration_context(integration_context)
