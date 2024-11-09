@@ -225,9 +225,7 @@ def parse_event_time(event) -> datetime:
     """
     Parse the event time from the given event dict to datetime object.
     """
-    return datetime.strptime(
-        normalize_date_format(event["log_time"]), DATE_FORMAT
-    )
+    return datetime.strptime(normalize_date_format(event["log_time"]), DATE_FORMAT)
 
 
 def extract_events_suspected_duplicates(events: list[dict]) -> list[str]:
@@ -312,9 +310,7 @@ def filter_duplicate_events(
     for event in events:
         if not is_duplicate(
             event["uuid"],
-            datetime.strptime(
-                normalize_date_format(event["log_time"]), DATE_FORMAT
-            ),
+            datetime.strptime(normalize_date_format(event["log_time"]), DATE_FORMAT),
             latest_event_time,
             events_suspected_duplicates,
         ):
