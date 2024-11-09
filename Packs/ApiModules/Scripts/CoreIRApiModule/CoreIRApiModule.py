@@ -2719,7 +2719,9 @@ def download_distribution_command(client, args):
         filename=f"xdr-agent-install-package.{file_ext}",
         data=dist_file_contents
     )
-    return dist_file
+    return [CommandResults(
+        readable_output="Successfully downloaded the installation package file"
+    ), dist_file]
 
 
 def get_distribution_status_command(client, args):
