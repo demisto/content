@@ -29,3 +29,7 @@ Palo Alto Networks Symantec Endpoint Security Event Collector integration for Co
 6. Click the ellipsis and select **Client Secret**.
 7. Click the `copy` icon next to `OAuth Credentials`.
 8. Paste the OAuth Credentials value into the `Token` field.
+
+for more information about to obtain the *Token* see [here](https://apidocs.securitycloud.symantec.com/#/doc?id=ses_auth)
+
+**Note: There’s no need to generate the bearer token, the integration uses the provided token to generate one.**
