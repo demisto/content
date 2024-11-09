@@ -748,6 +748,8 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 | sort_by | Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen". Possible values are: first_seen, last_seen. | Optional | 
 | sort_order | The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to asc. Possible values are: asc, desc. Default is asc. | Optional | 
 | username | The usernames to query for, accepts a single user, or comma-separated list of usernames. | Optional | 
+| all_results | Whether to return all endpoints. If true, will override the 'limit' and 'page' arguments. Possible values are: false, true. Default is false. | Optional | 
+| use_hr_timestamps | Whether to return timestamp values in human-readable format as opposed to Unix epoch timestamp format. Possible values are: false, true. Default is false. | Optional | 
 
 
 #### Context Output

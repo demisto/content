@@ -244,7 +244,7 @@ class CoreClient(BaseClient):
         try:
             decoder = base64.b64decode if response_data_type == "bin" else json.loads
             demisto.debug(f'{response_data_type=}, {decoder.__name__=}')
-            return decoder(response['data'])   # type: ignore[operator]
+            return decoder(response['data'])  # type: ignore[operator]
         except json.JSONDecodeError:
             demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}")
             return response['data']
@@ -2109,20 +2109,73 @@ def generate_endpoint_by_contex_standard(endpoints, ip_as_string, integration_na
     return standard_endpoints
 
 
+def retrieve_all_endpoints(client, endpoints, endpoint_id_list, dist_name, ip_list, public_ip_list,
+                           group_name, platform, alias_name, isolate, hostname, page_number,
+                           limit, first_seen_gte, first_seen_lte, last_seen_gte, last_seen_lte,
+                           sort_by_first_seen, sort_by_last_seen, status, username):
+    endpoints_page = endpoints
+    # Continue looping for as long as the latest page of endpoints retrieved is NOT empty
+    while endpoints_page:
+        page_number += 1
+        endpoints_page = client.get_endpoints(
+            endpoint_id_list=endpoint_id_list,
+            dist_name=dist_name,
+            ip_list=ip_list,
+            public_ip_list=public_ip_list,
+            group_name=group_name,
+            platform=platform,
+            alias_name=alias_name,
+            isolate=isolate,
+            hostname=hostname,
+            page_number=page_number,
+            limit=limit,
+            first_seen_gte=first_seen_gte,
+            first_seen_lte=first_seen_lte,
+            last_seen_gte=last_seen_gte,
+            last_seen_lte=last_seen_lte,
+            sort_by_first_seen=sort_by_first_seen,
+            sort_by_last_seen=sort_by_last_seen,
+            status=status,
+            username=username
+        )
+        endpoints += endpoints_page
+    return endpoints
+
+
+def convert_timestamps_to_datestring(endpoints):
+    for endpoint in endpoints:
+        if endpoint.get('content_release_timestamp'):
+            endpoint['content_release_timestamp'] = timestamp_to_datestring(endpoint.get('content_release_timestamp'))
+        if endpoint.get('first_seen'):
+            endpoint['first_seen'] = timestamp_to_datestring(endpoint.get('first_seen'))
+        if endpoint.get('install_date'):
+            endpoint['install_date'] = timestamp_to_datestring(endpoint.get('install_date'))
+        if endpoint.get('last_content_update_time'):
+            endpoint['last_content_update_time'] = timestamp_to_datestring(endpoint.get('last_content_update_time'))
+        if endpoint.get('last_seen'):
+            endpoint['last_seen'] = timestamp_to_datestring(endpoint.get('last_seen'))
+    return endpoints
+
+
 def get_endpoints_command(client, args):
     integration_context_brand = args.pop('integration_context_brand', 'CoreApiModule')
     integration_name = args.pop("integration_name", "CoreApiModule")
-    page_number = arg_to_int(
-        arg=args.get('page', '0'),
-        arg_name='Failed to parse "page". Must be a number.',
-        required=True
-    )
-
-    limit = arg_to_int(
-        arg=args.get('limit', '30'),
-        arg_name='Failed to parse "limit". Must be a number.',
-        required=True
-    )
+    all_results = argToBoolean(args.get('all_results', False))
+    # When we want to get all endpoints, start at page 0 and use the max limit supported by the API (100)
+    if all_results:
+        page_number = 0
+        limit = 100
+    else:
+        page_number = arg_to_int(
+            arg=args.get('page', '0'),
+            arg_name='Failed to parse "page". Must be a number.',
+            required=True
+        )
+        limit = arg_to_int(
+            arg=args.get('limit', '30'),
+            arg_name='Failed to parse "limit". Must be a number.',
+            required=True
+        )
 
     endpoint_id_list = argToList(args.get('endpoint_id_list'))
     dist_name = argToList(args.get('dist_name'))
@@ -2134,6 +2187,7 @@ def get_endpoints_command(client, args):
     isolate = args.get('isolate')
     hostname = argToList(args.get('hostname'))
     status = argToList(args.get('status'))
+    convert_timestamp_to_datestring = argToBoolean(args.get('convert_timestamp_to_datestring', False))
 
     first_seen_gte = arg_to_timestamp(
         arg=args.get('first_seen_gte'),
@@ -2181,6 +2235,17 @@ def get_endpoints_command(client, args):
         status=status,
         username=username
     )
+
+    if all_results:
+        endpoints = retrieve_all_endpoints(client, endpoints, endpoint_id_list, dist_name,
+                                           ip_list, public_ip_list, group_name, platform,
+                                           alias_name, isolate, hostname, page_number,
+                                           limit, first_seen_gte, first_seen_lte,
+                                           last_seen_gte, last_seen_lte, sort_by_first_seen,
+                                           sort_by_last_seen, status, username)
+
+    if convert_timestamp_to_datestring:
+        endpoints = convert_timestamps_to_datestring(endpoints)
 
     standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False, integration_name)
     endpoint_context_list = []
@@ -3685,6 +3750,13 @@ def filter_vendor_fields(alert: dict):
 
 def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResults:
     alert_id_list = argToList(args.get('alert_ids', []))
+    for alert_id in alert_id_list:
+        if alert_id and re.match(r'^[a-fA-F0-9-]{32,36}\$&\$.+$', alert_id):
+            raise DemistoException(f"Error: Alert ID {alert_id} is invalid. This issue arises because the playbook is running in"
+                                   f" debug mode, which replaces the original alert ID with a debug alert ID, causing the task to"
+                                   f" fail. To run this playbook in debug mode, please update the 'alert_ids' value to the real "
+                                   f"alert ID in the relevant task. Alternatively, run the playbook on the actual alert "
+                                   f"(not in debug mode) to ensure task success.")
     events_from_decider_as_list = bool(args.get('events_from_decider_format', '') == 'list')
     raw_response = client.get_original_alerts(alert_id_list)
     reply = copy.deepcopy(raw_response)

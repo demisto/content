@@ -1,6 +1,6 @@
-name: Bluecat Address Manager
-id: Bluecat_AddressManager
-fromversion: 8.2.0
+name: Bluecat Address Manager Parsing Rule
+id: Bluecat_AddressManager_ParsingRule
+fromversion: 8.4.0
 tags: []
 rules: ''
 samples: ''
