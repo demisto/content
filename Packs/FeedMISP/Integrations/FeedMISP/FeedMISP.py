@@ -576,7 +576,8 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
             demisto.debug(
                 f"Reached the limit of indicators to fetch."
                 f" The number of indicators fetched is: {total_fetched_indicators}")
-            demisto.setLastRun({'timestamp': last_run_timestamp, 'page': params_dict['page']})
+            demisto.setLastRun(
+                {'timestamp': last_run_timestamp, 'last_indicator_value': last_run_value, 'page': params_dict['page']})
             return
         search_query_per_page = client.search_query(params_dict)
     if error_message := search_query_per_page.get('Error'):
