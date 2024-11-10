@@ -63,6 +63,89 @@ def return_extra_data_result(*args):
         return {}, {}, {"incident": incident_from_extra_data_command}
 
 
+def test_retrieve_all_endpoints(mocker):
+    """
+    Given:
+    - endpoints is populated with the first round.
+    When
+        - Retrieve_all_endpoints is called.
+    Then
+        - Retrieve all endpoints.
+    """
+    from CoreIRApiModule import retrieve_all_endpoints
+    mock_endpoints_page_1 = {'reply': {'endpoints': [{'id': 1, 'hostname': 'endpoint1'}]}}
+    mock_endpoints_page_2 = {'reply': {'endpoints': [{'id': 2, 'hostname': 'endpoint2'}]}}
+    mock_endpoints_page_3 = {'reply': {'endpoints': []}}
+    http_request = mocker.patch.object(test_client, '_http_request')
+    http_request.side_effect = [mock_endpoints_page_1, mock_endpoints_page_2, mock_endpoints_page_3]
+
+    endpoints = retrieve_all_endpoints(
+        client=test_client,
+        endpoints=[{'id': 2, 'hostname': 'endpoint2'}],
+        endpoint_id_list=[],
+        dist_name=None,
+        ip_list=[],
+        public_ip_list=[],
+        group_name=None,
+        platform=None,
+        alias_name=None,
+        isolate=None,
+        hostname=None,
+        page_number=0,
+        limit=10,
+        first_seen_gte=None,
+        first_seen_lte=None,
+        last_seen_gte=None,
+        last_seen_lte=None,
+        sort_by_first_seen=None,
+        sort_by_last_seen=None,
+        status=None,
+        username=None,
+    )
+
+    assert len(endpoints) == 3
+    assert endpoints[1]['hostname'] == 'endpoint1'
+
+
+def test_get_endpoints_command(mocker):
+    """
+    When
+        - Retrieve_all_endpoints is called.
+    Then
+        - Retrieve all endpoints.
+    """
+    from CoreIRApiModule import get_endpoints_command
+    mock_endpoints_page_1 = {'reply': {'endpoints': [{'id': 1, 'hostname': 'endpoint1'}]}}
+    mock_endpoints_page_2 = {'reply': {'endpoints': [{'id': 2, 'hostname': 'endpoint2'}]}}
+    mock_endpoints_page_3 = {'reply': {'endpoints': []}}
+    http_request = mocker.patch.object(test_client, '_http_request')
+    http_request.side_effect = [mock_endpoints_page_1, mock_endpoints_page_2, mock_endpoints_page_3]
+    args = {'all_results': 'true'}
+    result = get_endpoints_command(test_client, args)
+    assert result.readable_output == '### Endpoints\n|hostname|id|\n|---|---|\n| endpoint1 | 1 |\n| endpoint2 | 2 |\n'
+    assert result.raw_response == [{'id': 1, 'hostname': 'endpoint1'}, {'id': 2, 'hostname': 'endpoint2'}]
+
+
+def test_convert_to_hr_timestamps():
+    """
+    Given
+        - Endpoints results.
+    When
+        - convert_to_hr_timestamps is called.
+    Then
+        - Convert to an hr date.
+    """
+    from CoreIRApiModule import convert_timestamps_to_datestring
+
+    expected_first_seen = "2019-12-08T09:06:09.000Z"
+    expected_last_seen = "2019-12-09T07:10:04.000Z"
+    endpoints_res = load_test_data('./test_data/get_endpoints.json').get('reply').get('endpoints')
+
+    converted_endpoint = convert_timestamps_to_datestring(endpoints_res)[0]
+    assert converted_endpoint.get('first_seen') == expected_first_seen
+    assert converted_endpoint.get('last_seen') == expected_last_seen
+
+
 def test_get_endpoints(requests_mock):
     from CoreIRApiModule import get_endpoints_command, CoreClient
 
@@ -2784,6 +2867,41 @@ def test_get_original_alerts_command__without_filtering(requests_mock):
     assert len(event) == 41  # make sure fields were not filtered
 
 
+@pytest.mark.parametrize("alert_ids, raises_demisto_exception",
+                         [("59cf36bbdedb8f05deabf00d9ae77ee5$&$A Successful login from TOR", True),
+                          ("b0e754480d79eb14cc9308613960b84b$&$A successful SSO sign-in from TOR", True),
+                          ("9d657d2dfd14e63d0b98c9dfc3647b4f$&$A successful SSO sign-in from TOR", True),
+                          ("561675a86f68413b6e7a3b12e48c6072$&$External Login Password Spray", True),
+                          ("fe925817cddbd11e6efe5a108cf4d4c5$&$SSO Password Spray", True),
+                          ("e2d2a0dd589e8ca97d468cdb0468e94d$&$SSO Brute Force", True),
+                          ("3978e33b76cc5b2503ba60efd4445603$&$A successful SSO sign-in from TOR", True),
+                          ("79", False)])
+def test_get_original_alerts_command_raises_exception_playbook_debugger_input(alert_ids, raises_demisto_exception,
+                                                                              requests_mock):
+    """
+    Given:
+        - A list of alert IDs with invalid formats for the alert ID of the form <GUID>$&$<Playbook name>
+    When:
+        - Running get_original_alerts_command command
+    Then:
+        - Verify that DemistoException is raised
+    """
+    from CoreIRApiModule import get_original_alerts_command, CoreClient
+
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={}
+    )
+    args = {'alert_ids': alert_ids}
+
+    if raises_demisto_exception:
+        with pytest.raises(DemistoException):
+            get_original_alerts_command(client, args)
+    else:
+        api_response = load_test_data('./test_data/get_original_alerts_results.json')
+        requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_original_alerts/', json=api_response)
+        get_original_alerts_command(client, args)
+
+
 def test_get_dynamic_analysis(requests_mock):
     """
     Given:
@@ -4292,7 +4410,7 @@ def test_terminate_causality_command(mocker):
     )
 
     result = terminate_causality_command(client=client, args={'agent_id': '1', 'causality_id': [
-                                         'causality_id_1', 'causality_id_2']})
+        'causality_id_1', 'causality_id_2']})
     assert result.readable_output == ('### Action terminate causality created on causality_id_1,'
                                       'causality_id_2\n|action_id|\n|---|\n| 1 |\n| 2 |\n')
     assert result.raw_response == [{'action_id': 1}, {'action_id': 2}]
