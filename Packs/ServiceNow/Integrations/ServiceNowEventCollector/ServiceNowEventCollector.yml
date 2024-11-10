@@ -43,14 +43,14 @@ configuration:
   options:
   - Audit
   - Syslog Transactions
-- additionalinfo: Maximum number of audit events per fetch. Recommended 10000. 
+- additionalinfo: Maximum number of audit events per fetch. Default is 10000. 
   defaultvalue: '10000'
   display: Maximum audit events to fetch
   name: max_fetch
   type: 0
   required: false
   section: Collect
-- additionalinfo: Maximum number of syslog transactions events per fetch. Recommended 10000. 
+- additionalinfo: Maximum number of syslog transactions events per fetch. Default is 10000. 
   defaultvalue: '10000'
   display: Maximum syslog transactions events to fetch
   name: max_fetch_syslog_transactions
@@ -76,7 +76,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-description: Use this integration to fetch audit logs from ServiceNow as Cortex XSIAM events.
+description: Use this integration to fetch audit and syslog transactions logs from ServiceNow as Cortex XSIAM events.
 display: ServiceNow Event Collector
 name: ServiceNow Event Collector
 script:
@@ -94,7 +94,6 @@ script:
       required: true
     - description: Maximum audit events to fetch. Default is 1000.
       name: limit
-      defaultValue: 1000
     - name: from_date
       description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
       required: false
@@ -117,8 +116,7 @@ script:
       - "False"
       required: true
     - description: Maximum syslog transactions events to fetch. Default is 1000.
-      name: max_fetch_syslog_transactions
-      defaultValue: 1000
+      name: limit
     - name: from_date
       description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
       required: false

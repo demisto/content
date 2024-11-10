@@ -1,4 +1,4 @@
-Use this integration to fetch audit logs from ServiceNow as Cortex XSIAM events.
+Use this integration to fetch audit and syslog transactions logs from ServiceNow as Cortex XSIAM events.
 This integration was integrated and tested with Vancouver version of ServiceNow API.
 
 ## Configure ServiceNow Event Collector in Cortex

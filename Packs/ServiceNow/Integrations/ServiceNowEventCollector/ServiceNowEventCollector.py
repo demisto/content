@@ -138,11 +138,7 @@ def add_time_field(events: List[Dict[str, Any]], log_type) -> List[Dict[str, Any
 
 
 def get_limit(args: dict, client: Client, log_type: str):
-    if log_type == AUDIT:
-        limit = arg_to_number(args.get("limit")) or client.fetch_limit_audit or 1000
-    else:
-        limit = arg_to_number(args.get("max_fetch_syslog_transactions")) or client.fetch_limit_syslog or 1000
-
+    limit = arg_to_number(args.get("limit")) or client.fetch_limit_audit or 1000
     return limit
 
 
@@ -195,7 +191,7 @@ def get_events_command(client: Client, args: dict, log_type: str, last_run: dict
         from_date = initialize_from_date(last_run, log_type)
 
     offset = args.get("offset", 0)
-    limit = get_limit(args, client, log_type)
+    limit = arg_to_number(args.get("limit")) or client.fetch_limit_audit or 1000
     logs = client.search_events(from_time=from_date, log_type=log_type, limit=limit, offset=offset)
     add_time_field(logs, log_type)
     demisto.debug(f"Got a total of {len(logs)} events created after {from_date}")
