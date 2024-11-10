@@ -60,7 +60,7 @@ class Client(BaseClient):
     def _save_access_token(self, access_token: str):
         self.access_token = access_token
         self._headers = {
-            "Authorization": f'bearer {access_token}'}
+            "Authorization": f'Bearer {access_token}'}
 
     def _is_access_token_valid(self, integration_context: dict) -> bool:
         access_token_expiration = integration_context.get('expires_in')
