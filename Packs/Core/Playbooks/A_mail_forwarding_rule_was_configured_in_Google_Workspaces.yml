@@ -1,34 +1,7 @@
 id: A mail forwarding rule was configured in Google Workspace
 version: -1
 name: A mail forwarding rule was configured in Google Workspace
-description: |-
-  This playbook handles the following alerts:
-
-  - A mail forwarding rule was configured in Google Workspace.
-  - A mail forwarding rule was configured in Google Workspace to an uncommon domain.
-
-  Playbook Stages:
-
-  Triage:
-  - The playbook retrieves the caller's IP, the forwarding email address, and associated filters.
-
-  Early Containment:
-
-  - The playbook checks if the IP or domain of the forwarding email address is malicious. If so, it suggests blocking the IP using PAN-OS while continuing the investigation in parallel.
-
-  Investigation:
-
-  - The playbook verifies if the rule was created outside of working hours or from an unusual geolocation and extracts suspicious keywords from the forwarding rules. It then aggregates all evidence collected during the investigation.
-
-  Verdict & Containment:
-
-  - If only one suspicious evidence is found, the playbook executes soft response actions, including signing the user out and deleting the forwarding email address from the user account mailbox. The user will be notified of these actions via email.
-  - If multiple suspicious evidences are found, the playbook executes both soft and hard response actions, recommending the analyst suspend the user account.
-
-  Requirements:
-
-  - Gmail integration to fetch filters and remove the forwarding email address.
-  - Google Workspace Admin access to sign out and suspend the user account.
+description: "\n#### Playbooks\n\n##### New: A mail forwarding rule was configured in Google Workspace\n\n**This playbook addresses the following alerts:**\n\n- A mail forwarding rule was configured in Google Workspace.\n- A mail forwarding rule was configured in Google Workspace to an uncommon domain.\n\n#### Playbook Stages:\n \n##### Triage: \n\n- The playbook retrieves the caller's IP, the forwarding email address, and associated filters.\n\n##### Early Containment:\n\n- The playbook checks if the IP or domain of the forwarding email address is malicious. If so, it suggests blocking the IP using PAN-OS while continuing the investigation in parallel.\n\n##### Investigation:\n\n- The playbook verifies if the rule was created outside of working hours or from an unusual geolocation and extracts suspicious keywords from the forwarding rules. It then aggregates all evidence collected during the investigation.\n\n##### Containment:\n\n- If only one suspicious evidence is found, the playbook executes soft response actions, including signing the user out and deleting the forwarding email address from the user account mailbox. The user will be notified of these actions via email.\n- If multiple suspicious evidences are found, the playbook executes both soft and hard response actions, recommending the analyst suspend the user account.\n\n#### Requirements: \n\nFor any response action, you need one of the following integrations:\n- Gmail integration to fetch filters and remove the forwarding email address.\n- Google Workspace Admin access to sign out and suspend the user account.\n"
 tags:
 - TA0009 - Collection
 - T1114 - Email Collection
@@ -66,10 +39,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 586f11c0-89b5-4c58-86df-36aa1af4305d
+    taskid: 8b6df5d6-9693-45c0-8945-64316982f67b
     type: regular
     task:
-      id: 586f11c0-89b5-4c58-86df-36aa1af4305d
+      id: 8b6df5d6-9693-45c0-8945-64316982f67b
       version: -1
       name: Get caller IP and forwarding mail address
       description: Returns information about each alert ID.
@@ -105,10 +78,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: bfb51251-f775-4f54-8ad2-20a46e1f1ac0
+    taskid: 4b1be694-eb0b-48cc-840f-124cc1eaf799
     type: regular
     task:
-      id: bfb51251-f775-4f54-8ad2-20a46e1f1ac0
+      id: 4b1be694-eb0b-48cc-840f-124cc1eaf799
       version: -1
       name: Get forwarding email domain reputation
       description: Checks the reputation of a domain.
@@ -153,16 +126,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 4f9ab5b8-efb8-4999-873c-8390d318895c
+    taskid: 9ce5316d-ed72-4ce3-834e-dff018d0ed49
     type: condition
     task:
-      id: 4f9ab5b8-efb8-4999-873c-8390d318895c
+      id: 9ce5316d-ed72-4ce3-834e-dff018d0ed49
       version: -1
       name: Check if forwarding email domain or IP is malicious
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "5"
@@ -343,10 +315,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: f636844f-1e17-47eb-8b12-e862f2863b85
+    taskid: 2a31d721-cec1-4636-8d02-143ede07037b
     type: regular
     task:
-      id: f636844f-1e17-47eb-8b12-e862f2863b85
+      id: 2a31d721-cec1-4636-8d02-143ede07037b
       version: -1
       name: Gmail - Get forwarding email address
       description: Gets the specified forwarding address or a list of the forwarding addresses for the specified account.
@@ -381,10 +353,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 4a1a1abf-ed23-4539-892a-03f8111fb08c
+    taskid: 9f958b82-fcbe-4e7e-870a-1f8f55eec0d3
     type: regular
     task:
-      id: 4a1a1abf-ed23-4539-892a-03f8111fb08c
+      id: 9f958b82-fcbe-4e7e-870a-1f8f55eec0d3
       version: -1
       name: Get caller IP reputation
       description: Checks the reputation of a domain.
@@ -452,10 +424,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: f0dd7de0-9eac-4e6f-86a1-dd9ff4dc93f6
+    taskid: d8daa7ec-d2c1-4187-8000-fd58b4a609af
     type: playbook
     task:
-      id: f0dd7de0-9eac-4e6f-86a1-dd9ff4dc93f6
+      id: d8daa7ec-d2c1-4187-8000-fd58b4a609af
       version: -1
       name: PAN-OS - Block IP
       description: |-
@@ -504,10 +476,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 3028fe8a-9e44-4203-8458-c6be36fc42a7
+    taskid: 8ebb3e8d-b9ef-4c64-81d7-66c33e3c3a43
     type: regular
     task:
-      id: 3028fe8a-9e44-4203-8458-c6be36fc42a7
+      id: 8ebb3e8d-b9ef-4c64-81d7-66c33e3c3a43
       version: -1
       name: Close Alert
       description: commands.local.cmd.close.inv
@@ -567,16 +539,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: de8e5625-536a-4bb9-8bdc-70ee14eb72ff
+    taskid: dcf7794d-b84c-4026-80cd-3502a2d70f46
     type: condition
     task:
-      id: de8e5625-536a-4bb9-8bdc-70ee14eb72ff
+      id: dcf7794d-b84c-4026-80cd-3502a2d70f46
       version: -1
       name: Check if the forwarding mail address still exists
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "17"
@@ -638,10 +609,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 252d8473-0602-420c-8fef-df880efcc695
+    taskid: 5dd6835b-fbc6-4ded-887a-958c6c1a2af5
     type: regular
     task:
-      id: 252d8473-0602-420c-8fef-df880efcc695
+      id: 5dd6835b-fbc6-4ded-887a-958c6c1a2af5
       version: -1
       name: Check if the rule was created outside of working hours
       description: Checks whether the given value is within the specified time (hour) range.
@@ -684,10 +655,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: a1b2240d-c96c-46a2-8749-c94f8a214538
+    taskid: 9e2c9ca1-94ae-4e69-839e-26dec2bbf539
     type: regular
     task:
-      id: a1b2240d-c96c-46a2-8749-c94f8a214538
+      id: 9e2c9ca1-94ae-4e69-839e-26dec2bbf539
       version: -1
       name: Check for unusual geolocation connections
       description: |-
@@ -726,10 +697,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 3023b302-dc80-4e51-8b44-4489de9d410c
+    taskid: 889055e0-18bd-4291-8277-db8b1db40d46
     type: regular
     task:
-      id: 3023b302-dc80-4e51-8b44-4489de9d410c
+      id: 889055e0-18bd-4291-8277-db8b1db40d46
       version: -1
       name: Gmail - Remove forwarding mail address
       description: Deletes the specified forwarding address and revokes any verification that may have been required. This method is only available to service account clients that have been delegated domain-wide authority.
@@ -746,6 +717,7 @@ tasks:
       user_id:
         simple: ${Gmail.ForwardingAddress.userId}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -826,16 +798,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 10a29f38-0fc1-4df2-82bc-e7afb761788b
+    taskid: 99da6380-2d8f-42a2-8d5a-dae1f30925af
     type: collection
     task:
-      id: 10a29f38-0fc1-4df2-82bc-e7afb761788b
+      id: 99da6380-2d8f-42a2-8d5a-dae1f30925af
       version: -1
       name: Decide Whether to Suspend User Account
       type: collection
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -895,10 +866,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 172b1869-9064-4a18-869e-a522b8602b9a
+    taskid: 16f0f23b-7699-4c0a-898b-5a94c248fb84
     type: regular
     task:
-      id: 172b1869-9064-4a18-869e-a522b8602b9a
+      id: 16f0f23b-7699-4c0a-898b-5a94c248fb84
       version: -1
       name: Sign-Out user account from Google Workspace
       description: Signs a user out of all web and device sessions and reset their sign-in cookies.
@@ -913,7 +884,6 @@ tasks:
       user_key:
         simple: ${Core.OriginalAlert.raw_abioc.event.identity_name}
     separatecontext: false
-    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -931,10 +901,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 1b880cd2-e9af-4734-8364-ead4ccdb0a7b
+    taskid: edb0a53b-7910-4174-8962-862a1a0771eb
     type: regular
     task:
-      id: 1b880cd2-e9af-4734-8364-ead4ccdb0a7b
+      id: edb0a53b-7910-4174-8962-862a1a0771eb
       version: -1
       name: Suspend user in google workspace
       description: Updates a user.
@@ -968,16 +938,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 2e040f98-61ea-4032-826c-66b48eece3d7
+    taskid: 2822070e-f8a4-4e10-8ede-0f5ab6506a27
     type: condition
     task:
-      id: 2e040f98-61ea-4032-826c-66b48eece3d7
+      id: 2822070e-f8a4-4e10-8ede-0f5ab6506a27
       version: -1
       name: Check analyst decision
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "17"
@@ -1044,16 +1013,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: fdc9701c-599a-4494-8a76-9b500a2bf90e
+    taskid: 28b2fd5c-a490-4cad-88b1-becdb0624308
     type: condition
     task:
-      id: fdc9701c-599a-4494-8a76-9b500a2bf90e
+      id: 28b2fd5c-a490-4cad-88b1-becdb0624308
       version: -1
       name: Check if suspicious evidence detected
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "17"
@@ -1200,10 +1168,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 9b154689-28ab-4f05-8ba4-e3cc23859851
+    taskid: 510e64b5-e807-4628-885a-7f07ab545ce1
     type: regular
     task:
-      id: 9b154689-28ab-4f05-8ba4-e3cc23859851
+      id: 510e64b5-e807-4628-885a-7f07ab545ce1
       version: -1
       name: Set abnormal geolocation to evidence
       description: |-
@@ -1273,10 +1241,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 47ef82fb-1c7d-4c4b-8f3b-40c46d3c5bac
+    taskid: cc9bcebc-16cd-4866-8b65-a119c84b928a
     type: regular
     task:
-      id: 47ef82fb-1c7d-4c4b-8f3b-40c46d3c5bac
+      id: cc9bcebc-16cd-4866-8b65-a119c84b928a
       version: -1
       name: Set suspicious keywords to evidence
       description: |-
@@ -1342,10 +1310,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 80b45a10-5b09-4f0f-89af-c4aced6131cd
+    taskid: 7bfb72a7-b879-45e6-88d8-10eaa0b9dcad
     type: regular
     task:
-      id: 80b45a10-5b09-4f0f-89af-c4aced6131cd
+      id: 7bfb72a7-b879-45e6-88d8-10eaa0b9dcad
       version: -1
       name: Set abnormal working hours to evidence
       description: |-
@@ -1424,16 +1392,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 652eb822-a99d-4d31-8777-3d912ffd8e29
+    taskid: 4d8f7f54-16e3-4e3d-880c-57cae91bd644
     type: condition
     task:
-      id: 652eb822-a99d-4d31-8777-3d912ffd8e29
+      id: 4d8f7f54-16e3-4e3d-880c-57cae91bd644
       version: -1
       name: Check if multiple suspicious evidence detected
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "17"
@@ -1531,10 +1498,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 8f88c80e-c7e1-41f0-8f57-2e0b353172ca
+    taskid: c31b5169-4bcf-4f32-8263-37bed10cd556
     type: regular
     task:
-      id: 8f88c80e-c7e1-41f0-8f57-2e0b353172ca
+      id: c31b5169-4bcf-4f32-8263-37bed10cd556
       version: -1
       name: Send user notification via Email
       description: Sends an email.
@@ -1555,7 +1522,6 @@ tasks:
       using:
         simple: Built-in Mail Sender
     separatecontext: false
-    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -1567,7 +1533,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1620,10 +1586,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 89920c84-f44d-45ce-8bc5-0577831df61f
+    taskid: a8d5e167-ea59-40a7-8522-a669285d6a47
     type: regular
     task:
-      id: 89920c84-f44d-45ce-8bc5-0577831df61f
+      id: a8d5e167-ea59-40a7-8522-a669285d6a47
       version: -1
       name: Get Google Workspace user account
       description: Retrieve a user's details given a user key.
@@ -1638,6 +1604,7 @@ tasks:
       user:
         simple: ${Core.OriginalAlert.raw_abioc.event.identity_name}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -1649,22 +1616,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 212fa2bf-f6ce-458e-846d-0536d50ed840
+    taskid: 97a8091a-7541-4478-8b62-e5bc0852e278
     type: condition
     task:
-      id: 212fa2bf-f6ce-458e-846d-0536d50ed840
+      id: 97a8091a-7541-4478-8b62-e5bc0852e278
       version: -1
       name: Check if Google Workspace user account found
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "17"
@@ -1679,6 +1645,8 @@ tasks:
             value:
               simple: GSuite.User.id
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -1696,16 +1664,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: d87cf812-ca8d-4017-85a4-aedb561018e7
+    taskid: ab86abd1-412e-46a9-8300-fa0b1aaa1dfb
     type: condition
     task:
-      id: d87cf812-ca8d-4017-85a4-aedb561018e7
+      id: ab86abd1-412e-46a9-8300-fa0b1aaa1dfb
       version: -1
       name: Check user notification requirement
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "17"
@@ -1780,7 +1747,6 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 tests:
-- No tests (auto formatted)
-fromversion: 6.10.0
-marketplaces:
-- marketplacev2
+- Test Playbook - Impossible Traveler - Enrichment
+- Test Playbook - IOC Alert
+- Test Playbook - Identity Analytics - Alert Handling
