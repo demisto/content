@@ -1581,11 +1581,14 @@ def test_get_remote_incident_data(mocker):
         Verify the function returns the expected mirrored data and updated object
     """
     client = mock_client()
-    mock_response = {'name': 'id-incident-1', 'properties': {'title': 'title-incident-1'}}
+    mock_response = {'name': 'id-incident-1', 'properties': {'title': 'title-incident-1', 'additionalData': {'alertsCount': 0}}}
     mocker.patch.object(client, 'http_request', return_value=mock_response)
 
     result = get_remote_incident_data(client, 'id-incident-1')
-    assert result == (mock_response, {'ID': 'id-incident-1', 'Title': 'title-incident-1'})
+    assert result == (
+        mock_response,
+        {'ID': 'id-incident-1', 'Title': 'title-incident-1', 'AlertsCount': 0, 'tags': [], 'relatedAnalyticRuleIds': []}
+    )
 
 
 @pytest.mark.parametrize("incident, expected_contents", [

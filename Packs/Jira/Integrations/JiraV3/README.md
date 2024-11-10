@@ -3107,3 +3107,90 @@ In the *jira-get-issue* command:
 
 * *get_attachments* - Supplying this argument with the value `true` will return the attachments found in the specified issue as `Entry Info File`, and not as `File`.
 
+
+### jira-create-metadata-issue-types-list
+
+***
+Returns a page of issue type metadata for a specified project.
+
+#### Base Command
+
+`jira-create-metadata-issue-types-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id_or_key | The ID or key of the project. | Required | 
+| start_at | The index of the first item to return in a page of results (page offset). Default is 0. | Optional | 
+| max_results | The maximum number of items to return per page. Between 0 and 200. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.IssueType.AvatarID | Number | The ID of the issue type's avatar. | 
+| Jira.IssueType.Description | String | The description of the issue type. | 
+| Jira.IssueType.EntityID | String | Unique ID for next-gen projects. | 
+| Jira.IssueType.Expand | String | Expand options that include additional issue type metadata details in the response. | 
+| Jira.IssueType.IconURL | String | The URL of the issue type's avatar. | 
+| Jira.IssueType.ID | String | The ID of the issue type. | 
+| Jira.IssueType.Name | String | The name of the issue type. | 
+| Jira.IssueType.Self | String | The URL of these issue type details. | 
+| Jira.IssueType.Subtask | Boolean | Whether this issue type is used to create subtasks. | 
+| Jira.IssueType.Scope | Object | Details of the next-gen projects the issue type is available in. | 
+| Jira.IssueType.Scope.type | String | The type of scope. Valid values: PROJECT, TEMPLATE. | 
+| Jira.IssueType.Scope.project | Object | The project the item has scope in. | 
+| Jira.IssueType.Scope.project.self | String | The URL of the project details. | 
+| Jira.IssueType.Scope.project.id | String | The ID of the project. | 
+| Jira.IssueType.Scope.project.key | String | The key of the project. | 
+| Jira.IssueType.Scope.project.name | String | The name of the project. | 
+| Jira.IssueType.Scope.project.projectTypeKey | String | The project type of the project. Valid values: software, service_desk, business. | 
+| Jira.IssueType.Scope.project.simplified | Boolean | Whether or not the project is simplified. | 
+| Jira.IssueType.Scope.project.avatarUrls | Object | The URLs of the project's avatars. | 
+| Jira.IssueType.Scope.project.projectCategory | Object | The category the project belongs to. | 
+| Jira.IssueType.Scope.project.projectCategory.self | String | The URL of the project category. | 
+| Jira.IssueType.Scope.project.projectCategory.id | String | The ID of the project category. | 
+| Jira.IssueType.Scope.project.projectCategory.description | String | The name of the project category. | 
+| Jira.IssueType.Scope.project.projectCategory.name | String | The description of the project category. | 
+
+### jira-create-metadata-field-list
+
+***
+Returns a page of field metadata for a specified project and issue type.
+
+#### Base Command
+
+`jira-create-metadata-field-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id_or_key | The ID or key of the project. | Required | 
+| issue_type_id | The issue type ID. | Required | 
+| start_at | The index of the first item to return in a page of results (page offset). Default is 0. | Optional | 
+| max_results | The maximum number of items to return per page. Between 0 and 200. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.IssueField.AllowedValues | Array | The list of values allowed in the field. | 
+| Jira.IssueField.AutoCompleteUrl | String | The URL that can be used to automatically complete the field. | 
+| Jira.IssueField.Configuration | Object | The configuration properties. | 
+| Jira.IssueField.DefaultValue | String | The default value of the field. | 
+| Jira.IssueField.FieldID | String | The field ID. | 
+| Jira.IssueField.HasDefaultValue | Boolean | Whether the field has a default value. | 
+| Jira.IssueField.Key | String | The key of the field. | 
+| Jira.IssueField.Name | String | The name of the field. | 
+| Jira.IssueField.Operations | Array | The list of operations that can be performed on the field. | 
+| Jira.IssueField.Required | Boolean | Whether the field is required. | 
+| Jira.IssueField.Schema | Object | The data type for the field. | 
+| Jira.IssueField.Schema.type | String | The data type of the field. | 
+| Jira.IssueField.Schema.items | String | When the data type is an array, the name of the field items within the array. | 
+| Jira.IssueField.Schema.system | String | If the field is a system field, the name of the field. | 
+| Jira.IssueField.Schema.custom | String | If the field is a custom field, the URI of the field. | 
+| Jira.IssueField.Schema.customId | Number | If the field is a custom field, the custom ID of the field. | 
+| Jira.IssueField.Schema.configuration | Object | If the field is a custom field, the configuration of the field. | 
+

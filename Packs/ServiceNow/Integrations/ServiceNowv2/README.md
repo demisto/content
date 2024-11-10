@@ -2537,6 +2537,28 @@ Generic call to ServiceNow api
 
 >Request for GET method is successful
 
+### servicenow-get-ticket-attachments
+
+***
+Retrieve file attachments from tickets.
+
+#### Base Command
+
+`servicenow-get-ticket-attachments`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sys_id | sys_id of the ticket containing the file. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+>Successfully retrieved attachments for ticket with sys id 111
 
 ### Troubleshooting  
 The following are tips for handling issues with mirroring incidents between ServiceNow and Cortex XSOAR.
