@@ -2420,7 +2420,9 @@ def run_script_execute_commands_command(client: CoreClient, args: Dict) -> Comma
     endpoint_ids = argToList(args.get('endpoint_ids'))
     incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
-    parameters = {'commands_list': argToList(args.get('commands'))}
+    commands: list = [args.get('commands')] if args.get('is_raw_command') else argToList(args.get('commands'))
+    parameters = {'commands_list': commands}
+
     response = client.run_script('a6f7683c8e217d85bd3c398f0d3fb6bf', endpoint_ids, parameters, timeout, incident_id)
     reply = response.get('reply')
     return CommandResults(
