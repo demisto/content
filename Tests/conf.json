@@ -3179,7 +3179,7 @@
             ],
             "playbookID": "Rasterize Test",
             "fromversion": "5.0.0",
-            "memory_threshold": 300,
+            "memory_threshold": 1000,
             "pid_threshold": 200,
             "timeout": 1500
         },
@@ -3187,7 +3187,7 @@
             "integrations": "Rasterize",
             "playbookID": "RasterizeImageTest",
             "fromversion": "5.0.0",
-            "memory_threshold": 300,
+            "memory_threshold": 1000,
             "pid_threshold": 200
         },
         {

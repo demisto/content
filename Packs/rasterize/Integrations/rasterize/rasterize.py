@@ -430,8 +430,18 @@ def start_chrome_process(chrome_port, chrome_binary=CHROME_EXE):
         demisto.debug(f"start_chrome_process: Starting Chrome with {subprocess_options=}")
 
         process = subprocess.Popen(subprocess_options, stdout=logfile, stderr=subprocess.STDOUT)
+        # Capture stdout and stderr
+        stdout, stderr = process.communicate()
+
+        # Convert byte output to string (decoding)
+        stdout = stdout.decode('utf-8')
+        stderr = stderr.decode('utf-8')
+
+        # Print or process the output
+        demisto.debug("STDOUT:", stdout)
+        demisto.debug("STDERR:", stderr)
         demisto.debug(f'start_chrome_process: Chrome started on port {chrome_port}, pid: {process.pid},'
-                      f'returncode: {process.returncode}')
+                      f'returncode: {process.returncode = } ')
         return process
     except Exception as exc:
         demisto.debug(exc)
