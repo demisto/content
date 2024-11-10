@@ -11,11 +11,11 @@
         "aaron1535"
     ],
     "CONTRIBUTION_TL": "jbabazadeh",
-    "CONTRIBUTION_SECURITY_REVIEWER": ["tomer-pan"],
+    "CONTRIBUTION_SECURITY_REVIEWER": ["idovandijk"],
     "ON_CALL_DEVS": [
         "sshuker",
-        "acarmi"
+        "yhayun"
     ],
-    "DOC_REVIEWER": "ShirleyDenkberg",
+    "DOC_REVIEWER": "richardbluestone",
     "TIM_REVIEWER": "MLainer1"
 }
