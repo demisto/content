@@ -207,7 +207,7 @@ def remove_alerts_by_ids(alerts: list, ids: list):
     Returns:
         list: A filtered list of alerts excluding any alerts with IDs in the provided ids list.
     """
-    return [alert for alert in alerts if alerts["id"] not in ids]
+    return [alert for alert in alerts if alert["id"] not in ids]
 
 
 def get_page_from_last_run_for_alerts(client: Client, page_link: str):
@@ -372,7 +372,7 @@ def save_events_ids_with_specific_created_date(events: list, created_date: str) 
     Returns:
         list: IDs of events matching the specified creation date.
     """
-    results = {}
+    results = set()
     for event in events:
         if event.get('created') == created_date:
             results.add(event.get('id'))
@@ -387,7 +387,7 @@ def get_page_with_min_time_for_events(client: Client, min_time, fetch_limit):
     Args:
         client (Client): The API client for fetching events.
         min_time: The timestamp to fetch from, or None to start from the beginning.
-
+        fetch_limit:
     Returns:
         dict: A dictionary of events from the specified time.
     """
@@ -399,7 +399,7 @@ def get_page_with_min_time_for_events(client: Client, min_time, fetch_limit):
     return results
 
 
-def create_last_run_dict_for_events(output, new_min_time):
+def create_last_run_dict_for_events(output: list, new_min_time: str):
     """
     Creates a dictionary to store the last run information for events.
 
@@ -416,6 +416,13 @@ def create_last_run_dict_for_events(output, new_min_time):
             }
 
 
+def first_time_fetching_events(client: Client, fetch_limit):
+    results = client.get_events_first_five_pages(fetch_limit)
+    last_fetched_event = results[0] if results else None
+    new_min_time = last_fetched_event.get('created') if last_fetched_event else None
+    return results, new_min_time
+
+
 def fetch_event_type(client: Client, fetch_limit: int, last_run: dict):
     """
     Fetches events until fetch_limit is reached, or no more events are available.
@@ -428,12 +435,18 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict):
     Returns:
         A list containing all fetched events.
     """
-
+    demisto.debug(f'Start to fetch events with {last_run}')
     min_time = last_run.get('min_time')
-    events_with_created_min_time = last_run.get('events_with_created_min_time', {})
+    events_with_created_min_time = last_run.get('events_with_created_min_time') or {}
     demisto.debug(f'Start to fetch events with {min_time}')
 
-    results = get_page_with_min_time_for_events(client, min_time, fetch_limit)
+    if min_time:
+        results = client.get_events_with_min_time(min_time)
+    else:  # first time fetching events
+        results, new_min_time = first_time_fetching_events(client, fetch_limit)
+        new_last_run_obj = create_last_run_dict_for_events(results, new_min_time)
+        return results, new_last_run_obj
+
     response = get_last_page_of_events(client, results)
     links = response.get('links')
     events = response.get('results')
@@ -476,7 +489,7 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, fetch_limit) -> str:
     """
     Returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
 
@@ -486,10 +499,12 @@ def test_module(client: Client) -> str:
     Returns:
         'ok' if test passed, anything else will fail the test
     """
-
     message: str = ''
+    if int(fetch_limit) < 1 or int(fetch_limit) > 2500:
+        message = 'Invalid maximum number of events per fetch, should be between 1 and 2500.'
+        return_error(message)
     try:
-        client.get_alerts(page_num=1, items_per_page=10)
+        client.get_alerts_with_page_num(page_num=1, items_per_page=10)
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
@@ -502,14 +517,12 @@ def test_module(client: Client) -> str:
 def fetch_events(client: Client, fetch_limit: int):
     last_run = demisto.getLastRun()
     # global last_run
+
     last_run_alerts = last_run.get('alerts', {})
     last_run_events = last_run.get('events', {})
 
-    # alerts_output, last_run_alerts = fetch_alert_type(client, fetch_limit, last_run_alerts)
-    demisto.debug(f'This is the final last_run_events {last_run_events}')
+    alerts_output, last_run_alerts = fetch_alert_type(client, fetch_limit, last_run_alerts)
     events_output, last_run_events = fetch_event_type(client, fetch_limit, last_run_events)
-    last_run_alerts = {}
-    alerts_output = []
 
     last_run_new_obj = ({'alerts': last_run_alerts,
                          'events': last_run_events
@@ -525,8 +538,8 @@ def get_events(client: Client, args):
     last_run_alerts = last_run.get('alerts', {})
     last_run_events = last_run.get('events', {})
 
-    alerts_output, _ = fetch_alert_type(client, fetch_limit, last_run_alerts, 'alerts')
-    events_output, _ = fetch_event_type(client, fetch_limit, last_run_events, 'events')
+    alerts_output, _ = fetch_alert_type(client, fetch_limit, last_run_alerts)
+    events_output, _ = fetch_event_type(client, fetch_limit, last_run_events)
 
     output = alerts_output + events_output
     filtered_events = []
@@ -567,7 +580,7 @@ def main() -> None:
 
         base_url = params.get('url')
         verify = not params.get('insecure', False)
-        fetch_limit = int(params.get('max_events_per_fetch', 2500))
+        fetch_limit = params.get('max_events_per_fetch', 2500)
 
         client = Client(
             base_url=base_url,
@@ -578,7 +591,7 @@ def main() -> None:
         )
 
         if command == 'test-module':
-            result = test_module(client)
+            result = test_module(client, fetch_limit)
             return_results(result)
         elif command == 'mongo-db-atlas-get-events':
             events, command_results = get_events(client, args)
@@ -587,9 +600,10 @@ def main() -> None:
             return_results(command_results)
         elif command == 'fetch-events':
             # while True:
-            events, last_run_new_obj = fetch_events(client, fetch_limit)
-            # global last_run
-            # last_run = last_run_new_obj
+            demisto.debug('fetch-events command is starting')
+            events, last_run_new_obj = fetch_events(client, int(fetch_limit))
+                # global last_run
+                # last_run = last_run_new_obj
             if events:
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
                 demisto.setLastRun(last_run_new_obj)
