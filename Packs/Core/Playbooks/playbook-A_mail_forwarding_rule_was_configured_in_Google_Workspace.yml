@@ -555,7 +555,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 2420
+          "y": 2410
         }
       }
     note: false
@@ -598,7 +598,7 @@ tasks:
       {
         "position": {
           "x": 710,
-          "y": 1700
+          "y": 1690
         }
       }
     note: false
@@ -626,7 +626,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 2580
+          "y": 2570
         }
       }
     note: false
@@ -689,7 +689,7 @@ tasks:
     task:
       id: a1b2240d-c96c-46a2-8749-c94f8a214538
       version: -1
-      name: Check if the user connected from an unusual geolocation
+      name: Check for unusual geolocation connections
       description: |-
         Returns all elements from the left side that have a substring that is equal to an element from the right side. Note: This filter is case-insensitive.
         E.g -AnyMatch left=baby right=A will return baby. For more examples see the filter's Readme.
@@ -731,7 +731,7 @@ tasks:
     task:
       id: 3023b302-dc80-4e51-8b44-4489de9d410c
       version: -1
-      name: Gmail - Remove forwarding email address
+      name: Gmail - Remove forwarding mail address
       description: Deletes the specified forwarding address and revokes any verification that may have been required. This method is only available to service account clients that have been delegated domain-wide authority.
       script: '|||gmail-forwarding-address-remove'
       type: regular
@@ -751,7 +751,7 @@ tasks:
       {
         "position": {
           "x": 710,
-          "y": 1890
+          "y": 1880
         }
       }
     note: false
@@ -900,7 +900,7 @@ tasks:
     task:
       id: 172b1869-9064-4a18-869e-a522b8602b9a
       version: -1
-      name: Google Workspace Admin - Sign-Out User
+      name: Sign-Out user account from Google Workspace
       description: Signs a user out of all web and device sessions and reset their sign-in cookies.
       script: '|||gsuite-user-signout'
       type: regular
@@ -919,7 +919,7 @@ tasks:
       {
         "position": {
           "x": 1130,
-          "y": 2250
+          "y": 2240
         }
       }
     note: false
@@ -936,7 +936,7 @@ tasks:
     task:
       id: 1b880cd2-e9af-4734-8364-ead4ccdb0a7b
       version: -1
-      name: Google Workspace Admin - Suspend User
+      name: Suspend user in google workspace
       description: Updates a user.
       script: '|||gsuite-user-update'
       type: regular
@@ -956,7 +956,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 1890
+          "y": 1880
         }
       }
     note: false
@@ -973,7 +973,7 @@ tasks:
     task:
       id: 2e040f98-61ea-4032-826c-66b48eece3d7
       version: -1
-      name: Check if the analyst has selected to suspend the user account
+      name: Check analyst decision
       type: condition
       iscommand: false
       brand: ""
@@ -1001,7 +1001,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 1700
+          "y": 1690
         }
       }
     note: false
@@ -1032,7 +1032,7 @@ tasks:
       {
         "position": {
           "x": -580,
-          "y": 2280
+          "y": 2270
         }
       }
     note: false
@@ -1205,7 +1205,7 @@ tasks:
     task:
       id: 9b154689-28ab-4f05-8ba4-e3cc23859851
       version: -1
-      name: Save abnormal geolocation to evidences
+      name: Set abnormal geolocation to evidence
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -1278,7 +1278,7 @@ tasks:
     task:
       id: 47ef82fb-1c7d-4c4b-8f3b-40c46d3c5bac
       version: -1
-      name: Save suspicious keywords to evidences
+      name: Set suspicious keywords to evidence
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -1347,7 +1347,7 @@ tasks:
     task:
       id: 80b45a10-5b09-4f0f-89af-c4aced6131cd
       version: -1
-      name: Save abnormal working hours to evidences
+      name: Set abnormal working hours to evidence
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -1536,7 +1536,7 @@ tasks:
     task:
       id: 8f88c80e-c7e1-41f0-8f57-2e0b353172ca
       version: -1
-      name: Notify User of Forwarding Address Removal
+      name: Send user notification via Email
       description: Sends an email.
       script: '|||send-mail'
       type: regular
@@ -1561,7 +1561,7 @@ tasks:
       {
         "position": {
           "x": 710,
-          "y": 2250
+          "y": 2240
         }
       }
     note: false
@@ -1625,7 +1625,7 @@ tasks:
     task:
       id: 89920c84-f44d-45ce-8bc5-0577831df61f
       version: -1
-      name: Google Workspace - Get the user account
+      name: Get Google Workspace user account
       description: Retrieve a user's details given a user key.
       script: '|||gsuite-user-get'
       type: regular
@@ -1643,7 +1643,7 @@ tasks:
       {
         "position": {
           "x": 1130,
-          "y": 1890
+          "y": 1880
         }
       }
     note: false
@@ -1684,7 +1684,7 @@ tasks:
       {
         "position": {
           "x": 1130,
-          "y": 2050
+          "y": 2040
         }
       }
     note: false
@@ -1701,7 +1701,7 @@ tasks:
     task:
       id: d87cf812-ca8d-4017-85a4-aedb561018e7
       version: -1
-      name: Check if to notify user of forwarding address removal
+      name: Check user notification requirement
       type: condition
       iscommand: false
       brand: ""
@@ -1729,7 +1729,7 @@ tasks:
       {
         "position": {
           "x": 710,
-          "y": 2050
+          "y": 2040
         }
       }
     note: false
@@ -1755,7 +1755,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2665,
+        "height": 2655,
         "width": 2090,
         "x": -580,
         "y": -20
