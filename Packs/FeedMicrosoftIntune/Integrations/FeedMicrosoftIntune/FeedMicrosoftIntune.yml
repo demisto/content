@@ -68,7 +68,7 @@ configuration:
   required: false
 - display: The Microsoft Intune endpoint URL
   name: url
-  defaultvalue: https://docs.microsoft.com/en-us/intune/fundamentals/intune-endpoints
+  defaultvalue: https://learn.microsoft.com/en-us/mem/intune/fundamentals/intune-endpoints
   type: 0
   required: true
 - additionalinfo: Supports CSV values.
@@ -103,3 +103,5 @@ script:
   dockerimage: demisto/btfl-soup:1.0.1.115405
   feed: true
   subtype: python3
+tests:
+- No tests (auto formatted)
