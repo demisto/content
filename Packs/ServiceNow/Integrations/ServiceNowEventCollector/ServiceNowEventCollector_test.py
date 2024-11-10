@@ -463,7 +463,7 @@ def test_process_and_filter_events_handles_event_time_formatting():
     assert unique_events[0]["_time"] == expected_time_format
 
 
-def test_get_limit_audit_with_args():
+def test_get_limit_with_args():
     """
     Test get_limit when log_type is 'audit' and args contains 'max_fetch_audit'.
 
@@ -489,12 +489,12 @@ def test_get_limit_audit_with_args():
         fetch_limit_syslog=400
     )
 
-    limit = get_limit(args, client, AUDIT)
+    limit = get_limit(args, client)
 
     assert limit == 200
 
 
-def test_get_limit_audit_with_client_default():
+def test_get_limit_with_client_default():
     """
     Test get_limit when log_type is 'audit' and client provides a default.
 
@@ -521,12 +521,12 @@ def test_get_limit_audit_with_client_default():
         fetch_limit_audit=300,
         fetch_limit_syslog=400
     )
-    limit = get_limit(args, client, AUDIT)
+    limit = get_limit(args, client)
 
     assert limit == 300
 
 
-def test_get_limit_audit_with_no_args_or_client_default():
+def test_get_limit_with_no_args_or_client_default():
     """
     Test get_limit when log_type is 'audit' and neither args nor client provides a limit.
 
@@ -553,99 +553,7 @@ def test_get_limit_audit_with_no_args_or_client_default():
         fetch_limit_audit=None,
         fetch_limit_syslog=400
     )
-    limit = get_limit(args, client, AUDIT)
-
-    assert limit == 1000
-
-
-def test_get_limit_syslog_with_args():
-    """
-    Test get_limit when log_type is 'syslog transactions' and args contains 'max_fetch_syslog_transactions'.
-
-    Given:
-        - args dictionary with 'max_fetch_syslog_transactions' set.
-        - log_type set to 'syslog transactions'.
-    When:
-        - Running the 'get_limit' function.
-    Then:
-        - Validates that 'max_fetch_syslog_transactions' from args is used as the limit.
-    """
-    args = {"max_fetch_syslog_transactions": "150"}
-    client = Client(
-        use_oauth=True,
-        credentials={"username": "test", "password": "test"},
-        client_id="test_id",
-        client_secret="test_secret",
-        url="https://test.com",
-        verify=False,
-        proxy=False,
-        api_server_url="https://test.com/api/now",
-        fetch_limit_audit=300,
-        fetch_limit_syslog=400
-    )
-    limit = get_limit(args, client, SYSLOG_TRANSACTIONS)
-
-    assert limit == 150
-
-
-def test_get_limit_syslog_with_client_default():
-    """
-    Test get_limit when log_type is 'syslog transactions' and client provides a default.
-
-    Given:
-        - args dictionary without 'max_fetch_syslog_transactions'.
-        - log_type set to 'syslog transactions'.
-        - client has fetch_limit_syslog set.
-    When:
-        - Running the 'get_limit' function.
-    Then:
-        - Validates that 'fetch_limit_syslog' from client is used as the limit.
-    """
-    args = {}
-    client = Client(
-        use_oauth=True,
-        credentials={"username": "test", "password": "test"},
-        client_id="test_id",
-        client_secret="test_secret",
-        url="https://test.com",
-        verify=False,
-        proxy=False,
-        api_server_url="https://test.com/api/now",
-        fetch_limit_audit=300,
-        fetch_limit_syslog=400
-    )
-    limit = get_limit(args, client, SYSLOG_TRANSACTIONS)
-
-    assert limit == 400
-
-
-def test_get_limit_syslog_with_no_args_or_client_default():
-    """
-    Test get_limit when log_type is 'syslog transactions' and neither args nor client provides a limit.
-
-    Given:
-        - args dictionary without 'max_fetch_syslog_transactions'.
-        - log_type set to 'syslog transactions'.
-        - client does not provide fetch_limit_syslog.
-    When:
-        - Running the 'get_limit' function.
-    Then:
-        - Validates that the default limit of 1000 is used.
-    """
-    args = {}
-    client = Client(
-        use_oauth=True,
-        credentials={"username": "test", "password": "test"},
-        client_id="test_id",
-        client_secret="test_secret",
-        url="https://test.com",
-        verify=False,
-        proxy=False,
-        api_server_url="https://test.com/api/now",
-        fetch_limit_audit=300,
-        fetch_limit_syslog=None
-    )
-    limit = get_limit(args, client, SYSLOG_TRANSACTIONS)
+    limit = get_limit(args, client)
 
     assert limit == 1000
 

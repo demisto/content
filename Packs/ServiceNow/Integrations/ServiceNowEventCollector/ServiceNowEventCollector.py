@@ -37,7 +37,7 @@ class Client:
         self.api_server_url = api_server_url
 
     def search_events(self, from_time: str, log_type: str, limit: Optional[int] = None, offset: int = 0):
-        """Make a request to the ServiceNow REST API to retrieve audit logs"""
+        """Make a request to the ServiceNow REST API to retrieve audit and syslog transactions logs"""
 
         if limit is None:
             limit = self.fetch_limit_audit if log_type == AUDIT else self.fetch_limit_syslog
@@ -126,9 +126,15 @@ def initialize_from_date(last_run: dict[str, Any], log_type: str) -> str:
 
 
 def add_time_field(events: List[Dict[str, Any]], log_type) -> List[Dict[str, Any]]:
-    """Adds time field to the events
+    """
+    Add a '_time' field to each event and set the source log type.
 
-    :param events: List of events to add the _time field to.
+    Args:
+        events (List[Dict[str, Any]]): List of events to add the '_time' field to.
+        log_type (str): Type of log to set as the 'source_log_type' for each event.
+
+    Returns:
+        List[Dict[str, Any]]: The list of events with '_time' and 'source_log_type' fields added.
     """
     for event in events:
         event["_time"] = datetime.strptime(event["sys_created_on"], LOGS_DATE_FORMAT).strftime(DATE_FORMAT)
@@ -137,19 +143,33 @@ def add_time_field(events: List[Dict[str, Any]], log_type) -> List[Dict[str, Any
     return events
 
 
-def get_limit(args: dict, client: Client, log_type: str):
+def get_limit(args: dict, client: Client):
+    """
+    Retrieve the limit for the number of logs to fetch, with defaults based on client settings.
+
+    Args:
+        args (dict): Dictionary of arguments potentially containing a "limit" key.
+        client (Client): Client instance with attributes for default fetch limits.
+
+    Returns:
+        int: The limit for the number of logs to fetch.
+    """
     limit = arg_to_number(args.get("limit")) or client.fetch_limit_audit or 1000
     return limit
 
 
 def process_and_filter_events(events: list, previous_run_ids: set, from_date: str, log_type: str):
     """
-    Removing duplicates and creating a set of last fetched ids with the same time.
+    Remove duplicates from events and create a set of last fetched IDs with the same timestamp.
 
-    :param events: events fetched from the API
-    :param previous_run_ids: ids with time as the one in the from date param
-    :param from_date: from date from last_run object
-    :return: all unique events and a set of last ids of events with same time.
+    Args:
+        events (list): List of events fetched from the API.
+        previous_run_ids (set): Set of event IDs matching the timestamp in the 'from_date' parameter.
+        from_date (str): Starting date for fetching events, based on the last run's timestamp.
+        log_type (str): Type of log to set as the 'source_log_type' for each event.
+
+    Returns:
+        tuple: A list of unique events and a set of the last fetched event IDs with the same timestamp.
     """
     unique_events = []
     from_date_datetime = datetime.strptime(from_date, LOGS_DATE_FORMAT)
@@ -191,7 +211,7 @@ def get_events_command(client: Client, args: dict, log_type: str, last_run: dict
         from_date = initialize_from_date(last_run, log_type)
 
     offset = args.get("offset", 0)
-    limit = arg_to_number(args.get("limit")) or client.fetch_limit_audit or 1000
+    limit = get_limit(args, client)
     logs = client.search_events(from_time=from_date, log_type=log_type, limit=limit, offset=offset)
     add_time_field(logs, log_type)
     demisto.debug(f"Got a total of {len(logs)} events created after {from_date}")
@@ -237,19 +257,19 @@ def fetch_events_command(client: Client, last_run: dict, log_types: list):
 
 
 def module_of_testing(client: Client, log_types: list) -> str:  # pragma: no cover
-    """Tests API connectivity and authentication
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
     """
+    Test API connectivity and authentication.
 
+    Returns "ok" if the connection to the service is successful and the integration functions correctly.
+    Raises exceptions if the test fails.
+
+    Args:
+        client (Client): Client instance used to test connectivity.
+        log_types (list): List of log types to test fetching events.
+
+    Returns:
+        str: "ok" if the test passed; any exception raised will indicate failure.
+    """
     _, _ = fetch_events_command(client, {}, log_types=log_types)
     return "ok"
 
