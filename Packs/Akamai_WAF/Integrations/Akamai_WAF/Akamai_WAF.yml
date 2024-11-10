@@ -1510,7 +1510,7 @@ script:
       required: true
     description: Get an enrollment in CPS by enrollment id.
     name: akamai-get-cps-enrollment-by-id
-  dockerimage: demisto/auth-utils:1.0.0.105764
+  dockerimage: demisto/auth-utils:1.0.0.115527
   script: ''
   subtype: python3
   type: python

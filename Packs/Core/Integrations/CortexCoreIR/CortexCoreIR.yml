@@ -320,6 +320,20 @@ script:
     - name: username
       description: The usernames to query for, accepts a single user, or comma-separated list of usernames.
       isArray: true
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to return all endpoints. If true, will override the 'limit' and 'page' arguments.
+      name: all_results
+      predefined:
+      - "false"
+      - "true"
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to return timestamp or date string values.
+      name: convert_timestamp_to_datestring
+      predefined:
+      - "false"
+      - "true"
     description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
     name: core-get-endpoints
     outputs:
@@ -3016,6 +3030,70 @@ script:
     - contextPath: Core.ScriptResult.results.retention_date
       description: Timestamp in which the retrieved files will be deleted from the server.
       type: Date
+  - arguments:
+    - description: The agent ID.
+      name: agent_id
+      isArray: false
+      required: true
+    - description: The instance ID.
+      name: instance_id
+      isArray: true
+      required: true
+    - description: The process name.
+      name: process_name
+      isArray: false
+      required: false
+    - description: The incident ID.
+      name: incident_id
+      isArray: false
+      required: false
+    - description: The action ID. For polling use.
+      isArray: true
+      name: action_id
+      deprecated: true
+    - description: Interval in seconds between each poll.
+      name: interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
+    name: core-terminate-process
+    description: Terminate a process by its instance ID. Available only for XSIAM 2.4.
+    polling: true
+    outputs:
+    - contextPath: Core.TerminateProcess.action_id
+      description: The action ID.
+      type: String
+  - arguments:
+    - description: The agent ID.
+      name: agent_id
+      isArray: false
+      required: true
+    - description: The causality ID.
+      name: causality_id
+      isArray: true
+      required: true
+    - description: The process name.
+      name: process_name
+      isArray: false
+      required: false
+    - description: The incident ID.
+      name: incident_id
+      isArray: false
+      required: false
+    - description: The action ID. For polling use.
+      isArray: true
+      name: action_id
+      deprecated: true
+    - description: Interval in seconds between each poll.
+      name: interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
+    name: core-terminate-causality
+    description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
+    polling: true
+    outputs:
+    - contextPath: Core.TerminateCausality.action_id
+      description: The action id.
+      type: String 
   runonce: false
   script: '-'
   subtype: python3

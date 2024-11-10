@@ -244,7 +244,7 @@ class CoreClient(BaseClient):
         try:
             decoder = base64.b64decode if response_data_type == "bin" else json.loads
             demisto.debug(f'{response_data_type=}, {decoder.__name__=}')
-            return decoder(response['data'])   # type: ignore[operator]
+            return decoder(response['data'])  # type: ignore[operator]
         except json.JSONDecodeError:
             demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}")
             return response['data']
@@ -1572,6 +1572,52 @@ class CoreClient(BaseClient):
             }},
         )
 
+    def terminate_on_agent(self,
+                           url_suffix_endpoint: str,
+                           id_key: str,
+                           id_value: str,
+                           agent_id: str,
+                           process_name: Optional[str],
+                           incident_id: Optional[str]) -> dict[str, dict[str, str]]:
+        """
+            Terminate a specific process or a the causality on an agent.
+
+            :type url_suffix_endpoint: ``str``
+            :param agent_id: The endpoint of the command(terminate_causality or terminate_process).
+
+            :type agent_id: ``str``
+            :param agent_id: The ID of the agent.
+
+            :type id_key: ``str``
+            :param id_key: The key name ID- causality_id or process_id.
+
+            :type id_key: ``str``
+            :param id_key: The ID data- causality_id or process_id.
+
+            :type process_name: ``Optional[str]``
+            :param process_name: The name of the process. Optional.
+
+            :type incident_id: ``Optional[str]``
+            :param incident_id: The ID of the incident. Optional.
+
+            :return: The response from the API.
+            :rtype: ``dict[str, dict[str, str]]``
+        """
+        request_data: Dict[str, Any] = {
+            "agent_id": agent_id,
+            id_key: id_value,
+        }
+        if process_name:
+            request_data["process_name"] = process_name
+        if incident_id:
+            request_data["incident_id"] = incident_id
+        response = self._http_request(
+            method='POST',
+            url_suffix=f'/endpoints/{url_suffix_endpoint}/',
+            json_data={"request_data": request_data},
+        )
+        return response.get('reply')
+
 
 class AlertFilterArg:
     def __init__(self, search_field: str, search_type: Optional[str], arg_type: str, option_mapper: dict = None):
@@ -1651,7 +1697,8 @@ def run_polling_command(client: CoreClient,
                         results_function: Callable,
                         polling_field: str,
                         polling_value: List,
-                        stop_polling: bool = False) -> CommandResults:
+                        stop_polling: bool = False,
+                        values_raise_error: List = []) -> CommandResults:
     """
     Arguments:
     args: args
@@ -1664,6 +1711,7 @@ def run_polling_command(client: CoreClient,
     polling_value: list of values of the polling_field we want to check. The list can contain values to stop or
     continue polling on, not both.
     stop_polling: True - polling_value stops the polling. False - polling_value does not stop the polling.
+    values_raise_error: list of polling values that require raising an error.
 
     Return:
     command_results(CommandResults)
@@ -1708,6 +1756,8 @@ def run_polling_command(client: CoreClient,
     result = outputs_result_func.get(polling_field) if isinstance(outputs_result_func, dict) else \
         outputs_result_func[0].get(polling_field)
     cond = result not in polling_value if stop_polling else result in polling_value
+    if values_raise_error and result in values_raise_error:
+        raise DemistoException(f"The command {cmd} failed. Received status {result}")
     if cond:
         # schedule next poll
         polling_args = {
@@ -1906,7 +1956,7 @@ def endpoint_scan_command(client: CoreClient, args) -> CommandResults:
 def action_status_get_command(client: CoreClient, args) -> CommandResults:
     action_id_list = argToList(args.get('action_id', ''))
     action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
-
+    demisto.debug(f'action_status_get_command {action_id_list=}')
     result = []
     for action_id in action_id_list:
         data = client.action_status_get(action_id)
@@ -1915,7 +1965,7 @@ def action_status_get_command(client: CoreClient, args) -> CommandResults:
             result.append({
                 'action_id': action_id,
                 'endpoint_id': endpoint_id,
-                'status': status
+                'status': status,
             })
 
     return CommandResults(
@@ -2059,20 +2109,73 @@ def generate_endpoint_by_contex_standard(endpoints, ip_as_string, integration_na
     return standard_endpoints
 
 
+def retrieve_all_endpoints(client, endpoints, endpoint_id_list, dist_name, ip_list, public_ip_list,
+                           group_name, platform, alias_name, isolate, hostname, page_number,
+                           limit, first_seen_gte, first_seen_lte, last_seen_gte, last_seen_lte,
+                           sort_by_first_seen, sort_by_last_seen, status, username):
+    endpoints_page = endpoints
+    # Continue looping for as long as the latest page of endpoints retrieved is NOT empty
+    while endpoints_page:
+        page_number += 1
+        endpoints_page = client.get_endpoints(
+            endpoint_id_list=endpoint_id_list,
+            dist_name=dist_name,
+            ip_list=ip_list,
+            public_ip_list=public_ip_list,
+            group_name=group_name,
+            platform=platform,
+            alias_name=alias_name,
+            isolate=isolate,
+            hostname=hostname,
+            page_number=page_number,
+            limit=limit,
+            first_seen_gte=first_seen_gte,
+            first_seen_lte=first_seen_lte,
+            last_seen_gte=last_seen_gte,
+            last_seen_lte=last_seen_lte,
+            sort_by_first_seen=sort_by_first_seen,
+            sort_by_last_seen=sort_by_last_seen,
+            status=status,
+            username=username
+        )
+        endpoints += endpoints_page
+    return endpoints
+
+
+def convert_timestamps_to_datestring(endpoints):
+    for endpoint in endpoints:
+        if endpoint.get('content_release_timestamp'):
+            endpoint['content_release_timestamp'] = timestamp_to_datestring(endpoint.get('content_release_timestamp'))
+        if endpoint.get('first_seen'):
+            endpoint['first_seen'] = timestamp_to_datestring(endpoint.get('first_seen'))
+        if endpoint.get('install_date'):
+            endpoint['install_date'] = timestamp_to_datestring(endpoint.get('install_date'))
+        if endpoint.get('last_content_update_time'):
+            endpoint['last_content_update_time'] = timestamp_to_datestring(endpoint.get('last_content_update_time'))
+        if endpoint.get('last_seen'):
+            endpoint['last_seen'] = timestamp_to_datestring(endpoint.get('last_seen'))
+    return endpoints
+
+
 def get_endpoints_command(client, args):
     integration_context_brand = args.pop('integration_context_brand', 'CoreApiModule')
     integration_name = args.pop("integration_name", "CoreApiModule")
-    page_number = arg_to_int(
-        arg=args.get('page', '0'),
-        arg_name='Failed to parse "page". Must be a number.',
-        required=True
-    )
-
-    limit = arg_to_int(
-        arg=args.get('limit', '30'),
-        arg_name='Failed to parse "limit". Must be a number.',
-        required=True
-    )
+    all_results = argToBoolean(args.get('all_results', False))
+    # When we want to get all endpoints, start at page 0 and use the max limit supported by the API (100)
+    if all_results:
+        page_number = 0
+        limit = 100
+    else:
+        page_number = arg_to_int(
+            arg=args.get('page', '0'),
+            arg_name='Failed to parse "page". Must be a number.',
+            required=True
+        )
+        limit = arg_to_int(
+            arg=args.get('limit', '30'),
+            arg_name='Failed to parse "limit". Must be a number.',
+            required=True
+        )
 
     endpoint_id_list = argToList(args.get('endpoint_id_list'))
     dist_name = argToList(args.get('dist_name'))
@@ -2084,6 +2187,7 @@ def get_endpoints_command(client, args):
     isolate = args.get('isolate')
     hostname = argToList(args.get('hostname'))
     status = argToList(args.get('status'))
+    convert_timestamp_to_datestring = argToBoolean(args.get('convert_timestamp_to_datestring', False))
 
     first_seen_gte = arg_to_timestamp(
         arg=args.get('first_seen_gte'),
@@ -2131,6 +2235,17 @@ def get_endpoints_command(client, args):
         status=status,
         username=username
     )
+
+    if all_results:
+        endpoints = retrieve_all_endpoints(client, endpoints, endpoint_id_list, dist_name,
+                                           ip_list, public_ip_list, group_name, platform,
+                                           alias_name, isolate, hostname, page_number,
+                                           limit, first_seen_gte, first_seen_lte,
+                                           last_seen_gte, last_seen_lte, sort_by_first_seen,
+                                           sort_by_last_seen, status, username)
+
+    if convert_timestamp_to_datestring:
+        endpoints = convert_timestamps_to_datestring(endpoints)
 
     standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False, integration_name)
     endpoint_context_list = []
@@ -3609,6 +3724,13 @@ def filter_vendor_fields(alert: dict):
 
 def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResults:
     alert_id_list = argToList(args.get('alert_ids', []))
+    for alert_id in alert_id_list:
+        if alert_id and re.match(r'^[a-fA-F0-9-]{32,36}\$&\$.+$', alert_id):
+            raise DemistoException(f"Error: Alert ID {alert_id} is invalid. This issue arises because the playbook is running in"
+                                   f" debug mode, which replaces the original alert ID with a debug alert ID, causing the task to"
+                                   f" fail. To run this playbook in debug mode, please update the 'alert_ids' value to the real "
+                                   f"alert ID in the relevant task. Alternatively, run the playbook on the actual alert "
+                                   f"(not in debug mode) to ensure task success.")
     events_from_decider_as_list = bool(args.get('events_from_decider_format', '') == 'list')
     raw_response = client.get_original_alerts(alert_id_list)
     reply = copy.deepcopy(raw_response)
@@ -4402,4 +4524,85 @@ def get_incidents_command(client, args):
             f'{args.get("integration_context_brand", "CoreApiModule")}.Incident(val.incident_id==obj.incident_id)': raw_incidents
         },
         raw_incidents
+    )
+
+
+def terminate_process_command(client, args) -> CommandResults:
+    """
+    AVAILABLE ONLY TO XDR3.12 / XSIAM2.4
+    Terminate the process command for a specific agent and instance IDs.
+
+    :type client: ``Client``
+    :param client: The client to use for making API calls.
+
+    :type args: ``Dict[str, Any]``
+    :param args: The arguments for the command.
+
+    :return: The results of the command.
+    :rtype: ``CommandResults``
+    """
+    agent_id = args.get('agent_id')
+    instance_ids = argToList(args.get('instance_id'))
+    process_name = args.get('process_name')
+    incident_id = args.get('incident_id')
+    replies: List[Dict[str, Any]] = []
+    for instance_id in instance_ids:
+        reply_per_instance_id = client.terminate_on_agent(
+            url_suffix_endpoint='terminate_process',
+            id_key='instance_id',
+            id_value=instance_id,
+            agent_id=agent_id,
+            process_name=process_name,
+            incident_id=incident_id
+        )
+        action_id = reply_per_instance_id.get("group_action_id")
+        demisto.debug(f'Action terminate process succeeded with action_id={action_id}')
+        replies.append({"action_id": action_id})
+
+    return CommandResults(
+        readable_output=tableToMarkdown(f'Action terminate process created on instance ids: {", ".join(instance_ids)}', replies),
+        outputs={
+            f'{args.get("integration_context_brand", "CoreApiModule")}'
+            f'.TerminateProcess(val.actionId && val.actionId == obj.actionId)': replies},
+        raw_response=replies
+    )
+
+
+def terminate_causality_command(client, args) -> CommandResults:
+    """
+    AVAILABLE ONLY TO XDR3.12 / XSIAM2.4
+    Terminate the causality command for a specific agent and causality IDs.
+
+    :type client: ``Client``
+    :param client: The client to use for making API calls.
+
+    :type args: ``Dict[str, Any]``
+    :param args: The arguments for the command.
+
+    :return: The results of the command.
+    :rtype: ``CommandResults``
+    """
+    agent_id = args.get('agent_id')
+    causality_ids = argToList(args.get('causality_id'))
+    process_name = args.get('process_name')
+    incident_id = args.get('incident_id')
+    replies: List[Dict[str, Any]] = []
+    for causality_id in causality_ids:
+        reply_per_instance_id = client.terminate_on_agent(
+            url_suffix_endpoint='terminate_causality',
+            id_key='causality_id',
+            id_value=causality_id,
+            agent_id=agent_id,
+            process_name=process_name,
+            incident_id=incident_id
+        )
+        action_id = reply_per_instance_id.get("group_action_id")
+        demisto.debug(f'Action terminate process succeeded with action_id={action_id}')
+        replies.append({"action_id": action_id})
+
+    return CommandResults(
+        readable_output=tableToMarkdown(f'Action terminate causality created on {",".join(causality_ids)}', replies),
+        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.TerminateProcess(val.actionId == obj.actionId)':
+                 replies},
+        raw_response=replies
     )

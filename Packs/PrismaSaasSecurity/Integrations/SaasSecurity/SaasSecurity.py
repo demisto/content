@@ -435,6 +435,11 @@ def fetch_incidents(client: Client, first_fetch_time, fetch_limit, fetch_state, 
     incidents = list()
     for inc in results:
 
+        date_updated = inc.get('updated_at')
+        date_updated_dt = datetime.strptime(date_updated, SAAS_SECURITY_DATE_FORMAT) + timedelta(milliseconds=1)
+        if date_updated_dt > datetime.strptime(current_fetch, SAAS_SECURITY_DATE_FORMAT):
+            current_fetch = date_updated_dt.strftime(SAAS_SECURITY_DATE_FORMAT)[:-4] + 'Z'
+
         # We fetch the incidents by the "updated-at" field,
         # So we need to filter the incidents created before the last_fetch
         date_created = inc.get('created_at')
@@ -447,12 +452,6 @@ def fetch_incidents(client: Client, first_fetch_time, fetch_limit, fetch_state, 
 
         incident = convert_to_xsoar_incident(inc)
         incidents.append(incident)
-
-        date_updated = inc.get('updated_at')
-        date_updated_dt = datetime.strptime(date_updated, SAAS_SECURITY_DATE_FORMAT) + timedelta(milliseconds=1)
-
-        if date_updated_dt > datetime.strptime(current_fetch, SAAS_SECURITY_DATE_FORMAT):
-            current_fetch = date_updated_dt.strftime(SAAS_SECURITY_DATE_FORMAT)[:-4] + 'Z'
 
     demisto.setLastRun({'last_run_time': current_fetch})
     demisto.incidents(incidents)

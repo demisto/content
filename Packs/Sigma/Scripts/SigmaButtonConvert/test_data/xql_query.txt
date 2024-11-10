@@ -1,0 +1,1 @@
+dataset=xdr_data | filter event_type = ENUM.REGISTRY and (agent_os_type = ENUM.AGENT_OS_WINDOWS and (action_registry_key_name contains "\\CLSID\\{fdb00e52-a214-4aa1-8fba-4357bb0072ec}\\InProcServer32\\(Default)" and (not (action_registry_value_name = "%windir%\\system32\\amsi.dll" or action_registry_data = "%windir%\\system32\\amsi.dll"))))

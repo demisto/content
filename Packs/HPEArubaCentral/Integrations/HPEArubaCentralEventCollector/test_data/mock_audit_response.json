@@ -1,0 +1,70 @@
+{
+        "events" : [
+            {
+                "_time": "2024-09-11T07:16:09Z",
+                "cid": "50b8aef1ec7496754e",
+                "classification": "Configuration",
+                "cname": "Test Name",
+                "description": "Access point configuration sync successful",
+                "device_type": "iap",
+                "gid": 328,
+                "has_details": false,
+                "id": "audit_trail_2024_9,AZHf8UWGuuvneUKv",
+                "ip_addr": "0.0.0.0",
+                "msp_id": "STANDALONE",
+                "target": "TESTKPPD2M",
+                "ts": 1726038969,
+                "user": "System"
+            },
+            {
+                "_time": "2024-09-11T02:18:39Z",
+                "cid": "50b8aef1ec77",
+                "classification": "Configuration",
+                "cname": "Test Name",
+                "description": "Access point configuration sync successful",
+                "device_type": "iap",
+                "gid": 328,
+                "has_details": false,
+                "id": "audit_trail_2024_9,AZ-jmz20JAw2C6cZ",
+                "ip_addr": "0.0.0.0",
+                "msp_id": "STANDALONE",
+                "target": "TESTKD5XLB",
+                "ts": 1726021119,
+                "user": "System"
+            },
+            {
+                "_time": "2024-09-11T00:21:33Z",
+                "cid": "50b8aef1e",
+                "classification": "Configuration",
+                "cname": "Test Name",
+                "description": "Swarm configuration sync successful",
+                "device_type": "iap",
+                "gid": 69,
+                "has_details": false,
+                "id": "audit_trail_2024_9,AZHe0PP1ItR5gw53",
+                "ip_addr": "0.0.0.0",
+                "msp_id": "STANDALONE",
+                "target": "TESTKPPCGB",
+                "ts": 1726014093,
+                "user": "System"
+            },
+            {
+                "_time": "2024-09-11T00:21:33Z",
+                "cid": "50b8ec774d",
+                "classification": "Configuration",
+                "cname": "Test Name",
+                "description": "Swarm configuration sync successful",
+                "device_type": "iap",
+                "gid": 69,
+                "has_details": false,
+                "id": "audit_trail_2024_9,AZHedwOSBmKq8_eh",
+                "ip_addr": "0.0.0.0",
+                "msp_id": "STANDALONE",
+                "target": "TESTKPP0MT",
+                "ts": 1726014093,
+                "user": "System"
+            }
+        ],
+        "remaining_records" : false,
+        "total" : 4
+    }

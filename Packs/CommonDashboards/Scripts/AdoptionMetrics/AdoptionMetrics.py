@@ -73,10 +73,9 @@ def get_use_cases() -> Dict[str, Any]:
         category = details.get('category', '').lower()
         brand = details.get('brand', '').lower()
         state = details.get('state')
-        incident_types = details.get('incident_types', [])
 
         if brand != 'builtin' and state == 'active' and category != 'utilities':
-            if category in ['email', 'messaging', 'messaging and conferencing'] and 'phishing' in incident_types:
+            if category in ['email', 'messaging', 'messaging and conferencing']:
                 if phishing_incidents:
                     use_cases_in_production.add('Business Email Compromise Coverage')
                 else:
