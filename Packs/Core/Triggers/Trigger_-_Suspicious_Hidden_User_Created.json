@@ -1,9 +1,9 @@
 {
-  "trigger_id": "88553e0247fc5628fbf4535a6ce7dbac",
+  "trigger_id": "4ce60e9949d518fdc734c3151e2cfe4a",
   "playbook_id": "Suspicious Hidden User Created",
   "suggestion_reason": "Recommended for Suspicious Hidden User Created alerts.",
   "description": "This trigger is responsible for handling alerts where a suspicious hidden user is created.",
-  "trigger_name": "Suspicious Hidden User Created",
+  "trigger_name": "Alert Trigger - Suspicious Hidden User Created",
   "alerts_filter": {
     "filter": {
       "AND": [

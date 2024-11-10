@@ -10,15 +10,15 @@ Triage:
 
 Investigation:
 
-- Check if the user is local or domain
-- For domain users: Retrieve AD attributes, including password expiration
-- For local users: run a Powershell command to get "Password Expires" attribute of the local user
-- Get risk level for the affected host
-- Search for related Script Engine Activity alerts in the incident
+- Check if the user is local or domain.
+- For domain users: Retrieve AD attributes, including password expiration.
+- For local users: Run a Powershell command to get "Password Expires" attribute of the local user.
+- Get risk level for the affected host.
+- Search for related Script Engine Activity alerts in the incident.
 
 Containment:
-
-- Disable the suspicious user account (domain or local).
+- For alerts determined to be true positives, suggest to the analyst to disable the user.
+- Upon analyst approval: Disable the suspicious user account (domain or local).
 - If a related alert about malicious activity exists, kill the Causality Group Owner (CGO) process that created the suspicious user.
 
 Requirements:
