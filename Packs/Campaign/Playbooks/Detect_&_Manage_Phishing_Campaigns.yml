@@ -1585,7 +1585,7 @@ inputs:
 
     "Reopen And Close" - Reopens the phishing campaign incident, adds  the new phishing incident to it, and closes the phishing campaign incident again. If the incident was already open and did not need to be reopened, it will not be closed.
 
-    "Do Not Change" -  New phishing incidents will not be add ed to a closed campaign. 
+    "Do Not Change" -  New phishing incidents will not be add ed to a closed campaign.  
   playbookInputQuery:
 outputs: []
 tests:

@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "CIAC-11068-playbook-tests-collector"
+  CURRENT_BRANCH_NAME: "CIAC-11100-playbook-run-in-build"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "CIAC-11068-playbook-tests-collector"
+    ref: "CIAC-11100-playbook-run-in-build"
     project: "${CI_PROJECT_NAMESPACE}/infra"
