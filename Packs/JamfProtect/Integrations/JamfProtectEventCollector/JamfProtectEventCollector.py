@@ -436,7 +436,7 @@ def get_events_alert_type(client: Client, start_date: str, max_fetch: int, last_
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     for event in events:
         event["source_log_type"] = "alert"
-    if next_page:
+    if next_page and events:
         demisto.debug(
             f"Jamf Protect- Fetched {len(events)} which is the maximum number of alerts."
             f" Will keep the fetching in the next fetch.")
@@ -480,7 +480,7 @@ def get_events_computer_type(client: Client, start_date: str, max_fetch: int, la
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     for event in events:
         event["source_log_type"] = "computers"
-    if next_page:
+    if next_page and events:
         demisto.debug(
             f"Fetched the maximal number of computers ({len(events)} events). "
             f"Fetching will continue using {next_page=} and last_fetch={created}, in the next iteration")
@@ -525,7 +525,7 @@ def get_events_audit_type(client: Client, start_date: str, end_date: str, max_fe
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     for event in events:
         event["source_log_type"] = "audit"
-    if next_page:
+    if next_page and events:
         demisto.debug(
             f" Jamf Protect - Fetched {len(events)}"
             f" which is the maximum number of audits. Will keep the fetching in the next fetch.")
@@ -606,12 +606,6 @@ def calculate_fetch_dates(start_date: str, last_run_key: str, last_run: dict, en
     return start_date, end_date
 
 
-def remove_next_page_if_no_new_events(events: list[dict] = None, next_run: dict[str: str] = None) -> dict[str: str]:
-    if not events and 'next_page' in next_run or {}:
-        del next_run['next_page']
-    return next_run
-
-
 def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, max_fetch_computer: int, start_date_arg: str = "",
                  end_date_arg: str = "") -> EventResult:
     """
@@ -643,20 +637,20 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
     if no_next_pages or alert_next_page:
         # The only case we don't trigger the alert event type cycle is when have only the audit and computer next page token.
         alert_events, alert_next_run = get_events_alert_type(client, start_date_arg, max_fetch_alerts, last_run)
-        remove_next_page_if_no_new_events(alert_events, alert_next_run)
     if no_next_pages or audit_next_page:
         # The only case we don't trigger the audit event type cycle is when have only the alert and computer next page token.
         audit_events, audit_next_run = get_events_audit_type(client, start_date_arg, end_date_arg, max_fetch_audits, last_run)
-        remove_next_page_if_no_new_events(audit_events, audit_next_run)
     if no_next_pages or computer_next_page:
         # The only case we don't trigger the computer event type cycle is when have only the alert and audit next page token.
         computer_events, computer_next_run = get_events_computer_type(client, start_date_arg, max_fetch_computer, last_run)
-        remove_next_page_if_no_new_events(computer_events, computer_next_run)
     next_run: dict[str, Any] = {"alert": alert_next_run, "audit": audit_next_run, 'computer': computer_next_run}
     if "next_page" in (alert_next_run | audit_next_run | computer_next_run):
         # Will instantly re-trigger the fetch command.
         next_run["nextTrigger"] = "0"
-    demisto.debug(f'Finish to fetching events, next_run is: {next_run}')
+    demisto.debug(
+        f'Finish fetching events, next_run is: {next_run}, length of alerts: {len(alert_events)}, '
+        f'length of audits: {len(audit_events)}, length of computer: {len(computer_events)}'
+    )
     return EventResult(alert_events, audit_events, computer_events, next_run)
 
 
