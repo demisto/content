@@ -451,17 +451,6 @@ def start_chrome_process(chrome_port, chrome_binary=CHROME_EXE):
 
         process = subprocess.Popen(subprocess_options, stdout=logfile, stderr=subprocess.STDOUT)
         # Capture stdout and stderr
-        stdout, stderr = process.communicate()
-
-        # Convert byte output to string (decoding)
-        stdout = stdout.decode('utf-8')
-        stderr = stderr.decode('utf-8')
-
-        # Print or process the output
-        demisto.debug("STDOUT:", stdout)
-        demisto.debug("STDERR:", stderr)
-        demisto.debug(f'start_chrome_process: Chrome started on port {chrome_port}, pid: {process.pid},'
-                      f'returncode: {process.returncode = } ')
         return process
     except Exception as exc:
         demisto.debug(exc)
@@ -587,21 +576,20 @@ def chrome_manager() -> tuple[Any | None, str | None]:
        demisto.debug(f'what {bla=}')
        terminate_chrome(chrome_port=instance_id_dict['None']['chrome_port'])
        instance_id_dict.pop('None')
-    if not chrome_instances_contents or instance_id not in instance_id_dict.keys():
-        if instance_id:
-            demisto.debug(f'[test] chrome_manager: first cond {instance_id_dict.keys()=}')
+    if not chrome_instances_contents:  # or instance_id not in instance_id_dict.keys():
         demisto.debug(f'[test] chrome_manager: first cond {chrome_instances_contents}')
         return generate_new_chrome_instance(instance_id, chrome_options)
+    
+    elif chrome_options == instance_id_dict.get(instance_id, {}).get(CHROME_INSTANCE_OPTIONS, ''):
+        browser = get_chrome_browser(chrome_port)
+        return browser, chrome_port
 
-    if chrome_options != instance_id_dict.get(instance_id, {}).get(CHROME_INSTANCE_OPTIONS, ''):
-        # If the current Chrome options differ from the saved options for this instance ID,
-        # it terminates the existing Chrome instance and generates a new one with the new options.
-        terminate_chrome(chrome_port=chrome_port)
-        demisto.debug(f'[test] chrome_manager after_terminate_chrome {chrome_port}')
-        return generate_new_chrome_instance(instance_id, chrome_options)
+    for chrome_port_ in chrome_instances_contents:
+        terminate_chrome(chrome_port=chrome_port_)
+    demisto.debug(f'[test] chrome_manager after_terminate_chrome {chrome_port}')
+    return generate_new_chrome_instance(instance_id, chrome_options)
 
-    browser = get_chrome_browser(chrome_port)
-    return browser, chrome_port
+    
 
 
 def generate_new_chrome_instance(instance_id: str, chrome_options: str) -> tuple[Any | None, str | None]:
