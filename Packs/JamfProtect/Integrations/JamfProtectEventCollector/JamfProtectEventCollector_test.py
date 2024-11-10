@@ -193,28 +193,28 @@ def test_alerts_and_next_page_audits_and_next_page(mocker):
     from JamfProtectEventCollector import main, parse_response
     mock_last_run = {
         "alert": {
-            "last_fetch": "2024-01-01T00:00:00.000000Z",
+            "last_fetch": MOCK_TIME_UTC_NOW,
             "next_page": "next_page_alerts"
         },
         "audit": {
-            "last_fetch": "2024-01-01T00:00:00.000000Z",
+            "last_fetch": MOCK_TIME_UTC_NOW,
             "next_page": "next_page_audits"
         },
         "computer": {
-            "last_fetch": "2024-01-01T00:00:00.000000Z"
+            "last_fetch": MOCK_TIME_UTC_NOW
         }
     }
     expected_mock_last_run = {
         "alert": {
-            "last_fetch": "2024-01-01T00:00:00.000000Z",
+            "last_fetch": MOCK_TIME_UTC_NOW,
             "next_page": "next_page_alerts"
         },
         "audit": {
-            "last_fetch": "2024-01-01T00:00:00.000000Z",
+            "last_fetch": MOCK_TIME_UTC_NOW,
             "next_page": "next_page_audits"
         },
         "computer": {
-            "last_fetch": "2024-01-01T00:00:00.000000Z"
+            "last_fetch": MOCK_TIME_UTC_NOW
         },
         "nextTrigger": "0"
     }
@@ -277,15 +277,15 @@ def test_alerts_and_no_next_page_audits_and_no_next_page(mocker):
     from JamfProtectEventCollector import main, parse_response
     mock_last_run = {
         "alert": {
-            "last_fetch": "2024-01-01T00:00:00.000000Z",
+            "last_fetch": MOCK_TIME_UTC_NOW,
             "next_page": "next_page_alerts"
         },
         "audit": {
-            "last_fetch": "2024-01-01T00:00:00.000000Z",
+            "last_fetch": MOCK_TIME_UTC_NOW,
             "next_page": "next_page_audits"
         },
         "computer": {
-            "last_fetch": "2024-01-01T00:00:00.000000Z"
+            "last_fetch": MOCK_TIME_UTC_NOW
         }
     }
     expected_mock_last_run = {
@@ -296,7 +296,7 @@ def test_alerts_and_no_next_page_audits_and_no_next_page(mocker):
             "last_fetch": "2024-01-01T14:17:38.552096Z",
         },
         "computer": {
-            "last_fetch": "2024-01-01T00:00:00.000000Z"
+            "last_fetch": MOCK_TIME_UTC_NOW
         }
     }
     mocker.patch('JamfProtectEventCollector.get_events', side_effect=[
@@ -318,14 +318,14 @@ def test_no_alerts_and_next_page_no_audits_and_no_next_page(mocker):
     from JamfProtectEventCollector import main
     mock_last_run = {
         "alert": {
-            "last_fetch": "2024-01-01T00:00:00.000000Z",
+            "last_fetch": "2023-01-01T00:00:00.000000Z",
             "next_page": "next_page_alerts"
         },
         "audit": {
-            "last_fetch": "2024-01-01T00:00:00.000000Z",
+            "last_fetch": "2023-01-01T00:00:00.000000Z",
         },
         "computer": {
-            "last_fetch": "2024-01-01T00:00:00.000000Z"
+            "last_fetch": "2023-01-01T00:00:00.000000Z"
         }
     }
     expected_mock_last_run = {
@@ -333,10 +333,10 @@ def test_no_alerts_and_next_page_no_audits_and_no_next_page(mocker):
             "last_fetch": MOCK_TIME_UTC_NOW,
         },
         "audit": {
-            "last_fetch": "2024-01-01T00:00:00.000000Z",
+            "last_fetch": "2023-01-01T00:00:00.000000Z",
         },
         "computer": {
-            "last_fetch": "2024-01-01T00:00:00.000000Z"
+            "last_fetch": "2023-01-01T00:00:00.000000Z"
         }
     }
     mocker.patch('JamfProtectEventCollector.get_events', side_effect=[
