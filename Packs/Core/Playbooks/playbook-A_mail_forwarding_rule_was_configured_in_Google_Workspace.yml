@@ -1660,7 +1660,7 @@ tasks:
     task:
       id: 212fa2bf-f6ce-458e-846d-0536d50ed840
       version: -1
-      name: Is user account found?
+      name: Check if Google Workspace user account found
       type: condition
       iscommand: false
       brand: ""
