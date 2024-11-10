@@ -81,7 +81,7 @@ class Client(BaseClient):
         return results
 
     def first_time_fetch_events(self, event_type: str):
-        #TODO to change items_per_page=500
+        # TODO to change items_per_page=500
         if event_type == 'alerts':
             return self.get_alerts_with_page_num(page_num=1, items_per_page=10)
         elif event_type == 'events':
@@ -126,8 +126,12 @@ def add_entry_status_field(event: dict):
     Args:
         event (dict): The event.
     """
-    updated = datetime.strptime(event.get('updated'), DATE_FORMAT)
-    created = datetime.strptime(event.get('created'), DATE_FORMAT)
+    updated_str: str = str(event.get('updated'))
+    created_str: str = str(event.get('created'))
+
+    updated = datetime.strptime(updated_str, DATE_FORMAT)
+    created = datetime.strptime(created_str, DATE_FORMAT)
+
     if updated == created:
         event['_entry_status'] = 'new'
     elif updated > created:
@@ -261,7 +265,8 @@ def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict):
     """
 
     demisto.debug('Start to fetch alerts')
-    response = get_page_from_last_run_for_alerts(client, last_run.get('page_link'))  # get the last page or get the first page
+    page_link = str(last_run.get('page_link')) if last_run.get('page_link') else None
+    response = get_page_from_last_run_for_alerts(client, page_link)  # get the last page or get the first page
     links = response.get('links')
     results = response.get('results')
 
@@ -333,7 +338,7 @@ def get_latest_date(date1: str, date2: str) -> str:
 
 
 def add_second_to_date(date: str) -> str:
-    #TODO if not used - to delete
+    # TODO if not used - to delete
     date_plus_one_second = datetime.strptime(date, DATE_FORMAT) + timedelta(seconds=1)
     return date_plus_one_second.strftime(DATE_FORMAT)
 
@@ -361,7 +366,7 @@ def get_last_page_of_events(client: Client, results):
     return last_response
 
 
-def save_events_ids_with_specific_created_date(events: list, created_date: str) -> set:
+def save_events_ids_with_specific_created_date(events: list, created_date: str) -> list:
     """
     Filters event IDs by a given creation date.
 
@@ -372,10 +377,10 @@ def save_events_ids_with_specific_created_date(events: list, created_date: str) 
     Returns:
         list: IDs of events matching the specified creation date.
     """
-    results = set()
+    results = []
     for event in events:
         if event.get('created') == created_date:
-            results.add(event.get('id'))
+            results.append(event.get('id'))
     return results
 
 
@@ -439,7 +444,7 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict):
     """
     demisto.debug(f'Start to fetch events with {last_run}')
     min_time = last_run.get('min_time')
-    events_with_created_min_time = last_run.get('events_with_created_min_time') or {}
+    events_with_created_min_time = last_run.get('events_with_created_min_time') or []
     demisto.debug(f'Start to fetch events with {min_time}')
 
     if min_time:
@@ -519,16 +524,19 @@ def test_module(client: Client, fetch_limit) -> str:
 def fetch_events(client: Client, fetch_limit: int):
     last_run = demisto.getLastRun()
     # global last_run
+    demisto.debug(f'This is the last run {last_run} directly from demisto')
 
-    last_run_alerts = last_run.get('alerts', {})
-    last_run_events = last_run.get('events', {})
+    # last_run_alerts = last_run.get('alerts', {})
+    # last_run_events = last_run.get('events', {})
 
-    alerts_output, last_run_alerts = fetch_alert_type(client, fetch_limit, last_run_alerts)
-    events_output, last_run_events = fetch_event_type(client, fetch_limit, last_run_events)
+    alerts_output, last_run_alerts = fetch_alert_type(client, fetch_limit, last_run)
+    events_output, last_run_events = fetch_event_type(client, fetch_limit, last_run)
 
-    last_run_new_obj = ({'alerts': last_run_alerts,
-                         'events': last_run_events
-                         })
+    # last_run_new_obj = ({'alerts': last_run_alerts,
+    #                      'events': last_run_events
+    #                      })
+
+    last_run_new_obj = {**last_run_alerts, **last_run_events}
     demisto.debug(f'This is the final output for fetch_events {alerts_output + events_output}')
     return (alerts_output + events_output), last_run_new_obj
 
@@ -604,11 +612,13 @@ def main() -> None:
             # while True:
             demisto.debug('fetch-events command is starting')
             events, last_run_new_obj = fetch_events(client, int(fetch_limit))
-                # global last_run
-                # last_run = last_run_new_obj
+            # global last_run
+            # last_run = last_run_new_obj
             if events:
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+                demisto.debug(f'Successfully fetched events, this is the dict {last_run_new_obj} and this is the events {events}')
                 demisto.setLastRun(last_run_new_obj)
+                demisto.debug(f'Successfully saved last_run {demisto.getLastRun()}')
                 demisto.debug('fetch-events command is finished')
 
     except Exception as e:
