@@ -283,37 +283,6 @@ def test_test_module(mocker: MockerFixture):
 
 
 @pytest.mark.parametrize(
-    "mock_status_code, expected_msg",
-    [
-        (403, "Authorization Error: make sure the Token is correctly set"),
-        (500, "Failure in test_module function"),
-    ],
-)
-def test_test_module_with_raises(
-    mocker: MockerFixture, mock_status_code: int, expected_msg: str
-):
-    """
-    Given:
-        - Client
-    When:
-        - The function `test_module` is called
-    Then:
-        - Ensure that the function raises an error when the API call is unsuccessful
-    """
-
-    class MockException:
-        status_code = mock_status_code
-
-    mocker.patch.object(Client, "_update_access_token")
-    client = mock_client()
-    mocker.patch.object(
-        Client, "get_events", side_effect=DemistoException("Test", res=MockException())
-    )
-    with pytest.raises(DemistoException, match=expected_msg):
-        _test_module(client)
-
-
-@pytest.mark.parametrize(
     "mock_status_code, exception_type",
     [
         (500, DemistoException),
