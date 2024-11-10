@@ -68,14 +68,13 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 INCOMING_MIRRORED_FIELDS = ['ID', 'Etag', 'Title', 'Description', 'Severity', 'Status', 'owner', 'tags', 'FirstActivityTimeUTC',
                                   'LastActivityTimeUTC', 'LastModifiedTimeUTC', 'CreatedTimeUTC', 'IncidentNumber', 'AlertsCount',
                                   'AlertProductNames', 'Tactics', 'relatedAnalyticRuleIds', 'IncidentUrl', 'classification',
-                                  'classificationComment', 'alerts', 'entities', 'comments', 'relations']
+                                  'classificationReason', 'classificationComment', 'alerts', 'entities', 'comments', 'relations']
 OUTGOING_MIRRORED_FIELDS = {'etag', 'title', 'description', 'severity', 'status', 'tags', 'firstActivityTimeUtc',
                             'lastActivityTimeUtc', 'classification', 'classificationComment', 'classificationReason'}
 OUTGOING_MIRRORED_FIELDS = {filed: pascalToSpace(filed) for filed in OUTGOING_MIRRORED_FIELDS}
 
 LEVEL_TO_SEVERITY = {0: 'Informational', 0.5: 'Informational', 1: 'Low', 2: 'Medium', 3: 'High', 4: 'High'}
-CLASSIFICATION_REASON = {'FalsePositive': 'InaccurateData', 'TruePositive': 'SuspiciousActivity',
-                         'BenignPositive': 'SuspiciousButExpected'}
+CLASSIFICATION_REASON = {'TruePositive': 'SuspiciousActivity', 'BenignPositive': 'SuspiciousButExpected'}
 
 
 class AzureSentinelClient:
@@ -669,6 +668,25 @@ def close_incident_in_remote(delta: Dict[str, Any], data: Dict[str, Any]) -> boo
     closing_reason = delta.get(closing_field, data.get(closing_field, ''))
     return demisto.params().get('close_ticket') and bool(closing_reason)
 
+def extract_classification_reason(delta: Dict, data: Dict) -> str:
+    """
+    Returns the classification reason based on `delta` and `data`.
+
+    If `delta['classification']` is 'FalsePositive', returns `delta['classificationReason']` 
+    or defaults to `'InaccurateData'`. Otherwise, retrieves the reason from `CLASSIFICATION_REASON` 
+    using `classification` from `delta` or `data`, if available.
+
+    Args:
+        delta (dict): Contains potential 'classification' and 'classificationReason' keys.
+        data (dict): Default classification information, with 'classification' and 'classificationReason'.
+
+    Returns:
+        str: The resolved classification reason.
+    """
+    if delta.get('classification') == 'FalsePositive':
+        return delta.get('classificationReason', data.get('classificationReason','InaccurateData'))
+    return CLASSIFICATION_REASON.get(delta.get('classification', data.get('classification', ''))) # type: ignore
+
 
 def update_incident_request(client: AzureSentinelClient, incident_id: str, data: Dict[str, Any], delta: Dict[str, Any],
                             close_ticket: bool = False) -> Dict[str, Any]:
@@ -710,7 +728,7 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
             'status': 'Closed',
             'classification': delta.get('classification') or data.get('classification'),
             'classificationComment': delta.get('classificationComment') or data.get('classificationComment'),
-            'classificationReason': CLASSIFICATION_REASON.get(delta.get('classification', data.get('classification', '')))
+            'classificationReason': extract_classification_reason(delta, data)
         }
     remove_nulls_from_dictionary(properties)
     data = {
