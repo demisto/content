@@ -274,12 +274,12 @@ def test_test_module(mocker: MockerFixture):
     When:
         - The function `test_module` is called
     Then:
-        - Ensure that the function returns 'ok' when the API call is successful
+        - Ensure there is no API call in the test_module function
+          (see the docstring in the `test_module` function).
     """
-    mocker.patch.object(Client, "_update_access_token")
-    client = mock_client()
-    mocker.patch.object(Client, "get_events")
-    assert _test_module(client) == "ok"
+    mock__http_request = mocker.patch.object(Client, "_http_request")
+    assert _test_module() == "ok"
+    mock__http_request.assert_not_called()
 
 
 @pytest.mark.parametrize(

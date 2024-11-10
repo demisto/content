@@ -412,16 +412,12 @@ def perform_long_running_loop(client: Client):
         sleep_if_necessary(client, start_timestamp, end_timestamp)
 
 
-def test_module(client: Client) -> str:
-    try:
-        client.get_events(payload={})
-    except DemistoException as e:
-        if e.res is not None and e.res.status_code == 403:
-            raise DemistoException(
-                "Authorization Error: make sure the Token is correctly set"
-            ) from e
-        raise DemistoException("Failure in test_module function") from e
-
+def test_module() -> str:
+    """
+    The test is performed by obtaining the `access_token` when defining the `Client`,
+    avoiding the use of `test_module` with get_events due to the one-minute timeout
+    set for the `test_module` command by the our server.
+    """
     return "ok"
 
 
@@ -449,7 +445,7 @@ def main() -> None:  # pragma: no cover
         )
 
         if command == "test-module":
-            return_results(test_module(client))
+            return_results(test_module())
         if command == "long-running-execution":
             demisto.info("Starting long running execution")
             perform_long_running_loop(client)
