@@ -2,7 +2,7 @@
     "name": "Forcepoint Security Management Center",
     "description": "Forcepoint SMC provides unified, centralized management of all models of Forcepoint engines whether physical, virtual or cloud—across large, geographically distributed enterprise environments.",
     "support": "xsoar",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.forcepoint.com",
     "email": "",
