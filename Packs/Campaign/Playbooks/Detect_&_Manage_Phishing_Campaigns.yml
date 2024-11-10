@@ -1588,7 +1588,7 @@ inputs:
     "Do Not Change" -  New phishing incidents will not be add ed to a closed campaign.  
   playbookInputQuery:
 outputs: []
-tests:
+tests: 
 - Detect & Manage Phishing Campaigns - Test
 - Detect_&_Manage_Phishing_Campaigns_flow_test
 fromversion: 6.0.0
