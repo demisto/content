@@ -86,14 +86,14 @@ class DomainNameObject:
         if dtype != 'FQDN':
             return []
 
-        domain = props.find('Value')
-        if domain is None or domain.string is None:
+        raw_domain = props.find('Value')
+        if raw_domain is None or raw_domain.string is None:
             return []
-
+        domains_list = raw_domain.split('##comma##')
         return [{
             'indicator': domain.string.encode('ascii', 'replace').decode(),
             'type': 'Domain'
-        }]
+        } for domain in domains_list]
 
 
 class FileObject:
@@ -174,14 +174,14 @@ class URIObject:
         else:
             return []
 
-        url = props.find('Value')
-        if url is None or url.string is None:
+        raw_url = props.find('Value')
+        if raw_url is None or raw_url.string is None:
             return []
-
+        urls_list = raw_url.split('##comma##')
         return [{
             'indicator': url.string.encode('utf8', 'replace').decode(),
             'type': type_
-        }]
+        } for url in urls_list]
 
 
 class SocketAddressObject:
@@ -219,10 +219,11 @@ class LinkObject:
             if value is None:
                 LOG('no value in observable LinkObject')
                 return []
+        links_list = value.split('##comma##')
         return [{
-            'indicator': value,
+            'indicator': link,
             'type': ltype
-        }]
+        } for link in links_list]
 
 
 class HTTPSessionObject:
@@ -244,11 +245,12 @@ class HTTPSessionObject:
                     if http_request_header is not None:
                         raw_header = http_request_header.get('raw_header', None)
                         if raw_header is not None:
+                            headers_list = raw_header.split('##comma##')
                             return [{
-                                'indicator': raw_header.split('\n')[0],
+                                'indicator': header.split('\n')[0],
                                 'type': 'http-session',  # we don't support this type natively in demisto
-                                'header': raw_header
-                            }]
+                                'header': header
+                            } for header in headers_list]
             else:
                 LOG('multiple HTTPSessionObjectTypes not supported')
         return []
