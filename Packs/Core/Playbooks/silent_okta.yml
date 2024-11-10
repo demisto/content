@@ -64,7 +64,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -220,4 +220,6 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
+marketplaces:
+- marketplacev2
 description: silent playbook with okta commands.

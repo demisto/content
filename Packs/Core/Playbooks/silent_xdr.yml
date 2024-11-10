@@ -222,4 +222,6 @@ outputs: []
 tests:
 - T1036 - Masquerading - Test
 fromversion: 6.10.0
+marketplaces:
+- marketplacev2
 description: silent playbook with xdr commands.
