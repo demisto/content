@@ -668,7 +668,7 @@ def close_incident_in_remote(delta: Dict[str, Any], data: Dict[str, Any]) -> boo
     closing_reason = delta.get(closing_field, data.get(closing_field, ''))
     return demisto.params().get('close_ticket') and bool(closing_reason)
 
-def extract_classification_reason(delta: Dict, data: Dict) -> str:
+def extract_classification_reason(delta: Dict, data: Dict) -> Any:
     """
     Returns the classification reason based on `delta` and `data`.
 
@@ -684,7 +684,7 @@ def extract_classification_reason(delta: Dict, data: Dict) -> str:
         return delta.get(
             "classificationReason", data.get("classificationReason", "InaccurateData")
         )
-    return CLASSIFICATION_REASON.get(classification, "Unknown")
+    return CLASSIFICATION_REASON.get(classification, "")
 
 
 def update_incident_request(client: AzureSentinelClient, incident_id: str, data: Dict[str, Any], delta: Dict[str, Any],

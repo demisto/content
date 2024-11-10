@@ -2113,19 +2113,26 @@ def test_update_incident_with_client_changed_etag(mocker):
 
     assert http_request_mock.call_count == 2
     assert http_request_mock.call_args[1].get('data', {}).get('etag') == newer_incident_from_azure.get('etag')
-    
-    
-    
+
+
 @pytest.mark.parametrize(
     "delta, data, expected",
     [
-        ({"classification": "FalsePositive", "classificationReason": "UserReported"}, {}, "UserReported"),
-        ({"classification": "FalsePositive"}, {"classificationReason": "SystemError"}, "SystemError"),
+        (
+            {"classification": "FalsePositive", "classificationReason": "UserReported"},
+            {},
+            "UserReported",
+        ),
+        (
+            {"classification": "FalsePositive"},
+            {"classificationReason": "SystemError"},
+            "SystemError",
+        ),
         ({"classification": "FalsePositive"}, {}, "InaccurateData"),
         ({"classification": "TruePositive"}, {}, "SuspiciousActivity"),
         ({}, {"classification": "BenignPositive"}, "SuspiciousButExpected"),
-        ({},{},"Unknown")
-    ]
+        ({}, {}, ""),
+    ],
 )
 def test_extract_classification_reason(delta, data, expected):
     result = extract_classification_reason(delta, data)
