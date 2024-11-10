@@ -53,7 +53,7 @@ The documentation also includes examples of correlation rules for Veeam security
 
 # Screenshots
 
-![The Security Dachboard](https://raw.githubusercontent.com/demisto/content/master/Packs/Veeam/XSIAMDashboards/Veeam_Security_Activities_Dashboard_image.png)
+![The Security Dashboard](https://raw.githubusercontent.com/demisto/content/master/Packs/Veeam/XSIAMDashboards/Veeam_Security_Activities_Dashboard_image.png)
 
-![The Moitoring Dachboard](https://raw.githubusercontent.com/demisto/content/master/Packs/Veeam/XSIAMDashboards/Veeam_Data_Platform_Monitoring_Dashboard_image.png)
+![The Moitoring Dashboard](https://raw.githubusercontent.com/demisto/content/master/Packs/Veeam/XSIAMDashboards/Veeam_Data_Platform_Monitoring_Dashboard_image.png)
 </~XSIAM>
