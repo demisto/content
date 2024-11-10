@@ -386,9 +386,11 @@ ALERT_RELATED_USER_API_RESPONSE = {
 FILE_STATISTICS_API_RESPONSE = {
     '@odata.context': 'https://api.security.microsoft.com/api/$metadata#microsoft.windowsDefenderATP.api.InOrgFileStats',
     'sha1': '0991a395da64e1c5fbe8732ed11e6be064081d9f',
+    'orgPrevalence': '14850',
     'organizationPrevalence': 14850,
     'orgFirstSeen': '2019-12-07T13:44:16Z',
     'orgLastSeen': '2020-01-06T13:39:36Z',
+    'globalPrevalence': '705012',
     'globallyPrevalence': 705012,
     'globalFirstObserved': '2015-03-19T12:20:07.3432441Z',
     'globalLastObserved': '2020-01-06T13:39:36Z',
@@ -2954,8 +2956,10 @@ def test_get_file_statistics_command(mocker):
     # Set
     mocker.patch.object(client_mocker, 'get_file_statistics', return_value=FILE_STATISTICS_API_RESPONSE)
     context_to_response_key_mapping: dict = {
-        'GlobalPrevalence': 'globallyPrevalence',
-        'OrgPrevalence': 'organizationPrevalence',
+        'GlobalPrevalence': 'globalPrevalence',
+        'OrgPrevalence': 'orgPrevalence',
+        'GloballyPrevalence': 'globallyPrevalence',
+        'OrganizationPrevalence': 'organizationPrevalence',
         'OrgFirstSeen': 'orgFirstSeen',
         'OrgLastSeen': 'orgLastSeen',
         'GlobalFirstObserved': 'globalFirstObserved',

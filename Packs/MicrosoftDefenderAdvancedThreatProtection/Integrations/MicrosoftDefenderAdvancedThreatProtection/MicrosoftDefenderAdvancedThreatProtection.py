@@ -3422,10 +3422,12 @@ def get_file_statistics_context(file_stat_response: dict) -> dict:
         (dict). File statistics context
     """
     return assign_params(
-        OrgPrevalence=file_stat_response.get('organizationPrevalence'),
+        OrgPrevalence=file_stat_response.get('orgPrevalence'),
+        OrganizationPrevalence=file_stat_response.get('organizationPrevalence'),
         OrgFirstSeen=file_stat_response.get('orgFirstSeen'),
         OrgLastSeen=file_stat_response.get('orgLastSeen'),
-        GlobalPrevalence=file_stat_response.get('globallyPrevalence'),
+        GlobalPrevalence=file_stat_response.get('globalPrevalence'),
+        GloballyPrevalence=file_stat_response.get('globallyPrevalence'),
         GlobalFirstObserved=file_stat_response.get('globalFirstObserved'),
         GlobalLastObserved=file_stat_response.get('globalLastObserved'),
         TopFileNames=file_stat_response.get('topFileNames'),

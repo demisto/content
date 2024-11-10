@@ -2515,10 +2515,12 @@ File.Read.All
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.FileStatistics.Sha1 | String | The file SHA1 hash. | 
-| MicrosoftATP.FileStatistics.Statistics.OrgPrevalence | Number | The prevalence of the file in the organization. | 
+| MicrosoftATP.FileStatistics.Statistics.OrgPrevalence | String | The prevalence of the file in the organization. | 
+| MicrosoftATP.FileStatistics.Statistics.OrganizationPrevalence | Number | The prevalence of the file in the organization. | 
 | MicrosoftATP.FileStatistics.Statistics.OrgFirstSeen | Date | The first date and time the file was seen in the organization. | 
 | MicrosoftATP.FileStatistics.Statistics.OrgLastSeen | Date | The last date and time the file was seen in the organization. | 
-| MicrosoftATP.FileStatistics.Statistics.GlobalPrevalence | Number | The global prevalence of the file. | 
+| MicrosoftATP.FileStatistics.Statistics.GlobalPrevalence | String | The global prevalence of the file. | 
+| MicrosoftATP.FileStatistics.Statistics.GloballyPrevalence | Number | The global prevalence of the file. | 
 | MicrosoftATP.FileStatistics.Statistics.GlobalFirstObserved | Date | The first global observation date and time of the file. | 
 | MicrosoftATP.FileStatistics.Statistics.GlobalLastObserved | Date | The last global observation date and time of the file. | 
 | MicrosoftATP.FileStatistics.Statistics.TopFileNames | String | The top names of the file. | 
@@ -2552,8 +2554,10 @@ File.Read.All
                     "lsass.exe"
                 ], 
                 "GlobalFirstObserved": "2019-04-03T04:10:18.1001071Z", 
-                "GlobalPrevalence": 1355899, 
-                "OrgPrevalence": 0, 
+                "GlobalPrevalence": "1355899",
+                "GloballyPrevalence": 1355899,
+                "OrgPrevalence": "0",
+                "OrganizationPrevalence": 0,
                 "GlobalLastObserved": "2020-03-23T09:24:54.169574Z"
             }
         }
