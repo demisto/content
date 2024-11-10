@@ -1,9 +1,4 @@
-
-#### Playbooks
-
-##### New: Suspicious Hidden User Created
-
-New: This playbook addresses the following alerts:
+This playbook addresses the following alerts:
 
 - Suspicious Hidden User Created
 
@@ -32,11 +27,49 @@ Requirements:
 For response actions, you need the following integrations:
 
 - Cortex Core - Investigation and Response
-- Active Directory Query v2 (for domain user actions)
+- Active Directory Query v2 (for domain user actions).
 
+## Dependencies
 
-#### Triggers Recommendations
+This playbook uses the following sub-playbooks, integrations, and scripts.
 
-##### New: Alert Trigger - Suspicious Hidden User Created
+### Sub-playbooks
 
-New: This trigger is responsible for handling alerts where a suspicious hidden user is created.
+This playbook does not use any sub-playbooks.
+
+### Integrations
+
+* CortexCoreIR
+
+### Scripts
+
+* IsIntegrationAvailable
+* SearchAlertsV2
+* SetAndHandleEmpty
+
+### Commands
+
+* ad-disable-account
+* ad-get-user
+* closeInvestigation
+* core-get-cloud-original-alerts
+* core-get-script-execution-results
+* core-list-risky-hosts
+* core-run-script-execute-commands
+* core-terminate-causality
+
+## Playbook Inputs
+
+---
+There are no inputs for this playbook.
+
+## Playbook Outputs
+
+---
+There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![Suspicious Hidden User Created](../doc_files/Suspicious_Hidden_User_Created.png)
