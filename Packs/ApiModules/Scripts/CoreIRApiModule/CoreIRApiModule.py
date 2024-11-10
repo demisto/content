@@ -244,7 +244,7 @@ class CoreClient(BaseClient):
         try:
             decoder = base64.b64decode if response_data_type == "bin" else json.loads
             demisto.debug(f'{response_data_type=}, {decoder.__name__=}')
-            return decoder(response['data'])   # type: ignore[operator]
+            return decoder(response['data'])  # type: ignore[operator]
         except json.JSONDecodeError:
             demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}")
             return response['data']
@@ -3724,6 +3724,13 @@ def filter_vendor_fields(alert: dict):
 
 def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResults:
     alert_id_list = argToList(args.get('alert_ids', []))
+    for alert_id in alert_id_list:
+        if alert_id and re.match(r'^[a-fA-F0-9-]{32,36}\$&\$.+$', alert_id):
+            raise DemistoException(f"Error: Alert ID {alert_id} is invalid. This issue arises because the playbook is running in"
+                                   f" debug mode, which replaces the original alert ID with a debug alert ID, causing the task to"
+                                   f" fail. To run this playbook in debug mode, please update the 'alert_ids' value to the real "
+                                   f"alert ID in the relevant task. Alternatively, run the playbook on the actual alert "
+                                   f"(not in debug mode) to ensure task success.")
     events_from_decider_as_list = bool(args.get('events_from_decider_format', '') == 'list')
     raw_response = client.get_original_alerts(alert_id_list)
     reply = copy.deepcopy(raw_response)
