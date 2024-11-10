@@ -475,7 +475,7 @@ script:
   - name: splunk-reset-enriching-fetch-mechanism
     arguments: []
     description: Resets the enrichment mechanism of fetched notables.
-  dockerimage: demisto/splunksdk:1.0.0.49073
+  dockerimage: demisto/splunksdk-py3:1.0.0.44906
   isfetch: true
   ismappable: true
   isremotesyncin: true
