@@ -178,6 +178,10 @@ def query_command(query_to_run=None):
             title = 'BigQuery Query Results'
             human_readable = tableToMarkdown(title, rows_contexts, removeNull=True)
 
+    demisto.debug(f'size of human readable: {sys.getsizeof(human_readable)}')
+    demisto.debug(f'size of context: {sys.getsizeof(context)}')
+    demisto.debug(f'size of rows_contexts: {sys.getsizeof(rows_contexts)}')
+
     return_outputs(
         readable_output=human_readable,
         outputs=context,
