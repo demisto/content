@@ -115,3 +115,4 @@ script:
 fromversion: 6.9.0
 tests:
 - PaloAltoNetworksAIOps-Test
+
