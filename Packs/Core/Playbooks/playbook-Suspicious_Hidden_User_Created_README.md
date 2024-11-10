@@ -17,6 +17,7 @@ Investigation:
 - Search for related Script Engine Activity alerts in the incident.
 
 Containment:
+
 - For alerts determined to be true positives, suggest to the analyst to disable the user.
 - Upon analyst approval: Disable the suspicious user account (domain or local).
 - If a related alert about malicious activity exists, kill the Causality Group Owner (CGO) process that created the suspicious user.
