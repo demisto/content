@@ -672,10 +672,6 @@ def extract_classification_reason(delta: Dict, data: Dict) -> str:
     """
     Returns the classification reason based on `delta` and `data`.
 
-    If `delta['classification']` is 'FalsePositive', returns `delta['classificationReason']` 
-    or defaults to `'InaccurateData'`. Otherwise, retrieves the reason from `CLASSIFICATION_REASON` 
-    using `classification` from `delta` or `data`, if available.
-
     Args:
         delta (dict): Contains potential 'classification' and 'classificationReason' keys.
         data (dict): Default classification information, with 'classification' and 'classificationReason'.
@@ -683,9 +679,12 @@ def extract_classification_reason(delta: Dict, data: Dict) -> str:
     Returns:
         str: The resolved classification reason.
     """
-    if delta.get('classification') == 'FalsePositive':
-        return delta.get('classificationReason', data.get('classificationReason','InaccurateData'))
-    return CLASSIFICATION_REASON.get(delta.get('classification', data.get('classification', ''))) # type: ignore
+    classification = delta.get("classification", data.get("classification", ""))
+    if classification == "FalsePositive":
+        return delta.get(
+            "classificationReason", data.get("classificationReason", "InaccurateData")
+        )
+    return CLASSIFICATION_REASON.get(classification, "Unknown")
 
 
 def update_incident_request(client: AzureSentinelClient, incident_id: str, data: Dict[str, Any], delta: Dict[str, Any],

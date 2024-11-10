@@ -2124,6 +2124,7 @@ def test_update_incident_with_client_changed_etag(mocker):
         ({"classification": "FalsePositive"}, {}, "InaccurateData"),
         ({"classification": "TruePositive"}, {}, "SuspiciousActivity"),
         ({}, {"classification": "BenignPositive"}, "SuspiciousButExpected"),
+        ({},{},"Unknown")
     ]
 )
 def test_extract_classification_reason(delta, data, expected):
