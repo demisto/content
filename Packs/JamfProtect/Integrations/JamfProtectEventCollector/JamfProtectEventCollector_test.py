@@ -183,3 +183,46 @@ def test_next_trigger(mocker):
     mocker.patch('JamfProtectEventCollector.get_events_alert_type', return_value=([], {}))
     mocker.patch('JamfProtectEventCollector.get_events_audit_type', return_value=([], {}))
     fetch_events(client, 1, 1, 1)
+
+
+def test_next_trigger_with_no_alerts_and_next_page(mocker):
+    mock_last_run = {
+        "alert": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z",
+            "next_page": "value1"
+        },
+        "audit": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z"
+        },
+        "computer": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z"
+        }
+    }
+    mock_events_result = ([], {"next_page": "next_page value", "last_fetch": "2024-01-01T00:00:00.000000Z"})
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
+    mocker.patch('JamfProtectEventCollector.get_events_alert_type', return_value=mock_events_result)
+    from JamfProtectEventCollector import Client, fetch_events
+    client = Client(
+        base_url=MOCK_BASEURL, verify=False, proxy=False, client_id=MOCK_CLIENT_ID, client_password=MOCK_CLIENT_PASSWORD
+    )
+
+    alert_events, audit_events, computer_events, new_last_run = fetch_events(
+        client, 1, 1, 1
+    )
+
+    assert alert_events == []
+    assert audit_events == []
+    assert computer_events == []
+    assert new_last_run == {'alert': {}, 'audit': {}, 'computer': {}}
+
+
+def test_next_trigger_with_alerts_and_next_page_no_audits_and_next_page(mocker):
+    ...
+
+
+def test_next_trigger_with_alerts_and_next_page(mocker):
+    ...
+
+
+def test_next_trigger_with_alerts_and_next_page_and_audits_and_next_page(mocker):
+    ...
