@@ -78,6 +78,8 @@ script:
       name: page
     - description: The number of requested results per page. Default is 50.
       name: page_size
+    - description: A comma-separated list of category ids to filter on.
+      name: categories
     description: List of destinations ordered by the number of requests made in descending order.
     name: umbrella-reporting-destination-list
     outputs:
@@ -175,6 +177,8 @@ script:
       - proxied
     - description: The page number (page size is 50 entries at max). Default is 1.
       name: page
+    - description: A comma-separated list of category ids to filter on.
+      name: categories
     description: List of categories ordered by the number of requests made matching the categories in descending order.
     name: umbrella-reporting-category-list
     outputs:
@@ -252,6 +256,8 @@ script:
       name: page
     - description: The number of requested results per page. Default is 50.
       name: page_size
+    - description: A comma-separated list of category ids to filter on.
+      name: categories
     description: List of identities ordered by the number of requests made matching the categories in descending order.
     name: umbrella-reporting-identity-list
     outputs:
@@ -326,6 +332,8 @@ script:
       name: page
     - description: The number of requested results per page. Default is 50.
       name: page_size
+    - description: A comma-separated list of category ids to filter on.
+      name: categories
     description: 'List of event types ordered by the number of requests made for each type of event in descending order. The event types are: domain_security, domain_integration, url_security, url_integration, cisco_amp and antivirus.'
     name: umbrella-reporting-event-type-list
     outputs:
@@ -370,6 +378,8 @@ script:
       name: page
     - description: The number of requested results per page. Default is 50.
       name: page_size
+    - description: A comma-separated list of category ids to filter on.
+      name: categories
     description: List of files within a time frame. Only returns proxy data.
     name: umbrella-reporting-file-list
     outputs:
@@ -438,6 +448,8 @@ script:
       name: page
     - description: The number of requested results per page. Default is 50.
       name: page_size
+    - description: A comma-separated list of category ids to filter on.
+      name: categories
     description: List of top threats within a time frame. Returns both DNS and Proxy data.
     name: umbrella-reporting-threat-list
     outputs:
@@ -491,7 +503,7 @@ script:
       name: page
     - description: The number of requested results per page. Default is 50.
       name: page_size
-    - description: 'A comma-separated list of category ids to filter on.'
+    - description: A comma-separated list of category ids to filter on.
       name: categories
     description: List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time frame.
     name: umbrella-reporting-activity-list
@@ -690,7 +702,7 @@ script:
       name: signatures
     - description: 'Comma-separated list of intrusion actions. Possible values: would_block, blocked, detected.'
       name: intrusion_action
-    - description: 'A comma-separated list of category ids to filter on.'
+    - description: A comma-separated list of category ids to filter on.
       name: categories
     description: |-
       List all entries within a time frame based on the traffic type selected. Valid activity types are dns, proxy, firewall, intrusion, ip, amp.
@@ -1364,6 +1376,8 @@ script:
       name: signatures
     - description: 'Comma-separated List of intrusion actions. Possible values: would_block, blocked, detected.'
       name: intrusion_action
+    - description: A comma-separated list of category ids to filter on.
+      name: categories
     description: Get the summary.
     name: umbrella-reporting-summary-list
     outputs:
@@ -1532,7 +1546,7 @@ script:
     - contextPath: UmbrellaReporting.SignatureListSummary.signatures.id
       description: Signature ID.
       type: Number
-  dockerimage: demisto/python3:3.11.10.111039
+  dockerimage: demisto/python3:3.11.10.113941
   runonce: false
   script: '-'
   subtype: python3

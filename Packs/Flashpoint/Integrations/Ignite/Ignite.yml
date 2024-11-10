@@ -1365,7 +1365,7 @@ script:
     description: Looks up the "File" type indicator details. The reputation of File hash is considered malicious if there's at least one IoC event in the Ignite database matching the File hash indicator.
   script: ''
   type: python
-  dockerimage: demisto/python3:3.11.9.104957
+  dockerimage: demisto/python3:3.11.10.111526
   isfetch: true
   runonce: false
   subtype: python3
