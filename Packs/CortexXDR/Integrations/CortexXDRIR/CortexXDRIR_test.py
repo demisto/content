@@ -765,6 +765,80 @@ def test_update_remote_system_command_should_not_close_xdr_incident(mocker):
     assert 'status' not in update_args or update_args['status'] != XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
 
 
+def test_update_remote_system_command_incident_changed_but_no_delta(mocker):
+    """
+    Given:
+        - an XDR client
+        - arguments indicating the incident was changed in XSOAR but no delta found
+    When:
+        - running update_remote_system_command
+    Then:
+        - no update will happen when incident was changed in XSOAR but no delta found
+    """
+    from CortexXDRIR import update_remote_system_command, Client
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False,
+        params={'close_xdr_incident': False}
+    )
+
+    expected_remote_id = 'remote_id'
+    args = {
+        'remoteId': expected_remote_id,
+        'data': {},
+        'entries': [],
+        'incidentChanged': True,
+        'delta': {},
+        'status': 2,
+    }
+
+    mock_get_update_args = mocker.patch('CoreIRApiModule.get_update_args')
+    incident_id = update_remote_system_command(client, args)
+    assert mock_get_update_args.call_count == 0
+    assert incident_id == expected_remote_id
+
+
+def test_update_remote_system_command_closing_alerts_and_including_resolve_comment(mocker):
+    """
+    Given:
+        - An XDR client configured with parameters for closing alerts in XDR.
+        - Expected remote incident ID and arguments representing a resolved XSOAR incident with a delta
+         containing close reason and resolve comment.
+
+    When:
+        - Calling update_remote_system_command with the provided client and arguments.
+
+    Then:
+        - The get_update_args function should be called once to prepare the update arguments.
+        - The update_related_alerts function should be called once to handle the closure of related alerts.
+        - The returned incident ID should match the expected remote incident ID.
+    """
+    from CortexXDRIR import update_remote_system_command, Client
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False,
+        params={'close_alerts_in_xdr': True}
+    )
+
+    expected_remote_id = 'remote_id'
+    args = {
+        'remoteId': expected_remote_id,
+        'data': {'CortexXDRIRstatus': 'resolved', 'close_reason': 'Resolved', 'status': 'test'},
+        'entries': [],
+        'incidentChanged': True,
+        'delta': {'close_reason': 'resolved', 'resolve_comment': '', 'closeNotes': 'resolved-true-positive'},
+        'status': 2,
+    }
+
+    mock_update_incident_command = mocker.patch("CortexXDRIR.update_incident_command")
+    mock_get_update_args = mocker.patch('CortexXDRIR.get_update_args')
+    mock_update_related_alerts = mocker.patch('CortexXDRIR.update_related_alerts')
+    incident_id = update_remote_system_command(client, args)
+    assert mock_get_update_args.call_count == 1
+    assert mock_update_related_alerts.call_count == 1
+    assert incident_id == expected_remote_id
+
+
 @freeze_time("1997-10-05 15:00:00 GMT")
 def test_fetch_incidents_extra_data(requests_mock, mocker):
     """

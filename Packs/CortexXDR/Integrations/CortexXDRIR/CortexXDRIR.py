@@ -1019,7 +1019,7 @@ def update_remote_system_command(client, args):
                 demisto.debug(
                     f'For incident ID: {parsed_args.remote_incident_id} got the following delta keys {str(list(parsed_args.delta.keys()))} to update.')
                 xsoar_to_xdr_delta = get_update_args(parsed_args)
-                demisto.debug(f"get_update_args after {xsoar_to_xdr_delta=}")
+                demisto.debug(f"update_remote_system_command: After calling get_update_args, {xsoar_to_xdr_delta=}")
                 xsoar_to_xdr_delta['incident_id'] = parsed_args.remote_incident_id
 
                 should_close_xdr_incident = argToBoolean(client._params.get("close_xdr_incident", True))
@@ -1029,7 +1029,7 @@ def update_remote_system_command(client, args):
                     xsoar_to_xdr_delta['status'] = parsed_args.data.get('status')
 
                 update_incident_command(client, xsoar_to_xdr_delta)  # updating xdr with the delta
-                demisto.debug(f"update_remote_system_command: xdr updated. {xsoar_to_xdr_delta=}")  # TODO: remove {}
+                demisto.debug(f"update_remote_system_command: xdr updated. {xsoar_to_xdr_delta=}")  # TODO: remove
 
                 should_close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
                 demisto.debug(f"update_remote_system_command {should_close_alerts_in_xdr=}")  # TODO: remove
