@@ -1,8 +1,8 @@
 {
     "name": "HashiCorp Vault",
-    "description": "Manage Secrets and Protect Sensitive Data through HashiCorp Vault",
+    "description": "Manage Secrets and Protect Sensitive Data through HashiCorp Vault. Ingest and normalize Vault Audit logs.",
     "support": "xsoar",
-    "currentVersion": "1.1.23",
+    "currentVersion": "1.1.24",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,7 +12,11 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "HashiCorp",
+        "Vault",
+        "HashiCorp Vault"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

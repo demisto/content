@@ -5,7 +5,7 @@
         "rshunim"
     ],
     "CONTRIBUTION_TL": "thefrieddan1",
-    "CONTRIBUTION_SECURITY_REVIEWER": ["efelmandar", "melamedbn"],
+    "CONTRIBUTION_SECURITY_REVIEWER": ["tomer-pan"],
     "ON_CALL_DEVS": [
         "skidorball",
         "ayousef"
