@@ -421,7 +421,19 @@ def create_last_run_dict_for_events(output: list, new_min_time: str):
             }
 
 
-def first_time_fetching_events(client: Client, fetch_limit):
+def first_time_fetching_events(client: Client, fetch_limit: int):
+    """
+    Fetches and enriches the first batch of events, returning them with the minimum creation time.
+
+    Args:
+        client (Client): The client instance used to retrieve events.
+        fetch_limit (int): The maximum number of events to retrieve.
+
+    Returns:
+        tuple: A tuple containing:
+            - results (list): A list of event dictionaries.
+            - new_min_time (str): The creation time of the latest fetched event.
+    """
     results = client.get_events_first_five_pages(fetch_limit)
     for event in results:
         enrich_event(event, event_type='events')
