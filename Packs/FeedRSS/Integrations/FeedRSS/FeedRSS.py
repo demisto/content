@@ -18,7 +18,13 @@ class Client(BaseClient):
 
     def __init__(self, server_url, use_ssl, proxy, reliability, feed_tags, tlp_color, content_max_size=45,
                  read_timeout=20, enrichment_excluded=False):
-        super().__init__(base_url=server_url, proxy=proxy, verify=use_ssl)
+        
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
+                    
+                    }
+        
+        super().__init__(base_url=server_url, proxy=proxy, verify=use_ssl, headers=headers)
         self.feed_tags = feed_tags
         self.tlp_color = tlp_color
         self.content_max_size = content_max_size * 1000
@@ -27,6 +33,7 @@ class Client(BaseClient):
         self.reliability = reliability
         self.read_timeout = read_timeout
         self.enrichment_excluded = enrichment_excluded
+        self.channel_link = None
 
     def request_feed_url(self):
         return self._http_request(method='GET', resp_type='response', timeout=self.read_timeout,
@@ -40,11 +47,23 @@ class Client(BaseClient):
             raise DemistoException(f"Failed to parse feed.\nError:\n{str(err)}")
 
     def create_indicators_from_response(self):
+        if hasattr(self.feed_data, 'channel') and hasattr(self.feed_data.channel, 'link'):
+            self.channel_link = self.feed_data.channel.link
+            if not self.channel_link.startswith(('http://', 'https://')):
+                self.channel_link = 'https://' + self.channel_link
+
+
         parsed_indicators: list = []
         if not self.feed_data:
             raise DemistoException(f"Could not parse feed data {self._base_url}")
 
         for indicator in reversed(self.feed_data.entries):
+            
+            link = indicator.get('link')
+            if link and not link.startswith(('http://', 'https://')):
+                link = urljoin(self.channel_link, link)
+            
+            
             publications = []
             if indicator:
                 published = dateparser.parse(indicator.published)
@@ -53,11 +72,11 @@ class Client(BaseClient):
                 published_iso = published.strftime('%Y-%m-%dT%H:%M:%S')
                 publications.append({
                     'timestamp': published_iso,
-                    'link': indicator.get('link'),
+                    'link': link,
                     'source': self._base_url,
                     'title': indicator.get('title')
                 })
-                text = self.get_url_content(indicator.get('link'))
+                text = self.get_url_content(link)
                 if not text:
                     continue
                 indicator_obj = {
