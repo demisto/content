@@ -6221,6 +6221,95 @@ class Common(object):
 
             return ret_value
 
+    class Tactic(Indicator):
+        """
+        Tactic indicator
+
+        :type stix_id: ``str``
+        :param stix_id: The Tactic STIX ID
+
+        :type first_seen_by_source: ``str``
+        :param first_seen_by_source: The Tactic first seen by source
+
+        :type description: ``str``
+        :param description: The Tactic description
+
+        :type publications: ``str``
+        :param publications: The Tactic publications
+
+        :type mitre_id: ``str``
+        :param mitre_id: The Tactic mitre id.
+
+        :type tags: ``str``
+        :param tags: The Tactic tags.
+
+        :type dbot_score: ``DBotScore``
+        :param dbot_score:  If the address has reputation then create DBotScore object.
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol: The Traffic Light Protocol (TLP) color that is suitable for the Tactic.
+
+        :type community_notes: ``CommunityNotes``
+        :param community_notes:  A list of community notes for the Tactic.
+
+        :type external_references: ``ExternalReference``
+        :param external_references:  A list of id's and description of the Tactic via external refs.
+
+        :type value: ``str``
+        :param value: The Tactic value (name) - example: "Plist File Modification"
+
+        :return: None
+        :rtype: ``None``
+        """
+        CONTEXT_PATH = 'Tactic(val.Name && val.Name == obj.Name)'
+
+        def __init__(self, stix_id, first_seen_by_source=None, description=None, publications=None, mitre_id=None, tags=None,
+                     traffic_light_protocol=None, dbot_score=None, community_notes=None, external_references=None, value=None):
+
+            self.community_notes = community_notes
+            self.description = description
+            self.external_references = external_references
+            self.first_seen_by_source = first_seen_by_source
+            self.mitre_id = mitre_id
+            self.publications = publications
+            self.stix_id = stix_id
+            self.tags = tags
+            self.traffic_light_protocol = traffic_light_protocol
+            self.value = value
+            self.dbot_score = dbot_score
+
+        def to_context(self):
+            attack_pattern_context = {
+                'STIXID': self.stix_id,
+                "FirstSeenBySource": self.first_seen_by_source,
+                "Publications": self.publications,
+                "MITREID": self.mitre_id,
+                "Value": self.value,
+                "Tags": self.tags,
+                "Description": self.description
+            }
+
+            if self.external_references:
+                attack_pattern_context['ExternalReferences'] = self.create_context_table(self.external_references)
+
+            if self.traffic_light_protocol:
+                attack_pattern_context['TrafficLightProtocol'] = self.traffic_light_protocol
+
+            if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
+                attack_pattern_context['Malicious'] = {
+                    'Vendor': self.dbot_score.integration_name,
+                    'Description': self.dbot_score.malicious_description
+                }
+
+            ret_value = {
+                Common.AttackPattern.CONTEXT_PATH: attack_pattern_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
 
 class ScheduledCommand:
     """
