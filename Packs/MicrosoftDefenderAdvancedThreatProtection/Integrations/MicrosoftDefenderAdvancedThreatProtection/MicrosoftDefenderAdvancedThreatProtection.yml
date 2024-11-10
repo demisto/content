@@ -1945,6 +1945,27 @@ script:
     - contextPath: MicrosoftATP.FileStatistics.Statistics.TopFileNames
       description: The file's top names.
       type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.OrganizationPrevalence
+      description: Indicates how frequently a specific indicator type is detected within a particular organization.
+      type: Number
+    - contextPath: File.GloballyPrevalence
+      description: Indicates how frequently a specific indicator type is detected across all organizations.
+      type: Number
+    - contextPath: File.OrganizationFirstSeen
+      description: The first time a specific organization encountered an indicator.
+      type: Date
+    - contextPath: File.OrganizationLastSeen
+      description: The most recent time a specific organization encountered an indicator.
+      type: Date
+    - contextPath: File.GlobalFirstSeen
+      description: The first time an indicator was detected globally across all organizations.
+      type: Date
+    - contextPath: File.GlobalLastSeen 
+      description: The most recent time an indicator was detected globally across all organizations.
+      type: Date
     polling: true
   - arguments:
     - description: File SHA1 hash to get statistics on.

@@ -3446,7 +3446,7 @@ def get_file_statistics_indicator(file_hash: str, file_stat_response: dict) -> C
     indicator_data: dict = assign_params(
         sha1=file_stat_response.get('sha1'),
         organization_prevalence=file_stat_response.get('organizationPrevalence'),
-        global_prevalence=file_stat_response.get('globallyPrevalence'),
+        globally_prevalence=file_stat_response.get('globallyPrevalence'),
         organization_first_seen=file_stat_response.get('orgFirstSeen'),
         organization_last_seen=file_stat_response.get('orgLastSeen'),
         global_first_seen=file_stat_response.get('globalFirstObserved'),

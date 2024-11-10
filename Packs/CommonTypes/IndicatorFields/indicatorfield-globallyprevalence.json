@@ -1,10 +1,10 @@
 {
-    "id": "indicator_globalprevalence",
+    "id": "indicator_globallyprevalence",
     "version": -1,
     "modified": "2024-10-30T12:05:32.803043623Z",
-    "name": "Global Prevalence",
+    "name": "Globally Prevalence",
     "ownerOnly": false,
-    "cliName": "globalprevalence",
+    "cliName": "globallyprevalence",
     "type": "number",
     "closeForm": false,
     "editForm": true,

@@ -2993,7 +2993,7 @@ def test_get_file_statistics_indicator():
 
     # Set
     indicator_to_response_key_mapping: dict = {
-        'GlobalPrevalence': 'globallyPrevalence',
+        'GloballyPrevalence': 'globallyPrevalence',
         'OrganizationPrevalence': 'organizationPrevalence',
         'OrganizationFirstSeen': 'orgFirstSeen',
         'OrganizationLastSeen': 'orgLastSeen',

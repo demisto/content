@@ -3209,8 +3209,8 @@ class Common(object):
         :type organization_prevalence: ``int``
         :param organization_prevalence: The frequency of detection within a particular organization.
 
-        :type global_prevalence: ``int``
-        :param global_prevalence: The frequency of detection across all organizations.
+        :type globally_prevalence: ``int``
+        :param globally_prevalence: The frequency of detection across all organizations.
 
         :type organization_first_seen: ``str``
         :param organization_first_seen: ISO 8601 date time string; the first time a specific organization encountered an indicator.
@@ -3240,7 +3240,7 @@ class Common(object):
                      organization_name=None, organization_type=None, feed_related_indicators=None, tags=None,
                      malware_family=None, relationships=None, blocked=None, description=None, stix_id=None,
                      whois_records=None, organization_prevalence=None,
-                     global_prevalence=None, organization_first_seen=None, organization_last_seen=None,
+                     globally_prevalence=None, organization_first_seen=None, organization_last_seen=None,
                      global_first_seen=None, global_last_seen=None):
 
             # Main value of the indicator
@@ -3284,7 +3284,7 @@ class Common(object):
             self.malware_family = malware_family
             self.relationships = relationships
             self.organization_prevalence = organization_prevalence
-            self.global_prevalence = global_prevalence
+            self.globally_prevalence = globally_prevalence
             self.organization_first_seen = organization_first_seen
             self.organization_last_seen = organization_last_seen
             self.global_first_seen = global_first_seen
@@ -3403,8 +3403,8 @@ class Common(object):
             if self.organization_prevalence is not None:  # cases where value is 0 should be written to indicator context
                 ip_context['OrganizationPrevalence'] = self.organization_prevalence
 
-            if self.global_prevalence is not None:  # cases where value is 0 should be written to indicator context
-                ip_context['GlobalPrevalence'] = self.global_prevalence
+            if self.globally_prevalence is not None:  # cases where value is 0 should be written to indicator context
+                ip_context['GloballyPrevalence'] = self.globally_prevalence
 
             if self.organization_first_seen:
                 ip_context['OrganizationFirstSeen'] = self.organization_first_seen
@@ -3919,8 +3919,8 @@ class Common(object):
         :type organization_prevalence: ``int``
         :param organization_prevalence: The frequency of detection within a particular organization.
 
-        :type global_prevalence: ``int``
-        :param global_prevalence: The frequency of detection across all organizations.
+        :type globally_prevalence: ``int``
+        :param globally_prevalence: The frequency of detection across all organizations.
 
         :type organization_first_seen: ``str``
         :param organization_first_seen: ISO 8601 date time string; the first time a specific organization encountered an indicator.
@@ -3949,7 +3949,7 @@ class Common(object):
                      associated_file_names=None, traffic_light_protocol=None, organization=None, community_notes=None,
                      publications=None, threat_types=None, behaviors=None, relationships=None,
                      creation_date=None, description=None, hashes=None, stix_id=None, organization_prevalence=None,
-                     global_prevalence=None, organization_first_seen=None, organization_last_seen=None,
+                     globally_prevalence=None, organization_first_seen=None, organization_last_seen=None,
                      global_first_seen=None, global_last_seen=None):
 
             # Main value of a file (Hashes)
@@ -3992,7 +3992,7 @@ class Common(object):
             self.threat_types = threat_types
             self.behaviors = behaviors
             self.organization_prevalence = organization_prevalence
-            self.global_prevalence = global_prevalence
+            self.globally_prevalence = globally_prevalence
             self.organization_first_seen = organization_first_seen
             self.organization_last_seen = organization_last_seen
             self.global_first_seen = global_first_seen
@@ -4115,8 +4115,8 @@ class Common(object):
             if self.organization_prevalence is not None:  # cases where value is 0 should be written to indicator context
                 file_context['OrganizationPrevalence'] = self.organization_prevalence
 
-            if self.global_prevalence is not None:  # cases where value is 0 should be written to indicator context
-                file_context['GlobalPrevalence'] = self.global_prevalence
+            if self.globally_prevalence is not None:  # cases where value is 0 should be written to indicator context
+                file_context['GloballyPrevalence'] = self.globally_prevalence
 
             if self.organization_first_seen:
                 file_context['OrganizationFirstSeen'] = self.organization_first_seen
@@ -4485,8 +4485,8 @@ class Common(object):
         :type organization_prevalence: ``int``
         :param organization_prevalence: The frequency of detection within a particular organization.
 
-        :type global_prevalence: ``int``
-        :param global_prevalence: The frequency of detection across all organizations.
+        :type globally_prevalence: ``int``
+        :param globally_prevalence: The frequency of detection across all organizations.
 
         :type organization_first_seen: ``str``
         :param organization_first_seen: ISO 8601 date time string; the first time a specific organization encountered an indicator.
@@ -4510,7 +4510,7 @@ class Common(object):
                      campaign=None, traffic_light_protocol=None, threat_types=None, asn=None, as_owner=None,
                      geo_country=None, organization=None, community_notes=None, publications=None, relationships=None,
                      blocked=None, certificates=None, description=None, stix_id=None, organization_prevalence=None,
-                     global_prevalence=None, organization_first_seen=None, organization_last_seen=None,
+                     globally_prevalence=None, organization_first_seen=None, organization_last_seen=None,
                      global_first_seen=None, global_last_seen=None):
 
             # Main indicator value
@@ -4541,7 +4541,7 @@ class Common(object):
             self.organization = organization
             self.publications = publications
             self.organization_prevalence = organization_prevalence
-            self.global_prevalence = global_prevalence
+            self.globally_prevalence = globally_prevalence
             self.organization_first_seen = organization_first_seen
             self.organization_last_seen = organization_last_seen
             self.global_first_seen = global_first_seen
@@ -4622,8 +4622,8 @@ class Common(object):
             if self.organization_prevalence is not None:  # cases where value is 0 should be written to indicator context
                 url_context['OrganizationPrevalence'] = self.organization_prevalence
 
-            if self.global_prevalence is not None:  # cases where value is 0 should be written to indicator context
-                url_context['GlobalPrevalence'] = self.global_prevalence
+            if self.globally_prevalence is not None:  # cases where value is 0 should be written to indicator context
+                url_context['GloballyPrevalence'] = self.globally_prevalence
 
             if self.organization_first_seen:
                 url_context['OrganizationFirstSeen'] = self.organization_first_seen
@@ -4682,8 +4682,8 @@ class Common(object):
         :type organization_prevalence: ``int``
         :param organization_prevalence: The frequency of detection within a particular organization.
 
-        :type global_prevalence: ``int``
-        :param global_prevalence: The frequency of detection across all organizations.
+        :type globally_prevalence: ``int``
+        :param globally_prevalence: The frequency of detection across all organizations.
 
         :type organization_first_seen: ``str``
         :param organization_first_seen: ISO 8601 date time string; the first time a specific organization encountered an indicator.
@@ -4711,7 +4711,7 @@ class Common(object):
                      tech_country=None, tech_name=None, tech_email=None, tech_organization=None, billing=None,
                      whois_records=None, relationships=None, description=None, stix_id=None, blocked=None,
                      certificates=None, dns_records=None, rank=None, organization_prevalence=None,
-                     global_prevalence=None, organization_first_seen=None, organization_last_seen=None,
+                     globally_prevalence=None, organization_first_seen=None, organization_last_seen=None,
                      global_first_seen=None, global_last_seen=None):
 
             # Main indicator value
@@ -4776,7 +4776,7 @@ class Common(object):
             self.geo_country = geo_country
             self.geo_description = geo_description
             self.organization_prevalence = organization_prevalence
-            self.global_prevalence = global_prevalence
+            self.globally_prevalence = globally_prevalence
             self.organization_first_seen = organization_first_seen
             self.organization_last_seen = organization_last_seen
             self.global_first_seen = global_first_seen
@@ -4868,8 +4868,8 @@ class Common(object):
             if self.organization_prevalence is not None:  # cases where value is 0 should be written to indicator context
                 domain_context['OrganizationPrevalence'] = self.organization_prevalence
 
-            if self.global_prevalence is not None:  # cases where value is 0 should be written to indicator context
-                domain_context['GlobalPrevalence'] = self.global_prevalence
+            if self.globally_prevalence is not None:  # cases where value is 0 should be written to indicator context
+                domain_context['GloballyPrevalence'] = self.globally_prevalence
 
             if self.organization_first_seen:
                 domain_context['OrganizationFirstSeen'] = self.organization_first_seen

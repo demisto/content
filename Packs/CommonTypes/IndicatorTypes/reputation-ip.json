@@ -451,8 +451,8 @@
             "simple": "IP.OrganizationPrevalence",
             "complex": null
         },
-        "globalprevalence": {
-            "simple": "IP.GlobalPrevalence",
+        "globallyprevalence": {
+            "simple": "IP.GloballyPrevalence",
             "complex": null
         },
         "organizationfirstseen": {

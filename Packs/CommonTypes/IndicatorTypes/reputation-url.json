@@ -270,8 +270,8 @@
         "simple": "URL.OrganizationPrevalence",
         "complex": null
     },
-    "globalprevalence": {
-        "simple": "URL.GlobalPrevalence",
+    "globallyprevalence": {
+        "simple": "URL.GloballyPrevalence",
         "complex": null
     },
     "organizationfirstseen": {
