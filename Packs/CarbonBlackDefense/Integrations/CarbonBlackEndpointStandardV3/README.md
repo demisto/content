@@ -2545,10 +2545,10 @@ Fetches Carbon Black events details based on specified parameters. Supports poll
 | polling | When set to false, the function will not use polling and will return the process job ID. Possible values: yes, no. Default is True. | Optional | 
 | job_id | The ID of the job to retrieve the details. This is used internally for polling. | Optional | 
 | alert_id | The ID of the alert to retrieve the observation details. Must be specified alone. | Optional | 
-| event_ids | A list of observation IDs to retrieve the details. Must be specified alone. | Optional | 
+| observation_ids | A list of observation IDs to retrieve the details. Must be specified alone. | Optional | 
 | process_hash | The hash of the process to search for. Can be combined with rows, and with device_id or count_unique_devices, but not both. | Optional | 
-| device_id | The ID of the device to filter the observations. Must be combined with process_hash. Cannot be combined with alert_id, event_ids, count_unique_devices. | Optional | 
-| count_unique_devices | A boolean indicating whether to count unique devices executing the process hash. Must be combined with process_hash. Cannot be combined with alert_id, event_ids, device_id. | Optional | 
+| device_id | The ID of the device to filter the observations. Must be combined with process_hash. Cannot be combined with alert_id, observation_ids, count_unique_devices. | Optional | 
+| count_unique_devices | A boolean indicating whether to count unique devices executing the process hash. Must be combined with process_hash. Cannot be combined with alert_id, observation_ids, device_id. | Optional | 
 | rows | The maximum number of rows to return, up to 10,000. Can only be combined with process_hash. | Optional | 
 
 #### Context Output
@@ -2749,9 +2749,9 @@ Fetches Carbon Black events details based on specified parameters. Supports poll
 #### Human Readable Output
 
 >### Defense Event Details Results
->|Event Id|Device Id|Device External Ip|Device Internal Ip|Enriched Event Type|
->|---|---|---|---|---|
->| dummy_event_id | 1234 | 1.1.1.1 | 1.1.1.1 | CREATE_PROCESS |
+>|Observation Id|Event Id|Device Id|Device External Ip|Device Internal Ip|Enriched Event Type|
+>|---|---|---|---|---|---|
+>| dummy_observation_id | dummy_event_id | 1234 | 1.1.1.1 | 1.1.1.1 | CREATE_PROCESS |
 
 
 ### cbd-find-observation
@@ -4507,9 +4507,9 @@ Retrieves the search results using the specified job ID.
 #### Human Readable Output
 
 >### Defense Event Details Results
->|Event Id|Device Id|Device External Ip|Device Internal Ip|Enriched Event Type|
->|---|---|---|---|---|
->| dummy_event_id | 1234 | 1.1.1.1 | 1.1.1.1 | CREATE_PROCESS |
+>|Observation Id|Event Id|Device Id|Device External Ip|Device Internal Ip|Enriched Event Type|
+>|---|---|---|---|---|---|
+>| dummy_observation_id | dummy_event_id | 1234 | 1.1.1.1 | 1.1.1.1 | CREATE_PROCESS |
 
 
 ### cbd-find-observation-results

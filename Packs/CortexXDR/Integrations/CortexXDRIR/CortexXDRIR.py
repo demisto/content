@@ -25,7 +25,6 @@ FIELDS_TO_EXCLUDE = [
     'file_artifacts'
 ]
 
-
 XDR_INCIDENT_FIELDS = {
     "status": {"description": "Current status of the incident: \"new\",\"under_"
                               "investigation\",\"resolved_known_issue\","
@@ -946,7 +945,9 @@ def get_remote_data_command(client, args):
                 sync_incoming_incident_owners(incident_data)
 
             # handle closed issue in XDR and handle outgoing error entry
-            entries = [handle_incoming_closing_incident(incident_data)]
+            entries = []
+            if argToBoolean(client._params.get('close_xsoar_incident', True)):
+                entries = [handle_incoming_closing_incident(incident_data)]
 
             reformatted_entries = []
             for entry in entries:
@@ -1028,6 +1029,13 @@ def update_remote_system_command(client, args):
             if is_closed and closed_without_status and not remote_is_already_closed:
                 update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
             demisto.debug(f"After checking status {update_args=}")
+
+            close_xdr_incident = argToBoolean(client._params.get("close_xdr_incident", True))
+
+            if not close_xdr_incident:
+                demisto.debug(f"Reverting to previous status {remote_args.data.get('status')}")
+                update_args['status'] = remote_args.data.get('status')
+
             update_incident_command(client, update_args)
 
             close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
@@ -1074,14 +1082,19 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
     global ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
+    demisto.debug(f"{last_fetch=}")
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
                                                                                                 dict) else []
+    demisto.debug(f"{incidents_from_previous_run=}")
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
         last_fetch, _ = parse_date_range(first_fetch_time, to_timestamp=True)
+        demisto.debug(f"last_fetch after parsing date range {last_fetch}")
 
     if starred:
         starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
+        demisto.debug(
+            f"starred_incidents_fetch_window after parsing date range {starred_incidents_fetch_window}")
 
     incidents = []
     if incidents_from_previous_run:
@@ -1105,6 +1118,8 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
                 starred=starred,
                 starred_incidents_fetch_window=starred_incidents_fetch_window,
                 exclude_artifacts=exclude_artifacts)
+
+    # demisto.debug(f"{raw_incidents=}") # uncomment to debug, otherwise spams the log
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
@@ -1334,16 +1349,23 @@ def main():  # pragma: no cover
 
         elif command == 'fetch-incidents':
             integration_instance = demisto.integrationInstance()
+            last_run = demisto.getLastRun().get('next_run')
+            demisto.debug(
+                f"Before starting a new cycle of fetch incidents\n{last_run=}\n{integration_instance=}")
             next_run, incidents = fetch_incidents(client=client,
                                                   first_fetch_time=first_fetch_time,
                                                   integration_instance=integration_instance,
                                                   exclude_artifacts=exclude_artifacts,
-                                                  last_run=demisto.getLastRun().get('next_run'),
+                                                  last_run=last_run,
                                                   max_fetch=max_fetch,
                                                   statuses=statuses,
                                                   starred=starred,
                                                   starred_incidents_fetch_window=starred_incidents_fetch_window,
                                                   )
+            demisto.debug(f"Finished a fetch incidents cycle, {next_run=}."
+                          f"Fetched {len(incidents)} incidents.")
+            # demisto.debug(f"{incidents=}") # uncomment to debug, otherwise spams the log
+
             last_run_obj = demisto.getLastRun()
             last_run_obj['next_run'] = next_run
             demisto.setLastRun(last_run_obj)

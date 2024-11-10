@@ -21,13 +21,13 @@ This script uses the following commands and scripts.
 
 ---
 
-| **Argument Name** | **Description** |
-| --- | --- |
-| entryID | File entry ID |
-| incidentID | Incident ID to upload the file to |
-| body | Request body |
-| target | Where to upload the file<br/>- Available options are:<br/>- \`war room entry\`: the file will be uploaded as war room entry.<br/>- \`incident attachment\`: the file will be uploaded as incident attachment.<br/>- default are \`war room entry\` |
-
+| **Argument Name** | **Description**                                                                                                                                                                                                                                    |
+|-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| entryID           | File entry ID.                                                                                                                                                                                                                                      |
+| incidentID        | Incident ID to upload the file to.                                                                                                                                                                                                                  |
+| body              | Request body.                                                                                                                                                                                                                                       |
+| target            | Where to upload the file<br/>- Available options are:<br/>- \`war room entry\`: the file will be uploaded as War Room entry.<br/>- \`incident attachment\`: the file will be uploaded as incident attachment.<br/>- default are \`war room entry\` |
+| using             | Integration instance to use to run the command.                                                                                                                                                                                                     |
 ## Outputs
 
 ---

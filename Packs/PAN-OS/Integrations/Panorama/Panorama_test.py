@@ -6876,33 +6876,6 @@ class TestFetchIncidentsFlows:
         assert new_last_run['last_id_dict'].get('Y_log_type', '') == {'dummy_device2': '000000003'}
 
 
-@pytest.mark.parametrize('new_incident_entries, expected_res',
-                         [
-                             ({}, {}),
-                             ({'log_type1': [{'test_data': 1}]}, {'log_type1': 15})
-                         ])
-def test_update_max_fetch_dict(mocker, new_incident_entries, expected_res):
-    """
-    Given:
-    - new_incident_entries - the fateched enties or empty dict
-    - max_fetch_dict - dictionary with the maximum number of incidents to fetch per log type.
-    - last_fetch_dict - dictionary with the last fetch time per log type.
-    When:
-        - update_max_fetch_dict is called.
-        - max_fetch_dict has a log type that is not in last_fetch_dict.
-    Then:
-        - The max_fetch_dict is updated with the maximum number of incidents to fetch per log type, only if new incident fetched.
-    """
-    from Panorama import update_max_fetch_dict
-    mocker.patch('demistomock.params', return_value={'max_fetch': 5})
-    mocker.patch('demistomock.getLastRun',
-                 return_value={"last_fetch_dict": {"log_type1": "2023-05-01 07:22:08", "log_type2": "2023-05-01 07:22:00"}})
-    res = update_max_fetch_dict(max_fetch_dict={"log_type1": 10, "log_type2": 15},
-                                last_fetch_dict={"log_type1": "2023-05-01 07:22:08", "log_type2": "2023-05-01 07:22:08"},
-                                new_incident_entries=new_incident_entries)
-    assert res == expected_res
-
-
 def test_find_largest_id_per_device(mocker):
     """
     Given:
@@ -7261,18 +7234,21 @@ def test_build_tag_element(mocker, device_group, vsys, args, expected_response):
     assert response == expected_response
 
 
-@pytest.mark.parametrize("element_to_change, element_value, current_objects_items, params_element, "
-                         "expected_exception, expected_warning, expected_warning_exit", [
-                             ('tag', ['tag3'], ['tag3'], '<tag></tag>', False, False, False),  # Last tag
-                             ('tag', ['tag2'], ['tag3', 'tag2'], '<tag><member>tag3</member></tag>',
-                              False, False, False),  # Not last tag
-                             ('tag', ['nonexistent_tag'], ['tag1'], '', False, True, True),  # Non-existent tag > exit
-                             ('tag', ['nonexistent_tag', 'tag1'], ['tag1'], '<tag></tag>',
-                              False, True, False),  # Non-existent tag & existent > warning
-                             ('source', ['source'], ['source'], '', True, False, False)  # raise exception
-                         ])
-def test_panorama_edit_rule_items_remove(mocker, element_to_change, element_value, current_objects_items, params_element,
-                                         expected_exception, expected_warning, expected_warning_exit):
+@pytest.mark.parametrize(
+    ("element_to_change, context_element, element_value, current_objects_items, params_element, "
+     "expected_exception, expected_warning, expected_warning_exit"),
+    [
+        ('tag', 'Tags', ['tag3'], ['tag3'], '<tag></tag>', False, False, False),  # Last tag
+        ('tag', 'Tags', ['tag2'], ['tag3', 'tag2'], '<tag><member>tag3</member></tag>', False, False, False),  # Not last tag
+        ('tag', 'Tags', ['nonexistent_tag'], ['tag1'], '', False, True, True),  # Non-existent tag > exit
+        ('tag', 'Tags', ['nonexistent_tag', 'tag1'], ['tag1'], '<tag></tag>',
+         False, True, False),  # Non-existent tag & existent > warning
+        ('source', 'Source', ['source'], ['source'], '', True, False, False)  # raise exception
+    ]
+)
+def test_panorama_edit_rule_items_remove(
+        mocker, element_to_change, context_element, element_value, current_objects_items,
+        params_element, expected_exception, expected_warning, expected_warning_exit):
     """
     Given:
      - element_to_change: The element to be changed in the rule.
@@ -7320,6 +7296,8 @@ def test_panorama_edit_rule_items_remove(mocker, element_to_change, element_valu
             assert request_mock.call_args.kwargs['body']['action'] == 'edit'
             assert request_mock.call_args.kwargs['body']['element'] == params_element
             assert return_results_mock.call_args[0][0]['HumanReadable'] == 'Rule edited successfully.'
+            assert isinstance(return_results_mock.call_args[0][0]['EntryContext'][
+                'Panorama.SecurityRule(val.Name == obj.Name)'][context_element], list)
 
 
 def test_list_device_groups_names(mocker):
@@ -7895,7 +7873,7 @@ def test_fetch_incidents_correlation(mocker: MockerFixture):
     assert entries[0]["name"] == "Correlation 1"
     assert "CORRELATION" in entries[0]["rawJSON"]
     assert mock_get_query_entries.call_args_list[0].args == (
-        "Correlation", "query and (match_time geq '2024/04/08 07:22:54')", 10, 1
+        "Correlation", "query and (match_time geq '2024/04/08 07:22:54')", 10, 1, 0
     )  # asserting that "match_time" is used instead of "time_generated".
     assert last_fetch_dict == LastFetchTimes(Correlation="2024-04-09 07:22:54")  # the max date
     assert last_id_dict == LastIDs(Correlation=4)
@@ -7909,3 +7887,61 @@ def test_fetch_incidents_correlation(mocker: MockerFixture):
         last_run, '2024/04/08 07:22:54', QueryMap(Correlation='query'), max_fetch_dict, 1
     )
     assert entries[0]["name"] == "Correlation 1"
+
+
+def test_fetch_incidents_offset(mocker: MockerFixture):
+    '''
+    Given: Panorama incidents.
+
+    When: Using fetch-incidents command using offset to get the next incidents.
+
+    Then: Assert the correct amount of incidents were fetched and the correct offset value was stored.
+
+    '''
+    from Panorama import fetch_incidents, LastIDs, LastFetchTimes, LastRun, MaxFetch, QueryMap, Offset
+    corr_logs = load_json('test_data/corr_logs_time_dif.json')
+    mock_get_query_entries = mocker.patch('Panorama.get_query_entries')
+
+    last_fetch_dict = LastFetchTimes(Correlation='2024/04/08 07:22:54')
+    last_id_dict = LastIDs()
+    max_fetch_dict = MaxFetch(Correlation=5)
+    offset_dict = Offset(Correlation=0)
+
+    last_run = LastRun(
+        last_fetch_dict=last_fetch_dict,
+        last_id_dict=last_id_dict,
+        max_fetch_dict=max_fetch_dict,
+        offset_dict=offset_dict
+    )
+
+    # assert duplicates are removed:
+
+    mock_get_query_entries.return_value = corr_logs[:5]
+    new_last_run, entries = fetch_incidents(
+        last_run, '2024/04/08 07:22:54', QueryMap(Correlation='query'), max_fetch_dict, 1
+    )
+
+    assert entries[0]["name"] == "Correlation 1"
+    assert "CORRELATION" in entries[0]["rawJSON"]
+    assert mock_get_query_entries.call_args_list[0].args == (
+        "Correlation", "query and (match_time geq '2024/04/08 07:22:54')", 5, 1, 0
+    )  # asserting that "match_time" is used instead of "time_generated".
+    assert last_fetch_dict == LastFetchTimes(Correlation="2024-04-08 07:22:54")  # the max date
+    assert last_id_dict == LastIDs(Correlation=5)
+    assert max_fetch_dict == MaxFetch(Correlation=5)
+    assert offset_dict == Offset(Correlation=5)
+
+    mock_get_query_entries.return_value = corr_logs[5:]
+    new_last_run, entries = fetch_incidents(
+        new_last_run, '2024/04/08 07:22:54', QueryMap(Correlation='query'), max_fetch_dict, 1
+    )
+
+    assert entries[0]["name"] == "Correlation 6"
+    assert "CORRELATION" in entries[0]["rawJSON"]
+    assert mock_get_query_entries.call_args_list[1].args == (
+        "Correlation", "query and (match_time geq '2024/04/08 07:22:54')", 5, 1, 5
+    )  # asserting that "match_time" is used instead of "time_generated".
+    assert last_fetch_dict == LastFetchTimes(Correlation="2024-04-08 07:22:55")  # the max date
+    assert last_id_dict == LastIDs(Correlation=10)
+    assert max_fetch_dict == MaxFetch(Correlation=5)
+    assert offset_dict == Offset(Correlation=2)

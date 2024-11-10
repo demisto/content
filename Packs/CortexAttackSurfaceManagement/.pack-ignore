@@ -16,6 +16,9 @@ ignore=PB114
 [file:1_6_17.md]
 ignore=RN115
 
+[file:layoutscontainer-ASM_Alert_Layout.json]
+ignore=LO107
+
 [known_words]
 ASM
 CMDB
