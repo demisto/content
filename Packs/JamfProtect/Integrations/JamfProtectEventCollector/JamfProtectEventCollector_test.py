@@ -185,44 +185,196 @@ def test_next_trigger(mocker):
     fetch_events(client, 1, 1, 1)
 
 
-def test_next_trigger_with_no_alerts_and_next_page(mocker):
+def mock_set_last_run(last_run):
+    return last_run
+
+
+def test_alerts_and_next_page_audits_and_next_page(mocker):
+    from JamfProtectEventCollector import main, parse_response
     mock_last_run = {
         "alert": {
             "last_fetch": "2024-01-01T00:00:00.000000Z",
-            "next_page": "value1"
+            "next_page": "next_page_alerts"
         },
         "audit": {
-            "last_fetch": "2024-01-01T00:00:00.000000Z"
+            "last_fetch": "2024-01-01T00:00:00.000000Z",
+            "next_page": "next_page_audits"
         },
         "computer": {
             "last_fetch": "2024-01-01T00:00:00.000000Z"
         }
     }
-    mock_events_result = ([], {"next_page": "next_page value", "last_fetch": "2024-01-01T00:00:00.000000Z"})
+    expected_mock_last_run = {
+        "alert": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z",
+            "next_page": "next_page_alerts"
+        },
+        "audit": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z",
+            "next_page": "next_page_audits"
+        },
+        "computer": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z"
+        },
+        "nextTrigger": "0"
+    }
+
+    _, mocked_alerts = parse_response(util_load_json('test_data/raw_alerts.json'))
+    _, mocked_audits = parse_response(util_load_json('test_data/raw_audits.json'))
+    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch('JamfProtectEventCollector.get_events_alert_type', return_value=(
+        mocked_alerts, {'next_page': 'next_page_alerts', 'last_fetch': '2024-01-01T00:00:00.000000Z'}
+    ))
+    mocker.patch('JamfProtectEventCollector.get_events_audit_type', return_value=(
+        mocked_audits, {'next_page': 'next_page_audits', 'last_fetch': '2024-01-01T00:00:00.000000Z'}
+    ))
     mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
-    mocker.patch('JamfProtectEventCollector.get_events_alert_type', return_value=mock_events_result)
-    from JamfProtectEventCollector import Client, fetch_events
-    client = Client(
-        base_url=MOCK_BASEURL, verify=False, proxy=False, client_id=MOCK_CLIENT_ID, client_password=MOCK_CLIENT_PASSWORD
-    )
+    mock_next_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
+    mocker.patch('JamfProtectEventCollector.send_events_to_xsiam')
 
-    alert_events, audit_events, computer_events, new_last_run = fetch_events(
-        client, 1, 1, 1
-    )
+    main()
 
-    assert alert_events == []
-    assert audit_events == []
-    assert computer_events == []
-    assert new_last_run == {'alert': {}, 'audit': {}, 'computer': {}}
+    assert mock_next_run.call_args.args[0] == expected_mock_last_run
 
 
-def test_next_trigger_with_alerts_and_next_page_no_audits_and_next_page(mocker):
-    ...
+def test_no_alerts_and_no_next_page_no_audits_and_no_next_page(mocker):
+    from JamfProtectEventCollector import main, parse_response
+    mock_last_run = {
+        "alert": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z",
+            "next_page": "next_page_alerts"
+        },
+        "audit": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z",
+            "next_page": "next_page_audits"
+        },
+        "computer": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z"
+        }
+    }
+    expected_mock_last_run = {
+        "alert": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z",
+        },
+        "audit": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z",
+        },
+        "computer": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z"
+        }
+    }
+
+    _, mocked_alerts = parse_response(util_load_json('test_data/raw_alerts.json'))
+    _, mocked_audits = parse_response(util_load_json('test_data/raw_audits.json'))
+    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch('JamfProtectEventCollector.get_events_alert_type', return_value=(
+        [], {'last_fetch': '2024-01-01T00:00:00.000000Z'}
+    ))
+    mocker.patch('JamfProtectEventCollector.get_events_audit_type', return_value=(
+        [], {'last_fetch': '2024-01-01T00:00:00.000000Z'}
+    ))
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
+    mock_next_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
+    mocker.patch('JamfProtectEventCollector.send_events_to_xsiam')
+
+    main()
+
+    assert mock_next_run.call_args.args[0] == expected_mock_last_run
 
 
-def test_next_trigger_with_alerts_and_next_page(mocker):
-    ...
+def test_alerts_and_no_next_page_audits_and_no_next_page(mocker):
+    from JamfProtectEventCollector import main, parse_response
+    mock_last_run = {
+        "alert": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z",
+            "next_page": "next_page_alerts"
+        },
+        "audit": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z",
+            "next_page": "next_page_audits"
+        },
+        "computer": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z"
+        }
+    }
+    expected_mock_last_run = {
+        "alert": {
+            "last_fetch": "2024-02-01T00:00:00.000000Z",
+        },
+        "audit": {
+            "last_fetch": "2024-02-01T00:00:00.000000Z",
+        },
+        "computer": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z"
+        }
+    }
+
+    _, mocked_alerts = parse_response(util_load_json('test_data/raw_alerts.json'))
+    _, mocked_audits = parse_response(util_load_json('test_data/raw_audits.json'))
+    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch('JamfProtectEventCollector.get_events_alert_type', return_value=(
+        mocked_alerts, {'last_fetch': '2024-02-01T00:00:00.000000Z'}
+    ))
+    mocker.patch('JamfProtectEventCollector.get_events_audit_type', return_value=(
+        mocked_audits, {'last_fetch': '2024-02-01T00:00:00.000000Z'}
+    ))
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
+    mock_next_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
+    mocker.patch('JamfProtectEventCollector.send_events_to_xsiam')
+
+    main()
+
+    assert mock_next_run.call_args.args[0] == expected_mock_last_run
 
 
-def test_next_trigger_with_alerts_and_next_page_and_audits_and_next_page(mocker):
-    ...
+def test_no_alerts_and_next_page_no_audits_and_no_next_page(mocker):
+    from JamfProtectEventCollector import main, parse_response
+    mock_last_run = {
+        "alert": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z",
+            "next_page": "next_page_alerts"
+        },
+        "audit": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z",
+        },
+        "computer": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z"
+        }
+    }
+    expected_mock_last_run = {
+        "alert": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z",
+        },
+        "audit": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z",
+        },
+        "computer": {
+            "last_fetch": "2024-01-01T00:00:00.000000Z"
+        }
+    }
+
+    _, mocked_alerts = parse_response(util_load_json('test_data/raw_alerts.json'))
+    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch('JamfProtectEventCollector.get_events_alert_type', return_value=(
+        [], {'next_page': 'next_page_alerts', 'last_fetch': '2024-01-01T00:00:00.000000Z'}
+    ))
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
+    mock_next_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
+    mocker.patch('JamfProtectEventCollector.send_events_to_xsiam')
+
+    main()
+
+    assert mock_next_run.call_args.args[0] == expected_mock_last_run
+
+
+def test_remove_next_page_if_no_new_events():
+    from JamfProtectEventCollector import remove_next_page_if_no_new_events, parse_response
+
+    next_run = remove_next_page_if_no_new_events([], {})
+    assert next_run == {}
+    next_run = remove_next_page_if_no_new_events([], {'next_page': '1'})
+    assert next_run == {}
+    next_run = remove_next_page_if_no_new_events(parse_response(util_load_json('test_data/raw_alerts.json'))[1], {})
+    assert next_run == {}
+    next_run = remove_next_page_if_no_new_events(parse_response(util_load_json('test_data/raw_alerts.json'))[1], {'next_page': '1'})
+    assert next_run == {'next_page': '1'}

@@ -606,6 +606,12 @@ def calculate_fetch_dates(start_date: str, last_run_key: str, last_run: dict, en
     return start_date, end_date
 
 
+def remove_next_page_if_no_new_events(events: list[dict] = None, next_run: dict[str: str] = None) -> dict[str: str]:
+    if not events and 'next_page' in next_run or {}:
+        del next_run['next_page']
+    return next_run
+
+
 def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, max_fetch_computer: int, start_date_arg: str = "",
                  end_date_arg: str = "") -> EventResult:
     """
@@ -621,25 +627,30 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
         EventResult: A NamedTuple containing four elements
     """
     last_run = demisto.getLastRun()
-    alert_events, alert_next_run = [], {}
-    audit_events, audit_next_run = [], {}
+    alert_events: list = []
+    alert_next_run: dict = last_run.get('alert', {})
+    audit_events: list = []
+    audit_next_run: dict = last_run.get('audit', {})
     computer_events: list = []
-    computer_next_run: dict = {}
-    alert_next_page = last_run.get("alert", {}).get("next_page", "")
-    audit_next_page = last_run.get("audit", {}).get("next_page", "")
-    computer_next_page = last_run.get("computer", {}).get("next_page", "")
+    computer_next_run: dict = last_run.get("computer", {})
+    alert_next_page = alert_next_run.get("next_page", "")
+    audit_next_page = audit_next_run.get("next_page", "")
+    computer_next_page = computer_next_run.get("next_page", "")
 
     no_next_pages = not (any((alert_next_page, audit_next_page, computer_next_page)))
 
     if no_next_pages or alert_next_page:
         # The only case we don't trigger the alert event type cycle is when have only the audit and computer next page token.
         alert_events, alert_next_run = get_events_alert_type(client, start_date_arg, max_fetch_alerts, last_run)
+        remove_next_page_if_no_new_events(alert_events, alert_next_run)
     if no_next_pages or audit_next_page:
         # The only case we don't trigger the audit event type cycle is when have only the alert and computer next page token.
         audit_events, audit_next_run = get_events_audit_type(client, start_date_arg, end_date_arg, max_fetch_audits, last_run)
+        remove_next_page_if_no_new_events(audit_events, audit_next_run)
     if no_next_pages or computer_next_page:
         # The only case we don't trigger the computer event type cycle is when have only the alert and audit next page token.
         computer_events, computer_next_run = get_events_computer_type(client, start_date_arg, max_fetch_computer, last_run)
+        remove_next_page_if_no_new_events(computer_events, computer_next_run)
     next_run: dict[str, Any] = {"alert": alert_next_run, "audit": audit_next_run, 'computer': computer_next_run}
     if "next_page" in (alert_next_run | audit_next_run | computer_next_run):
         # Will instantly re-trigger the fetch command.
@@ -791,8 +802,7 @@ def main() -> None:  # pragma: no cover
             if events:
                 add_time_field(events)
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
-                if new_last_run:
-                    demisto.setLastRun(new_last_run)
+            demisto.setLastRun(new_last_run)
 
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
