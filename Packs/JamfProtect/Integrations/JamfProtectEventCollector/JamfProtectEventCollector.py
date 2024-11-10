@@ -627,14 +627,15 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
         EventResult: A NamedTuple containing four elements
     """
     last_run = demisto.getLastRun()
+    demisto.debug(f'Starting to fetch events, last_run is: {last_run}')
     alert_events: list = []
     alert_next_run: dict = last_run.get('alert', {})
+    alert_next_page = alert_next_run.get("next_page", "")
     audit_events: list = []
     audit_next_run: dict = last_run.get('audit', {})
+    audit_next_page = audit_next_run.get("next_page", "")
     computer_events: list = []
     computer_next_run: dict = last_run.get("computer", {})
-    alert_next_page = alert_next_run.get("next_page", "")
-    audit_next_page = audit_next_run.get("next_page", "")
     computer_next_page = computer_next_run.get("next_page", "")
 
     no_next_pages = not (any((alert_next_page, audit_next_page, computer_next_page)))
@@ -655,6 +656,7 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
     if "next_page" in (alert_next_run | audit_next_run | computer_next_run):
         # Will instantly re-trigger the fetch command.
         next_run["nextTrigger"] = "0"
+    demisto.debug(f'Finish to fetching events, next_run is: {next_run}')
     return EventResult(alert_events, audit_events, computer_events, next_run)
 
 
@@ -801,6 +803,7 @@ def main() -> None:  # pragma: no cover
             events = alert_events + audit_events + computer_events
             if events:
                 add_time_field(events)
+                demisto.debug(f'Sending {len(events)} events to XSIAM API')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(new_last_run)
 
