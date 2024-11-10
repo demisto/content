@@ -343,7 +343,7 @@ script:
     description: Configures the KV store fields.
     name: splunk-kv-store-collection-config
   - arguments:
-    - description: 'The data to add to the KV store collection, according to the collection JSON format, e.g., [{"name": "Splunk HQ", "id": 456, "address": { "street": "340 Brannan Street", "city": "San Francisco", "state": "CA", "zip": "121212"}}, {"name": "Splunk HQ", "id": 123, "address": { "street": "250 Brannan Street", "city": "San Francisco", "state": "CA", "zip": "94107"}}]'
+    - description: 'The data to add to the KV store collection, according to the collection JSON format, e.g., [{"name": "Splunk HQ", "id": 456, "address": { "street": "340 Brannan Street", "city": "San Francisco", "state": "CA", "zip": "121212"}}, {"name": "Splunk HQ", "id": 123, "address": { "street": "250 Brannan Street", "city": "San Francisco", "state": "CA", "zip": "94107"}}].'
       name: kv_store_data
       required: true
     - description: The name of the KV store collection.
@@ -475,7 +475,7 @@ script:
   - name: splunk-reset-enriching-fetch-mechanism
     arguments: []
     description: Resets the enrichment mechanism of fetched notables.
-  dockerimage: demisto/splunksdk-py3:1.0.0.44906
+  dockerimage: demisto/splunksdk-py3:1.0.0.115556
   isfetch: true
   ismappable: true
   isremotesyncin: true
