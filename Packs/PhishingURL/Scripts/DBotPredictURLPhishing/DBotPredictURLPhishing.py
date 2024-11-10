@@ -669,10 +669,8 @@ def get_urls_to_run(
         urls_email_html = extract_embedded_urls_from_html(email_html)
     else:
         urls_email_html = []
-    if isinstance(urls_argument, list):
-        urls_only = urls_argument
-    else:
-        urls_only = urls_argument.split()
+
+    urls_only = argToList(urls_argument)
     urls = list(set(urls_email_body + urls_only + urls_email_html))
 
     # create a list with all the paths that start with "mailto:"
