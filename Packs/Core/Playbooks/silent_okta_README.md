@@ -1,4 +1,4 @@
-silent playbook with xdr commands
+silent playbook with okta commands.
 
 ## Dependencies
 
@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* CortexCoreIR
+This playbook does not use any integrations.
 
 ### Scripts
 
@@ -18,7 +18,7 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* core-get-endpoints
+* okta-list-users
 
 ## Playbook Inputs
 
@@ -34,4 +34,4 @@ There are no outputs for this playbook.
 
 ---
 
-![silent playbook xdr](../doc_files/silent_playbook_xdr.png)
+![silent okta](../doc_files/silent_okta.png)

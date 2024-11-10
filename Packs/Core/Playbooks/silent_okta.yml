@@ -1,6 +1,6 @@
-id: silent playbook okta
+id: silent okta
 version: -1
-name: silent playbook okta
+name: silent okta
 starttaskid: "0"
 tasks:
   "0":
@@ -217,8 +217,7 @@ view: |-
   }
 inputs: []
 outputs: []
-is_silent: true
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
-description: silent playbook with okta commands
+description: silent playbook with okta commands.

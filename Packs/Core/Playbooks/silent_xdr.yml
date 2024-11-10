@@ -1,6 +1,6 @@
-id: silent playbook xdr
+id: silent xdr
 version: -1
-name: silent playbook xdr
+name: silent xdr
 starttaskid: "0"
 tasks:
   "0":
@@ -219,8 +219,7 @@ view: |-
   }
 inputs: []
 outputs: []
-is_silent: true
 tests:
 - T1036 - Masquerading - Test
 fromversion: 6.10.0
-description: silent playbook with xdr commands
+description: silent playbook with xdr commands.
