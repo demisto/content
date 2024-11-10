@@ -252,48 +252,9 @@ class EclecticIQ_api:
 
         r = None
         try:
-            if method == "post":
-                r = requests.post(
-                    url,
-                    headers=self.headers,
-                    params=params,
-                    data=json.dumps(data),
-                    verify=self.verify_ssl,
-                    proxies=self.proxies,
-                    timeout=30,
-                )
-            elif method == "put":
-                r = requests.put(
-                    url,
-                    headers=self.headers,
-                    params=params,
-                    data=json.dumps(data),
-                    verify=self.verify_ssl,
-                    proxies=self.proxies,
-                    timeout=30,
-                )
-            elif method == "get":
-                r = requests.get(
-                    url,
-                    headers=self.headers,
-                    params=params,
-                    data=json.dumps(data),
-                    verify=self.verify_ssl,
-                    proxies=self.proxies,
-                    timeout=30,
-                )
-            elif method == "delete":
-                r = requests.delete(
-                    url,
-                    headers=self.headers,
-                    params=params,
-                    data=json.dumps(data),
-                    verify=self.verify_ssl,
-                    proxies=self.proxies,
-                    timeout=30,
-                )
-            elif method == "patch":
-                r = requests.patch(
+            if hasattr(requests, method):
+                request_method = getattr(requests, method)
+                r = request_method(
                     url,
                     headers=self.headers,
                     params=params,
@@ -304,7 +265,8 @@ class EclecticIQ_api:
                 )
             else:
                 self.eiq_logging.error("Unknown method: " + str(method))
-                raise Exception
+                raise Exception(f"Unsupported HTTP method: {method}")
+
         except Exception as e:
             self.eiq_logging.exception(
                 "Could not perform request to EclecticIQ VA: {}: {}. Exception: {}".format(
