@@ -2524,7 +2524,13 @@ File.Read.All
 | MicrosoftATP.FileStatistics.Statistics.GlobalFirstObserved | Date | The first global observation date and time of the file. | 
 | MicrosoftATP.FileStatistics.Statistics.GlobalLastObserved | Date | The last global observation date and time of the file. | 
 | MicrosoftATP.FileStatistics.Statistics.TopFileNames | String | The top names of the file. | 
-
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.OrganizationPrevalence | Number | Indicates how frequently a specific indicator type is detected within a particular organization. |
+| File.GloballyPrevalence | Number | Indicates how frequently a specific indicator type is detected across all organizations. |
+| File.OrganizationFirstSeen | Date | The first time a specific organization encountered an indicator. |
+| File.OrganizationLastSeen | Date | The most recent time a specific organization encountered an indicator. |
+| File.GlobalFirstSeen | Date | The first time an indicator was detected globally across all organizations. |
+| File.GlobalLastSeen | Date | The most recent time an indicator was detected globally across all organizations. |
 
 ##### Command Example
 
@@ -2535,9 +2541,10 @@ File.Read.All
 ```json
 {
     "File": {
+        "SHA1": "9fe3ba25e5660c23dfe478d577cfacde5795870c",
         "GlobalFirstSeen": "2019-04-03T04:10:18.1001071Z",
         "GlobalLastSeen": "2020-03-23T09:24:54.169574Z",
-        "GlobalPrevalence": 1355899,
+        "GloballyPrevalence": 1355899,
         "Hashes":[
             {
                 "type" :"SHA1",
@@ -2578,7 +2585,7 @@ File.Read.All
 
 The basic indicator fields from the command are shown below without auto extraction and enrichment.
 
-| Type | Value | Verdict | Related Incidents | Expiration | Global Prevalence | Organization Prevalence | Global First Seen | Global Last Seen | Organization First Seen | Organization Last Seen |
+| Type | Value | Verdict | Related Incidents | Expiration | Globally Prevalence | Organization Prevalence | Global First Seen | Global Last Seen | Organization First Seen | Organization Last Seen |
 |---|---|---|---|---|---|---|---|---|---|---|
 | File | 50ef7c645fd5cbb95d50fbaddf6213800f9296ec | Unknown | 2 | Never | 195803 | 0 | April 03, 2019 4:10 AM | March 23, 2020 9:24 AM | N/A | N/A |
 
