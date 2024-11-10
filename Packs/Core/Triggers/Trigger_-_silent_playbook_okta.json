@@ -1,6 +1,6 @@
 {
   "trigger_id": "aed4edec656b25cbdbdda695e4d9be36",
-  "playbook_id": "silent playbook okta",
+  "playbook_id": "silent okta",
   "suggestion_reason": "Recommended for 'okta alert' alert",
   "description": "This trigger is responsible for handling the 'okta alert' alert",
   "trigger_name": "silent playbook okta",
