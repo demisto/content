@@ -668,7 +668,8 @@ def close_incident_in_remote(delta: Dict[str, Any], data: Dict[str, Any]) -> boo
     closing_reason = delta.get(closing_field, data.get(closing_field, ''))
     return demisto.params().get('close_ticket') and bool(closing_reason)
 
-def extract_classification_reason(delta: Dict, data: Dict) -> Any:
+
+def extract_classification_reason(delta: Dict, data: Dict):
     """
     Returns the classification reason based on `delta` and `data`.
 
@@ -677,7 +678,7 @@ def extract_classification_reason(delta: Dict, data: Dict) -> Any:
         data (dict): Default classification information, with 'classification' and 'classificationReason'.
 
     Returns:
-        str: The resolved classification reason.
+        The resolved classification reason.
     """
     classification = delta.get("classification", data.get("classification", ""))
     if classification == "FalsePositive":
