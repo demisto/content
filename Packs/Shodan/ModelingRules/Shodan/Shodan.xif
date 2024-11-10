@@ -7,7 +7,7 @@
 | alter
     xdm.alert.name = name,
     xdm.event.is_completed = has_triggers,
-    xdm.event.description = if(has_triggers=false, "missing triggers to complete the configuration of alert", "alert activate"),
+    xdm.event.description = if(has_triggers=false, "missing triggers to complete the configuration of alert", "The alert has been activated"),
     xdm.observer.vendor = _vendor,
     xdm.observer.product = _product,
     xdm.target.host.ipv4_addresses = arraycreate(internal_ipv4),
