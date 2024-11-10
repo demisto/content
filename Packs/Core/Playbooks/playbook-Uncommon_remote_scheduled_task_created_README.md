@@ -15,7 +15,9 @@ During the alert investigation, the playbook will perform the following:
 
 Remediation:
 
-- Remediation actions will disable the scheduled task, block the malicious IP, and close the alert.
+- Automatically disable the malicious scheduled task.
+- Block the malicious IP (requires analyst approval).
+- Automatically Close the alert.
 
 Requirements:
 
@@ -51,16 +53,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * core-get-script-execution-results
 * core-run-script-execute-commands
 * ip
-
-## Playbook Inputs
-
----
-There are no inputs for this playbook.
-
-## Playbook Outputs
-
----
-There are no outputs for this playbook.
 
 ## Playbook Image
 

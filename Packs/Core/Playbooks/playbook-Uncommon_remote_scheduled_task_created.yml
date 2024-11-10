@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Uncommon remote scheduled task created
-description: "This playbook handles \"Uncommon remote scheduled task created\" alerts.\n\nPlaybook Stages:\n\nAnalysis:\n\n- The playbook checks if the remote IP is external or has a bad reputation.\n\nInvestigation:\nDuring the alert investigation, the playbook will perform the following:\n\n- Searches for related XSIAM alerts on the endpoint that use the following MITRE techniques to identify malicious activity: T1202 - Indirect Command Execution, T1021 - Remote Services.\n- Searches for related XSIAM agent alerts on the remote endpoint, to determine if the creation of the scheduled task is part of an attack pattern.\n- Searches for suspicious command-line parameters indicating a malicious scheduled task.\n\nRemediation:\n\n- Remediation actions will disable the scheduled task, block the malicious IP, and close the alert.\n\nRequirements:\n\nFor response actions, the following integrations are required: \n\n- PAN-OS."
+description: "This playbook handles \"Uncommon remote scheduled task created\" alerts.\n\nPlaybook Stages:\n\nAnalysis:\n\n- The playbook checks if the remote IP is external or has a bad reputation.\n\nInvestigation:\nDuring the alert investigation, the playbook will perform the following:\n\n- Searches for related XSIAM alerts on the endpoint that use the following MITRE techniques to identify malicious activity: T1202 - Indirect Command Execution, T1021 - Remote Services.\n- Searches for related XSIAM agent alerts on the remote endpoint, to determine if the creation of the scheduled task is part of an attack pattern.\n- Searches for suspicious command-line parameters indicating a malicious scheduled task.\n\nRemediation:\n\n- Automatically disable the malicious scheduled task.\n- Block the malicious IP (requires analyst approval).\n- Automatically Close the alert.\n\nRequirements:\n\nFor response actions, the following integrations are required: \n\n- PAN-OS."
 tags:
 - TA0002 - Execution
 - T1053 - Scheduled Task/Job
@@ -77,12 +77,11 @@ tasks:
     task:
       id: eae7099d-0e36-4442-8d50-a5e79d067791
       version: -1
-      name: Check whether the remote IP is malicious or external
+      name: Check whether the remote IP is external
       description: |-
-        Determines the appropriate verdict based on:
-        - IP Reputation.
-        - Whether the task was created from an external IP address.
-        - Suspicious Command-line parameters.
+        Determines the appropriate verdict if the task was created from an external IP address.
+
+        Remote scheduled tasks created from an external IP address may indicate unauthorized access or malicious activity. Legitimate remote scheduled tasks should be created from trusted internal sources. If the task is created from an external IP, the playbook will proceed with remediation actions; otherwise, it will continue investigating the alert.
       type: condition
       iscommand: false
       brand: ""
@@ -104,26 +103,6 @@ tasks:
             value:
               simple: "no"
           ignorecase: true
-        - operator: isEqualNumber
-          left:
-            value:
-              complex:
-                root: DBotScore
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DBotScore.Type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: ip
-                    ignorecase: true
-                accessor: Score
-            iscontext: true
-          right:
-            value:
-              simple: "3"
     continueonerrortype: ""
     view: |-
       {
@@ -160,7 +139,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 2400
+          "y": 2510
         }
       }
     note: false
@@ -311,7 +290,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 3730
+          "y": 3840
         }
       }
     note: false
@@ -355,7 +334,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 2540
+          "y": 2650
         }
       }
     note: false
@@ -381,7 +360,7 @@ tasks:
       '#default#':
       - "13"
       "yes":
-      - "20"
+      - "23"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -411,7 +390,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 3380
+          "y": 3360
         }
       }
     note: false
@@ -481,7 +460,7 @@ tasks:
       {
         "position": {
           "x": -10,
-          "y": 3550
+          "y": 3660
         }
       }
     note: false
@@ -505,14 +484,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "23"
+      - "17"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 0,
-          "y": 3070
+          "y": 3180
         }
       }
     note: false
@@ -529,21 +508,21 @@ tasks:
     task:
       id: c5219f31-047d-4cee-888e-f7c63909a296
       version: -1
-      name: Block Malicious Indicators
+      name: Block Malicious IP
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "17"
+      - "20"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 410,
-          "y": 3240
+          "x": -10,
+          "y": 3530
         }
       }
     note: false
@@ -571,7 +550,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 3890
+          "y": 4000
         }
       }
     note: false
@@ -769,7 +748,7 @@ tasks:
     task:
       id: 789cf6e0-eded-4b32-8108-8091409a2537
       version: -1
-      name: Found any alerts indicating this is a malicious scheduled task?
+      name: Found any alerts of malicious activity on the remote host?
       description: Determines if there are agent alerts on the remote host indicating that the alert was part of an attack pattern.
       type: condition
       iscommand: false
@@ -897,7 +876,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "42"
+      - "71"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -910,62 +889,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "42":
-    id: "42"
-    taskid: 951c96f5-d9b9-4a75-802a-da1d01d66810
-    type: condition
-    task:
-      id: 951c96f5-d9b9-4a75-802a-da1d01d66810
-      version: -1
-      name: Analyst decision for suspicious cmd parameters
-      description: Based on suspicious command line parameters, analyst review is required to determine whether to take remediation actions such as disabling the scheduled task and blocking the IP if malicious, or to close the alert as a false positive.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      Disable Schedule Task:
-      - "3"
-      False Positive:
-      - "43"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1070,
-          "y": 2160
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    message:
-      to:
-      subject:
-      body:
-        simple: |-
-          The following command-line contains a suspicious argument:
-
-          ${Core.OriginalAlert.event.scheduled_task_image_command_line}
-
-          Do you want to proceed and disable the scheduled task?
-      methods: []
-      format: ""
-      bcc:
-      cc:
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-        completeafterv2: true
-        completeaftersla: false
-      replyOptions:
-      - Disable Schedule Task
-      - False Positive
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -991,7 +914,7 @@ tasks:
       {
         "position": {
           "x": 1070,
-          "y": 2400
+          "y": 2550
         }
       }
     note: false
@@ -1030,7 +953,7 @@ tasks:
       {
         "position": {
           "x": 1070,
-          "y": 2540
+          "y": 2690
         }
       }
     note: false
@@ -1058,7 +981,7 @@ tasks:
       {
         "position": {
           "x": 1070,
-          "y": 2710
+          "y": 2850
         }
       }
     note: false
@@ -1264,7 +1187,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "23"
+      - "17"
     scriptarguments:
       value:
         simple: "Dear Analyst,\n\nDuring the remediation process the playbook executed a shell command to disable the following scheduled task: \n${Core.OriginalAlert.event.scheduled_task_path}\n\n"
@@ -1274,7 +1197,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 3070
+          "y": 3180
         }
       }
     note: false
@@ -1344,7 +1267,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 2710
+          "y": 2820
         }
       }
     note: false
@@ -1389,7 +1312,125 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 2870
+          "y": 2980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 0ae56624-11e4-4420-8245-6b62c02d8a2f
+    type: collection
+    task:
+      id: 0ae56624-11e4-4420-8245-6b62c02d8a2f
+      version: -1
+      name: Analyst decision for suspicious cmd parameters
+      description: Analyst review is required to determine, based on suspicious command-line parameters, whether to take remediation actions  such as disabling the scheduled task and blocking the IP if malicious or to close the alert as a false positive.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "72"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 2180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: "Dear Analyst,\n\nSummary of the investigation of the remote scheduled task creation:\n\n- The task was created from an internal IP address: ${Core.OriginalAlert.event.actor_remote_ip}.\n- No related alerts were found indicating malicious activity on the endpoint or remote endpoint.\n- No malicious command line indicators were detected.\n \nHowever, the playbook detected suspicious arguments in the command line. \nThe following command line contains suspicious parameters:\n\n${Core.OriginalAlert.event.scheduled_task_image_command_line}\n\nDecision Needed: \n\nWould you like to proceed with disabling the scheduled task, or should this be considered a false positive?"
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Disable Schedule Task
+      - False Positive
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: "The following command line contains suspicious parameters:\n\n${Core.OriginalAlert.event.scheduled_task_image_command_line}\n\nWould you like to proceed with disabling the scheduled task, or should this be considered a false positive? "
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: Disable Schedule Task
+        - simple: False Positive
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Analyst Decision to Disable Scheduled Task
+      description: "Dear Analyst,\n\nSummary of the investigation of the remote scheduled task creation:\n\n- The task was created from an internal IP address.\n- No related alerts were found indicating malicious activity on the endpoint or remote endpoint.\n- No malicious command line indicators were detected.\n \nHowever, the playbook detected suspicious arguments in the command line. \n\nDecision Needed: "
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: f12ee6de-ec1a-4c0b-872a-7653ef15891c
+    type: condition
+    task:
+      id: f12ee6de-ec1a-4c0b-872a-7653ef15891c
+      version: -1
+      name: Should disable schedule task based on the analyst decision?
+      description: Checks if the scheduled task should be disabled based on the analyst's decision.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      Disable Schedule Task:
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: Disable Schedule Task
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Decision to Disable Scheduled Task.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Disable Schedule Task
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 2340
         }
       }
     note: false
@@ -1403,21 +1444,21 @@ view: |-
   {
     "linkLabelsPosition": {
       "14_22_#error#": 0.55,
-      "17_13_#default#": 0.51,
-      "17_20_yes": 0.43,
+      "17_13_#default#": 0.42,
+      "17_23_yes": 0.69,
       "2_3_Yes": 0.12,
       "32_3_yes": 0.29,
-      "42_3_Disable Schedule Task": 0.56,
-      "42_43_False Positive": 0.67,
       "66_3_Malicious Cmd parameters": 0.36,
       "66_41_Suspicious Cmd parameters": 0.57,
       "70_67_yes": 0.52,
+      "72_3_Disable Schedule Task": 0.42,
+      "72_43_#default#": 0.53,
       "8_30_#default#": 0.55,
       "8_3_yes": 0.13
     },
     "paper": {
       "dimensions": {
-        "height": 4395,
+        "height": 4505,
         "width": 2060,
         "x": -10,
         "y": -440
