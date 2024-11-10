@@ -181,25 +181,24 @@ To access the Export Indicators service by instance name, make sure ***Instance 
 1. Navigate to **Settings > About > Troubleshooting**.
 2.  In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
 3. In a web browser, go to:
-    `https://*<xsoar_address>*/instance/execute/*<instance_name>*`
+    `https://<xsoar_address>/instance/execute/<instance_name>`
 
-### Set up Authentication for Cortex XSOAR 8 On-prem
-EDLs running on tenants in Cortex XSOAR 8 require basic authentication. EDLs running on engines do not require basic authentication, but it is recommended.  
-For Cortex 8 On-prem, you can set up authentication using custom certificates. For more information, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate). 
+### Set up Authentication
+EDLs running on tenants in Cortex XSOAR 8 Cloud or Cortex XSIAM require basic authentication. EDLs running on engines do not require basic authentication, but it is recommended.  
+For Cortex XSOAR On-prem (6.x or 8) or when using engines, you can set up authentication using custom certificates. For more information on setting up a custom certificate for Cortex XSOAR 8 On-prem, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate). 
 
 ### Access EDLs on Cortex XSOAR 8 Cloud and On-prem and Cortex XSIAM
 **Note:**  
-For Cortex XSOAR 8 On-prem, you need to add the following DNS records:
-- ext-FQDN - The Cortex XSOAR DNS name mapped to the external IP address. For example, `ext-xsoar.mycompany.com`.
-- API-FQDN - The Cortex XSOAR DNS name mapped to the API IP address. For example, `api-xsoar.mycompany.com`.
+For Cortex XSOAR 8 On-prem, you need to add the `ext-` FQDN DNS record to map the Cortex XSOAR DNS name to the external IP address.  
+For example, `ext-xsoar.mycompany.com`.
   
-For Cortex XSOAR 8 Cloud and On-prem and Cortex XSIAM, you can only access the Export Indicators Service using a third-party tool such as cURL.
-- On a tenant, use https://ext-<cortex-xsoar-address\>/xsoar/instance/execute/\<instance-name\>
+For Cortex XSOAR 8 Cloud, Cortex XSOAR On-prem and Cortex XSIAM, you can only access the Export Indicators Service using a third-party tool such as cURL.
+- If the integration is configured to run on a tenant, use `https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>`
    
-  For example: curl -v -u user:pass https://ext-mytenant.paloaltonetworks.com/xsoar/instance/execute/edl_instance_01\?q\=type:ip
-- On an engine, use http://\<engine-address\>:\<integration listen port\>/
+  For example: `curl -v -u user:pass https://ext-mytenant.paloaltonetworks.com/xsoar/instance/execute/edl_instance_01?q=type:ip`
+- If the integration is configured to run on an engine, use `http://<engine-address>:<integration listen port>`
      
-  For example: curl -v -u user:pass http://\<engine_address\>:\<listen_port\>/?n=50
+  For example: `curl -v -u user:pass http://<engine_address>:<listen_port>?n=50`
 
 ### URL Inline Arguments
 
