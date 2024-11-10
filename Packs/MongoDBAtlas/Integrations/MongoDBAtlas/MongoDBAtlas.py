@@ -418,6 +418,8 @@ def create_last_run_dict_for_events(output: list, new_min_time: str):
 
 def first_time_fetching_events(client: Client, fetch_limit):
     results = client.get_events_first_five_pages(fetch_limit)
+    for event in results:
+        enrich_event(event, event_type='events')
     last_fetched_event = results[0] if results else None
     new_min_time = last_fetched_event.get('created') if last_fetched_event else None
     return results, new_min_time
