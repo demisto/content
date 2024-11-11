@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: TAXIIFeed test
+  id: TAXIIFeed
   version: -1
 configuration:
 - defaultvalue: 'true'
@@ -178,8 +178,8 @@ configuration:
   - xsoar_on_prem
   section: Collect
 description: Ingests indicator feeds from TAXII 1.x servers.
-display: TAXII Feed test
-name: TAXIIFeed test
+display: TAXII Feed
+name: TAXIIFeed
 script:
   commands:
   - arguments:
