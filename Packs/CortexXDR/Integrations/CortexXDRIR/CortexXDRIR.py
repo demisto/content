@@ -1033,12 +1033,9 @@ def update_remote_system_command(client, args):
             close_xdr_incident = argToBoolean(client._params.get("close_xdr_incident", True))
 
             if not close_xdr_incident:
-                demisto.debug(f"close_xdr_incident marked as false")
-                status1 = update_args.get('status')
-                demisto.debug(f"This is the {status1=}")
                 if update_args.get('status') in XDR_RESOLVED_STATUS_TO_XSOAR.keys():
                     status = update_args.pop('status')
-                    demisto.debug(f"Popped status from update_args {status=}, so incident status won't change")
+                    demisto.debug(f"Popped {status=} from update_args, incident status won't update in XDR")
 
             update_incident_command(client, update_args)
 
