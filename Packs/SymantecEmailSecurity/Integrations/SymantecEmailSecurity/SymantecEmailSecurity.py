@@ -7,9 +7,8 @@ import copy
 import dataclasses
 import functools
 import http
-from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, cast
+from typing import Any, Callable
 
 """ Global Variables """
 
@@ -785,6 +784,7 @@ def determine_clients(
     username: str | None,
     password: str | None,
     command_to_url: dict[str, Any],
+    has_any_client_url: bool,
     quarantine_username: str | None,
     quarantine_password: str | None,
     url_quarantine: str | None,
@@ -822,9 +822,15 @@ def determine_clients(
 
     client = None
     quarantine_client = None
+    is_test_command = command == "test-module"
 
-    if username and password and command in command_to_url:
-        if not (base_url := command_to_url.get(command)):
+    if username and password and (is_test_command or command in command_to_url):
+        base_url = command_to_url.get(command)
+
+        if (
+            (is_test_command and not has_any_client_url)
+            or (not is_test_command and not base_url)
+        ):
             raise DemistoException(
                 "Missing URL for 'Credentials', please fill the correct URL according to the mapping in 'Help'."
             )
@@ -904,7 +910,13 @@ def arg_to_optional_bool(arg: Any | None) -> None | bool:
 
 
 @logger
-def test_module(client: Client | None = None, quarantine_client: QuarantineClient | None = None) -> str:
+def test_module(
+    credentials: tuple | None = None,
+    url_ioc: str | None = None,
+    url_data_feeds: str | None = None,
+    url_email_queue: str | None = None,
+    quarantine_client: QuarantineClient | None = None,
+) -> str:
     """Test the connection to the API only for clients that are present.
 
     Args:
@@ -918,26 +930,53 @@ def test_module(client: Client | None = None, quarantine_client: QuarantineClien
         str: returns "ok" which represents that the test connection to the client was successful.
             Otherwise, return an informative message based on the user's input.
     """
-    if not any((client, quarantine_client)):
+    if not any((credentials, quarantine_client)):
         return "At least one of the credentials must be filled."
 
     client_passed = False
 
     try:
-        if client:
-            client.list_email_queue()
+        if credentials:
+            if url_ioc:
+                try:
+                    Client(url_ioc, *credentials).list_ioc()
+                except DemistoException as exc:
+                    if exc.res and exc.res.status_code == http.HTTPStatus.NOT_FOUND:
+                        return "The given URL for 'Server URL - IOC' is invalid. Please verify the URL."
+                    raise exc
+
+            if url_data_feeds:
+                try:
+                    Client(url_data_feeds, *credentials).list_data("all", convert_datetime_string("3 days"))
+                except DemistoException as exc:
+                    if exc.res and exc.res.status_code == http.HTTPStatus.NOT_FOUND:
+                        return "The given URL for 'Server URL - Data Feeds' is invalid. Please verify the URL."
+                    raise exc
+
+            if url_email_queue:
+                try:
+                    Client(url_email_queue, *credentials).list_email_queue()
+                except DemistoException as exc:
+                    if exc.res and exc.res.status_code == http.HTTPStatus.NOT_FOUND:
+                        return "The given URL for 'Server URL - Email Queue' is invalid. Please verify the URL."
+                    raise exc
 
         client_passed = True
 
         if quarantine_client:
-            quarantine_client.list_quarantine_email()
+            try:
+                quarantine_client.list_quarantine_email()
+            except DemistoException as exc:
+                if exc.res and exc.res.status_code == http.HTTPStatus.NOT_FOUND:
+                    return "The given URL for 'Server URL - Quarantine' is invalid"
+                raise exc
     except DemistoException as exc:
         if exc.res is not None:
             if exc.res.status_code == http.HTTPStatus.UNAUTHORIZED:
-                return f"Authorization Error: invalid {'Quarantine ' if client_passed else ''}Credentials"
-
-            if exc.res.status_code == http.HTTPStatus.NOT_FOUND:
-                return "The given URL is invalid"
+                return (
+                    "Authorization Error: Invalid Credentials."
+                    f" Please verify the {'Quarantine ' if client_passed else ''}credentials."
+                )
 
         raise exc
 
@@ -1132,7 +1171,7 @@ def list_data_command(client: Client, args: dict[str, Any]) -> CommandResults:
         list[dict[str, Any]],
         client.list_data(
             feed_type=feed_type,
-            include="delivery" if argToBoolean(args.get("include_delivery", False)) else None,
+            include="delivery" if feed_type == "all" and argToBoolean(args.get("include_delivery", False)) else None,
         ),
     )
 
@@ -1573,11 +1612,11 @@ def fetch_incidents(
         list[dict[str, Any]],
         client.list_data(
             feed_type=feed_type,
-            include="delivery" if include_delivery else None,
+            include="delivery" if feed_type == "all" and include_delivery else None,
         ),
     )
 
-    new_ids = []
+    seen_ids = []
     items = raw_response or []
     demisto.debug(f"Received {len(items)} feed items from the server.")
 
@@ -1586,7 +1625,7 @@ def fetch_incidents(
             continue
 
         incident_id = email_info.get("xMsgRef")
-        new_ids.append(incident_id)
+        seen_ids.append(incident_id)
 
         # Skip incident if occurred time is less than last fetch
         if incident_id in last_ids:
@@ -1611,7 +1650,6 @@ def fetch_incidents(
                 "occurred": timestamp_to_datestring(last_fetch),
                 "severity": severity,
                 "details": worst_incident["reason"],
-                "dbotMirrorId": incident_id,
                 "rawJSON": json.dumps(item),
             }
         )
@@ -1620,7 +1658,7 @@ def fetch_incidents(
             break
 
     demisto.debug(f"Fetched {len(incidents)} incidents, setting next run to {last_fetch}.")
-    next_run = {"email_data_feeds": {"last_fetch": last_fetch, "last_ids": new_ids}}
+    next_run = {"email_data_feeds": {"last_fetch": last_fetch, "last_ids": seen_ids}}
 
     return next_run, incidents
 
@@ -1679,13 +1717,13 @@ def fetch_incidents_quarantine(
         limit=max_results,
     )
 
-    new_ids = []
+    seen_ids = []
     items = response.get("mail_list", [])
     demisto.debug(f"Received {len(items)} quarantined emails from the server.")
 
     for item in items:
         incident_id = item.get("id")
-        new_ids.append(incident_id)
+        seen_ids.append(incident_id)
 
         # Skip incident if occurred time is less than last fetch
         if incident_id in last_ids:
@@ -1710,7 +1748,6 @@ def fetch_incidents_quarantine(
                 "occurred": timestamp_to_datestring(last_fetch),
                 "severity": IncidentSeverity.UNKNOWN,
                 "details": f"Reason: {metadata.get('quarantine_reason')}",
-                "dbotMirrorId": incident_id,
                 "rawJSON": json.dumps(item),
             }
         )
@@ -1719,7 +1756,7 @@ def fetch_incidents_quarantine(
             break
 
     demisto.debug(f"Fetched {len(incidents)} incidents, setting next run to {last_fetch}.")
-    next_run = {"email_quarantine": {"last_fetch": last_fetch, "last_ids": new_ids}}
+    next_run = {"email_quarantine": {"last_fetch": last_fetch, "last_ids": seen_ids}}
 
     return next_run, incidents
 
@@ -1743,7 +1780,7 @@ def main() -> None:
     verify_certificate: bool = not argToBoolean(params.get("insecure", False))
     proxy: bool = argToBoolean(params.get("proxy", False))
 
-    commands = {
+    credentials_commands = {
         f"{COMMAND_PREFIX}-ioc-list": list_ioc_command,
         f"{COMMAND_PREFIX}-ioc-action": action_ioc_command,
         f"{COMMAND_PREFIX}-ioc-renew": renew_ioc_command,
@@ -1764,7 +1801,6 @@ def main() -> None:
     }
 
     command_to_url = {
-        "test-module": url_email_queue,
         "fetch-incidents": url_data_feeds,
         f"{COMMAND_PREFIX}-ioc-list": url_ioc,
         f"{COMMAND_PREFIX}-ioc-action": url_ioc,
@@ -1786,6 +1822,7 @@ def main() -> None:
             username=username,
             password=password,
             command_to_url=command_to_url,
+            has_any_client_url=any((url_ioc, url_data_feeds, url_email_queue)),
             quarantine_username=quarantine_username,
             quarantine_password=quarantine_password,
             url_quarantine=url_quarantine,
@@ -1796,12 +1833,17 @@ def main() -> None:
         is_fetch = command == "fetch-incidents"
 
         if command == "test-module":
-            results = test_module(client, quarantine_client)
+            return_results(
+                test_module(
+                    credentials=(username, password),
+                    url_ioc=url_ioc,
+                    url_data_feeds=url_data_feeds,
+                    url_email_queue=url_email_queue,
+                    quarantine_client=quarantine_client,
+                )
+            )
         elif is_fetch:
-            fetch_type = params.get("fetch_type")
-
-            if not fetch_type:
-                raise DemistoException("Choosing a 'Fetch Type' is required when fetching incidents.")
+            fetch_type = params.get("fetch_type", "both")
 
             if any(
                 (
@@ -1810,7 +1852,7 @@ def main() -> None:
                     fetch_type == "both" and not (client and quarantine_client),
                 )
             ):
-                raise DemistoException("Missing credentials for Fetch command.")
+                raise DemistoException("Credentials for the selected fetch type are missing.")
 
             first_fetch_time = arg_to_datetime(
                 arg=params["first_fetch"],
@@ -1864,22 +1906,22 @@ def main() -> None:
 
             demisto.setLastRun(both_next_run)
             demisto.incidents(both_incidents)
-        elif command in commands:
+        elif command in credentials_commands:
             if not client:
-                raise DemistoException(f"'Credentials' is required for the command {command}")
+                raise DemistoException(
+                    f"To execute the {command} command, please ensure that 'Credentials' are provided and valid."
+                )
 
-            results = commands[command](client, args)
+            return_results(credentials_commands[command](client, args))
         elif command in quarantine_commands:
             if not quarantine_client:
-                raise DemistoException(f"'Quarantine Credentials' is required for the command {command}")
+                raise DemistoException(
+                    f"To execute the {command} command, please ensure 'Quarantine Credentials' are provided and valid."
+                )
 
-            results = quarantine_commands[command](quarantine_client, args)
+            return_results(quarantine_commands[command](quarantine_client, args))
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
-
-        if not is_fetch:
-            return_results(results)
-
     except Exception as e:
         return_error(str(e))
 

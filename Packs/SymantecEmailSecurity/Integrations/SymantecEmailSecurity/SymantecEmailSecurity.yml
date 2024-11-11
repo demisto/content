@@ -8,33 +8,31 @@ configuration:
   type: 0
   defaultvalue: "https://iocapi.emailsecurity.symantec.com"
   section: Connect
-  advanced: true
 - name: url_data_feeds
   display: Server URL - Data Feeds
   type: 0
   defaultvalue: "https://datafeeds.emailsecurity.symantec.com"
   section: Connect
-  advanced: true
 - name: url_email_queue
   display: Server URL - Email Queue
   type: 0
   defaultvalue: "https://emailqueue.emailsecurity.symantec.com"
   section: Connect
-  advanced: true
 - name: url_quarantine
   display: Server URL - Quarantine
-  additionalinfo: The Quarantine API is available for United States (us) and European Union (eu).
+  additionalinfo: The Quarantine API is available for the United States (us) and European Union (eu).
   type: 0
   defaultvalue: "https://api.eu.quarantine.symantec.com"
   section: Connect
-  advanced: true
 - name: credentials
   display: Username
+  additionalinfo: 'Relevant to: Server URL - IOC, Server URL - Email Queue, Server URL - Quarantine'
   type: 9
   required: false
   section: Connect
 - name: quarantine_credentials
   display: Quarantine Username
+  additionalinfo: 'Relevant to: Server URL - Quarantine'
   type: 9
   required: false
   section: Connect
@@ -135,7 +133,7 @@ script:
     description: List the IOCs that apply to a specific domain or to all domains.
     arguments:
     - name: domain
-      description: Run the command for a specific domain or all domains with 'global'. Use `symantec-email-security-email-queue-list` to get a list of available domains.
+      description: Run the command for a specific domain, for all domains use 'global'. Run `symantec-email-security-email-queue-list` to get a list of available domains.
       defaultValue: global
       default: true
     - name: limit
@@ -158,13 +156,13 @@ script:
       description: Value of the IOC.
       type: String
     - contextPath: SymantecEmailSecurity.IOC.status
-      description: Wether the IOC is active.
+      description: Whether the IOC is active.
       type: String
     - contextPath: SymantecEmailSecurity.IOC.description
       description: Description of the IOC.
       type: String
     - contextPath: SymantecEmailSecurity.IOC.emailDirection
-      description: 'Email direction can be one of: I=Inbound, O=Outbound or B=Both.'
+      description: 'Email direction. Can be one of: I=Inbound, O=Outbound or B=Both.'
       type: String
     - contextPath: SymantecEmailSecurity.IOC.remediationAction
       description: 'Remediation Action can be one of: B=Block and delete, Q=Quarantine, M=Redirect, T=Tag subject or H=Append header.'
@@ -176,10 +174,10 @@ script:
     description: Add, update, delete and renew multiple IOCs through the `entry_id` or a single through the rest of the parameters.
     arguments:
     - name: domain
-      description: Run the command for a specific domain or all domains with 'global'. Use `symantec-email-security-email-queue-list` to get a list of available domains.
+      description: Run the command for a specific domain, for all domains use 'global'. Run `symantec-email-security-email-queue-list` to get a list of available domains.
       defaultValue: global
     - name: action
-      description: 'Defines the action for IOCs: ''merge'' to merge or update IOCs in the database by their type and value without inputting `ioc_id`; ''replace'' to delete and replace all IOCs in the database without inputting `ioc_id`; ''ioc'' to add, update, delete, or renew multiple IOCs each with their own action, use this only when entering an `entry_id`; ''add'' to add an IOC without inputting `ioc_id`.'
+      description: 'Defines the action for IOCs: ''merge'' to merge or update IOCs in the database by their type and value without inputting `ioc_id`; ''replace'' to delete and replace all IOCs in the database without inputting `upload_ioc_json`; ''ioc'' to add, update, delete, or renew multiple IOCs each with their own action, use this only when entering an `entry_id`; ''add'' to add an IOC without inputting `ioc_id`.'
       auto: PREDEFINED
       predefined:
       - merge
@@ -238,7 +236,7 @@ script:
     description: Renew all IOCs previously uploaded and still in the database, whether active or inactive, for a specific domain or all domains. The default retention period for IOCs is 7 days and the maximum is 30 days. After 30 days IOCs are retained in an inactive state for another 14 days. If an organization receives new email containing previously block listed IOCs, then the IOCs can renewed in the block list within this grace period. Thereafter, IOCs are removed from the system and must be uploaded again to remain in the block list.
     arguments:
     - name: domain
-      description: Run the command for a specific domain or all domains with 'global'. Use `symantec-email-security-email-queue-list` to get a list of available domains.
+      description: Run the command for a specific domain, for all domains use 'global'. Run `symantec-email-security-email-queue-list` to get a list of available domains.
       defaultValue: global
       default: true
   - name: symantec-email-security-data-list
@@ -923,7 +921,7 @@ script:
     description: Retrieves the contents of the email specified in the request. To preview an email the compliance policy must allow it.
     arguments:
     - name: message_id
-      description: The message ID of the email to preview. Use `symantec-email-security-email-queue-list` to get a list of message IDs.
+      description: The message ID of the email to preview. Run `symantec-email-security-email-queue-list` to get a list of message IDs.
       required: true
       default: true
     outputs:
@@ -991,7 +989,7 @@ script:
     description: Releases the set of quarantined emails specified in the request.
     arguments:
     - name: message_ids
-      description: Comma-separated list of emails message IDs to release. Use `symantec-email-security-quarantine-email-list` to get a list of message IDs.
+      description: Comma-separated list of emails message IDs to release. Run `symantec-email-security-quarantine-email-list` to get a list of message IDs.
       required: true
       isArray: true
       default: true
@@ -1010,7 +1008,7 @@ script:
     description: Deletes the set of quarantined emails specified in the request. The items are marked as deleted in the backend data store, but are not physically deleted.
     arguments:
     - name: message_ids
-      description: Comma-separated list of quarantined emails message IDs to delete. Use `symantec-email-security-quarantine-email-list` to get a list of message IDs.
+      description: Comma-separated list of quarantined emails message IDs to delete. Run `symantec-email-security-quarantine-email-list` to get a list of message IDs.
       required: true
       isArray: true
       default: true
@@ -1072,7 +1070,7 @@ script:
       required: True
       default: True
     - name: item_id
-      description: ID of SUDULS item to be added/updated. Only required when updating an existing item. Use `symantec-email-security-item-allow-list` to get a list of items.
+      description: ID of SUDULS item to be added/updated. Only required when updating an existing item. Run `symantec-email-security-item-allow-list` to get a list of items.
     - name: email_or_domain
       description: Email address or domain to be added in the allow list.
       required: True
@@ -1083,7 +1081,7 @@ script:
     description: Allows a SUDULS (allow quarantine users to maintain their own lists of email addresses or domains) user to delete an item from the allow list.
     arguments:
     - name: item_id
-      description: ID of SUDULS item to be deleted. Use `symantec-email-security-item-allow-list` to get a list of items.
+      description: ID of SUDULS item to be deleted. Run `symantec-email-security-item-allow-list` to get a list of items.
       required: true
       default: true
   - name: symantec-email-security-item-block-list
@@ -1135,7 +1133,7 @@ script:
       required: True
       default: True
     - name: item_id
-      description: ID of SUDULS item to be added/updated. Only required when updating an existing item. Use `symantec-email-security-item-block-list` to get a list of items.
+      description: ID of SUDULS item to be added/updated. Only required when updating an existing item. Run `symantec-email-security-item-block-list` to get a list of items.
     - name: email_or_domain
       required: True
       description: Email address or domain to be added in the block list.
@@ -1146,7 +1144,7 @@ script:
     description: Allows a SUDULS (allow quarantine users to maintain their own lists of email addresses or domains) user to delete an item from the block list.
     arguments:
     - name: item_id
-      description: ID of SUDULS item to be deleted. Use `symantec-email-security-item-block-list` to get a list of items.
+      description: ID of SUDULS item to be deleted. Run `symantec-email-security-item-block-list` to get a list of items.
       required: true
       default: true
   type: python
