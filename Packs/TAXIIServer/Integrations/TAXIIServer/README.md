@@ -48,18 +48,18 @@ To access the TAXII service by instance name, make sure ***Instance execute exte
      **Note**:
      The string `instance` does not refer to the name of your Cortex XSOAR instance, but rather is part of the URL.
 
-## How to use HTTPS
+## How to Use HTTPS
 
 To use HTTPS, a certificate and private key have to be provided in the integration configuration.   
 The `HTTP Server` checkbox needs to be unchecked.
 
-## Set up authentication
+## Set up Authentication
 ### For Cortex XSOAR 8 Cloud Tenant or Cortex XSIAM Tenant
 The TAXII Service integration running on a Cortex XSOAR 8 Cloud tenant or Cortex XSIAM tenant enables using basic authentication in the requests.  
 To enable basic authentication, a user and password have to be supplied in the **Credentials** parameters in the integration configuration.  
 The server then authenticates the requests by the `Authorization` header, expecting basic authentication encrypted in base64 to match the given credentials.  
-### For Cortex XSOAR On-prem (6.x or 8) or when Using Engines
-For Cortex XSOAR On-prem (6.x or 8) or when using engines, you can set up authentication using custom certificates. For more information on setting up a custom certificate for Cortex XSOAR 8 On-prem, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate)
+### For Cortex XSOAR On-prem (6.x or 8) or When Using Engines
+For Cortex XSOAR On-prem (6.x or 8) or when using engines, you can set up authentication using custom certificates. For more information on setting up a custom certificate for Cortex XSOAR 8 On-prem, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate). For more information on setting up a custom certificate for Cortex XSOAR 6.x, see [HTTPS with a Signed Certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/HTTPS-with-a-Signed-Certificate).
 
 ## Troubleshooting
 
