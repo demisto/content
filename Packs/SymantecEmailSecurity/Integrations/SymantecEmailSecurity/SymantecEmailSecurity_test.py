@@ -182,16 +182,25 @@ def test_validate_response_failure() -> None:
 
 
 @pytest.mark.parametrize(
-    "username,password,quarantine_username,quarantine_password,expect_client,expect_quarantine_client",
+    (
+        "username,"
+        "password,"
+        "has_any_client_url,"
+        "quarantine_username,"
+        "quarantine_password,"
+        "expect_client,"
+        "expect_quarantine_client"
+    ),
     [
-        ("user", "pass", "user", "pass", True, True),  # Test creating both the clients
-        ("user", "pass", None, None, True, False),  # Test creating only the regular client
-        (None, None, "q_user", "q_pass", False, True),  # Test creating only the quarantine client
+        ("user", "pass", True, "user", "pass", True, True),  # Test creating both the clients
+        ("user", "pass", True, None, None, True, False),  # Test creating only the regular client
+        (None, None, False, "q_user", "q_pass", False, True),  # Test creating only the quarantine client
     ],
 )
 def test_determine_clients(
     username: str | None,
     password: str | None,
+    has_any_client_url: bool,
     quarantine_username: str | None,
     quarantine_password: str | None,
     expect_client: bool,
@@ -216,6 +225,7 @@ def test_determine_clients(
         username=username,
         password=password,
         command_to_url={command: "https://example.com"},
+        has_any_client_url=has_any_client_url,
         quarantine_username=quarantine_username,
         quarantine_password=quarantine_password,
         url_quarantine="https://example.com/quarantine",
@@ -317,6 +327,7 @@ def test_determine_clients_exceptions(
             command=command,
             username=username,
             password=password,
+            has_any_client_url=False,
             command_to_url=command_to_url,
             quarantine_username=quarantine_username,
             quarantine_password=quarantine_password,
@@ -1474,7 +1485,6 @@ def test_fetch_incidents(requests_mock, mock_client: SymantecEmailSecurity.Clien
             "occurred": "1970-01-12T13:46:40.000Z",
             "severity": 1,
             "details": "unknown",
-            "dbotMirrorId": "000",
             "rawJSON": json.dumps(mock_response[0] | {"incident_type": "email_data_feed"}),
         }
     ]
@@ -1532,7 +1542,6 @@ def test_fetch_incidents_quarantine(
             "occurred": "2024-10-06T09:20:41.000Z",
             "severity": CommonServerPython.IncidentSeverity.UNKNOWN,
             "details": "Reason: CC",
-            "dbotMirrorId": "000",
             "rawJSON": json.dumps(item),
         }
     ]
