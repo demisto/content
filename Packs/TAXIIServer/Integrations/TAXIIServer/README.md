@@ -23,8 +23,8 @@ Use one of the following options to access the TAXII service:
 
 ### For Cortex XSOAR 8 On-prem, Cortex XSOAR 8 Cloud, or Cortex XSIAM:  
 Use one of the following options to access the TAXII service:
-- `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>/<taxii2_api_endpoint>`
-- When using an engine: `http://<demisto_address>:<listen_port>/<taxii2_api_endpoint>`
+- `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>/<taxii2_api_endpoint>/`
+- When using an engine: `http://<demisto_address>:<listen_port>/<taxii2_api_endpoint>/`
   
 **Note:**  
 For Cortex XSOAR 8 On-prem, you need to add the `ext-` FQDN DNS record to map the Cortex XSOAR DNS name to the external IP address.  
