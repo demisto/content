@@ -1,5 +1,5 @@
 {
-  "trigger_id": "a9f4f8a7a81eebadfe694353481fda1d",
+  "trigger_id": "49f4f8a7a81eebadfe694353481fda1d",
   "playbook_id": "A mail forwarding rule was configured in Google Workspace",
   "suggestion_reason": "Recommended for 'A mail forwarding rule was configured in Google Workspace' and 'A mail forwarding rule was configured in Google Workspace to an uncommon domain' alerts",
   "description": "This trigger runs the A mail forwarding rule was configured in Google Workspace playbook, which handles the A mail forwarding rule was configured in Google Workspace and A mail forwarding rule was configured in Google Workspace to an uncommon domain alerts.",
