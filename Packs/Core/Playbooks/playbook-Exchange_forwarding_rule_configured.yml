@@ -31,7 +31,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -470
+          "y": -310
         }
       }
     note: false
@@ -70,7 +70,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -340
+          "y": -180
         }
       }
     note: false
@@ -109,7 +109,7 @@ tasks:
       {
         "position": {
           "x": -160,
-          "y": -170
+          "y": -10
         }
       }
     note: false
@@ -153,7 +153,7 @@ tasks:
       {
         "position": {
           "x": 240,
-          "y": 20
+          "y": 180
         }
       }
     note: false
@@ -165,15 +165,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 1b328978-fec3-468d-88dd-f18492b9463f
+    taskid: 0b23837d-9e34-4468-8c26-2d54a9705b83
     type: condition
     task:
-      id: 1b328978-fec3-468d-88dd-f18492b9463f
+      id: 0b23837d-9e34-4468-8c26-2d54a9705b83
       version: -1
-      name: Evaluate Domain and IP suspicion level
+      name: Evaluate Domain and IP suspicious level
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "6"
@@ -224,7 +225,7 @@ tasks:
       {
         "position": {
           "x": -160,
-          "y": 190
+          "y": 350
         }
       }
     note: false
@@ -254,7 +255,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -330,
+          "x": -410,
           "y": 520
         }
       }
@@ -358,7 +359,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -330,
+          "x": -410,
           "y": 660
         }
       }
@@ -537,6 +538,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "14"
@@ -910,15 +912,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 7fcb035d-5516-4306-8caf-07941646ffbf
+    taskid: 627d5819-cb1e-4b21-8e88-8b6d82ae21ac
     type: condition
     task:
-      id: 7fcb035d-5516-4306-8caf-07941646ffbf
+      id: 627d5819-cb1e-4b21-8e88-8b6d82ae21ac
       version: -1
       name: Evaluate evidence count
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "14"
@@ -999,6 +1002,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "6"
@@ -1018,7 +1022,7 @@ tasks:
       {
         "position": {
           "x": 240,
-          "y": -170
+          "y": -10
         }
       }
     note: false
@@ -1062,15 +1066,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: a4053aef-891a-486a-8b82-6b0f7fb34d35
+    taskid: 7a967a10-abda-42b5-8535-2b3502c52c05
     type: condition
     task:
-      id: a4053aef-891a-486a-8b82-6b0f7fb34d35
+      id: 7a967a10-abda-42b5-8535-2b3502c52c05
       version: -1
       name: Evaluate evidence count and alert severity
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "14"
@@ -1136,6 +1141,7 @@ tasks:
       type: collection
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "34"
@@ -1241,6 +1247,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: "" 
     nexttasks:
       '#default#':
       - "14"
@@ -1293,7 +1300,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -330,
+          "x": -410,
           "y": 2115
         }
       }
@@ -1378,7 +1385,10 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
+      '#default#':
+      - "14"
       "yes":
       - "39"
     separatecontext: false
@@ -1411,10 +1421,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 91b78f10-cf0f-4fa6-8416-b40be94a6903
+    taskid: 49505509-b341-41dd-83e9-c80018d07814
     type: regular
     task:
-      id: 91b78f10-cf0f-4fa6-8416-b40be94a6903
+      id: 49505509-b341-41dd-83e9-c80018d07814
       version: -1
       name: Send the user a notification via email
       description: Sends an email.
@@ -1435,7 +1445,7 @@ tasks:
 
           Thank you for your understanding and cooperation.
       subject:
-        simple: Forwarding Rule and Address Removed from Your Mailbox
+        simple: Forwarding rule was removed from your mailbox
       to:
         simple: ${Core.OriginalAlert.raw_abioc.event.identity_name}
     separatecontext: false
@@ -1527,15 +1537,16 @@ view: |-
       "30_36_yes": 0.4,
       "34_14_#default#": 0.23,
       "34_33_yes": 0.61,
+      "38_14_#default#": 0.49,
       "38_39_yes": 0.42,
       "4_5_yes": 0.38
     },
     "paper": {
       "dimensions": {
-        "height": 2795,
-        "width": 1960,
-        "x": -330,
-        "y": -470
+        "height": 2635,
+        "width": 2040,
+        "x": -410,
+        "y": -310
       }
     }
   }

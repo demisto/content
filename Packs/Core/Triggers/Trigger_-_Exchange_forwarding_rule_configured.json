@@ -1,0 +1,32 @@
+{
+  "trigger_id": "461746d489017d070d0ac7ffc7fec57d",
+  "playbook_id": "Exchange forwarding rule configured",
+  "suggestion_reason": "Recommended for SSO Password Spray alerts",
+  "description": "This trigger is responsible for handling Exchange forwarding rule alerts",
+  "trigger_name": "Exchange forwarding rule configured",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "OR": [
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "External Exchange inbox forwarding rule configured"
+            },
+            {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Suspicious Exchange inbox forwarding rule configured"
+            },
+            {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Suspicious Exchange email-hiding inbox rule"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
