@@ -1,19 +1,18 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+from xml.etree import ElementTree
+from urllib.error import HTTPError
+from datetime import timedelta
+import requests
+import hashlib
+import base64
+import json
+import uuid
+import hmac
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+demisto.debug('pack name = Mimecast, pack version = 2.5.2')
+
 
 ''' IMPORTS '''
-
-import hmac
-import uuid
-import json
-import base64
-import hashlib
-import requests
-
-from datetime import timedelta
-from urllib.error import HTTPError
-from xml.etree import ElementTree
 
 
 ''' GLOBALS/PARAMS '''
@@ -2555,6 +2554,7 @@ def create_get_group_members_request(group_id=-1, limit=100):
 
     meta = {}
     data = {}
+    members = {}
 
     if limit:
         meta['pagination'] = {
@@ -2571,7 +2571,24 @@ def create_get_group_members_request(group_id=-1, limit=100):
     response = http_request('POST', api_endpoint, payload)
     if isinstance(response, dict) and response.get('fail'):
         raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
-    return response
+
+    members.update(response)
+
+    while int(limit) > len(members['data'][0]['groupMembers']) and response['meta']['pagination'].get('next'):
+        page_token = response['meta']['pagination']['next']
+        meta['pagination'] = {
+            'pageToken': page_token
+        }
+        payload = {
+            'meta': meta,
+            'data': [data]
+        }
+
+        response = http_request('POST', api_endpoint, payload)
+
+        members["data"][0]["groupMembers"].extend(response["data"][0]["groupMembers"])
+
+    return members
 
 
 def group_members_api_response_to_markdown(api_response):
