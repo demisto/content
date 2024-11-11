@@ -5,7 +5,7 @@
   "description": "This trigger is responsible for handling Identity Analytics alerts",
   "trigger_name": "Identity Analytics Alerts",
   "fromVersion": "6.10.0",
-  "deprecated": true,
+  "deprecated": "true",
   "alerts_filter": {
     "filter": {
       "AND": [
