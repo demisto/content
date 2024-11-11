@@ -571,11 +571,6 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     }
     chrome_port = instance_id_dict.get(instance_id, {}).get('chrome_port', '')
     demisto.debug(f'[test] chrome_manager {instance_id_dict=}')
-    if instance_id_dict.get('None'):
-       bla= instance_id_dict.get('None')
-       demisto.debug(f'what {bla=}')
-       terminate_chrome(chrome_port=instance_id_dict['None']['chrome_port'])
-       instance_id_dict.pop('None')
     if not chrome_instances_contents:  # or instance_id not in instance_id_dict.keys():
         demisto.debug(f'[test] chrome_manager: first cond {chrome_instances_contents}')
         return generate_new_chrome_instance(instance_id, chrome_options)
@@ -585,8 +580,11 @@ def chrome_manager() -> tuple[Any | None, str | None]:
         return browser, chrome_port
 
     for chrome_port_ in chrome_instances_contents:
+        if chrome_port_ == 'None':
+            terminate_port_chrome_instances_file(chrome_port_)
+            continue
         terminate_chrome(chrome_port=chrome_port_)
-    demisto.debug(f'[test] chrome_manager after_terminate_chrome {chrome_port}')
+        demisto.debug(f'[test] chrome_manager after_terminate_chrome {chrome_port_}')
     return generate_new_chrome_instance(instance_id, chrome_options)
 
     
