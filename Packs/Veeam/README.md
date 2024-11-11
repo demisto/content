@@ -1,14 +1,8 @@
-# Overview
+The Veeam App for Palo Alto Networks XSOAR allows Veeam Data Platform Advanced and Premium customers to combine the automation and orchestration features of Cortex XSOAR with a simple and powerful [Veeam Data Platform](https://www.veeam.com/products/veeam-data-platform.html) that goes beyond backup, providing businesses with reliable data protection, seamless recovery, and streamlined data management. Using the data received from Veeam Backup & Replication and Veeam ONE REST APIs the Veeam App creates custom incidents related to malware detection and the health state of the backup infrastructure components. These incidents can be managed through built-in Veeam Incident Dashboard and resolved manually or automatically with built-in Veeam playbooks.
 
-Secure backup is critical to your cyber resilience. [Veeam Data Platform](https://www.veeam.com/products/veeam-data-platform.html) provides comprehensive capabilities to extend the principles of Zero Trust to data backup and recovery including Proactive Threat Hunting, Immutability Everywhere, and Secure Access.
-
-<~XSOAR>
-Using the data received from Veeam Backup & Replication and Veeam ONE REST APIs, the app creates custom incidents related to malware detection and the health state of the backup infrastructure components. These incidents can be managed through the built-in Veeam Incident dashboard and resolved manually or automatically with built-in Veeam playbooks.
-
-The content pack includes:
-
+The pack includes:
 - Veeam Incident Dashboard: an overview of all API activities and incidents handled by the Veeam App
-- Leverage custom incident types and fields related to malware detection and the health state of the backup infrastructure components
+- Leverage custom incident types and fields related to malware detection and health state of the backup infrastructure components
 - Predefined incident classifiers and incoming mappers for incident types
 - Ingestion of the most important security alerts and detections:
   - Configuration Backup State
@@ -23,37 +17,4 @@ The content pack includes:
 
 # Documentation
 
-[Veeam Helpcenter User Guide](https://helpcenter.veeam.com/docs/security_plugins_xsoar/guide/)
-
-# Screenshots
-
-![The XSOAR Dashboard](https://raw.githubusercontent.com/demisto/content/master/Packs/Veeam/doc_files/Veeam_XSOAR_Dashboard.png)
-
-![Veeam - Start Instant VM Recovery Automatically](https://raw.githubusercontent.com/demisto/content/master/Packs/Veeam/doc_files/Veeam_XSOAR_Playbooks.png)
-</~XSOAR>
-<~XSIAM>
-This app allows Veeam Data Platform Advanced and Premium users to monitor various security activities in their Veeam backup infrastructure for:
-
-- Veeam Backup & Replication events.
-- Alarms triggered by Veeam ONE.
-
-The app gets information from the event forwarding capabilities via syslog servers integrated with Veeam Backup & Replication and Veeam ONE, parses the data and displays it on the Veeam Data Platform Monitoring dashboard. For events and alarms with Medium, High and Critical severity, the app generates alerts and displays them on the Veeam Security Activities dashboard.
-
-The content pack includes:
-
-- Built-in dashboards to monitor job statuses and security activities on a daily basis.
-- Built-in reports.
-- Multiple data source support.
-
-# Documentation
-
-[Veeam Helpcenter User Guide](https://helpcenter.veeam.com/docs/security_plugins_xsiam/guide/)
-
-The documentation also includes examples of correlation rules for Veeam security activities.
-
-# Screenshots
-
-![The Security Dashboard](https://raw.githubusercontent.com/demisto/content/master/Packs/Veeam/XSIAMDashboards/Veeam_Security_Activities_Dashboard_image.png)
-
-![The Moitoring Dashboard](https://raw.githubusercontent.com/demisto/content/master/Packs/Veeam/XSIAMDashboards/Veeam_Data_Platform_Monitoring_Dashboard_image.png)
-</~XSIAM>
+[Veeam App for Palo Alto XSOAR User Guide](https://helpcenter.veeam.com/docs/security_plugins_xsoar/guide/)
