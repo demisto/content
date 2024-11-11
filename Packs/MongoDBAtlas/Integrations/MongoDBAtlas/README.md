@@ -19,6 +19,16 @@ This integration was integrated and tested with version 2.0 of MongoDB Atlas.
 
 4. Click **Test** to validate the URLs, token, and connection.
 
+
+## Additional Information
+Groups and projects are synonymous terms. Your group id is the same as your project id. For existing groups, your group/project id remains the same. The resource and corresponding endpoints use the term groups.
+
+### Authentication and authorization:
+#### Grant Programmatic Access to a Project
+Use the following procedures to grant programmatic access to a project. 
+To learn more, see [Manage Programmatic Access to a Project](https://www.mongodb.com/docs/atlas/configure-api-access-project/#std-label-atlas-admin-api-access-project).
+
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
