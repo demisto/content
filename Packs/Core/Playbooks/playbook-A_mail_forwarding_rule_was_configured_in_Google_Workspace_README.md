@@ -1,4 +1,4 @@
-This playbook addresses the following alerts:
+This playbook handles the following alerts:
 
 - A mail forwarding rule was configured in Google Workspace.
 - A mail forwarding rule was configured in Google Workspace to an uncommon domain.
