@@ -1960,11 +1960,11 @@ script:
     - contextPath: File.OrganizationLastSeen
       description: When the indicator was last seen in the organization.
       type: Date
-    - contextPath: File.GlobalFirstSeen
-      description: When the indicator was first seen across all organizations.
+    - contextPath: File.FirstSeenBySource
+      description: When the indicator was first seen by the source vendor.
       type: Date
-    - contextPath: File.GlobalLastSeen 
-      description: When the indicator was last seen across all organizations.
+    - contextPath: File.LastSeenBySource 
+      description: When the indicator was last seen by the source vendor.
       type: Date
     polling: true
   - arguments:

@@ -3474,8 +3474,8 @@ def get_file_statistics_indicator(file_hash: str, file_stat_response: dict) -> C
         global_prevalence=file_stat_response.get('globallyPrevalence'),
         organization_first_seen=file_stat_response.get('orgFirstSeen'),
         organization_last_seen=file_stat_response.get('orgLastSeen'),
-        global_first_seen=file_stat_response.get('globalFirstObserved'),
-        global_last_seen=file_stat_response.get('globalLastObserved'),
+        first_seen_by_source=file_stat_response.get('globalFirstObserved'),
+        last_seen_by_source=file_stat_response.get('globalLastObserved'),
     )
 
 

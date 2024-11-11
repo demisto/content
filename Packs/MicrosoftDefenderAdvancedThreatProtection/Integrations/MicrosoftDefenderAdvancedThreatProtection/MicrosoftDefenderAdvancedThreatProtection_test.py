@@ -2997,8 +2997,8 @@ def test_get_file_statistics_indicator():
         'OrganizationPrevalence': 'organizationPrevalence',
         'OrganizationFirstSeen': 'orgFirstSeen',
         'OrganizationLastSeen': 'orgLastSeen',
-        'GlobalFirstSeen': 'globalFirstObserved',
-        'GlobalLastSeen': 'globalLastObserved',
+        'FirstSeenBySource': 'globalFirstObserved',
+        'LastSeenBySource': 'globalLastObserved',
     }
 
     # Arrange

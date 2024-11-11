@@ -18,7 +18,7 @@
     "group": 2,
     "hidden": false,
     "openEnded": false,
-    "description": "How frequently a specific indicator type is detected across all organizations.",
+    "description": "How frequently the indicator is detected across all organizations.",
     "associatedTypes": [
         "Domain",
         "IP",

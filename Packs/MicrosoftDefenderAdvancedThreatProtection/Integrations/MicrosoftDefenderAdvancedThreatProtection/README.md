@@ -2529,8 +2529,8 @@ File.Read.All
 | File.GlobalPrevalence | Number | How frequently the indicator is detected across all organizations. |
 | File.OrganizationFirstSeen | Date | When the indicator was first seen in the organization. |
 | File.OrganizationLastSeen | Date | When the indicator was last seen in the organization. |
-| File.GlobalFirstSeen | Date | When the indicator was first seen across all organizations. |
-| File.GlobalLastSeen | Date | When the indicator was last seen across all organizations. |
+| File.FirstSeenBySource | Date | When the indicator was first seen by the source vendor. |
+| File.LastSeenBySource | Date | When the indicator was last seen by the source vendor. |
 
 ##### Command Example
 
@@ -2542,8 +2542,8 @@ File.Read.All
 {
     "File": {
         "SHA1": "9fe3ba25e5660c23dfe478d577cfacde5795870c",
-        "GlobalFirstSeen": "2019-04-03T04:10:18.1001071Z",
-        "GlobalLastSeen": "2020-03-23T09:24:54.169574Z",
+        "FirstSeenBySource": "2019-04-03T04:10:18.1001071Z",
+        "LastSeenBySource": "2020-03-23T09:24:54.169574Z",
         "GlobalPrevalence": 1355899,
         "Hashes":[
             {

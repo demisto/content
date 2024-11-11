@@ -282,12 +282,12 @@
         "simple": "URL.OrganizationLastSeen",
         "complex": null
     },
-    "globalfirstseen": {
-        "simple": "URL.GlobalFirstSeen",
+    "firstseenbysource": {
+        "simple": "URL.FirstSeenBySource",
         "complex": null
     },
-    "globallastseen": {
-        "simple": "URL.GlobalLastSeen",
+    "lastseenbysource": {
+        "simple": "URL.LastSeenBySource",
         "complex": null
     }
   },

@@ -246,12 +246,12 @@
             "simple": "IPv6.OrganizationLastSeen",
             "complex": null
         },
-        "globalfirstseen": {
-            "simple": "IPv6.GlobalFirstSeen",
+        "firstseenbysource": {
+            "simple": "IPv6.FirstSeenBySource",
             "complex": null
         },
-        "globallastseen": {
-            "simple": "IPv6.GlobalLastSeen",
+        "lastseenbysource": {
+            "simple": "IPv6.LastSeenBySource",
             "complex": null
         }
     },

@@ -552,12 +552,12 @@
             "simple": "Domain.OrganizationLastSeen",
             "complex": null
         },
-        "globalfirstseen": {
-            "simple": "Domain.GlobalFirstSeen",
+        "firstseenbysource": {
+            "simple": "Domain.FirstSeenBySource",
             "complex": null
         },
-        "globallastseen": {
-            "simple": "Domain.GlobalLastSeen",
+        "lastseenbysource": {
+            "simple": "Domain.LastSeenBySource",
             "complex": null
         }
     },

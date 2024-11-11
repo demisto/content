@@ -493,12 +493,12 @@
         "simple": "File.OrganizationLastSeen",
         "complex": null
       },
-      "globalfirstseen": {
-        "simple": "File.GlobalFirstSeen",
+      "firstseenbysource": {
+        "simple": "File.FirstSeenBySource",
         "complex": null
       },
-      "globallastseen": {
-        "simple": "File.GlobalLastSeen",
+      "lastseenbysource": {
+        "simple": "File.LastSeenBySource",
         "complex": null
       }
     },

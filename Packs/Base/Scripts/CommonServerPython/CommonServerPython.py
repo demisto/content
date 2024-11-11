@@ -3207,10 +3207,10 @@ class Common(object):
         :param dbot_score: If IP has a score then create and set a DBotScore object.
 
         :type organization_prevalence: ``int``
-        :param organization_prevalence: How frequently within a particular organization.
+        :param organization_prevalence: How frequently the indicator is detected within a particular organization.
 
         :type global_prevalence: ``int``
-        :param global_prevalence: How frequently across all organizations.
+        :param global_prevalence: How frequently the indicator is detected across all organizations.
 
         :type organization_first_seen: ``str``
         :param organization_first_seen: ISO 8601 date time string; when the indicator was first seen in the organization.
@@ -3218,11 +3218,11 @@ class Common(object):
         :type organization_last_seen: ``str``
         :param organization_last_seen: ISO 8601 date time string; the last time a specific organization encountered an indicator.
 
-        :type global_first_seen: ``str``
-        :param global_first_seen: ISO 8601 date time string; when the indicator was first seen across all organizations.
+        :type first_seen_by_source: ``str``
+        :param first_seen_by_source: ISO 8601 date time string; when the indicator was first seen by the source vendor.
 
-        :type global_last_seen: ``str``
-        :param global_last_seen: ISO 8601 date time string; the last time an indicator was detected globally across all organizations.
+        :type last_seen_by_source: ``str``
+        :param last_seen_by_source: ISO 8601 date time string; when the indicator was last seen by the source vendor.
 
         :return: None
         :rtype: ``None``
@@ -3241,7 +3241,7 @@ class Common(object):
                      malware_family=None, relationships=None, blocked=None, description=None, stix_id=None,
                      whois_records=None, organization_prevalence=None,
                      global_prevalence=None, organization_first_seen=None, organization_last_seen=None,
-                     global_first_seen=None, global_last_seen=None):
+                     first_seen_by_source=None, last_seen_by_source=None):
 
             # Main value of the indicator
             self.ip = ip
@@ -3287,8 +3287,8 @@ class Common(object):
             self.global_prevalence = global_prevalence
             self.organization_first_seen = organization_first_seen
             self.organization_last_seen = organization_last_seen
-            self.global_first_seen = global_first_seen
-            self.global_last_seen = global_last_seen
+            self.first_seen_by_source = first_seen_by_source
+            self.last_seen_by_source = last_seen_by_source
 
             if not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
@@ -3412,11 +3412,11 @@ class Common(object):
             if self.organization_last_seen:
                 ip_context['OrganizationLastSeen'] = self.organization_last_seen
 
-            if self.global_first_seen:
-                ip_context['GlobalFirstSeen'] = self.global_first_seen
+            if self.first_seen_by_source:
+                ip_context['FirstSeenBySource'] = self.first_seen_by_source
 
-            if self.global_last_seen:
-                ip_context['GlobalLastSeen'] = self.global_last_seen
+            if self.last_seen_by_source:
+                ip_context['LastSeenBySource'] = self.last_seen_by_source
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 ip_context['Malicious'] = {
@@ -3917,10 +3917,10 @@ class Common(object):
         :param stix_id: File assigned STIX ID.
 
         :type organization_prevalence: ``int``
-        :param organization_prevalence: How frequently within a particular organization.
+        :param organization_prevalence: How frequently the indicator is detected within a particular organization.
 
         :type global_prevalence: ``int``
-        :param global_prevalence: How frequently across all organizations.
+        :param global_prevalence: How frequently the indicator is detected across all organizations.
 
         :type organization_first_seen: ``str``
         :param organization_first_seen: ISO 8601 date time string; when the indicator was first seen in the organization.
@@ -3928,11 +3928,11 @@ class Common(object):
         :type organization_last_seen: ``str``
         :param organization_last_seen: ISO 8601 date time string; the last time a specific organization encountered an indicator.
 
-        :type global_first_seen: ``str``
-        :param global_first_seen: ISO 8601 date time string; when the indicator was first seen across all organizations.
+        :type first_seen_by_source: ``str``
+        :param first_seen_by_source: ISO 8601 date time string; when the indicator was first seen by the source vendor.
 
-        :type global_last_seen: ``str``
-        :param global_last_seen: ISO 8601 date time string; the last time an indicator was detected globally across all organizations.
+        :type last_seen_by_source: ``str``
+        :param last_seen_by_source: ISO 8601 date time string; when the indicator was last seen by the source vendor.
 
         :rtype: ``None``
         :return: None
@@ -3950,7 +3950,7 @@ class Common(object):
                      publications=None, threat_types=None, behaviors=None, relationships=None,
                      creation_date=None, description=None, hashes=None, stix_id=None, organization_prevalence=None,
                      global_prevalence=None, organization_first_seen=None, organization_last_seen=None,
-                     global_first_seen=None, global_last_seen=None):
+                     first_seen_by_source=None, last_seen_by_source=None):
 
             # Main value of a file (Hashes)
             self.md5 = md5
@@ -3995,8 +3995,8 @@ class Common(object):
             self.global_prevalence = global_prevalence
             self.organization_first_seen = organization_first_seen
             self.organization_last_seen = organization_last_seen
-            self.global_first_seen = global_first_seen
-            self.global_last_seen = global_last_seen
+            self.first_seen_by_source = first_seen_by_source
+            self.last_seen_by_source = last_seen_by_source
 
             # XSOAR Fields
             self.relationships = relationships
@@ -4124,11 +4124,11 @@ class Common(object):
             if self.organization_last_seen:
                 file_context['OrganizationLastSeen'] = self.organization_last_seen
 
-            if self.global_first_seen:
-                file_context['GlobalFirstSeen'] = self.global_first_seen
+            if self.first_seen_by_source:
+                file_context['FirstSeenBySource'] = self.first_seen_by_source
 
-            if self.global_last_seen:
-                file_context['GlobalLastSeen'] = self.global_last_seen
+            if self.last_seen_by_source:
+                file_context['LastSeenBySource'] = self.last_seen_by_source
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 file_context['Malicious'] = {
@@ -4483,10 +4483,10 @@ class Common(object):
         :param stix_id: The URL STIX ID.
 
         :type organization_prevalence: ``int``
-        :param organization_prevalence: How frequently within a particular organization.
+        :param organization_prevalence: How frequently the indicator is detected within a particular organization.
 
         :type global_prevalence: ``int``
-        :param global_prevalence: How frequently across all organizations.
+        :param global_prevalence: How frequently the indicator is detected across all organizations.
 
         :type organization_first_seen: ``str``
         :param organization_first_seen: ISO 8601 date time string; when the indicator was first seen in the organization.
@@ -4494,11 +4494,11 @@ class Common(object):
         :type organization_last_seen: ``str``
         :param organization_last_seen: ISO 8601 date time string; the last time a specific organization encountered an indicator.
 
-        :type global_first_seen: ``str``
-        :param global_first_seen: ISO 8601 date time string; when the indicator was first seen across all organizations.
+        :type first_seen_by_source: ``str``
+        :param first_seen_by_source: ISO 8601 date time string; when the indicator was first seen by the source vendor.
 
-        :type global_last_seen: ``str``
-        :param global_last_seen: ISO 8601 date time string; the last time an indicator was detected globally across all organizations.
+        :type last_seen_by_source: ``str``
+        :param last_seen_by_source: ISO 8601 date time string; when the indicator was last seen by the source vendor.
 
         :return: None
         :rtype: ``None``
@@ -4511,7 +4511,7 @@ class Common(object):
                      geo_country=None, organization=None, community_notes=None, publications=None, relationships=None,
                      blocked=None, certificates=None, description=None, stix_id=None, organization_prevalence=None,
                      global_prevalence=None, organization_first_seen=None, organization_last_seen=None,
-                     global_first_seen=None, global_last_seen=None):
+                     first_seen_by_source=None, last_seen_by_source=None):
 
             # Main indicator value
             self.url = url
@@ -4544,8 +4544,8 @@ class Common(object):
             self.global_prevalence = global_prevalence
             self.organization_first_seen = organization_first_seen
             self.organization_last_seen = organization_last_seen
-            self.global_first_seen = global_first_seen
-            self.global_last_seen = global_last_seen
+            self.first_seen_by_source = first_seen_by_source
+            self.last_seen_by_source = last_seen_by_source
 
             # XSOAR Fields
             self.relationships = relationships
@@ -4631,11 +4631,11 @@ class Common(object):
             if self.organization_last_seen:
                 url_context['OrganizationLastSeen'] = self.organization_last_seen
 
-            if self.global_first_seen:
-                url_context['GlobalFirstSeen'] = self.global_first_seen
+            if self.first_seen_by_source:
+                url_context['FirstSeenBySource'] = self.first_seen_by_source
 
-            if self.global_last_seen:
-                url_context['GlobalLastSeen'] = self.global_last_seen
+            if self.last_seen_by_source:
+                url_context['LastSeenBySource'] = self.last_seen_by_source
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 url_context['Malicious'] = {
@@ -4680,10 +4680,10 @@ class Common(object):
         :param dns_records: A list of DNS records for the domain.
 
         :type organization_prevalence: ``int``
-        :param organization_prevalence: How frequently within a particular organization.
+        :param organization_prevalence: How frequently the indicator is detected within a particular organization.
 
         :type global_prevalence: ``int``
-        :param global_prevalence: How frequently across all organizations.
+        :param global_prevalence: How frequently the indicator is detected across all organizations.
 
         :type organization_first_seen: ``str``
         :param organization_first_seen: ISO 8601 date time string; when the indicator was first seen in the organization.
@@ -4691,11 +4691,11 @@ class Common(object):
         :type organization_last_seen: ``str``
         :param organization_last_seen: ISO 8601 date time string; the last time a specific organization encountered an indicator.
 
-        :type global_first_seen: ``str``
-        :param global_first_seen: ISO 8601 date time string; when the indicator was first seen across all organizations.
+        :type first_seen_by_source: ``str``
+        :param first_seen_by_source: ISO 8601 date time string; when the indicator was first seen by the source vendor.
 
-        :type global_last_seen: ``str``
-        :param global_last_seen: ISO 8601 date time string; the last time an indicator was detected globally across all organizations.
+        :type last_seen_by_source: ``str``
+        :param last_seen_by_source: ISO 8601 date time string; when the indicator was last seen by the source vendor.
         """
         CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
 
@@ -4712,7 +4712,7 @@ class Common(object):
                      whois_records=None, relationships=None, description=None, stix_id=None, blocked=None,
                      certificates=None, dns_records=None, rank=None, organization_prevalence=None,
                      global_prevalence=None, organization_first_seen=None, organization_last_seen=None,
-                     global_first_seen=None, global_last_seen=None):
+                     first_seen_by_source=None, last_seen_by_source=None):
 
             # Main indicator value
             self.domain = domain
@@ -4779,8 +4779,8 @@ class Common(object):
             self.global_prevalence = global_prevalence
             self.organization_first_seen = organization_first_seen
             self.organization_last_seen = organization_last_seen
-            self.global_first_seen = global_first_seen
-            self.global_last_seen = global_last_seen
+            self.first_seen_by_source = first_seen_by_source
+            self.last_seen_by_source = last_seen_by_source
 
             # XSOAR Fields
             self.relationships = relationships
@@ -4877,11 +4877,11 @@ class Common(object):
             if self.organization_last_seen:
                 domain_context['OrganizationLastSeen'] = self.organization_last_seen
 
-            if self.global_first_seen:
-                domain_context['GlobalFirstSeen'] = self.global_first_seen
+            if self.first_seen_by_source:
+                domain_context['FirstSeenBySource'] = self.first_seen_by_source
 
-            if self.global_last_seen:
-                domain_context['GlobalLastSeen'] = self.global_last_seen
+            if self.last_seen_by_source:
+                domain_context['LastSeenBySource'] = self.last_seen_by_source
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 domain_context['Malicious'] = {

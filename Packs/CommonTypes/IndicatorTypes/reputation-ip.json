@@ -463,12 +463,12 @@
             "simple": "IP.OrganizationLastSeen",
             "complex": null
         },
-        "globalfirstseen": {
-            "simple": "IP.GlobalFirstSeen",
+        "firstseenbysource": {
+            "simple": "IP.FirstSeenBySource",
             "complex": null
         },
-        "globallastseen": {
-            "simple": "IP.GlobalLastSeen",
+        "lastseenbysource": {
+            "simple": "IP.LastSeenBySource",
             "complex": null
         }
     },
