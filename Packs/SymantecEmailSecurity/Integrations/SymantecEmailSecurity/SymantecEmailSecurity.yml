@@ -165,13 +165,13 @@ script:
       description: 'Email direction. Can be one of: I=Inbound, O=Outbound or B=Both.'
       type: String
     - contextPath: SymantecEmailSecurity.IOC.remediationAction
-      description: 'Remediation Action can be one of: B=Block and delete, Q=Quarantine, M=Redirect, T=Tag subject or H=Append header.'
+      description: 'Remediation Action. Can be one of: B=Block and delete, Q=Quarantine, M=Redirect, T=Tag subject or H=Append header.'
       type: String
     - contextPath: SymantecEmailSecurity.IOC.expiryDate
       description: Retention period for an IOC until it is removed from the system.
       type: String
   - name: symantec-email-security-ioc-action
-    description: Add, update, delete and renew multiple IOCs through the `entry_id` or a single through the rest of the parameters.
+    description: Add, update, delete, and renew multiple IOCs through the `entry_id` or a single IOC through the rest of the parameters.
     arguments:
     - name: domain
       description: Run the command for a specific domain, for all domains use 'global'. Run `symantec-email-security-email-queue-list` to get a list of available domains.
@@ -255,7 +255,7 @@ script:
       - ec-reports
       default: true
     - name: start_from
-      description: 'Start time from for reading metadata. Accepted formats: any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute. Max start time is 1095 days before current date.'
+      description: 'Start time for reading metadata. Accepted formats: any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute. Max start time is 1095 days before current date.'
       defaultValue: 3 days
     - name: include_delivery
       description: Only relevant to `all` feed. Contains metadata that describes both inbound and outbound email delivery to provide visibility into email tracing, TLS compliance, and routing.
@@ -756,10 +756,10 @@ script:
       - 'false'
     outputs:
     - contextPath: SymantecEmailSecurity.EmailQueue.TotalMessagesInbound
-      description: Total number inbound messages in queue, for all domains.
+      description: Total number of inbound messages in the queue, for all domains.
       type: Number
     - contextPath: SymantecEmailSecurity.EmailQueue.TotalMessagesOutbound
-      description: Total number of outbound messages in queue, for all domains.
+      description: Total number of outbound messages in the queue, for all domains.
       type: Number
     - contextPath: SymantecEmailSecurity.EmailQueue.MeanTimeInQueueInbound
       description: Average (mean) queue wait for inbound messages, for all domains. Measured in seconds.
@@ -768,10 +768,10 @@ script:
       description: Average (mean) queue wait for outbound messages, for all domains. Measured in seconds.
       type: Number
     - contextPath: SymantecEmailSecurity.EmailQueue.LongestTimeInInbound
-      description: How long the oldest message in the inbound queue has been queue, across all domains. Measured in seconds.
+      description: How long the oldest message in the inbound queue has been queued, across all domains. Measured in seconds.
       type: Number
     - contextPath: SymantecEmailSecurity.EmailQueue.LongestTimeInOutbound
-      description: How long the oldest message in the outbound queue has been queue, across all domains. Measured in seconds.
+      description: How long the oldest message in the outbound queue has been queued, across all domains. Measured in seconds.
       type: Number
     - contextPath: SymantecEmailSecurity.EmailQueue.Domains.Name
       description: Name of the domain.
@@ -789,10 +789,10 @@ script:
       description: Number of outbound messages that have been processed and are waiting to be delivered.
       type: Number
     - contextPath: SymantecEmailSecurity.EmailQueue.Domains.LongestTimeInReceiveQueueInbound
-      description: Oldest inbound message in queue waiting to be processed. Measured in seconds.
+      description: Oldest inbound message in the queue waiting to be processed. Measured in seconds.
       type: Number
     - contextPath: SymantecEmailSecurity.EmailQueue.Domains.LongestTimeInReceiveQueueOutbound
-      description: Oldest outbound message in queue waiting to be processed. Measured in seconds.
+      description: Oldest outbound message in the queue waiting to be processed. Measured in seconds.
       type: Number
     - contextPath: SymantecEmailSecurity.EmailQueue.Domains.LongestTimeInDeliveryQueueInbound
       description: Oldest inbound message waiting to be delivered after processing. Measured in seconds.
@@ -894,7 +894,7 @@ script:
       description: ID of the user.
       type: Number
     - contextPath: SymantecEmailSecurity.QuarantineEmail.metadata.email_envelope_sender
-      description: Address to respond in the case of bounce messages or errors.
+      description: Address to respond to in case of bounce messages or errors.
       type: String
     - contextPath: SymantecEmailSecurity.QuarantineEmail.metadata.email_subject
       description: Subject of the email.
@@ -994,7 +994,7 @@ script:
       isArray: true
       default: true
     - name: recipient
-      description: An email address to which the mails have to be released instead of the recipient users address.
+      description: An email address to which the mails have to be released instead of the recipient user's address.
     - name: headers
       description: Comma-separated list of x-headers that will be added to the message on release.
       isArray: true
@@ -1136,7 +1136,7 @@ script:
       description: ID of SUDULS item to be added/updated. Only required when updating an existing item. Run `symantec-email-security-item-block-list` to get a list of items.
     - name: email_or_domain
       required: True
-      description: Email address or domain to be added in the block list.
+      description: Email address or domain to be added to the block list.
     - name: description
       description: Description of the item to be added to the block list.
       required: True

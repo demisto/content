@@ -20,7 +20,7 @@ This integration was integrated and tested with version 10.6.6 of Symantec Email
     | Server URL - IOC |  |  |
     | Server URL - Data Feeds |  |  |
     | Server URL - Email Queue |  |  |
-    | Server URL - Quarantine | The Quarantine API is available for United States \(us\) and European Union \(eu\). |  |
+    | Server URL - Quarantine | The Quarantine API is available for the United States \(us\) and European Union \(eu\). |  |
     | Username |  | False |
     | Password |  | False |
     | Quarantine Username |  | False |
@@ -58,7 +58,7 @@ List the IOCs that apply to a specific domain or to all domains.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Run the command for a specific domain or all domains with 'global'. Use `symantec-email-security-email-queue-list` to get a list of available domains. Default is global. | Optional |
+| domain | Run the command for a specific domain. For all domains use'global'. Use `symantec-email-security-email-queue-list` to get a list of available domains. Default is global. | Optional |
 | limit | The maximum number of records to return. Default is 50. | Optional |
 | all_results | Whether to retrieve all the results by overriding the default limit. Possible values are: true, false. | Optional |
 
@@ -69,10 +69,10 @@ List the IOCs that apply to a specific domain or to all domains.
 | SymantecEmailSecurity.IOC.iocBlackListId | String | ID of the IOC. |
 | SymantecEmailSecurity.IOC.iocType | String | Type of the IOC value. |
 | SymantecEmailSecurity.IOC.iocValue | String | Value of the IOC. |
-| SymantecEmailSecurity.IOC.status | String | Wether the IOC is active. |
+| SymantecEmailSecurity.IOC.status | String | Whether the IOC is active. |
 | SymantecEmailSecurity.IOC.description | String | Description of the IOC. |
-| SymantecEmailSecurity.IOC.emailDirection | String | Email direction can be one of: I=Inbound, O=Outbound or B=Both. |
-| SymantecEmailSecurity.IOC.remediationAction | String | Remediation Action can be one of: B=Block and delete, Q=Quarantine, M=Redirect, T=Tag subject or H=Append header. |
+| SymantecEmailSecurity.IOC.emailDirection | String | Email direction. Can be one of: I=Inbound, O=Outbound or B=Both. |
+| SymantecEmailSecurity.IOC.remediationAction | String | Remediation Action. Can be one of: B=Block and delete, Q=Quarantine, M=Redirect, T=Tag subject or H=Append header. |
 | SymantecEmailSecurity.IOC.expiryDate | String | Retention period for an IOC until it is removed from the system. |
 
 #### Command example
@@ -107,7 +107,7 @@ List the IOCs that apply to a specific domain or to all domains.
 ### symantec-email-security-ioc-action
 
 ***
-Add, update, delete and renew multiple IOCs through the `entry_id` or a single through the rest of the parameters.
+Add, update, delete and renew multiple IOCs through the `entry_id` or a single IOC through the rest of the parameters.
 
 #### Base Command
 
@@ -117,7 +117,7 @@ Add, update, delete and renew multiple IOCs through the `entry_id` or a single t
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Run the command for a specific domain or all domains with 'global'. Use `symantec-email-security-email-queue-list` to get a list of available domains. Default is global. | Optional |
+| domain | Run the command for a specific domain. For all domains use 'global'. Use `symantec-email-security-email-queue-list` to get a list of available domains. Default is global. | Optional |
 | action | Defines the action for IOCs: 'merge' to merge or update IOCs in the database by their type and value without inputting `ioc_id`; 'replace' to delete and replace all IOCs in the database without inputting `ioc_id`; 'ioc' to add, update, delete, or renew multiple IOCs each with their own action, use this only when entering an `entry_id`; 'add' to add an IOC without inputting `ioc_id`. Possible values are: merge, replace, upload_ioc_json, add, update, delete, renew. | Required |
 | entry_id | Entry ID of a JSON file to pass multiple IOCs. Only accepts `action=merge/replace/ioc`. Example value: [{"APIRowAction": "U", "IocBlacklistId": xxxx, "IocType": "url", "IocValue": "https://www.example.com", "Description": "Hello World!"}]. More about IOCs can be found in: https://techdocs.broadcom.com/content/dam/broadcom/techdocs/us/en/dita/symantec-security-software/email-security/email-security-cloud/content/Indicators-of-Compromise-(IOC)-Blacklist-API-Guide.pdf. | Optional |
 | ioc_id | ID of the IOC. Can't be used with action=`merge`\replace\`add`. | Optional |
@@ -149,7 +149,7 @@ Renew all IOCs previously uploaded and still in the database, whether active or 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Run the command for a specific domain or all domains with 'global'. Use `symantec-email-security-email-queue-list` to get a list of available domains. Default is global. | Optional |
+| domain | Run the command for a specific domain. For all domains use 'global'. Use `symantec-email-security-email-queue-list` to get a list of available domains. Default is global. | Optional |
 
 #### Context Output
 
@@ -174,7 +174,7 @@ Retrieves data feeds from Symantec Email Security.cloud. Available feeds: 'all' 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | feed_type | The type of the email data feed to retrieve. Possible values are: all, malware, threat-isolation, clicktime, anti-spam, ec-reports. Default is all. | Optional |
-| start_from | Start time from for reading metadata. Accepted formats: any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute. Max start time is 1095 days before current date. Default is 3 days. | Optional |
+| start_from | Start time for reading metadata. Accepted formats: any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute. Max start time is 1095 days before current date. Default is 3 days. | Optional |
 | include_delivery | Only relevant to `all` feed. Contains metadata that describes both inbound and outbound email delivery to provide visibility into email tracing, TLS compliance, and routing. Possible values are: false, true. | Optional |
 | fetch_only_incidents | Whether to fetch only incident fields. Possible values are: true, false. | Optional |
 | limit | The maximum number of records to return. Default is 50. | Optional |
@@ -503,19 +503,19 @@ Returns a list of domains owned by the customer, with queue statistics for each 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SymantecEmailSecurity.EmailQueue.TotalMessagesInbound | Number | Total number inbound messages in queue, for all domains. |
-| SymantecEmailSecurity.EmailQueue.TotalMessagesOutbound | Number | Total number of outbound messages in queue, for all domains. |
+| SymantecEmailSecurity.EmailQueue.TotalMessagesInbound | Number | Total number of inbound messages in the queue, for all domains. |
+| SymantecEmailSecurity.EmailQueue.TotalMessagesOutbound | Number | Total number of outbound messages in the queue, for all domains. |
 | SymantecEmailSecurity.EmailQueue.MeanTimeInQueueInbound | Number | Average \(mean\) queue wait for inbound messages, for all domains. Measured in seconds. |
 | SymantecEmailSecurity.EmailQueue.MeanTimeInQueueOutbound | Number | Average \(mean\) queue wait for outbound messages, for all domains. Measured in seconds. |
-| SymantecEmailSecurity.EmailQueue.LongestTimeInInbound | Number | How long the oldest message in the inbound queue has been queue, across all domains. Measured in seconds. |
-| SymantecEmailSecurity.EmailQueue.LongestTimeInOutbound | Number | How long the oldest message in the outbound queue has been queue, across all domains. Measured in seconds. |
+| SymantecEmailSecurity.EmailQueue.LongestTimeInInbound | Number | How long the oldest message in the inbound queue has been queued, across all domains. Measured in seconds. |
+| SymantecEmailSecurity.EmailQueue.LongestTimeInOutbound | Number | How long the oldest message in the outbound queue has been queued, across all domains. Measured in seconds. |
 | SymantecEmailSecurity.EmailQueue.Domains.Name | String | Name of the domain. |
 | SymantecEmailSecurity.EmailQueue.Domains.ReceiveQueueCountInbound | Number | Number of inbound messages waiting to be processed. |
 | SymantecEmailSecurity.EmailQueue.Domains.ReceiveQueueCountOutbound | Number | Number of outbound messages waiting to be processed. |
 | SymantecEmailSecurity.EmailQueue.Domains.DeliveryQueueCountInbound | Number | Number of inbound messages that have been processed and are waiting to be delivered. |
 | SymantecEmailSecurity.EmailQueue.Domains.DeliveryQueueCountOutbound | Number | Number of outbound messages that have been processed and are waiting to be delivered. |
-| SymantecEmailSecurity.EmailQueue.Domains.LongestTimeInReceiveQueueInbound | Number | Oldest inbound message in queue waiting to be processed. Measured in seconds. |
-| SymantecEmailSecurity.EmailQueue.Domains.LongestTimeInReceiveQueueOutbound | Number | Oldest outbound message in queue waiting to be processed. Measured in seconds. |
+| SymantecEmailSecurity.EmailQueue.Domains.LongestTimeInReceiveQueueInbound | Number | Oldest inbound message in the queue waiting to be processed. Measured in seconds. |
+| SymantecEmailSecurity.EmailQueue.Domains.LongestTimeInReceiveQueueOutbound | Number | Oldest outbound message in the queue waiting to be processed. Measured in seconds. |
 | SymantecEmailSecurity.EmailQueue.Domains.LongestTimeInDeliveryQueueInbound | Number | Oldest inbound message waiting to be delivered after processing. Measured in seconds. |
 | SymantecEmailSecurity.EmailQueue.Domains.LongestTimeInDeliveryQueueOutbound | Number | Oldest outbound message waiting to be delivered after processing. Measured in seconds. |
 | SymantecEmailSecurity.EmailQueue.Domains.MeanTimeInReceiveQueueInbound | Number | Average \(mean\) wait time for inbound messages waiting to be processed. Measured in seconds. |
@@ -612,7 +612,7 @@ Retrieves the metadata for quarantined emails belonging to the authenticated use
 | SymantecEmailSecurity.QuarantineEmail.metadata.service_type | String | Service type used for the email. |
 | SymantecEmailSecurity.QuarantineEmail.metadata.master_recipient | String | Recipient of the email. |
 | SymantecEmailSecurity.QuarantineEmail.metadata.user_id | Number | ID of the user. |
-| SymantecEmailSecurity.QuarantineEmail.metadata.email_envelope_sender | String | Address to respond in the case of bounce messages or errors. |
+| SymantecEmailSecurity.QuarantineEmail.metadata.email_envelope_sender | String | Address to respond to in case of bounce messages or errors. |
 | SymantecEmailSecurity.QuarantineEmail.metadata.email_subject | String | Subject of the email. |
 | SymantecEmailSecurity.QuarantineEmail.metadata.email_size | Number | Size of the email. |
 | SymantecEmailSecurity.QuarantineEmail.metadata.email_envelope_recipient | String | The RCPT TO address. |
@@ -919,7 +919,7 @@ Releases the set of quarantined emails specified in the request.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | message_ids | Comma-separated list of emails message IDs to release. Use `symantec-email-security-quarantine-email-list` to get a list of message IDs. | Required |
-| recipient | An email address to which the mails have to be released instead of the recipient users address. | Optional |
+| recipient | An email address to which the mails have to be released instead of the recipient user's address. | Optional |
 | headers | Comma-separated list of x-headers that will be added to the message on release. | Optional |
 | encrypt | If true adds an 'x-encrypted-quarantine-release: true' to the released email. Customers have to configure a corresponding DP rule that triggers encryption. Possible values are: true, false. | Optional |
 
@@ -1170,7 +1170,7 @@ Allows a SUDULS (allow quarantine users to maintain their own lists of email add
 | --- | --- | --- |
 | suduls_user | Email address of the user for whom the entry should be added in the block list. | Required |
 | item_id | ID of SUDULS item to be added/updated. Only required when updating an existing item. Use `symantec-email-security-item-block-list` to get a list of items. | Optional |
-| email_or_domain | Email address or domain to be added in the block list. | Required |
+| email_or_domain | Email address or domain to be added to the block list. | Required |
 | description | Description of the item to be added to the block list. | Required |
 
 #### Context Output
