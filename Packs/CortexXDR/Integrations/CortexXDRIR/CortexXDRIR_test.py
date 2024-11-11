@@ -830,7 +830,7 @@ def test_update_remote_system_command_closing_alerts_and_including_resolve_comme
         'status': 2,
     }
 
-    mock_update_incident_command = mocker.patch("CortexXDRIR.update_incident_command")
+    mocker.patch("CortexXDRIR.update_incident_command")
     mock_get_update_args = mocker.patch('CortexXDRIR.get_update_args')
     mock_update_related_alerts = mocker.patch('CortexXDRIR.update_related_alerts')
     incident_id = update_remote_system_command(client, args)

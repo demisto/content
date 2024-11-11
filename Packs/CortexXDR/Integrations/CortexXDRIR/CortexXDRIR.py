@@ -1032,10 +1032,9 @@ def update_remote_system_command(client, args):
                 demisto.debug(f"update_remote_system_command: xdr updated. {xsoar_to_xdr_delta=}")  # TODO: remove
 
                 should_close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
-                demisto.debug(f"update_remote_system_command {should_close_alerts_in_xdr=}")  # TODO: remove
+                demisto.debug(f"update_remote_system_command: aaa {should_close_alerts_in_xdr=}, {xsoar_to_xdr_delta=}")  # TODO: remove
 
-                # TODO: check when closing all alerts incident closed or not
-                if should_close_alerts_in_xdr and xsoar_to_xdr_delta.get('close_reason'):
+                if should_close_alerts_in_xdr:
                     update_related_alerts(client, xsoar_to_xdr_delta)
                     demisto.debug(f"update_remote_system_command: closed xdr alerts")
 
