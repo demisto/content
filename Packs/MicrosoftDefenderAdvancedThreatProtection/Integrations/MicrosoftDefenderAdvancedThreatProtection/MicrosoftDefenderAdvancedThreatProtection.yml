@@ -1955,16 +1955,16 @@ script:
       description: Indicates how frequently a specific indicator type is detected across all organizations.
       type: Number
     - contextPath: File.OrganizationFirstSeen
-      description: The first time a specific organization encountered an indicator.
+      description: When the indicator was first seen in the organization.
       type: Date
     - contextPath: File.OrganizationLastSeen
-      description: The most recent time a specific organization encountered an indicator.
+      description: When the indicator was last seen in the organization.
       type: Date
     - contextPath: File.GlobalFirstSeen
-      description: The first time an indicator was detected globally across all organizations.
+      description: When the indicator was first seen across all organizations.
       type: Date
     - contextPath: File.GlobalLastSeen 
-      description: The most recent time an indicator was detected globally across all organizations.
+      description: When the indicator was last seen across all organizations.
       type: Date
     polling: true
   - arguments:

@@ -2527,10 +2527,10 @@ File.Read.All
 | File.SHA1 | String | The SHA1 hash of the file. |
 | File.OrganizationPrevalence | Number | Indicates how frequently a specific indicator type is detected within a particular organization. |
 | File.GloballyPrevalence | Number | Indicates how frequently a specific indicator type is detected across all organizations. |
-| File.OrganizationFirstSeen | Date | The first time a specific organization encountered an indicator. |
-| File.OrganizationLastSeen | Date | The most recent time a specific organization encountered an indicator. |
-| File.GlobalFirstSeen | Date | The first time an indicator was detected globally across all organizations. |
-| File.GlobalLastSeen | Date | The most recent time an indicator was detected globally across all organizations. |
+| File.OrganizationFirstSeen | Date | When the indicator was first seen in the organization. |
+| File.OrganizationLastSeen | Date | When the indicator was last seen in the organization. |
+| File.GlobalFirstSeen | Date | When the indicator was first seen across all organizations. |
+| File.GlobalLastSeen | Date | When the indicator was last seen across all organizations. |
 
 ##### Command Example
 

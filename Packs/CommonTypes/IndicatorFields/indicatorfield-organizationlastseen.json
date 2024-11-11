@@ -18,7 +18,7 @@
     "group": 2,
     "hidden": false,
     "openEnded": false,
-    "description": "Most recent time a specific organization encountered an indicator.",
+    "description": "When the indicator was last seen in the organization.",
     "associatedTypes": [
         "Domain",
         "IP",

@@ -3213,13 +3213,13 @@ class Common(object):
         :param globally_prevalence: The frequency of detection across all organizations.
 
         :type organization_first_seen: ``str``
-        :param organization_first_seen: ISO 8601 date time string; the first time a specific organization encountered an indicator.
+        :param organization_first_seen: ISO 8601 date time string; when the indicator was first seen in the organization.
 
         :type organization_last_seen: ``str``
         :param organization_last_seen: ISO 8601 date time string; the last time a specific organization encountered an indicator.
 
         :type global_first_seen: ``str``
-        :param global_first_seen: ISO 8601 date time string; the first time an indicator was detected globally across all organizations.
+        :param global_first_seen: ISO 8601 date time string; when the indicator was first seen across all organizations.
 
         :type global_last_seen: ``str``
         :param global_last_seen: ISO 8601 date time string; the last time an indicator was detected globally across all organizations.
@@ -3923,13 +3923,13 @@ class Common(object):
         :param globally_prevalence: The frequency of detection across all organizations.
 
         :type organization_first_seen: ``str``
-        :param organization_first_seen: ISO 8601 date time string; the first time a specific organization encountered an indicator.
+        :param organization_first_seen: ISO 8601 date time string; when the indicator was first seen in the organization.
 
         :type organization_last_seen: ``str``
         :param organization_last_seen: ISO 8601 date time string; the last time a specific organization encountered an indicator.
 
         :type global_first_seen: ``str``
-        :param global_first_seen: ISO 8601 date time string; the first time an indicator was detected globally across all organizations.
+        :param global_first_seen: ISO 8601 date time string; when the indicator was first seen across all organizations.
 
         :type global_last_seen: ``str``
         :param global_last_seen: ISO 8601 date time string; the last time an indicator was detected globally across all organizations.
@@ -4489,13 +4489,13 @@ class Common(object):
         :param globally_prevalence: The frequency of detection across all organizations.
 
         :type organization_first_seen: ``str``
-        :param organization_first_seen: ISO 8601 date time string; the first time a specific organization encountered an indicator.
+        :param organization_first_seen: ISO 8601 date time string; when the indicator was first seen in the organization.
 
         :type organization_last_seen: ``str``
         :param organization_last_seen: ISO 8601 date time string; the last time a specific organization encountered an indicator.
 
         :type global_first_seen: ``str``
-        :param global_first_seen: ISO 8601 date time string; the first time an indicator was detected globally across all organizations.
+        :param global_first_seen: ISO 8601 date time string; when the indicator was first seen across all organizations.
 
         :type global_last_seen: ``str``
         :param global_last_seen: ISO 8601 date time string; the last time an indicator was detected globally across all organizations.
@@ -4686,13 +4686,13 @@ class Common(object):
         :param globally_prevalence: The frequency of detection across all organizations.
 
         :type organization_first_seen: ``str``
-        :param organization_first_seen: ISO 8601 date time string; the first time a specific organization encountered an indicator.
+        :param organization_first_seen: ISO 8601 date time string; when the indicator was first seen in the organization.
 
         :type organization_last_seen: ``str``
         :param organization_last_seen: ISO 8601 date time string; the last time a specific organization encountered an indicator.
 
         :type global_first_seen: ``str``
-        :param global_first_seen: ISO 8601 date time string; the first time an indicator was detected globally across all organizations.
+        :param global_first_seen: ISO 8601 date time string; when the indicator was first seen across all organizations.
 
         :type global_last_seen: ``str``
         :param global_last_seen: ISO 8601 date time string; the last time an indicator was detected globally across all organizations.

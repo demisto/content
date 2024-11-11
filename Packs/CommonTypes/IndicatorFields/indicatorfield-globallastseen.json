@@ -18,7 +18,7 @@
     "group": 2,
     "hidden": false,
     "openEnded": false,
-    "description": "Most recent time an indicator was detected globally across all organizations.",
+    "description": "When the indicator was last seen across all organizations.",
     "associatedTypes": [
         "Domain",
         "IP",
