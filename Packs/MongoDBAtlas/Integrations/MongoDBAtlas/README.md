@@ -10,8 +10,8 @@ This integration was integrated and tested with version 2.0 of MongoDB Atlas.
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL | The endpoint URL. | True |
-    | Public Key | The Public Key to use for connection | True |
-    | Private Key | The Private Key to use for connection | True |
+    | Public Key | The Public Key to use for connection. | True |
+    | Private Key | The Private Key to use for connection. | True |
     | Group ID | The Project ID from MongoDB Atlas account. | True |
     | Maximum number of events per fetch | Defines the maximum number of alerts or events fetched per type in each fetch cycle. Default value: 2500. | True |
     | Trust any certificate (not secure) |  | False |
@@ -37,7 +37,7 @@ Retrieves a list of events from the MongoDB Atlas instance.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
+| should_push_events | Set this argument to True in order to create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
 | limit | Maximum number of events to return. | Required | 
 
 #### Context Output

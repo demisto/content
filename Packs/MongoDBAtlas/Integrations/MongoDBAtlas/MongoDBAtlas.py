@@ -80,15 +80,15 @@ class Client(BaseClient):
         )
         return results
 
-    def first_time_fetch_events(self, event_type: str):
+    def first_time_fetch_alerts(self):
         # TODO to change items_per_page=500
-        if event_type == 'alerts':
-            return self.get_alerts_with_page_num(page_num=1, items_per_page=10)
-        elif event_type == 'events':
-            return self.get_events_with_page_num(page_num=1, items_per_page=100)
-        return None
+        # if event_type == 'alerts':
+        return self.get_alerts_with_page_num(page_num=1, items_per_page=10)
+        # elif event_type == 'events':
+        #     return self.get_events_with_page_num(page_num=1, items_per_page=100)
+        # return None
 
-    def get_events_first_five_pages(self, fetch_limit):
+    def get_events_first_five_pages(self, fetch_limit: int):
         """
         Fetches events from up to 5 pages, ensuring that the total number of fetched events does not exceed the specified
         `fetch_limit`.
@@ -183,7 +183,7 @@ def add_time_field(event: dict):
         event['_time'] = event.get('created')
 
 
-def enrich_event(event, event_type):
+def enrich_event(event: dict, event_type: str):
     """
     Enriches each event with additional information based on its type.
 
@@ -230,11 +230,11 @@ def get_page_from_last_run_for_alerts(client: Client, page_link: str):
         response = client.get_response_from_page_link(page_link)
     else:
         demisto.debug('Initialize the first page')
-        response = client.first_time_fetch_events('alerts')
+        response = client.first_time_fetch_alerts()
     return response
 
 
-def create_last_run_dict_for_alerts(links, last_page_alerts_ids):
+def create_last_run_dict_for_alerts(links: list, last_page_alerts_ids: list) -> dict:
     """
     Updates the last_run dictionary with the current page's self URL and event IDs.
 
@@ -308,7 +308,16 @@ def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict):
 ################ EVENTS FUNCTIONS ################
 
 
-def get_previous_page(links):
+def get_previous_page(links: list):
+    """
+    Finds and returns the URL of the previous page from a list of link dictionaries.
+
+    Args:
+        links (list): A list of dictionaries representing links, where each dictionary contains "rel" and "href" keys.
+
+    Returns:
+        str or None: The URL of the previous page if found, otherwise None.
+    """
     for link in links:
         if link.get("rel") == "previous":
             return link.get("href")
@@ -343,7 +352,7 @@ def add_second_to_date(date: str) -> str:
     return date_plus_one_second.strftime(DATE_FORMAT)
 
 
-def get_last_page_of_events(client: Client, results):
+def get_last_page_of_events(client: Client, results: dict) -> dict:
     """
     Iterates through paginated event data, following "next" links provided in the API response until it reaches the last page.
 
@@ -384,7 +393,7 @@ def save_events_ids_with_specific_created_date(events: list, created_date: str) 
     return results
 
 
-def get_page_with_min_time_for_events(client: Client, min_time, fetch_limit):
+def get_page_with_min_time_for_events(client: Client, min_time, fetch_limit) -> dict:
     """
     If `min_time` is provided, fetches events from that timestamp onward.
     If None, fetches events from the beginning.
@@ -400,11 +409,10 @@ def get_page_with_min_time_for_events(client: Client, min_time, fetch_limit):
         results = client.get_events_with_min_time(min_time)
     else:
         results = client.get_events_first_five_pages(fetch_limit)
-        # results = client.first_time_fetch_events('events')
     return results
 
 
-def create_last_run_dict_for_events(output: list, new_min_time: str):
+def create_last_run_dict_for_events(output: list, new_min_time: str) -> dict:
     """
     Creates a dictionary to store the last run information for events.
 

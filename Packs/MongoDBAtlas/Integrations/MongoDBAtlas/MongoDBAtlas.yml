@@ -7,7 +7,7 @@ commonfields:
   version: -1
 configuration:
 - display: Server URL
-  defaultvalue: https://cloud.mongodb.com/
+  defaultvalue: "https://cloud.mongodb.com/"
   additionalinfo: The endpoint URL.
   name: url
   required: true
@@ -34,7 +34,7 @@ configuration:
   type: 0
   section: Connect
 - additionalinfo: 'Defines the maximum number of alerts or events fetched per type in each fetch cycle. Default value: 2500.'
-  defaultvalue: 2500
+  defaultvalue: "2500"
   display: Maximum number of events per fetch
   name: max_events_per_fetch
   required: true
@@ -58,7 +58,7 @@ script:
     arguments:
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: If true, the command will create events, otherwise it will only display them.
+      description: Set this argument to True in order to create events, otherwise it will only display them.
       name: should_push_events
       predefined:
       - 'true'
