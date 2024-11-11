@@ -6,12 +6,16 @@ To access the IBM MaaS360 Security API, you first need to generate an App access
 Follow these steps:
 
 1. Log into the IBM MaaS360 portal.  
+
 2. Go to **Setup** > **Manage Access Keys**.
 ![Generate access key](../../doc_files/manage-access-keys.png)  
+
 3. Click on **Generate Access Key**.
 ![Generate access key](../../doc_files/generate-key.png)  
+
 4. Create a new `MaaS360 Web Services` key.
 ![Generate access key](../../doc_files/generate-key2.png)  
+
 5. Get **App ID**, **App Version**, **Platform ID**, and **App Access Key**.
 ![Generate access key](../../doc_files/generate-key3.png)  
 
@@ -21,6 +25,7 @@ See [Configuring provisioning for MaaS360](https://www.ibm.com/docs/en/security-
 ## Find your Billing ID
 
 1. Log in to the IBM MaaS360 portal.
+
 2. Mouse over the profile menu on the top right and copy the **Account ID** value. This is your Billing ID.
 ![Get Billing ID](../../doc_files/find-billing-id.png)
 
@@ -30,11 +35,15 @@ To collect events, the User requires read-only permissions.
 Follow these steps to modify user permissions:
 
 1. Log into the IBM MaaS360 portal.  
+
 2. Go to **Setup** > **Administrators**
 ![Admin permissions](../../doc_files/administrators-page.png)  
+
 3. Find the relevant administrator account or create a new one.  
+
 4. Click the **Edit** button. (Note: This does not appear for the primary admin account)
 ![Admin permissions](../../doc_files/edit-admin-roles.png)  
+
 5. Add the **Read-Only** permission.
 ![Admin permissions](../../doc_files/admin-read-only-role.png)  
 
