@@ -1,30 +1,33 @@
-This playbook handles the following alerts:
+**This playbook addresses the following alerts:**
 
 - A mail forwarding rule was configured in Google Workspace.
 - A mail forwarding rule was configured in Google Workspace to an uncommon domain.
 
-Playbook Stages:
+#### Playbook Stages:
+ 
+##### Triage: 
 
-Triage:
 - The playbook retrieves the caller's IP, the forwarding email address, and associated filters.
 
-Early Containment:
+##### Early Containment:
 
 - The playbook checks if the IP or domain of the forwarding email address is malicious. If so, it suggests blocking the IP using PAN-OS while continuing the investigation in parallel.
 
-Investigation:
+##### Investigation:
 
 - The playbook verifies if the rule was created outside of working hours or from an unusual geolocation and extracts suspicious keywords from the forwarding rules. It then aggregates all evidence collected during the investigation.
 
-Verdict & Containment:
+##### Containment:
 
 - If only one suspicious evidence is found, the playbook executes soft response actions, including signing the user out and deleting the forwarding email address from the user account mailbox. The user will be notified of these actions via email.
 - If multiple suspicious evidences are found, the playbook executes both soft and hard response actions, recommending the analyst suspend the user account.
 
-Requirements:
+#### Requirements: 
 
+For any response action, you need one of the following integrations:
 - Gmail integration to fetch filters and remove the forwarding email address.
 - Google Workspace Admin access to sign out and suspend the user account.
+
 
 ## Dependencies
 
