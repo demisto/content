@@ -2656,7 +2656,18 @@ def parse_fields(fields):
     return None
 
 
-def ensure_valid_json_format(events):
+def ensure_valid_json_format(events: str|dict)->List[dict]:
+    """Converts a batch of events to a valid JSON format for processing.
+
+    Args:
+        events (str): The batch of events to be formatted as JSON.
+
+    Raises:
+        DemistoException: If the input cannot be converted to a valid JSON format, an exception is raised.
+
+    Returns:
+        list: A list of JSON objects derived from the input events.
+    """
     try:
         events_str = str(events)
         
@@ -2664,10 +2675,9 @@ def ensure_valid_json_format(events):
         rgx = re.compile(r"}[\s]*{")
         valid_json_events = rgx.sub("},{", events_str)
         valid_json_events = json.loads(f"[{valid_json_events}]")
-        demisto.debug(f'Splunk {valid_json_events=}')
         return valid_json_events
     except Exception as e:
-        raise DemistoException(f'{str(e)}\nMake sure that the batched events are in the correct format.')
+        raise DemistoException(f'{str(e)}\nMake sure that the events are in the correct format.')
     
     
 def splunk_submit_event_hec(
@@ -2685,7 +2695,6 @@ def splunk_submit_event_hec(
     entry_id: int | None,
     service
 ):
-    demisto.debug('Splunk in submit_event_hec func')
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
 
@@ -2708,15 +2717,12 @@ def splunk_submit_event_hec(
             source=source,
             time=time_
         )
-    demisto.debug(f'Splunk {events=}')
     valid_json_events = ensure_valid_json_format(events)
 
     indexes = [d.get('index') for d in valid_json_events]
     
     if not validate_indexes(indexes, service):
         raise DemistoException('Index name does not exist in your splunk instance')
-
-    demisto.debug('Splunk indexes are valid')
     
     headers = {
         'Authorization': f'Splunk {hec_token}',

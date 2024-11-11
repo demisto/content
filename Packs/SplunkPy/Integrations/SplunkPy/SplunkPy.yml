@@ -469,7 +469,7 @@ script:
       name: time
     - description: A channel identifier (ID) where to send the request, must be a Globally Unique Identifier (GUID). If the indexer acknowledgment is turned on, a channel is required.
       name: request_channel
-    - description: The events in a json way for example, #{"event": "something happened at 14/10/2024 12:29","fields": {"fields": "severity: INFO, category: test, test1"},"index": "main","sourcetype": "access","source": "/var/log/access.log" } {"event": "something happened at 14/10/2024 13:29","fields": {    "fields": "severity: INFO, category: test2, test2"},"index": "testindex1","sourcetype": "access","source": "/var/log/access.log" }
+    - description: 'The events in a json way for example, `{"event": "something happened at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test2, test2"}, "index": "main","sourcetype": "access","source": "/var/log/access.log" } {"event": "something happened at 14/10/2024 13:29","fields": { "severity: INFO, category: test2, test2"},"index": "testindex1","sourcetype": "access","source": "/var/log/access.log"}`'
       name: batch_event_data
     - description: The entry id in XSOAR
       name: entry_id
