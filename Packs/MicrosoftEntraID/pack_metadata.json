@@ -1,6 +1,6 @@
 {
     "name": "Azure Logs",
-    "description": "This pack use the Azure Event Hub Integration, providing XDM mapping for tenant logs (audit & sign-in) and a default mapping for resource logs.",
+    "description": "This pack use the Azure Event Hub Integration, providing XDM mapping for tenant logs (audit & sign-in) and a default mapping for resource logs. In addition, the same cover is provided with the equivalent checkboxes under the O365 collector",
     "support": "xsoar",
     "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
