@@ -2,7 +2,7 @@
    CONSTANTS - COMMON REGEX PATTERNS
  -----------------------------------*/
 [CONST]
-CISCO_CATALYST_TIMESTAMP_FORMAT = "[A-Z][a-z]{2}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}(?:\.\d+)?\sUTC|[A-Z][a-z]{2}+\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}(?:\.\d+)?\sUTC"; // supported format samples:  May 16 2023 14:30:00 UTC or May  2 09:47:18.714 UTC
+CISCO_CATALYST_TIMESTAMP_FORMAT = "[A-Z][a-z]{2}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}(?:\.\d+)?\sUTC|[A-Z][a-z]{2}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}(?:\.\d+)?\sUTC"; // supported format samples:  May 16 2023 14:30:00 UTC or May  2 09:47:18.714 UTC
 CISCO_CATALYST_SYSTEM_LOG_MESSAGE_FORMAT = "%[\w\-]+\-\d\-\S+?:"; // %facility-severity-MNEMONIC:description (see https://www.cisco.com/c/en/us/td/docs/routers/access/wireless/software/guide/SysMsgLogging.html#wp1054470)
 
 /*---------
