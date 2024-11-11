@@ -32,6 +32,10 @@
             "type": "string",
             "is_array": false
         },
+        "requestID": {
+            "type": "string",
+            "is_array": false
+        },
         "requestParameters": {
             "type": "string",
             "is_array": false

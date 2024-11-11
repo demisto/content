@@ -11,12 +11,14 @@ filter _log_type = "Cloud Audit Log"
     source_ipv4 = if(sourceIPAddress ~= "(?:\d{1,3}\.){3}\d{1,3}", sourceIPAddress), // The IP address that the request was made from. For actions that originate from the service console, the address reported is for the underlying customer resource, not the console web server. For services in AWS, only the DNS name is displayed.
     source_ipv6 = if(sourceIPAddress ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", sourceIPAddress)
 | alter // XDM Mappings 
+    xdm.event.description = eventName,
     xdm.event.id = eventId,
     xdm.event.operation_sub_type = eventName,
     xdm.event.original_event_type = eventType,
     xdm.event.outcome = if(errorCode = null, XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_FAILED),
     xdm.event.outcome_reason = if(errorMessage != null and errorMessage != "", concat(errorCode, ": ", errorMessage), errorCode),
     xdm.event.type = _log_type,
+    xdm.network.session_id = requestID,
     xdm.network.tls.cipher = tlsDetails -> cipherSuite,
     xdm.network.tls.protocol_version = tlsDetails -> tlsVersion,
     xdm.session_context_id = sharedEventID,
@@ -30,7 +32,7 @@ filter _log_type = "Cloud Audit Log"
     xdm.source.user.groups = if(user_identity_type in ("Role", "AssumedRole"), arraycreate(userIdentity -> sessionContext.sessionIssuer.userName)),
     xdm.source.user.identifier = coalesce(userIdentity -> principalId, userIdentity -> onBehalfOf.userId),
     xdm.source.user.username = coalesce(userIdentity -> userName, userIdentity -> sessionContext.sessionIssuer.userName, user_identity_arn),
-    xdm.source.user.user_type = user_identity_type,
+    xdm.source.user.user_type = if(user_identity_type = "Unknown", XDM_CONST.IDENTITY_TYPE_UNKNOWN, user_identity_type),
     xdm.target.cloud.project_id = recipientAccountId,
     xdm.target.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AWS,
     xdm.target.cloud.region = awsRegion,
