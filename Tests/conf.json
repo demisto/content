@@ -5582,7 +5582,7 @@
         },
         {
             "playbookID": "TAXII2 Server Performance Test",
-            "instance_names": "taxii2server",
+            "instance_names": "taxii2serverxsoar8",
             "integrations": [
                 "TAXII2 Server",
                 "Create-Mock-Feed-Relationships"
@@ -5591,7 +5591,22 @@
             "timeout": 6000,
             "memory_threshold": 900,
             "pid_threshold": 12,
-            "is_mockable": false
+            "is_mockable": false,
+            "marketplaces": "xsoar_saas"
+        },
+        {
+            "playbookID": "TAXII2 Server Performance Test",
+            "instance_names": "taxii2serverxsoar6",
+            "integrations": [
+                "TAXII2 Server",
+                "Create-Mock-Feed-Relationships"
+            ],
+            "fromversion": "6.2.0",
+            "timeout": 6000,
+            "memory_threshold": 900,
+            "pid_threshold": 12,
+            "is_mockable": false,
+            "marketplaces": "xsoar_on_prem"
         },
         {
             "integrations": "FortiSIEMV2",
