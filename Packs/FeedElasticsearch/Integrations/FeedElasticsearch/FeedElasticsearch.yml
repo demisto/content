@@ -21,6 +21,7 @@ configuration:
   options:
   - ElasticSearch
   - OpenSearch
+  - Elasticsearch_v8
   type: 15
   required: false
   section: Connect
@@ -229,7 +230,7 @@ script:
       required: true
     description: Gets indicators available in the configured Elasticsearch database.
     name: es-get-indicators
-  dockerimage: demisto/elasticsearch:1.0.0.87483
+  dockerimage: demisto/elasticsearch:1.0.0.115427
   feed: true
   runonce: false
   script: '-'
