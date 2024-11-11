@@ -2612,6 +2612,7 @@ def splunk_submit_event_command(service: client.Service, args: dict):
         return_results(f'Event was created in Splunk index: {r.name}')
 
 def validate_indexes(indexes, service):
+    """Validates that all provided Splunk indexes exist within the Splunk service instance."""
     real_indexes = service.indexes
     real_indexes_names_set = set()
     for real_index in real_indexes:
@@ -2622,12 +2623,50 @@ def validate_indexes(indexes, service):
 
 
 def get_events_from_file(entry_id):
+    """
+    Retrieves event data from a file in Demisto based on a specified entry ID as a string.
+
+    Args:
+        entry_id (int): The entry ID corresponding to the file containing event data.
+
+    Returns:
+        str: The content of the file as a string.
+    """
     get_file_path_res = demisto.getFilePath(entry_id)
+    demisto.debug(f'#############Splunk {get_file_path_res=}')
     file_path = get_file_path_res["path"]
-    file_data = {'file': open(file_path, 'rb')}
-    return file_data
+    demisto.debug(f'############Splunk {file_path=}')
+    with open(file_path, encoding='utf-8') as file_data:
+        demisto.debug(f'###########Splunk {file_data=}')
+        return file_data.read()
 
 
+def parse_fields(fields):
+    """Parses the `fields` string into a dictionary. If `fields` is not valid JSON, 
+    it returns the `fields` as a dictionary with a single key-value pair.
+
+    """
+    if fields:
+        try:
+            parsed_fields = json.loads(fields)
+        except Exception:
+            demisto.debug('Fields provided are not valid JSON; treating as a single field')
+            parsed_fields = {'fields': fields}
+        return parsed_fields
+    return None
+
+
+def ensure_valid_json_format(events):
+    events_str = str(events)
+    
+    events_str = events_str.replace("'", '"')
+    rgx = re.compile(r"}[\s]*{")
+    valid_json_events = rgx.sub("},{", events_str)
+    valid_json_events = json.loads(f"[{valid_json_events}]")
+    demisto.debug(f'Splunk {valid_json_events=}')
+    return valid_json_events
+    
+    
 def splunk_submit_event_hec(
     hec_token: str | None,
     baseurl: str,
@@ -2643,22 +2682,19 @@ def splunk_submit_event_hec(
     entry_id: int | None,
     service
 ):
+    demisto.debug('Splunk in submit_event_hec func')
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
 
     if entry_id:
+        demisto.debug(f'Splunk {entry_id=}')
         events = get_events_from_file(entry_id)
         
     elif batch_event_data:
         events = batch_event_data
             
     else:
-        parsed_fields = None
-        if fields:
-            try:
-                parsed_fields = json.loads(fields)
-            except Exception:
-                parsed_fields = {'fields': fields}
+        parsed_fields = parse_fields(fields)
 
         events = assign_params(
             event=event,
@@ -2669,19 +2705,16 @@ def splunk_submit_event_hec(
             source=source,
             time=time_
         )
-        
-    events_str = str(events)
-    
-    events_str = events_str.replace("'", '"')
-    rgx = re.compile(r"}[\s]*{")
-    valid_json_events = rgx.sub("},{", events_str)
-    valid_json_events = json.loads(f"[{valid_json_events}]")
-    
+    demisto.debug(f'Splunk {events=}')
+    valid_json_events = ensure_valid_json_format(events)
+
     indexes = [d.get('index') for d in valid_json_events]
     
     if not validate_indexes(indexes, service):
         raise DemistoException('Index name does not exist in your splunk instance')
 
+    demisto.debug('Splunk indexes are valid')
+    
     headers = {
         'Authorization': f'Splunk {hec_token}',
         'Content-Type': 'application/json',
@@ -2689,11 +2722,14 @@ def splunk_submit_event_hec(
     if request_channel:
         headers['X-Splunk-Request-Channel'] = request_channel
     
+    data = ''
     if entry_id or batch_event_data:
-        data = events
+        data=events
     else:
-        data = json.dumps(events)
+        data=json.dumps(events)
         
+    demisto.debug(f'Splunk sending {data=}')
+    
     return requests.post(
         f'{baseurl}/services/collector/event',
         data=data,
@@ -2727,9 +2763,9 @@ def splunk_submit_event_hec_command(params: dict, service, args: dict):
     else:
         response_dict = json.loads(response_info.text)
         if response_dict and 'ackId' in response_dict:
-            return_results(f"The event was sent successfully to Splunk. AckID: {response_dict['ackId']}")
+            return_results(f"The event/s was/were sent successfully to Splunk. AckID: {response_dict['ackId']}")
         else:
-            return_results('The event was sent successfully to Splunk.')
+            return_results('The event/s was/were sent successfully to Splunk.')
 
 
 def splunk_edit_notable_event_command(base_url: str, token: str, auth_token: str | None, args: dict) -> None:
