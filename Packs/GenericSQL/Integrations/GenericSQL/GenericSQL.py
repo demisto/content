@@ -87,6 +87,8 @@ class Client:
             connect_parameters_dict.setdefault('autocommit', 'True')
             if not verify_certificate:
                 connect_parameters_dict['TrustServerCertificate'] = 'yes'
+        elif dialect == TRINO:
+            connect_parameters_dict['verify'] = str(verify_certificate).lower()
         return connect_parameters_dict
 
     @staticmethod
