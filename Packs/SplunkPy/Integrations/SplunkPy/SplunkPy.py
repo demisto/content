@@ -2657,14 +2657,17 @@ def parse_fields(fields):
 
 
 def ensure_valid_json_format(events):
-    events_str = str(events)
-    
-    events_str = events_str.replace("'", '"')
-    rgx = re.compile(r"}[\s]*{")
-    valid_json_events = rgx.sub("},{", events_str)
-    valid_json_events = json.loads(f"[{valid_json_events}]")
-    demisto.debug(f'Splunk {valid_json_events=}')
-    return valid_json_events
+    try:
+        events_str = str(events)
+        
+        events_str = events_str.replace("'", '"')
+        rgx = re.compile(r"}[\s]*{")
+        valid_json_events = rgx.sub("},{", events_str)
+        valid_json_events = json.loads(f"[{valid_json_events}]")
+        demisto.debug(f'Splunk {valid_json_events=}')
+        return valid_json_events
+    except Exception as e:
+        raise DemistoException(f'{str(e)}\nMake sure that the batched events are in the correct format.')
     
     
 def splunk_submit_event_hec(
