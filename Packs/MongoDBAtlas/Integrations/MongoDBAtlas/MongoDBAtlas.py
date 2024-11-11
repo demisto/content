@@ -565,20 +565,20 @@ def get_events(client: Client, args):
     fetch_limit = int(args.get('limit'))
 
     last_run = demisto.getLastRun()
-    last_run_alerts = last_run.get('alerts', {})
-    last_run_events = last_run.get('events', {})
+    # last_run_alerts = last_run.get('alerts', {})
+    # last_run_events = last_run.get('events', {})
 
-    alerts_output, _ = fetch_alert_type(client, fetch_limit, last_run_alerts)
-    events_output, _ = fetch_event_type(client, fetch_limit, last_run_events)
+    alerts_output, _ = fetch_alert_type(client, fetch_limit, last_run)
+    events_output, _ = fetch_event_type(client, fetch_limit, last_run)
 
     output = alerts_output + events_output
     filtered_events = []
     for event in output:
-        filtered_event = {}
-        filtered_event['ID'] = event.get('id')
-        filtered_event['Event Type'] = event.get('source_log_type')
-        filtered_event['Time'] = event.get('_time')
-        filtered_event['Created'] = event.get('created')
+        filtered_event = {'ID': event.get('id'),
+                          'Event Type': event.get('source_log_type'),
+                          'Time': event.get('_time'),
+                          'Created': event.get('created')
+                          }
         filtered_events.append(filtered_event)
 
     human_readable = tableToMarkdown(name='MongoDB Atlas Events', t=filtered_events, removeNull=True)
@@ -593,11 +593,7 @@ def get_events(client: Client, args):
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
-    """
+    """main function, parses params and runs command functions"""
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
