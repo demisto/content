@@ -21,12 +21,23 @@ def extract_keys_with_values(obj, parent_key=''):
     return items
 
 
+def escape_pipe(value):
+    """
+    Escapes pipe characters in the value by replacing them with an HTML entity.
+    """
+    return value.replace('|', '&#124;')
+
 def format_data_to_rows(items):
     """
-    Formats the extracted data into rows.
+    Formats the extracted data into rows and escapes pipes.
     """
-    return [f'{key}|{value}' for key, value in items]
-
+    rows = []
+    for key, value in items:
+        if isinstance(value, list):
+            # If the value is a list, join the items with a separator and escape the result
+            value = '|'.join(map(str, value))
+        rows.append(f'{escape_pipe(key)}|{escape_pipe(str(value))}')
+    return rows
 
 def convert_to_html(rows):
     html = ["""<table style="border-collapse:collapse;"><tbody style="font-family:Lato,Assistant,sans-serif;font-weight:600;font-size:12px;text-align:left;padding: 1px 0px 0px;margin:0px 5px 0px 0px;contrast:4.95">"""]  # noqa: E501
