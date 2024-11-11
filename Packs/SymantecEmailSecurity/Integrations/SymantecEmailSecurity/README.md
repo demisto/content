@@ -21,13 +21,14 @@ This integration was integrated and tested with version 10.6.6 of Symantec Email
     | Server URL - Data Feeds |  |  |
     | Server URL - Email Queue |  |  |
     | Server URL - Quarantine | The Quarantine API is available for the United States \(us\) and European Union \(eu\). |  |
-    | Username |  | False |
+    | Username | Relevant to: Server URL - IOC, Server URL - Email Queue, Server URL - Quarantine | False |
     | Password |  | False |
-    | Quarantine Username |  | False |
+    | Quarantine Username | Relevant to: Server URL - Quarantine | False |
     | Password |  | False |
     | Use system proxy settings |  |  |
     | Trust any certificate (not secure) |  |  |
     | Fetch incidents |  |  |
+    | Incident type |  |  |
     | Maximum number of incidents per fetch | Maximum number of incidents per fetch. Default is 50. The maximum is 200. |  |
     | First Fetch Time |  |  |
     | Fetch Type | The API to fetch incidents from: Data Feeds, Quarantine or both. |  |
@@ -58,7 +59,7 @@ List the IOCs that apply to a specific domain or to all domains.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Run the command for a specific domain. For all domains use'global'. Use `symantec-email-security-email-queue-list` to get a list of available domains. Default is global. | Optional |
+| domain | Run the command for a specific domain, for all domains use 'global'. Run `symantec-email-security-email-queue-list` to get a list of available domains. Default is global. | Optional |
 | limit | The maximum number of records to return. Default is 50. | Optional |
 | all_results | Whether to retrieve all the results by overriding the default limit. Possible values are: true, false. | Optional |
 
@@ -107,7 +108,7 @@ List the IOCs that apply to a specific domain or to all domains.
 ### symantec-email-security-ioc-action
 
 ***
-Add, update, delete and renew multiple IOCs through the `entry_id` or a single IOC through the rest of the parameters.
+Add, update, delete, and renew multiple IOCs through the `entry_id` or a single IOC through the rest of the parameters.
 
 #### Base Command
 
@@ -117,8 +118,8 @@ Add, update, delete and renew multiple IOCs through the `entry_id` or a single I
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Run the command for a specific domain. For all domains use 'global'. Use `symantec-email-security-email-queue-list` to get a list of available domains. Default is global. | Optional |
-| action | Defines the action for IOCs: 'merge' to merge or update IOCs in the database by their type and value without inputting `ioc_id`; 'replace' to delete and replace all IOCs in the database without inputting `ioc_id`; 'ioc' to add, update, delete, or renew multiple IOCs each with their own action, use this only when entering an `entry_id`; 'add' to add an IOC without inputting `ioc_id`. Possible values are: merge, replace, upload_ioc_json, add, update, delete, renew. | Required |
+| domain | Run the command for a specific domain, for all domains use 'global'. Run `symantec-email-security-email-queue-list` to get a list of available domains. Default is global. | Optional |
+| action | Defines the action for IOCs: 'merge' to merge or update IOCs in the database by their type and value without inputting `ioc_id`; 'replace' to delete and replace all IOCs in the database without inputting `upload_ioc_json`; 'ioc' to add, update, delete, or renew multiple IOCs each with their own action, use this only when entering an `entry_id`; 'add' to add an IOC without inputting `ioc_id`. Possible values are: merge, replace, upload_ioc_json, add, update, delete, renew. | Required |
 | entry_id | Entry ID of a JSON file to pass multiple IOCs. Only accepts `action=merge/replace/ioc`. Example value: [{"APIRowAction": "U", "IocBlacklistId": xxxx, "IocType": "url", "IocValue": "https://www.example.com", "Description": "Hello World!"}]. More about IOCs can be found in: https://techdocs.broadcom.com/content/dam/broadcom/techdocs/us/en/dita/symantec-security-software/email-security/email-security-cloud/content/Indicators-of-Compromise-(IOC)-Blacklist-API-Guide.pdf. | Optional |
 | ioc_id | ID of the IOC. Can't be used with action=`merge`\replace\`add`. | Optional |
 | ioc_type | Type of the IOC. Possible values are: attachmentname, md5attachment, sha2attachment, bodysenderdomain, bodysenderemail, bodysendertopleveldomain, envelopesenderdomain, envelopesenderemail, envelopesendertopleveldomain, senderipaddress, senderiprange, recipientdomain, recipientemail, subject, url. | Optional |
@@ -149,7 +150,7 @@ Renew all IOCs previously uploaded and still in the database, whether active or 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Run the command for a specific domain. For all domains use 'global'. Use `symantec-email-security-email-queue-list` to get a list of available domains. Default is global. | Optional |
+| domain | Run the command for a specific domain, for all domains use 'global'. Run `symantec-email-security-email-queue-list` to get a list of available domains. Default is global. | Optional |
 
 #### Context Output
 
@@ -810,7 +811,7 @@ Retrieves the contents of the email specified in the request. To preview an emai
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | The message ID of the email to preview. Use `symantec-email-security-email-queue-list` to get a list of message IDs. | Required |
+| message_id | The message ID of the email to preview. Run `symantec-email-security-email-queue-list` to get a list of message IDs. | Required |
 
 #### Context Output
 
@@ -918,7 +919,7 @@ Releases the set of quarantined emails specified in the request.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_ids | Comma-separated list of emails message IDs to release. Use `symantec-email-security-quarantine-email-list` to get a list of message IDs. | Required |
+| message_ids | Comma-separated list of emails message IDs to release. Run `symantec-email-security-quarantine-email-list` to get a list of message IDs. | Required |
 | recipient | An email address to which the mails have to be released instead of the recipient user's address. | Optional |
 | headers | Comma-separated list of x-headers that will be added to the message on release. | Optional |
 | encrypt | If true adds an 'x-encrypted-quarantine-release: true' to the released email. Customers have to configure a corresponding DP rule that triggers encryption. Possible values are: true, false. | Optional |
@@ -945,7 +946,7 @@ Deletes the set of quarantined emails specified in the request. The items are ma
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_ids | Comma-separated list of quarantined emails message IDs to delete. Use `symantec-email-security-quarantine-email-list` to get a list of message IDs. | Required |
+| message_ids | Comma-separated list of quarantined emails message IDs to delete. Run `symantec-email-security-quarantine-email-list` to get a list of message IDs. | Required |
 
 #### Context Output
 
@@ -1044,7 +1045,7 @@ Allows a SUDULS (allow quarantine users to maintain their own lists of email add
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | suduls_user | Email address of the user for whom the entry should be added in the allow list. | Required |
-| item_id | ID of SUDULS item to be added/updated. Only required when updating an existing item. Use `symantec-email-security-item-allow-list` to get a list of items. | Optional |
+| item_id | ID of SUDULS item to be added/updated. Only required when updating an existing item. Run `symantec-email-security-item-allow-list` to get a list of items. | Optional |
 | email_or_domain | Email address or domain to be added in the allow list. | Required |
 | description | Description of the item to be added to the allow list. | Required |
 
@@ -1070,7 +1071,7 @@ Allows a SUDULS (allow quarantine users to maintain their own lists of email add
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| item_id | ID of SUDULS item to be deleted. Use `symantec-email-security-item-allow-list` to get a list of items. | Required |
+| item_id | ID of SUDULS item to be deleted. Run `symantec-email-security-item-allow-list` to get a list of items. | Required |
 
 #### Context Output
 
@@ -1169,7 +1170,7 @@ Allows a SUDULS (allow quarantine users to maintain their own lists of email add
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | suduls_user | Email address of the user for whom the entry should be added in the block list. | Required |
-| item_id | ID of SUDULS item to be added/updated. Only required when updating an existing item. Use `symantec-email-security-item-block-list` to get a list of items. | Optional |
+| item_id | ID of SUDULS item to be added/updated. Only required when updating an existing item. Run `symantec-email-security-item-block-list` to get a list of items. | Optional |
 | email_or_domain | Email address or domain to be added to the block list. | Required |
 | description | Description of the item to be added to the block list. | Required |
 
@@ -1195,7 +1196,7 @@ Allows a SUDULS (allow quarantine users to maintain their own lists of email add
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| item_id | ID of SUDULS item to be deleted. Use `symantec-email-security-item-block-list` to get a list of items. | Required |
+| item_id | ID of SUDULS item to be deleted. Run `symantec-email-security-item-block-list` to get a list of items. | Required |
 
 #### Context Output
 
