@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: IBMMaaS360SecurityEventCollector
+  id: IBMMaaS360Security
   version: -1
 configuration:
 - display: Server URL
@@ -73,7 +73,7 @@ configuration:
   advanced: true
 description: This is the IBM MaaS360 Security event collector integration for Cortex XSIAM.
 display: IBM MaaS360 Security
-name: IBM MaaS360 Security
+name: IBMMaaS360Security
 script:
   commands:
   - arguments:
