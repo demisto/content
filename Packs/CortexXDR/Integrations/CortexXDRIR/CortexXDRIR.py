@@ -1032,7 +1032,7 @@ def update_remote_system_command(client, args):
 
             close_xdr_incident = argToBoolean(client._params.get("close_xdr_incident", True))
 
-            if not close_xdr_incident and (update_args.get('status') in XDR_RESOLVED_STATUS_TO_XSOAR.keys()):
+            if not close_xdr_incident and (update_args.get('status') in XDR_RESOLVED_STATUS_TO_XSOAR):
                 status = update_args.pop('status')
                 demisto.debug(f"Popped {status=} from update_args, incident status won't be updated in XDR.")
 
@@ -1042,7 +1042,7 @@ def update_remote_system_command(client, args):
             # Check all relevant fields for an incident being closed in XSOAR UI
             demisto.debug(f"Defining whether to close related alerts by: {is_closed=} {close_alerts_in_xdr=}")
             if is_closed and closed_without_status and remote_is_already_closed:
-                update_args['status'] = current_remote_status
+                update_args['status'] = current_remotgit e_status
             if close_alerts_in_xdr and is_closed:
                 update_related_alerts(client, update_args)
 
