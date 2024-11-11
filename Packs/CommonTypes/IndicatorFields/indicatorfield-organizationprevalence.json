@@ -18,7 +18,7 @@
     "group": 2,
     "hidden": false,
     "openEnded": false,
-    "description": "Indicates how frequently a specific indicator type is detected within a particular organization.",
+    "description": "How frequently a specific indicator type is detected within a particular organization.",
     "associatedTypes": [
         "Domain",
         "IP",

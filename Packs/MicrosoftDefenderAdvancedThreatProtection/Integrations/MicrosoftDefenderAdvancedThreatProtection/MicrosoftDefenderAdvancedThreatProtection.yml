@@ -1949,10 +1949,10 @@ script:
       description: The SHA1 hash of the file.
       type: String
     - contextPath: File.OrganizationPrevalence
-      description: Indicates how frequently a specific indicator type is detected within a particular organization.
+      description: How frequently the indicator is detected within a particular organization.
       type: Number
-    - contextPath: File.GloballyPrevalence
-      description: Indicates how frequently a specific indicator type is detected across all organizations.
+    - contextPath: File.GlobalPrevalence
+      description: How frequently the indicator is detected across all organizations.
       type: Number
     - contextPath: File.OrganizationFirstSeen
       description: When the indicator was first seen in the organization.

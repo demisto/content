@@ -481,8 +481,8 @@
         "simple": "File.OrganizationPrevalence",
         "complex": null
       },
-      "globallyprevalence": {
-        "simple": "File.GloballyPrevalence",
+      "globalprevalence": {
+        "simple": "File.GlobalPrevalence",
         "complex": null
       },
       "organizationfirstseen": {

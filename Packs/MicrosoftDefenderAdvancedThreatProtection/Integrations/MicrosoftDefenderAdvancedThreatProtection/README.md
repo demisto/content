@@ -2525,8 +2525,8 @@ File.Read.All
 | MicrosoftATP.FileStatistics.Statistics.GlobalLastObserved | Date | The last global observation date and time of the file. | 
 | MicrosoftATP.FileStatistics.Statistics.TopFileNames | String | The top names of the file. | 
 | File.SHA1 | String | The SHA1 hash of the file. |
-| File.OrganizationPrevalence | Number | Indicates how frequently a specific indicator type is detected within a particular organization. |
-| File.GloballyPrevalence | Number | Indicates how frequently a specific indicator type is detected across all organizations. |
+| File.OrganizationPrevalence | Number | How frequently the indicator is detected within a particular organization. |
+| File.GlobalPrevalence | Number | How frequently the indicator is detected across all organizations. |
 | File.OrganizationFirstSeen | Date | When the indicator was first seen in the organization. |
 | File.OrganizationLastSeen | Date | When the indicator was last seen in the organization. |
 | File.GlobalFirstSeen | Date | When the indicator was first seen across all organizations. |
@@ -2544,7 +2544,7 @@ File.Read.All
         "SHA1": "9fe3ba25e5660c23dfe478d577cfacde5795870c",
         "GlobalFirstSeen": "2019-04-03T04:10:18.1001071Z",
         "GlobalLastSeen": "2020-03-23T09:24:54.169574Z",
-        "GloballyPrevalence": 1355899,
+        "GlobalPrevalence": 1355899,
         "Hashes":[
             {
                 "type" :"SHA1",
@@ -2585,7 +2585,7 @@ File.Read.All
 
 The basic indicator fields from the command are shown below without auto extraction and enrichment.
 
-| Type | Value | Verdict | Related Incidents | Expiration | Globally Prevalence | Organization Prevalence | Global First Seen | Global Last Seen | Organization First Seen | Organization Last Seen |
+| Type | Value | Verdict | Related Incidents | Expiration | Global Prevalence | Organization Prevalence | Global First Seen | Global Last Seen | Organization First Seen | Organization Last Seen |
 |---|---|---|---|---|---|---|---|---|---|---|
 | File | 50ef7c645fd5cbb95d50fbaddf6213800f9296ec | Unknown | 2 | Never | 195803 | 0 | April 03, 2019 4:10 AM | March 23, 2020 9:24 AM | N/A | N/A |
 

@@ -3394,7 +3394,7 @@ def get_file_statistics_command(client: MsClient, args: dict) -> CommandResults:
     file_sha1 = args.get('file_hash', '')
     response = client.get_file_statistics(file_sha1)
     file_stat = get_file_statistics_context(response)
-    human_readable = tableToMarkdown(f'Statistics on {file_sha1} file:', file_stat, removeNull=True)
+    human_readable = get_file_statistics_human_readable(file_sha1, response)
     context_output = {
         'Sha1': file_sha1,
         'Statistics': file_stat
@@ -3410,6 +3410,27 @@ def get_file_statistics_command(client: MsClient, args: dict) -> CommandResults:
         outputs=context_output,
         raw_response=response,
     )
+
+
+def get_file_statistics_human_readable(file_hash: str, file_stat_response: dict) -> str:
+    """Gets the file statistics response and returns as a human readable markdown table.
+
+    Args:
+        file_hash (str): Hash of file
+        file_stat_response (dict): File statistics response body
+
+    Returns:
+        (dict). File statistics context
+    """
+    formatted_data = {
+        'Global Prevalence': file_stat_response.get('globallyPrevalence'),
+        'Organization Prevalence': file_stat_response.get('orgPrevalence'),
+        'Global First Observed': file_stat_response.get('globalFirstObserved'),
+        'Global Last Observed': file_stat_response.get('globalLastObserved'),
+        'Organization First Seen': file_stat_response.get('orgFirstSeen'),
+        'Organization Last Seen': file_stat_response.get('orgLastSeen'),
+    }
+    return tableToMarkdown(f'Statistics on {file_hash} file:', formatted_data, removeNull=True)
 
 
 def get_file_statistics_context(file_stat_response: dict) -> dict:
@@ -3438,38 +3459,24 @@ def get_file_statistics_indicator(file_hash: str, file_stat_response: dict) -> C
     """Creates File indicator from the file statistics response
 
     Args:
+        file_hash (str): Hash of file
         file_stat_response (dict): File statistics response body
 
     Returns:
         Common.File: File indicator
     """
-    indicator_data: dict = assign_params(
+    dbot_score = Common.DBotScore(file_hash, DBotScoreType.FILE, INTEGRATION_NAME, Common.DBotScore.NONE)
+
+    return Common.File(
+        dbot_score=dbot_score,
         sha1=file_stat_response.get('sha1'),
         organization_prevalence=file_stat_response.get('organizationPrevalence'),
-        globally_prevalence=file_stat_response.get('globallyPrevalence'),
+        global_prevalence=file_stat_response.get('globallyPrevalence'),
         organization_first_seen=file_stat_response.get('orgFirstSeen'),
         organization_last_seen=file_stat_response.get('orgLastSeen'),
         global_first_seen=file_stat_response.get('globalFirstObserved'),
         global_last_seen=file_stat_response.get('globalLastObserved'),
     )
-
-    demisto.createIndicators(
-        [
-            {
-                'value': file_hash,
-                'type': 'File',
-                'score': Common.DBotScore.NONE,
-                'fields': {
-                    # CLI name needs to be lowercase connected
-                    field_name.replace('_', '').lower(): field_value
-                    for field_name, field_value in indicator_data.items()
-                },
-                'rawJSON': file_stat_response,
-            }
-        ]
-    )
-
-    return Common.File(Common.DBotScore.NONE, **indicator_data)
 
 
 def get_file_alerts_command(client: MsClient, args: dict):

@@ -540,8 +540,8 @@
             "simple": "Domain.OrganizationPrevalence",
             "complex": null
         },
-        "globallyprevalence": {
-            "simple": "Domain.GloballyPrevalence",
+        "globalprevalence": {
+            "simple": "Domain.GlobalPrevalence",
             "complex": null
         },
         "organizationfirstseen": {

@@ -234,8 +234,8 @@
             "simple": "IPv6.OrganizationPrevalence",
             "complex": null
         },
-        "globallyprevalence": {
-            "simple": "IPv6.GloballyPrevalence",
+        "globalprevalence": {
+            "simple": "IPv6.GlobalPrevalence",
             "complex": null
         },
         "organizationfirstseen": {
