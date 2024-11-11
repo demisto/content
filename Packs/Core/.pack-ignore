@@ -31,9 +31,6 @@ ignore=LO107
 [file:playbook-Scheduled_task_created_with_HTTP_or_FTP_reference.yml]
 ignore=GR103
 
-[file:Packs/Core/Triggers/Trigger_-_Identity_Analytics_Alerts.json]
-ignore=ST108
-
 [known_words]
 xsiam
 coreirapimodule
