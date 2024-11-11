@@ -965,7 +965,8 @@ def main():  # pragma: no cover
     types_for_indicator_sdo = argToList(params.get('provide_as_indicator'))
 
     try:
-        port = int(params.get('longRunningPort'))
+        port = int(params.get('longRunningPort') or '1111')
+        # The default is for the autogeneration port feature before port allocation.
     except ValueError as e:
         raise ValueError(f'Invalid listen port - {e}')
 
