@@ -838,8 +838,6 @@ def determine_clients(
                 "Missing URL for 'Credentials', please fill the correct URL according to the mapping in 'Help'."
             )
 
-
-
     if quarantine_username and quarantine_password:
         if not url_quarantine:
             raise DemistoException("Missing URL for 'Quarantine Credentials', please fill 'Server URL - Quarantine'.")
