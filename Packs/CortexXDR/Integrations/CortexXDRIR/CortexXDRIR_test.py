@@ -763,7 +763,7 @@ def test_update_remote_system_command_should_not_close_xdr_incident(mocker, data
     mock_update_incident_command = mocker.patch("CortexXDRIR.update_incident_command")
     update_remote_system_command(client, args)
     update_args = mock_update_incident_command.call_args[0][1]
-    if data.get('status') in XSOAR_RESOLVED_STATUS_TO_XDR.keys():
+    if data.get('status') in XSOAR_RESOLVED_STATUS_TO_XDR:
         assert 'status' not in update_args
     else:
         assert 'status' in update_args
@@ -1495,11 +1495,11 @@ def test_update_alerts_in_xdr_request_called_with():
         mock_http_request.assert_called_once_with(method='POST',
                                                   url_suffix='/alerts/update_alerts',
                                                   json_data={'request_data':
-                                                                 {'alert_id_list': '1,2,3',
-                                                                  'update_data':
-                                                                      {'severity': 'High', 'status': 'resolved',
-                                                                       'comment': 'i am a test'}
-                                                                  }
+                                                             {'alert_id_list': '1,2,3',
+                                                              'update_data':
+                                                              {'severity': 'High', 'status': 'resolved',
+                                                               'comment': 'i am a test'}
+                                                              }
                                                              },
                                                   headers={
                                                       'x-xdr-timestamp': 123,
@@ -1527,7 +1527,7 @@ def test_update_alerts_in_xdr_request_invalid_response():
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False, params={'close_alerts_in_xdr': True})
     with patch.object(client, '_http_request') as mock_http_request, patch("CortexXDRIR.get_headers") as get_headers_mock, \
-        pytest.raises(DemistoException) as e:
+            pytest.raises(DemistoException) as e:
         mock_http_request.return_value = {
             "replys": {
                 "alerts_ids": alerts_ids
