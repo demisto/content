@@ -1,8 +1,3 @@
-
-#### Playbooks
-
-##### New: A mail forwarding rule was configured in Google Workspace
-
 This playbook addresses the following alerts:
 
 - A mail forwarding rule was configured in Google Workspace.
@@ -34,10 +29,52 @@ For any response action, you need one of the following integrations:
 - Google Workspace Admin access to sign out and suspend the user account.
 
 
+## Dependencies
 
-#### Triggers Recommendations
+This playbook uses the following sub-playbooks, integrations, and scripts.
 
-##### New: A mail forwarding rule was configured in Google Workspace
+### Sub-playbooks
 
-- New: This trigger runs the A mail forwarding rule was configured in Google Workspace playbook, which handles the A mail forwarding rule was configured in Google Workspace and A mail forwarding rule was configured in Google Workspace to an uncommon domain alerts.
+* PAN-OS - Block IP
 
+### Integrations
+
+* Cortex Core - IR
+
+### Scripts
+
+* AnyMatch
+* BetweenHours
+* SetAndHandleEmpty
+
+### Commands
+
+* closeInvestigation
+* core-get-cloud-original-alerts
+* domain
+* gmail-forwarding-address-get
+* gmail-forwarding-address-remove
+* gmail-list-filters
+* gsuite-user-get
+* gsuite-user-signout
+* gsuite-user-update
+* send-mail
+
+## Playbook Inputs
+
+---
+
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| SendNotification | If set to "true," the playbook will send an email notification to the user informing them that the forwarding address was deleted. If "false," no notification will be sent. | true | Optional |
+
+## Playbook Outputs
+
+---
+There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![A mail forwarding rule was configured in Google Workspace](../doc_files/A_mail_forwarding_rule_was_configured_in_Google_Workspace.png)
