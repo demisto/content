@@ -209,6 +209,8 @@ def set_playbook_on_alerts(playbook_id: str, alert_ids: list, playbooks_dict: di
     command_results = demisto.executeCommand(
         "core-api-post", {"uri": "/xsoar/inv-playbook/new", "body":
                           {"playbookId": playbook_id, "alertIds": alert_ids, "version": -1}})
+    
+    demisto.debug(f"Results of setting playbook {playbook_id} on alerts {alert_ids}:\n{command_results}")
     handle_results(command_results, playbook_id, alert_ids, results_summary)
 
 
@@ -315,6 +317,7 @@ def main():
     try:
         args = demisto.args()
         incidents: list[dict] = get_incidents_by_query(args)
+        print(arg_to_datetime(args.get("fromDate")))
         if not incidents:
             return return_results("No alerts were found for the provided query and filter arguments.")
         
