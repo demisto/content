@@ -2810,3 +2810,30 @@ def test_get_drilldown_searches(drilldown_data, expected):
     """
 
     assert splunk.get_drilldown_searches(drilldown_data) == expected
+
+
+@pytest.mark.parametrize('drilldown_search, expected_res',
+                         [('{"name":"test", "query":"|key="the value""}', 'key="the value"'),
+                          ('{"name":"test", "query":"|key in (line_1\nline_2)"}', 'key in (line_1,line_2)'),
+                          ('{"name":"test", "query":"search a=$a|s$ c=$c$ suffix"}', 'search a=$a|s$ c=$c$ suffix')])
+def test_escape_invalid_chars_in_drilldown_json(drilldown_search, expected_res):
+    """
+    Scenario: When extracting the drilldown search query which are a json string,
+    we should escape unescaped JSON special characters.
+
+    Given:
+    - A raw search query with text like 'key="a value"'.
+    - A raw search query with text like where 'key in (a\nb)' which it should be 'key in (a,b)'.
+    - A raw search query with normal json string, should not be changed by this function.
+
+    When:
+    - escape_invalid_chars_in_drilldown_json is called
+
+    Then:
+    - Return the expected result
+    """
+    import json
+
+    res = splunk.escape_invalid_chars_in_drilldown_json(drilldown_search)
+
+    assert expected_res in json.loads(res)['query']
