@@ -36,17 +36,17 @@ Append `expirationStatus:active` to the end of the query.
 
 To view logs concerning the creation of the indicator list and its current status add the `/log` suffix to the list URL.
 
-<~XSOAR_SAAS>
+For Cortex XSOAR Cloud - 
 `https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>/log`
-</~XSOAR_SAAS>
 
-<~XSOAR_ON_PREM>
+
+For Cortex XSOAR On-prem - 
 `https://*<xsoar_address>*/instance/execute/*<instance_name>*/log`
-</~XSOAR_ON_PREM>
 
-<~XSIAM>
+
+For Cortex XSIAM - 
 `https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log`
-</~XSIAM>
+
 
 ## Use Cases
 
@@ -74,9 +74,9 @@ To view logs concerning the creation of the indicator list and its current statu
 | Exported Fields                    | For use with JSON and CSV formats - select specific Cortex XSOAR fields to export. If given the value 'all' - all Cortex XSOAR fields are exported. If empty - only value and type are exported.                                                      | False        |
 | List Size                          | Maximum number of items in the list.                                                                                                                                                                                                                 | True         |
 | Refresh Rate                       | How often to refresh the list (e.g., less than 1 minute, 5 minutes, 12 hours, 7 days, 3 months, 1 year). For performance reasons, we do not recommend setting this value at less than 1 minute.                                                      | False        |
-| Listen Port                        | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. <br>Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use.  <br> (For Cortex XSOAR 8 and Cortex XSIAM) If using an engine, you must enter a Listen Port. If not using an engine, do not enter a Listen Port and an unused port for the Generic Export Indicators Service will automatically be generated when the instance is saved.                                                             | True         |
-| Certificate (Required for HTTPS)   | (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use.  <br> (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported.                                                                                                                                                                                  | False        |
-| Private Key (Required for HTTPS)   | For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use.  <br> (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key. Not supported on the Cortex XSOAR​​ or Cortex XSIAM server.                                                                                                                                                                                  | False        |
+| Listen Port                        | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. <br>Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use.  <br> (For Cortex XSOAR 8 Cloud and Cortex XSIAM) If using an engine, you must enter a Listen Port. If not using an engine, do not enter a Listen Port and an unused port for the Generic Export Indicators Service will automatically be generated when the instance is saved.                                                             | True         |
+| Certificate (Required for HTTPS)   | For use with HTTPS - the certificate that the service should use. <br> Supported for Cortex XSOAR On-prem (6.x or 8) or when using an engine. Cortex XSOAR 8 Cloud tenants and Cortex XSIAM tenants do not support custom certificates.                                                                                                                                                                                  | False        |
+| Private Key (Required for HTTPS)   | For use with HTTPS - the private key that the service should use.  <br> Supported for Cortex XSOAR On-prem (6.x or 8) or when using an engine. Cortex XSOAR 8 Cloud tenants and Cortex XSIAM tenants do not support private keys.                                                                                                                                                                                  | False        |
 | Username                           | Uses basic authentication for accessing the list. If empty, no authentication is enforced.                                                                                                                                                           | (For Cortex XSOAR 6.x) False <br> (For Cortex XSOAR 8 and Cortex XSIAM)  Optional for engines, otherwise mandatory.    |
 | Password                           | Uses basic authentication for accessing the list. If empty, no authentication is enforced.                                                                                                                                                           | (For Cortex XSOAR 6.x) False <br> (For Cortex XSOAR 8 and Cortex XSIAM)  Optional for engines, otherwise mandatory.     |
 | Add comment to empty list          | If selected, add to an empty list the comment "# Empty list".                                                                                                                                                                                        | False        |
@@ -172,7 +172,8 @@ In order to get the list of all available fields to search by, you can configure
 
 ### Access the Export Indicators Service by Instance Name (HTTPS) - For Cortex XSOAR 6.x only
 
-**Note:** By default, the route is open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use credentials to connect to the integration.
+**Note:**  
+By default, the route is open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use credentials to connect to the integration.
 
 
 To access the Export Indicators service by instance name, make sure ***Instance execute external*** is enabled.
@@ -180,21 +181,24 @@ To access the Export Indicators service by instance name, make sure ***Instance 
 1. Navigate to **Settings > About > Troubleshooting**.
 2.  In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
 3. In a web browser, go to:
-    `https://*<xsoar_address>*/instance/execute/*<instance_name>*`
- 
+    `https://<xsoar_address>/instance/execute/<instance_name>`
 
-### Access EDLs on Cortex XSOAR 8 and Cortex XSIAM
+### Set up Authentication
+EDLs running on tenants in Cortex XSOAR 8 Cloud or Cortex XSIAM require basic authentication. EDLs running on engines do not require basic authentication, but it is recommended.  
+For Cortex XSOAR On-prem (6.x or 8) or when using engines, you can set up authentication using custom certificates. For more information on setting up a custom certificate for Cortex XSOAR 8 On-prem, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate). 
 
-For Cortex XSOAR 8 and Cortex XSIAM, you can only access the Export Indicators Service using a third-party tool such as cURL.
-- On a tenant, use https://ext-<cortex-xsoar-address\>/xsoar/instance/execute/\<instance-name\>
+### Access EDLs on Cortex XSOAR 8 Cloud and On-prem and Cortex XSIAM
+**Note:**  
+For Cortex XSOAR 8 On-prem, you need to add the `ext-` FQDN DNS record to map the Cortex XSOAR DNS name to the external IP address.  
+For example, `ext-xsoar.mycompany.com`.
+  
+For Cortex XSOAR 8 Cloud, Cortex XSOAR On-prem and Cortex XSIAM, you can only access the Export Indicators Service using a third-party tool such as cURL.
+- If the integration is configured to run on a tenant, use `https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>`
    
-  For example: curl -v -u user:pass https://ext-mytenant.paloaltonetworks.com/xsoar/instance/execute/edl_instance_01\?q\=type:ip
-- On an engine, use http://\<engine-address\>:\<integration listen port\>/
+  For example: `curl -v -u user:pass https://ext-mytenant.paloaltonetworks.com/xsoar/instance/execute/edl_instance_01?q=type:ip`
+- If the integration is configured to run on an engine, use `http://<engine-address>:<integration listen port>`
      
-  For example: curl -v -u user:pass http://\<engine_address\>:\<listen_port\>/?n=50
-
-For EDLs running on the server in Cortex XSOAR 8, basic authentication is mandatory. For EDLs running on engines, basic authentication is optional but recommended
-
+  For example: `curl -v -u user:pass http://<engine_address>:<listen_port>?n=50`
 
 ### URL Inline Arguments
 
