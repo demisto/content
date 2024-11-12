@@ -674,8 +674,8 @@ def test_check_window_before_call_not_in_window():
     result = client.check_window_before_call(mintime=mintime.timestamp())
     assert not result
 
+
 @freeze_time("2020-01-24 15:16:33 UTC")
-    
 def test_check_window_before_call_5_sec_time_delta():
     """
     Given:
