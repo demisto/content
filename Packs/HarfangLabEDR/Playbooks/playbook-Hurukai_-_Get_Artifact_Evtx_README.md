@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get Artifact Evtx](./doc_files/Hurukai_-_Get_Artifact_Evtx.png)
+![Hurukai - Get Artifact Evtx](../doc_files/Hurukai_-_Get_Artifact_Evtx.png)

@@ -1649,14 +1649,7 @@ def list_activity_data(client: Client, args) -> Tuple[str, Dict, Dict]:
                         f'Error from Securonix is: {activity_data.get("errorMessage")}')
 
     activity_events = activity_data.get('events')
-    fields_to_include = ['Accountname', 'Agentfilename', 'Categorybehavior', 'Categoryobject', 'Categoryseverity',
-                         'Collectionmethod', 'Collectiontimestamp', 'Destinationprocessname', 'Destinationusername',
-                         'Deviceaddress', 'Deviceexternalid', 'Devicehostname', 'EventID', 'Eventoutcome', 'Eventtime',
-                         'Filepath', 'Ingestionnodeid', 'JobID', 'Jobstarttime', 'Message', 'Publishedtime',
-                         'Receivedtime', 'Resourcename', 'Rg_category', 'Rg_functionality', 'Rg_id', 'Rg_name',
-                         'Rg_resourcetypeid', 'Rg_vendor', 'Sourcehostname', 'Sourceusername', 'TenantID', 'Tenantname',
-                         'Timeline', 'Eventid', 'Accountresourcekey']
-    activity_readables, activity_outputs = parse_data_arr(activity_events, fields_to_include=fields_to_include)
+    activity_readables, activity_outputs = parse_data_arr(activity_events)
     for index, activity in enumerate(activity_readables):
         if activity.get('Eventid'):
             activity['EventID'] = activity.get('Eventid')

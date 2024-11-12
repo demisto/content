@@ -180,9 +180,9 @@ def test_indicator_delete_command(mocker):
     assert "Indicator deleted" in results.readable_output
 
 
-@ pytest.mark.parametrize(argnames="field, value",
-                          argvalues=[('score', '50'),
-                                     ('description', 'new description')])
+@pytest.mark.parametrize(argnames="field, value",
+                         argvalues=[('score', '50'),
+                                    ('description', 'new description')])
 def test_indicator_field_update_command(mocker, field, value):
     """Tests indicator_field_update_command function
     Given

@@ -7,3 +7,6 @@ ignore=BA124
 [file:RansomwareHostWidget.yml]
 ignore=BA124
 
+# GR103 is temporary, see CIAC-11705
+[file:playbook-Post_Intrusion_Ransomware_Investigation_6_5.yml]
+ignore=GR103,GR107

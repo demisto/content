@@ -11,9 +11,12 @@ from CofenseTriagev2 import TriageNoReportersFoundError
 from freezegun import freeze_time
 
 
-def fixture_from_file(fname):
-    with (Path(__file__).parent / 'test' / 'fixtures' / fname).open() as file:
-        return file.read()
+@pytest.fixture
+def fixture_from_file():
+    def _fixture_from_file(fname):
+        with (Path(__file__).parent / 'test' / 'fixtures' / fname).open() as file:
+            return file.read()
+    return _fixture_from_file
 
 
 DEMISTO_ARGS = {}
@@ -78,7 +81,7 @@ def triage_instance():
 
 
 class TestCofenseTriage:
-    def test_test_function(self, requests_mock, triage_instance):
+    def test_test_function(self, requests_mock, triage_instance, fixture_from_file):
         requests_mock.get(
             "https://some-triage-host/api/public/v1/processed_reports",
             text=fixture_from_file("processed_reports.json"),
@@ -88,7 +91,7 @@ class TestCofenseTriage:
 
         CofenseTriagev2.demisto.results.assert_called_once_with("ok")
 
-    def test_test_function_error(self, requests_mock, triage_instance):
+    def test_test_function_error(self, requests_mock, triage_instance, fixture_from_file):
         requests_mock.get(
             "https://some-triage-host/api/public/v1/processed_reports",
             status_code=404,
@@ -99,7 +102,7 @@ class TestCofenseTriage:
             CofenseTriagev2.test_function(triage_instance)
 
     @freeze_time("2000-10-31")
-    def test_fetch_reports(self, mocker, requests_mock, triage_instance):
+    def test_fetch_reports(self, mocker, requests_mock, triage_instance, fixture_from_file):
         requests_mock.get(
             "https://some-triage-host/api/public/v1/processed_reports?category_id=&"
             "match_priority=&tags=&start_date=2000-10-30T00%3A00%3A00",
@@ -130,7 +133,7 @@ class TestCofenseTriage:
 
     @freeze_time("2000-10-31")
     def test_fetch_reports_already_fetched(
-            self, mocker, requests_mock, triage_instance
+            self, mocker, requests_mock, triage_instance, fixture_from_file
     ):
         requests_mock.get(
             "https://some-triage-host/api/public/v1/processed_reports?category_id=&"
@@ -155,7 +158,7 @@ class TestCofenseTriage:
         )
 
     @freeze_time("2000-10-31")
-    def test_search_reports_command(self, requests_mock, triage_instance):
+    def test_search_reports_command(self, requests_mock, triage_instance, fixture_from_file):
         set_demisto_arg("subject", "suspicious subject")
         set_demisto_arg("url", "")
         set_demisto_arg("file_hash", "")
@@ -179,7 +182,7 @@ class TestCofenseTriage:
             "| 5 | 2020-03-19T16:43:09.715Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | 13363 | Processed | 1 | 111 | From: Sender <sender@example.com><br>Reply-To: \"sender@example.com\" <sender@example.com><br>Date: Wednesday, March 18, 2020 at 3:34 PM<br>To: recipient@example.com<br>Subject: suspicious subject<br>click on this link! trust me! <a href=\"http://example.com/malicious\">here</a> | suspicious subject | 2020-03-19T16:42:22.000Z | 5331 | 222 |\n"  # noqa: 501
         )
 
-    def test_build_reporters_clause_found(self, requests_mock, triage_instance):
+    def test_build_reporters_clause_found(self, requests_mock, triage_instance, fixture_from_file):
         set_demisto_arg("reporter", "reporter2@example.com")
 
         requests_mock.get(
@@ -193,7 +196,7 @@ class TestCofenseTriage:
 
         assert CofenseTriagev2.build_reporters_clause(triage_instance) == {"reporter_ids": [111]}
 
-    def test_build_reporters_clause_id(self, requests_mock, triage_instance):
+    def test_build_reporters_clause_id(self, requests_mock, triage_instance, fixture_from_file):
         set_demisto_arg("reporter", "222")
 
         requests_mock.get(
@@ -220,7 +223,7 @@ class TestCofenseTriage:
         assert CofenseTriagev2.build_reporters_clause(triage_instance) == {}
 
     @freeze_time("2000-10-31")
-    def test_search_reports_command_not_found(self, requests_mock, triage_instance):
+    def test_search_reports_command_not_found(self, requests_mock, triage_instance, fixture_from_file):
         set_demisto_arg("subject", "my great subject")
         set_demisto_arg("url", "my-great-url")
         set_demisto_arg("file_hash", "")
@@ -256,7 +259,7 @@ class TestCofenseTriage:
         ],
     )
     def test_search_reports_filtering(
-            self, requests_mock, triage_instance, filter_attrs, expected_found_report_ids
+            self, requests_mock, triage_instance, filter_attrs, expected_found_report_ids, fixture_from_file
     ):
         requests_mock.get(
             "https://some-triage-host/api/public/v1/processed_reports?start_date=2000-10-31+00%3A00%3A00",  # noqa: 501
@@ -269,7 +272,7 @@ class TestCofenseTriage:
         assert [report["id"] for report in found_reports] == expected_found_report_ids
 
     @freeze_time("2000-10-31")
-    def test_search_inbox_reports_command(self, requests_mock, triage_instance):
+    def test_search_inbox_reports_command(self, requests_mock, triage_instance, fixture_from_file):
         set_demisto_arg("subject", "aaa")
         set_demisto_arg("url", "")
         set_demisto_arg("file_hash", "")
@@ -297,7 +300,7 @@ class TestCofenseTriage:
         )
 
     @freeze_time("2000-10-31")
-    def test_search_inbox_reports_command_with_reporter(self, requests_mock, triage_instance):
+    def test_search_inbox_reports_command_with_reporter(self, requests_mock, triage_instance, fixture_from_file):
         set_demisto_arg("subject", "aaa")
         set_demisto_arg("url", "")
         set_demisto_arg("file_hash", "")
@@ -329,7 +332,7 @@ class TestCofenseTriage:
         )
 
     @freeze_time("2000-10-31")
-    def test_search_inbox_reports_command_with_file_hash(self, requests_mock, triage_instance):
+    def test_search_inbox_reports_command_with_file_hash(self, requests_mock, triage_instance, fixture_from_file):
         set_demisto_arg("subject", "aaa")
         set_demisto_arg("url", "")
         set_demisto_arg("file_hash", "1234")
@@ -356,7 +359,7 @@ class TestCofenseTriage:
         )
 
     @freeze_time("2000-10-31")
-    def test_search_inbox_reports_command_with_max_matches(self, requests_mock, triage_instance):
+    def test_search_inbox_reports_command_with_max_matches(self, requests_mock, triage_instance, fixture_from_file):
         set_demisto_arg("subject", "aaa")
         set_demisto_arg("url", "")
         set_demisto_arg("file_hash", "")
@@ -386,7 +389,7 @@ class TestCofenseTriage:
             "| 3887 | 2020-08-26T15:13:30.920Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13461 | Inbox | 1 | 555 | Report body 1 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 1<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 1 aaa | 2020-08-26T14:36:43.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 6417, 'name': 'Triage_rule_1', 'reports_count': 67, 'active': True, 'created_at': '2019-04-11T17:15:53.940Z', 'updated_at': '2019-04-11T17:15:53.940Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-26T14:36:51.000Z | 2020-08-26T15:13:35.200Z |\n"  # noqa: 501
         )
 
-    def test_get_attachment_command(self, mocker, requests_mock, triage_instance):
+    def test_get_attachment_command(self, mocker, requests_mock, triage_instance, fixture_from_file):
         set_demisto_arg("attachment_id", "5")
         set_demisto_arg("file_name", "my_great_file")
         requests_mock.get(
@@ -402,7 +405,7 @@ class TestCofenseTriage:
         assert demisto_results[0]["FileID"] == "/path/to/temp/file"
         assert demisto_results[0]["File"] == "my_great_file"
 
-    def test_get_reporter_command(self, requests_mock, triage_instance):
+    def test_get_reporter_command(self, requests_mock, triage_instance, fixture_from_file):
         set_demisto_arg("reporter_id", "5")
         requests_mock.get(
             "https://some-triage-host/api/public/v1/reporters/5",
@@ -431,7 +434,7 @@ class TestCofenseTriage:
             }
         }
 
-    def test_get_report_by_id_command(self, requests_mock, triage_instance):
+    def test_get_report_by_id_command(self, requests_mock, triage_instance, fixture_from_file):
         set_demisto_arg("report_id", "6")
         set_demisto_arg("verbose", "false")
         requests_mock.get(
@@ -454,7 +457,7 @@ class TestCofenseTriage:
         )
 
     def test_get_report_by_id_command_with_attachment(
-            self, requests_mock, triage_instance
+            self, requests_mock, triage_instance, fixture_from_file
     ):
         set_demisto_arg("report_id", "6")
         set_demisto_arg("verbose", "false")
@@ -481,7 +484,7 @@ class TestCofenseTriage:
             "| 7 | 2020-03-19T16:43:09.715Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | 13363 | Processed | 1 | 111 | suspicious subject | 2020-03-19T16:42:22.000Z | 5331 | 222 |\n"  # noqa: 501
         )
 
-    def test_get_all_reporters(self, requests_mock, triage_instance):
+    def test_get_all_reporters(self, requests_mock, triage_instance, fixture_from_file):
         requests_mock.get(
             "https://some-triage-host/api/public/v1/reporters?start_date=1995-01-01",
             text=fixture_from_file("reporters.json"),
@@ -494,7 +497,7 @@ class TestCofenseTriage:
             "reporter2@example.com",
         ]
 
-    def test_get_threat_indicators_command(self, requests_mock, triage_instance):
+    def test_get_threat_indicators_command(self, requests_mock, triage_instance, fixture_from_file):
         set_demisto_arg("type", "what")
         set_demisto_arg("level", "what")
         set_demisto_arg("start_date", "what")

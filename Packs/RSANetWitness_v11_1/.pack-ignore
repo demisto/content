@@ -16,3 +16,11 @@ RSANetWitness
 
 [file:incidentfield-RSA_Metas_Events.json]
 ignore=IF115
+
+# GR103 is temporary, see CIAC-11656
+[file:incidentfield-RSA_Event_Count.json]
+ignore=GR103
+[file:incidentfield-RSA_Alert_Count.json]
+ignore=GR103
+[file:incidentfield-RSA_Rule_Id.json]
+ignore=GR103

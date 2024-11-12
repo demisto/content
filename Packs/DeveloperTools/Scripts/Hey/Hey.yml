@@ -31,7 +31,7 @@ args:
   - OPTIONS
   description: HTTP method.
 - name: headers
-  description: Custom HTTP header. Comma separated list of "key=value". e.g. User-Agent=curl/7.54.0,Accept=*/*
+  description: Custom HTTP header. Comma separated list of "key=value". e.g. User-Agent=curl/7.54.0,Accept=*/*.
 - name: disable_compression
   defaultValue: "true"
   auto: PREDEFINED
@@ -80,11 +80,12 @@ outputs:
   description: The average time it took for a request to finish.
   type: number
 - contextPath: Hey.Result
-  description: The full result in text format when output is set to "human_readable"
+  description: The full result in text format when output is set to "human_readable".
   type: number
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/rakyll-hey:1.0.0.49364
+dockerimage: demisto/rakyll-hey:1.0.0.103237
 runas: DBotWeakRole
+deprecated: true
 tests:
 - No test

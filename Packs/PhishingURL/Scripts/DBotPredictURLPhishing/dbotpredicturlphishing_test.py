@@ -36,8 +36,7 @@ def executeCommand(command, args=None):
         url = args.get('url')
         html_data = "" if url == "bad_url.com" else "html"
         return [{'Contents': {KEY_IMAGE_RASTERIZE: "iVBORwrkJggg==",
-                              KEY_IMAGE_HTML: html_data,
-                              KEY_CURRENT_URL_RASTERIZE: url[0]},
+                              KEY_IMAGE_HTML: html_data},
                  'Type': 'note'}]
 
     elif command == 'getMLModel':

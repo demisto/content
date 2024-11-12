@@ -1,0 +1,8 @@
+{
+    "success": true,
+    "comment": {
+      "id": "Q29tbWVudFR5cGU6OTg=",
+      "text": "API Test Comment"
+    },
+    "readable_output": "Comment successful.\nComment ID: Q29tbWVudFR5cGU6OTg=\nComment Text: API Test Comment"
+}

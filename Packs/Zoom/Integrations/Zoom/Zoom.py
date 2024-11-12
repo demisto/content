@@ -395,6 +395,14 @@ class Client(Zoom_Client):
             headers={'authorization': f'Bearer {self.access_token}'}
         )
 
+    def zoom_delete_user_token(self, url_suffix: str):
+        return self.error_handled_http_request(
+            method='DELETE',
+            url_suffix=url_suffix,
+            resp_type='response',
+            headers={'authorization': f'Bearer {self.access_token}'}
+        )
+
 
 '''HELPER FUNCTIONS'''
 
@@ -547,7 +555,7 @@ def run_long_running(port: int, is_test: bool = False):
                 '()': UserAgentFormatter,
                 'fmt': '%(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s "%(user_agent)s"'
             }
-            uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config, **ssl_args)
+            uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config, **ssl_args)  # type: ignore[arg-type]
         except Exception as e:
             demisto.error(f'An error occurred in the long running loop: {str(e)} - {format_exc()}')
             demisto.updateModuleHealth(f'An error occurred: {str(e)}')
@@ -2007,6 +2015,19 @@ def zoom_update_message_command(client, **args) -> CommandResults:
     )
 
 
+def zoom_delete_user_token_command(client, **args) -> CommandResults:
+    """
+        Revoke a user's Zoom SSO session
+    """
+    client = client
+    user_id = args.get('user_id')
+    url_suffix = f'/users/{user_id}/token'
+    client.zoom_delete_user_token(url_suffix)
+    return CommandResults(
+        readable_output=f'User SSO token for user {user_id} is deleted',
+    )
+
+
 def zoom_get_user_id_by_email(client, email):
     """
     Retrieves the user ID associated with the given email address.
@@ -2555,6 +2576,8 @@ bot client id and secret id""")
             results = zoom_delete_message_command(client, **args)
         elif command == 'zoom-update-message':
             results = zoom_update_message_command(client, **args)
+        elif command == 'zoom-delete-user-token':
+            results = zoom_delete_user_token_command(client, **args)
         elif command == 'send-notification':
             results = send_notification(client, **args)
 

@@ -1,5 +1,5 @@
 Use the Tenable.sc integration to get a real-time, continuous assessment of your security posture so you can find and fix vulnerabilities faster.
-All data in Tenable.sc is managed using group level permissions. If you have several groups, data (scans, scan results, assets, etc) can be viewable but not manageable. Users with Security Manager role  can manage everything. These permissions come into play when multiple groups are in use.
+All data in Tenable.sc is managed using group level permissions. If you have several groups, data (scans, scan results, assets, etc) can be viewable but not manageable. Users with Security Manager role  can manage everything. These permissions come into play when multiple groups are in use.
 It is important to know what data is manageable for the user in order to work with the integration.
 This integration was integrated and tested with Tenable.sc v5.7.0.
 
@@ -1708,3 +1708,22 @@ Creates a remediation scan. Requires security manager role. This command is a pr
 ## Troubleshooting
 
 For errors within Tenable.sc, the cause is generally specified, e.g., The currently logged in used is not an administrator, Unable to retrieve Asset #2412. Asset #2412 does not exist or Invalid login credentials. However there might be connection errors, for example when the server URL provided is incorrect.
+
+### tenable-sc-get-organization
+
+***
+Requires administrator role. Command to get a list of organizations' information, depending on the comma-separated list of fields provided.
+
+#### Base Command
+
+`tenable-sc-get-organization`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| fields | Optional fields to return specific values, example: restrictedIPs. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.

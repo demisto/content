@@ -1,7 +1,9 @@
 id: Expanse VM Enrich
 version: -1
 name: Expanse VM Enrich
+deprecated: true
 description: |
+  Deprecated. No available replacement.
   This Playbook is used to verify that all assets found by Expanse are being scanned by a vulnerability management tool by:
   - Searching the IP and / or domain of the identified Expanse asset in the vulnerability management tool
   This playbook expects an incident with an IP or a Domain to exist in the context.

@@ -1,5 +1,7 @@
 !umbrella-reporting-activity-list limit=2
+!umbrella-reporting-activity-list from=-1days to=now categories="61,65,66,68"
 !umbrella-reporting-activity-get traffic_type=dns limit=2
+!umbrella-reporting-activity-get traffic_type=dns from=-1days to=now categories="61,65,66,68" 
 !umbrella-reporting-activity-get traffic_type=amp limit=2
 !umbrella-reporting-activity-get traffic_type=proxy limit=2
 !umbrella-reporting-activity-get traffic_type=firewall limit=2

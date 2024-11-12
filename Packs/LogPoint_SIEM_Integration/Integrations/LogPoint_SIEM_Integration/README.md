@@ -17,17 +17,19 @@ This integration was integrated and tested with version 6.7.4 of LogPoint.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | url | LogPoint URL | True |
-    | username | LogPoint Username | True |
-    | apikey | API Key | True |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
-    | first_fetch | First fetch timestamp  (\<number\> \<time unit\>, e.g., 6 hours, 1 day) | False |
-    | incidentType | Incident type | False |
-    | isFetch | Fetch incidents | False |
-    | max_fetch | Fetch limit \(Max value is 200, Recommended value is 50 or less\) | False |
+    | LogPoint URL |  | True |
+    | LogPoint Username |  | True |
+    | API Key | User's secret key | True |
+    | Trust any certificate (not secure) | Whether to allow connections without verifying SSL certificates validity. | False |
+    | Use system proxy settings | Whether to use XSOAR’s system proxy settings to connect to the API | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 6 hours, 1 day) | If it is not provided, incidents from past 24 hours will be fetched by default. | False |
+    | Incident type |  | False |
+    | Fetch incidents |  | False |
+    | Fetch limit (Max value is 200, Recommended value is 50 or less) | If this is left blank, maximum 50 incidents will be fetched at a time. | False |
+    | Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -1047,9 +1049,10 @@ Gets the search ID based on the provided search parameters.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | LogPoint search query. | Required | 
-| time_range | Time range. For example: Last 30 minutes, Last 7 days, etc. If not provided, it will use 'Last 5 minutes' as the time range by default. Default is Last 5 minutes. | Optional | 
-| limit | Number of logs to fetch. If not provided, first 100 logs will be displayed. Default is 100. | Optional | 
-| repos | Comma-separated list of LogPoint repos from which logs are to be fetched. If not provided, it will display logs from all repos. | Optional | 
+| time_range | Time range. For example: Last 30 minutes, Last 7 days, etc. If not provided, it will use 'Last 5 minutes' as the time range by default. Default is "Last 5 minutes". | Optional | 
+| limit | Number of logs to fetch. If not provided, the first 100 logs will be displayed. Default is 100. | Optional | 
+| repos | A comma-separated list of LogPoint repos from which logs are to be fetched. If not provided, it will display logs from all repos. | Optional |
+| timeout | LogPoint search timeout in seconds. Default is 60. | Optional | 
 
 
 #### Context Output

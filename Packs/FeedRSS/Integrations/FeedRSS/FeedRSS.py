@@ -17,7 +17,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, server_url, use_ssl, proxy, reliability, feed_tags, tlp_color, content_max_size=45,
-                 read_timeout=20):
+                 read_timeout=20, enrichment_excluded=False):
         super().__init__(base_url=server_url, proxy=proxy, verify=use_ssl)
         self.feed_tags = feed_tags
         self.tlp_color = tlp_color
@@ -26,6 +26,7 @@ class Client(BaseClient):
         self.feed_data = None
         self.reliability = reliability
         self.read_timeout = read_timeout
+        self.enrichment_excluded = enrichment_excluded
 
     def request_feed_url(self):
         return self._http_request(method='GET', resp_type='response', timeout=self.read_timeout,
@@ -51,7 +52,7 @@ class Client(BaseClient):
                     continue
                 published_iso = published.strftime('%Y-%m-%dT%H:%M:%S')
                 publications.append({
-                    'timestamp': indicator.get('published'),
+                    'timestamp': published_iso,
                     'link': indicator.get('link'),
                     'source': self._base_url,
                     'title': indicator.get('title')
@@ -75,6 +76,9 @@ class Client(BaseClient):
                 if self.tlp_color:
                     indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
 
+                if self.enrichment_excluded:
+                    indicator_obj['enrichmentExcluded'] = self.enrichment_excluded
+
             parsed_indicators.append(indicator_obj)
 
         return parsed_indicators
@@ -82,8 +86,13 @@ class Client(BaseClient):
     def get_url_content(self, link: str) -> str:
         """Returns the link content only from the relevant tags (listed on HTML_TAGS). For better performance - if the
          extracted content is bigger than "content_max_size" we trim him"""
-
-        response_url = self._http_request(method='GET', full_url=link, resp_type='str', timeout=self.read_timeout)
+        demisto.debug(f"Getting url content for {link=}")
+        try:
+            response_url = self._http_request(method='GET', full_url=link, resp_type='str', timeout=self.read_timeout)
+            demisto.debug(f"Got response {response_url=}")
+        except DemistoException as e:
+            demisto.debug(f"Failed to get content for {link=} - Skipping\nError:\n{e}")
+            return ""
         report_content = 'This is a dumped content of the article. Use the link under Publications field to read ' \
                          'the full article. \n\n'
         soup = BeautifulSoup(response_url.content, "html.parser")
@@ -163,7 +172,8 @@ def main():
                         feed_tags=argToList(params.get('feedTags')),
                         tlp_color=params.get('tlp_color'),
                         content_max_size=int(params.get('max_size', '45')),
-                        read_timeout=int(params.get('read_timeout', '20')))
+                        read_timeout=int(params.get('read_timeout', '20')),
+                        enrichment_excluded=argToBoolean(params.get('enrichmentExcluded', False)))
 
         if command == 'test-module':
             return_results(check_feed(client))

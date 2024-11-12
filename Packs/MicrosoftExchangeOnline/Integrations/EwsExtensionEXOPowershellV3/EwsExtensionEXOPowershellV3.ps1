@@ -149,7 +149,7 @@ class ExchangeOnlinePowershellV3Client
             "Organization" = $this.organization
             "Certificate" = $this.certificate
         }
-        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration,Get-InboxRule,Remove-InboxRule -WarningAction:SilentlyContinue | Out-Null
+        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration,Get-InboxRule,Remove-InboxRule,Export-QuarantineMessage,Get-QuarantineMessage,Release-QuarantineMessage -WarningAction:SilentlyContinue | Out-Null
     }
     DisconnectSession()
     {
@@ -473,6 +473,172 @@ class ExchangeOnlinePowershellV3Client
     }
 
     [PSObject]
+    EXOExportQuarantineMessage(
+        [string[]]$identities,
+        [string]$identity,
+        [bool]$compress_output,
+        [string]$entity_type,
+        [bool]$force_conversion_to_mime,
+        [string]$password,
+        [string]$reason_for_export,
+        [string]$recipient_address
+    )
+    {
+        $results = ""
+        try {
+            $cmd_params = @{ }
+            if ($identities)
+            {
+                $cmd_params.Identities = $identities
+            }
+            if ($identity)
+            {
+                $cmd_params.Identity = $identity
+            }
+            if ($compress_output)
+            {
+                $cmd_params.CompressOutput = $null
+            }
+            if ($entity_type)
+            {
+                $cmd_params.EntityType = $entity_type
+            }
+            if ($force_conversion_to_mime)
+            {
+                $cmd_params.ForceConversionToMime = $null
+            }
+            if ($password)
+            {
+                $cmd_params.Password = $password
+            }
+            if ($reason_for_export)
+            {
+                $cmd_params.ReasonForExport = $reason_for_export
+            }
+            if ($recipient_address)
+            {
+                $cmd_params.RecipientAddress = $recipient_address
+            }
+            $this.CreateSession()
+            $results = Export-QuarantineMessage @cmd_params
+        }
+        finally {
+            $this.DisconnectSession()
+        }
+        if ($null -eq $results) {
+            return @{}
+        } else {
+            return $results
+        }
+        <#
+            .DESCRIPTION
+            Use the Export-QuarantineMessage cmdlet to export messages from quarantine in your organization.
+            This cmdlet allows you to export one or more messages in various formats.
+
+            .LINK
+            https://learn.microsoft.com/en-us/powershell/module/exchange/export-quarantinemessage?view=exchange-ps
+        #>
+    }
+
+    [PSObject]
+    EXOGetQuarantineMessage(
+        [hashtable]$params
+    )
+    {
+        $results = ""
+        try {
+            $cmd_params = @{}
+            $param_keys = @("Identity", "EntityType", "RecipientAddress", "SenderAddress", "TeamsConversationTypes",
+                            "Direction", "Domain", "EndExpiresDate", "EndReceivedDate", "MessageId", "Page",
+                            "PageSize", "PolicyName", "PolicyTypes", "QuarantineTypes", "RecipientTag",
+                            "ReleaseStatus", "StartExpiresDate", "StartReceivedDate", "Subject", "Type")
+
+            foreach ($key in $param_keys) {
+                if ($params.$key) {
+                    $cmd_params.$key = $params.$key
+                }
+            }
+
+            if ($params.IncludeMessagesFromBlockedSenderAddress -eq $true) { $cmd_params.IncludeMessagesFromBlockedSenderAddress = $true }
+            if ($params.MyItems -eq $true) { $cmd_params.MyItems = $true }
+            if ($params.Reported -eq $true) { $cmd_params.Reported = $true }
+
+            $this.CreateSession()
+            $results = Get-QuarantineMessage @cmd_params
+        }
+        finally {
+            $this.DisconnectSession()
+        }
+        if ($null -eq $results) {
+            return @{}
+        } else {
+            return $results
+        }
+    }
+
+
+    [PSObject]
+    EXOReleaseQuarantineMessage(
+        [string]$user,
+        [string[]]$identities,
+        [string]$identity,
+        [bool]$release_to_all,
+        [bool]$allow_sender,
+        [string]$entity_type,
+        [bool]$force,
+        [bool]$report_false_positive,
+        [string]$action_type
+    )
+    {
+        if (-not $identities -and -not $identity) {
+            return ""
+        }
+        try {
+            $cmd_params = @{ }
+            if ($user) {
+                $cmd_params.User = $user
+            }
+            if ($release_to_all) {
+                $cmd_params.ReleaseToAll = $release_to_all
+            }
+            if ($identities) {
+                $cmd_params.Identities = $identities
+            }
+            if ($identity) {
+                $cmd_params.Identity = $identity
+            }
+            if ($allow_sender) {
+                $cmd_params.AllowSender = $null
+            }
+            if ($entity_type) {
+                $cmd_params.EntityType = $entity_type
+            }
+            if ($force) {
+                $cmd_params.Force = $null
+            }
+            if ($report_false_positive) {
+                $cmd_params.ReportFalsePositive = $null
+            }
+            if ($action_type) {
+                $cmd_params.ActionType = $action_type
+            }
+            $this.CreateSession()
+            Release-QuarantineMessage @cmd_params
+        }
+        finally {
+            $this.DisconnectSession()
+        }
+        return ""
+        <#
+            .DESCRIPTION
+            Use the Release-QuarantineMessage cmdlet to release messages from quarantine in your organization.
+            This cmdlet allows you to release one or more messages and manage sender allow lists.
+
+            .LINK
+            https://learn.microsoft.com/en-us/powershell/module/exchange/release-quarantinemessage?view=exchange-ps
+        #>
+    }
+    [PSObject]
     EXORemoveTenantAllowBlockList(
             [string]$entries,
             [string]$ids,
@@ -628,16 +794,18 @@ class ExchangeOnlinePowershellV3Client
             # Import and Execute command
             $cmd_params = @{
                 "Identity"                 = $mailbox
-                "BlockedSendersAndDomains" = @{Add = $add_blocked_senders_and_domains
-                    Remove                         = $remove_blocked_senders_and_domains
-                }
-                "TrustedSendersAndDomains" = @{Add = $add_trusted_senders_and_domains
-                    Remove                         = $remove_trusted_senders_and_domains
-                }
                 "TrustedListsOnly"         = $trusted_lists_only
                 "ContactsTrusted"          = $contacts_trusted
                 "Enabled"                  = $enabled
                 "Confirm"                  = $false
+            }
+            $blocked_senders_and_domains = CreateAddAndRemoveSections $add_blocked_senders_and_domains $remove_blocked_senders_and_domains
+            if ($blocked_senders_and_domains -ne $null){
+                $cmd_params["BlockedSendersAndDomains"] = $blocked_senders_and_domains
+            }
+            $trusted_senderns_and_domains = CreateAddAndRemoveSections $add_trusted_senders_and_domains $remove_trusted_senders_and_domains
+            if ($trusted_senderns_and_domains -ne $null){
+                $cmd_params["TrustedSendersAndDomains"] = $trusted_senderns_and_domains
             }
             Set-MailboxJunkEmailConfiguration @cmd_params
         }
@@ -689,16 +857,18 @@ class ExchangeOnlinePowershellV3Client
             $this.CreateSession()
             # Import and Execute command
             $cmd_params = @{
-                "BlockedSendersAndDomains" = @{Add = $add_blocked_senders_and_domains
-                    Remove                         = $remove_blocked_senders_and_domains
-                }
-                "TrustedSendersAndDomains" = @{Add = $add_trusted_senders_and_domains
-                    Remove                         = $remove_trusted_senders_and_domains
-                }
                 "TrustedListsOnly"         = $trusted_lists_only
                 "ContactsTrusted"          = $contacts_trusted
                 "Enabled"                  = $enabled
                 "Confirm"                  = $false
+            }
+            $blocked_senders_and_domains = CreateAddAndRemoveSections $add_blocked_senders_and_domains $remove_blocked_senders_and_domains
+            if ($blocked_senders_and_domains -ne $null){
+                $cmd_params["BlockedSendersAndDomains"] = $blocked_senders_and_domains
+            }
+            $trusted_senderns_and_domains = CreateAddAndRemoveSections $add_trusted_senders_and_domains $remove_trusted_senders_and_domains
+            if ($trusted_senderns_and_domains -ne $null){
+                $cmd_params["TrustedSendersAndDomains"] = $trusted_senderns_and_domains
             }
             Get-Mailbox -RecipientTypeDetails UserMailbox -ResultSize Unlimited | ForEach-Object {
                 Set-MailboxJunkEmailConfiguration -Identity $_.Name @cmd_params
@@ -1443,6 +1613,120 @@ function EXORemoveTenantAllowBlockListCommand
 
 }
 
+function EXOExportQuarantineMessageCommand
+{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [hashtable]$kwargs
+    )
+    $identities = $kwargs.identities
+    $identity = $kwargs.identity
+    $compress_output = if ($kwargs.compress_output -eq "true") { $true } else { $false }
+    $entity_type = $kwargs.entity_type
+    $force_conversion_to_mime = if ($kwargs.force_conversion_to_mime -eq "true") { $true } else { $false }
+    $password = $kwargs.password
+    $reason_for_export = $kwargs.reason_for_export
+    $recipient_address = $kwargs.recipient_address
+
+    $raw_response = $client.EXOExportQuarantineMessage(
+        $identities,
+        $identity,
+        $compress_output,
+        $entity_type,
+        $force_conversion_to_mime,
+        $password,
+        $reason_for_export,
+        $recipient_address
+    )
+
+    $human_readable = TableToMarkdown $raw_response "Results of $command"
+    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.ExportQuarantineMessage(obj.Guid === val.Guid)" = $raw_response }
+    Write-Output $human_readable, $entry_context, $raw_response
+}
+
+function EXOGetQuarantineMessageCommand {
+    [CmdletBinding()]
+    Param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [hashtable]$kwargs
+    )
+
+    $params = @{
+        Identity = $kwargs.identity
+        EntityType = $kwargs.entity_type
+        RecipientAddress = $kwargs.recipient_address
+        SenderAddress = $kwargs.sender_address
+        TeamsConversationTypes = $kwargs.teams_conversation_types
+        Direction = $kwargs.direction
+        Domain = $kwargs.domain
+        EndExpiresDate = $kwargs.end_expires_date
+        EndReceivedDate = $kwargs.end_received_date
+        IncludeMessagesFromBlockedSenderAddress = if ($kwargs.include_messages_from_blocked_sender_address -eq "true") { $true } else { $false }
+        MessageId = $kwargs.message_id
+        MyItems = if ($kwargs.my_items -eq "true") { $true } else { $false }
+        Page = $kwargs.page
+        PageSize = $kwargs.page_size
+        PolicyName = $kwargs.policy_name
+        PolicyTypes = $kwargs.policy_types
+        QuarantineTypes = $kwargs.quarantine_types
+        RecipientTag = $kwargs.recipient_tag
+        ReleaseStatus = $kwargs.release_status
+        Reported = if ($kwargs.reported -eq "true") { $true } else { $false }
+        StartExpiresDate = $kwargs.start_expires_date
+        StartReceivedDate = $kwargs.start_received_date
+        Subject = $kwargs.subject
+        Type = $kwargs.type
+    }
+
+    $raw_response = $client.EXOGetQuarantineMessage($params)
+
+    $human_readable = TableToMarkdown $raw_response "Results of $command"
+    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.GetQuarantineMessage(obj.Guid === val.Guid)" = $raw_response}
+    Write-Output $human_readable, $entry_context, $raw_response
+}
+
+
+function EXOReleaseQuarantineMessageCommand
+{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [hashtable]$kwargs
+    )
+
+    $user = $kwargs.user
+    $identities = $kwargs.identities
+    $identity = $kwargs.identity
+    $release_to_all = if ($kwargs.release_to_all -eq "true") { $true } else { $false }
+    $allow_sender = if ($kwargs.allow_sender -eq "true") { $true } else { $false }
+    $entity_type = $kwargs.entity_type
+    $force = if ($kwargs.force -eq "true") { $true } else { $false }
+    $report_false_positive = if ($kwargs.report_false_positive -eq "true") { $true } else { $false }
+    $action_type = $kwargs.action_type
+
+    $result = $client.EXOReleaseQuarantineMessage(
+        $user,
+        $identities,
+        $identity,
+        $release_to_all,
+        $allow_sender,
+        $entity_type,
+        $force,
+        $report_false_positive,
+        $action_type
+    )
+
+    $raw_response = @{}
+    $human_readable = $identities ?
+    "The following messages have been sent for release from quarantine: $identities" :
+    ($identity ?
+        "The message with identity $identity has been sent for release from quarantine." :
+        "No identities were provided for release from quarantine.");
+    $entry_context = @{}
+    Write-Output $human_readable, $entry_context, $raw_response
+}
+
 function GetJunkRulesCommand([ExchangeOnlinePowershellV3Client]$client, [hashtable]$kwargs) {
     $raw_response = $client.GetJunkRules($kwargs.mailbox)
     $md_columns = $raw_response | Select-Object -Property BlockedSendersAndDomains, TrustedSendersAndDomains, ContactsTrusted, TrustedListsOnly, Enabled
@@ -1478,6 +1762,17 @@ function SetJunkRulesCommand([ExchangeOnlinePowershellV3Client]$client, [hashtab
     $entry_context = @{}
 
     return $human_readable, $entry_context, $raw_response
+}
+
+function  CreateAddAndRemoveSections([string[]]$items_to_add, [string[]]$items_to_remove ){
+    $params = @{}
+    if (-not [string]::IsNullOrEmpty($items_to_add)){
+        $params["Add"] = $items_to_add
+    }
+    if (-not [string]::IsNullOrEmpty($items_to_remove)){
+        $params["Remove"] =  $items_to_remove
+    }
+    return $params
 }
 
 function SetGlobalJunkRulesCommand([ExchangeOnlinePowershellV3Client]$client, [hashtable]$kwargs) {
@@ -1734,6 +2029,15 @@ function Main
             }
             "$script:COMMAND_PREFIX-remove-tenant-allow-block-list-items" {
                 ($human_readable, $entry_context, $raw_response) = EXORemoveTenantAllowBlockListCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-export-quarantinemessage" {
+                ($human_readable, $entry_context, $raw_response) = EXOExportQuarantineMessageCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-get-quarantinemessage" {
+                ($human_readable, $entry_context, $raw_response) = EXOGetQuarantineMessageCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-release-quarantinemessage" {
+                ($human_readable, $entry_context, $raw_response) = EXOReleaseQuarantineMessageCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-junk-rules-get" {
                 ($human_readable, $entry_context, $raw_response) = GetJunkRulesCommand $exo_client $command_arguments

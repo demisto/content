@@ -139,6 +139,7 @@ def main():     # pragma: no cover
     display_full_email_body = argToBoolean(params.get("display_full_email_body", "false"))
     mark_fetched_read = argToBoolean(params.get("mark_fetched_read", "false"))
     fetch_html_formatting = argToBoolean(params.get("fetch_html_formatting", "false"))
+    legacy_name = argToBoolean(params.get('legacy_name', False))
 
     # params related to self deployed
     tenant_id = refresh_token if self_deployed else ''
@@ -163,6 +164,7 @@ def main():     # pragma: no cover
         first_fetch_interval=first_fetch_interval,
         emails_fetch_limit=emails_fetch_limit,
         fetch_html_formatting=fetch_html_formatting,
+        legacy_name=legacy_name,
 
         refresh_token=refresh_token,
         auth_code=auth_code,

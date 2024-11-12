@@ -5,13 +5,13 @@ ignore=BA110
 ignore=BA110
 
 [file:playbook-SolarStorm_and_SUNBURST_Hunting_and_Response_Playbook_6.yml]
-ignore=BA110
+ignore=BA110,GR107
 
 [file:playbook-Kaseya_VSA__0-day_-_REvil_Ransomware_Supply_Chain_Attack_README.md]
 ignore=RM106
 
 [file:playbook-CVE-2021-1675_-_PrintNightmare.yml]
-ignore=BA101
+ignore=BA101,GR107
 
 [file:pack_metadata.json]
 ignore=PA129
@@ -50,10 +50,35 @@ ignore=RN113,RN114
 ignore=RM106
 
 [file:playbook-SolarStorm_and_SUNBURST_Hunting_and_Response_Playbook_6_5.yml]
-ignore=BA110
+ignore=BA110,GR107
 
 [file:1_6_35.md]
 ignore=RN113,RN114
 
 [file:1_6_36.md]
 ignore=RN116
+
+# GR103 is temporary, see CIAC-11705
+[file:layoutscontainer-Rapid_Breach_Response.json]
+ignore=GR103
+
+[file:playbook-Kaseya_VSA__0-day_-_REvil_Ransomware_Supply_Chain_Attack.yml]
+ignore=GR107
+
+[file:playbook-Kaseya_VSA__0-day_-_REvil_Ransomware_Supply_Chain_Attack_6_5.yml]
+ignore=GR107
+
+[file:playbook-HAFNIUM_-_Exchange_0-day_exploits_6.yml]
+ignore=GR107
+
+[file:playbook-HAFNIUM_-_Exchange_0-day_exploits_6_5.yml]
+ignore=GR107
+
+[file:playbook-CVE-2021-22893_-_Pulse_Connect_Secure_RCE_6_5.yml]
+ignore=GR107
+
+[file:playbook-CVE-2021-22893_-_Pulse_Connect_Secure_RCE.yml]
+ignore=GR107
+
+[file:1_6_39.md]
+ignore=RN113,RN114

@@ -40,10 +40,10 @@ script:
     - description: The DB2 query to run
       name: query
       required: true
-    - defaultValue: "50"
+    - defaultValue: '50'
       description: The maximum number of results
       name: limit
-    - defaultValue: "0"
+    - defaultValue: '0'
       description: The offset at which to start the result
       name: offset
     - description: A comma separated list of names which will be replaced in query having ':<name>'.
@@ -52,7 +52,7 @@ script:
       name: bind_variables_values
     description: Running a DB2 query command
     name: db2-query
-  dockerimage: demisto/ibm-db2:1.0.0.27972
+  dockerimage: demisto/ibm-db2:1.0.0.114680
   script: ''
   subtype: python3
   type: python

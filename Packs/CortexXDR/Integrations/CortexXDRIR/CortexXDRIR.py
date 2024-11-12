@@ -4,6 +4,8 @@ import hashlib
 import secrets
 import string
 from itertools import zip_longest
+from datetime import datetime, timedelta
+import pytz
 
 from CoreIRApiModule import *
 
@@ -22,7 +24,6 @@ FIELDS_TO_EXCLUDE = [
     'network_artifacts',
     'file_artifacts'
 ]
-
 
 XDR_INCIDENT_FIELDS = {
     "status": {"description": "Current status of the incident: \"new\",\"under_"
@@ -130,6 +131,64 @@ def filter_and_save_unseen_incident(incidents: List, limit: int, number_of_alrea
     return filtered_incidents
 
 
+def get_xsoar_close_reasons():
+    """
+     Get the default XSOAR close-reasons in addition to custom close-reasons from server configuration.
+    """
+    default_xsoar_close_reasons = list(XSOAR_RESOLVED_STATUS_TO_XDR.keys())
+    custom_close_reasons: List[str] = []
+    try:
+        server_config = get_server_config()
+        demisto.debug(f'get_xsoar_close_reasons server-config: {str(server_config)}')
+        if server_config:
+            custom_close_reasons = argToList(server_config.get('incident.closereasons', ''))
+    except Exception as e:
+        demisto.error(f"Could not get server configuration: {e}")
+    return default_xsoar_close_reasons + custom_close_reasons
+
+
+def validate_custom_close_reasons_mapping(mapping: str, direction: str):
+    """ Check validity of provided custom close-reason mappings. """
+
+    xdr_statuses = [status.replace("resolved_", "").replace("_", " ").title() for status in XDR_RESOLVED_STATUS_TO_XSOAR]
+    xsoar_statuses = get_xsoar_close_reasons()
+
+    exception_message = ('Improper custom mapping ({direction}) provided: "{key_or_value}" is not a valid Cortex '
+                         '{xsoar_or_xdr} close-reason. Valid Cortex {xsoar_or_xdr} close-reasons are: {statuses}')
+
+    def to_xdr_status(status):
+        return "resolved_" + "_".join(status.lower().split(" "))
+
+    custom_mapping = comma_separated_mapping_to_dict(mapping)
+
+    valid_key = valid_value = True  # If no mapping was provided.
+
+    for key, value in custom_mapping.items():
+        if direction == XSOAR_TO_XDR:
+            xdr_close_reason = to_xdr_status(value)
+            valid_key = key in xsoar_statuses
+            valid_value = xdr_close_reason in XDR_RESOLVED_STATUS_TO_XSOAR
+        elif direction == XDR_TO_XSOAR:
+            xdr_close_reason = to_xdr_status(key)
+            valid_key = xdr_close_reason in XDR_RESOLVED_STATUS_TO_XSOAR
+            valid_value = value in xsoar_statuses
+
+        if not valid_key:
+            raise DemistoException(
+                exception_message.format(direction=direction,
+                                         key_or_value=key,
+                                         xsoar_or_xdr="XSOAR" if direction == XSOAR_TO_XDR else "XDR",
+                                         statuses=xsoar_statuses
+                                         if direction == XSOAR_TO_XDR else xdr_statuses))
+        elif not valid_value:
+            raise DemistoException(
+                exception_message.format(direction=direction,
+                                         key_or_value=value,
+                                         xsoar_or_xdr="XDR" if direction == XSOAR_TO_XDR else "XSOAR",
+                                         statuses=xdr_statuses
+                                         if direction == XSOAR_TO_XDR else xsoar_statuses))
+
+
 class Client(CoreClient):
     def __init__(self, base_url, proxy, verify, timeout, params=None):
         if not params:
@@ -157,54 +216,12 @@ class Client(CoreClient):
                 raise
 
         # XSOAR -> XDR
-        self.validate_custom_mapping(mapping=self._params.get("custom_xsoar_to_xdr_close_reason_mapping"),
-                                     direction=XSOAR_TO_XDR)
+        validate_custom_close_reasons_mapping(mapping=self._params.get("custom_xsoar_to_xdr_close_reason_mapping"),
+                                              direction=XSOAR_TO_XDR)
 
         # XDR -> XSOAR
-        self.validate_custom_mapping(mapping=self._params.get("custom_xdr_to_xsoar_close_reason_mapping"),
-                                     direction=XDR_TO_XSOAR)
-
-    def validate_custom_mapping(self, mapping: str, direction: str):
-        """ Check validity of provided custom close-reason mappings. """
-
-        xdr_statuses_to_xsoar = [status.replace("resolved_", "").replace("_", " ").title()
-                                 for status in XDR_RESOLVED_STATUS_TO_XSOAR]
-        xsoar_statuses_to_xdr = list(XSOAR_RESOLVED_STATUS_TO_XDR.keys())
-
-        exception_message = ('Improper custom mapping ({direction}) provided: "{key_or_value}" is not a valid Cortex '
-                             '{xsoar_or_xdr} close-reason. Valid Cortex {xsoar_or_xdr} close-reasons are: {statuses}')
-
-        def to_xdr_status(status):
-            return "resolved_" + "_".join(status.lower().split(" "))
-
-        custom_mapping = comma_separated_mapping_to_dict(mapping)
-
-        valid_key = valid_value = True  # If no mapping was provided.
-
-        for key, value in custom_mapping.items():
-            if direction == XSOAR_TO_XDR:
-                xdr_close_reason = to_xdr_status(value)
-                valid_key = key in XSOAR_RESOLVED_STATUS_TO_XDR
-                valid_value = xdr_close_reason in XDR_RESOLVED_STATUS_TO_XSOAR
-            elif direction == XDR_TO_XSOAR:
-                xdr_close_reason = to_xdr_status(key)
-                valid_key = xdr_close_reason in XDR_RESOLVED_STATUS_TO_XSOAR
-                valid_value = value in XSOAR_RESOLVED_STATUS_TO_XDR
-
-            if not valid_key:
-                raise DemistoException(
-                    exception_message.format(direction=direction,
-                                             key_or_value=key,
-                                             xsoar_or_xdr="XSOAR" if direction == XSOAR_TO_XDR else "XDR",
-                                             statuses=xsoar_statuses_to_xdr
-                                             if direction == XSOAR_TO_XDR else xdr_statuses_to_xsoar))
-            elif not valid_value:
-                raise DemistoException(
-                    exception_message.format(direction=direction,
-                                             key_or_value=value,
-                                             xsoar_or_xdr="XDR" if direction == XSOAR_TO_XDR else "XSOAR",
-                                             statuses=xdr_statuses_to_xsoar
-                                             if direction == XSOAR_TO_XDR else xsoar_statuses_to_xdr))
+        validate_custom_close_reasons_mapping(mapping=self._params.get("custom_xdr_to_xsoar_close_reason_mapping"),
+                                              direction=XDR_TO_XSOAR)
 
     def handle_fetch_starred_incidents(self, limit: int, page_number: int, request_data: dict) -> List:
         """
@@ -789,6 +806,7 @@ def resolve_xsoar_close_reason(xdr_close_reason: str):
     :param xdr_close_reason: XDR raw status/close reason e.g. 'resolved_false_positive'.
     :return: XSOAR close reason.
     """
+    possible_xsoar_close_reasons = get_xsoar_close_reasons()
 
     # Check if incoming XDR close-reason has a non-default mapping to XSOAR close-reason.
     if demisto.params().get("custom_xdr_to_xsoar_close_reason_mapping"):
@@ -802,7 +820,7 @@ def resolve_xsoar_close_reason(xdr_close_reason: str):
             xdr_close_reason.replace("resolved_", "").replace("_", " ").title()
         )
         xsoar_close_reason = custom_xdr_to_xsoar_close_reason_mapping.get(title_cased_xdr_close_reason)
-        if xsoar_close_reason in XSOAR_RESOLVED_STATUS_TO_XDR:
+        if xsoar_close_reason in possible_xsoar_close_reasons:
             demisto.debug(
                 f"XDR->XSOAR custom close-reason exists, using {xdr_close_reason}={xsoar_close_reason}"
             )
@@ -865,25 +883,32 @@ def get_mapping_fields_command():
     return mapping_response
 
 
-def get_modified_remote_data_command(client, args):
+def get_modified_remote_data_command(client, args, mirroring_last_update: str = '', xdr_delay: int = 1):
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = remote_args.last_update  # In the first run, this value will be set to 1 minute earlier
-
-    demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
-
+    last_update: str = mirroring_last_update or remote_args.last_update
     last_update_utc = dateparser.parse(last_update,
-                                       settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})  # convert to utc format
+                                       settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
+
     if last_update_utc:
-        last_update_without_ms = last_update_utc.isoformat().split('.')[0]
-
-    raw_incidents = client.get_incidents(gte_modification_time=last_update_without_ms, limit=100)
-
+        gte_modification_time_milliseconds = last_update_utc - timedelta(minutes=xdr_delay)
+        lte_modification_time_milliseconds = gte_modification_time_milliseconds + timedelta(minutes=1)
+    demisto.debug(
+        f'Performing get-modified-remote-data command {last_update=} | {gte_modification_time_milliseconds=} |'
+        f'{lte_modification_time_milliseconds=}'
+    )
+    raw_incidents = client.get_incidents(
+        gte_modification_time_milliseconds=gte_modification_time_milliseconds,
+        lte_modification_time_milliseconds=lte_modification_time_milliseconds,
+        limit=100)
+    last_run_mirroring = (lte_modification_time_milliseconds + timedelta(milliseconds=1))
+    # Format with milliseconds as string, truncate microseconds
+    last_run_mirroring_str = last_run_mirroring.replace(tzinfo=pytz.UTC).strftime(  # type: ignore
+        '%Y-%m-%d %H:%M:%S.%f')[:-3] + '+02:00'  # type: ignore
     modified_incident_ids = []
     for raw_incident in raw_incidents:
         incident_id = raw_incident.get('incident_id')
         modified_incident_ids.append(incident_id)
-
-    return GetModifiedRemoteDataResponse(modified_incident_ids)
+    return GetModifiedRemoteDataResponse(modified_incident_ids), last_run_mirroring_str
 
 
 def get_remote_data_command(client, args):
@@ -920,7 +945,9 @@ def get_remote_data_command(client, args):
                 sync_incoming_incident_owners(incident_data)
 
             # handle closed issue in XDR and handle outgoing error entry
-            entries = [handle_incoming_closing_incident(incident_data)]
+            entries = []
+            if argToBoolean(client._params.get('close_xsoar_incident', True)):
+                entries = [handle_incoming_closing_incident(incident_data)]
 
             reformatted_entries = []
             for entry in entries:
@@ -1002,6 +1029,13 @@ def update_remote_system_command(client, args):
             if is_closed and closed_without_status and not remote_is_already_closed:
                 update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
             demisto.debug(f"After checking status {update_args=}")
+
+            close_xdr_incident = argToBoolean(client._params.get("close_xdr_incident", True))
+
+            if not close_xdr_incident:
+                demisto.debug(f"Reverting to previous status {remote_args.data.get('status')}")
+                update_args['status'] = remote_args.data.get('status')
+
             update_incident_command(client, update_args)
 
             close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
@@ -1048,14 +1082,19 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
     global ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
+    demisto.debug(f"{last_fetch=}")
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
                                                                                                 dict) else []
+    demisto.debug(f"{incidents_from_previous_run=}")
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
         last_fetch, _ = parse_date_range(first_fetch_time, to_timestamp=True)
+        demisto.debug(f"last_fetch after parsing date range {last_fetch}")
 
     if starred:
         starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
+        demisto.debug(
+            f"starred_incidents_fetch_window after parsing date range {starred_incidents_fetch_window}")
 
     incidents = []
     if incidents_from_previous_run:
@@ -1079,6 +1118,8 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
                 starred=starred,
                 starred_incidents_fetch_window=starred_incidents_fetch_window,
                 exclude_artifacts=exclude_artifacts)
+
+    # demisto.debug(f"{raw_incidents=}") # uncomment to debug, otherwise spams the log
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
@@ -1269,7 +1310,6 @@ def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
     LOG(f'Command being called is {command}')
-
     # using two different credentials object as they both fields need to be encrypted
     first_fetch_time = params.get('fetch_time', '3 days')
     base_url = urljoin(params.get('url'), '/public_api/v1')
@@ -1279,7 +1319,7 @@ def main():  # pragma: no cover
     starred = True if params.get('starred') else None
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
     exclude_artifacts = argToBoolean(params.get('exclude_fields', True))
-
+    xdr_delay = arg_to_number(params.get('xdr_delay')) or 1
     try:
         timeout = int(params.get('timeout', 120))
     except ValueError as e:
@@ -1302,7 +1342,6 @@ def main():  # pragma: no cover
     args = demisto.args()
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
-
     try:
         if command == 'test-module':
             client.test_module(first_fetch_time)
@@ -1310,16 +1349,23 @@ def main():  # pragma: no cover
 
         elif command == 'fetch-incidents':
             integration_instance = demisto.integrationInstance()
+            last_run = demisto.getLastRun().get('next_run')
+            demisto.debug(
+                f"Before starting a new cycle of fetch incidents\n{last_run=}\n{integration_instance=}")
             next_run, incidents = fetch_incidents(client=client,
                                                   first_fetch_time=first_fetch_time,
                                                   integration_instance=integration_instance,
                                                   exclude_artifacts=exclude_artifacts,
-                                                  last_run=demisto.getLastRun().get('next_run'),
+                                                  last_run=last_run,
                                                   max_fetch=max_fetch,
                                                   statuses=statuses,
                                                   starred=starred,
                                                   starred_incidents_fetch_window=starred_incidents_fetch_window,
                                                   )
+            demisto.debug(f"Finished a fetch incidents cycle, {next_run=}."
+                          f"Fetched {len(incidents)} incidents.")
+            # demisto.debug(f"{incidents=}") # uncomment to debug, otherwise spams the log
+
             last_run_obj = demisto.getLastRun()
             last_run_obj['next_run'] = next_run
             demisto.setLastRun(last_run_obj)
@@ -1536,7 +1582,17 @@ def main():  # pragma: no cover
             return_results(action_status_get_command(client, args))
 
         elif command == 'get-modified-remote-data':
-            return_results(get_modified_remote_data_command(client, demisto.args()))
+            last_run_mirroring: Dict[str, Any] = demisto.getLastRun()
+
+            modified_incidents, next_mirroring_time = get_modified_remote_data_command(
+                client=client,
+                args=demisto.args(),
+                mirroring_last_update=last_run_mirroring.get('mirroring_last_update', ''),
+                xdr_delay=xdr_delay,
+            )
+            last_run_mirroring['mirroring_last_update'] = next_mirroring_time
+            demisto.setLastRun(last_run_mirroring)
+            return_results(modified_incidents)
 
         elif command == 'xdr-script-run':  # used with polling = true always
             return_results(script_run_polling_command(args, client))

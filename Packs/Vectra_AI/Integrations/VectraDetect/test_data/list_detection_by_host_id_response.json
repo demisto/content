@@ -1,0 +1,200 @@
+{
+    "count": 2,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "id": 2590,
+            "url": "https://dummy_url/api/v/detections/2590",
+            "detection_url": "https://dummy_url/api/v/detections/2590",
+            "category": "DUMMY_CATEGORY",
+            "detection": "Port Sweep",
+            "detection_category": "DUMMY_CATEGORY",
+            "detection_type": "Port Sweep",
+            "custom_detection": null,
+            "description": null,
+            "src_ip": "0.0.0.1",
+            "state": "active",
+            "t_score": 47,
+            "c_score": 65,
+            "certainty": 65,
+            "threat": 47,
+            "created_timestamp": "2024-07-09T01:36:24Z",
+            "first_timestamp": "2024-07-09T01:28:55Z",
+            "last_timestamp": "2024-07-09T01:28:57Z",
+            "targets_key_asset": false,
+            "is_targeting_key_asset": false,
+            "src_account": null,
+            "src_host": {
+                "id": 1,
+                "ip": "0.0.0.1",
+                "name": "IP-0.0.0.1",
+                "url": "https://dummy_url/api/v/hosts/1",
+                "is_key_asset": false,
+                "groups": [],
+                "threat": 10,
+                "certainty": 38
+            },
+            "note": null,
+            "notes": [],
+            "note_modified_by": null,
+            "note_modified_timestamp": null,
+            "sensor": "whx12u9g",
+            "sensor_name": "dummy-center",
+            "tags": [],
+            "triage_rule_id": null,
+            "assigned_to": null,
+            "assigned_date": null,
+            "groups": [],
+            "is_marked_custom": false,
+            "is_custom_model": false,
+            "filtered_by_ai": false,
+            "filtered_by_user": false,
+            "filtered_by_rule": false,
+            "grouped_details": [
+                {
+                    "first_timestamp": "2024-07-09T01:28:55Z",
+                    "last_timestamp": "2024-07-09T01:28:57Z",
+                    "detection_guid": null,
+                    "distilled_context": {},
+                    "sequence_id": null,
+                    "is_host_detail": true,
+                    "is_account_detail": false,
+                    "account_uid": null,
+                    "account_detection": null,
+                    "host_detection": 2590,
+                    "src_ip": "0.0.0.1",
+                    "date_couch": "2024-07-09T01:35:57Z",
+                    "date_publish": "2024-07-09T01:36:15Z",
+                    "date_s3": null,
+                    "date_first_bucket": "2024-07-09T01:36:24Z",
+                    "grouping_field": "last_timestamp",
+                    "protocol": "tcp",
+                    "num_attempts": 232,
+                    "num_successes": 0,
+                    "is_smallsweep": false,
+                    "accounts": [],
+                    "target_domains": [],
+                    "dst_ports": [
+                        199
+                    ],
+                    "dst_subnets": [
+                        "0.0.0.1/24"
+                    ]
+                }
+            ],
+            "summary": {
+                "dst_ports": [
+                    80
+                ],
+                "protocols": [
+                    "tcp"
+                ],
+                "num_attempts": 600,
+                "num_successes": 0
+            }
+        },
+        {
+            "summary": {
+                "dst_ips": [
+                    "0.0.0.2"
+                ],
+                "num_sessions": 123,
+                "bytes_sent": 29616,
+                "bytes_received": 655540,
+                "description": "This host communicated with an external destination using HTTPS where another protocol was running over the top of the session."
+            },
+            "id": 2589,
+            "url": "https://dummy_url/api/v/detections/2589",
+            "detection_url": "https://dummy_url/api/v/detections/2589",
+            "category": "COMMAND & CONTROL",
+            "detection": "HTTPS Tunnel",
+            "detection_category": "COMMAND & CONTROL",
+            "detection_type": "HTTPS Tunnel",
+            "custom_detection": "AI",
+            "description": null,
+            "src_ip": "0.0.0.1",
+            "state": "active",
+            "t_score": 0,
+            "c_score": 0,
+            "certainty": 0,
+            "threat": 0,
+            "created_timestamp": "2024-07-09T00:20:39Z",
+            "first_timestamp": "2024-07-09T00:01:01Z",
+            "last_timestamp": "2024-07-09T00:11:46Z",
+            "targets_key_asset": false,
+            "is_targeting_key_asset": false,
+            "src_account": null,
+            "src_host": {
+                "id": 1,
+                "ip": "0.0.0.1",
+                "name": "IP-0.0.0.1",
+                "url": "https://dummy_url/api/v/hosts/1",
+                "is_key_asset": false,
+                "groups": [],
+                "threat": 10,
+                "certainty": 38
+            },
+            "note": null,
+            "notes": [],
+            "note_modified_by": null,
+            "note_modified_timestamp": null,
+            "sensor": "whx12u9g",
+            "sensor_name": "dummy-center",
+            "tags": [],
+            "triage_rule_id": 2453,
+            "assigned_to": null,
+            "assigned_date": null,
+            "groups": [],
+            "is_marked_custom": false,
+            "is_custom_model": false,
+            "filtered_by_ai": true,
+            "filtered_by_user": false,
+            "filtered_by_rule": false,
+            "grouped_details": [
+                {
+                    "external_target": {
+                        "ip": "0.0.0.2",
+                        "name": "minutemen.vault-tech.org"
+                    },
+                    "num_sessions": 123,
+                    "bytes_received": 655540,
+                    "bytes_sent": 29616,
+                    "ja3_hashes": [
+                        "dummy-ja3_hashes"
+                    ],
+                    "ja3s_hashes": [
+                        "dummy-ja3s_hashes"
+                    ],
+                    "sessions": [
+                        {
+                            "tunnel_type": "Multiple short TCP sessions",
+                            "protocol": "tcp",
+                            "app_protocol": "https",
+                            "dst_port": 443,
+                            "dst_ip": "0.0.0.2",
+                            "bytes_received": 655540,
+                            "bytes_sent": 29616,
+                            "first_timestamp": "2024-07-09T00:01:01Z",
+                            "last_timestamp": "2024-07-09T00:11:46Z",
+                            "dst_geo": null,
+                            "dst_geo_lat": null,
+                            "dst_geo_lon": null
+                        }
+                    ],
+                    "first_timestamp": "2024-07-09T00:01:01Z",
+                    "last_timestamp": "2024-07-09T00:11:46Z",
+                    "dst_ips": [
+                        "0.0.0.2"
+                    ],
+                    "dst_ports": [
+                        443
+                    ],
+                    "target_domains": [
+                        "minutemen.vault-tech.org"
+                    ]
+                }
+            ]
+        }
+    ]
+}

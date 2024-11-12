@@ -87,6 +87,7 @@
     "totalMemory": 4035,
     "updatedAt": "2021-01-11T19:33:25.482177Z",
     "userActionsNeeded": [],
-    "uuid": "f431b0a1a8744d2a8a92fc88fa3c13bc"
+    "uuid": "f431b0a1a8744d2a8a92fc88fa3c13bc",
+    "tags": ["my-custom-tag"]
   }
 ]

@@ -16,7 +16,7 @@ class Client:
             self._verify = verify
         self._base_url = server_url
         self._proxy = proxy
-        self._headers = headers if headers else dict()
+        self._headers = headers if headers else {}
         self._client_cert = client_cert
         self._client_key = client_key
 

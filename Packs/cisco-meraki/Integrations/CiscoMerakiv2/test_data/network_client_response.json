@@ -1,0 +1,35 @@
+[
+    {
+        "id": "k74272e",
+        "mac": "00:00:00:00:00:00",
+        "ip": "0.0.0.0",
+        "ip6": "0000:000:0000:00::1",
+        "description": "Miles's phone",
+        "firstSeen": 1518365681,
+        "lastSeen": 1526087474,
+        "manufacturer": "Apple",
+        "os": "iOS",
+        "user": "milesmeraki",
+        "vlan": "100",
+        "ssid": "My SSID",
+        "switchport": "My switch port",
+        "wirelessCapabilities": "802.11b - 2.4 GHz",
+        "smInstalled": true,
+        "recentDeviceMac": "00:00:00:00:00:00",
+        "status": "Online",
+        "usage": {
+            "sent": 138,
+            "recv": 61
+        },
+        "namedVlan": "My VLAN",
+        "adaptivePolicyGroup": "2: Infrastructure",
+        "deviceTypePrediction": "iPhone SE, iOS9.3.5",
+        "recentDeviceSerial": "00:00:00:00:00:00",
+        "recentDeviceName": "0000-0000-0000",
+        "recentDeviceConnection": "Wired",
+        "notes": "My AP's note",
+        "ip6Local": "0000:0:0:0:0000:0000:0000:0000",
+        "groupPolicy8021x": "Student_Access",
+        "pskGroup": "Group 1"
+    }
+]

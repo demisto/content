@@ -28,7 +28,7 @@ if not incident:
 
             # for each role the user has, add their types if the role exists in the list
             for role in roles:
-                if role in role_list.keys():
+                if role in role_list:
                     allowedTypes.extend(role_list[role])
 
             # remove duplicates

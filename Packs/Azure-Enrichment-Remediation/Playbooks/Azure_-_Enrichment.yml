@@ -2,734 +2,15 @@ id: Azure - Enrichment
 version: -1
 name: Azure - Enrichment
 description: Given an IP address, this playbook enriches Azure Compute, Microsoft Graph User, and IAM information and outputs Azure Compute, Microsoft Graph User, and IAM information.
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    taskid: bfd24387-65c9-4354-88ac-5fd5839183be
-    type: start
-    task:
-      id: bfd24387-65c9-4354-88ac-5fd5839183be
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 40
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: 2125eb2b-347d-4773-8cb3-a5ea8b877dcf
-    type: condition
-    task:
-      id: 2125eb2b-347d-4773-8cb3-a5ea8b877dcf
-      version: -1
-      name: Is Azure Compute v2 enabled and is input value defined?
-      description: Determines if the Azure Compute v2 integration instance is configured and input values are defined to pull enrichment data.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "2"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: containsGeneral
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Azure Compute v2
-                - - operator: containsGeneral
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isExists
-          left:
-            value:
-              simple: inputs.AzureIP
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: ceeb2d76-27dc-462b-8dd7-ca6835748866
-    type: regular
-    task:
-      id: ceeb2d76-27dc-462b-8dd7-ca6835748866
-      version: -1
-      name: Lookup Azure public IP information associated with IP
-      description: Gets the properties of a given public IP address.
-      script: Azure Compute v2|||azure-vm-get-public-ip-details
-      type: regular
-      iscommand: true
-      brand: Azure Compute v2
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      address_name:
-        complex:
-          root: inputs.AzureIP
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 500
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: 862b3c6e-070d-44c6-8857-7f37f8bf8d3f
-    type: condition
-    task:
-      id: 862b3c6e-070d-44c6-8857-7f37f8bf8d3f
-      version: -1
-      name: Is there a public IP in Azure?
-      description: Checks whether the last command returned information on the Public IP or not.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Azure.Network.IPConfigurations.PublicConfigID
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 680
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: 82afe861-c5c6-46e2-87a4-6ee3f450dfb3
-    type: regular
-    task:
-      id: 82afe861-c5c6-46e2-87a4-6ee3f450dfb3
-      version: -1
-      name: Lookup Azure NIC information associated with IP
-      description: Gets the properties of a given network interface.
-      script: Azure Compute v2|||azure-vm-get-nic-details
-      type: regular
-      iscommand: true
-      brand: Azure Compute v2
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      nic_name:
-        complex:
-          root: Azure.Network.IPConfigurations
-          accessor: PublicConfigID
-          transformers:
-          - operator: ExtractInbetween
-            args:
-              from:
-                value:
-                  simple: networkInterfaces/
-              to:
-                value:
-                  simple: /ipConfigurations
-      resource_group:
-        complex:
-          root: Azure.Network.IPConfigurations
-          accessor: PublicConfigID
-          transformers:
-          - operator: ExtractInbetween
-            args:
-              from:
-                value:
-                  simple: resourceGroups/
-              to:
-                value:
-                  simple: /providers
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 860
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: 45295f5c-5db5-4ade-8133-5d415996a5db
-    type: condition
-    task:
-      id: 45295f5c-5db5-4ade-8133-5d415996a5db
-      version: -1
-      name: Is there a NIC in Azure associated with the IP?
-      description: Check whether the last command returned information for the NIC associated with the IP or not.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Azure.Network.Interfaces.ID
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: 1f001609-43a6-4284-81d0-10b4089b3598
-    type: regular
-    task:
-      id: 1f001609-43a6-4284-81d0-10b4089b3598
-      version: -1
-      name: Lookup Azure Compute instance information with NIC and IP
-      description: Gets the properties of a given virtual machine.
-      script: Azure Compute v2|||azure-vm-get-instance-details
-      type: regular
-      iscommand: true
-      brand: Azure Compute v2
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      resource_group:
-        complex:
-          root: Azure.Network.Interfaces
-          accessor: AttachedVirtualMachine
-          transformers:
-          - operator: ExtractInbetween
-            args:
-              from:
-                value:
-                  simple: resourceGroups/
-              to:
-                value:
-                  simple: /providers
-      virtual_machine_name:
-        complex:
-          root: Azure.Network.Interfaces
-          accessor: AttachedVirtualMachine
-          transformers:
-          - operator: substringFrom
-            args:
-              from:
-                value:
-                  simple: virtualMachines/
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1290
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: 7cdb0921-fbed-4c0a-87c9-3d8f0e2f43f9
-    type: title
-    task:
-      id: 7cdb0921-fbed-4c0a-87c9-3d8f0e2f43f9
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -60,
-          "y": 3080
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: fdc922d7-b3b5-49aa-849f-f6eb0b0b316b
-    type: title
-    task:
-      id: fdc922d7-b3b5-49aa-849f-f6eb0b0b316b
-      version: -1
-      name: IAM Information
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "9"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: f6b11147-ac1c-44e4-8b36-8b23fb118b85
-    type: condition
-    task:
-      id: f6b11147-ac1c-44e4-8b36-8b23fb118b85
-      version: -1
-      name: Is Azure Active Directory Identity And Access enabled?
-      description: Determines if the Azure Active Directory Identity And Access integration instance is configured.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "10"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: MicrosoftGraphIdentityandAccess
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1620
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: 8da95498-c2a5-4aba-87fd-c13c21c6932c
-    type: regular
-    task:
-      id: 8da95498-c2a5-4aba-87fd-c13c21c6932c
-      version: -1
-      name: Lookup roles in directory
-      description: Lists the roles in the directory.
-      script: MicrosoftGraphIdentityandAccess|||msgraph-identity-directory-roles-list
-      type: regular
-      iscommand: true
-      brand: MicrosoftGraphIdentityandAccess
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      limit:
-        simple: "50"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1860
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: c0663b85-a499-4aa0-8359-46c98a177b26
-    type: condition
-    task:
-      id: c0663b85-a499-4aa0-8359-46c98a177b26
-      version: -1
-      name: Is the Global Admin role id defined?
-      description: Checks whether the last command returned information for Global Admins in Azure.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "12"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: MSGraphIdentity.Role
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: MSGraphIdentity.Role.displayName
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Global Administrator
-                transformers:
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: id
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2050
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: 74cef228-ddcd-4a78-8514-c9ddc42fb0de
-    type: regular
-    task:
-      id: 74cef228-ddcd-4a78-8514-c9ddc42fb0de
-      version: -1
-      name: Lookup members of Global Admin from MS Graph
-      description: Gets all members in the Global admins role ID.
-      script: MicrosoftGraphIdentityandAccess|||msgraph-identity-directory-role-members-list
-      type: regular
-      iscommand: true
-      brand: MicrosoftGraphIdentityandAccess
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      limit:
-        simple: "100"
-      role_id:
-        complex:
-          root: MSGraphIdentity.Role
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: MSGraphIdentity.Role.displayName
-                iscontext: true
-              right:
-                value:
-                  simple: Global Administrator
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: id
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: 085d43b7-26ee-4c06-86c1-620288295670
-    type: regular
-    task:
-      id: 085d43b7-26ee-4c06-86c1-620288295670
-      version: -1
-      name: Lookup user details of Global Admin users
-      description: "Retrieves the properties and relationships for Global Admins. \n\nFor more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0. \nPermissions: - User.Read (Delegated) - User.Read.All (Application)"
-      script: Microsoft Graph User|||msgraph-user-get
-      type: regular
-      iscommand: true
-      brand: Microsoft Graph User
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      user:
-        complex:
-          root: MSGraphIdentity.RoleMember
-          accessor: user_id
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2850
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: 145b8864-a6c4-46aa-8e65-2c9f3efba993
-    type: condition
-    task:
-      id: 145b8864-a6c4-46aa-8e65-2c9f3efba993
-      version: -1
-      name: Is Microsoft Graph User enabled?
-      description: Determines if the Microsoft Graph User integration instance is configured.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Microsoft Graph User
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2580
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "11_7_#default#": 0.55,
-      "1_2_yes": 0.49,
-      "1_7_#default#": 0.19,
-      "3_7_#default#": 0.21,
-      "5_7_#default#": 0.29,
-      "9_7_#default#": 0.36
-    },
-    "paper": {
-      "dimensions": {
-        "height": 3105,
-        "width": 890,
-        "x": -60,
-        "y": 40
-      }
-    }
-  }
 inputs:
-- key: AzureIP
+- description: Azure IP address in the alert.
+  key: AzureIP
+  playbookInputQuery:
+  required: false
   value:
     complex:
-      root: alert
       accessor: remoteip
-  required: false
-  description: Azure IP in Alert
-  playbookInputQuery:
+      root: alert
 outputs:
 - contextPath: Azure.Compute
   description: Azure Compute information.
@@ -746,6 +27,927 @@ outputs:
 - contextPath: MSGraphUser
   description: Microsoft Graph User objects for found user IDs.
   type: unknown
-fromversion: 6.5.0
+- contextPath: AzureAssetHierarchy
+  description: Azure Compute Hierarchy Path.
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 77f69570-eab6-4d8e-8b44-69daa18bf950
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 77f69570-eab6-4d8e-8b44-69daa18bf950
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -500
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: Azure Compute v2
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isNotEmpty
+          right:
+            value: {}
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.AzureIP
+          operator: isExists
+      label: "yes"
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if the Azure Compute v2 integration instance is configured and input values are defined to pull enrichment data.
+      id: 4b2e403d-8d1a-4879-898f-e82535608cd9
+      iscommand: false
+      name: Is Azure Compute v2 enabled and is input value defined?
+      type: condition
+      version: -1
+    taskid: 4b2e403d-8d1a-4879-898f-e82535608cd9
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -350
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      address_name:
+        complex:
+          root: inputs.AzureIP
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: Azure Compute v2
+      description: Gets the properties of a given public IP address.
+      id: b9ebc3f4-a5ea-4f6f-8ca2-67e96b6e0d4b
+      iscommand: true
+      name: Lookup Azure public IP information associated with IP
+      script: Azure Compute v2|||azure-vm-get-public-ip-details
+      type: regular
+      version: -1
+    taskid: b9ebc3f4-a5ea-4f6f-8ca2-67e96b6e0d4b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -90
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Azure.Network.IPConfigurations.PublicConfigID
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether the last command returned information on the public IP address or not.
+      id: 9e1014cc-4f4a-4fb3-8b4b-bc194a75c207
+      iscommand: false
+      name: Is there a public IP in Azure?
+      type: condition
+      version: -1
+    taskid: 9e1014cc-4f4a-4fb3-8b4b-bc194a75c207
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 80
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      nic_name:
+        complex:
+          accessor: PublicConfigID
+          root: Azure.Network.IPConfigurations
+          transformers:
+          - args:
+              from:
+                value:
+                  simple: networkInterfaces/
+              to:
+                value:
+                  simple: /ipConfigurations
+            operator: ExtractInbetween
+      resource_group:
+        complex:
+          accessor: PublicConfigID
+          root: Azure.Network.IPConfigurations
+          transformers:
+          - args:
+              from:
+                value:
+                  simple: resourceGroups/
+              to:
+                value:
+                  simple: /providers
+            operator: ExtractInbetween
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: Azure Compute v2
+      description: Gets the properties of a given network interface.
+      id: af95996b-2eae-4154-80d3-3f87449492ec
+      iscommand: true
+      name: Lookup Azure NIC information associated with IP
+      script: Azure Compute v2|||azure-vm-get-nic-details
+      type: regular
+      version: -1
+    taskid: af95996b-2eae-4154-80d3-3f87449492ec
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 310
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Azure.Network.Interfaces.ID
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the last command returned information for the NIC associated with the IP address or not.
+      id: d59b8af2-c8c2-47cd-8289-f3e7c01a8edd
+      iscommand: false
+      name: Is there a NIC in Azure associated with the IP?
+      type: condition
+      version: -1
+    taskid: d59b8af2-c8c2-47cd-8289-f3e7c01a8edd
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 470
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      resource_group:
+        complex:
+          accessor: AttachedVirtualMachine
+          root: Azure.Network.Interfaces
+          transformers:
+          - args:
+              from:
+                value:
+                  simple: resourceGroups/
+              to:
+                value:
+                  simple: /providers
+            operator: ExtractInbetween
+      virtual_machine_name:
+        complex:
+          accessor: AttachedVirtualMachine
+          root: Azure.Network.Interfaces
+          transformers:
+          - args:
+              from:
+                value:
+                  simple: virtualMachines/
+            operator: substringFrom
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: Azure Compute v2
+      description: Gets the properties of a given virtual machine.
+      id: 8bde15d9-bc6f-4410-8605-6063cd6f34fb
+      iscommand: true
+      name: Lookup Azure Compute instance information with NIC and IP
+      script: Azure Compute v2|||azure-vm-get-instance-details
+      type: regular
+      version: -1
+    taskid: 8bde15d9-bc6f-4410-8605-6063cd6f34fb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 730
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ba95013c-15f8-4fa1-8e1c-d326a00fb6b7
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: ba95013c-15f8-4fa1-8e1c-d326a00fb6b7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 3080
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ac8cc499-7abd-4f59-831a-4c517b234a41
+      iscommand: false
+      name: IAM Information
+      type: title
+      version: -1
+      description: ''
+    taskid: ac8cc499-7abd-4f59-831a-4c517b234a41
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1640
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: MicrosoftGraphIdentityandAccess
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if the Azure Active Directory Identity And Access integration instance is configured.
+      id: d0f2c3ef-0687-411c-8c1a-044b9f74843b
+      iscommand: false
+      name: Is Azure Active Directory Identity And Access enabled?
+      type: condition
+      version: -1
+    taskid: d0f2c3ef-0687-411c-8c1a-044b9f74843b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1770
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      limit:
+        simple: "50"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: MicrosoftGraphIdentityandAccess
+      description: Lists the roles in the directory.
+      id: f721ad8e-d2b8-4e2b-8ba5-61c1d160c382
+      iscommand: true
+      name: Lookup roles in directory
+      script: MicrosoftGraphIdentityandAccess|||msgraph-identity-directory-roles-list
+      type: regular
+      version: -1
+    taskid: f721ad8e-d2b8-4e2b-8ba5-61c1d160c382
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1990
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: MSGraphIdentity.Role.displayName
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Global Administrator
+                root: MSGraphIdentity.Role
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: id
+                  operator: getField
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether the last command returned information for Global Admins in Azure.
+      id: dd1e7cee-ec2f-4ad5-85d6-d9b7b9c02c78
+      iscommand: false
+      name: Is the Global Admin role id defined?
+      type: condition
+      version: -1
+    taskid: dd1e7cee-ec2f-4ad5-85d6-d9b7b9c02c78
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2160
+        }
+      }
+  "12":
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      limit:
+        simple: "100"
+      role_id:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: MSGraphIdentity.Role.displayName
+              operator: isEqualString
+              right:
+                value:
+                  simple: Global Administrator
+          root: MSGraphIdentity.Role
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: id
+            operator: getField
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: MicrosoftGraphIdentityandAccess
+      description: Gets all members in the Global Admins role ID.
+      id: c85ffc7c-483c-4d60-8d70-19dd4912a3d6
+      iscommand: true
+      name: Lookup members of Global Admin from MS Graph
+      script: MicrosoftGraphIdentityandAccess|||msgraph-identity-directory-role-members-list
+      type: regular
+      version: -1
+    taskid: c85ffc7c-483c-4d60-8d70-19dd4912a3d6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2390
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      user:
+        complex:
+          accessor: user_id
+          root: MSGraphIdentity.RoleMember
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Microsoft Graph User
+      description: "Retrieves the properties and relationships for Global Admins. \n\nFor more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0. \nPermissions: - User.Read (Delegated) - User.Read.All (Application)"
+      id: 91642248-ff97-4d3b-8dc8-175dc172c7c7
+      iscommand: true
+      name: Lookup user details of Global Admin users
+      script: Microsoft Graph User|||msgraph-user-get
+      type: regular
+      version: -1
+    taskid: 91642248-ff97-4d3b-8dc8-175dc172c7c7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2850
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Microsoft Graph User
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if the Microsoft Graph User integration instance is configured.
+      id: d689060f-4d97-40db-8332-b6d382f29ec8
+      iscommand: false
+      name: Is Microsoft Graph User enabled?
+      type: condition
+      version: -1
+    taskid: d689060f-4d97-40db-8332-b6d382f29ec8
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2580
+        }
+      }
+  "15":
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.AzureIP
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: resources | where type == 'microsoft.network/publicipaddresses'| where properties['ipAddress'] == '
+              suffix:
+                value:
+                  simple: ''' | project name, id, tenantId, subscriptionId, resourceGroup | join kind=inner (resourcecontainers | where type == ''microsoft.resources/subscriptions'' | project subscriptionId, subscriptionName=name, properties.managementGroupAncestorsChain) on subscriptionId'
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Azure Resource Graph
+      description: Executes a given Azure Resource Graph Query to find management group information.
+      id: 0b468465-df26-4641-8b01-cfee8a4a3a23
+      iscommand: true
+      name: Query for management group chain
+      script: Azure Resource Graph|||azure-rg-query
+      type: regular
+      version: -1
+    taskid: 0b468465-df26-4641-8b01-cfee8a4a3a23
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1290
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: AzureAssetHierarchy
+      value:
+        complex:
+          accessor: displayName
+          root: AzureResourceGraph.Query.properties_managementGroupAncestorsChain
+          transformers:
+          - operator: ReverseList
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: AzureResourceGraph.Query.subscriptionName
+            operator: append
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: AzureResourceGraph.Query.resourceGroup
+            operator: append
+          - args:
+              separator:
+                value:
+                  simple: /
+            operator: join
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a hierarchy path value for an Azure asset.
+      id: 0004b8d2-3bac-4082-822d-f3c42fd6310d
+      iscommand: false
+      name: Set asset hierarchy path
+      script: Set
+      type: regular
+      version: -1
+    taskid: 0004b8d2-3bac-4082-822d-f3c42fd6310d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1460
+        }
+      }
+  "17":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Azure Resource Graph
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if the Azure Active Directory Identity And Access integration instance is configured.
+      id: c5276745-c370-442f-81d2-d0a2b2713dcd
+      iscommand: false
+      name: Is Azure Resource Graph enabled?
+      type: condition
+      version: -1
+    taskid: c5276745-c370-442f-81d2-d0a2b2713dcd
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1070
+        }
+      }
+  "18":
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d1939081-2a26-4068-821d-99bbad099bae
+      iscommand: false
+      name: Hierarchy Information
+      type: title
+      version: -1
+      description: ''
+    taskid: d1939081-2a26-4068-821d-99bbad099bae
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 930
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_7_#default#": 0.55,
+      "17_15_yes": 0.71,
+      "17_7_#default#": 0.19,
+      "1_2_yes": 0.49,
+      "1_7_#default#": 0.19,
+      "3_7_#default#": 0.21,
+      "5_6_yes": 0.55,
+      "5_7_#default#": 0.29,
+      "9_10_yes": 0.61,
+      "9_7_#default#": 0.19
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3645,
+        "width": 890,
+        "x": -60,
+        "y": -500
+      }
+    }
+  }
 tests:
 - No tests (auto formatted)
+fromversion: 6.5.0

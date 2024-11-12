@@ -227,15 +227,15 @@ script:
       description: '"Yes" if you want to delete all the secrets having same name in all the subfolders recursively. "No" if you want do not want to delete the secret in the subfolders.'
       name: recursiveDelete
       predefined:
-      - "Yes"
-      - "No"
+      - 'Yes'
+      - 'No'
       required: true
     - auto: PREDEFINED
       description: '"Yes" if you want to delete the secret having the provided secretname as a part of the Secret. "No" if you want to delete the secret with the exact name match. Ex: Demisto* will delete all secrets like Demisto_1, Demisto_pwd, Demisto. '
       name: matchPartOfSecret
       predefined:
-      - "Yes"
-      - "No"
+      - 'Yes'
+      - 'No'
       required: true
     description: 'Delete Secret from the Centrify Vault. Please note:  Enabling "recursiveDelete" to "Yes" will delete all secrets if there multiple secrets with same name in subfolders.'
     name: centrify-delete-secret
@@ -273,7 +273,7 @@ script:
       required: true
     description: Delete set from the Centrify Vault
     name: centrify-delete-set
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.14.100715
   runonce: false
   script: ''
   subtype: python3

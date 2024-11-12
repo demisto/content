@@ -1,7 +1,8 @@
 id: Recorded Future Identity - Lookup Identities (parent)
 version: -1
 name: Recorded Future Identity - Lookup Identities (parent)
-description: This playbook was developed as a template to look up exposed identities
+deprecated: true
+description: Deprecated. Use Recorded Future - Identity Exposure instead. This playbook was developed as a template to look up exposed identities
   and generate incidents if they exist; it can be used within a job.
 starttaskid: "0"
 tasks:

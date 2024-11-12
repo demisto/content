@@ -9,3 +9,6 @@ ignore=BA101
 
 [file:classifier-gmail-single-user.json]
 ignore=BA101
+
+[known_words]
+attachmentName

@@ -30,7 +30,7 @@ class Client(BaseClient):
         self.api_key = params.get('api_key')
         super().__init__(base_url, verify)
 
-    def _http_request(
+    def _http_request(  # type: ignore[override]
             self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
             params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
             return_empty_response=False, retries=0, status_list_to_retry=None,
@@ -137,7 +137,7 @@ def get_stock_data(client: Client, args: Dict[str, Any]) -> List[CommandResults]
         raise ValueError('symbol not specified')
 
     # Call the Client function and get the raw response
-    results = list()
+    results = []
     for symbol in symbols:
         raw_api_response = client.get_stock_data(symbol)
         outputs = remove_indexing_from_dictionary_keys(raw_api_response.get('Global Quote', {}))
@@ -160,7 +160,7 @@ def get_stock_history(client: Client, args: Dict[str, Any]) -> List[CommandResul
         raise ValueError('symbol not specified')
 
     # Call the Client function and get the raw response
-    results = list()
+    results = []
     for symbol in symbols:
         raw_api_response = client.get_stock_history(symbol=symbol, interval=interval, output_size=output_size)
         outputs = {

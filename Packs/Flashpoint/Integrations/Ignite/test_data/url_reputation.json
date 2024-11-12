@@ -1,0 +1,35 @@
+[
+    {
+        "Attribute": {
+            "Event": {
+                "RelatedEvent": [],
+                "Tags": [
+                  "sample_tags"
+                ],
+                "attack_ids": [
+                    "T1016",
+                    "T1027",
+                    "T1033",
+                    "T1047",
+                    "T1048"
+                ],
+                "event_uuid": "sample_uuid",
+                "fpid": "sample_fpid",
+                "href": "https://api.flashpoint.io/technical-intelligence/v1/event/sample_fpid",
+                "info": "Sample info",
+                "reports": [],
+                "timestamp": "1000000001"
+            },
+            "category": "Network activity",
+            "fpid": "sample_fpid",
+            "href": "https://api.flashpoint.io/technical-intelligence/v1/attribute/sample_fpid",
+            "timestamp": "1000000001",
+            "type": "url",
+            "uuid": "sample_uuid",
+            "value": {
+                "comment": "",
+                "url": "http://dummy.com"
+            }
+        }
+    }
+]

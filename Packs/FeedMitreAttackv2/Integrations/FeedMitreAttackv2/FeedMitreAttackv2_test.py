@@ -269,6 +269,55 @@ def test_attack_pattern_reputation_command(mocker):
     assert command_results[1].indicator.value == 'Active Scanning: Wordlist Scanning'
 
 
+def test_attack_pattern_reputation_without_answer_command(mocker):
+    """
+    Given:
+        One attach pattern to retrive data on, that is not found in the collection
+
+    When:
+        Running attack-pattern reputation command
+
+    Then:
+        Ensures the command_results is not empty and readable_output is as expected
+    """
+    from FeedMitreAttackv2 import attack_pattern_reputation_command
+
+    stix_objs = [parse(stix_obj_dict, allow_custom=True) for stix_obj_dict in ATTACK_PATTERNS]
+    mocker.patch('FeedMitreAttackv2.get_mitre_data_by_filter', return_value=stix_objs)
+
+    args = {'attack_pattern': 'dummy attack pattern'}
+    command_results = attack_pattern_reputation_command('', args)
+
+    assert command_results
+    assert command_results.readable_output == "MITRE ATTACK Attack Patterns values: No Attack " \
+                                              "Patterns found for ['dummy attack pattern'] in the Enterprise collection."
+
+
+def test_get_mitre_value_from_id_without_answer_command(mocker):
+    """
+    Given:
+        One attach pattern to retrive data on, that is not found in the collection
+
+    When:
+        Running attack-pattern reputation command
+
+    Then:
+        Ensures the command_results is not empty and readable_output is as expected
+    """
+    from FeedMitreAttackv2 import get_mitre_value_from_id
+
+    stix_objs = [parse(stix_obj_dict, allow_custom=True) for stix_obj_dict in ATTACK_PATTERNS]
+    mocker.patch('FeedMitreAttackv2.get_mitre_data_by_filter', return_value=stix_objs)
+
+    args = {'attack_ids': ['dummy attack pattern id']}
+    command_results = get_mitre_value_from_id('', args)
+
+    assert command_results
+    assert command_results.readable_output == "MITRE ATTACK Attack Patterns values: " \
+                                              "No Attack Patterns found for ['dummy attack pattern id'] in the " \
+                                              "Enterprise collection."
+
+
 @pytest.mark.parametrize('description, expected_result', [
     ("Waterbear is modular malware attributed to BlackTech ...(Citation: Trend Micro Waterbear December 2019)",
      "Waterbear is modular malware attributed to BlackTech ..."),

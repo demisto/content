@@ -19,7 +19,7 @@ script: |-
   message = '{}/{} correct predictions. '.format(len(df)- len(wrong_predictions_ids), len(df))
   if len(wrong_predictions_ids) > 0:
       message += 'Wrong predictions:\n {}'.format('\n'.join([str(id_) for id_ in wrong_predictions_ids]))
-  return_outputs(message, {'CompareEnvPredictionsToExpectedPredictions .allPredictionsMatched': len(wrong_predictions_ids)== 0})
+  return_outputs(message, {'CompareEnvPredictionsToExpectedPredictions.allPredictionsMatched': len(wrong_predictions_ids)== 0})
 type: python
 tags: []
 enabled: true
@@ -27,11 +27,10 @@ args:
 - name: input
   required: true
 outputs:
-- contextPath: CompareEnvPredictionsToExpectedPredictions .allPredictionsMatched
+- contextPath: CompareEnvPredictionsToExpectedPredictions.allPredictionsMatched
 scripttarget: 0
 subtype: python3
 pswd: ""
-runonce: false
-dockerimage: demisto/ml:1.0.0.20606
+dockerimage: demisto/pandas:1.0.0.102566
 runas: DBotWeakRole
 fromversion: 5.5.0

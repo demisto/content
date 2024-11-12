@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "<p>Deprecated the <b>rule_id</b> argument from the ***harmony-ep-policy-rule-install*** command.</p>"
+}

@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 """Implementation file for IllumioCore Integration."""
 import json
-from typing import Dict, List, Any
+from typing import Any
 from enum import Enum
 from datetime import datetime
 import urllib3
@@ -77,11 +77,11 @@ def validate_required_parameters(**kwargs) -> None:
     for key, value in kwargs.items():
         if not value and value is not False:
             raise ValueError(
-                "{} is a required parameter. Please provide correct value.".format(key)
+                f"{key} is a required parameter. Please provide correct value."
             )
 
 
-def trim_spaces_from_args(args: Dict) -> Dict:
+def trim_spaces_from_args(args: dict) -> dict:
     """Trim spaces from values of the args dict.
 
     Args:
@@ -96,7 +96,7 @@ def trim_spaces_from_args(args: Dict) -> Dict:
     return args
 
 
-def extract_values_from_dictionary(response: List) -> List:
+def extract_values_from_dictionary(response: list) -> list:
     """Extract values from dictionary.
     Args:
         response: Response from the SDK.
@@ -113,7 +113,7 @@ def extract_values_from_dictionary(response: List) -> List:
     return values
 
 
-def generate_change_description_for_object_provision(hrefs: List[str]) -> str:
+def generate_change_description_for_object_provision(hrefs: list[str]) -> str:
     """
     Generate a unique message for object provision command's change description argument.
 
@@ -129,7 +129,7 @@ def generate_change_description_for_object_provision(hrefs: List[str]) -> str:
 
 
 def validate_traffic_analysis_arguments(
-        port: Optional[int], policy_decisions: List, protocol: str
+        port: Optional[int], policy_decisions: list, protocol: str
 ) -> None:
     """Validate arguments for traffic-analysis command.
 
@@ -247,17 +247,16 @@ def validate_ip_lists_get_arguments(max_results: Optional[int], ip_address: Opti
             )
         )
 
-    if ip_address:
-        if not is_ipv6_valid(ip_address):
-            try:
-                socket.inet_aton(ip_address)  # type: ignore
-            except:  # noqa
-                raise InvalidValueError(
-                    message="{} is an invalid value for ip_address.".format(ip_address)
-                )
+    if ip_address and not is_ipv6_valid(ip_address):
+        try:
+            socket.inet_aton(ip_address)  # type: ignore
+        except:  # noqa
+            raise InvalidValueError(
+                message=f"{ip_address} is an invalid value for ip_address."
+            )
 
 
-def prepare_traffic_analysis_output(response: List) -> str:
+def prepare_traffic_analysis_output(response: list) -> str:
     """Prepare human-readable output for traffic-analysis-command.
 
     Args:
@@ -289,7 +288,7 @@ def prepare_traffic_analysis_output(response: List) -> str:
     return tableToMarkdown("Traffic Analysis:", hr_output, headers=headers, removeNull=True)
 
 
-def prepare_virtual_service_output(response: Dict) -> str:
+def prepare_virtual_service_output(response: dict) -> str:
     """Prepare human-readable output for virtual-service-create command.
 
     Args:
@@ -318,7 +317,7 @@ def prepare_virtual_service_output(response: Dict) -> str:
     return tableToMarkdown(title, hr_output, headers=headers, removeNull=True)
 
 
-def prepare_service_binding_output(response: Dict) -> str:
+def prepare_service_binding_output(response: dict) -> str:
     """Prepare human-readable output for service-binding-create command.
 
     Args:
@@ -340,7 +339,7 @@ def prepare_service_binding_output(response: Dict) -> str:
     return tableToMarkdown(title, hr_outputs, headers=headers, removeNull=True)
 
 
-def prepare_object_provision_output(response: Dict[str, Any]) -> str:
+def prepare_object_provision_output(response: dict[str, Any]) -> str:
     """
     Prepare human-readable output for objects-provision command.
 
@@ -367,7 +366,7 @@ def prepare_object_provision_output(response: Dict[str, Any]) -> str:
                            removeNull=True)
 
 
-def prepare_workload_get_output(response: Dict) -> str:
+def prepare_workload_get_output(response: dict) -> str:
     """Prepare human-readable output for workload-get command.
 
     Args:
@@ -393,7 +392,7 @@ def prepare_workload_get_output(response: Dict) -> str:
     return tableToMarkdown(title, hr_outputs, headers=headers, removeNull=True)
 
 
-def prepare_workloads_list_output(response: List) -> str:
+def prepare_workloads_list_output(response: list) -> str:
     """Prepare human-readable output for workloads-list command.
 
     Args:
@@ -424,7 +423,7 @@ def prepare_workloads_list_output(response: List) -> str:
     return tableToMarkdown("Workloads:\n", hr_outputs, headers=headers, removeNull=True)
 
 
-def prepare_enforcement_boundary_create_output(response: Dict) -> str:
+def prepare_enforcement_boundary_create_output(response: dict) -> str:
     """Prepare human-readable output for enforcement-boundary-create command.
 
     Args:
@@ -462,7 +461,7 @@ def prepare_enforcement_boundary_create_output(response: Dict) -> str:
     return tableToMarkdown("Enforcement Boundary:\n", hr_outputs, headers=headers, removeNull=True)
 
 
-def prepare_update_enforcement_mode_output(response: List):
+def prepare_update_enforcement_mode_output(response: list):
     """Prepare Human Readable output for enforcement-mode-update command.
 
     Args:
@@ -490,7 +489,7 @@ def prepare_update_enforcement_mode_output(response: List):
     return tableToMarkdown(title, hr_outputs, headers=headers, removeNull=True)
 
 
-def ip_list_human_readable(response: Dict) -> Dict:
+def ip_list_human_readable(response: dict) -> dict:
     """Prepare dictionary for ip list.
 
     Args:
@@ -515,7 +514,7 @@ def ip_list_human_readable(response: Dict) -> Dict:
     return hr_output
 
 
-def prepare_ip_list_get_output(response: Dict) -> str:
+def prepare_ip_list_get_output(response: dict) -> str:
     """Prepare human-readable output for ip-list-get command.
 
     Args:
@@ -530,7 +529,7 @@ def prepare_ip_list_get_output(response: Dict) -> str:
     return tableToMarkdown("IP List Details:", hr_output, headers=headers, removeNull=True)
 
 
-def prepare_ip_lists_get_output(response: List) -> str:
+def prepare_ip_lists_get_output(response: list) -> str:
     """Prepare human-readable output for ip-lists-get command.
 
     Args:
@@ -547,7 +546,7 @@ def prepare_ip_lists_get_output(response: List) -> str:
     return tableToMarkdown("IP Lists:", hr_outputs, headers=headers, removeNull=True)
 
 
-def prepare_ruleset_create_output(response: Dict, name: Optional[Any]):
+def prepare_ruleset_create_output(response: dict, name: Optional[Any]):
     """Prepare Human Readable output for create ruleset command.
 
     Args:
@@ -570,13 +569,13 @@ def prepare_ruleset_create_output(response: Dict, name: Optional[Any]):
     }
 
     headers = list(hr_output.keys())
-    title = "Ruleset {} has been created successfully.".format(name)
+    title = f"Ruleset {name} has been created successfully."
 
     return tableToMarkdown(title, hr_output, headers=headers,
                            removeNull=True)
 
 
-def prepare_rule_create_output(response: Dict) -> str:
+def prepare_rule_create_output(response: dict) -> str:
     """Prepare Human Readable output for create rule command.
 
     Args:
@@ -626,7 +625,7 @@ def command_test_module(client: PolicyComputeEngine) -> str:
 """ COMMAND FUNCTIONS """
 
 
-def traffic_analysis_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> CommandResults:
+def traffic_analysis_command(client: PolicyComputeEngine, args: dict[str, Any]) -> CommandResults:
     """Retrieve the traffic for a particular port and protocol.
 
     Args:
@@ -645,7 +644,7 @@ def traffic_analysis_command(client: PolicyComputeEngine, args: Dict[str, Any]) 
     validate_required_parameters(port=port)
     validate_traffic_analysis_arguments(port, policy_decisions, protocol)  # type: ignore
 
-    query_name = "XSOAR - Traffic analysis for port {}: {}".format(port, datetime.now().isoformat())
+    query_name = f"XSOAR - Traffic analysis for port {port}: {datetime.now().isoformat()}"
 
     proto = convert_protocol(protocol)
     service = ServicePort(port, proto=proto)  # type: ignore
@@ -670,7 +669,7 @@ def traffic_analysis_command(client: PolicyComputeEngine, args: Dict[str, Any]) 
     )
 
 
-def virtual_service_create_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> CommandResults:
+def virtual_service_create_command(client: PolicyComputeEngine, args: dict[str, Any]) -> CommandResults:
     """Create a virtual service.
 
     Args:
@@ -680,32 +679,32 @@ def virtual_service_create_command(client: PolicyComputeEngine, args: Dict[str, 
     Returns:
         CommandResult object
     """
-    port = args.get("port")
     protocol = args.get("protocol", "tcp").lower()
-    name = args.get("name")
+    name = args["name"]
+    port: int = arg_to_number(args["port"], arg_name="port")  # type: ignore[assignment]
 
     validate_required_parameters(name=name, port=port)
-    port = arg_to_number(port, arg_name="port")
+
     validate_virtual_service_arguments(port, protocol)
     proto = convert_protocol(protocol)
 
-    service = VirtualService(name=name, service_ports=[ServicePort(port=port, proto=proto)])  # type: ignore
+    service = VirtualService(name=name, service_ports=[ServicePort(port=port, proto=proto)])
     try:
-        virtual_service = client.virtual_services.create(service)  # type: ignore
+        virtual_service = client.virtual_services.create(service)   # type: ignore[call-overload]
         virtual_service_json = virtual_service.to_json()
     except Exception as e:
         if EXISTING_VIRTUAL_SERVICE in str(e):
             try:
-                virtual_services = client.virtual_services.get(params={"name": name})
+                virtual_services = client.virtual_services.get(params={"name": name})  # type: ignore[call-overload]
                 demisto.debug("Virtual service already exists.")
                 for virtual_service in virtual_services:
                     if virtual_service.name == name:
                         virtual_service_json = virtual_service.to_json()
                         break
             except Exception as e:
-                raise Exception("Encountered error while retrieving virtual service: {}".format(e))
+                raise Exception(f"Encountered error while retrieving virtual service: {e}")
         else:
-            raise Exception("Encountered error while creating virtual service: {}".format(e))  # type: ignore
+            raise Exception(f"Encountered error while creating virtual service: {e}")  # type: ignore[misc]
 
     readable_output = prepare_virtual_service_output(virtual_service_json)
 
@@ -718,7 +717,7 @@ def virtual_service_create_command(client: PolicyComputeEngine, args: Dict[str, 
     )
 
 
-def service_binding_create_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> CommandResults:
+def service_binding_create_command(client: PolicyComputeEngine, args: dict[str, Any]) -> CommandResults:
     """Create a service binding.
 
     Args:
@@ -728,27 +727,25 @@ def service_binding_create_command(client: PolicyComputeEngine, args: Dict[str, 
     Returns:
         CommandResult object
     """
-    workloads = args.get("workloads")
-    virtual_service = args.get("virtual_service")
+    workloads = argToList(args["workloads"])
+    virtual_service = args["virtual_service"]
 
     validate_required_parameters(workloads=workloads, virtual_service=virtual_service)
-    workloads = argToList(workloads)
-    virtual_service = convert_draft_href_to_active(args.get("virtual_service"))
+
+    virtual_service = convert_draft_href_to_active(virtual_service)
     try:
         client.virtual_services.get_by_reference(virtual_service)
     except IllumioException as e:
         raise InvalidValueError(
-            message="no active record for virtual service with HREF {}".format(
-                virtual_service
-            )
+            message=f"no active record for virtual service with HREF {virtual_service}"
         ) from e
 
     service_bindings = [
-        ServiceBinding(virtual_service=Reference(href=virtual_service), workload=Reference(href=href))  # type: ignore
+        ServiceBinding(virtual_service=Reference(href=virtual_service), workload=Reference(href=href))
         for href in workloads
     ]
 
-    response = client.service_bindings.create(service_bindings)  # type: ignore
+    response = client.service_bindings.create(service_bindings)  # type: ignore[call-overload]
     results = json.loads(json.dumps(response, cls=IllumioEncoder))
     context_data = {
         "hrefs": [service.get("href", "") for service in results.get("service_bindings", [])]
@@ -764,7 +761,7 @@ def service_binding_create_command(client: PolicyComputeEngine, args: Dict[str, 
     )
 
 
-def object_provision_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> CommandResults:
+def object_provision_command(client: PolicyComputeEngine, args: dict[str, Any]) -> CommandResults:
     """
     Command function for illumio-objects-provision command.
 
@@ -797,7 +794,7 @@ def object_provision_command(client: PolicyComputeEngine, args: Dict[str, Any]) 
         response_dict["provisioned_hrefs"] = provisioned_hrefs
     except Exception as e:
         if EXISTING_OBJECT not in str(e):
-            raise Exception("Encountered error while provisioning security policy object: {}".format(e))
+            raise Exception(f"Encountered error while provisioning security policy object: {e}")
         else:
             hr_output = "### Security policy object(s) already provisioned: {}.".format(
                 ", ".join(security_policy_objects))
@@ -811,7 +808,7 @@ def object_provision_command(client: PolicyComputeEngine, args: Dict[str, Any]) 
     )
 
 
-def workload_get_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> CommandResults:
+def workload_get_command(client: PolicyComputeEngine, args: dict[str, Any]) -> CommandResults:
     """Retrieve a workload.
 
     Args:
@@ -838,7 +835,7 @@ def workload_get_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> C
     )
 
 
-def workloads_list_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> CommandResults:
+def workloads_list_command(client: PolicyComputeEngine, args: dict[str, Any]) -> CommandResults:
     """Retrieve the workloads list.
 
     Args:
@@ -861,7 +858,7 @@ def workloads_list_command(client: PolicyComputeEngine, args: Dict[str, Any]) ->
     validate_workloads_list_arguments(max_results, online, managed, enforcement_mode, visibility_level)
 
     if labels:
-        labels = json.dumps(list(map(lambda x: [x], argToList(labels))))
+        labels = json.dumps([[x] for x in argToList(labels)])
 
     params = {
         "max_results": max_results,
@@ -889,7 +886,7 @@ def workloads_list_command(client: PolicyComputeEngine, args: Dict[str, Any]) ->
 
 
 def enforcement_boundary_create_command(
-        client: PolicyComputeEngine, args: Dict[str, Any]
+        client: PolicyComputeEngine, args: dict[str, Any]
 ) -> CommandResults:
     """Create an enforcement boundary.
 
@@ -911,33 +908,33 @@ def enforcement_boundary_create_command(
     )
     providers = argToList(providers)
     consumers = argToList(consumers)
-    port = arg_to_number(port, arg_name="port")  # type: ignore
-    validate_enforcement_boundary_create_arguments(port, protocol)  # type: ignore
+    port = arg_to_number(port, arg_name="port")
+    validate_enforcement_boundary_create_arguments(port, protocol)
     proto = convert_protocol(protocol)
 
     enforcement_boundary_rule = EnforcementBoundary.build(
         name=name,
-        consumers=consumers,  # type: ignore
-        providers=providers,  # type: ignore
+        consumers=consumers,
+        providers=providers,
         ingress_services=[{"port": port, "proto": proto}],
     )
     enforcement_boundary_json = {}
     try:
-        enforcement_boundary = client.enforcement_boundaries.create(enforcement_boundary_rule)  # type: ignore
+        enforcement_boundary = client.enforcement_boundaries.create(enforcement_boundary_rule)  # type: ignore[call-overload]
         enforcement_boundary_json = enforcement_boundary.to_json()
     except Exception as e:
         if EXISTING_ENFORCEMENT_BOUNDARY in str(e):
             try:
-                enforcement_boundaries = client.enforcement_boundaries.get(params={"name": name})
+                enforcement_boundaries = client.enforcement_boundaries.get(params={"name": name})  # type: ignore[call-overload]
                 demisto.debug("Enforcement boundary already exists.")
                 for enforcement_boundary in enforcement_boundaries:
                     if enforcement_boundary.name == name:
                         enforcement_boundary_json = enforcement_boundary.to_json()
                         break
             except Exception as e:
-                raise Exception("Encountered error while retrieving enforcement boundary: {}".format(e))
+                raise Exception(f"Encountered error while retrieving enforcement boundary: {e}")
         else:
-            raise Exception("Encountered error while creating enforcement boundary: {}".format(e))  # type: ignore
+            raise Exception(f"Encountered error while creating enforcement boundary: {e}")  # type: ignore[misc]
 
     readable_output = prepare_enforcement_boundary_create_output(
         enforcement_boundary_json
@@ -952,7 +949,7 @@ def enforcement_boundary_create_command(
     )
 
 
-def update_enforcement_mode_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> CommandResults:
+def update_enforcement_mode_command(client: PolicyComputeEngine, args: dict[str, Any]) -> CommandResults:
     """Update enforcement mode for one or more workloads.
 
     Args:
@@ -991,7 +988,7 @@ def update_enforcement_mode_command(client: PolicyComputeEngine, args: Dict[str,
     )
 
 
-def ip_list_get_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> CommandResults:
+def ip_list_get_command(client: PolicyComputeEngine, args: dict[str, Any]) -> CommandResults:
     """Get the details of the IP List.
 
     Args:
@@ -1001,10 +998,10 @@ def ip_list_get_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> Co
     Returns:
         CommandResult object
     """
-    href = args.get("href")
+    href = args["href"]
     validate_required_parameters(href=href)
 
-    response = client.ip_lists.get_by_reference(href)
+    response = client.ip_lists.get_by_reference(href)  # type: ignore[call-overload]
     results = json.loads(json.dumps(response, cls=IllumioEncoder))  # convert the ip_lists objects
 
     readable_output = prepare_ip_list_get_output(results)
@@ -1018,7 +1015,7 @@ def ip_list_get_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> Co
     )
 
 
-def ip_lists_get_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> CommandResults:
+def ip_lists_get_command(client: PolicyComputeEngine, args: dict[str, Any]) -> CommandResults:
     """Retrieve the IP lists.
 
     Args:
@@ -1058,7 +1055,7 @@ def ip_lists_get_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> C
     )
 
 
-def ruleset_create_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> CommandResults:
+def ruleset_create_command(client: PolicyComputeEngine, args: dict[str, Any]) -> CommandResults:
     """Create a ruleset with unique name.
 
     Args:
@@ -1071,21 +1068,21 @@ def ruleset_create_command(client: PolicyComputeEngine, args: Dict[str, Any]) ->
     name = args.get("name")
     validate_required_parameters(name=name)
     try:
-        response = client.rule_sets.create(body={"name": name, "scopes": [[]]})
+        response = client.rule_sets.create(body={"name": name, "scopes": [[]]})  # type: ignore[call-overload]
         json_response = response.to_json()
     except Exception as e:
         if EXISTING_RULESET in str(e):
             try:
-                rule_sets = client.rule_sets.get(params={"name": name})
+                rule_sets = client.rule_sets.get(params={"name": name})  # type: ignore[call-overload]
                 demisto.debug("Ruleset already exists.")
                 for rule_set in rule_sets:
                     if rule_set.name == name:
                         json_response = rule_set.to_json()
                         break
             except Exception as e:
-                raise Exception("Encountered error while creating Ruleset: {}".format(e))
+                raise Exception(f"Encountered error while creating Ruleset: {e}")
         else:
-            raise Exception("Encountered error while creating Ruleset: {}".format(e))  # type: ignore
+            raise Exception(f"Encountered error while creating Ruleset: {e}")  # type: ignore[misc]
 
     readable_output = prepare_ruleset_create_output(json_response, name)
 
@@ -1098,7 +1095,7 @@ def ruleset_create_command(client: PolicyComputeEngine, args: Dict[str, Any]) ->
     )
 
 
-def rule_create_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> CommandResults:
+def rule_create_command(client: PolicyComputeEngine, args: dict[str, Any]) -> CommandResults:
     """Create and assign rules to a particular ruleset.
 
     Args:
@@ -1108,7 +1105,7 @@ def rule_create_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> Co
     Returns:
         CommandResults: CommandResults object
     """
-    ruleset_href = args.get("ruleset_href")
+    ruleset_href = args["ruleset_href"]
     providers = args.get("providers")
     consumers = args.get("consumers")
     ingress_services = args.get("ingress_services")
@@ -1128,7 +1125,7 @@ def rule_create_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> Co
               "resolve_providers_as": sorted(resolve_providers_as), "resolve_consumers_as": sorted(resolve_consumers_as)
               }
 
-    ruleset = client.rule_sets.get_by_reference(ruleset_href)
+    ruleset = client.rule_sets.get_by_reference(ruleset_href)  # type: ignore[call-overload]
     ruleset_json = ruleset.to_json()
     for rules in ruleset_json.get("rules", []):
         existing_rule = {"ingress_services": sorted([href.get('href') for href in rules.get("ingress_services", {})]),
@@ -1138,7 +1135,7 @@ def rule_create_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> Co
                          "resolve_consumers_as": sorted(rules.get("resolve_labels_as", {}).get("consumers"))
                          }
         if params == existing_rule:
-            demisto.debug("Found existing Rule bounded to the Ruleset: {}.".format(ruleset_href))
+            demisto.debug(f"Found existing Rule bounded to the Ruleset: {ruleset_href}.")
             rule_href = rules.get("href")
             response = client.rules.get_by_reference(rule_href)
             break
@@ -1152,7 +1149,7 @@ def rule_create_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> Co
         response = client.rules.create(rule, parent=ruleset_href)
 
     response = response.to_json()
-    readable_output = prepare_rule_create_output(response)  # type: ignore
+    readable_output = prepare_rule_create_output(response)  # type: ignore[arg-type]
 
     return CommandResults(
         outputs_prefix="Illumio.Rule",
@@ -1173,29 +1170,27 @@ def main():
         api_key = params.get("api_key")
 
         port = arg_to_number(params.get("port"), required=True, arg_name="port")
-        if port < MIN_PORT or port > MAX_PORT:  # type: ignore
+        if port < MIN_PORT or port > MAX_PORT:  # type: ignore[operator]
             raise InvalidValueError(
-                message="{} is an invalid value for port. Value must be in 1 to 65535.".format(port))
+                message=f"{port} is an invalid value for port. Value must be in 1 to 65535.")
 
         org_id = arg_to_number(params.get("org_id"), required=True, arg_name="org_id")
-        if org_id <= 0:  # type: ignore
+        if org_id <= 0:  # type: ignore[operator]
             raise ValueError(
-                "{} is an invalid value. Organization ID must be a non-zero and positive numeric value.".format(
-                    org_id
-                )
+                f"{org_id} is an invalid value. Organization ID must be a non-zero and positive numeric value."
             )
 
-        base_url = params.get("url").strip()
+        base_url = params.get("url", '').strip()
         if not base_url:
             raise ValueError("Server URL is required.")
 
         proxy = handle_proxy()
 
-        client = PolicyComputeEngine(url=base_url, port=port, org_id=org_id)
+        client = PolicyComputeEngine(url=base_url, port=port, org_id=org_id)  # type: ignore[call-arg,arg-type]
         client.set_proxies(
             http_proxy=proxy.get("http", None), https_proxy=proxy.get("https", None)
         )
-        client.set_credentials(api_user, api_key)
+        client.set_credentials(api_user, api_key)  # type: ignore[arg-type]
 
         if command == "test-module":
             return_results(command_test_module(client))
@@ -1219,9 +1214,9 @@ def main():
                 remove_nulls_from_dictionary(trim_spaces_from_args(args))
                 return_results(illumio_commands[command](client, args))
             else:
-                raise NotImplementedError("Command {} is not implemented".format(command))
+                raise NotImplementedError(f"Command {command} is not implemented")
     except Exception as e:
-        return_error("Failed to execute {} command.\nError:\n{}".format(command, str(e)))
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover

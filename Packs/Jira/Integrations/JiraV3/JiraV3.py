@@ -1,15 +1,14 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 from abc import ABCMeta
 from collections.abc import Callable
 from collections import defaultdict
 from bs4 import BeautifulSoup
-from datetime import timezone
 import hashlib
 from copy import deepcopy
 from mimetypes import guess_type
+
 # Note: time.time_ns() is used instead of time.time() to avoid the precision loss caused by the float type.
 # Source: https://docs.python.org/3/library/time.html#time.time_ns
 
@@ -633,6 +632,54 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             resp_type='response',
         )
 
+    def get_create_metadata_issue_types(self, project_id_or_key: str, start_at: int = 0, max_results: int = 50) -> Dict[str, Any]:
+        """This method is in charge of returning the issue types for a project.
+
+        Args:
+            project_id_or_key (str): The id or key of the project to return.
+            start_at (int, optional): The starting index of the returned issues. Defaults to None.
+            max_results (int, optional): The maximum number of issues to return per page. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: The result of the API, which will hold the issue types.
+        """
+
+        query_params = assign_params(
+            startAt=start_at,
+            maxResults=max_results
+        )
+
+        return self.http_request(
+            method="GET",
+            url_suffix=f"rest/api/{self.api_version}/issue/createmeta/{project_id_or_key}/issuetypes",
+            params=query_params
+        )
+
+    def get_create_metadata_field(self, project_id_or_key: str, issue_type_id: str, start_at: int = 0,
+                                  max_results: int = 50) -> Dict[str, Any]:
+        """This method is in charge of returning the fields for a project issue type.
+
+        Args:
+            project_id_or_key (str): The id or key of the project to return.
+            issue_type_id (str): The id of the issue type.
+            start_at (int, optional): The starting index of the returned issues. Defaults to None.
+            max_results (int, optional): The maximum number of issues to return per page. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: The result of the API, which will hold the fields.
+        """
+
+        query_params = assign_params(
+            startAt=start_at,
+            maxResults=max_results
+        )
+
+        return self.http_request(
+            method="GET",
+            url_suffix=f"rest/api/{self.api_version}/issue/createmeta/{project_id_or_key}/issuetypes/{issue_type_id}",
+            params=query_params
+        )
+
     def update_assignee(self, issue_id_or_key: str, assignee_body: Dict[str, Any]) -> requests.Response:
         """This method is in charge of assigning an assignee to a specific issue.
 
@@ -804,16 +851,33 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             List[Dict[str, Any]]: The results of the API, which will hold the users that match the attribute.
         """
 
-    def get_user_info(self) -> Dict[str, Any]:
-        """This method is in charge of returning the user info of the current user.
+    def get_user_info(self, identifier='') -> Dict[str, Any]:
+        """Gets the user from Jira via API, if no identifier is supplied
+        it returns information for the user the API credentials belong to
 
-        Returns:
-            Dict[str, Any]: The results of the API, which will hold the current user info.
+        :param identifier: The URL parameter used to identify the user,
+                           i.e. `f'key={key}'`, `f'username={username}'` or `f'accountId={accountId}'`
+        :type identifier: str
+        :return: The user's information as returned by the API
+        :rtype: Dict[str, Any]
         """
-        return self.http_request(
-            method='GET',
-            url_suffix=f'rest/api/{self.api_version}/myself'
-        )
+
+        if identifier:
+            response = self.http_request(
+                method='GET',
+                url_suffix=f'rest/api/{self.api_version}/user?{identifier}',
+                ok_codes=[200, 404],
+                resp_type='response'
+            )
+            if response.status_code == 404:
+                return {}
+            else:
+                return response.json()
+        else:
+            return self.http_request(
+                method='GET',
+                url_suffix=f'rest/api/{self.api_version}/myself'
+            )
 
 
 class JiraCloudClient(JiraBaseClient):
@@ -1123,6 +1187,25 @@ class JiraOnPremClient(JiraBaseClient):
             url_suffix='rest/api/2/project'
         )
 
+    def issue_get_forms(self, issue_id: str) -> List:
+        """Retrieve forms' data for a specified issue_id
+
+        :param issue_id: Issue to pull forms for
+        :type issue_id: str
+        :return: The raw response and a cleaned up response
+        :rtype: tuple[List, List]
+        """
+        response = self.http_request(
+            method='GET',
+            url_suffix=f'rest/proforma/api/{self.api_version}/issues/{issue_id}/forms',
+            ok_codes=[200, 404],
+            resp_type='response'
+        )
+        if response.status_code == 404:
+            return []
+        else:
+            return response.json()
+
 
 class JiraIssueFieldsParser:
     """This class is in charge of parsing the issue fields returned from a response. The data of the fields are mostly
@@ -1189,19 +1272,19 @@ class JiraIssueFieldsParser:
     @staticmethod
     def get_assignee_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         assignee = demisto.get(issue_data, 'fields.assignee', {}) or {}
-        return {'Assignee': f'{assignee.get("displayName","")}({assignee.get("emailAddress", "")})'
+        return {'Assignee': f'{assignee.get("displayName", "")}({assignee.get("emailAddress", "")})'
                 if assignee else ''}
 
     @staticmethod
     def get_creator_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         creator = demisto.get(issue_data, 'fields.creator', {}) or {}
-        return {'Creator': f'{creator.get("displayName","")}({creator.get("emailAddress", "")})'
+        return {'Creator': f'{creator.get("displayName", "")}({creator.get("emailAddress", "")})'
                 if creator else ''}
 
     @staticmethod
     def get_reporter_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         reporter = demisto.get(issue_data, 'fields.reporter', {}) or {}
-        return {'Reporter': f'{reporter.get("displayName","")}({reporter.get("emailAddress", "")})'
+        return {'Reporter': f'{reporter.get("displayName", "")}({reporter.get("emailAddress", "")})'
                 if reporter else ''}
 
     @staticmethod
@@ -1531,11 +1614,18 @@ def create_issue_fields(client: JiraBaseClient, issue_args: Dict[str, str],
             parsed_value = [{"name": component} for component in argToList(value)]
         elif issue_arg in ['description', 'environment']:
             parsed_value = text_to_adf(value) if isinstance(client, JiraCloudClient) else value
+        elif not (isinstance(value, dict | list)):
+            # If the value is not a list or a dictionary, we will try to parse it as a json object.
+            try:
+                parsed_value = json.loads(value)
+            except (json.JSONDecodeError, TypeError):
+                pass    # Some values should not be in a JSON format so it maks sense for them to fail parsing.
         dotted_string = issue_fields_mapper.get(issue_arg, '')
         if not dotted_string and issue_arg.startswith('customfield'):
             # This is used to deal with the case when the user creates a custom incident field, using
             # the custom fields of Jira.
             dotted_string = f'fields.{issue_arg}'
+
         issue_fields |= create_fields_dict_from_dotted_string(
             issue_fields=issue_fields, dotted_string=dotted_string, value=parsed_value or value)
     return issue_fields
@@ -1794,6 +1884,56 @@ def apply_issue_transition(client: JiraBaseClient, issue_id_or_key: str, transit
     raise DemistoException(f'Transition "{transition_name}" not found. \nValid transitions are: {transitions_name} \n')
 
 
+def get_issue_forms(client: JiraOnPremClient, issue_id: str) -> tuple[List, List]:
+    """Gets the forms from the client and processes them into a usable JSON format.
+
+    :param client: Client to make the API call with
+    :type client: JiraOnPremClient
+    :param issue_id: Issue ID to get the forms for
+    :type issue_id: str
+    :return: The raw JSON response and the formatted outputs
+    :rtype: tuple[List, List]
+    """
+    response = client.issue_get_forms(issue_id=issue_id)
+    demisto.debug(f'Response from Jira API rest/proforma/api/2/issues/{issue_id}/forms: {json.dumps(response)}')
+    outputs = []
+    for form in response:
+        questions = []
+        for question_id, question_data in form.get('design', {}).get('questions').items():
+            answer = form.get('state', {}).get('answers', {}).get(question_id)
+            name = form.get('design', {}).get('settings', {}).get('name')
+            # Get choice details if the answer type was a choice
+            if answer and answer.get('choices', ''):
+                final_answer: Dict[str, Any] = {
+                    'choices': []
+                }
+                choices = question_data.get('choices')
+                for choice in choices:
+                    for answer_choice in answer.get('choices'):
+                        if answer_choice == choice.get('id'):
+                            final_answer.get('choices').append(choice)  # type: ignore[union-attr]
+            elif answer:
+                final_answer = answer
+            else:  # Not all questions are required to be answered.
+                final_answer = {}
+
+            questions.append({
+                'ID': question_id,
+                'Label': question_data.get('label'),
+                'Type': question_data.get('type'),
+                'Description': question_data.get('description'),
+                'Key': question_data.get('questionKey'),
+                'Answer': final_answer,
+            })
+        outputs.append({
+            'ID': form.get('id'),
+            'Name': name,
+            'Issue': issue_id,
+            'Questions': questions
+        })
+    return response, outputs
+
+
 # Issues Commands
 def add_link_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
     """This command is in charge of adding a link (web url) to a Jira issue.
@@ -1922,6 +2062,124 @@ def get_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Comm
                                                 headerTransform=pascalToSpace),
                 raw_response=response
             ))
+    return command_results
+
+
+def get_create_metadata_issue_types_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """This command is in charge of returning the metadata of a specific project.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
+    project_id_or_key = args.get('project_id_or_key', '')
+    start_at = args.get('start_at', 0)
+    max_results = args.get('max_results', 50)
+
+    if not project_id_or_key:
+        raise ValueError("No project_id_or_key specified for jira-create-metadata-issue-types-list")
+
+    res = client.get_create_metadata_issue_types(
+        project_id_or_key=project_id_or_key,
+        start_at=start_at,
+        max_results=max_results
+    )
+
+    outputs = []
+    for result in res.get('values', []):
+        outputs.append(
+            {
+                "AvatarID": result.get('avatarId'),
+                "Description": result.get('description'),
+                "EntityID": result.get('entityId'),
+                "Expand": result.get('expand'),
+                "IconURL": result.get('iconUrl'),
+                "ID": result.get('id'),
+                "Name": result.get('name'),
+                "Self": result.get('self'),
+                "Subtask": result.get('subtask'),
+                "Scope": result.get('scope'),
+            }
+        )
+
+    command_results = CommandResults(
+        outputs_prefix="Jira.IssueType",
+        outputs=outputs,
+        outputs_key_field="ID",
+        raw_response=res,
+        readable_output=tableToMarkdown(
+            name=f"Issue types for project {project_id_or_key}",
+            t=outputs,
+            headerTransform=pascalToSpace,
+            removeNull=True
+        )
+    )
+
+    return command_results
+
+
+def get_create_metadata_field_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """This command is in charge of returning the field metadata of a specific project and issue type.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
+    project_id_or_key = args.get('project_id_or_key', '')
+    issue_type_id = args.get('issue_type_id', '')
+    start_at = args.get('start_at', 0)
+    max_results = args.get('max_results', 50)
+
+    if not project_id_or_key:
+        raise ValueError("No project_id_or_key specified for jira-create-metadata-field-list")
+
+    if not issue_type_id:
+        raise ValueError("No issue_type_id specified for jira-create-metadata-field-list")
+
+    res = client.get_create_metadata_field(
+        project_id_or_key=project_id_or_key,
+        issue_type_id=issue_type_id,
+        start_at=start_at,
+        max_results=max_results
+    )
+
+    outputs = []
+    for result in res.get('values', []):
+        outputs.append(
+            {
+                "AllowedValues": result.get('allowedValues'),
+                "AutoCompleteURL": result.get('autoCompleteUrl'),
+                "Configuration": result.get('configuration'),
+                "DefaultValue": result.get('defaultValue'),
+                "FieldID": result.get('fieldId'),
+                "HasDefaultValue": result.get('hasDefaultValue'),
+                "Key": result.get('key'),
+                "Operations": result.get('operations'),
+                "Required": result.get('required'),
+                "Schema": result.get('schema'),
+                "Name": result.get('name'),
+            }
+        )
+
+    command_results = CommandResults(
+        outputs_prefix="Jira.IssueField",
+        outputs=outputs,
+        outputs_key_field="FieldID",
+        raw_response=res,
+        readable_output=tableToMarkdown(
+            name=f"Issue fields for project {project_id_or_key} and issue type {issue_type_id}",
+            t=outputs,
+            headerTransform=pascalToSpace,
+            removeNull=True
+        )
+    )
+
     return command_results
 
 
@@ -2622,8 +2880,8 @@ def get_id_by_attribute_command(client: JiraBaseClient, args: Dict[str, str]) ->
 
     elif len(account_ids) > 1:
         return CommandResults(readable_output=f'Multiple account IDs were found for attribute: {attribute}.\n'
-                              f'Please try to provide the other attributes available - Email or DisplayName'
-                              ' (and Name in the case of Jira OnPrem).')
+                                              f'Please try to provide the other attributes available - Email or DisplayName'
+                                              ' (and Name in the case of Jira OnPrem).')
     # If reached here, that means there is only one entry in account_ids that holds the right id for the given attribute
     outputs['AccountId'] = account_ids[0]
     return CommandResults(
@@ -3281,7 +3539,7 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
                 ' "Issue index to start fetching incidents from" parameter.'
                 if smallest_issue_id
                 else 'The id that was configured does not exist in the Jira instance, '
-                'and the fetch query returned no results, therefore, could not start fetching.'
+                     'and the fetch query returned no results, therefore, could not start fetching.'
             ) from e
     # If we did no progress in terms of time (the created, or updated time stayed the same as the last fetch), we should keep the
     # ids of the last fetch until progress is made, so we exclude them in the next fetch.
@@ -3408,13 +3666,17 @@ def get_comments_entries_for_fetched_incident(
 
 def get_attachments_entries_for_fetched_incident(
         client: JiraBaseClient,
-        attachments_metadata: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        attachments_metadata: List[Dict[str, Any]],
+        incident_modified_date: datetime | None = None,
+        user_timezone_name: str = "") -> List[Dict[str, Any]]:
     """Return the attachments' entries for a fetched and mirrored incident
 
     Args:
         client (JiraBaseClient): The Jira client.
         attachments_metadata (List[str]): The metadata of the attachments, which includes the ids and created time of the
         attachments.
+        incident_modified_date (datetime | None): The modified date of the incident.
+        user_timezone_name (str): The timezone of the user.
 
     Returns:
         List[Dict[str, Any]]: The attachment entries for a fetched or mirrored incident.
@@ -3422,6 +3684,13 @@ def get_attachments_entries_for_fetched_incident(
     attachment_ids: List[str] = []
     attachments_entries: List[Dict[str, Any]] = []
     for attachment_metadata in attachments_metadata:
+        if (incident_modified_date
+            and (attachment_created_date := dateparser.parse(attachment_metadata.get('created', ''),
+                                                             settings={'TIMEZONE': user_timezone_name}))
+                and attachment_created_date <= incident_modified_date):
+            demisto.debug(f"The attachment with the id {attachment_metadata.get('id', '')} was created before the incident"
+                          f" was modified, therefore, it will not be fetched.")
+            continue
         attachment_id = attachment_metadata.get('id', '')
         attachments_entries.append(create_file_info_from_attachment(
             client=client, attachment_id=attachment_id
@@ -3490,6 +3759,12 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
     ]
     issue['mirror_instance'] = demisto.integrationInstance()
     issue['extractedAttachments'] = attachments
+
+    # Fetch any forms for the issue
+    if isinstance(client, JiraOnPremClient):
+        _, forms = get_issue_forms(client, str(issue.get('key')))
+        issue['forms'] = forms
+
     return {
         "name": incident_name,
         "labels": labels,
@@ -3630,7 +3905,7 @@ def get_system_timezone() -> Any:
     """Returns the system's timezone.
     This will also print to the debug console the system timezone.
     """
-    system_timezone = datetime.now(timezone.utc).astimezone().tzinfo
+    system_timezone = datetime.utcnow().astimezone().tzinfo
     demisto.debug(f'Timezone of the system: {system_timezone}')
     return system_timezone
 
@@ -3800,6 +4075,8 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
         attachments_entries = get_attachments_entries_for_fetched_incident(
             client=client,
             attachments_metadata=demisto.get(issue, 'fields.attachment') or [],
+            incident_modified_date=incident_modified_date,
+            user_timezone_name=user_timezone_name
         )
         attachments_incident_field = []
         demisto.debug(f'Got the following attachments entries {attachments_entries}')
@@ -3873,6 +4150,102 @@ def handle_incoming_resolved_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
             'ContentsFormat': EntryFormat.JSON
         }
     return closing_entry
+
+
+def issue_get_forms_command(client: JiraBaseClient, args: Dict[str, Any]) -> List[CommandResults]:
+    """Retrieves all forms, including corresponding questions and answers, for a specified issue.
+
+    :param client: The Jira client to use for making the API calls
+    :type client: JiraBaseClient
+    :param args: Generic arguments dict which has the argument `issue_id` for finding
+                 the specific issue and it's forms
+    :type args: Dict[str, Any]
+    :raises DemistoException: When the command is tried for a Jira Cloud platform which is not supported.
+    :raises ValueError: When the `issue_id` argument is not supplied
+    :return: One CommandResult per form that is found with the form data
+    :rtype: List[CommandResults]
+    """
+    if not isinstance(client, JiraOnPremClient):
+        raise DemistoException('This command is only supported on Jira OnPrem')
+
+    issue_id = args.get('issue_id', '')
+    if not issue_id:
+        raise ValueError('No issue_id specified for jira-get-issue-forms')
+
+    raw, forms = get_issue_forms(client, issue_id)
+    if not forms:
+        return [CommandResults(readable_output="No forms found")]
+
+    results = []
+    for form in forms:
+        results.append(CommandResults(
+            outputs_prefix='Jira.Forms',
+            outputs_key_field='ID',
+            outputs=form,
+            readable_output=f'Pulled data for form {form.get("ID")} from issue {issue_id}.',
+            raw_response=raw
+        ))
+    return results
+
+
+def get_user_info_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """Gets a user's information from Jira
+
+    :param client: The Jira client for calling the API
+    :type client: JiraBaseClient
+    :param args: Generic arguments dict which has the argument `username` or `key` for finding
+                 the user
+    :type args: Dict[str, Any]
+    :raises ValueError: When no key, username or accountId is provided to the command
+    :return: The CommandResults object with the data returned by the API
+    :rtype: CommandResults
+    """
+    if isinstance(client, JiraOnPremClient):
+        demisto.debug("On prem check")
+        # On prem allows key or username
+        key = args.get('key', '')
+        username = args.get('username', '')
+        if key:
+            identifier = f'key={key}'
+        elif username:
+            identifier = f'username={username}'
+        else:
+            raise ValueError('No key or username specified for jira-get-user-info')
+        key_field = "Key"
+    else:
+        # Jira Cloud requires using account_id
+        demisto.debug("Cloud check")
+        account_id = args.get('account_id', '')
+        if not account_id:
+            raise ValueError('No account_id specified for jira-get-user-info')
+        identifier = f'accountId={account_id}'
+        key_field = "AccountID"
+
+    response = client.get_user_info(identifier)
+    if not response:
+        return CommandResults(readable_output="No users found")
+
+    output = {
+        'Key': response.get('key', ''),
+        'Name': response.get('name', ''),
+        'Email': response.get('emailAddress', ''),
+        'DisplayName': response.get('displayName', ''),
+        'Active': response.get('active', ''),
+        'Deleted': response.get('deleted', ''),
+        'Timezone': response.get('timeZone', ''),
+        'Locale': response.get('locale', ''),
+        'AccountID': response.get('accountId', ''),  # Cloud only
+        'AccountType': response.get('accountType', ''),  # Cloud only
+    }
+
+    remove_nulls_from_dictionary(output)
+
+    return CommandResults(
+        outputs_prefix='Jira.Users',
+        outputs_key_field=key_field,
+        outputs=output,
+        raw_response=response
+    )
 
 
 def get_mapping_fields_command(client: JiraBaseClient) -> GetMappingFieldsResponse:
@@ -4120,6 +4493,10 @@ def main():  # pragma: no cover
         'jira-issue-link-type-get': get_issue_link_types_command,
         'jira-issue-to-issue-link': link_issue_to_issue_command,
         'jira-issue-delete-file': delete_attachment_file_command,
+        'jira-issue-get-forms': issue_get_forms_command,
+        'jira-get-user-info': get_user_info_command,
+        'jira-create-metadata-field-list': get_create_metadata_field_command,
+        'jira-create-metadata-issue-types-list': get_create_metadata_issue_types_command
     }
     try:
         client: JiraBaseClient

@@ -5,13 +5,13 @@ args:
 - description: The last time the message was sent. Typically one week ago.
   name: last_run_str
   required: true
-comment: |-
-  Extracts the index.zip and filters new packs since the last run.
-  Builds the slack message for new packs.
+comment: 'Extracts the index.zip and filters new packs since the last run.
+
+  Builds the slack message for new packs.'
 commonfields:
   id: BuildSlackBlocksFromIndex
   version: -1
-dockerimage: demisto/unzip:1.0.0.19258
+dockerimage: demisto/unzip:1.0.0.114702
 enabled: true
 name: BuildSlackBlocksFromIndex
 outputs:

@@ -17,5 +17,6 @@
     "override_port": "",
     "override_platform": "",
     "override_username": "",
-    "override_password": ""
+    "override_password": "",
+    "TimeoutOverride": "60"
 }

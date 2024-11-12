@@ -1,5 +1,6 @@
 Synapse intelligence analysis platform.
 This integration was integrated and tested with version `2.7.0` of Synapse
+
 ## Configure Synapse on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -19,10 +20,14 @@ This integration was integrated and tested with version `2.7.0` of Synapse
 | use_optic | Synapse is running Optic | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Returns IP information and reputation.
 
@@ -30,6 +35,7 @@ Returns IP information and reputation.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -53,9 +59,11 @@ Returns IP information and reputation.
 
 
 #### Command Example
+
 ```!ip ip="1.2.3.4"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -86,12 +94,14 @@ Returns IP information and reputation.
 #### Human Readable Output
 
 >### IP List
+
 >|ip|tags|
 >|---|---|
 >| 1.2.3.4 | mal,<br/>test |
 
 
 ### url
+
 ***
 Returns URL information and reputation.
 
@@ -101,6 +111,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -124,9 +135,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ```!url url="https://google.com"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -150,12 +163,14 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Human Readable Output
 
 >### URL List
+
 >|tags|url|
 >|---|---|
->|  | https://google.com |
+>|  | <https://google.com> |
 
 
 ### domain
+
 ***
 Returns Domain information and reputation.
 
@@ -165,6 +180,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -188,9 +204,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ```!domain domain="foobar.com"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -220,12 +238,14 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Human Readable Output
 
 >### Domain List
+
 >|domain|tags|
 >|---|---|
 >| foobar.com | mal |
 
 
 ### file
+
 ***
 Returns File information and reputation.
 
@@ -233,6 +253,7 @@ Returns File information and reputation.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -256,16 +277,18 @@ Returns File information and reputation.
 | File.SHA512 | String | The SHA512 hash of the file. | 
 | File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | String | For malicious files, the full description. | 
-| DBotScore.Indicator | String | The value assigned by DBot for the indicator. | 
-| DBotScore.Type | String | The type assigned by DBot for the indicator. | 
-| DBotScore.Score | Number | The score assigned by DBot for the indicator. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Score | Number | The actual score. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 
 
 #### Command Example
+
 ```!file file="9e0c442ee3157d3f3aa2be30a1d24d81"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -303,12 +326,14 @@ Returns File information and reputation.
 #### Human Readable Output
 
 >### File List
+
 >|MD5|SHA1|SHA256|SHA512|hash|query|tags|
 >|---|---|---|---|---|---|---|
 >| 9e0c442ee3157d3f3aa2be30a1d24d81 | e7b03ed4dbdfb79477c49942d5796d3dfc78ac7e | 290f64a315850c5bccc907f79cbeabd79345719df738ee5d02dc3447d04675b3 | 53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043fd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b | 9e0c442ee3157d3f3aa2be30a1d24d81 | file:bytes:md5=9e0c442ee3157d3f3aa2be30a1d24d81 | mal |
 
 
 ### synapse-storm-query
+
 ***
 Execute a Synapse Storm query.
 
@@ -316,6 +341,7 @@ Execute a Synapse Storm query.
 #### Base Command
 
 `synapse-storm-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -335,9 +361,11 @@ Execute a Synapse Storm query.
 
 
 #### Command Example
+
 ```!synapse-storm-query query="inet:ipv4=1.2.3.5" limit=1```
 
 #### Context Example
+
 ```json
 {
     "Synapse": {
@@ -357,16 +385,20 @@ Execute a Synapse Storm query.
 #### Human Readable Output
 
 >### Synapse Query Results: `inet:ipv4=1.2.3.5`
+
 >|form|valu|created|tags|
 >|---|---|---|---|
 >| inet:ipv4 | 1.2.3.5 | 2020/09/12 10:07:17 EDT | test.foo,<br/>test.testing |
+
 >### Synapse Node Properties
+
 >|.created|type|
 >|---|---|
 >| 1599919637048 | unicast |
 
 
 ### synapse-list-users
+
 ***
 Lists current users in Synapse Cortex.
 
@@ -374,6 +406,7 @@ Lists current users in Synapse Cortex.
 #### Base Command
 
 `synapse-list-users`
+
 #### Input
 
 There are no input arguments for this command.
@@ -391,9 +424,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!synapse-list-users```
 
 #### Context Example
+
 ```json
 {
     "Synapse": {
@@ -435,6 +470,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Synapse Users
+
 >|Name|Email|Admin|Rules|Roles|
 >|---|---|---|---|---|
 >| root |  | true |  |  |
@@ -443,6 +479,7 @@ There are no input arguments for this command.
 
 
 ### synapse-list-roles
+
 ***
 Lists current roles in Synapse Cortex.
 
@@ -450,6 +487,7 @@ Lists current roles in Synapse Cortex.
 #### Base Command
 
 `synapse-list-roles`
+
 #### Input
 
 There are no input arguments for this command.
@@ -464,9 +502,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!synapse-list-roles```
 
 #### Context Example
+
 ```json
 {
     "Synapse": {
@@ -494,6 +534,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Synapse Roles
+
 >|Name|Iden|Rules|
 >|---|---|---|
 >| xsoar-role | bcf176a4cbe240ae1dcf9fbebdffa680 |  |
@@ -502,6 +543,7 @@ There are no input arguments for this command.
 
 
 ### synapse-create-user
+
 ***
 Create a new Synapse user.
 
@@ -509,6 +551,7 @@ Create a new Synapse user.
 #### Base Command
 
 `synapse-create-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -530,9 +573,11 @@ Create a new Synapse user.
 
 
 #### Command Example
+
 ```!synapse-create-user username="xsoardemo" password="secret"```
 
 #### Context Example
+
 ```json
 {
     "Synapse": {
@@ -553,12 +598,14 @@ Create a new Synapse user.
 #### Human Readable Output
 
 >### Synapse New User
+
 >|Name|Email|Admin|Rules|Roles|
 >|---|---|---|---|---|
 >| xsoardemo |  | false |  | all |
 
 
 ### synapse-create-role
+
 ***
 Create a new Synapse role.
 
@@ -566,6 +613,7 @@ Create a new Synapse role.
 #### Base Command
 
 `synapse-create-role`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -583,9 +631,11 @@ Create a new Synapse role.
 
 
 #### Command Example
+
 ```!synapse-create-role role="xsoar-role-demo"```
 
 #### Context Example
+
 ```json
 {
     "Synapse": {
@@ -601,12 +651,14 @@ Create a new Synapse role.
 #### Human Readable Output
 
 >### Synapse New Role
+
 >|Name|Iden|Rules|
 >|---|---|---|
 >| xsoar-role-demo | 029019964000fef6ccd2be428f496423 |  |
 
 
 ### synapse-grant-user-role
+
 ***
 Grants a user access to role based perrmissions.
 
@@ -614,6 +666,7 @@ Grants a user access to role based perrmissions.
 #### Base Command
 
 `synapse-grant-user-role`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -635,9 +688,11 @@ Grants a user access to role based perrmissions.
 
 
 #### Command Example
+
 ```!synapse-grant-user-role user="a2bfead4c16b0354af2a92aa05588fc9" role="bcf176a4cbe240ae1dcf9fbebdffa680"```
 
 #### Context Example
+
 ```json
 {
     "Synapse": {
@@ -659,12 +714,14 @@ Grants a user access to role based perrmissions.
 #### Human Readable Output
 
 >### Synapse New User Role
+
 >|Name|Email|Admin|Rules|Roles|
 >|---|---|---|---|---|
 >| testuser |  | false |  | xsoar-role,<br/>all |
 
 
 ### synapse-query-model
+
 ***
 Query the Synapse data model and return details for given type or form (i.e. "inet:ipv4" for an IPv4 IP address).
 
@@ -672,6 +729,7 @@ Query the Synapse data model and return details for given type or form (i.e. "in
 #### Base Command
 
 `synapse-query-model`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -692,9 +750,11 @@ Query the Synapse data model and return details for given type or form (i.e. "in
 
 
 #### Command Example
+
 ```!synapse-query-model query="file:bytes"```
 
 #### Context Example
+
 ```json
 {
     "Synapse": {
@@ -731,11 +791,14 @@ Query the Synapse data model and return details for given type or form (i.e. "in
 #### Human Readable Output
 
 >### Synapse Model Type
+
 >|Type|Doc|Example|
 >|---|---|---|
 >| file:bytes | The file bytes type with SHA256 based primary property. | N/A |
+
 >### Synapse `file:bytes` Form Properties
+
 >|.seen|.created|size|md5|sha1|sha256|sha512|name|mime|mime:x509:cn|mime:pe:size|mime:pe:imphash|mime:pe:compiled|mime:pe:pdbpath|mime:pe:exports:time|mime:pe:exports:libname|mime:pe:richhdr|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| The time interval for first/last observation of the node. | The time the node was created in the cortex. | The file size in bytes. | The md5 hash of the file. | The sha1 hash of the file. | The sha256 hash of the file. | The sha512 hash of the file. | The best known base name for the file. | The "best" mime type name for the file. | The Common Name (CN) attribute of the x509 Subject. | The size of the executable file according to the PE file header. | The PE import hash of the file as calculated by pefile; https://github.com/erocarrera/pefile . | The compile time of the file according to the PE header. | The PDB string according to the PE. | The export time of the file according to the PE. | The export library name according to the PE. | The sha256 hash of the rich header bytes. |
+>| The time interval for first/last observation of the node. | The time the node was created in the cortex. | The file size in bytes. | The md5 hash of the file. | The sha1 hash of the file. | The sha256 hash of the file. | The sha512 hash of the file. | The best known base name for the file. | The "best" mime type name for the file. | The Common Name (CN) attribute of the x509 Subject. | The size of the executable file according to the PE file header. | The PE import hash of the file as calculated by pefile; <https://github.com/erocarrera/pefile> . | The compile time of the file according to the PE header. | The PDB string according to the PE. | The export time of the file according to the PE. | The export library name according to the PE. | The sha256 hash of the rich header bytes. |
 

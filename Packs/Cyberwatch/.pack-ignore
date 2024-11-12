@@ -1,0 +1,7 @@
+[known_words]
+capecs
+cves
+cyberwatch
+
+[file:Cyberwatch.yml]
+ignore=BA124

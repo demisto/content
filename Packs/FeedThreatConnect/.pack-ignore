@@ -1,6 +1,3 @@
-[file:FeedThreatConnect.yml]
-ignore=IN124
-
 [file:FeedThreatConnect_image.png]
 ignore=IM111
 

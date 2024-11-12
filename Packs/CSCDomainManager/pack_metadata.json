@@ -1,8 +1,8 @@
 {
     "name": "CSCDomainManager",
-    "description": "no",
+    "description": "CSCDomainManager is the world's first multilingual domain management tool, available in English, French, and German. It uses rules-based technology, customizable reporting, granular user management, and more to enable you to manage your domain.",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -14,6 +14,7 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "xpanse"
     ]
 }

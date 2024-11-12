@@ -67,6 +67,10 @@ class Client:
     def get_api_version(self):
         return self.ms_client._api_version
 
+    def block_public_access(self, url, headers):
+        return self.ms_client.http_request(method='PUT', headers=headers, full_url=url,
+                                           return_empty_response=True)
+
     def get_container_properties_request(self, container_name: str) -> Response:
         """
         Retrieve properties for the specified Container.
@@ -956,7 +960,11 @@ def generate_sas_token_command(client: Client, args: dict) -> CommandResults:  #
     if check_valid_permission(valid_permissions, signed_permissions):  # type: ignore
         # Set start time
         signed_start = str((datetime.utcnow() - timedelta(minutes=2)).strftime("%Y-%m-%dT%H:%M:%SZ"))
-        account_key = demisto.params().get("key")
+        account_key = demisto.params().get("key") or args.get("account_key")
+
+        if not account_key:
+            raise DemistoException("An account key must be given to generate the SAS token.")
+
         time_taken = int(args.get('expiry_time'))  # type: ignore
         signed_expiry = str((datetime.utcnow() + timedelta(hours=time_taken)).strftime("%Y-%m-%dT%H:%M:%SZ"))
         url_suffix = f"{container_name}"
@@ -976,6 +984,73 @@ def generate_sas_token_command(client: Client, args: dict) -> CommandResults:  #
         return result
     else:
         raise DemistoException("Permissions are invalid or in wrong order. Correct order for permissions are \'racwdl\'")
+
+
+def block_public_access_command(client: Client, args: Dict[str, Any]):
+    """
+    Block container's public access.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs and raw response for XSOAR.
+
+    """
+
+    account_key = demisto.params().get('shared_key', {}).get('password')
+    if not account_key:
+        raise KeyError("The 'shared_key' parameter must be provided.")
+    else:
+        account_name = demisto.params().get('credentials', {}).get('identifier')
+        container_name = args.get("container_name")
+        api_version = client.get_api_version()
+        request_url = f"https://{account_name}.blob.core.windows.net/{container_name}?restype=container&comp=acl"
+        request_date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
+
+        # string for API signature
+        string_to_sign = (
+            f"PUT\n"  # HTTP Verb
+            f"\n"  # Content-Encoding
+            f"\n"  # Content-Language
+            f"\n"  # Content-Length
+            f"\n"  # Content-MD5
+            f"\n"  # Content-Type
+            f"\n"  # Date
+            f"\n"  # If-Modified-Since
+            f"\n"  # If-Match
+            f"\n"  # If-None-Match
+            f"\n"  # If-Unmodified-Since
+            f"\n"  # Range
+            f"x-ms-date:{request_date}\n"
+            f"x-ms-version:{api_version}\n"
+            f"/{account_name}/{container_name}\n"
+            "comp:acl\n"
+            "restype:container"
+        )
+
+        # create signature token for API auth
+        try:
+            decoded_key = base64.b64decode(account_key)
+            signature = hmac.new(
+                decoded_key, string_to_sign.encode("utf-8"), hashlib.sha256
+            ).digest()
+            encoded_signature = base64.b64encode(signature).decode("utf-8")
+        except ValueError:
+            raise ValueError("Incorrect shared key provided")
+        authorization_header = f"SharedKey {account_name}:{encoded_signature}"
+        headers = {
+            "x-ms-date": request_date,
+            "Authorization": authorization_header,
+            'x-ms-version': api_version,
+        }
+        response = client.block_public_access(request_url, headers)
+        demisto.debug(f"Response from block public access API:- {response}")
+        command_results = CommandResults(
+            readable_output=f"Public access to container '{container_name}' has been successfully blocked",
+        )
+        return command_results
 
 
 def test_module(client: Client) -> None:
@@ -1013,8 +1088,6 @@ def main() -> None:  # pragma: no cover
     global account_sas_token
     global storage_account_name
     account_sas_token = params.get('credentials', {}).get('password')
-    if account_sas_token and not account_sas_token.startswith("?"):
-        account_sas_token = f"?{account_sas_token}"
     storage_account_name = params['credentials']['identifier']
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     api_version = "2020-10-02"
@@ -1044,6 +1117,7 @@ def main() -> None:  # pragma: no cover
             'azure-storage-container-blob-property-get': get_blob_properties_command,
             'azure-storage-container-blob-property-set': set_blob_properties_command,
             'azure-storage-container-sas-create': generate_sas_token_command,
+            'azure-storage-container-block-public-access': block_public_access_command,
         }
 
         if command == 'test-module':

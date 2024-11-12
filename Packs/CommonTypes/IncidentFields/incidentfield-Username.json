@@ -49,7 +49,8 @@
 		"IAM - Update User",
 		"User Profile",
 		"IAM - Sync User",
-		"IAM - Rehire User"
+		"IAM - Rehire User",
+		"Exabeam Notable User"
 	],
 	"threshold": 72,
 	"type": "shortText",

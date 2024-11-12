@@ -1,5 +1,5 @@
 [file:CortexDataLake.yml]
-ignore=IN126,IN136,IN124
+ignore=IN126,IN136
 
 [file:README.md]
 ignore=RM102,RM106

@@ -1,0 +1,108 @@
+{
+    "id": 1226,
+    "hostname": "WIN-97RELK05NHD",
+    "description": null,
+    "last_communication": "2021-03-11T11:05:45.000Z",
+    "reboot_required": false,
+    "boot_at": "2021-03-10T13:45:28.000Z",
+    "category": "server",
+    "created_at": "2021-03-10T15:47:41.000Z",
+    "packages": [
+      {
+        "vendor": null,
+        "product": "KB4457015",
+        "type": "Packages::Kb",
+        "version": "",
+        "active": true,
+        "paths": []
+      },
+      {
+        "vendor": null,
+        "product": "Browser for SQL Server 2016",
+        "type": "Packages::WinApp",
+        "version": "13.2.5026.0",
+        "active": true,
+        "paths": []
+      }
+    ],
+    "metadata": [
+      {
+        "key": "bios-release-date",
+        "value": "08/24/2006"
+      },
+      {
+        "key": "bios-vendor",
+        "value": "Xen"
+      },
+      {
+        "key": "processor-model-name",
+        "value": "Intel(R) Xeon(R) CPU E5-2686 v4 @ 2.30GHz"
+      },
+      {
+        "key": "processor-virtualization",
+        "value": "False"
+      },
+      {
+        "key": "processor-socket",
+        "value": "CPU 1"
+      },
+      {
+        "key": "processor-description",
+        "value": "Intel64 Family 6 Model 79 Stepping 1"
+      },
+      {
+        "key": "system-model",
+        "value": "HVM domU"
+      },
+      {
+        "key": "system-manufacturer",
+        "value": "Xen"
+      },
+      {
+        "key": "system-ram",
+        "value": "8589524992"
+      }
+    ],
+    "services": [],
+    "environment": {
+      "id": 32,
+      "name": "Low",
+      "confidentiality_requirement": "confidentiality_requirement_low",
+      "integrity_requirement": "integrity_requirement_low",
+      "availability_requirement": "availability_requirement_low",
+      "ceiling_cvss_v3": null
+    },
+    "os": {
+      "key": "windows_2012_r2",
+      "name": "Windows Server 2012 R2",
+      "arch": null,
+      "eol": "2023-10-10",
+      "short_name": "Windows 2012 R2",
+      "type": "Os::Windows"
+    },
+    "groups": [
+      {
+        "id": 789,
+        "name": "0_Compliance",
+        "description": null,
+        "color": "#12AFCB"
+      }
+    ],
+    "ports": [
+      {
+        "port": 53,
+        "protocol": "TCP",
+        "package": null
+      },
+      {
+        "port": 80,
+        "protocol": "TCP",
+        "package": null
+      }
+    ],
+    "connector": {
+      "id": 21,
+      "type": "Agent",
+      "path": "/api/v3/assets/agents/21"
+    }
+  }

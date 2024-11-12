@@ -60,8 +60,8 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Use Microsoft Advanced Threat Analytics integration to manage suspicious activities, monitoring alerts and entities.
-display: Microsoft Advanced Threat Analytics
+description: Deprecated. No available replacement.
+display: Microsoft Advanced Threat Analytics (Deprecated)
 name: Microsoft Advanced Threat Analytics
 script:
   commands:
@@ -191,6 +191,7 @@ script:
     - contextPath: MicrosoftATA.SuspiciousActivity.DetailsRecords.SourceComputerId
       description: The identifier of the suspicious activity source computer.
       type: String
+    deprecated: true
   - arguments:
     - description: The Identifier of suspicious activity for which to update the status.
       name: id
@@ -206,6 +207,7 @@ script:
       required: true
     description: Sets the status of the suspicious activity.
     name: ms-ata-suspicious-activity-status-set
+    deprecated: true
   - arguments:
     - auto: PREDEFINED
       description: 'Monitoring alerts with a specified status to retrieve (comma-separated values supported). Can be: "Open", "Closed", and "Suppressed".'
@@ -282,6 +284,7 @@ script:
     - contextPath: MicrosoftATA.MonitoringAlert.PasswordExpiryTime
       description: The password expiry time of the monitoring alert.
       type: Date
+    deprecated: true
   - arguments:
     - description: The identifier of an entity to retrieve. Can be retrieved by running the ms-ata-suspicious-activities-list command (from the RelatedUniqueEntityIds output).
       name: id
@@ -293,7 +296,7 @@ script:
       description: The time that the bad password was entered.
       type: Date
     - contextPath: MicrosoftATA.Entity.CanonicalName
-      description: The canonical name of the entity,
+      description: The canonical name of the entity.
       type: String
     - contextPath: MicrosoftATA.Entity.CreationTime
       description: The time that entity was created.
@@ -418,7 +421,8 @@ script:
     - contextPath: MicrosoftATA.Entity.Profile.UpdateTime
       description: The update time of the entity profile.
       type: Date
-  dockerimage: demisto/ntlm:1.0.0.85814
+    deprecated: true
+  dockerimage: demisto/ntlm:1.0.0.107683
   isfetch: true
   runonce: false
   script: '-'
@@ -428,4 +432,5 @@ fromversion: 5.0.0
 defaultclassifier: Microsoft Advanced Threat Analytics
 defaultmapperin: Microsoft Advanced Threat Analytics-mapper
 tests:
-- Microsoft Advanced Threat Analytics - Test
+- No tests (deprecated)
+deprecated: true

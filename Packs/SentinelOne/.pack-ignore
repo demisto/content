@@ -1,5 +1,5 @@
 [file:SentinelOne-V2.yml]
-ignore=IN126,BA108,BA109,IN124
+ignore=IN126,BA108,BA109
 
 [file:README.md]
 ignore=RM106
@@ -16,3 +16,6 @@ ignore=MR108
 [file:layoutscontainer-SentinelOne_Incident_Layout.json]
 ignore=LO107
 
+# GR103 is temporary, see CIAC-11656
+[file:classifier-mapper-outgoing-SentinelOne.json]
+ignore=GR103

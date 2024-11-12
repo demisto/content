@@ -45,7 +45,7 @@ _MODULES_LINE_MAPPING = {
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
-XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB
+XSIAM_EVENT_CHUNK_SIZE_LIMIT = 4 * (10 ** 6)  # 4 MB
 ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
@@ -200,7 +200,6 @@ logging.raiseExceptions = False
 try:
     import requests
     from requests.adapters import HTTPAdapter
-    from requests.models import RequestEncodingMixin
     from urllib3.util import Retry
     from typing import Optional, Dict, List, Any, Union, Set, cast
 
@@ -1596,9 +1595,9 @@ def stringUnEscape(st):
 class IntegrationLogger(object):
     """
       a logger for python integrations:
-      use LOG(<message>) to add a record to the logger (message can be any object with __str__)
-      use LOG.print_log(verbose=True/False) to display all records in War-Room (if verbose) and server log.
-      use add_replace_strs to add sensitive strings that should be replaced before going to the log.
+      use `LOG(<message>)` to add a record to the logger (message can be any object with __str__)
+      use `LOG.print_log(verbose=True/False)` to display all records in War-Room (if verbose) and server log.
+      use `add_replace_strs` to add sensitive strings that should be replaced before going to the log.
 
       :type message: ``str``
       :param message: The message to be logged
@@ -1802,8 +1801,8 @@ class IntegrationLogger(object):
 
 """
 a logger for python integrations:
-use LOG(<message>) to add a record to the logger (message can be any object with __str__)
-use LOG.print_log() to display all records in War-Room and server log.
+use `LOG(<message>)` to add a record to the logger (message can be any object with __str__)
+use `LOG.print_log()` to display all records in War-Room and server log.
 """
 LOG = IntegrationLogger(debug_logging=is_debug_mode())
 
@@ -4930,11 +4929,12 @@ class Common(object):
         """
         CONTEXT_PATH = 'Account(val.id && val.id == obj.id)'
 
-        def __init__(self, id, type=None, username=None, display_name=None, groups=None,
+        def __init__(self, id=None, type=None, username=None, display_name=None, groups=None,
                      domain=None, email_address=None, telephone_number=None, office=None, job_title=None,
                      department=None, country=None, state=None, city=None, street=None, is_enabled=None,
                      dbot_score=None, relationships=None, blocked=None, community_notes=None, creation_date=None,
-                     description=None, stix_id=None, tags=None, traffic_light_protocol=None, user_id=None):
+                     description=None, stix_id=None, tags=None, traffic_light_protocol=None, user_id=None,
+                     manager_email=None, manager_display_name=None, risk_level=None):
 
             self.id = id
             self.type = type
@@ -4961,16 +4961,20 @@ class Common(object):
             self.traffic_light_protocol = traffic_light_protocol
             self.user_id = user_id
             self.relationships = relationships
+            self.manager_email_address = manager_email
+            self.manager_display_name = manager_display_name
+            self.risk_level = risk_level
 
-            if not isinstance(dbot_score, Common.DBotScore):
+            if dbot_score and not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
 
             self.dbot_score = dbot_score
 
         def to_context(self):
-            account_context = {
-                'Id': self.id
-            }
+            account_context = {}
+
+            if self.id:
+                account_context['ID'] = self.id
 
             if self.type:
                 account_context['Type'] = self.type
@@ -4981,15 +4985,22 @@ class Common(object):
             if self.creation_date:
                 account_context['CreationDate'] = self.creation_date
 
-            irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'Id', 'create_context_table']
+            irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'id', 'create_context_table']
             details = [detail for detail in dir(self) if not detail.startswith('__') and detail not in irrelevent]
 
             for detail in details:
-                if self.__getattribute__(detail):
+                if self.__getattribute__(detail) is not None:
                     if detail == 'email_address':
                         account_context['Email'] = {
                             'Address': self.email_address
                         }
+                    elif detail in ('manager_email_address', 'manager_display_name'):
+                        if 'Manager' not in account_context:
+                            account_context['Manager'] = {}
+                        if detail == 'manager_email_address':
+                            account_context['Manager']['Email'] = self.manager_email_address
+                        elif detail == 'manager_display_name':
+                            account_context['Manager']['DisplayName'] = self.manager_display_name
                     else:
                         Detail = camelize_string(detail, '_')
                         account_context[Detail] = self.__getattribute__(detail)
@@ -7118,7 +7129,11 @@ def is_integration_command_execution():
     try:
         return demisto.callingContext['context']['ExecutedCommands'][0]['moduleBrand'] != 'Scripts'
     except (KeyError, IndexError, TypeError):
-        return True
+        try:
+            # In dynamic-section scripts ExecutedCommands is None and another way is needed to verify if we are in a Script.
+            return demisto.callingContext['context']['ScriptName'] == ''
+        except (KeyError, IndexError, TypeError):
+            return True
 
 
 EXECUTION_METRICS_SCRIPT_SKIP_MSG = "returning results with Type=EntryType.EXECUTION_METRICS isn't fully supported for scripts. dropping result."
@@ -8267,7 +8282,7 @@ get_demisto_version = GetDemistoVersion()
 
 
 def get_demisto_version_as_str():
-    """Get the Demisto Server version as a string <version>-<build>. If unknown will return: 'Unknown'.
+    """Get the Demisto Server version as a string `<version>-<build>`. If unknown will return: 'Unknown'.
     Meant to be use in places where we want to display the version. If you want to perform logic based upon vesrion
     use: is_demisto_version_ge.
 
@@ -8392,6 +8407,14 @@ def is_xsiam():
     return demisto.demistoVersion().get("platform") == "x2"
 
 
+def is_using_engine():
+    """Determines whether or not the platform is using engine.
+    :return: True iff the platform is using engine.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("engine")
+
+
 class DemistoHandler(logging.Handler):
     """
         Handler to route logging messages to an IntegrationLogger or demisto.debug if not supplied
@@ -8422,7 +8445,7 @@ def censor_request_logs(request_log):
     :return: The censored request log
     :rtype: ``str``
     """
-    keywords_to_censor = ['Authorization:', 'Cookie', "Token"]
+    keywords_to_censor = ['Authorization:', 'Cookie', "Token", "username", "password", "apiKey"]
     lower_keywords_to_censor = [word.lower() for word in keywords_to_censor]
 
     trimed_request_log = request_log.lstrip(SEND_PREFIX)
@@ -8437,6 +8460,8 @@ def censor_request_logs(request_log):
                 # If the next word is "Bearer" or "Basic" then we replace the word after it since thats the token
                 if next_word.lower() in ["bearer", "basic"] and i + 2 < len(request_log_lst):
                     request_log_lst[i + 2] = MASK
+                elif request_log_lst[i + 1].endswith("}'"):
+                    request_log_lst[i + 1] = "\"{}\"}}'".format(MASK)
                 else:
                     request_log_lst[i + 1] = MASK
 
@@ -9301,7 +9326,7 @@ if 'requests' in sys.modules:
 
 def generic_http_request(method,
                          server_url,
-                         timeout=10,
+                         timeout=60,
                          verify=True,
                          proxy=False,
                          client_headers=None,
@@ -9403,12 +9428,6 @@ def generic_http_request(method,
                         auth=auth,
                         timeout=timeout
                         )
-
-    if files:
-        """
-        To prevent timeout errors when sending large files, it is necessary to load the files into memory by reading them using the command f.read().
-        """
-        RequestEncodingMixin._encode_files(files=files, data={})
 
     return client._http_request(method=method, url_suffix=url_suffix, data=data, ok_codes=ok_codes, error_handler=error_handler,
                                 headers=headers, files=files, params=params, retries=retries, resp_type=resp_type,
@@ -10140,12 +10159,13 @@ class IndicatorsSearcher:
                  value='',
                  limit=None,
                  sort=None,
+                 search_after=None
                  ):
         # searchAfter is available in searchIndicators from version 6.1.0
         self._can_use_search_after = True
         # populateFields merged in https://github.com/demisto/server/pull/18398
         self._can_use_filter_fields = True
-        self._search_after_param = None
+        self._search_after_param = search_after
         self._page = page
         self._filter_fields = filter_fields
         self._total = None
@@ -11638,12 +11658,14 @@ def split_data_to_chunks(data, target_chunk_size):
         data = data.split('\n')
     for data_part in data:
         if chunk_size >= target_chunk_size:
+            demisto.debug("reached max chunk size, sending chunk with size: {size}".format(size=chunk_size))
             yield chunk
             chunk = []
             chunk_size = 0
         chunk.append(data_part)
         chunk_size += sys.getsizeof(data_part)
     if chunk_size != 0:
+        demisto.debug("sending the remaining chunk with size: {size}".format(size=chunk_size))
         yield chunk
 
 
@@ -11808,7 +11830,7 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                        chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
-                       add_proxy_to_request=False):
+                       add_proxy_to_request=False, snapshot_id='', items_count=None):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -11846,6 +11868,12 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :type add_proxy_to_request: ``bool``
     :param add_proxy_to_request: whether to add proxy to the send evnets request.
 
+    :type snapshot_id: ``str``
+    :param snapshot_id: the snapshot id.
+
+    :type items_count: ``str``
+    :param items_count: the asset snapshot items count.
+
     :return: None
     :rtype: ``None``
     """
@@ -11855,7 +11883,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     calling_context = demisto.callingContext.get('context', {})
     instance_name = calling_context.get('IntegrationInstance', '')
     collector_name = calling_context.get('IntegrationBrand', '')
-    items_count = len(data) if isinstance(data, list) else 1
+    if not items_count:
+        items_count = len(data) if isinstance(data, list) else 1
     if data_type not in DATA_TYPES:
         demisto.debug("data type must be one of these values: {types}".format(types=DATA_TYPES))
         return
@@ -11896,7 +11925,12 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         'collector-type': ASSETS if data_type == ASSETS else EVENTS
     }
     if data_type == ASSETS:
-        headers['snapshot-id'] = str(round(time.time() * 1000))
+        if not snapshot_id:
+            snapshot_id = str(round(time.time() * 1000))
+
+        # We are setting a time stamp ahead of the instance name since snapshot-ids must be configured in ascending
+        # alphabetical order such that first_snapshot < second_snapshot etc.
+        headers['snapshot-id'] = snapshot_id + instance_name
         headers['total-items-count'] = str(items_count)
 
     header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
@@ -11938,7 +11972,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
                                     error_msg=header_msg, headers=headers,
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
-                                    zipped_data=zipped_data, is_json_response=True)
+                                    zipped_data=zipped_data, is_json_response=True, data_type=data_type)
 
     if should_update_health_module:
         demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
@@ -12016,6 +12050,37 @@ def is_time_sensitive():
         :rtype: ``bool``
     """
     return hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
+
+
+def parse_json_string(json_string):
+    """
+    Parse a JSON string into a Python dictionary.
+
+    :type json_string: ``str``
+    :param json_string: The JSON string to be parsed.
+
+    :rtype: ``dict``
+    :return: A Python dictionary representing the parsed JSON data.
+    """
+    try:
+        data = json.loads(json_string)
+        return data
+    except json.JSONDecodeError as error:  # type: ignore[attr-defined]
+        demisto.error("Error decoding JSON: {error}".format(error=error))
+        return {}
+
+
+def get_server_config():
+    """
+    Retrieves XSOAR server configuration.
+
+    :rtype: ``dict``
+    :return: The XSOAR server configuration.
+    """
+    response = demisto.internalHttpRequest(method='GET', uri='/system/config')
+    body = parse_json_string(response.get('body'))
+    server_config = body.get('sysConf', {})
+    return server_config
 
 
 from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402

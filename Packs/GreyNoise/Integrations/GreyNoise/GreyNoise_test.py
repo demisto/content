@@ -2,7 +2,6 @@ import pytest
 import json
 import GreyNoise
 import demistomock as demisto
-from pytest import raises
 from test_data.input_data import (  # type: ignore
     parse_code_and_body_data,
     get_ip_reputation_score_data,
@@ -17,6 +16,7 @@ from test_data.input_data import (  # type: ignore
     context_command_response_data,
     similar_command_response_data,
     timeline_command_response_data,
+    cve_command_response_data
 )
 
 
@@ -285,6 +285,34 @@ def test_timeline_command(mocker, args, test_scenario, api_response, status_code
 
 
 @pytest.mark.parametrize(
+    "args, test_scenario, api_response, status_code, expected_output", cve_command_response_data
+)
+def test_cve_command(mocker, args, test_scenario, api_response, status_code, expected_output):
+    """
+    Test various inputs for cve command
+    """
+    client = GreyNoise.Client(
+        api_key="true_api_key",
+        api_server="dummy_server",
+        timeout=10,
+        proxy="proxy",
+        use_cache=False,
+        integration_name="dummy_integration",
+    )
+    dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(expected_output), status_code)
+    mocker.patch("requests.Session.get", return_value=dummy_response)
+    reliability = "B - Usually reliable"
+    if test_scenario == "positive":
+        response = GreyNoise.cve_command(client, args, reliability)
+        assert response[0].outputs == expected_output
+    else:
+        mocker.patch("requests.Session.get", return_value=dummy_response)
+        with pytest.raises(Exception) as err:
+            _ = GreyNoise.cve_command(client, args, reliability)
+        assert str(err.value) == expected_output
+
+
+@pytest.mark.parametrize(
     "demisto_params_result, expected_result",
     [({'credentials': {'password': 'api_key'}, 'apikey': 'old_api_key'}, 'api_key'),
      ({'credentials': {'password': ''}, 'apikey': 'old_api_key'}, 'old_api_key'),
@@ -324,6 +352,6 @@ def test_get_api_key_invalid_key(mocker):
     mocker.patch.object(demisto, 'results')
 
     # Get the client that was instantiated
-    with raises(SystemExit):
+    with pytest.raises(SystemExit):
         GreyNoise.main()
     assert demisto.results.call_args[0][0]['Contents'] == 'Please provide a valid API token'

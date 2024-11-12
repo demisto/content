@@ -1,7 +1,8 @@
 id: Recorded Future Workforce Usecase
 version: -1
 name: Recorded Future Workforce Usecase
-description: Implements an workforce usecase for Recorded Future Identity Data
+deprecated: true
+description: Deprecated. Use Recorded Future - Identity Exposure instead. Implements an workforce usecase for Recorded Future Identity Data
 starttaskid: "0"
 tasks:
   "0":

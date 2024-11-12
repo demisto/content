@@ -47,7 +47,7 @@ Returns the latest updated CVEs from your reports.
 | CVE.Modified | Date | The date that the CVE was last modified. | 
 | CVE.Description | String | The description of the CVE. | 
 | DBotScore.Indicator | String | The indicator value. | 
-| DBotScore.Score | Number | The indicator score. | 
+| DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor reporting the score of the indicator. | 
 
@@ -75,10 +75,10 @@ Returns CVE information by CVE ID.
 | CVE.Published | Date | The date the CVE was published. | 
 | CVE.Modified | Date | The date that the CVE was last modified. | 
 | CVE.Description | String | The description of the CVE. | 
-| DBotScore.Indicator | String | The indicator value. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The indicator score. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor reporting the score of the indicator. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 
 ### opencve-get-my-vendors
 
