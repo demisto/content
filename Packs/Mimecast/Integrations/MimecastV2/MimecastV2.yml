@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://api.services.mimecast.com
-  display: BaseUrl - API url
+  display: BaseUrl - API url including region, For example https://eu-api.mimecast.com
   name: baseUrl
   required: true
   type: 0
@@ -217,6 +217,7 @@ script:
       - ""
     - name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+      defaultValue: ""
       predefined:
       - ""
     description: Query Mimecast emails. This is an archive search command.
@@ -554,17 +555,16 @@ script:
       defaultValue: "20"
       predefined:
       - ""
-      auto: PREDEFINED
     - name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: page_size
       description: Number of results per page to display.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     description: Permit or block a specific sender.
     name: mimecast-manage-sender
     outputs:
@@ -690,14 +690,14 @@ script:
       name: limit
     - name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: page_size
       description: Number of results per page to display.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     description: Get a list of messages for a given user. This is an archive search command.
     name: mimecast-list-messages
     outputs:
@@ -742,14 +742,14 @@ script:
       name: limit
     - name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: page_size
       description: Number of results per page to display.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     description: Returns Attachment Protect logs for a Mimecast customer account.
     name: mimecast-get-attachment-logs
     outputs:
@@ -797,14 +797,14 @@ script:
       name: limit
     - name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: page_size
       description: Number of results per page to display.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     description: Returns URL protect logs for a Mimecast customer account. Default value of scanResult as malicious.
     name: mimecast-get-url-logs
     outputs:
@@ -897,14 +897,14 @@ script:
       name: limit
     - name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: page_size
       description: Number of results per page to display.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     description: Returns Impersonation Protect logs for a Mimecast customer account.
     name: mimecast-get-impersonation-logs
     outputs:
@@ -972,13 +972,10 @@ script:
     - contextPath: Mimecast.Authentication.EmailToken
       description: Email token of the request sender.
       type: string
-    arguments: []
   - description: Refresh access key validity.
     name: mimecast-refresh-token
-    arguments: []
   - description: Login to generate Access Key and  Secret Key.
     name: mimecast-login
-    arguments: []
   - arguments:
     - description: Message ID.
       name: messageID
@@ -1100,6 +1097,7 @@ script:
       required: true
     - description: The Mimecast attachment name. When used, the file name and its extension will be included in the context data. Can be retrieved from mimecast-get-message command.
       name: attachmentName
+      required: false
     description: Download attachments from a specified message. This is an archive search command.
     name: mimecast-download-attachments
     outputs:
@@ -1500,48 +1498,49 @@ script:
     arguments:
     - name: search_reason
       description: Reason for tracking the email.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: from_date
       description: API start parameter. Datetime format is ISO 8601. e.g., 2022-07-11T14:49:18+0000.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: to_date
       description: API end parameter  Datetime format ISO 8601. e.g., 2022-07-11T14:49:18+0000.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: message_id
       description: The internet message ID of the message to track.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: from
       description: "Part of advancedTrackAndTraceOptions object: The sending email address or domain of the messages to track."
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: to
       description: "Part of advancedTrackAndTraceOptions object: The recipient email address or domain of the messages to track."
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: subject
       description: "Part of advancedTrackAndTraceOptions object: The subject of the messages to track."
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: sender_ip
       description: "Part of advancedTrackAndTraceOptions object: The source IP address of the messages to track."
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - auto: PREDEFINED
       name: route
       description: A comma-separated list of routes to filter by.
       isArray: true
+      defaultValue: ""
       predefined:
       - internal
       - outbound
@@ -1602,9 +1601,9 @@ script:
       description: A comma-separated list of the Mimecast IDs of the messages to load. This is returned by the /api/message-finder/search endpoint. (mimecast-search-message command).
       required: true
       isArray: true
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - auto: PREDEFINED
       name: show_recipient_info
       description: When argument is true all data from recipientInfo object is presented at command response.
@@ -1931,22 +1930,23 @@ script:
       - "false"
     - name: from_date
       description: Datetime format ISO 8601. e.g., 2022-07-11T14:49:18+0000.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: to_date
       description: Datetime format ISO 8601. e.g., 2022-07-11T14:49:18+0000.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: value
       description: Free text to filter results by.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - auto: PREDEFINED
       name: field_name
       description: Message fields to filter based on.
+      defaultValue: ""
       predefined:
       - all
       - subject
@@ -1955,19 +1955,19 @@ script:
       - reason_code
     - name: page_size
       description: Number of results per page to display.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: limit
       description: The maximum number of results to return.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     outputs:
     - contextPath: Mimecast.HeldMessage.dateReceived
       description: The timestamp of the message transmission.
@@ -2034,17 +2034,18 @@ script:
       description: A comma-separated list of Mimecast secure IDs IDs are extracted from the mimecast-list-held-message command.
       required: true
       isArray: true
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: message
       description: Rejection message to be returned to the sender.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - auto: PREDEFINED
       name: reason_type
       description: User can choose reason.
+      defaultValue: ""
       predefined:
       - MESSAGE CONTAINS UNDESIRABLE CONTENT,MESSAGE CONTAINS CONFIDENTIAL INFORMATION,REVIEWER DISAPPROVES OF CONTENT.
       - INAPPROPRIATE COMMUNICATIONMESSAGE GOES AGAINST EMAIL POLICIES
@@ -2052,45 +2053,50 @@ script:
     - auto: PREDEFINED
       name: notify
       description: Whether to deliver rejection notificationd.
+      defaultValue: ""
       predefined:
       - "true"
       - "false"
+    outputs: []
   - name: mimecast-release-held-message
     description: Release a currently held message.
     arguments:
     - name: id
       description: Mimecast secure ID. ID can be extracted from the mimecast-list-held-message command.
       required: true
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
+    outputs: []
   - name: mimecast-search-processing-message
     description: Return messages currently being processed by Mimecast. Note that most of the time, no results are returned.
     arguments:
     - auto: PREDEFINED
       name: sort_order
       description: The method used to sort the messages.
+      defaultValue: ""
       predefined:
       - asc
       - desc
     - name: from_date
       description: Datetime format ISO 8601. e.g., 2022-07-11T14:49:18+0000.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: to_date
       description: Datetime format ISO 8601. e.g., 2022-07-11T14:49:18+0000.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: value
       description: The search value to be used.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - auto: PREDEFINED
       name: field_name
       description: The field to be searched.
+      defaultValue: ""
       predefined:
       - ALL
       - fromAddress
@@ -2100,12 +2106,13 @@ script:
       - remoteIp
     - name: attachments
       description: The presence of an attachment in the message.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - auto: PREDEFINED
       name: route
       description: The message route.
+      defaultValue: ""
       predefined:
       - all
       - internal
@@ -2114,19 +2121,19 @@ script:
       - external
     - name: page_size
       description: Number of results per page to display.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: limit
       description: The maximum number of results to return.
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     outputs:
     - contextPath: Mimecast.ProcessingMessage.messages.id
       description: The Mimecast secure ID of the message.
@@ -2176,15 +2183,15 @@ script:
     - name: from_date
       description: Datetime format ISO 8601. e.g., 2022-07-11T14:49:18+0000.
       required: true
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     - name: to_date
       description: Datetime format ISO 8601. e.g., 2022-07-11T14:49:18+0000.
       required: true
+      defaultValue: ""
       predefined:
       - ""
-      auto: PREDEFINED
     outputs:
     - contextPath: Mimecast.EmailQueue.inboundEmailQueue.count
       description: The number of inbound messages currently queued.
@@ -2209,7 +2216,7 @@ script:
       description: Number of items per page for pagination. Default value is '50'.
     - name: limit
       description: The maximum number of items to return.
-      defaultValue: '50'
+      defaultValue: 50
     outputs:
     - contextPath: Mimecast.ArchiveSearchLog.logs.createTime
       description: The time that the search was executed.
@@ -2246,7 +2253,7 @@ script:
       description: Number of items per page for pagination. Default value is '50'.
     - name: limit
       description: The maximum number of items to return.
-      defaultValue: '50'
+      defaultValue: 50
     outputs:
     - contextPath: Mimecast.SearchLog.meta.pagination.pageSize
       description: 'The number of results per page.'
@@ -2306,7 +2313,7 @@ script:
       description: Number of items per page for pagination. Default value is '50'.
     - name: limit
       description: The maximum number of items to return.
-      defaultValue: '50'
+      defaultValue: 50
     outputs:
     - contextPath: Mimecast.Account.region
       description: 'The region where the account is hosted.'
@@ -2415,7 +2422,7 @@ script:
       description: Number of items per page for pagination. Default value is '50'.
     - name: limit
       description: The maximum number of items to return.
-      defaultValue: '50'
+      defaultValue: 50
     outputs:
     - contextPath: Mimecast.ViewLog.viewer
       description: 'The email address of the user who viewed the message.'
@@ -2633,7 +2640,7 @@ script:
       description: Sets the result to start returning results. Default value is '50'.
     - name: limit
       description: The maximum number of results to return.
-      defaultValue: '50'
+      defaultValue: 50
     outputs:
     - contextPath: Mimecast.AddressAlterationPolicy.ID
       description: Policy ID.
@@ -3375,10 +3382,10 @@ script:
       type: String
   isfetch: true
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.11.10.111526
 tests:
 - Mimecast test
 - Mimecast Test api 2.0
