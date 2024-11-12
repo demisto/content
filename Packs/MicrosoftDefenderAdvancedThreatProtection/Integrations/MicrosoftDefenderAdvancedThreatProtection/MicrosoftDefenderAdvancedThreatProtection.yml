@@ -1931,10 +1931,10 @@ script:
       description: The last date and time the file was in the organization.
       type: Date
     - contextPath: MicrosoftATP.FileStatistics.Statistics.GlobalPrevalence
-      description: The number of times the file is detected across all organizations.
+      description: The number of times the file is detected across all organizations by Microsoft Defender ATP.
       type: String
     - contextPath: MicrosoftATP.FileStatistics.Statistics.GloballyPrevalence
-      description: The number of times the file is detected across all organizations.
+      description: The number of times the file is detected across all organizations by Microsoft Defender ATP.
       type: Number
     - contextPath: MicrosoftATP.FileStatistics.Statistics.GlobalFirstObserved
       description: The global first observation date and time of the file.
@@ -1952,7 +1952,7 @@ script:
       description: The number of times the indicator is detected in the organization.
       type: Number
     - contextPath: File.GlobalPrevalence
-      description: The number of times the indicator is detected across all organizations.
+      description: The number of times the indicator is detected across all organizations by Microsoft Defender ATP.
       type: Number
     - contextPath: File.OrganizationFirstSeen
       description: When the indicator was first seen in the organization.
