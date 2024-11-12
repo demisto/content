@@ -360,8 +360,8 @@ tasks:
       id: 4a1a1abf-ed23-4539-892a-03f8111fb08c
       version: -1
       name: Get caller IP reputation
-      description: Checks the reputation of a domain.
-      script: '|||domain'
+      description: Checks the reputation of an IP address.
+      script: '|||ip'
       type: regular
       iscommand: true
       brand: ""
@@ -369,7 +369,7 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      domain:
+      ip:
         complex:
           root: Core.OriginalAlert.raw_abioc.event
           accessor: caller_ip
@@ -1651,6 +1651,8 @@ tasks:
             value:
               simple: GSuite.User.id
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
