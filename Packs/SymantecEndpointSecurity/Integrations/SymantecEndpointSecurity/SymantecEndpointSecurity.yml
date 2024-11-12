@@ -12,7 +12,7 @@ configuration:
   defaultvalue: https://api.sep.securitycloud.symantec.com
   required: true
   section: Connect
-- displaypassword: Token
+- displaypassword: OAuth credential
   name: token
   hiddenusername: true
   type: 9
@@ -30,12 +30,6 @@ configuration:
   required: true
   additionalinfo: ""
   section: Connect
-- display: Fetch interval in seconds
-  name: fetch_interval
-  type: 0
-  defaultvalue: 60
-  required: true
-  section: Collect
 - display: Use system proxy settings
   name: proxy
   required: false

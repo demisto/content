@@ -17,6 +17,11 @@ DEFAULT_CONNECTION_TIMEOUT = 30
 MAX_CHUNK_SIZE_TO_READ = 1024 * 1024 * 150  # 150 MB
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
+# Sleep time between fetch attempts when an error occurs in the retrieval process,
+# primarily used to avoid overloading with consecutive API calls
+# if an error is received from Symantec's side.
+FETCH_INTERVAL = 60
+
 
 class UnauthorizedToken(Exception):
     """
@@ -43,14 +48,13 @@ class Client(BaseClient):
         channel_id: str,
         verify: bool,
         proxy: bool,
-        fetch_interval: int,
     ) -> None:
 
         self.headers: dict[str, str] = {}
         self.token = token
         self.stream_id = stream_id
         self.channel_id = channel_id
-        self.fetch_interval = fetch_interval
+        self.fetch_interval = FETCH_INTERVAL
 
         super().__init__(
             base_url=base_url,
@@ -381,6 +385,21 @@ def get_events_command(client: Client, integration_context: dict) -> None:
 
 
 def perform_long_running_loop(client: Client):
+    """
+    Manages the fetch process.
+    Due to a limitation on Symantec's side,
+    the integration is configured as long-running
+    since API calls can take over 5 minutes.
+
+    Fetch process:
+        - In every iteration except the first,
+          fetch is performed with the `next_fetch` argument,
+          which acts as a pointer for Symantec.
+        - When an error is encountered from Symantec,
+          it is handled based on the error type, and before the next iteration,
+          the process enters a brief sleep period defined by `FETCH_INTERVAL`
+          to avoid overloading with API calls.
+    """
     while True:
         # Used to calculate the duration of the fetch run.
         start_timestamp = time.time()
@@ -430,7 +449,6 @@ def main() -> None:  # pragma: no cover
     channel_id = params["channel_id"]
     verify = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
-    fetch_interval: int = arg_to_number(params.get("fetch_interval", 60), required=True)  # type: ignore
 
     command = demisto.command()
     try:
@@ -441,7 +459,6 @@ def main() -> None:  # pragma: no cover
             channel_id=channel_id,
             verify=verify,
             proxy=proxy,
-            fetch_interval=fetch_interval,
         )
 
         if command == "test-module":
