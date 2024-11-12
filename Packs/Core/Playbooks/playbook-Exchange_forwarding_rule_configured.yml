@@ -1208,7 +1208,7 @@ tasks:
       name: Disable user account via MS-Graph
       description: |-
         Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables a user,
-        but does not terminate an existing session. Supported only in a self deployed app flow with the
+        but does not terminate an existing session. Supported only in a self-deployed app flow with the
         Permission: Directory.AccessAsUser.All(Delegated).
       script: '|||msgraph-user-account-disable'
       type: regular
