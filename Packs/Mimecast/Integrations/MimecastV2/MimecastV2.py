@@ -1,18 +1,19 @@
-from xml.etree import ElementTree
-from urllib.error import HTTPError
-from datetime import timedelta
-import requests
-import hashlib
-import base64
-import json
-import uuid
-import hmac
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-demisto.debug('pack name = Mimecast, pack version = 2.5.2')
-
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 ''' IMPORTS '''
+
+import hmac
+import uuid
+import json
+import base64
+import hashlib
+import requests
+
+from datetime import timedelta
+from urllib.error import HTTPError
+from xml.etree import ElementTree
 
 
 ''' GLOBALS/PARAMS '''
