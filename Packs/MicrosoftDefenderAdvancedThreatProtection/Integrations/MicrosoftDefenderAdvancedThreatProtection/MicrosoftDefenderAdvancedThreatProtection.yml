@@ -1961,10 +1961,10 @@ script:
       description: The date and time when the indicator was last seen in the organization.
       type: Date
     - contextPath: File.FirstSeenBySource
-      description: The date and time when the indicator was first seen by the source vendor.
+      description: The date and time when the indicator was first seen by Microsoft Defender ATP.
       type: Date
     - contextPath: File.LastSeenBySource 
-      description: The date and time when the indicator was last seen by the source vendor.
+      description: The date and time when the indicator was last seen by Microsoft Defender ATP.
       type: Date
     polling: true
   - arguments:
