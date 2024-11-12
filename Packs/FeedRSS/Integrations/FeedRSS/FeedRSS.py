@@ -10,6 +10,7 @@ INTEGRATION_NAME = 'RSS Feed'
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0" \
              " Safari/537.36"
 
+
 class Client(BaseClient):
     """Client for RSS Feed - gets Reports from the website
     Attributes:
@@ -43,7 +44,7 @@ class Client(BaseClient):
             raise DemistoException(f"Failed to parse feed.\nError:\n{str(err)}")
 
     def create_indicators_from_response(self):
-        if hasattr(self.feed_data, 'channel') and hasattr(self.feed_data.channel, 'link'):
+        if hasattr(self.feed_data, 'channel') and hasattr(self.feed_data.channel, 'link'):  # type: ignore
             self.channel_link = self.feed_data.channel.link
             if not self.channel_link.startswith(('http://', 'https://')):
                 self.channel_link = 'https://' + self.channel_link
@@ -53,7 +54,7 @@ class Client(BaseClient):
             raise DemistoException(f"Could not parse feed data {self._base_url}")
 
         for indicator in reversed(self.feed_data.entries):
-            
+
             link = indicator.get('link')
             if link and not link.startswith(('http://', 'https://')):
                 link = urljoin(self.channel_link, link)
