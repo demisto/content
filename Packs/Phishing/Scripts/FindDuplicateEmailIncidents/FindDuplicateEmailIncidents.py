@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 # set omp
 import os
 import multiprocessing
-os.environ['OMP_NUM_THREADS'] = multiprocessing.cpu_count()
+os.environ['OMP_NUM_THREADS'] = str(multiprocessing.cpu_count())
 
 import dateutil  # type: ignore
 import pandas as pd
