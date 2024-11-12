@@ -45,9 +45,10 @@ class Client(BaseClient):
 
     def create_indicators_from_response(self):
         if hasattr(self.feed_data, 'channel') and hasattr(self.feed_data.channel, 'link'):  # type: ignore
-            self.channel_link = self.feed_data.channel.link
+            self.channel_link = self.feed_data.channel.link  # type: ignore
             if not self.channel_link.startswith(('http://', 'https://')):
                 self.channel_link = 'https://' + self.channel_link
+                demisto.debug(f'feed channel link is: {self.channel_link}')
 
         parsed_indicators: list = []
         if not self.feed_data:
@@ -58,6 +59,7 @@ class Client(BaseClient):
             link = indicator.get('link')
             if link and not link.startswith(('http://', 'https://')):
                 link = urljoin(self.channel_link, link)
+                demisto.debug(f'indicator link is: {link}')
 
             publications = []
             if indicator:
