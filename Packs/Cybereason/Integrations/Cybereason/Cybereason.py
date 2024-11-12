@@ -95,9 +95,12 @@ CONNECTION_FIELDS = [element['field'] for element in CONNECTION_INFO]
 
 CONNECTION_HEADERS = [element['header'] for element in CONNECTION_INFO]
 
+JSESSIONID = ''
+
 HEADERS = {
     'Content-Type': 'application/json',
-    'Connection': 'close'
+    'Connection': 'close',
+    'Cookie': f"JSESSIONID={JSESSIONID}"
 }
 
 ''' HELPER FUNCTIONS '''
@@ -1653,7 +1656,7 @@ def fetch_incidents(client: Client):
 def login(client: Client):
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Connection': 'close'
+        'Connection': 'close',
     }
     data = {
         'username': USERNAME,
@@ -1661,34 +1664,26 @@ def login(client: Client):
     }
     demisto.debug("Login function is getting called")
     response = client.cybereason_api_call('POST', '/login.html', data=data, headers=headers, custom_response=True, return_json=False)
-    demisto.debug(f"Login response: {response}")
-    jsession_id = response.cookies.get("JSESSIONID")
-    demisto.debug(f"status code in login: {response.status_code}")
-    demisto.debug(f"response cookies items in login: {response.cookies.items()}")
-    demisto.debug(f"response cookies in login: {response.cookies}")
-    demisto.debug(f"response content login: {response.content}")
-    demisto.debug(f"jsessionid: {jsession_id} .calling jsession function")
-    save_jsession()
+    JSESSIONID = client._session.cookies.get("JSESSIONID")
+    creation_time = int(time.time())
+    return JSESSIONID, creation_time
 
-def save_jsession():
+def validate_jsession(client: Client, creation_time):
+    creation_time = int(time.time())
     integration_context = get_integration_context()
-    token = integration_context.get('access_token')
+    token = integration_context.get('jsession_id')
     demisto.debug(f"access token: {token}")
     valid_until = integration_context.get('valid_until')
     demisto.debug(f"token valid until: {valid_until}")
-    time_now = int(time.time())
-    demisto.debug(f"current time in save_jsession function: {time_now}")
+    demisto.debug(f"current time in save_jsession function: {creation_time}")
     if token and valid_until:
-        if time_now < valid_until:
+        if creation_time < valid_until:
             demisto.debug(f"Token is still valid - did not expire. token: {token}")
-            return token
-        else:
-            pass
-        # get_token() should be the implementation of retrieving the token from the API 
-        # token = get_token()
+            return
+    token, creation_time = login(client)
     integration_context = {
-        'access_token': token,
-        'valid_until': time_now + 3600  # Assuming the expiration time is 1 hour
+        'jsession_id': token,
+        'valid_until': creation_time + 28000
     }
     set_integration_context(integration_context)
     demisto.debug(f"set integration")
@@ -2198,7 +2193,7 @@ def main():
             client_certificate()
             auth = 'CERT'
         elif USERNAME and PASSWORD:
-            login(client)
+            validate_jsession(client)
             auth = 'BASIC'
         else:
             raise Exception('No credentials were provided')
