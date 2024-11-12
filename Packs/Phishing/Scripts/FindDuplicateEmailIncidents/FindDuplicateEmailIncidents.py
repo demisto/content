@@ -17,6 +17,7 @@ from email.utils import parseaddr
 import tldextract
 from urllib.parse import urlparse
 import re
+
 from FormatURLApiModule import *  # noqa: E402
 
 no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=[], cache_dir=None)
@@ -48,184 +49,6 @@ URL_REGEX = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\
             r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
 
 IGNORE_INCIDENT_TYPE_VALUE = 'None'
-
-INCIDENTS = '''
-[
-    {
-        "account": "",
-        "activated": "0001-01-01T00:00:00Z",
-        "attachment": [
-            {
-                "description": "",
-                "isTempPath": false,
-                "name": "Christmas packages need confirmation.eml",
-                "path": "275_424ca709-bd35-4d6d-815b-6bc593622e57_Christmas_packages_need_confirmation.eml",
-                "showMediaFile": false,
-                "type": "message/rfc822"
-            }
-        ],
-        "autime": 1730203605766000000,
-        "cacheVersn": 0,
-        "canvases": null,
-        "category": "",
-        "closeNotes": "",
-        "closeReason": "",
-        "closed": "0001-01-01T00:00:00Z",
-        "closingUserId": "",
-        "created": "2024-10-29T12:06:45.766Z",
-        "custom_status": "",
-        "dbotCreatedBy": "jlevy@paloaltonetworks.com",
-        "dbotCurrentDirtyFields": null,
-        "dbotDirtyFields": null,
-        "dbotMirrorDirection": "",
-        "dbotMirrorId": "",
-        "dbotMirrorInstance": "",
-        "dbotMirrorLastSync": "0001-01-01T00:00:00Z",
-        "dbotMirrorTags": null,
-        "details": "",
-        "droppedCount": 0,
-        "dueDate": "2024-11-08T12:06:45.766932611Z",
-        "feedBased": false,
-        "id": "275",
-        "investigationId": "275",
-        "isDebug": false,
-        "isPlayground": false,
-        "labels": [
-            {
-                "type": "Instance",
-                "value": "jlevy@paloaltonetworks.com"
-            },
-            {
-                "type": "Brand",
-                "value": "Manual"
-            }
-        ],
-        "lastJobRunTime": "0001-01-01T00:00:00Z",
-        "lastOpen": "0001-01-01T00:00:00Z",
-        "linkedCount": 0,
-        "linkedIncidents": null,
-        "modified": "2024-10-29T12:14:36.018Z",
-        "name": "jl-phishing",
-        "notifyTime": "2024-10-29T12:14:35.963541548Z",
-        "occurred": "2024-10-29T12:06:45.76692823Z",
-        "openDuration": 0,
-        "owner": "jlevy@paloaltonetworks.com",
-        "parent": "",
-        "parentXDRIncident": "",
-        "phase": "",
-        "playbookId": "Phishing - Generic v3",
-        "rawCategory": "",
-        "rawCloseReason": "",
-        "rawJSON": "",
-        "rawName": "jl-phishing",
-        "rawPhase": "",
-        "rawType": "Phishing",
-        "reason": "",
-        "reminder": "0001-01-01T00:00:00Z",
-        "resolution_status": "",
-        "retained": false,
-        "runStatus": "error",
-        "severity": 0,
-        "sizeInBytes": 0,
-        "sla": 0,
-        "sortValues": [
-            "1"
-        ],
-        "sourceBrand": "Manual",
-        "sourceInstance": "jlevy@paloaltonetworks.com",
-        "status": 1,
-        "type": "Phishing",
-        "version": -1,
-        "clickedurls": [
-            {}
-        ],
-        "containmentsla": {
-            "accumulatedPause": 0,
-            "breachTriggered": false,
-            "dueDate": "0001-01-01T00:00:00Z",
-            "endDate": "0001-01-01T00:00:00Z",
-            "lastPauseDate": "0001-01-01T00:00:00Z",
-            "runStatus": "idle",
-            "sla": 30,
-            "slaStatus": -1,
-            "startDate": "0001-01-01T00:00:00Z",
-            "totalDuration": 0
-        },
-        "criticalassets": [
-            {}
-        ],
-        "detectionsla": {
-            "accumulatedPause": 0,
-            "breachTriggered": false,
-            "dueDate": "2024-10-29T12:26:55.089352396Z",
-            "endDate": "0001-01-01T00:00:00Z",
-            "lastPauseDate": "0001-01-01T00:00:00Z",
-            "runStatus": "running",
-            "sla": 20,
-            "slaStatus": 0,
-            "startDate": "2024-10-29T12:06:55.089352396Z",
-            "totalDuration": 0
-        },
-        "emailbody": "",
-        "emailbodyhtml": "<a href=\"https://bit.ly/3DeJDIq#cl/94468_md/1/35353/5610/487/51623\" target=\"_blank\" rel=\"nofollow noopener\">\n<strong>ATTENTION NEEDED: Package Delivery Issue Please update your info</strong><br><br>\n<img src=\"https://files.constantcontact.com/473b1db4901/c6ab20c4-0640-4a69-a07c-876816087800.png\" width=\"100%\" height=\"100%\">\n<img src=\"//files.constantcontact.com/473b1db4901/c6ab20c4-0640-4a69-a07c-876816087800.png\" width=\"100%\" height=\"100%\"><br></a>\n<div id=\"Wrapper\" style=\"padding: 0;margin: 0 auto;text-align: center;font-family: Arial, Helvetica, sans-serif;\">\n\n\n\n    \n    \n    \n    \n    \n    \n\n\n    \n        \n        <table cellpadding=\"0\" cellspacing=\"0\" bgcolor=\"#ececf8\n\" width=\"100%\" height=\"100%\">\n            \n            <tr>\n                <td style=\"height: 24px;\"></td>\n            </tr>\n            <tr>\n                \n                <td style=\"text-align: center;\">\n                   \n                </td>\n            </tr>\n            <tr>\n                <td style=\"height: 12px;\"></td>\n            </tr>\n            <tr>\n                \n                <td style=\"font-size: 22px;color: #6600cc;font-family: Arial, Helvetica, sans-serif; line-height: 1.3; text-align: center;\"><h1><a href=\"https://bit.ly/3DeJDIq#cl/94468_md/1/35353/5610/487/51623\" target=\"_blank\" rel=\"nofollow noopener\"><p style=\"color:rgb(255, 102, 0);\">  Christmas packages need confirmation</p></a></td>\n            </tr>\n            <tr>\n                <td style=\"height: 12px;\"></td>\n            </tr>\n            <tr>\n                <td>\n                    <table>\n                        <tr>\n                            \n                            <td style=\"width: 28%;\" class=\"mobSpacing\"></td>\n                            \n                            <a href=\"https://bit.ly/3DeJDIq#cl/94468_md/1/35353/5610/487/51623\" target=\"_blank\" rel=\"nofollow noopener\"><h1><p style=\"color:rgb(255, 102, 0);\">We have been trying to reach you, your reward is waiting!<br><br>\nWe&#39;ve seen your loyalty and now it&#39;s time for us to give thanks<br><h2><p style=\"color:rgb(0, 0, 255);\">\n\n <h1><p style=\"color:rgb(0, 0, 0);\"><p style=\"color:rgb(0, 0, 0);\">\n\n\n\n</a></td>\n                            \n                            <td style=\"width: 28%;\" class=\"mobSpacing\"></td>\n                        </tr>\n                    </table>\n                </td>\n            </tr>\n            <tr>\n                <td style=\"height: 12px;\"></td>\n            </tr>\n            <tr>\n               <td style=\"text-align: center;font-family: Arial, Helvetica, sans-serif;height: 47px;\">\n                    \n                   <a href=\"https://bit.ly/3DeJDIq#cl/94468_md/1/35353/5610/487/51623\" class=\"btn_cta\" target=\"_blank\" rel=\"nofollow noopener\">\n                        <span>Schedule Your Delivery</span>\n                    </a>\n                </td>\n            </tr>\n\n            <tr>\n                <td style=\"height: 24px;\"></td>\n            </tr>\n        </table>\n        \n        <table cellpadding=\"0\" cellspacing=\"0\" bgcolor=\"#ffffff\" width=\"100%\" height=\"100%\">\n            \n            <tr>\n                <td style=\"height: 24px;\"></td>\n            </tr>\n            <tr>\n                \n                <td style=\"text-align: center;\">\n                  \n                </td>\n            </tr>\n            <tr>\n                <td style=\"height: 12px;\"></td>\n            </tr>\n            <tr>\n              \n               <td style=\"font-size: 22px;color: #6600cc;font-family: Arial, Helvetica, sans-serif; line-height: 1.3; text-align: center;\"><h1><a href=\"https://bit.ly/3DeJDIq#cl/94468_md/1/35353/5610/487/51623\" target=\"_blank\" rel=\"nofollow noopener\"><p style=\"color:rgb(102, 0, 204)\n;\">  ATTENTION NEEDED: Package Delivery Issue Please update your info</p></a></td>\n            </tr>\n            <tr>\n                <td style=\"height: 12px;\"></td>\n            </tr>\n            <tr>\n                <td>\n                    <table>\n                        <tr>\n                            \n                            <td style=\"width: 28%;\" class=\"mobSpacing\"></td>\n                           \n                            <a href=\"https://bit.ly/3DeJDIq#cl/94468_md/1/35353/5610/487/51623\" target=\"_blank\" rel=\"nofollow noopener\"><h1><p style=\"color:rgb(102, 0, 204);\">Congratulations! Complete The Short Survey.<br>This limited one - time offer expires in 03:42 minutes! \t<br> <br>We Need Your Confirmation To Ship Your Order\n\n\n\n\n\n\n<strong><br> \t\n\n\n\n\n \n\n\n<h1><p style=\"color:rgb(0, 38, 77);\">\n    </h1><h1><p style=\"color:rgb(0, 38, 77)\n;\">\n                            \n                            <td style=\"width: 28%;\" class=\"mobSpacing\"></td>\n                        </tr>\n                    </table>\n                </td>\n            </tr>\n            <tr>\n                <td style=\"height: 12px;\"></td>\n            </tr>\n            <tr>\n                <td style=\"text-align: center;font-family: Arial, Helvetica, sans-serif;height: 47px;\">\n                    \n                   <a href=\"https://bit.ly/3DeJDIq#cl/94468_md/1/35353/5610/487/51623\" class=\"btn_cta1\" target=\"_blank\" rel=\"nofollow noopener\">\n                        <span> Confirm </span>\n                    </a>\n                </td>\n            </tr>\n\n            <tr>\n                <td style=\"height: 24px;\"></td>\n            </tr>\n        </table>\n    <br><p style=\"text-align:center;font-family: &#39;Open Sans&#39;,&#39;Arial&#39;,&#39;Helvetica&#39;,sans-serif;font-size:15px;\"><br><br>\nIf you no longer wish to receive these emails, you may unsubscribe by <a href=\"https://bit.ly/3DeJDIq#oop/94468_md/1/35353/5610/487/51623\" target=\"_blank\" rel=\"nofollow noopener\"> clicking here</a>\n<br/><br><br><br><br><br><br><br>\n<p style=\"text-align:center;font-family: &#39;Open Sans&#39;,&#39;Arial&#39;,&#39;Helvetica&#39;,sans-serif;font-size:9px;\"><br><br>\ntest@demisto.com If you no longer wish to receive these emails, you may unsubscribe by  <a href=\"https://bit.ly/3DeJDIq#un/94468_md/1/35353/5610/487/51623\" target=\"_blank\" rel=\"nofollow noopener\"> clicking here </a><br>\n<br>\n<br>\n</p>\n\n\n<img src=\"//bit.ly/3f5hUSN/#op/94468_md/1/35353/5610/487/51623\" style=\"visibility:hidden;\"> <br>\n<img src=\"https://bit.ly/3f5hUSN/#op/94468_md/1/35353/5610/487/51623\" style=\"visibility:hidden;\"><br>\n\u00a0<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" bgcolor=\"white\" style=\"border:2px solid black;\">\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0<tbody>\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0<tr>\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0<td align=\"center\">\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0<br/>\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0<table align=\"center\" border=\"0\" cellpadding=\"0\" class=\"col-550\" width=\"550\">\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0<tbody>\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0</tbody>\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0</table>\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0</td>\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0</tr>\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0</tbody>\n\u00a0\u00a0\u00a0\u00a0</table>\n",
-        "emailcc": "",
-        "emailfrom": "geeksquad@emailinfo.geeksquad.com",
-        "emailheaders": [
-            {
-                "headername": "Authentication-Results",
-                "headervalue": "spf=none (sender IP is 52.232.106.214) smtp.mailfrom=2EZjo7SsIi.com; dkim=none (message not signed) header.d=none;dmarc=fail action=quarantine header.from=emailinfo.geeksquad.com;compauth=fail reason=000"
-            }
-        ],
-        "emailhtml": "<!DOCTYPE html><center><a href=\"https://bit.ly/3DeJDIq#cl/94468_md/1/35353/5610/487/51623\">\r\n<strong><font color=\"black\">ATTENTION NEEDED: Package Delivery Issue Please update your info</font></strong><br><br>\r\n<ImG sRc=\"https://files.constantcontact.com/473b1db4901/c6ab20c4-0640-4a69-a07c-876816087800.png\" width=\"100%\" height=\"100%\">\r\n<img src=\"//files.constantcontact.com/473b1db4901/c6ab20c4-0640-4a69-a07c-876816087800.png\" width=\"100%\" height=\"100%\"><br></a>\r\n<center><div id=\"Wrapper\" style=\"padding: 0;margin: 0 auto;text-align: center;font-family: Arial, Helvetica, sans-serif;\"><!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n    <head>\r\n    <meta charset=\"UTF-8\">\r\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n    <title>Christmas packages need confirmation</title>\r\n    <style>\r\n        * {\r\n            box-sizing: border-box;\r\n        }\r\n        \r\n        body {\r\n            margin: 0;\r\n            padding: 0;\r\n        }\r\n        \r\n        a {\r\n            text-decoration: none;\r\n           \r\n        }\r\n        \r\n        .btn_cta {\r\n            color: #ffffff;\r\n            text-decoration: none;\r\n            background-color: #6600cc;\r\n            border: 1px solid #6600cc;\r\n            border-radius: 5px;\r\n            padding: 22px 15px;\r\n            font-weight: 500;\r\n            transition: all .3s ease;\r\n            position: relative;\r\n            min-width: 160px;\r\n            min-height: 47px;\r\n            display: inline-block;\r\n        }\r\n        \r\n        .btn_cta span {\r\n            position: absolute;\r\n            top: 0;\r\n            bottom: 0;\r\n            left: 0;\r\n            right: 0;\r\n            width: max-content;\r\n            height: max-content;\r\n            margin: auto;\r\n            transition: all .3s ease;\r\n            /* If you want to change the blinking speed */\r\n            /* change 0.6s value */\r\n            /* increment will slow down */\r\n            animation: blink 0.6s ease infinite;\r\n        }\r\n        \r\n        .btn_cta:hover {\r\n            background-color:#ffcc66;\r\n            border-color: #ffcc66;\r\n            transition: all .3s ease;\r\n        }\r\n        \r\n        @keyframes blink {\r\n            from {\r\n                opacity: 0;\r\n                transform: scale(0, 0);\r\n            }\r\n            to {\r\n                opacity: 1;\r\n                transform: scale(1, 1);\r\n            }\r\n        }\r\n        /* Mobile Title Spacing */\r\n        \r\n        @media (max-width: 768px) {\r\n            .mobSpacing {\r\n                width: 10px !important;\r\n            }\r\n        }\r\n    </style>\r\n</head>\r\n<body>\r\n    <center>\r\n        <!-- If you want to change the table background-color -->\r\n        <table cellpadding=\"0\" cellspacing=\"0\" bgColor=\"#ececf8\r\n\" width=\"100%\" height=\"100%\">\r\n            <!-- If you want to change the Vertical Gap between Elements -->\r\n            <tr>\r\n                <td style=\"height: 24px;\"></td>\r\n            </tr>\r\n            <tr>\r\n                <!-- If you want to change the Logo -->\r\n                <td style=\"text-align: center;\">\r\n                   \r\n                </td>\r\n            </tr>\r\n            <tr>\r\n                <td style=\"height: 12px;\"></td>\r\n            </tr>\r\n            <tr>\r\n                <!-- If you want to change the Title Color -->\r\n                <td style=\"font-size: 22px;color: #6600cc;font-family: Arial, Helvetica, sans-serif; line-height: 1.3; text-align: center;\"><h1><a href=\"https://bit.ly/3DeJDIq#cl/94468_md/1/35353/5610/487/51623\"><p style=\"color:rgb(255, 102, 0);\">  Christmas packages need confirmation</p></a></td>\r\n            </tr>\r\n            <tr>\r\n                <td style=\"height: 12px;\"></td>\r\n            </tr>\r\n            <tr>\r\n                <td>\r\n                    <table>\r\n                        <tr>\r\n                            <!-- If you want to change the Text Left Spacing -->\r\n                            <td style=\"width: 28%;\" class=\"mobSpacing\"></td>\r\n                            <!-- If you want to change the Text Color -->\r\n                            <a href=\"https://bit.ly/3DeJDIq#cl/94468_md/1/35353/5610/487/51623\"><center><h1><p style=\"color:rgb(255, 102, 0);\">We have been trying to reach you, your reward is waiting!<br><br>\r\nWe've seen your loyalty and now it's time for us to give thanks<br><h2><p style=\"color:rgb(0, 0, 255);\">\r\n\r\n <h1><p style=\"color:rgb(0, 0, 0);\"><p style=\"color:rgb(0, 0, 0);\">\r\n\r\n\r\n\r\n</p</h2></a></td>\r\n                            <!-- If you want to change the Text Right Spacing -->\r\n                            <td style=\"width: 28%;\" class=\"mobSpacing\"></td>\r\n                        </tr>\r\n                    </table>\r\n                </td>\r\n            </tr>\r\n            <tr>\r\n                <td style=\"height: 12px;\"></td>\r\n            </tr>\r\n            <tr>\r\n               <td style=\"text-align: center;font-family: Arial, Helvetica, sans-serif;height: 47px;\">\r\n                    <!-- If you want to change the button text -->\r\n                   <a href=\"https://bit.ly/3DeJDIq#cl/94468_md/1/35353/5610/487/51623\" class=\"btn_cta\">\r\n                        <span>Schedule Your Delivery</span>\r\n                    </a>\r\n                </td>\r\n            </tr>\r\n\r\n            <tr>\r\n                <td style=\"height: 24px;\"></td>\r\n            </tr>\r\n        </table><style>\r\n        * {\r\n            box-sizing: border-box;\r\n        }\r\n        \r\n        body {\r\n            margin: 0;\r\n            padding: 0;\r\n        }\r\n        \r\n        a {\r\n            text-decoration: none;\r\n           \r\n        }\r\n        \r\n        .btn_cta1 {\r\n            color: #ffffff;\r\n            text-decoration: none;\r\n            background-color: #ff6600;\r\n            border: 1px solid #ff6600;\r\n            border-radius: 5px;\r\n            padding: 22px 15px;\r\n            font-weight: 500;\r\n            transition: all .3s ease;\r\n            position: relative;\r\n            min-width: 160px;\r\n            min-height: 47px;\r\n            display: inline-block;\r\n        }\r\n        \r\n        .btn_cta1 span {\r\n            position: absolute;\r\n            top: 0;\r\n            bottom: 0;\r\n            left: 0;\r\n            right: 0;\r\n            width: max-content;\r\n            height: max-content;\r\n            margin: auto;\r\n            transition: all .3s ease;\r\n            /* If you want to change the blinking speed */\r\n            /* change 0.6s value */\r\n            /* increment will slow down */\r\n            animation: blink 0.6s ease infinite;\r\n        }\r\n        \r\n        .btn_cta1:hover {\r\n            background-color: #ffcc00;\r\n            border-color: #ffcc00;\r\n            transition: all .3s ease;\r\n        }\r\n        \r\n        @keyframes blink {\r\n            from {\r\n                opacity: 0;\r\n                transform: scale(0, 0);\r\n            }\r\n            to {\r\n                opacity: 1;\r\n                transform: scale(1, 1);\r\n            }\r\n        }\r\n        /* Mobile Title Spacing */\r\n        \r\n        @media (max-width: 768px) {\r\n            .mobSpacing {\r\n                width: 10px !important;\r\n            }\r\n        }\r\n    </style>\r\n        <!-- If you want to change the table background-color -->\r\n        <table cellpadding=\"0\" cellspacing=\"0\" bgColor=\"#ffffff\"  width=\"100%\" height=\"100%\">\r\n            <!-- If you want to change the Vertical Gap between Elements -->\r\n            <tr>\r\n                <td style=\"height: 24px;\"></td>\r\n            </tr>\r\n            <tr>\r\n                <!-- If you want to change the Logo -->\r\n                <td style=\"text-align: center;\">\r\n                  \r\n                </td>\r\n            </tr>\r\n            <tr>\r\n                <td style=\"height: 12px;\"></td>\r\n            </tr>\r\n            <tr>\r\n              \r\n               <td style=\"font-size: 22px;color: #6600cc;font-family: Arial, Helvetica, sans-serif; line-height: 1.3; text-align: center;\"><h1><a href=\"https://bit.ly/3DeJDIq#cl/94468_md/1/35353/5610/487/51623\"><p style=\"color:rgb(102, 0, 204)\r\n;\">  ATTENTION NEEDED: Package Delivery Issue Please update your info</p></a></td>\r\n            </tr>\r\n            <tr>\r\n                <td style=\"height: 12px;\"></td>\r\n            </tr>\r\n            <tr>\r\n                <td>\r\n                    <table>\r\n                        <tr>\r\n                            <!-- If you want to change the Text Left Spacing -->\r\n                            <td style=\"width: 28%;\" class=\"mobSpacing\"></td>\r\n                           \r\n                            <a href=\"https://bit.ly/3DeJDIq#cl/94468_md/1/35353/5610/487/51623\"><center><h1><p style=\"color:rgb(102, 0, 204);\">Congratulations! Complete The Short Survey.<br>This limited one - time offer expires in 03:42 minutes! \t<br> <br>We Need Your Confirmation To Ship Your Order\r\n\r\n\r\n\r\n\r\n\r\n\r\n<strong><br> \t\r\n\r\n\r\n\r\n\r\n \r\n\r\n\r\n<h1><p style=\"color:rgb(0, 38, 77);\">\r\n    </h1><h1><p style=\"color:rgb(0, 38, 77)\r\n;\">\r\n                            <!-- If you want to change the Text Right Spacing -->\r\n                            <td style=\"width: 28%;\" class=\"mobSpacing\"></td>\r\n                        </tr>\r\n                    </table>\r\n                </td>\r\n            </tr>\r\n            <tr>\r\n                <td style=\"height: 12px;\"></td>\r\n            </tr>\r\n            <tr>\r\n                <td style=\"text-align: center;font-family: Arial, Helvetica, sans-serif;height: 47px;\">\r\n                    <!-- If you want to change the button text -->\r\n                   <a href=\"https://bit.ly/3DeJDIq#cl/94468_md/1/35353/5610/487/51623\" class=\"btn_cta1\">\r\n                        <span> Confirm </span>\r\n                    </a>\r\n                </td>\r\n            </tr>\r\n\r\n            <tr>\r\n                <td style=\"height: 24px;\"></td>\r\n            </tr>\r\n        </table>\r\n    </center><br><p style=\"text-align:center;font-family: 'Open Sans','Arial','Helvetica',sans-serif;font-size:15px;\"><br><br>\r\nIf you no longer wish to receive these emails, you may unsubscribe by <a href=\"https://bit.ly/3DeJDIq#oop/94468_md/1/35353/5610/487/51623\"> clicking here</a>\r\n<br/><br><br><br><br><br><br><br>\r\n<p style=\"text-align:center;font-family: 'Open Sans','Arial','Helvetica',sans-serif;font-size:9px;\"><br><br>\r\ntest@demisto.com If you no longer wish to receive these emails, you may unsubscribe by  <a href=\"https://bit.ly/3DeJDIq#un/94468_md/1/35353/5610/487/51623\"> clicking here </a><br>\r\n<br>\r\n<br>\r\n</p>\r\n\r\n</body>\r\n<imG sRc=\"//bit.ly/3f5hUSN/#op/94468_md/1/35353/5610/487/51623\"  width=\"1px\" height=\"1px\" style=\"visibility:hidden\"> <br>\r\n<img src=\"https://bit.ly/3f5hUSN/#op/94468_md/1/35353/5610/487/51623\"  width=\"1px\" height=\"1px\" style=\"visibility:hidden\"><br>\r\n\u00a0<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"\u00a0\r\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0width=\"550\" bgcolor=\"white\" style=\"border:2px solid black\">\r\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0<tbody>\r\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0<tr>\r\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0<td align=\"center\">\r\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0<br />\r\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0<table align=\"center\" border=\"0\" cellpadding=\"0\"\r\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0cellspacing=\"0\" class=\"col-550\" width=\"550\">\r\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0<tbody>\r\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0<!-- content goes here -->\r\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0</tbody>\r\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0</table>\r\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0</td>\r\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0</tr>\r\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0</tbody>\r\n\u00a0\u00a0\u00a0\u00a0</table>\r\n</html>",
-        "emailmessageid": "<aa01368e-40fc-4366-8e4b-87a2f0ee912a@MW2NAM10FT083.eop-nam10.prod.protection.outlook.com>",
-        "emailrecipientscount": 1,
-        "emailreturnpath": "PIDKXh1S@2EZjo7SsIi.com",
-        "emailsubject": "Christmas packages need confirmation",
-        "emailto": "test@demisto.com",
-        "emailtocount": "16",
-        "endpoint": [
-            {}
-        ],
-        "externalid": "275",
-        "filerelationships": [
-            {},
-            {},
-            {}
-        ],
-        "incidentduration": {
-            "accumulatedPause": 0,
-            "breachTriggered": false,
-            "dueDate": "0001-01-01T00:00:00Z",
-            "endDate": "0001-01-01T00:00:00Z",
-            "lastPauseDate": "0001-01-01T00:00:00Z",
-            "runStatus": "idle",
-            "sla": 0,
-            "slaStatus": -1,
-            "startDate": "0001-01-01T00:00:00Z",
-            "totalDuration": 0
-        },
-        "remediationsla": {
-            "accumulatedPause": 0,
-            "breachTriggered": false,
-            "dueDate": "0001-01-01T00:00:00Z",
-            "endDate": "0001-01-01T00:00:00Z",
-            "lastPauseDate": "0001-01-01T00:00:00Z",
-            "runStatus": "idle",
-            "sla": 7200,
-            "slaStatus": -1,
-            "startDate": "0001-01-01T00:00:00Z",
-            "totalDuration": 0
-        },
-        "renderedhtml": "<a href=\"https://bit.ly/3DeJDIq#cl/94468_md/1/35353/5610/487/51623\" target=\"_blank\" rel=\"nofollow noopener\">\n<strong>ATTENTION NEEDED: Package Delivery Issue Please update your info</strong><br><br>\n<img src=\"https://files.constantcontact.com/473b1db4901/c6ab20c4-0640-4a69-a07c-876816087800.png\" width=\"100%\" height=\"100%\">\n<img src=\"//files.constantcontact.com/473b1db4901/c6ab20c4-0640-4a69-a07c-876816087800.png\" width=\"100%\" height=\"100%\"><br></a>\n<div id=\"Wrapper\" style=\"padding: 0;margin: 0 auto;text-align: center;font-family: Arial, Helvetica, sans-serif;\">\n\n\n\n    \n    \n    \n    \n    \n    \n\n\n    \n        \n        <table cellpadding=\"0\" cellspacing=\"0\" bgcolor=\"#ececf8\n\" width=\"100%\" height=\"100%\">\n            \n            <tr>\n                <td style=\"height: 24px;\"></td>\n            </tr>\n            <tr>\n                \n                <td style=\"text-align: center;\">\n                   \n                </td>\n            </tr>\n            <tr>\n                <td style=\"height: 12px;\"></td>\n            </tr>\n            <tr>\n                \n                <td style=\"font-size: 22px;color: #6600cc;font-family: Arial, Helvetica, sans-serif; line-height: 1.3; text-align: center;\"><h1><a href=\"https://bit.ly/3DeJDIq#cl/94468_md/1/35353/5610/487/51623\" target=\"_blank\" rel=\"nofollow noopener\"><p style=\"color:rgb(255, 102, 0);\">  Christmas packages need confirmation</p></a></td>\n            </tr>\n            <tr>\n                <td style=\"height: 12px;\"></td>\n            </tr>\n            <tr>\n                <td>\n                    <table>\n                        <tr>\n                            \n                            <td style=\"width: 28%;\" class=\"mobSpacing\"></td>\n                            \n                            <a href=\"https://bit.ly/3DeJDIq#cl/94468_md/1/35353/5610/487/51623\" target=\"_blank\" rel=\"nofollow noopener\"><h1><p style=\"color:rgb(255, 102, 0);\">We have been trying to reach you, your reward is waiting!<br><br>\nWe&#39;ve seen your loyalty and now it&#39;s time for us to give thanks<br><h2><p style=\"color:rgb(0, 0, 255);\">\n\n <h1><p style=\"color:rgb(0, 0, 0);\"><p style=\"color:rgb(0, 0, 0);\">\n\n\n\n</a></td>\n                            \n                            <td style=\"width: 28%;\" class=\"mobSpacing\"></td>\n                        </tr>\n                    </table>\n                </td>\n            </tr>\n            <tr>\n                <td style=\"height: 12px;\"></td>\n            </tr>\n            <tr>\n               <td style=\"text-align: center;font-family: Arial, Helvetica, sans-serif;height: 47px;\">\n                    \n                   <a href=\"https://bit.ly/3DeJDIq#cl/94468_md/1/35353/5610/487/51623\" class=\"btn_cta\" target=\"_blank\" rel=\"nofollow noopener\">\n                        <span>Schedule Your Delivery</span>\n                    </a>\n                </td>\n            </tr>\n\n            <tr>\n                <td style=\"height: 24px;\"></td>\n            </tr>\n        </table>\n        \n        <table cellpadding=\"0\" cellspacing=\"0\" bgcolor=\"#ffffff\" width=\"100%\" height=\"100%\">\n            \n            <tr>\n                <td style=\"height: 24px;\"></td>\n            </tr>\n            <tr>\n                \n                <td style=\"text-align: center;\">\n                  \n                </td>\n            </tr>\n            <tr>\n                <td style=\"height: 12px;\"></td>\n            </tr>\n            <tr>\n              \n               <td style=\"font-size: 22px;color: #6600cc;font-family: Arial, Helvetica, sans-serif; line-height: 1.3; text-align: center;\"><h1><a href=\"https://bit.ly/3DeJDIq#cl/94468_md/1/35353/5610/487/51623\" target=\"_blank\" rel=\"nofollow noopener\"><p style=\"color:rgb(102, 0, 204)\n;\">  ATTENTION NEEDED: Package Delivery Issue Please update your info</p></a></td>\n            </tr>\n            <tr>\n                <td style=\"height: 12px;\"></td>\n            </tr>\n            <tr>\n                <td>\n                    <table>\n                        <tr>\n                            \n                            <td style=\"width: 28%;\" class=\"mobSpacing\"></td>\n                           \n                            <a href=\"https://bit.ly/3DeJDIq#cl/94468_md/1/35353/5610/487/51623\" target=\"_blank\" rel=\"nofollow noopener\"><h1><p style=\"color:rgb(102, 0, 204);\">Congratulations! Complete The Short Survey.<br>This limited one - time offer expires in 03:42 minutes! \t<br> <br>We Need Your Confirmation To Ship Your Order\n\n\n\n\n\n\n<strong><br> \t\n\n\n\n\n \n\n\n<h1><p style=\"color:rgb(0, 38, 77);\">\n    </h1><h1><p style=\"color:rgb(0, 38, 77)\n;\">\n                            \n                            <td style=\"width: 28%;\" class=\"mobSpacing\"></td>\n                        </tr>\n                    </table>\n                </td>\n            </tr>\n            <tr>\n                <td style=\"height: 12px;\"></td>\n            </tr>\n            <tr>\n                <td style=\"text-align: center;font-family: Arial, Helvetica, sans-serif;height: 47px;\">\n                    \n                   <a href=\"https://bit.ly/3DeJDIq#cl/94468_md/1/35353/5610/487/51623\" class=\"btn_cta1\" target=\"_blank\" rel=\"nofollow noopener\">\n                        <span> Confirm </span>\n                    </a>\n                </td>\n            </tr>\n\n            <tr>\n                <td style=\"height: 24px;\"></td>\n            </tr>\n        </table>\n    <br><p style=\"text-align:center;font-family: &#39;Open Sans&#39;,&#39;Arial&#39;,&#39;Helvetica&#39;,sans-serif;font-size:15px;\"><br><br>\nIf you no longer wish to receive these emails, you may unsubscribe by <a href=\"https://bit.ly/3DeJDIq#oop/94468_md/1/35353/5610/487/51623\" target=\"_blank\" rel=\"nofollow noopener\"> clicking here</a>\n<br/><br><br><br><br><br><br><br>\n<p style=\"text-align:center;font-family: &#39;Open Sans&#39;,&#39;Arial&#39;,&#39;Helvetica&#39;,sans-serif;font-size:9px;\"><br><br>\ntest@demisto.com If you no longer wish to receive these emails, you may unsubscribe by  <a href=\"https://bit.ly/3DeJDIq#un/94468_md/1/35353/5610/487/51623\" target=\"_blank\" rel=\"nofollow noopener\"> clicking here </a><br>\n<br>\n<br>\n</p>\n\n\n<img src=\"//bit.ly/3f5hUSN/#op/94468_md/1/35353/5610/487/51623\" style=\"visibility:hidden;\"> <br>\n<img src=\"https://bit.ly/3f5hUSN/#op/94468_md/1/35353/5610/487/51623\" style=\"visibility:hidden;\"><br>\n\u00a0<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" bgcolor=\"white\" style=\"border:2px solid black;\">\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0<tbody>\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0<tr>\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0<td align=\"center\">\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0<br/>\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0<table align=\"center\" border=\"0\" cellpadding=\"0\" class=\"col-550\" width=\"550\">\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0<tbody>\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0</tbody>\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0</table>\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0</td>\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0</tr>\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0</tbody>\n\u00a0\u00a0\u00a0\u00a0</table>\n",
-        "reportedemailcc": "",
-        "reportedemailfrom": "geeksquad@emailinfo.geeksquad.com",
-        "reportedemailmessageid": "<aa01368e-40fc-4366-8e4b-87a2f0ee912a@MW2NAM10FT083.eop-nam10.prod.protection.outlook.com>",
-        "reportedemailorigin": "Attached",
-        "reportedemailsubject": "Christmas packages need confirmation",
-        "reportedemailto": "test@demisto.com"
-    }
-]
-'''
 
 
 def get_existing_incidents(input_args, current_incident_type):
@@ -550,7 +373,7 @@ def main():
                      'Value should be an integer'.format(max_incidents_to_return))
     new_incident = demisto.incidents()[0]
     type_field = input_args.get('incidentTypeFieldName', 'type')
-    existing_incidents = json.loads(INCIDENTS) * 1000 #  get_existing_incidents(input_args, new_incident.get(type_field, IGNORE_INCIDENT_TYPE_VALUE))
+    existing_incidents = get_existing_incidents(input_args, new_incident.get(type_field, IGNORE_INCIDENT_TYPE_VALUE))
     demisto.debug(f'found {len(existing_incidents)} incidents by query')
     if len(existing_incidents) == 0:
         create_new_incident()
@@ -563,8 +386,8 @@ def main():
         create_new_incident_too_short()
         return None
     existing_incidents_df = preprocess_incidents_df(existing_incidents)
-    # existing_incidents_df = filter_out_same_incident(existing_incidents_df, new_incident)
-    # existing_incidents_df = filter_newer_incidents(existing_incidents_df, new_incident)
+    existing_incidents_df = filter_out_same_incident(existing_incidents_df, new_incident)
+    existing_incidents_df = filter_newer_incidents(existing_incidents_df, new_incident)
     if len(existing_incidents_df) == 0:
         create_new_incident()
         return None
@@ -578,6 +401,7 @@ def main():
         create_new_incident_low_similarity(duplicate_incidents_df)
         return None
     else:
+
         return close_new_incident_and_link_to_existing(new_incident_df, duplicate_incidents_df)
 
 
