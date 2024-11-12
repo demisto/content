@@ -10,7 +10,13 @@
 	"detached": false,
 	"disabled": false,
 	"extractSettings": {
-		"fieldCliNameToExtractSettings": {},
+		"fieldCliNameToExtractSettings": {
+			"gibrelatedindicatorsdata": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": [],
+				"isExtractingAllIndicatorTypes": true
+			}
+		},
 		"mode": "Specific"
 	},
 	"fromServerVersion": "",
@@ -21,14 +27,18 @@
 	"layout": "GIB Attacks Phishing Group Layout",
 	"locked": false,
 	"name": "GIB Attacks Phishing Group",
-	"onChangeRepAlg": 1,
-	"packID": "",
+	"onChangeRepAlg": 0,
+	"packID": "GroupIB_ThreatIntelligenceAttribution",
 	"packName": "",
+	"packPropagationLabels": [
+		"all"
+	],
 	"playbookId": "Incident Postprocessing - Group-IB Threat Intelligence \u0026 Attribution",
 	"preProcessingScript": "",
+	"propagationLabels": [],
 	"readonly": false,
-	"reputationCalc": 1,
-	"system": false,
+	"reputationCalc": 0,
+	"system": true,
 	"toServerVersion": "",
 	"version": -1,
 	"weeks": 0,

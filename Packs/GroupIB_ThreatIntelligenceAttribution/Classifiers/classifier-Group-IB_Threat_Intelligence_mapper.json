@@ -13,7 +13,7 @@
 	"itemVersion": "1.4.2",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 77,
+	"logicalVersion": 78,
 	"mapping": {
 		"GIB Attacks DDOS": {
 			"dontMapEventToLabels": false,
@@ -1723,6 +1723,9 @@
 				},
 				"GIB Portal Link": {
 					"simple": "portalLink"
+				},
+				"GIB Related Indicators Data": {
+					"simple": "indicators"
 				},
 				"GIB Reliability": {
 					"complex": {

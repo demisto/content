@@ -33,6 +33,8 @@ INDICATORS_TYPES = {
             "events_ipv4_ip": "IP",
         },
         "add_fields_types": {
+            "event_url":{},
+            "event_domain":{},
             "events_ipv4_ip": {
                 "asn": "asn",
                 "country_name": "geocountry",
@@ -47,6 +49,8 @@ INDICATORS_TYPES = {
             "cnc_ipv4_ip": "IP",
         },
         "add_fields_types": {
+            "cnc_url":{},
+            "cnc_domain":{},
             "cnc_ipv4_ip": {
                 "cnc_ipv4_asn": "asn",
                 "cnc_ipv4_country_name": "geocountry",
@@ -61,6 +65,8 @@ INDICATORS_TYPES = {
             "cnc_ipv4_ip": "IP",
         },
         "add_fields_types": {
+            "cnc_url":{},
+            "cnc_domain":{},
             "cnc_ipv4_ip": {
                 "cnc_ipv4_asn": "asn",
                 "cnc_ipv4_country_name": "geocountry",
@@ -75,6 +81,8 @@ INDICATORS_TYPES = {
             "cnc_ipv4_ip": "IP",
         },
         "add_fields_types": {
+            "cnc_url":{},
+            "cnc_domain":{},
             "cnc_ipv4_ip": {
                 "cnc_ipv4_asn": "asn",
                 "cnc_ipv4_country_name": "geocountry",
@@ -86,10 +94,17 @@ INDICATORS_TYPES = {
         "types": {
             "id": "CVE",
         },
+        "markdowns": {
+            "software_mixed": (
+                "| Software Name | Software Type | Software Version |\n"
+                "| ------------- | ------------- | ---------------- |\n"
+            )
+        },
         "add_fields_types": {
             "id": {
                 "cvss_score": "cvss",
                 "description": "description",
+                "software_mixed": "gibsoftwaremixed",
                 "dateLastSeen": "cvemodified",
                 "datePublished": "published",
                 "severity": "severity",
@@ -101,9 +116,12 @@ INDICATORS_TYPES = {
             "contributors_emails": "Email",
             "hash": "GIB Hash",
         },
-        "add_fields_types": {},
+        "add_fields_types": {
+            "contributors_emails":{},
+            "hash":{}
+        },
     },
-    "attacks/phishing_kit": {"types": {"emails": "Email"}, "add_fields_types": {}},
+    "attacks/phishing_kit": {"types": {"emails": "Email"}, "add_fields_types": {"emails":{}}},
     "attacks/phishing_group": {
         "types": {
             "url": "URL",
@@ -111,6 +129,7 @@ INDICATORS_TYPES = {
             "ipv4_ip": "IP",
         },
         "add_fields_types": {
+            "url":{},
             "phishing_domain_domain": {"phishing_domain_registrar": "registrarname"},
             "ipv4_ip": {
                 "ipv4_country_name": "geocountry",
@@ -120,6 +139,8 @@ INDICATORS_TYPES = {
     "attacks/deface": {
         "types": {"url": "URL", "target_domain": "Domain", "target_ip_ip": "IP"},
         "add_fields_types": {
+            "url":{},
+            "target_domain":{},
             "target_ip_ip": {
                 "target_ip_asn": "asn",
                 "target_ip_country_name": "geocountry",
@@ -130,6 +151,8 @@ INDICATORS_TYPES = {
     "attacks/ddos": {
         "types": {"cnc_url": "URL", "cnc_domain": "Domain", "cnc_ipv4_ip": "IP"},
         "add_fields_types": {
+            "cnc_url":{},
+            "cnc_domain":{},
             "cnc_ipv4_ip": {
                 "cnc_ipv4_asn": "asn",
                 "cnc_ipv4_country_name": "geocountry",
@@ -143,6 +166,7 @@ INDICATORS_TYPES = {
             "domain": "Domain",
         },
         "add_fields_types": {
+            "url":{},
             "domain": {
                 "ipv4_ip": "IP",
                 "ipv4_asn": "asn",
@@ -215,7 +239,10 @@ INDICATORS_TYPES = {
             "hashes_md5": "File",
         },
         "add_fields_types": {
-            "indicators_params_hashes_md5": {
+            "ipv4":{},
+            "domain":{},
+            "url":{},
+            "hashes_md5": {
                 "name": "gibfilename",
                 "hashes_md5": "md5",
                 "hashes_sha1": "sha1",
@@ -232,6 +259,9 @@ INDICATORS_TYPES = {
             "hashes_md5": "File",
         },
         "add_fields_types": {
+            "ipv4":{},
+            "domain":{},
+            "url":{},
             "hashes_md5": {
                 "name": "gibfilename",
                 "hashes_md5": "md5",
@@ -708,6 +738,11 @@ MAPPING = {
             "description": "description",
             "dateLastSeen": "dateLastSeen",
             "datePublished": "datePublished",
+            "software_mixed": {
+                "names": "softwareMixed.softwareName",
+                "types": "softwareMixed.softwareType",
+                "versions": "softwareMixed.softwareVersion",
+            },
         },
     },
     "attacks/ddos": {  # GIB Source:sourceType, severity:systemSeverity
@@ -965,7 +1000,7 @@ MAPPING = {
             "ipv4_region": "ipv4.region",
         },
     },
-    "suspicious_ip/open_proxy": {  # GIB Source:sourceType, severity:systemSeverity
+    "suspicious_ip/open_proxy": {  # GIB Source:sourceType, severity:systemSeverity 
         "name": "ipv4.ip",
         # Information from Group-IB
         "id": "id",  # GIB ID
@@ -1115,6 +1150,7 @@ MAPPING = {
             "ipv4_asn": "ipv4.asn",
             "country_name": "ipv4.countryName",
             "ipv4_region": "ipv4.region",
+            "cnc": "cnc",
         },
     },
     "malware/malware": {  # GIB Source:sourceType
@@ -1333,7 +1369,6 @@ MAPPING = {
     },
 }
 
-
 class Client(BaseClient):
     """
     Client will implement the service API, and should not contain any Demisto logic.
@@ -1445,7 +1480,6 @@ class Client(BaseClient):
 
 
 """ Support functions """
-
 
 class CommonHelpers:
     @staticmethod
@@ -1706,25 +1740,18 @@ class IndicatorsHelper:
 
 
 class IncidentBuilder:
+    fields_list_for_parse = [
+        "creationdate",
+        "firstseenbysource",
+        "lastseenbysource",
+        "gibdatecompromised",
+    ]
 
     def __init__(self, collection_name: str, incident: dict, mapping: dict) -> None:
         self.collection_name = collection_name
         self.incident = incident
         self.mapping = mapping
-
-    def get_related_indicators_data(self) -> list:
-        related_indicators_data = []
-        indicators: dict = self.incident.get("indicators", {})
-        demisto.debug(f"get_related_indicators_data {self.incident['id']} {indicators}")
-        for _indcator_name, indicator_value in indicators.items():
-
-            if indicator_value is not None:
-                related_indicators_data.append(indicator_value)
-        demisto.debug(
-            f"success_get_related_indicators_data {self.incident['id']} {related_indicators_data}"
-        )
-        return related_indicators_data
-
+        
     def get_system_severity(self) -> int:
         severity = self.incident.get("evaluation", {}).get("severity")
         system_severity = 0
@@ -1896,14 +1923,11 @@ class IncidentBuilder:
         self.custom_generate_portal_link()
         incident_name = self.get_incident_name()
         system_severity = self.get_system_severity()
-        related_indicators_data = self.get_related_indicators_data()
-        demisto.debug(f"{related_indicators_data}")
         self.incident.update(
             {
                 "name": incident_name,
                 "gibType": self.collection_name,
                 "systemSeverity": system_severity,
-                "relatedIndicatorsData": related_indicators_data,
             }
         )
 
@@ -1918,7 +1942,6 @@ class IncidentBuilder:
             "occurred": self.get_incident_created_time(),
             "rawJSON": json_dumps(self.incident),
             "dbotMirrorId": self.incident.get("id"),
-            "relatedIndicatorsData": related_indicators_data,
         }
         demisto.debug(f"{data}")
         return data

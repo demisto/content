@@ -25,7 +25,14 @@
 		"GIB Cybercriminal Threat",
 		"GIB Suspicious IP Socks Proxy",
 		"GIB Nation-State Cybercriminals Threat",
-		"GIB Cybercriminal Threat Actor"
+		"GIB Cybercriminal Threat Actor",
+		"GIB Malware CNC copy",
+		"GIB APT Threat",
+		"GIB Data Breach",
+		"GIB Malware",
+		"GIB Nation-State Cybercriminals Threat Actor",
+		"GIB OSI Git Leak",
+		"GIB OSI Public Leak"
 	],
 	"autoCompleteTags": null,
 	"breachScript": "",
