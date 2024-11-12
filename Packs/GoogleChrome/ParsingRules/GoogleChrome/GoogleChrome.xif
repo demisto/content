@@ -7,7 +7,10 @@ call GOOGLE_WORKSPACE_CHROME_PARSING_RULE;
 [RULE: GOOGLE_WORKSPACE_CHROME_PARSING_RULE]
 alter
 // Getting the JSON from either event OR events.
-    tmp_get_field = if(events = null, null, arrayindex(to_string(events) -> [], 0) -> parameters[])
+    tmp_get_events_json = if(events = null, null, to_string(events) !~= "^\[", to_string(events) -> parameters[]),
+    tmp_get_events_jsonarray = if(events = null, null, to_string(events) ~= "^\[", arrayindex(to_string(events) -> [], 0) -> parameters[])
+| alter
+    tmp_get_field = coalesce(tmp_get_events_json, tmp_get_events_jsonarray)
 | alter
 // Get all of the keys and values.
     // Get all of the object names to a regex format.
@@ -33,5 +36,4 @@ alter
     tmp_updated_timestamp_len = 10, to_timestamp(tmp_updated_timestamp_format, "SECONDS"), 
     tmp_updated_timestamp_len = 13, to_timestamp(tmp_updated_timestamp_format, "MILLIS"),  
     tmp_updated_timestamp_len = 16, to_timestamp(tmp_updated_timestamp_format, "MICROS"),  
-    tmp_updated_timestamp_len = 19, to_timestamp(to_integer(divide(tmp_updated_timestamp_format, 1000)), "MICROS")) 
-| fields -tmp*;
+    tmp_updated_timestamp_len = 19, to_timestamp(to_integer(divide(tmp_updated_timestamp_format, 1000)), "MICROS"));
