@@ -2527,10 +2527,10 @@ File.Read.All
 | File.SHA1 | String | The SHA1 hash of the file. |
 | File.OrganizationPrevalence | Number | The number of times the indicator is detected in the organization. |
 | File.GlobalPrevalence | Number | The number of times the indicator is detected across all organizations by Microsoft Defender ATP. |
-| File.OrganizationFirstSeen | Date | When the indicator was first seen in the organization. |
-| File.OrganizationLastSeen | Date | When the indicator was last seen in the organization. |
-| File.FirstSeenBySource | Date | When the indicator was first seen by the source vendor. |
-| File.LastSeenBySource | Date | When the indicator was last seen by the source vendor. |
+| File.OrganizationFirstSeen | Date | The date and time when the indicator was first seen in the organization. |
+| File.OrganizationLastSeen | Date | The date and time when the indicator was last seen in the organization. |
+| File.FirstSeenBySource | Date | The date and time when the indicator was first seen by the source vendor. |
+| File.LastSeenBySource | Date | The date and time when the indicator was last seen by the source vendor. |
 
 ##### Command Example
 

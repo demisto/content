@@ -1955,16 +1955,16 @@ script:
       description: The number of times the indicator is detected across all organizations by Microsoft Defender ATP.
       type: Number
     - contextPath: File.OrganizationFirstSeen
-      description: When the indicator was first seen in the organization.
+      description: The date and time when the indicator was first seen in the organization.
       type: Date
     - contextPath: File.OrganizationLastSeen
-      description: When the indicator was last seen in the organization.
+      description: The date and time when the indicator was last seen in the organization.
       type: Date
     - contextPath: File.FirstSeenBySource
-      description: When the indicator was first seen by the source vendor.
+      description: The date and time when the indicator was first seen by the source vendor.
       type: Date
     - contextPath: File.LastSeenBySource 
-      description: When the indicator was last seen by the source vendor.
+      description: The date and time when the indicator was last seen by the source vendor.
       type: Date
     polling: true
   - arguments:
