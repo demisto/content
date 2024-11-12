@@ -681,7 +681,7 @@ def extract_classification_reason(delta: Dict, data: Dict):
         The resolved classification reason.
     """
 
-    classification = delta.get("classification") or data.get("classification", "")
+    classification: str = delta.get("classification") or data.get("classification", "")
     if classification == "FalsePositive":
         return delta.get("classificationReason") or data.get(
             "classificationReason", "InaccurateData"

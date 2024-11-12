@@ -15,7 +15,6 @@ def test_set_owner(mocker):
     expected_owner_email = "test@test.com"
 
     mocker.patch.object(demisto, "args", return_value=demisto_args)
-    debug_mock = mocker.patch.object(demisto, "debug")
     info_mock = mocker.patch.object(demisto, "info")
     execute_command_mock = mocker.patch.object(CommonServerPython, "execute_command")
 
