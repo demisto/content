@@ -14,8 +14,14 @@ import json
 import unittest
 from datetime import datetime
 from unittest.mock import patch
+import pytest
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
+
+MOCK_BASEURL = "https://example.com"
+MOCK_GROUP_ID = "123"
+MOCK_PRIVATE_KEY = "private_key"
+MOCK_PUBLIC_KEY = "public_key"
 
 
 def util_load_json(path):
@@ -97,4 +103,24 @@ def test_add_time_field():
     assert event["_time"] == "2024-10-27T13:07:17Z"
 
 
+@pytest.mark.parametrize("fetch_limit, expected_alert_count", [
+    (10, 5),  # Case: fetch_limit > available alerts
+    (3, 3)  # Case: fetch_limit < available alerts
+])
+def test_fetch_alert_type(mocker, fetch_limit, expected_alert_count):
+    from MongoDBAtlas import fetch_alert_type, Client
+    mocked_alerts = util_load_json('test_data/raw_alerts_page_1.json')
+    mocker.patch('MongoDBAtlas.get_page_from_last_run_for_alerts', return_value=mocked_alerts)
+    mocker.patch('MongoDBAtlas.get_next_url', return_value=None)
 
+    client = Client(base_url=MOCK_BASEURL, verify=False, group_id=MOCK_GROUP_ID, private_key=MOCK_PRIVATE_KEY,
+                    public_key=MOCK_PUBLIC_KEY)
+    last_run = {"page_link": None, "last_page_alerts_ids": []}
+    output, last_run_new_dict = fetch_alert_type(client, fetch_limit, last_run)
+
+    assert len(output) == expected_alert_count
+    assert last_run_new_dict.get('page_link') == 'self'
+    last_page_alerts_ids = last_run_new_dict.get('last_page_alerts_ids')
+    assert len(last_page_alerts_ids) == expected_alert_count
+    for id in last_page_alerts_ids:
+        assert int(id) <= expected_alert_count
