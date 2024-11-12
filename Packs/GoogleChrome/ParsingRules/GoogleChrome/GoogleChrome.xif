@@ -1,6 +1,6 @@
 [INGEST:vendor="Google", product="Workspace Chrome", target_dataset="google_workspace_chrome_raw", no_hit=keep]
 call GOOGLE_WORKSPACE_CHROME_PARSING_RULE;
-[INGEST:vendor="google", product="Workspace_Chrome", target_dataset="google_workspace_chrome_raw", no_hit=keep]
+[INGEST:vendor="Google", product="Workspace_Chrome", target_dataset="google_workspace_chrome_raw", no_hit=keep]
 call GOOGLE_WORKSPACE_CHROME_PARSING_RULE;
 
 
