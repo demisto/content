@@ -67,6 +67,15 @@ class Client(BaseClient):
         return results
 
     def get_response_from_page_link(self, page_link: str):
+        """
+        Sends an HTTP GET request to fetch data using `page_link`.
+
+        Args:
+            page_link (str): The URL to the specific page of data to fetch.
+
+        Returns:
+            The API response containing the data retrieved from the provided page link.
+        """
         results = self._http_request(
             method="GET",
             full_url=page_link
@@ -74,6 +83,16 @@ class Client(BaseClient):
         return results
 
     def get_events_with_min_time(self, min_time: str):
+        """
+        Sends an HTTP GET request to fetch events from the server that occurred after
+        the provided `min_time`, using it as a filter.
+
+        Args:
+            min_time (str): The minimum time, specifying the earliest event time to include.
+
+        Returns:
+            The API response containing the events that match the specified time filter.
+        """
         results = self._http_request(
             method="GET",
             url_suffix=f"/api/atlas/v2/groups/{self.group_id}/events?minDate={min_time}",
@@ -81,12 +100,15 @@ class Client(BaseClient):
         return results
 
     def first_time_fetch_alerts(self):
+        """
+        Initiates the first-time retrieval of alerts by fetching a single page of alerts,
+        with a maximum of 500 alerts in that page.
+
+        Returns:
+            A response object containing the first page of alerts.
+        """
         # TODO to change items_per_page=500
-        # if event_type == 'alerts':
         return self.get_alerts_with_page_num(page_num=1, items_per_page=10)
-        # elif event_type == 'events':
-        #     return self.get_events_with_page_num(page_num=1, items_per_page=100)
-        # return None
 
     def get_events_first_five_pages(self, fetch_limit: int):
         """
@@ -211,7 +233,6 @@ def remove_alerts_by_ids(alerts: list, ids: list):
     Returns:
         list: A filtered list of alerts excluding any alerts with IDs in the provided ids list.
     """
-    # return [alert for alert in alerts if alert["id"] not in ids]
     results = []
     for alert in alerts:
         if alert.get('id') not in ids:
@@ -551,15 +572,8 @@ def fetch_events(client: Client, fetch_limit: int):
     # global last_run
     demisto.debug(f'This is the last run {last_run} directly from demisto')
 
-    # last_run_alerts = last_run.get('alerts', {})
-    # last_run_events = last_run.get('events', {})
-
     alerts_output, last_run_alerts = fetch_alert_type(client, fetch_limit, last_run)
     events_output, last_run_events = fetch_event_type(client, fetch_limit, last_run)
-
-    # last_run_new_obj = ({'alerts': last_run_alerts,
-    #                      'events': last_run_events
-    #                      })
 
     last_run_new_obj = {**last_run_alerts, **last_run_events}
     demisto.debug(f'This is the final output for fetch_events {alerts_output + events_output}')
@@ -570,8 +584,6 @@ def get_events(client: Client, args):
     fetch_limit = int(args.get('limit'))
 
     last_run = demisto.getLastRun()
-    # last_run_alerts = last_run.get('alerts', {})
-    # last_run_events = last_run.get('events', {})
 
     alerts_output, _ = fetch_alert_type(client, fetch_limit, last_run)
     events_output, _ = fetch_event_type(client, fetch_limit, last_run)
@@ -637,10 +649,8 @@ def main() -> None:
             # last_run = last_run_new_obj
             if events:
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
-                demisto.debug(f'Successfully fetched events, this is the dict {last_run_new_obj} and this is the events {events}')
                 demisto.setLastRun(last_run_new_obj)
-                demisto.debug(f'Successfully saved last_run {demisto.getLastRun()}')
-                demisto.debug('fetch-events command is finished')
+                demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
