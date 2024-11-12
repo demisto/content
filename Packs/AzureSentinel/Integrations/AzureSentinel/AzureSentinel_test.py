@@ -2119,10 +2119,10 @@ def test_extract_classification_reason():
     """
     Test extract_classification_reason function with various delta and data inputs.
 
-    Given: Various scenarios of delta and data dictionaries with or without classification 
+    Given: Various scenarios of delta and data dictionaries with or without classification
            and classificationReason fields.
     When: The extract_classification_reason function is called with these inputs.
-    Then: The function should return the correct classification reason based on the inputs, 
+    Then: The function should return the correct classification reason based on the inputs,
           following specific rules for each classification type and default values where necessary.
     """
     test_cases = [
