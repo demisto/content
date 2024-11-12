@@ -2509,6 +2509,8 @@ Expires a password for an existing Okta user.
 | --- | --- | --- |
 | username | Okta username for which to expire the password. | Required | 
 | temporary_password | When true, you'll need to change the password in the next login. Possible values are: true, false. Default is false. | Optional | 
+| revoke_session | When true, revokes the user's existing sessions. | Optional |
+| hide_password | When true, prevents the password from being saved in the war room. | Optional |
 
 #### Context Output
 
