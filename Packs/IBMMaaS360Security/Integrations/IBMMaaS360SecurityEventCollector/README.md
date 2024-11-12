@@ -5,12 +5,12 @@ This is the IBM MaaS360 Security integration for Cortex XSIAM.
 To access the IBM MaaS360 Security API, you first need to generate an App access key.
 Follow these steps:
 
-1. Log into the IBM MaaS360 portal.  
+1. Log in to the IBM MaaS360 portal.  
 
 2. Go to **Setup** > **Manage Access Keys**.
 ![Generate access key](../../doc_files/manage-access-keys.png)  
 
-3. Click on **Generate Access Key**.
+3. Click **Generate Access Key**.
 ![Generate access key](../../doc_files/generate-key.png)  
 
 4. Create a new `MaaS360 Web Services` key.
@@ -26,22 +26,22 @@ See [Configuring provisioning for MaaS360](https://www.ibm.com/docs/en/security-
 
 1. Log in to the IBM MaaS360 portal.
 
-2. Mouse over the profile menu on the top right and copy the **Account ID** value. This is your Billing ID.
+2. Hover over the profile menu on the top right and copy the **Account ID** value. This is your Billing ID.
 ![Get Billing ID](../../doc_files/find-billing-id.png)
 
 ## Account permissions
 
-To collect events, the User requires read-only permissions.
+To collect events, the user requires read-only permissions.
 Follow these steps to modify user permissions:
 
-1. Log into the IBM MaaS360 portal.  
+1. Log in to the IBM MaaS360 portal.  
 
 2. Go to **Setup** > **Administrators**
 ![Admin permissions](../../doc_files/administrators-page.png)  
 
 3. Find the relevant administrator account or create a new one.  
 
-4. Click the **Edit** button. (Note: This does not appear for the primary admin account)
+4. Click **Edit**. (Note: This does not appear for the primary admin account.)
 ![Admin permissions](../../doc_files/edit-admin-roles.png)  
 
 5. Add the **Read-Only** permission.

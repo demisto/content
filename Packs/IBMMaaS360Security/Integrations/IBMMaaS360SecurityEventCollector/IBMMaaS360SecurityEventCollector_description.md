@@ -5,9 +5,9 @@
 To access the IBM MaaS360 Security API, you first need to generate an App access key.
 Follow these steps:
 
-1. Log into the IBM MaaS360 portal.
+1. Log in to the IBM MaaS360 portal.
 2. Go to **Setup** > **Manage Access Keys**.
-3. Click on **Generate Access Key**.
+3. Click **Generate Access Key**.
 4. Create a new `MaaS360 Web Services` key.
     - Save the **App ID**, **App Version**, **Platform ID**, and **App Access Key**.
 
@@ -16,8 +16,8 @@ See [Configuring provisioning for MaaS360](https://www.ibm.com/docs/en/security-
 
 ## Where to find the Billing ID
 
-1. Log into the IBM MaaS360 portal.
-2. Mouse over the profile menu on the top right and copy the **Account ID** value. This is your Billing ID.
+1. Log in to the IBM MaaS360 portal.
+2. Hover over the profile menu on the top right and copy the **Account ID** value. This is your Billing ID.
 
 ## Server URL
 
