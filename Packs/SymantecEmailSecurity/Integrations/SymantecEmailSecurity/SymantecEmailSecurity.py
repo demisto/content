@@ -825,23 +825,20 @@ def determine_clients(
     is_test_command = command == "test-module"
 
     if username and password and (is_test_command or command in command_to_url):
-        base_url = command_to_url.get(command)
-
-        if (
-            (is_test_command and not has_any_client_url)
-            or (not is_test_command and not base_url)
-        ):
+        if base_url := command_to_url.get(command):
+            client = Client(
+                base_url=base_url,
+                username=username,
+                password=password,
+                verify=verify_certificate,
+                proxy=proxy,
+            )
+        elif not (is_test_command and has_any_client_url):
             raise DemistoException(
                 "Missing URL for 'Credentials', please fill the correct URL according to the mapping in 'Help'."
             )
 
-        client = Client(
-            base_url=base_url,
-            username=username,
-            password=password,
-            verify=verify_certificate,
-            proxy=proxy,
-        )
+
 
     if quarantine_username and quarantine_password:
         if not url_quarantine:
@@ -1835,7 +1832,7 @@ def main() -> None:
         if command == "test-module":
             return_results(
                 test_module(
-                    credentials=(username, password),
+                    credentials=(username, password) if username and password else None,
                     url_ioc=url_ioc,
                     url_data_feeds=url_data_feeds,
                     url_email_queue=url_email_queue,
