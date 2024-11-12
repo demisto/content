@@ -3419,7 +3419,7 @@ def get_file_statistics_human_readable(file_hash: str, file_stat_response: dict)
         file_stat_response (dict): File statistics response body
 
     Returns:
-        (dict). File statistics context
+        (str). File statistics human readable
     """
     formatted_data = {
         'Global Prevalence': file_stat_response.get('globalPrevalence'),
