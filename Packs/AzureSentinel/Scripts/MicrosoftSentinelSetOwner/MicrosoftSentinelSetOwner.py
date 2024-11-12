@@ -15,34 +15,26 @@ def set_owner(context_results: dict):
                          and the updated owner information.
     """
     args = demisto.args()
-    mirror_dir = next(
-        (
-            tag["value"]
-            for tag in context_results.get("labels", [])
-            if tag.get("type") == "mirror_direction"
-        ),
-        context_results.get("dbotMirrorDirection"),
-    )
-    incident_id = dict_safe_get(
+    incident_id = args.get("incident_id") or dict_safe_get(
         context_results, ["CustomFields", "sourceid"], ""
-    ) or args.get("incident_id")
+    )
     instance_name = context_results.get("sourceInstance") or args.get("using")
     user_principal_email = args.get("user_principal_name")
-    if mirror_dir in ["null", "Out"]:
-        return CommandResults(
-            readable_output="""The 'Owner' field has not been changed.
-            The 'Owner' field can only be modified when the Mirroring Direction is set to 'Incoming' or 'Incoming and Outgoing'."""  # noqa: E501
+    if not instance_name:
+        return_error(
+            message="Please provide a not empty 'using' as an argument when executing the script from the War Room."
         )
-
+    if not user_principal_email:
+        return_error(
+            message="Please provide a not empty 'user_principal_name' as an argument when executing the script from the War Room."
+        )
     if not incident_id:
         return_error(
-            "Incident ID not found. Please provide the remote 'incident_id' either as an argument when running the script from the War Room."  # noqa: E501
+            message="""The specified 'incident_id' was not found.
+            Please ensure you provide a valid 'incident_id' as an argument when executing the script from the War Room."""
         )
-
-    demisto.debug(
-        f"set owner remote incident: {incident_id} by {instance_name=} with owner email {user_principal_email} "
-    )
-    return execute_command(
+    
+    result = execute_command(
         "azure-sentinel-update-incident",
         {
             "using": instance_name,
@@ -50,6 +42,11 @@ def set_owner(context_results: dict):
             "user_principal_name": user_principal_email,
         },
     )
+    demisto.info(
+        f"Assigned remote incident owner: Incident ID {incident_id}, \
+            Instance Name {instance_name}, Owner Email {user_principal_email}."
+    )
+    return result
 
 
 def main():  # pragma: no cover
@@ -63,3 +60,4 @@ def main():  # pragma: no cover
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
+

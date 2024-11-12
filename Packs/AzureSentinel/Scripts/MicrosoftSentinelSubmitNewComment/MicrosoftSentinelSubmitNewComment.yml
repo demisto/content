@@ -8,7 +8,7 @@ args:
 commonfields:
   id: MicrosoftSentinelSubmitNewComment
   version: -1
-comment: This script is used to add a new comment to incident.
+comment: Use this script to add a comment which will then be mirrored as a comment to a Sentinal event. This script should be run within an incident.
 name: MicrosoftSentinelSubmitNewComment
 outputs:
   - contextPath: AzureSentinel.AddComment.InstanceName

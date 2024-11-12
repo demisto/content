@@ -5,7 +5,6 @@ import CommonServerPython
 def test_set_owner(mocker):
     context_results = {
         "CustomFields": {"sourceid": "incident-123"},
-        "dbotMirrorDirection": "In",
         "labels": [{"type": "Instance", "value": "Azure Sentinel_instance_1"}],
     }
 

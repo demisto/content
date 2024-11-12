@@ -7,10 +7,15 @@ def format_comment(comment: dict) -> dict:
     """
     Converts a comment to a dictionary with the relevant fields.
     """
+    comment_time = comment.get("properties", {}).get("createdTimeUtc")
+    try:
+        createdTime = datetime.strftime(parser.parse(comment_time), "%d/%m/%Y, %H:%M")
+    except Exception:
+        createdTime = comment_time
     return {
-        'message': comment.get('properties', {}).get('message'),
-        'createdTime': datetime.strftime(parser.parse(comment.get('properties', {}).get('createdTimeUtc')), '%d/%m/%Y, %H:%M'),
-        'name': comment.get('properties', {}).get('author', {}).get('name'),
+        "message": comment.get("properties", {}).get("message"),
+        "createdTime": createdTime,
+        "name": comment.get("properties", {}).get("author", {}).get("name"),
     }
 
 
@@ -52,7 +57,7 @@ def main():  # pragma: no cover
     if not context:
         return_error('No data to present')
 
-    return_results(convert_to_table(context))  # type: ignore
+    return_results(convert_to_table(str(context)))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

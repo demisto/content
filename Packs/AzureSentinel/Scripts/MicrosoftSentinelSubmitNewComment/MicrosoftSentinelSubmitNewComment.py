@@ -15,36 +15,34 @@ def add_new_comment(context_results: dict):
     """
     args = demisto.args()
 
-    incident_id = dict_safe_get(
+    incident_id = args.get("incident_id") or dict_safe_get(
         context_results, ["CustomFields", "sourceid"], ""
-    ) or args.get("incident_id")
-    mirror_dir = next(
-        (
-            tag["value"]
-            for tag in context_results.get("labels", [])
-            if tag.get("type") == "mirror_direction"
-        ),
-        context_results.get("dbotMirrorDirection"),
     )
     instance_name = context_results.get("sourceInstance") or args.get("using")
     new_comment = args.get("new_comment")
-    if mirror_dir in ["null", "Out"]:
-        return CommandResults(
-            readable_output="""The comment has not been added.
-            Comments can only be added when the Mirroring Direction is set to 'Incoming' or 'Incoming and Outgoing'."""
+    if not instance_name:
+        return_error(
+            "Please provide a not empty 'using' as an argument when executing the script from the War Room."
+        )
+    if not new_comment:
+        return_error(
+            "New comment not provided. Please provide the 'new_comment' argument when running the script from the War Room."
         )
     if not incident_id:
         return_error(
-            "Incident ID not found. Please provide the remote 'incident_id' either as an argument when running the script from the War Room."  # noqa: E501
+            "Incident ID not found. \
+                Please provide the remote 'incident_id' either as an argument when running the script from the War Room."
         )
-
-    demisto.debug(f"update remote incident with new XSOAR comments: {new_comment}")
     execute_command(
         "azure-sentinel-incident-add-comment",
         {"using": instance_name, "incident_id": incident_id, "message": new_comment},
     )
+
+    demisto.info(f"update remote incident with new XSOAR comment: {new_comment}")
+
     readable_output = tableToMarkdown(
-        "The new comment has been recorded and will appear in your comments field in a minute \n(Only if you have A 'Mirror In')",  # noqa: E501
+        """The new comment has been recorded and will appear in your comments field shortly.
+        Note: This will only occur if you have the 'Mirror In' option enabled.""",
         {"Instance Name": instance_name, "New Comment": new_comment},
         headers=["New Comment", "Instance Name"],
         removeNull=True,

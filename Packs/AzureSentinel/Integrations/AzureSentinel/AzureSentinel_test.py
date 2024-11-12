@@ -2115,25 +2115,55 @@ def test_update_incident_with_client_changed_etag(mocker):
     assert http_request_mock.call_args[1].get('data', {}).get('etag') == newer_incident_from_azure.get('etag')
 
 
-@pytest.mark.parametrize(
-    "delta, data, expected",
-    [
-        (
-            {"classification": "FalsePositive", "classificationReason": "UserReported"},
-            {},
-            "UserReported",
-        ),
-        (
-            {"classification": "FalsePositive"},
-            {"classificationReason": "SystemError"},
-            "SystemError",
-        ),
-        ({"classification": "FalsePositive"}, {}, "InaccurateData"),
-        ({"classification": "TruePositive"}, {}, "SuspiciousActivity"),
-        ({}, {"classification": "BenignPositive"}, "SuspiciousButExpected"),
-        ({}, {}, ""),
-    ],
-)
-def test_extract_classification_reason(delta, data, expected):
-    result = extract_classification_reason(delta, data)
-    assert result == expected
+def test_extract_classification_reason():
+    """
+    Test extract_classification_reason function with various delta and data inputs.
+
+    Given: Various scenarios of delta and data dictionaries with or without classification 
+           and classificationReason fields.
+    When: The extract_classification_reason function is called with these inputs.
+    Then: The function should return the correct classification reason based on the inputs, 
+          following specific rules for each classification type and default values where necessary.
+    """
+    test_cases = [
+        {
+            "delta": {"classification": "FalsePositive", "classificationReason": "UserReported"},
+            "data": {},
+            "expected": "UserReported",
+            "description": "FalsePositive with specific reason in delta",
+        },
+        {
+            "delta": {"classification": "FalsePositive"},
+            "data": {"classificationReason": "SystemError"},
+            "expected": "SystemError",
+            "description": "FalsePositive with reason in data",
+        },
+        {
+            "delta": {"classification": "FalsePositive"},
+            "data": {},
+            "expected": "InaccurateData",
+            "description": "FalsePositive without specific reason",
+        },
+        {
+            "delta": {"classification": "TruePositive"},
+            "data": {},
+            "expected": "SuspiciousActivity",
+            "description": "TruePositive classification with default reason",
+        },
+        {
+            "delta": {},
+            "data": {"classification": "BenignPositive"},
+            "expected": "SuspiciousButExpected",
+            "description": "No classification in delta, but classification in data",
+        },
+        {
+            "delta": {},
+            "data": {},
+            "expected": "",
+            "description": "No classification in delta or data",
+        },
+    ]
+
+    for case in test_cases:
+        result = extract_classification_reason(case["delta"], case["data"])
+        assert result == case["expected"], f"{case['description']}: Expected {case['expected']} but got {result}"
