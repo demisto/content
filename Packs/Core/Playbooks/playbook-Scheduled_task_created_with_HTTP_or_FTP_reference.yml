@@ -363,7 +363,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "26"
+      - "31"
     scriptarguments:
       closeNotes:
         simple: No Results Found
@@ -467,7 +467,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2350
+          "y": 2690
         }
       }
     note: false
@@ -494,7 +494,7 @@ tasks:
       '#error#':
       - "22"
       '#none#':
-      - "23"
+      - "29"
     scriptarguments:
       commands:
         simple: powershell.exe schtasks /change /tn "${ExtractedTaskName}" /disable
@@ -567,7 +567,7 @@ tasks:
       {
         "position": {
           "x": 670,
-          "y": 1660
+          "y": 2000
         }
       }
     note: false
@@ -623,7 +623,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 1660
+          "y": 2000
         }
       }
     note: false
@@ -693,7 +693,7 @@ tasks:
       {
         "position": {
           "x": 670,
-          "y": 1850
+          "y": 2190
         }
       }
     note: false
@@ -765,7 +765,7 @@ tasks:
       {
         "position": {
           "x": 30,
-          "y": 2180
+          "y": 2520
         }
       }
     note: false
@@ -795,8 +795,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 1340
+          "x": 0,
+          "y": 1690
         }
       }
     note: false
@@ -828,7 +828,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1520
+          "y": 1860
         }
       }
     note: false
@@ -861,7 +861,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 2010
+          "y": 2350
         }
       }
     note: false
@@ -943,7 +943,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 1850
+          "y": 2190
         }
       }
     note: false
@@ -971,7 +971,150 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2510
+          "y": 2850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 4ebfbf7e-b9c0-4ec7-86c5-b741ec7142fa
+    type: regular
+    task:
+      id: 4ebfbf7e-b9c0-4ec7-86c5-b741ec7142fa
+      version: -1
+      name: Notify to War Room - Scheduled Task Disabled
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      value:
+        simple: "Dear Analyst,\n\nPlease note that during the remediation process, the playbook executed a shell command to disable the following scheduled task: \n${ExtractedTaskName}"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 917a0b85-38b9-4f5a-86bf-2bc724829f8e
+    type: regular
+    task:
+      id: 917a0b85-38b9-4f5a-86bf-2bc724829f8e
+      version: -1
+      name: Get script execution results
+      description: Retrieve the results of a script execution action.
+      script: '|||core-get-script-execution-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      action_id:
+        simple: ${Core.ScriptRun.action_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 9bca942b-9378-49c2-85f9-1b04f168f8a3
+    type: condition
+    task:
+      id: 9bca942b-9378-49c2-85f9-1b04f168f8a3
+      version: -1
+      name: Has the script disabled the task successfully?
+      description: Verify if the script successfully disabled the task.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: AnyMatch
+          left:
+            value:
+              simple: Core.ScriptResult.results.standard_output
+            iscontext: true
+          right:
+            value:
+              simple: SUCCESS
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: a3fc63d5-f57f-4e5b-89cb-9fcd435227fc
+    type: title
+    task:
+      id: a3fc63d5-f57f-4e5b-89cb-9fcd435227fc
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 1150
         }
       }
     note: false
@@ -993,14 +1136,15 @@ view: |-
       "24_21_Yes": 0.55,
       "2_3_yes": 0.28,
       "2_6_#default#": 0.42,
+      "30_28_yes": 0.53,
       "8_3_yes": 0.47,
       "8_5_#default#": 0.48
     },
     "paper": {
       "dimensions": {
-        "height": 2495,
-        "width": 1560,
-        "x": 30,
+        "height": 2835,
+        "width": 1590,
+        "x": 0,
         "y": 80
       }
     }
