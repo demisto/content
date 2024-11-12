@@ -5,14 +5,14 @@ import CommonServerPython
 def test_add_new_comment(mocker):
     context_results = {
         "CustomFields": {"sourceid": "incident-123"},
-        "sourceInstance": None,
+        "sourceInstance": "instance_test",
     }
     demisto_args = {"new_comment": "This is a new comment"}
-    expected_instance_name = None
+    expected_instance_name = "instance_test"
     expected_incident_id = "incident-123"
     expected_new_comment = "This is a new comment"
     mocker.patch.object(demisto, "args", return_value=demisto_args)
-    debug_mock = mocker.patch.object(demisto, "debug")
+    debug_mock = mocker.patch.object(demisto, "info")
     execute_command_mock = mocker.patch.object(CommonServerPython, "execute_command")
     table_to_markdown_mock = mocker.patch.object(
         CommonServerPython, "tableToMarkdown", return_value="Markdown Table"
@@ -25,7 +25,7 @@ def test_add_new_comment(mocker):
 
     result = add_new_comment(context_results)
     debug_mock.assert_any_call(
-        f"update remote incident with new XSOAR comments: {expected_new_comment}"
+        f"update remote incident with new XSOAR comment: {expected_new_comment}"
     )
 
     execute_command_mock.assert_called_once_with(
@@ -52,6 +52,6 @@ def test_add_new_comment(mocker):
         outputs={
             "IncidentId": expected_incident_id,
             "Message": expected_new_comment,
-            "InstanceName": None,
+            "InstanceName": "instance_test",
         },
     )
