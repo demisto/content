@@ -1092,7 +1092,7 @@ def test_filter_and_save_unseen_incident_limit_test():
         {
             "id": "2",
             "creation_time": 1577836800001
-        }]
+    }]
     assert filter_and_save_unseen_incident(incident, 1, 1) == [{"id": "1", "creation_time": 1577836800000}]
 
 
