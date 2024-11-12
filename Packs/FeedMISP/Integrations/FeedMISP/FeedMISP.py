@@ -557,9 +557,7 @@ def get_new_last_run_values(last_run: dict, latest_indicator_timestamp: str, lat
     if candidate_timestamp := last_run.get("candidate_timestamp"):
         # Update the last run with the candidate timestamp and indicator value when finishing pagination
         return candidate_timestamp, last_run.get("candidate_indicator_value")
-    elif ((last_run_timestamp and latest_indicator_timestamp
-           and latest_indicator_timestamp > last_run_timestamp)
-          or not last_run_timestamp):
+    elif not last_run_timestamp or latest_indicator_timestamp > last_run_timestamp:
         # If the indicators created successfully and the new indicator timestamp is bigger than last run timestamp,
         # update the last run timestamp and last indicator value
         return latest_indicator_timestamp, latest_indicator_value
