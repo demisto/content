@@ -13,7 +13,6 @@ configuration:
   type: 0
   additionalinfo: For API 2.0
   section: Connect
-  required: false
 - display: Client Secret
   name: client_secret
   type: 9
@@ -21,14 +20,12 @@ configuration:
   hiddenusername: true
   additionalinfo: For API 2.0
   section: Connect
-  required: false
 - display: App ID
   name: appId
   type: 0
   additionalinfo: For API 1.0
   section: Connect
   advanced: true
-  required: false
 - display: User Email Address (Use for auto token refresh)
   name: credentials
   type: 9
@@ -218,12 +215,10 @@ script:
       defaultValue: "20"
       predefined:
       - ""
-      auto: PREDEFINED
     - name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
       predefined:
       - ""
-      auto: PREDEFINED
     description: Query Mimecast emails. This is an archive search command.
     name: mimecast-query
     outputs:
@@ -290,7 +285,6 @@ script:
     - contextPath: Mimecast.Policy.Receiver.Type
       description: Block emails to receiver type.
       type: string
-    arguments: []
   - arguments:
     - description: Policy ID. The policy ID can be retrieved from the data.id field using the mimecast-list-policies command. For type address-alteration provide the folderId from the data.addressAlterationSetId field.
       name: policyID
