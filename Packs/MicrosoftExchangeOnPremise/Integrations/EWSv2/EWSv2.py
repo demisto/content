@@ -1,5 +1,4 @@
 import email
-from email.errors import HeaderParseError
 import hashlib
 import uuid
 from email.policy import SMTP, SMTPUTF8
@@ -1335,9 +1334,9 @@ def fetch_emails_as_incidents(account_email, folder_name, skip_unparsable_emails
                     if len(incidents) >= MAX_FETCH:
                         break
             except Exception as e:
-                if not skip_unparsable_emails: # default is to raise and exception and fail the command
+                if not skip_unparsable_emails:  # default is to raise and exception and fail the command
                     raise
-                
+
                 # when the skip param is `True`, we log the exceptions instead of failing the
                 error_msg = (
                     "Encountered email parsing issue while fetching. "

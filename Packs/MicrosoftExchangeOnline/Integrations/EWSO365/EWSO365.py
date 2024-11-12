@@ -2471,9 +2471,9 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
                     if len(incidents) >= client.max_fetch:
                         break
             except Exception as e:
-                if not skip_unparsable_emails: # default is to raise and exception and fail the command
+                if not skip_unparsable_emails:  # default is to raise and exception and fail the command
                     raise
-                
+
                 # when the skip param is `True`, we log the exceptions instead of failing the
                 error_msg = (
                     "Encountered email parsing issue while fetching. "
