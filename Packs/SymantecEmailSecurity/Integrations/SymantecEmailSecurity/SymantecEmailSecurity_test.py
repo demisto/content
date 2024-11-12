@@ -2,7 +2,7 @@ import copy
 import json
 import os
 import unittest.mock
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Callable
 
 import CommonServerPython
@@ -368,7 +368,7 @@ def test_convert_datetime_string(input: str, expected: str) -> None:
     [
         (
             "2023-10-15T12:34:56Z",
-            str(int(datetime(2023, 10, 15, 12, 34, 56, tzinfo=datetime.UTC).timestamp() * 1000)),
+            str(int(datetime(2023, 10, 15, 12, 34, 56, tzinfo=timezone.utc).timestamp() * 1000)),
         ),
         ("1970-01-01T00:00:00Z", "0"),
         ("2023-10-15T12:34:56", str(int(datetime(2023, 10, 15, 12, 34, 56).timestamp() * 1000))),
