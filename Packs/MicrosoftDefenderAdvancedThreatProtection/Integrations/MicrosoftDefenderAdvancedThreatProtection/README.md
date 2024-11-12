@@ -2576,18 +2576,18 @@ File.Read.All
 
 ##### Statistics on 9fe3ba25e5660c23dfe478d577cfacde5795870c file:
 
-|GlobalFirstObserved|GlobalLastObserved|GlobalPrevalence|OrgPrevalence|TopFileNames|
+|Global First Observed|Global Last Observed|Global Prevalence|Organization Prevalence|Top File Names|
 |---|---|---|---|---|
 | 2019-04-03T04:10:18.1001071Z | 2020-03-23T09:24:54.169574Z | 1355899 | 0 | lsass.exe |
 
 
 ##### File Indicator Example
 
-The basic indicator fields from the command are shown below without auto extraction and enrichment.
+The indicator fields from the command are shown below:
 
-| Type | Value | Verdict | Related Incidents | Expiration | Global Prevalence | Organization Prevalence | Global First Seen | Global Last Seen | Organization First Seen | Organization Last Seen |
+| Type | Value | Verdict | Related Incidents | Expiration | Global Prevalence | Organization Prevalence | First Seen By Source | Last Seen By Source | Organization First Seen | Organization Last Seen |
 |---|---|---|---|---|---|---|---|---|---|---|
-| File | 50ef7c645fd5cbb95d50fbaddf6213800f9296ec | Unknown | 2 | Never | 195803 | 0 | April 03, 2019 4:10 AM | March 23, 2020 9:24 AM | N/A | N/A |
+| File | 50ef7c645fd5cbb95d50fbaddf6213800f9296ec | Benign | 2 | Never | 195803 | 0 | April 03, 2019 4:10 AM | March 23, 2020 9:24 AM | N/A | N/A |
 
 ### 27. microsoft-atp-get-file-alerts
 

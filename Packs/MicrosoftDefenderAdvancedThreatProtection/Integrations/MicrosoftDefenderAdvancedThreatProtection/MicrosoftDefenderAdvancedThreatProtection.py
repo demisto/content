@@ -3429,6 +3429,7 @@ def get_file_statistics_human_readable(file_hash: str, file_stat_response: dict)
         'Global Last Observed': file_stat_response.get('globalLastObserved'),
         'Organization First Seen': file_stat_response.get('orgFirstSeen'),
         'Organization Last Seen': file_stat_response.get('orgLastSeen'),
+        'Top File Names': file_stat_response.get('topFileNames'),
     }
     return tableToMarkdown(f'Statistics on {file_hash} file:', formatted_data, removeNull=True)
 

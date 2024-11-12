@@ -387,11 +387,11 @@ FILE_STATISTICS_API_RESPONSE = {
     '@odata.context': 'https://api.security.microsoft.com/api/$metadata#microsoft.windowsDefenderATP.api.InOrgFileStats',
     'sha1': '0991a395da64e1c5fbe8732ed11e6be064081d9f',
     'orgPrevalence': '14850',
-    'organizationPrevalence': 14850,
+    'organizationPrevalence': 14850,  # same as 'orgPrevalence', but as integer
     'orgFirstSeen': '2019-12-07T13:44:16Z',
     'orgLastSeen': '2020-01-06T13:39:36Z',
     'globalPrevalence': '705012',
-    'globallyPrevalence': 705012,
+    'globallyPrevalence': 705012,  # same as 'globalPrevalence', but as integer
     'globalFirstObserved': '2015-03-19T12:20:07.3432441Z',
     'globalLastObserved': '2020-01-06T13:39:36Z',
     'topFileNames': ['MREC.exe']

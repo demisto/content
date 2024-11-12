@@ -3400,10 +3400,10 @@ class Common(object):
             if self.malware_family:
                 ip_context['MalwareFamily'] = self.malware_family
 
-            if self.organization_prevalence is not None:  # cases where value is 0 should be written to indicator context
+            if self.organization_prevalence is not None:  # checking for `is not None` to allow `0`-value
                 ip_context['OrganizationPrevalence'] = self.organization_prevalence
 
-            if self.global_prevalence is not None:  # cases where value is 0 should be written to indicator context
+            if self.global_prevalence is not None:  # checking for `is not None` to allow `0`-value
                 ip_context['GlobalPrevalence'] = self.global_prevalence
 
             if self.organization_first_seen:
@@ -4112,10 +4112,10 @@ class Common(object):
             if self.behaviors:
                 file_context['Behavior'] = self.create_context_table(self.behaviors)
 
-            if self.organization_prevalence is not None:  # cases where value is 0 should be written to indicator context
+            if self.organization_prevalence is not None:  # checking for `is not None` to allow `0`-value
                 file_context['OrganizationPrevalence'] = self.organization_prevalence
 
-            if self.global_prevalence is not None:  # cases where value is 0 should be written to indicator context
+            if self.global_prevalence is not None:  # checking for `is not None` to allow `0`-value
                 file_context['GlobalPrevalence'] = self.global_prevalence
 
             if self.organization_first_seen:
@@ -4619,10 +4619,10 @@ class Common(object):
             if self.publications:
                 url_context['Publications'] = self.create_context_table(self.publications)
 
-            if self.organization_prevalence is not None:  # cases where value is 0 should be written to indicator context
+            if self.organization_prevalence is not None:  # checking for `is not None` to allow `0`-value
                 url_context['OrganizationPrevalence'] = self.organization_prevalence
 
-            if self.global_prevalence is not None:  # cases where value is 0 should be written to indicator context
+            if self.global_prevalence is not None:  # checking for `is not None` to allow `0`-value
                 url_context['GlobalPrevalence'] = self.global_prevalence
 
             if self.organization_first_seen:
@@ -4865,10 +4865,10 @@ class Common(object):
             if self.malware_family:
                 domain_context['MalwareFamily'] = self.malware_family
 
-            if self.organization_prevalence is not None:  # cases where value is 0 should be written to indicator context
+            if self.organization_prevalence is not None:  # checking for `is not None` to allow `0`-value
                 domain_context['OrganizationPrevalence'] = self.organization_prevalence
 
-            if self.global_prevalence is not None:  # cases where value is 0 should be written to indicator context
+            if self.global_prevalence is not None:  # checking for `is not None` to allow `0`-value
                 domain_context['GlobalPrevalence'] = self.global_prevalence
 
             if self.organization_first_seen:
