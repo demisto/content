@@ -59,16 +59,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * closeInvestigation
 * core-list-risky-users
 
-## Playbook Inputs
-
----
-There are no inputs for this playbook.
-
-## Playbook Outputs
-
----
-There are no outputs for this playbook.
-
 ## Playbook Image
 
 ---

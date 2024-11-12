@@ -23,10 +23,6 @@ Remediation:
 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
-### Sub-playbooks
-
-This playbook does not use any sub-playbooks.
-
 ### Integrations
 
 CortexCoreIR
@@ -40,16 +36,6 @@ SearchIncidentsV2
 * core-get-process-analytics-prevalence
 * core-terminate-causality
 * closeInvestigation
-
-## Playbook Inputs
-
----
-There are no inputs for this playbook.
-
-## Playbook Outputs
-
----
-There are no outputs for this playbook.
 
 ## Playbook Image
 

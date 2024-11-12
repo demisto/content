@@ -57,16 +57,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * gsuite-user-signout
 * gsuite-user-update
 
-## Playbook Inputs
-
----
-There are no inputs for this playbook.
-
-## Playbook Outputs
-
----
-There are no outputs for this playbook.
-
 ## Playbook Image
 
 ---

@@ -43,15 +43,6 @@ This playbook does not use any scripts.
 * msgraph-user-account-disable
 * msgraph-user-list
 
-## Playbook Inputs
-
----
-There are no inputs for this playbook.
-
-## Playbook Outputs
-
----
-There are no outputs for this playbook.
 
 ## Playbook Image
 

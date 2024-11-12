@@ -41,16 +41,6 @@ SearchAlertsV2
 * core-get-cmd-analytics-prevalence
 * core-list-risky-users
 
-## Playbook Inputs
-
----
-There are no inputs for this playbook.
-
-## Playbook Outputs
-
----
-There are no outputs for this playbook.
-
 ## Playbook Image
 
 ---

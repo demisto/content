@@ -40,16 +40,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * core-get-script-execution-results
 * core-run-script-execute-commands
 
-## Playbook Inputs
-
----
-There are no inputs for this playbook.
-
-## Playbook Outputs
-
----
-There are no outputs for this playbook.
-
 ## Playbook Image
 
 ---

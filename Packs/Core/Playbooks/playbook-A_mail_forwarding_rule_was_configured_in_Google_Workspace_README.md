@@ -68,10 +68,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | --- | --- | --- | --- |
 | SendNotification | If set to "true," the playbook will send an email notification to the user informing them that the forwarding address was deleted. If "false," no notification will be sent. | true | Optional |
 
-## Playbook Outputs
-
----
-There are no outputs for this playbook.
 
 ## Playbook Image
 

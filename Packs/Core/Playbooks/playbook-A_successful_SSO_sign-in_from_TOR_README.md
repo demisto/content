@@ -49,16 +49,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * core-get-cloud-original-alerts
 * closeInvestigation
 
-## Playbook Inputs
-
----
-There are no inputs for this playbook.
-
-## Playbook Outputs
-
----
-There are no outputs for this playbook.
-
 ## Playbook Image
 
 ---
