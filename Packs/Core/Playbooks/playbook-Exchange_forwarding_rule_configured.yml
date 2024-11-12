@@ -1,7 +1,7 @@
 id: Exchange forwarding rule configured
 version: -1
 name: Exchange forwarding rule configured
-description: "#### Playbooks\n\n**This playbook addresses the following alerts:**\n\n- External Exchange inbox forwarding rule configured.\n- Suspicious Exchange inbox forwarding rule configured.\n- Possible BEC Exchange email-hiding inbox rule.\n- Suspicious Exchange email-hiding inbox rule.\n\n#### Playbook Stages:\n \n##### Triage: \n\n- The playbook retrieves the caller's IP, the forwarding email address, and the domain.\n\n##### Early Containment:\n\n- The playbook checks if the IP or domain of the forwarding email address is malicious. If so, it suggests blocking the IP using PAN-OS while continuing the investigation in parallel.\n\n##### Investigation:\n\n- The playbook checks for suspicious behaviors, including whether the rule was created outside of working hours, from an unusual geolocation, by an Exchange admin, or if the user who created the rule has a high risk score. It then aggregates all evidence collected during the investigation.\n\n##### Containment:\n\n- If at least two suspicious evidence are found, the playbook executes soft response actions, including signing the user out and deleting the forwarding email address from the user account mailbox. The user will be notified of these actions via email.\n- If more than two suspicious evidence are found, the playbook executes both soft and hard response actions, recommending the analyst suspend the user account.\n\n#### Requirements: \n\nFor any response action, you need one of the following integrations:\n- EWS Extension Online Powershell v3 integration."
+description: "This playbook addresses the following alerts:\n\n- External Exchange inbox forwarding rule configured.\n- Suspicious Exchange inbox forwarding rule configured.\n- Possible BEC Exchange email-hiding inbox rule.\n- Suspicious Exchange email-hiding inbox rule.\n\nPlaybook Stages:\n \nTriage: \n\n- The playbook retrieves the caller's IP, the forwarding email address, and the domain.\n\nEarly Containment:\n\n- The playbook checks if the IP or domain of the forwarding email address is malicious. If so, it suggests blocking the IP using PAN-OS while continuing the investigation in parallel.\n\nInvestigation:\n\n- The playbook checks for suspicious behaviors, including whether an Exchange admin created the rule outside of working hours, from unusual geolocation, or if the user who created the rule has a high-risk score. It then aggregates all evidence collected during the investigation.\n\nContainment:\n\n- If at least two suspicious evidence are found, the playbook executes soft response actions, including signing the user out and deleting the forwarding email address from the user account mailbox. The user will be notified of these actions via email.\n- If more than two suspicious evidence are found, the playbook executes both soft and hard response actions, recommending the analyst suspend the user account.\n\nRequirements: \n\nFor any response action, you need the following integration:\n- EWS Extension Online Powershell v3 integration."
 tags:
 - TA0009 - Collection
 - TA0010 - Exfiltration
@@ -413,7 +413,7 @@ tasks:
     task:
       id: 146faa60-9405-4cf2-8f7c-7ce02160a0c4
       version: -1
-      name: Check if rule created outside of business hours
+      name: Check if the rule was created outside of business hours
       description: Checks whether the given value is within the specified time (hour) range.
       scriptName: BetweenHours
       type: regular
@@ -439,7 +439,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 660
+          "y": 670
         }
       }
     note: false
@@ -1137,7 +1137,7 @@ tasks:
     task:
       id: 6cc4ec9a-a36d-48e5-852b-a5c1bc1b782f
       version: -1
-      name: Decide whether to suspend the user account
+      name: Decide whether to disable the user account
       type: collection
       iscommand: false
       brand: ""
@@ -1176,7 +1176,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: "The following evidences was found: \n\n${Evidences}\nWould you like to suspend the account ${Core.OriginalAlert.raw_abioc.event.identity_name}?"
+          simple: "The following evidence was found: \n\n${Evidences}\n\nWould you like to disable the account ${Core.OriginalAlert.raw_abioc.event.identity_name}?"
         required: false
         gridcolumns: []
         defaultrows: []
@@ -1243,11 +1243,11 @@ tasks:
     task:
       id: 65ab206a-9e3f-4b64-8efe-0ec2ba0d3e54
       version: -1
-      name: Disable user account?
+      name: Check analyst decision
       type: condition
       iscommand: false
       brand: ""
-      description: "" 
+      description: ""
     nexttasks:
       '#default#':
       - "14"
@@ -1265,6 +1265,7 @@ tasks:
           right:
             value:
               simple: "yes"
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1568,7 +1569,7 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 tests:
-- Test Playbook - Impossible Traveler - Enrichment
-- Test Playbook - IOC Alert
-- Test Playbook - Identity Analytics - Alert Handling
+- No tests (auto formatted)
 fromversion: 6.10.0
+marketplaces:
+- marketplacev2

@@ -1,34 +1,32 @@
-#### Playbooks
-
-**This playbook addresses the following alerts:**
+This playbook addresses the following alerts:
 
 - External Exchange inbox forwarding rule configured.
 - Suspicious Exchange inbox forwarding rule configured.
 - Possible BEC Exchange email-hiding inbox rule.
 - Suspicious Exchange email-hiding inbox rule.
 
-#### Playbook Stages:
+Playbook Stages:
  
-##### Triage: 
+Triage: 
 
 - The playbook retrieves the caller's IP, the forwarding email address, and the domain.
 
-##### Early Containment:
+Early Containment:
 
 - The playbook checks if the IP or domain of the forwarding email address is malicious. If so, it suggests blocking the IP using PAN-OS while continuing the investigation in parallel.
 
-##### Investigation:
+Investigation:
 
-- The playbook checks for suspicious behaviors, including whether the rule was created outside of working hours, from an unusual geolocation, by an Exchange admin, or if the user who created the rule has a high risk score. It then aggregates all evidence collected during the investigation.
+- The playbook checks for suspicious behaviors, including whether an Exchange admin created the rule outside of working hours, from unusual geolocation, or if the user who created the rule has a high-risk score. It then aggregates all evidence collected during the investigation.
 
-##### Containment:
+Containment:
 
 - If at least two suspicious evidence are found, the playbook executes soft response actions, including signing the user out and deleting the forwarding email address from the user account mailbox. The user will be notified of these actions via email.
 - If more than two suspicious evidence are found, the playbook executes both soft and hard response actions, recommending the analyst suspend the user account.
 
-#### Requirements: 
+Requirements: 
 
-For any response action, you need one of the following integrations:
+For any response action, you need the following integration:
 - EWS Extension Online Powershell v3 integration.
 
 ## Dependencies
