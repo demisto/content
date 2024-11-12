@@ -26,6 +26,7 @@ def test_create_relationship():
     indicator = "Sigma Rule"
     entity_b = "Command and Scripting Interpreter"
     entity_b_type = "Attack Pattern"
+    relation_type = "detects"
     result = EntityRelationship(
         entity_a="Sigma Rule",
         entity_a_type="Sigma Rule Indicator",
@@ -34,19 +35,21 @@ def test_create_relationship():
         entity_b="Command and Scripting Interpreter",
         entity_b_type="Attack Pattern"
     )
-    assert create_relationship(indicator, entity_b, entity_b_type).to_context() == result.to_context()
+    assert create_relationship(indicator, entity_b, entity_b_type, relation_type).to_context() == result.to_context()
 
 
 @pytest.mark.parametrize("input, expected_result", [
     pytest.param([SigmaRuleTag(namespace='attack', name='t1059', source=None)],
-                 (["Command and Scripting Interpreter"], [], ["T1059 - Command and Scripting Interpreter"], 'CLEAR'),
+                 ([{"value": "Command and Scripting Interpreter", "type": "Attack Pattern"}],
+                  ["T1059 - Command and Scripting Interpreter"],
+                  "CLEAR"),
                  id="Tag Creation - MITRE technique"),
     pytest.param([SigmaRuleTag(namespace="attack", name="resource-development"),
                   SigmaRuleTag(namespace='tlp', name='RED')],
-                 ([], [], ["Resource Development"], "RED"),
+                 ([], ["Resource Development"], "RED"),
                  id="Tag Creation - MITRE tactic"),
     pytest.param([SigmaRuleTag(namespace='cve', name="2024-3400")],
-                 ([], ["CVE-2024-3400"], ["CVE-2024-3400"], "CLEAR"),
+                 ([{"value": "CVE-2024-3400", "type": "CVE"}], ["CVE-2024-3400"], "CLEAR"),
                  id="Tag Creation - CVEs")
 ])
 @patch.object(CreateSigmaRuleIndicator, "get_mitre_technique_name")
@@ -59,7 +62,8 @@ def test_parse_tags(mock_get_mitre_technique_name, input, expected_result):
 def test_get_mitre_technique_name(mock_execute_command):
     mock_execute_command.return_value = True, {"value": "Command and Scripting Interpreter"}
     mitre_id = "T1059"
-    get_mitre_technique_name(mitre_id)
+    indicator_type = "Attack Pattern"
+    get_mitre_technique_name(mitre_id, indicator_type)
     mock_execute_command.assert_called_with(command='SearchIndicator',
                                             args={'query': f'type:"Attack Pattern" and {mitre_id}'},
                                             fail_on_error=False)
@@ -71,9 +75,9 @@ def test_create_indicator_relationships(mock_return_results, mock_create_relatio
     mock_create_relationship.return_value("relationship")
     indicator = "Sigma Rule Test"
     product = "Windows"
-    techniques = ["Some technique"]
-    cves = ["CVE-2024-111"]
-    create_indicator_relationships(indicator, product, techniques, cves)
+    relationships = [{"value": "Some technique", "type": "Attack Pattern"},
+                     {"value": "CVE-2024-111", "type": "CVE"}]
+    create_indicator_relationships(indicator, product, relationships)
     assert mock_create_relationship.call_count == 3
 
 

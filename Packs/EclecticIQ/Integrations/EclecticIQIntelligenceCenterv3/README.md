@@ -585,7 +585,7 @@ Make HTTP POST request to EclecticIQ Intelligence Center.
 | EclecticIQ.POST.URI | String | POST reply requested URI. | 
 
 #### Command example
-```!eclecticiq-request-post uri=/api/v2/datasets body=`{"data": {"workspaces": "1", "name": "test11112"}}````
+```!eclecticiq-request-post uri=/api/v2/datasets body=`{"data": {"workspaces": "1", "name": "test11112"}}```
 #### Context Example
 ```json
 {
@@ -601,9 +601,108 @@ Make HTTP POST request to EclecticIQ Intelligence Center.
 }
 ```
 
+
+
 #### Human Readable Output
 
 >### EclecticIQ POST action to endpoint /api/v2/datasets exectued. Reply status: 201
+
+
+### eclecticiq-request-put
+
+***
+Make HTTP PUT request to EclecticIQ Intelligence Center.
+
+#### Base Command
+
+`eclecticiq-request-put`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uri | EclecticIQ URI excluding Intelligence Cetner address but including API version and params if needed. | Required | 
+| body | JSON payload. | Optional | 
+
+#### Context Output
+
+| **Path**                   | **Type** | **Description**          |
+|----------------------------| --- |--------------------------|
+| EclecticIQ.PUT.ReplyBody   | String | PUT reply body.          | 
+| EclecticIQ.PUT.ReplyStatus | String | PUT reply status code.   | 
+| EclecticIQ.PUT.URI         | String | PUT reply requested URI. | 
+
+#### Command example
+```!eclecticiq-request-put uri=/api/v2/datasets body=`{"data": {"workspaces": "1", "name": "test11112"}}```
+#### Context Example
+```json
+{
+    "EclecticIQ": {
+        "PUT": {
+            "ReplyBody": {
+                "data": {...}
+            },
+            "ReplyStatus": "200",
+            "URI": "/api/v2/datasets"
+        }
+    }
+}
+```
+
+
+
+#### Human Readable Output
+
+>### EclecticIQ PUT action to endpoint /api/v2/datasets exectued. Reply status: 200
+
+
+### eclecticiq-request-patch
+
+***
+Make HTTP PATCH request to EclecticIQ Intelligence Center.
+
+#### Base Command
+
+`eclecticiq-request-patch`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uri | EclecticIQ URI excluding Intelligence Cetner address but including API version and params if needed. | Required | 
+| body | JSON payload. | Optional | 
+
+#### Context Output
+
+| **Path**                     | **Type** | **Description**            |
+|------------------------------| --- |----------------------------|
+| EclecticIQ.PATCH.ReplyBody   | String | PATCH reply body.          | 
+| EclecticIQ.PATCH.ReplyStatus | String | PATCH reply status code.   | 
+| EclecticIQ.PATCH.URI         | String | PATCH reply requested URI. | 
+
+#### Command example
+```!eclecticiq-request-patch uri=/api/v2/datasets/1 body=`{"data": {"workspaces": "1", "name": "test11112"}}```
+#### Context Example
+```json
+{
+    "EclecticIQ": {
+        "PATCH": {
+            "ReplyBody": {
+                "data": {...}
+            },
+            "ReplyStatus": "200",
+            "URI": "/api/v2/datasets/1"
+        }
+    }
+}
+```
+
+
+
+#### Human Readable Output
+
+>### EclecticIQ PATCH action to endpoint /api/v2/datasets/1 exectued. Reply status: 200
+
 
 ### eclecticiq-request-delete
 

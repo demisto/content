@@ -278,16 +278,30 @@ There is no context output for this command.
 Sends a file to a user, channel, or group. If not specified, the file is sent to the mirrored investigation channel (if
 the channel exists).
 
-**Note:** Command slack-send-file isn't available for newly created apps (from May 8, 2024) and will get an error in case of use, due to changes from the Slack API side.
-
 #### Base Command
 
 `slack-send-file`
 
+#### Permissions
+
+Permission scopes required for this command:
+
+| **Token Type**    | **Scope**                     |
+| --- | --- | 
+| Granular bot      | files:write                   |
+| User              | files:write files:write:user  |
+| Legacy bot        | bot                           |
+
+The full list of Slack API scopes can be accessed [here](https://api.slack.com/scopes).
+
+#### Limitations
+
+There are no known limitations for this command.
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                     | **Required** |
-|-------------------|-----------------------------------------------------------------------------------------------------|--------------|
+| --- | --- | --- |
 | file              | The ID of the file entry to send.                                                                   | Required     | 
 | to                | The user to whom to send the file. Can be the username or the email address.                        | Optional     | 
 | group             | The name of the Slack group (private channel) to which to send the file.                            | Optional     | 

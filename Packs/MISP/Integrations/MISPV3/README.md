@@ -19,6 +19,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 | Malicious tag IDs | Comma-separated list of event's or attribute's malicious tag IDs. Malicious tags are stronger than suspicious tags. | False |
 | Suspicious tag IDs | Comma-separated list of event's or attribute's suspicious tag IDs. Malicious tags are stronger than suspicious tags. | False |
 | Benign tag IDs | Comma-separated list of event's or attribute's benign tag IDs. Malicious and suspicious tags are stronger than benign tags. | False |
+| Search warninglists | Should the warninglists be considered when searching for an attribute.` | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | True |
 | Maximum attributes to be returned | This field limits the number of attributes that will be written to the context for every reputation command. Raising the number of attributes may result in high memory and disk usage. | False |
 

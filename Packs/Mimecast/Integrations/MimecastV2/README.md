@@ -33,6 +33,7 @@ Mimecast uses quotas per period of time (i.e. rate limits) that apply to every A
    | Fetch incidents | False |
    | Incident type | False |
    | Fetch incidents | False |
+   | Incidents Fetch Interval | False |
 
 > **Note:** The fields `User Email Address (Use for auto token refresh)` and `Password` are not mandatory fields. You will only need them if you have expiry set on the auth of the user account you use to create the API keys. They will be used to auto refresh the API key once it expires.
 
@@ -818,6 +819,7 @@ Returns the members list for the specified group.
 | Mimecast.Group.Users.Type         | String   | The user type.                               | 
 | Mimecast.Group.Users.InternalUser | Boolean  | Whether the user is internal.                | 
 | Mimecast.Group.Users.IsRemoved    | Boolean  | Whether the user is part of the group.       | 
+| Mimecast.Group.Users.Notes        | unknown  | The notes linked to the group.               | 
 
 ### mimecast-add-group-member
 
@@ -835,6 +837,7 @@ Adds a user to a group. The email_address and domain_address arguments are optio
 | group_id          | The Mimecast ID of the group to add the user to. | Required     | 
 | email_address     | The email address of the user to add to a group. | Optional     | 
 | domain_address    | A domain to add to a group.                      | Optional     | 
+| notes             | The notes for the entry.                         | Optional     | 
 
 #### Context Output
 

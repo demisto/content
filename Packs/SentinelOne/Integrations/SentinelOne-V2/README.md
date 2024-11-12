@@ -1786,7 +1786,9 @@ Automate a power query and return the query results. (The maximum timeout of 300
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.PowerQuery.ResultIndex | List | Result from the power query in list of objects format | 
 
 
 ### get-mapping-fields

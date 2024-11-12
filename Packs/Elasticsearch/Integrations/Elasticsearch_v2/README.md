@@ -1,5 +1,6 @@
 Search for and analyze data in real time. 
- Supports version 6 and later.
+Supports version 6 and later.
+This integration was integrated and tested with versions 6.6.2, 7.3, 8.4.1 of Elasticsearch.
 
 ## Permissions
 
@@ -17,7 +18,7 @@ The permissions required to use this integration depends on which operations you
 | Username for server login | Provide Username \+ Passoword instead of API key \+ API ID | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-| Client type | In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type. | False |
+| Client type | For Elasticsearch version 7 and below, select 'Elasticsearch'. For Elasticsearch server version 8, select 'Elasticsearch_v8'. In some hosted Elasticsearch environments, the standard Elasticsearch client is not supported. If you encounter any related client issues, consider using the 'OpenSearch' client type. | False |
 | Index from which to fetch incidents (CSV) |  | False |
 | Query String | The query will be used when fetching incidents. Index time field will be used as a filter in the query | False |
 | Index time field (for sorting sort and limiting data) | The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation. | False |
@@ -227,7 +228,6 @@ Indexes a document into an Elasticsearch index.
 >|---|---|---|---|
 >| 1234 | test-xsoar | 1 | created | 
 
-
 ### es-integration-health-check
 ***
 Returns the health status of the integration. This commmand should be used for debugging purposes.
@@ -242,3 +242,30 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+### es-get-indices-statistics
+
+***
+Returns Elasticsearch indices statistics and information. This command is not supported for client type OpenSearch.
+
+#### Base Command
+
+`es-get-indices-statistics`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of indices to return. Default is 50. | Optional |
+| all_results | Whether to retrieve all the Elasticsearch indices. If true, the "limit" argument will be ignored. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.IndexStatistics.Name | String | The name of the index. |
+| Elasticsearch.IndexStatistics.Status | String | The status of the index. |
+| Elasticsearch.IndexStatistics.Health | String | The health status of the index. |
+| Elasticsearch.IndexStatistics.UUID | String | The UUID of the index. |
+| Elasticsearch.IndexStatistics.DocumentsCount | Number | The number of documents that are indexed in the index. |
+| Elasticsearch.IndexStatistics.DocumentsDeleted | Number | The number of documents that were deleted from the index. |

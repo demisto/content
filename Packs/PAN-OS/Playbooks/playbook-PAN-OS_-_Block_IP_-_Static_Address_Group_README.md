@@ -22,8 +22,8 @@ This playbook does not use any scripts.
 ### Commands
 
 * pan-os-create-address
-* pan-os-edit-address-group
 * pan-os-get-address-group
+* pan-os-edit-address-group
 
 ## Playbook Inputs
 
@@ -46,5 +46,4 @@ There are no outputs for this playbook.
 ---
 
 ![PAN-OS - Block IP - Static Address Group](../doc_files/PAN-OS_Block_IP_Static_Address_Group.png)
-
 

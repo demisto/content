@@ -35,7 +35,7 @@ The integration was integrated and tested with version v3 API of VirusTotal.
 ### Acquiring your API key
 
 Your API key can be found in your VirusTotal account user menu:
-![how to get api key in virus total](https://files.readme.io/ddeb298-Screen_Shot_2019-10-17_at_3.17.04_PM.png)
+![how to get api key in virus total](../../doc_files/ddeb298-Screen_Shot_2019-10-17_at_3_17_04_PM.png)
 Your API key carries all your privileges, so keep it secure and don't share it with anyone.
 
 ## DBot Score / Reputation scores

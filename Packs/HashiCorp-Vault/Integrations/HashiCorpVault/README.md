@@ -400,6 +400,67 @@ Create a new authentication token.
 #### Command example
 ```!hashicorp-create-token display_name=token explicit_max_ttl=3600 renewable=false```
 
+
+### hashicorp-generate-role-secret
+***
+Generates and issues a new SecretID on an existing AppRole.
+
+#### Base Command
+
+`hashicorp-generate-role-secret`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| role_name | The name of the AppRole. | Required |
+| meta_data | Metadata to be tied to the SecretID. | Optional |
+| cidr_list | Comma separated string or list of CIDR blocks enforcing secret IDs to be used from specific set of IP addresses. | Optional |
+| token_bound_cidrs | Comma-separated string or list of CIDR blocks. | Optional |
+| num_uses | Number of times this SecretID can be used, after which the SecretID expires. A value of zero will allow unlimited uses. | Optional |
+| ttl_seconds | Duration in seconds after which this SecretID expires. A value of zero will allow the SecretID to not expire. | Optional |
+
+#### Context Output
+There is no context output for this command.
+#### Command example
+```!hashicorp-generate-role-secret role_name=my-role```
+
+#### Human Readable Output
+>SecretID:123
+
+
+
+### hashicorp-get-role-id
+***
+Retrieves the AppRole ID for a specified role.
+
+
+#### Base Command
+
+`hashicorp-get-role-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| role_name | The name of the AppRole. | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| HashiCorp.AppRole.Id | string | AppRole ID. | 
+| HashiCorp.AppRole.Name | string | AppRole Name. | 
+
+#### Command example
+```!hashicorp-get-role-id role_name=my-role```
+
+#### Human Readable Output
+|Id|Name|
+|---|---|
+|role_id|role_name|
+
+
 ## Additional Information
 - In order to fetch credentials from HashiCorp Vault, the relevant secrets engines must be configured with the integration so it can pull the data from them. To configure an engine with the integration, use the ***configure-engine*** command.
 - The default fetch rate for fetch-credentials is 10 minutes. This is configurable with the server parameter *vault.module.cache.expire*

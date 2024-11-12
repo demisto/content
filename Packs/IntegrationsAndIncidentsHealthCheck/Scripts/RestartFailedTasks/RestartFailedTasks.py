@@ -63,7 +63,7 @@ def restart_tasks(failed_tasks: list, sleep_time: int, group_size: int):
         task_id, incident_id, playbook_name, task_name =\
             task['Task ID'], task['Incident ID'], task['Playbook Name'], task['Task Name']
         demisto.info(f'Restarting task with id: {task_id} and incident id: {incident_id}')
-        demisto.executeCommand("taskReopen", {'id': task_id, 'incident_id': incident_id})
+        demisto.executeCommand("taskReopen", {'id': task_id, 'incidentId': incident_id})
         body = {'invId': incident_id, 'inTaskID': task_id}
 
         if is_xsoar_version_6_2:

@@ -63,6 +63,8 @@ Follow the instructions in the [Fetched Incidents Data](#fetched-incidents-data)
 | Timeout (in seconds) for HTTP requests to Exchange Server                                                                                     | False        |
 | Max incidents per fetch                                                                                                                       | False        |
 | Run as a separate process (protects against memory depletion)                                                                                 | False        |
+| Skip unparsable emails during fetch incidents                                                                                                 | False        |
+
 
 
 ## Fetched Incidents Data
@@ -390,7 +392,7 @@ Move an item to different folder in the mailbox.
 ### ews-delete-items
 
 ***
-Delete items from mailbox.
+Delete items from mailbox. This command requires eDiscovery permissions to the Exchange Server. For more information, see the EWSv2 integration documentation.
 
 
 #### Base Command

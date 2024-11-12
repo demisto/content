@@ -489,7 +489,7 @@ Resolves and updates a detection using the provided arguments. At least one opti
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ids | A comma-separated list of one or more IDs to resolve. | Required | 
-| status | The status to transition a detection to. Possible values are: new, in_progress, true_positive, false_positive, closed, reopened, ignored. | Optional | 
+| status | The status to transition a detection to. **Possible** values are: new, in_progress, true_positive, false_positive, closed, reopened, ignored. <br /> Note: The following statuses—true_positive, false_positive, and ignored—are only available in the legacy version of the API.| Optional | 
 | assigned_to_uuid | A user ID, for example: 1234567891234567891. username and assigned_to_uuid are mutually exclusive. | Optional | 
 | comment | Optional comment to add to the detection. Comments are displayed with the detection in CrowdStrike Falcon and provide context or notes for other Falcon users. | Optional | 
 | show_in_ui | If true, displays the detection in the UI. Possible values are: true, false. | Optional | 
@@ -3300,7 +3300,7 @@ Resolve and update incidents using the specified settings.
 | username | Username of a user to assign the incident to. Mutually exclusive with the 'assigned_to_uuid' argument. Using this parameter instead of 'assigned_to_uuid' will result in an additional API call in order to fetch the UUID of the user. | Optional | 
 | add_tag | Add a new tag to the incidents. | Optional | 
 | remove_tag | Remove a tag from the incidents. | Optional | 
-| add_comment | Add a comment to the incident. | Optional | 
+| add_comment | Add a comment to the incident. Comment is limited to 1024 characters. | Optional | 
 
 #### Context Output
 

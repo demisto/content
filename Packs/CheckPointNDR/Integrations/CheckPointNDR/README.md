@@ -1,5 +1,5 @@
 Collect network security events from Check Point Infinity NDR for your secured SaaS periodically
-This integration was integrated and tested with version 1.0.0 of CheckPointNDR
+This integration was integrated and tested with version 1.1.0 of CheckPointNDR
 
 ## Configure Check Point Network Detection and Response (Infinity NDR) in Cortex
 
@@ -14,10 +14,9 @@ This integration was integrated and tested with version 1.0.0 of CheckPointNDR
 | Use system proxy settings | False |
 | Incidents Fetch Interval | False |
 
-
 ## Commands
 
-You can execute these commands from the CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### check-point-ndr-fetch-insights

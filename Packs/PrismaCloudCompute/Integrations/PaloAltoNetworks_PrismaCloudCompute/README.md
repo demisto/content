@@ -928,6 +928,31 @@ There is no context output for this command.
 #### Human Readable Output
 >Successfully updated the custom IP feeds
 
+### prisma-cloud-compute-custom-feeds-ip-remove
+
+***
+Remove a list of IPs from the system's block list.
+
+#### Base Command
+
+`prisma-cloud-compute-custom-feeds-ip-remove`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | A comma-separated list of custom IP addresses to remove from the banned IPs list. For example ip=1.1.1.1,2.2.2.2. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!prisma-cloud-compute-custom-feeds-ip-remove ip=2.2.2.2,5.6.7.8```
+#### Human Readable Output
+
+>Successfully removed {'2.2.2.2'} from the custom IP feeds.
+>        Could not find {'5.6.7.8'} in the custom IP feeds.
+
 ### prisma-cloud-compute-custom-feeds-malware-list
 ***
 List all custom uploaded md5 malwares.

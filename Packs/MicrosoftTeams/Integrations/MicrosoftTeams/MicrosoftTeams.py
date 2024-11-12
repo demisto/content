@@ -616,6 +616,48 @@ def process_ask_user(message: str) -> dict:
     return create_adaptive_card(body, actions)
 
 
+def add_data_to_actions(card_json, data_value):
+
+    # If the current item is a list, iterate over it
+    if isinstance(card_json, list):
+        for item in card_json:
+            add_data_to_actions(item, data_value)
+
+    # If the current item is a dictionary
+    elif isinstance(card_json, dict):
+        # Check if this dictionary is an Action.Submit or Action.Execute
+        if card_json.get("type") in ["Action.Submit", "Action.Execute"]:
+            # Add the 'data' key with the provided value
+            card_json["data"] = data_value
+
+        # Only check nested elements within 'actions'
+        if "actions" in card_json:
+            add_data_to_actions(card_json["actions"], data_value)
+
+        # Handle nested card inside Action.ShowCard
+        if card_json.get("type") == "Action.ShowCard" and "card" in card_json:
+            add_data_to_actions(card_json["card"], data_value)
+
+
+def process_adaptive_card(adaptive_card_obj: dict) -> dict:
+    """
+    Processes adaptive cards coming from MicrosoftTeamsAsk. It will find all action elements
+    of type Action.Submit or Action.Execute within adaptive_card_obj['adaptive_card'] and add entitlement,
+    investigation_id and task_id to them.
+    :param adaptive_card_obj: The adaptive card object.
+    :return: Adaptive card with entitlement.
+    """
+
+    adaptive_card = adaptive_card_obj.get('adaptive_card', '')
+    data_obj: dict = {}
+    data_obj["entitlement"] = str(adaptive_card_obj.get('entitlement', ''))
+    data_obj["investigation_id"] = str(adaptive_card_obj.get('investigation_id', ''))
+    data_obj["task_id"] = str(adaptive_card_obj.get('task_id', ''))
+
+    add_data_to_actions(adaptive_card.get('content', ''), data_obj)
+    return adaptive_card
+
+
 def get_bot_access_token() -> str:
     """
     Retrieves Bot Framework API access token, either from cache or from Microsoft
@@ -2095,11 +2137,11 @@ def send_message():
 
     recipient: str = channel_id or personal_conversation_id
 
-    conversation: dict
+    conversation: dict = {}
 
     if message:
-        entitlement_match: Match[str] | None = re.search(ENTITLEMENT_REGEX, message)
-        if entitlement_match and is_teams_ask_message(message):
+        entitlement_match_msg: Match[str] | None = re.search(ENTITLEMENT_REGEX, message)
+        if entitlement_match_msg and is_teams_ask_message(message):
             # In TeamsAsk process
             adaptive_card = process_ask_user(message)
             conversation = {
@@ -2119,10 +2161,13 @@ def send_message():
                 'entities': entities
             }
     else:  # Adaptive card
-        conversation = {
-            'type': 'message',
-            'attachments': [adaptive_card]
-        }
+        entitlement_match_ac: Match[str] | None = re.search(ENTITLEMENT_REGEX, adaptive_card.get('entitlement', ''))
+        if entitlement_match_ac:
+            adaptive_card_processed = process_adaptive_card(adaptive_card)
+            conversation = {
+                'type': 'message',
+                'attachments': [adaptive_card_processed]
+            }
 
     service_url: str = integration_context.get('service_url', '')
     if not service_url:
@@ -2444,6 +2489,13 @@ def entitlement_handler(integration_context: dict, request_body: dict, value: di
     :return: None
     """
     response: str = value.get('response', '')
+    if not response:
+        # Adaptive Card Response Received
+        remove_keys = ['entitlement', 'investigation_id', 'task_id']
+        response_dict = {key: value for key, value in value.items() if key not in remove_keys}
+        response = tableToMarkdown("Response", response_dict, headers=list(response_dict.keys()))
+
+    demisto.debug(f"Entitlement Response Received\n{value}")
     entitlement_guid: str = value.get('entitlement', '')
     investigation_id: str = value.get('investigation_id', '')
     task_id: str = value.get('task_id', '')

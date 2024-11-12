@@ -2069,10 +2069,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 2d42a79a-15bd-4851-8ce1-16e874ea4567
+    taskid: 4e31d21d-f0e5-40d2-8333-750fd0973c3c
     type: condition
     task:
-      id: 2d42a79a-15bd-4851-8ce1-16e874ea4567
+      id: 4e31d21d-f0e5-40d2-8333-750fd0973c3c
       version: -1
       name: Calculate Verdict
       description: Estimate the verdict for the large upload Cortex XDR alerts.
@@ -2468,100 +2468,62 @@ tasks:
             value:
               simple: inputs.InternalIPRanges
             iscontext: true
-        - operator: isEqualString
+        - operator: inList
           left:
             value:
               complex:
-                root: Core.Incident.alerts
+                root: Core.OriginalAlert
                 filters:
-                - - operator: inList
+                - - operator: isNotEmpty
                     left:
                       value:
-                        simple: Core.Incident.alerts.host_name
+                        simple: Core.OriginalAlert._all_events.agent_hostname
                       iscontext: true
-                    right:
-                      value:
-                        simple: Analysis.FTP_Server
-                      iscontext: true
-                    ignorecase: true
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: Core.Incident.alerts.name
+                        simple: Core.OriginalAlert.alert_name
                       iscontext: true
                     right:
                       value:
                         simple: Large Upload (FTP)
                     ignorecase: true
-                accessor: host_name
+                accessor: _all_events.agent_hostname
                 transformers:
                 - operator: uniq
             iscontext: true
           right:
             value:
-              complex:
-                root: Core.Endpoint
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Core.Endpoint.endpoint_type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: AGENT_TYPE_SERVER
-                    ignorecase: true
-                accessor: endpoint_name
-                transformers:
-                - operator: uniq
+              simple: Analysis.FTP_Server
             iscontext: true
           ignorecase: true
-        - operator: isEqualString
+        - operator: inList
           left:
             value:
               complex:
-                root: Core.Incident.alerts
+                root: Core.OriginalAlert
                 filters:
-                - - operator: inList
+                - - operator: isNotEmpty
                     left:
                       value:
-                        simple: Core.Incident.alerts.host_name
+                        simple: Core.OriginalAlert._all_events.agent_hostname
                       iscontext: true
-                    right:
-                      value:
-                        simple: Analysis.SMTP_Server
-                      iscontext: true
-                    ignorecase: true
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: Core.Incident.alerts.name
+                        simple: Core.OriginalAlert.alert_name
                       iscontext: true
                     right:
                       value:
                         simple: Large Upload (SMTP)
                     ignorecase: true
-                accessor: host_name
+                accessor: _all_events.agent_hostname
                 transformers:
                 - operator: uniq
             iscontext: true
           right:
             value:
-              complex:
-                root: Core.Endpoint
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Core.Endpoint.endpoint_type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: AGENT_TYPE_SERVER
-                    ignorecase: true
-                accessor: endpoint_name
-                transformers:
-                - operator: uniq
+              simple: Analysis.SMTP_Server
             iscontext: true
           ignorecase: true
       - - operator: lessThanOrEqual
