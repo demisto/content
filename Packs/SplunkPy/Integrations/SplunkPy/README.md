@@ -524,14 +524,16 @@ Sends events to an HTTP event collector using the Splunk platform JSON event pro
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event | The event payload key-value pair. An example string: "event": "Access log test message.". | Required |
+| event | The event payload key-value pair. An example string: "event": "Access log test message.". | Optional |
 | fields | Fields for indexing that do not occur in the event payload itself. Accepts multiple, comma-separated, fields. | Optional |
 | index | The index name. | Optional |
 | host | The hostname. | Optional |
 | source_type | The user-defined event source type. | Optional |
 | source | The user-defined event source. | Optional | 
 | time | The epoch-formatted time. | Optional | 
-| request_channel | A channel identifier (ID) where to send the request, must be a Globally Unique Identifier (GUID). **If the indexer acknowledgment is turned on, a channel is required.** | Optional | 
+| request_channel | A channel identifier (ID) where to send the request, must be a Globally Unique Identifier (GUID). **If the indexer acknowledgment is turned on, a channel is required.** | Optional |
+| batch_event_data | A  batch of events to send to splunk. For example, `{"event": "something happened at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test2, test2"}, "index": "index0","sourcetype": "sourcetype0","source": "/example/something" } {"event": "something happened at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1","source": "/exeample/something", "fields":{ "fields" : "severity: INFO, category: test2, test2"}}` | Optional |
+| entry_id | The entry id in XSOAR | Optional |
 
 ##### Context Output
 

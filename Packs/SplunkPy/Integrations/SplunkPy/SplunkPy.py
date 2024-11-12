@@ -2617,7 +2617,6 @@ def validate_indexes(indexes, service):
     real_indexes_names_set = set()
     for real_index in real_indexes:
         real_indexes_names_set.add(real_index.name)
-    real_indexes_names_set.add(None)
     indexes_set = set(indexes)
     return indexes_set.issubset(real_indexes_names_set)
 
@@ -2633,11 +2632,8 @@ def get_events_from_file(entry_id):
         str: The content of the file as a string.
     """
     get_file_path_res = demisto.getFilePath(entry_id)
-    demisto.debug(f'#############Splunk {get_file_path_res=}')
     file_path = get_file_path_res["path"]
-    demisto.debug(f'############Splunk {file_path=}')
     with open(file_path, encoding='utf-8') as file_data:
-        demisto.debug(f'###########Splunk {file_data=}')
         return file_data.read()
 
 
@@ -2698,12 +2694,12 @@ def splunk_submit_event_hec(
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
 
-    if entry_id:
+    if batch_event_data:
+        events = batch_event_data
+
+    elif entry_id:
         demisto.debug(f'Splunk {entry_id=}')
         events = get_events_from_file(entry_id)
-        
-    elif batch_event_data:
-        events = batch_event_data
             
     else:
         parsed_fields = parse_fields(fields)
@@ -2719,7 +2715,7 @@ def splunk_submit_event_hec(
         )
     valid_json_events = ensure_valid_json_format(events)
 
-    indexes = [d.get('index') for d in valid_json_events]
+    indexes = [d.get('index') for d in valid_json_events if d.get('index')]
     
     if not validate_indexes(indexes, service):
         raise DemistoException('Index name does not exist in your splunk instance')
@@ -2763,6 +2759,9 @@ def splunk_submit_event_hec_command(params: dict, service, args: dict):
     request_channel = args.get('request_channel')
     batch_event_data = args.get('batch_event_data')
     entry_id = args.get('entry_id')
+    
+    if not event and not batch_event_data and not entry_id:
+        raise DemistoException("Invalid input: Please specify one of the following arguments: `event`, `batch_event_data`, or `entry_id`.")
 
     response_info = splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_,
                                             request_channel, batch_event_data, entry_id, service)
