@@ -1,15 +1,3 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
 import json
 import unittest
 from datetime import datetime
@@ -119,8 +107,48 @@ def test_fetch_alert_type(mocker, fetch_limit, expected_alert_count):
     output, last_run_new_dict = fetch_alert_type(client, fetch_limit, last_run)
 
     assert len(output) == expected_alert_count
-    assert last_run_new_dict.get('page_link') == 'self'
+    assert last_run_new_dict.get('page_link') == 'self1'
     last_page_alerts_ids = last_run_new_dict.get('last_page_alerts_ids')
     assert len(last_page_alerts_ids) == expected_alert_count
     for id in last_page_alerts_ids:
-        assert int(id) <= expected_alert_count
+        assert 1 <= int(id) <= expected_alert_count
+        last_page_alerts_ids.remove(id)
+
+
+@pytest.mark.parametrize("fetch_limit, expected_alert_count", [
+    # (9, 9),  # Each page has 5 alerts
+    (8,8)
+])
+def test_fetch_alert_type_using_next_page(mocker, fetch_limit, expected_alert_count):
+    from MongoDBAtlas import fetch_alert_type, Client
+    mocked_alerts_page_1 = util_load_json('test_data/raw_alerts_page_1.json')
+    mocked_alerts_page_2 = util_load_json('test_data/raw_alerts_page_2.json')
+    mocker.patch('MongoDBAtlas.get_page_from_last_run_for_alerts', return_value=mocked_alerts_page_1)
+    mocker.patch('MongoDBAtlas.get_next_url', return_value=True)
+    mocker.patch('MongoDBAtlas.Client.get_response_from_page_link', return_value=mocked_alerts_page_2)
+
+    client = Client(base_url=MOCK_BASEURL, verify=False, group_id=MOCK_GROUP_ID, private_key=MOCK_PRIVATE_KEY,
+                    public_key=MOCK_PUBLIC_KEY)
+
+    last_run = {"page_link": None, "last_page_alerts_ids": []}
+    output, last_run_new_dict = fetch_alert_type(client, fetch_limit, last_run)
+
+    assert len(output) == expected_alert_count
+    assert last_run_new_dict.get('page_link') == 'self2'
+    last_page_alerts_ids = last_run_new_dict.get('last_page_alerts_ids')
+    assert len(last_page_alerts_ids) == expected_alert_count - 5
+    for id in last_page_alerts_ids:
+        assert 1 <= int(id) <= expected_alert_count
+        last_page_alerts_ids.remove(id)
+
+    last_run = {"page_link": None, "last_page_alerts_ids": ["1"]}
+    output, last_run_new_dict = fetch_alert_type(client, fetch_limit, last_run)
+
+    assert len(output) == expected_alert_count
+    assert last_run_new_dict.get('page_link') == 'self2'
+    last_page_alerts_ids = last_run_new_dict.get('last_page_alerts_ids')
+    assert len(last_page_alerts_ids) == abs(4 - expected_alert_count)
+    for id in last_page_alerts_ids:
+        assert 2 <= int(id) <= 10
+        last_page_alerts_ids.remove(id)
+

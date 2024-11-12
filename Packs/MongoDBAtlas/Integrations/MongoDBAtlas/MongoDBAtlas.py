@@ -211,7 +211,12 @@ def remove_alerts_by_ids(alerts: list, ids: list):
     Returns:
         list: A filtered list of alerts excluding any alerts with IDs in the provided ids list.
     """
-    return [alert for alert in alerts if alert["id"] not in ids]
+    # return [alert for alert in alerts if alert["id"] not in ids]
+    results = []
+    for alert in alerts:
+        if alert.get('id') not in ids:
+            results.append(alert)
+    return results
 
 
 def get_page_from_last_run_for_alerts(client: Client, page_link: str):
