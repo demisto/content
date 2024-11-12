@@ -439,7 +439,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 670
+          "y": 660
         }
       }
     note: false
@@ -459,7 +459,6 @@ tasks:
       name: Assess geolocation anomalies
       description: |-
         Returns all elements from the left side that have a substring that is equal to an element from the right side. Note: This filter is case-insensitive.
-        E.g -AnyMatch left=baby right=A will return baby. For more examples see the filter's Readme.
       scriptName: AnyMatch
       type: regular
       iscommand: false
