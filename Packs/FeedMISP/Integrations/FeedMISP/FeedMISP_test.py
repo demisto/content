@@ -463,6 +463,47 @@ def test_fetch_new_indicator_after_last_indicator_been_ignored(mocker):
     mocker.patch.object(demisto, 'createIndicators')
     fetch_attributes_command(client, params_dict)
     indicators = demisto.createIndicators.call_args[0][0]
-    # The last ignored indicator will be re-fetched but the new last run will proceed.
+    # The last ignored indicator will be re-fetched as we query his timestamp,
+    # but the new last run will be updated with the new indicator.
     assert len(indicators) == 2
     assert setLastRun_mocked.called
+
+
+def test_set_last_run_pagination(mocker):
+    """
+    Given:
+         - The set_last_run_pagination function is called with a list of indicators, a next_page value, and a last_run dictionary.
+    When:
+        - The function is called to set the last run with the appropriate values.
+    Then:
+        - Ensure the last run is set correctly with the appropriate values
+    """
+    from FeedMISP import set_last_run_pagination
+
+    # Mock the demisto.setLastRun function
+    mock_set_last_run = mocker.patch('FeedMISP.demisto.setLastRun')
+
+    # Sample indicators
+    indicators = [
+        {'value': 'test1', 'timestamp': '1607517728'},
+        {'value': 'test2', 'timestamp': '1607517729'}
+    ]
+
+    # Test parameters
+    next_page = 2
+    last_run = {"timestamp": "1607517727", "last_indicator_value": "test0"}
+    last_run_timestamp = last_run["timestamp"]
+    last_run_value = last_run["last_indicator_value"]
+    latest_indicator_timestamp = indicators[-1]["timestamp"]
+    latest_indicator_value = indicators[-1]["value"]
+
+    # Call the function
+    set_last_run_pagination(last_run, last_run_timestamp, last_run_value, next_page,
+                            latest_indicator_timestamp, latest_indicator_value)
+
+    # Assert that setLastRun was called with the correct arguments
+    expected_last_run = {'timestamp': last_run_timestamp, 'candidate_timestamp': latest_indicator_timestamp,
+                         'last_indicator_value': last_run_value,
+                         'candidate_indicator_value': latest_indicator_value, 'page': next_page}
+
+    mock_set_last_run.assert_called_once_with(expected_last_run)
