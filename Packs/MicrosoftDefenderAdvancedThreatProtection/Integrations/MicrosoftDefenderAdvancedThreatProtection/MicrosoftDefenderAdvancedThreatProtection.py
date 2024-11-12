@@ -3422,7 +3422,7 @@ def get_file_statistics_human_readable(file_hash: str, file_stat_response: dict)
         (dict). File statistics context
     """
     formatted_data = {
-        'Global Prevalence': file_stat_response.get('globallyPrevalence'),
+        'Global Prevalence': file_stat_response.get('globalPrevalence'),
         'Organization Prevalence': file_stat_response.get('orgPrevalence'),
         'Global First Observed': file_stat_response.get('globalFirstObserved'),
         'Global Last Observed': file_stat_response.get('globalLastObserved'),
@@ -3444,11 +3444,11 @@ def get_file_statistics_context(file_stat_response: dict) -> dict:
     """
     return assign_params(
         OrgPrevalence=file_stat_response.get('orgPrevalence'),
-        OrganizationPrevalence=file_stat_response.get('organizationPrevalence'),
+        OrganizationPrevalence=file_stat_response.get('organizationPrevalence'),  # same as 'orgPrevalence', but as integer
         OrgFirstSeen=file_stat_response.get('orgFirstSeen'),
         OrgLastSeen=file_stat_response.get('orgLastSeen'),
         GlobalPrevalence=file_stat_response.get('globalPrevalence'),
-        GloballyPrevalence=file_stat_response.get('globallyPrevalence'),
+        GloballyPrevalence=file_stat_response.get('globallyPrevalence'),  # same as 'globalPrevalence', but as integer
         GlobalFirstObserved=file_stat_response.get('globalFirstObserved'),
         GlobalLastObserved=file_stat_response.get('globalLastObserved'),
         TopFileNames=file_stat_response.get('topFileNames'),

@@ -3025,7 +3025,7 @@ def test_get_file_statistics_human_readable(mocker):
 
     # Set
     human_readable_to_response_key_mapping: dict = {
-        'Global Prevalence': 'globallyPrevalence',
+        'Global Prevalence': 'globalPrevalence',
         'Organization Prevalence': 'orgPrevalence',
         'Global First Observed': 'globalFirstObserved',
         'Global Last Observed': 'globalLastObserved',
