@@ -597,7 +597,7 @@ tasks:
     task:
       id: 08bbda77-f3ca-482f-83bb-6590a059f649
       version: -1
-      name: Remove Exchange forwarding rule
+      name: Remove the Exchange forwarding rule
       description: Remove an Inbox rule.
       script: '|||ews-remove-rule'
       type: regular
@@ -623,7 +623,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -697,7 +697,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1232,7 +1232,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1461,7 +1461,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
