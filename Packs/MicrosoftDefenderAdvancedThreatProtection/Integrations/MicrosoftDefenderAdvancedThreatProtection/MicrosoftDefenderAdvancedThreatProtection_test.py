@@ -3008,3 +3008,40 @@ def test_get_file_statistics_indicator():
     # Assert
     for indicator_key, response_key in indicator_to_response_key_mapping.items():
         assert indicator_data[indicator_key] == FILE_STATISTICS_API_RESPONSE[response_key]
+
+
+def test_get_file_statistics_human_readable(mocker):
+    """
+    Given:
+    - SHA1 File hash and Defender for Endpoint file statistics API response
+
+    When:
+    - Calling the get_file_statistics_human_readable function
+
+    Then:
+    - Assert correct human readable markdown table title and data
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import get_file_statistics_human_readable
+
+    # Set
+    human_readable_to_response_key_mapping: dict = {
+        'Global Prevalence': 'globallyPrevalence',
+        'Organization Prevalence': 'orgPrevalence',
+        'Global First Observed': 'globalFirstObserved',
+        'Global Last Observed': 'globalLastObserved',
+        'Organization First Seen': 'orgFirstSeen',
+        'Organization Last Seen': 'orgLastSeen',
+        'Top File Names': 'topFileNames',
+    }
+    file_hash = '0991a395da64e1c5fbe8732ed11e6be064081d9f'
+    table_to_markdown = mocker.patch('MicrosoftDefenderAdvancedThreatProtection.tableToMarkdown')
+
+    # Arrange
+    get_file_statistics_human_readable(file_hash, FILE_STATISTICS_API_RESPONSE)
+    table_name, table_data = table_to_markdown.call_args[0]
+
+    # Assert
+    assert table_name == f'Statistics on {file_hash} file:'
+
+    for table_key, response_key in human_readable_to_response_key_mapping.items():
+        assert table_data[table_key] == FILE_STATISTICS_API_RESPONSE[response_key]

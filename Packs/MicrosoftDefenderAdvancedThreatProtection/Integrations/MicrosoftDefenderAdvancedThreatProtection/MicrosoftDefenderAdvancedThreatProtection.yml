@@ -1919,10 +1919,10 @@ script:
       description: The file SHA1 hash.
       type: String
     - contextPath: MicrosoftATP.FileStatistics.Statistics.OrgPrevalence
-      description: The prevalence of the file in the organization.
+      description: The number of times the file is detected in the organization.
       type: String
     - contextPath: MicrosoftATP.FileStatistics.Statistics.OrganizationPrevalence
-      description: The prevalence of the file in the organization.
+      description: The number of times the file is detected in the organization.
       type: Number
     - contextPath: MicrosoftATP.FileStatistics.Statistics.OrgFirstSeen
       description: The first date and time the file was in the organization.
@@ -1931,10 +1931,10 @@ script:
       description: The last date and time the file was in the organization.
       type: Date
     - contextPath: MicrosoftATP.FileStatistics.Statistics.GlobalPrevalence
-      description: The global prevalence of the file.
+      description: The number of times the file is detected across all organizations.
       type: String
     - contextPath: MicrosoftATP.FileStatistics.Statistics.GloballyPrevalence
-      description: The global prevalence of the file.
+      description: The number of times the file is detected across all organizations.
       type: Number
     - contextPath: MicrosoftATP.FileStatistics.Statistics.GlobalFirstObserved
       description: The global first observation date and time of the file.
@@ -1949,10 +1949,10 @@ script:
       description: The SHA1 hash of the file.
       type: String
     - contextPath: File.OrganizationPrevalence
-      description: How frequently the indicator is detected within a particular organization.
+      description: The number of times the indicator is detected in the organization.
       type: Number
     - contextPath: File.GlobalPrevalence
-      description: How frequently the indicator is detected across all organizations.
+      description: The number of times the indicator is detected across all organizations.
       type: Number
     - contextPath: File.OrganizationFirstSeen
       description: When the indicator was first seen in the organization.

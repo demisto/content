@@ -3207,10 +3207,10 @@ class Common(object):
         :param dbot_score: If IP has a score then create and set a DBotScore object.
 
         :type organization_prevalence: ``int``
-        :param organization_prevalence: How frequently the indicator is detected within a particular organization.
+        :param organization_prevalence: The number of times the indicator is detected in the organization.
 
         :type global_prevalence: ``int``
-        :param global_prevalence: How frequently the indicator is detected across all organizations.
+        :param global_prevalence: The number of times the indicator is detected across all organizations.
 
         :type organization_first_seen: ``str``
         :param organization_first_seen: ISO 8601 date time string; when the indicator was first seen in the organization.
@@ -3917,10 +3917,10 @@ class Common(object):
         :param stix_id: File assigned STIX ID.
 
         :type organization_prevalence: ``int``
-        :param organization_prevalence: How frequently the indicator is detected within a particular organization.
+        :param organization_prevalence: The number of times the indicator is detected in the organization.
 
         :type global_prevalence: ``int``
-        :param global_prevalence: How frequently the indicator is detected across all organizations.
+        :param global_prevalence: The number of times the indicator is detected across all organizations.
 
         :type organization_first_seen: ``str``
         :param organization_first_seen: ISO 8601 date time string; when the indicator was first seen in the organization.
@@ -4483,10 +4483,10 @@ class Common(object):
         :param stix_id: The URL STIX ID.
 
         :type organization_prevalence: ``int``
-        :param organization_prevalence: How frequently the indicator is detected within a particular organization.
+        :param organization_prevalence: The number of times the indicator is detected in the organization.
 
         :type global_prevalence: ``int``
-        :param global_prevalence: How frequently the indicator is detected across all organizations.
+        :param global_prevalence: The number of times the indicator is detected across all organizations.
 
         :type organization_first_seen: ``str``
         :param organization_first_seen: ISO 8601 date time string; when the indicator was first seen in the organization.
@@ -4680,10 +4680,10 @@ class Common(object):
         :param dns_records: A list of DNS records for the domain.
 
         :type organization_prevalence: ``int``
-        :param organization_prevalence: How frequently the indicator is detected within a particular organization.
+        :param organization_prevalence: The number of times the indicator is detected in the organization.
 
         :type global_prevalence: ``int``
-        :param global_prevalence: How frequently the indicator is detected across all organizations.
+        :param global_prevalence: The number of times the indicator is detected across all organizations.
 
         :type organization_first_seen: ``str``
         :param organization_first_seen: ISO 8601 date time string; when the indicator was first seen in the organization.

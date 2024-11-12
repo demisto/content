@@ -3394,13 +3394,12 @@ def get_file_statistics_command(client: MsClient, args: dict) -> CommandResults:
     file_sha1 = args.get('file_hash', '')
     response = client.get_file_statistics(file_sha1)
     file_stat = get_file_statistics_context(response)
-    human_readable = get_file_statistics_human_readable(file_sha1, response)
     context_output = {
         'Sha1': file_sha1,
         'Statistics': file_stat
     }
+    human_readable = get_file_statistics_human_readable(file_sha1, response)
     file_indicator = get_file_statistics_indicator(file_sha1, response)
-    demisto.debug(f'Got file indicator: {file_indicator.to_context()}')
 
     return CommandResults(
         outputs_prefix='MicrosoftATP.FileStatistics',

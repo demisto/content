@@ -2515,18 +2515,18 @@ File.Read.All
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.FileStatistics.Sha1 | String | The file SHA1 hash. | 
-| MicrosoftATP.FileStatistics.Statistics.OrgPrevalence | String | The prevalence of the file in the organization. | 
-| MicrosoftATP.FileStatistics.Statistics.OrganizationPrevalence | Number | The prevalence of the file in the organization. | 
+| MicrosoftATP.FileStatistics.Statistics.OrgPrevalence | String | The number of times the file is detected in the organization. | 
+| MicrosoftATP.FileStatistics.Statistics.OrganizationPrevalence | Number | The number of times the file is detected in the organization. | 
 | MicrosoftATP.FileStatistics.Statistics.OrgFirstSeen | Date | The first date and time the file was seen in the organization. | 
 | MicrosoftATP.FileStatistics.Statistics.OrgLastSeen | Date | The last date and time the file was seen in the organization. | 
-| MicrosoftATP.FileStatistics.Statistics.GlobalPrevalence | String | The global prevalence of the file. | 
-| MicrosoftATP.FileStatistics.Statistics.GloballyPrevalence | Number | The global prevalence of the file. | 
+| MicrosoftATP.FileStatistics.Statistics.GlobalPrevalence | String | The number of times the file is detected across all organizations. | 
+| MicrosoftATP.FileStatistics.Statistics.GloballyPrevalence | Number | The number of times the file is detected across all organizations. | 
 | MicrosoftATP.FileStatistics.Statistics.GlobalFirstObserved | Date | The first global observation date and time of the file. | 
 | MicrosoftATP.FileStatistics.Statistics.GlobalLastObserved | Date | The last global observation date and time of the file. | 
 | MicrosoftATP.FileStatistics.Statistics.TopFileNames | String | The top names of the file. | 
 | File.SHA1 | String | The SHA1 hash of the file. |
-| File.OrganizationPrevalence | Number | How frequently the indicator is detected within a particular organization. |
-| File.GlobalPrevalence | Number | How frequently the indicator is detected across all organizations. |
+| File.OrganizationPrevalence | Number | The number of times the indicator is detected in the organization. |
+| File.GlobalPrevalence | Number | The number of times the indicator is detected across all organizations. |
 | File.OrganizationFirstSeen | Date | When the indicator was first seen in the organization. |
 | File.OrganizationLastSeen | Date | When the indicator was last seen in the organization. |
 | File.FirstSeenBySource | Date | When the indicator was first seen by the source vendor. |
