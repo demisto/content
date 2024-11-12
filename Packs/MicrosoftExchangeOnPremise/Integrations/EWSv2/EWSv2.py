@@ -1,4 +1,5 @@
 import email
+from email.errors import HeaderParseError
 import hashlib
 import uuid
 from email.policy import SMTP, SMTPUTF8
@@ -1333,16 +1334,17 @@ def fetch_emails_as_incidents(account_email, folder_name, skip_unparsable_emails
 
                     if len(incidents) >= MAX_FETCH:
                         break
-            except (UnicodeEncodeError, UnicodeDecodeError, IndexError) as e:
-                if skip_unparsable_emails:
-                    error_msg = (
-                        "Encountered email parsing issue while fetching. "
-                        f"Skipping item with message id: {item.message_id if item.message_id else ''}"
-                    )
-                    demisto.debug(error_msg + f", Error: {str(e)}")
-                    demisto.updateModuleHealth(error_msg, is_error=False)
-                else:
-                    raise e
+            except Exception as e:
+                if not skip_unparsable_emails: # default is to raise and exception and fail the command
+                    raise
+                
+                # when the skip param is `True`, we log the exceptions instead of failing the
+                error_msg = (
+                    "Encountered email parsing issue while fetching. "
+                    f"Skipping item with message id: {item.message_id or '<error parsing message_id>'}"
+                )
+                demisto.debug(f"{error_msg}, Error: {str(e)} {traceback.format_exc()}")
+                demisto.updateModuleHealth(error_msg, is_error=False)
 
         demisto.debug(f'EWS V2 - ending fetch - got {len(incidents)} incidents.')
         last_fetch_time = last_run.get(LAST_RUN_TIME)
