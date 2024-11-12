@@ -1,27 +1,16 @@
 import json
-import io
 
 BASE_URL = 'https://gateway.qg2.apps.qualys.eu/'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 
-def load_mock_response(file_name: str) -> dict:
-    """
-    Load one of the mock responses to be used for assertion.
-    Args:
-        file_name (str): Name of the mock response JSON file to return.
-    """
-    with open(f'{file_name}', mode='r', encoding='utf-8') as json_file:
-        return json.loads(json_file.read())
-
-
 def util_load_json(path) -> dict:
-    with io.open(path, mode='r', encoding='utf-8') as file:
+    with open(path, encoding='utf-8') as file:
         return json.loads(file.read())
 
 
 def util_load_file(path) -> str:
-    with io.open(path, mode='r', encoding='utf-8') as file:
+    with open(path, encoding='utf-8') as file:
         return file.read()
 
 
@@ -63,7 +52,7 @@ def test_get_event_command(requests_mock) -> None:
     """
     from QualysFIM import Client, get_event_command
     mock_response = util_load_json('test_data/get_event.json')
-    requests_mock.get(f'{BASE_URL}fim/v1/events/123456', json=mock_response)
+    requests_mock.get(f'{BASE_URL}fim/v2/events/123456', json=mock_response)
     requests_mock.post(f'{BASE_URL}/auth', json={})
     client = Client(base_url=BASE_URL, verify=False, proxy=False, auth=('a', 'b'))
     result = get_event_command(client, {'event_id': '123456'})

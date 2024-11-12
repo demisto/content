@@ -8,7 +8,6 @@ from CommonServerUserPython import *
 import json
 import requests
 import dateparser
-from typing import Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -65,7 +64,7 @@ class Client(BaseClient):
         return:
             response (Response): API response from Qualys FIM.
         """
-        return self._http_request(method='GET', url_suffix='fim/v1/incidents/',
+        return self._http_request(method='GET', url_suffix='fim/v2/incidents/',
                                   params={'pageSize': '1'}, resp_type='response')
 
     def events_list(self, data: dict):
@@ -90,7 +89,7 @@ class Client(BaseClient):
         return:
             response (Dict): API response from Qualys FIM.
         """
-        return self._http_request(method='GET', url_suffix=f'fim/v1/events/{event_id}')
+        return self._http_request(method='GET', url_suffix=f'fim/v2/events/{event_id}')
 
     def incidents_list(self, data: dict):
         """
@@ -557,7 +556,7 @@ def list_assets_command(client: Client, args: dict):
 
 def fetch_incidents(client: Client, last_run: Dict[str, int],
                     max_fetch: str, fetch_filter: str,
-                    first_fetch_time: str) -> Tuple[Dict, List[dict]]:
+                    first_fetch_time: str) -> tuple[Dict, List[dict]]:
     """
     Fetch incidents (alerts) each minute (by default).
     Args:
