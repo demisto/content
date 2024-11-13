@@ -13,7 +13,6 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSIAM
 AUDIT = "audit"
 SYSLOG_TRANSACTIONS = "syslog transactions"
 URL = {AUDIT: "table/sys_audit", SYSLOG_TRANSACTIONS: "table/syslog_transaction"}
-VALID_EVENT_TITLES = ['Audit', 'Syslog Transactions']
 LAST_FETCH_TIME = {AUDIT: "last_fetch_time", SYSLOG_TRANSACTIONS: "last_fetch_time_syslog"}
 PREVIOUS_RUN_IDS = {AUDIT: "previous_run_ids", SYSLOG_TRANSACTIONS: "previous_run_ids_syslog"}
 """ CLIENT CLASS """
@@ -73,6 +72,7 @@ def handle_log_types(event_types_to_fetch: list) -> list:
               If an event type title is not found, an exception is raised.
     """
     log_types = []
+    VALID_EVENT_TITLES = ['Audit', 'Syslog Transactions']
     titles_to_types = {'Audit': AUDIT, 'Syslog Transactions': SYSLOG_TRANSACTIONS}
     for type_title in event_types_to_fetch:
         if log_type := titles_to_types.get(type_title):
@@ -172,12 +172,15 @@ def process_and_filter_events(events: list, previous_run_ids: set, from_date: st
     """
     unique_events = []
     from_date_datetime = datetime.strptime(from_date, LOGS_DATE_FORMAT)
+    duplicates_list = []
     for event in events:
         create_time = datetime.strptime(event.get("sys_created_on"), LOGS_DATE_FORMAT)
         event["_time"] = create_time.strftime(DATE_FORMAT)
         event["source_log_type"] = log_type
         if event.get("sys_id") in previous_run_ids:
+            duplicates_list.append(event.get("sys_id"))
             continue
+
         if create_time > from_date_datetime:
             previous_run_ids = set()
             from_date_datetime = create_time
@@ -185,6 +188,8 @@ def process_and_filter_events(events: list, previous_run_ids: set, from_date: st
         previous_run_ids.add(event.get("sys_id"))
         unique_events.append(event)
 
+    demisto.debug(f"Filtered out the following event IDs due to duplication: {duplicates_list}.")
+    demisto.debug(f"Updated last_run with previous_run_ids: {previous_run_ids}.")
     return unique_events, previous_run_ids
 
 
@@ -320,23 +325,17 @@ def main() -> None:  # pragma: no cover
         last_run = demisto.getLastRun()
         if client.sn_client.use_oauth and not get_integration_context().get("refresh_token", None):
             client.sn_client.login(username=user_name, password=password)
-        
+
         if command == "test-module":
             return_results(module_of_testing(client, log_types))
 
-        elif command == "service-now-get-audit-logs":
-            audit_logs, results = get_events_command(client=client, args=args, log_type=AUDIT, last_run=last_run)
+        elif command == "service-now-get-audit-logs" or command == "service-now-get-syslog-transactions":
+            log_type = AUDIT if command == "service-now-get-audit-logs" else SYSLOG_TRANSACTIONS
+            audit_logs, results = get_events_command(client=client, args=args, log_type=log_type, last_run=last_run)
             return_results(results)
 
             if argToBoolean(args.get("should_push_events", True)):
                 send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
-
-        elif command == "service-now-get-syslog-transactions":
-            syslog_logs, results = get_events_command(client=client, args=args, log_type=SYSLOG_TRANSACTIONS, last_run=last_run)
-            return_results(results)
-
-            if argToBoolean(args.get("should_push_events", True)):
-                send_events_to_xsiam(syslog_logs, vendor=VENDOR, product=PRODUCT)
 
         elif command == "fetch-events":
             demisto.debug(f"Starting new fetch with last_run as {last_run}")

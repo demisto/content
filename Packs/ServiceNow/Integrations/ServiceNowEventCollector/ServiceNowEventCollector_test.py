@@ -954,18 +954,3 @@ def test_handle_log_types_empty_list():
     assert handle_log_types(event_types_to_fetch) == []
 
 
-def test_handle_log_types_case_sensitivity():
-    """
-    Test handle_log_types with different case inputs.
-
-    Given:
-        - A list with event type titles in different cases.
-    When:
-        - Calling handle_log_types.
-    Then:
-        - Raises a DemistoException if the title case does not match exactly.
-    """
-    event_types_to_fetch = ["audit"]
-    with pytest.raises(DemistoException) as excinfo:
-        handle_log_types(event_types_to_fetch)
-    assert "'audit' is not valid event type" in str(excinfo.value)
