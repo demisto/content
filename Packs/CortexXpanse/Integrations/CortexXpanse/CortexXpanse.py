@@ -1241,7 +1241,7 @@ def update_alert_command(client: Client, args: dict[str, Any]) -> CommandResults
             ``args['alert_id_list']`` IDs of the alerts to modify
             ``args['severity']`` The severity of the alert
             ``args['status']`` Updated alert status
-            ``args['comment']`` A comment to add to the alert.
+            ``args['resolution_comment']`` A comment to add to the alert.
 
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``
@@ -1249,7 +1249,7 @@ def update_alert_command(client: Client, args: dict[str, Any]) -> CommandResults
     alert_id_list = argToList(args.get('alert_id_list'))
     severity = args.get('severity')
     status = args.get('status')
-    comment = str(args.get('comment'))
+    comment = str(args.get('resolution_comment'))
 
     update_params = {"update_data": {}}  # type: ignore
     if alert_id_list:

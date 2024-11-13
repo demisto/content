@@ -13,7 +13,7 @@ args:
   description: The URL(s) or Email(s) to process.
   isArray: true
 scripttarget: 0
-dockerimage: demisto/py3-tools:1.0.0.96102
+dockerimage: demisto/py3-tools:1.0.0.114656
 runas: DBotWeakRole
 subtype: python3
 tests:

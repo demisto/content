@@ -1114,12 +1114,15 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
      'View all wineventlogs involving user="test"'),
     ({}, 'Test query name', {}, True, 'Test query name'),
     ({'user': 'test\crusher'}, 'index="test" | where user = $user|s$', {}, False,
-     'index="test" | where user = "test\\\\crusher"'),
+     'index="test" | where user="test\\\\crusher"'),
     ({'user': 'test\crusher'}, 'index="test" | where user = "$user|s$"', {}, False,
-     'index="test" | where user = "test\\\\crusher"'),
+     'index="test" | where user="test\\\\crusher"'),
     ({'countryNameA': '"test\country"', 'countryNameB': '""'},
      'search countryA="$countryNameA|s$" countryB=$countryNameB|s$', {}, False,
      'search countryA="test\country" countryB=""'),
+    ({'test': 'test_user'},
+     'search countryA=\$this is a test\$', {}, False,
+     'search countryA=\$this is a test\$'),
 ], ids=[
     "search query fields in notables data and raw data",
     "search query fields in notable data more than one value",
@@ -1129,7 +1132,8 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
     "query name without fields to replace",
     "search query with a user field that contains a backslash",
     "search query with a user field that is surrounded by quotation marks and contains a backslash",
-    "search query fields in notable data more than one value, with one empty value"
+    "search query fields in notable data more than one value, with one empty value",
+    "search query with $ as part of the search - no need to replace"
 
 ])
 def test_build_drilldown_search(notable_data, search, raw, is_query_name, expected_search, mocker):
@@ -1155,6 +1159,7 @@ def test_build_drilldown_search(notable_data, search, raw, is_query_name, expect
     - Return the expected result
     """
     mocker.patch.object(demisto, 'error')
+    mocker.patch.object(demisto, 'params', return_value={})
     parsed_query = splunk.build_drilldown_search(notable_data, search, raw, is_query_name)
     assert parsed_query == expected_search
 
@@ -1538,7 +1543,7 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
      [("View all login attempts by system 'test_src'",
        '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"'),
       ('View all test involving user="\'test_user\'"',
-       'search index="test"\n| where user = "\'test_user\'"')]),
+       'search index="test"\n| where user="\'test_user\'"')]),
     ({'event_id': 'test_id3', 'drilldown_searches':
         ["{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentication\\\".\\\"Authe"
          "ntication\\\" | search src=$src|s$\",\"earliest_offset\":1715040000,\"latest_offset\":1715126400}",
@@ -1548,7 +1553,7 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
      [("View all login attempts by system 'test_src'",
        '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"'),
       ('View all test involving user="\'test_user\'"',
-       'search index="test"\n| where user = "\'test_user\'"')]),
+       'search index="test"\n| where user="\'test_user\'"')]),
 ], ids=[
     "A notable data with one drilldown search enrichment",
     "A notable data with two drilldown searches which contained the earlies in 'earliest' key ",
@@ -2786,205 +2791,28 @@ def test_get_drilldown_searches(drilldown_data, expected):
     assert splunk.get_drilldown_searches(drilldown_data) == expected
 
 
-def test_remove_double_quotes():
+@pytest.mark.parametrize('drilldown_search, expected_res',
+                         [('{"name":"test", "query":"|key="the value""}', 'key="the value"'),
+                          ('{"name":"test", "query":"|key in (line_1\nline_2)"}', 'key in (line_1,line_2)'),
+                          ('{"name":"test", "query":"search a=$a|s$ c=$c$ suffix"}', 'search a=$a|s$ c=$c$ suffix')])
+def test_escape_invalid_chars_in_drilldown_json(drilldown_search, expected_res):
     """
-        Given: string with double quotes
-        When: replacing a var in a query
-        Then: make sure no double double quotes are returned.
-    """
-    from SplunkPy import remove_double_quotes
+    Scenario: When extracting the drilldown search query which are a json string,
+    we should escape unescaped JSON special characters.
 
-    assert remove_double_quotes('this is a ""test""') == 'this is a "test"'
-    assert remove_double_quotes('no ""double quotes"" here, and here: ""') == 'no "double quotes" here, and here: ""'
-    
+    Given:
+    - A raw search query with text like 'key="a value"'.
+    - A raw search query with text like where 'key in (a\nb)' which it should be 'key in (a,b)'.
+    - A raw search query with normal json string, should not be changed by this function.
 
-# Define minimal classes to simulate the service and index behavior
-class Index:
-    def __init__(self, name):
-        self.name = name
+    When:
+    - escape_invalid_chars_in_drilldown_json is called
 
-class ServiceIndex:
-    def __init__(self, indexes):
-        self.indexes = [Index(name) for name in indexes]
- 
-@pytest.mark.parametrize(
-    "given_indexes, service_indexes, expected",
-    [
-        # Test case: All indexes exist in the service
-        (["index1", "index2"], ["index1", "index2", "index3"], True),
+    Then:
+    - Return the expected result
+    """
+    import json
 
-        # Test case: Some indexes do not exist in the service
-        (["index1", "index4"], ["index1", "index2", "index3"], False),
+    res = splunk.escape_invalid_chars_in_drilldown_json(drilldown_search)
 
-        # Test case: Empty input indexes list
-        ([], ["index1", "index2", "index3"], True),
-    ]
-)
-def test_validate_indexes(given_indexes, service_indexes, expected):
-    """
-    Given: A list of indexes' names.
-    When: Calling validate_indexes function.
-    Then: The function returns `True` if all the given index names exist within the Splunk service instance;
-          otherwise, it returns `False`.
-    """
-    from SplunkPy import validate_indexes
-    service = ServiceIndex(service_indexes)
-    # Assert that the function returns the expected result
-    assert validate_indexes(given_indexes, service) == expected
-    
-    
-@pytest.mark.parametrize(
-    "fields, expected",
-    [
-        # Valid JSON input
-        ('{"key": "value"}', {"key": "value"}),
-
-        # Valid JSON with multiple key-value pairs
-        ('{"key1": "value1", "key2": 2}', {"key1": "value1", "key2": 2}),
-
-        # Invalid JSON input (non-JSON string)
-        ("not a json string", {"fields": "not a json string"}),
-
-        # Another invalid JSON input (partially structured JSON)
-        ("{'key': 'value'}", {"fields": "{'key': 'value'}"}),
-    ]
-)
-def test_parse_fields(fields, expected):
-    """
-    Given: A string representing fields, which may be a valid JSON string or a regular string.
-    When: The parse_fields function is called with the given string.
-    Then: If the string is valid JSON, the function returns a dictionary of the parsed fields. If the string is not valid JSON, the function returns a dictionary with a single key-value pair, where the entire input string is the key.
-    """
-    from SplunkPy import parse_fields
-    result = parse_fields(fields)
-    assert result == expected
-    
-    
-@pytest.mark.parametrize(
-    "events, expected",
-    [
-        ("{'key1': 'value1'} {'key2': 'value2'}", [{"key1": "value1"}, {"key2": "value2"}]),
-        ("{'key1': 'value1'}", [{"key1": "value1"}]),
-        ({"key1": "value1", "key2": "value2"}, [{"key1": "value1", "key2": "value2"}]),
-        ({"key1": {"nestedKey": "nestedValue"}, "key2": "value2"}, [{"key1": {"nestedKey": "nestedValue"}, "key2": "value2"}]),
-    ]
-)
-def test_ensure_valid_json_format_valid_inputs(events, expected):
-    """
-    Given: A string or dictionary representing valid JSON inputs, including single, multiple, and nested events.
-    When: Calling ensure_valid_json_format.
-    Then: The function should return a list of dictionaries corresponding to the parsed events.
-    """
-    from SplunkPy import ensure_valid_json_format
-    assert ensure_valid_json_format(events) == expected
-    
-    
-@pytest.mark.parametrize(
-    "invalid_events",
-    [
-        "{key1: {'nestedKey': 'nestedValue'}}",                # Missing double quotes on the outer key
-        "{'key1': {nestedKey: 'nestedValue'}}",                 # Missing double quotes on nested key
-        "{'key1': 'value1', 'key2': 'value2'",                  # Missing closing brace
-        "{'key1': 'value1', 'key2': 'value2'}, {'key3': 'value3'",  # Missing closing brace on one event
-        "{'key1': 'value1' 'key2': 'value2'}",                  # Missing comma between key-value pairs
-    ]
-)
-def test_ensure_valid_json_format_invalid_inputs(invalid_events):
-    """
-    Given: A string representing various invalid JSON formats (e.g., missing quotes, missing commas, unmatched braces).
-    When: Calling ensure_valid_json_format.
-    Then: The function should raise a DemistoException due to invalid JSON format.
-    """
-    from SplunkPy import ensure_valid_json_format
-    with pytest.raises(DemistoException, match=r"Make sure that the events are in the correct format"):
-        ensure_valid_json_format(invalid_events)
-        
-from unittest.mock import patch, MagicMock
-@pytest.mark.parametrize("event, batch_event_data, entry_id, expected_data", [
-    ("Somthing happened", None, None, '{"event": "Somthing happened", "fields": {"field1": "value1"}, "index": "main"}'),
-    (None, "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}", None,
-     "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"),  # Batch event data
-    (None, None, "some entry_id", "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}")  # Entry ID
-])
-@patch("requests.post")
-@patch("SplunkPy.get_events_from_file")  # Replace with the actual module
-@patch("SplunkPy.ensure_valid_json_format")
-@patch("SplunkPy.validate_indexes")
-@patch("SplunkPy.parse_fields")
-def test_splunk_submit_event_hec(
-    mock_parse_fields,
-    mock_validate_indexes,
-    mock_ensure_valid_json_format,
-    mock_get_events_from_file,
-    mock_post,
-    event,
-    batch_event_data,
-    entry_id,
-    expected_data
-):
-    """
-    Given: Different types of event submission (single event, batch event, entry_id).
-    When: Calling splunk_submit_event_hec.
-    Then: Ensure a POST request is sent with the correct data and headers.
-    """
-    from SplunkPy import splunk_submit_event_hec
-    # Arrange
-    hec_token = "valid_token"
-    baseurl = "https://splunk.example.com"
-    fields = '{"field1": "value1"}'
-    parsed_fields = {"field1": "value1"}
-    
-    # Mocks
-    mock_parse_fields.return_value = parsed_fields
-    mock_validate_indexes.return_value = True
-    
-    if event:
-        # Single event
-        mock_ensure_valid_json_format.return_value = [{"event": event}]
-    elif batch_event_data:
-        # Batch event data
-        mock_ensure_valid_json_format.return_value = [{'event': 'some event', 'index': 'some index'}, {'event': 'some event', 'index': 'some index'}]
-    elif entry_id:
-        # Entry ID
-        mock_get_events_from_file.return_value = "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"
-        mock_ensure_valid_json_format.return_value = [{'event': 'some event', 'index': 'some index'}, {'event': 'some event', 'index': 'some index'}]
-    
-    # Act
-    splunk_submit_event_hec(
-        hec_token=hec_token,
-        baseurl=baseurl,
-        event=event,
-        fields=fields,
-        host=None,
-        index="main",
-        source_type=None,
-        source=None,
-        time_=None,
-        request_channel="test_channel",
-        batch_event_data=batch_event_data,
-        entry_id=entry_id,
-        service=MagicMock(),
-    )
-        #assert http_request.call_args.kwargs['json_data']['criteria']['event_id'] == [123]
-    #assert type(mock_post.call_args.kwargs['data']) == expected_data_type
-    # Assert
-    mock_post.assert_called_once_with(
-        f"{baseurl}/services/collector/event",
-        data=expected_data,
-        headers={
-            "Authorization": f"Splunk {hec_token}",
-            "Content-Type": "application/json",
-            "X-Splunk-Request-Channel": "test_channel",
-        },
-        verify=True,
-    )
-
-
-def test_splunk_submit_event_hec_command_no_required_arguments():
-    """ Given: none of these arguments: 'entry_id', 'event', 'batch_event_data'
-        When: Runing splunk-submit-event-hec command
-        Then: An exception is thrown
-    """
-    from SplunkPy import splunk_submit_event_hec_command
-    with pytest.raises(DemistoException, match=r"""Invalid input: Please specify one of the following arguments: `event`, `batch_event_data`, or `entry_id`."""):
-        splunk_submit_event_hec_command({'hec_url': 'hec_url'}, None, {})
+    assert expected_res in json.loads(res)['query']
