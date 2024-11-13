@@ -1497,6 +1497,8 @@ script:
     name: akamai-list-cps-active-certificates
     outputs:
     - contextPath: Akamai.Cps.Active.Certificates.Enrollments
+      description: A collection of Active Akami CPS enrollments.
+      type: Dictionary    
   - arguments:
     - description: The change for this enrollment on which to perform the desired operation. Default is 0. "change_path" is used.
       name: change_id
