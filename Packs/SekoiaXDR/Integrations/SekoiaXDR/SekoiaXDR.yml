@@ -1183,7 +1183,6 @@ script:
   runonce: false
   subtype: python3
   isFetchSamples: true
-  defaultmapperin: Sekoia XDR - Incoming Mapper
   ismappable: true
   isremotesyncin: true
 fromversion: 6.10.0
