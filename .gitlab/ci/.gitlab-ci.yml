@@ -1,5 +1,5 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  CURRENT_BRANCH_NAME: "ciac-11489/automate_infra_release"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
