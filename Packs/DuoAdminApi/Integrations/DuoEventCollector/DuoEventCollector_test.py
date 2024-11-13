@@ -642,7 +642,7 @@ def test_check_window_before_call_v2_format():
 
     result_no_fetch = client.check_window_before_call(mintime=1666714066000 / 1000)  # October 25, 2022 4:07:46 PM
     assert not result_no_fetch
-    result_do_fetch = client.check_window_before_call(mintime=1666714065304 / 1000)  # October 25, 2022 4:07:45.304 PM
+    result_do_fetch = client.check_window_before_call(mintime=1666714060304 / 1000)  # October 25, 2022 4:07:45.304 PM
     assert result_do_fetch
 
 
@@ -673,3 +673,34 @@ def test_check_window_before_call_not_in_window():
     mintime = datetime.now() - timedelta(minutes=1)
     result = client.check_window_before_call(mintime=mintime.timestamp())
     assert not result
+
+
+@freeze_time("2020-01-24 15:16:33 UTC")
+def test_check_window_before_call_5_sec_time_delta():
+    """
+    Given:
+        mintime - a timestamp represents the minimum time from which to get events.
+    When:
+        calling check_window_before_call.
+    Then:
+        True is returned, the API call should be performed, we are in the time window.
+    """
+    params = {
+        "after": "1 minute",
+        "host": "api-host.duosecurity.com",
+        "integration_key": "XXXXXXXXXXXXXXXX",
+        "limit": "10",
+        "proxy": False,
+        "retries": "5",
+        "secret_key": {"password": "password", "passwordChanged": False},
+        "end_window": datetime.strptime("2020-01-24 15:11:33", DATE_FORMAT),
+        "fetch_delay": "5"
+    }
+
+    client = Client(Params(**params, mintime={}))
+    # min time 3 sec less than the end time return false (less then 5 sec delta)
+    mintime = datetime.strptime("2020-01-24 15:11:30", DATE_FORMAT)
+    assert not client.check_window_before_call(mintime=mintime.timestamp())
+    # min time 13 sec less than the end time return true (more then 5 sec delta)
+    mintime = datetime.strptime("2020-01-24 15:11:20", DATE_FORMAT)
+    assert client.check_window_before_call(mintime=mintime.timestamp())
