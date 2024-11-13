@@ -482,15 +482,15 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict):
 
     Args:
         client (Client): MongoDBAtlas client.
-        fetch_limit: The maximum number of events to fetch.
+        fetch_limit (int): The maximum number of events to fetch.
         last_run (dict): Dictionary containing data from the previous run.
 
     Returns:
         A list containing all fetched events.
     """
-    demisto.debug(f'Start to fetch events with {last_run}')
     min_time = last_run.get('min_time')
     events_with_created_min_time = last_run.get('events_with_created_min_time') or []
+
     demisto.debug(f'Start to fetch events with {min_time}')
 
     if min_time:
@@ -519,7 +519,7 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict):
             current_fetched_events_amount += 1
             new_min_time = get_latest_date(new_min_time, event.get('created'))
 
-            demisto.debug(f'Fetched event ID {event_id} from type events')
+            demisto.debug(f'Fetched event ID {event_id} from type "events"')
 
             if current_fetched_events_amount == fetch_limit:
                 demisto.debug(f'Fetch limit reached. Total events fetched: {len(output)}')
@@ -534,7 +534,7 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict):
         else:
             break
 
-    demisto.debug(f'No more pages left to fetch. Total events fetched: {len(output)}')
+    demisto.debug(f'No more events left to fetch. Total events fetched: {len(output)}')
     new_last_run_obj = create_last_run_dict_for_events(output, new_min_time)
     return output, new_last_run_obj
 
