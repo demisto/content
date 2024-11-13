@@ -4,7 +4,7 @@ commonfields:
 name: Symantec Endpoint Security
 display: Symantec Endpoint Security
 category: Analytics & SIEM
-description: "Palo Alto Networks Symantec Endpoint Security Event Collector integration for Cortex XSIAM."
+description: "Symantec Endpoint Security Event Collector for Cortex XSIAM."
 configuration:
 - display: Server URL
   name: host

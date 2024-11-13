@@ -1,4 +1,4 @@
-Palo Alto Networks Symantec Endpoint Security Event Collector integration for Cortex XSIAM.
+Symantec Endpoint Security Event Collector for Cortex XSIAM.
 
 ## Configure Symantec Endpoint Security on Cortex XSIAM
 
@@ -21,7 +21,7 @@ Palo Alto Networks Symantec Endpoint Security Event Collector integration for Co
 
 ### To generate a token for the ***Token*** parameter:
 
-1. Log in to your Symantec Endpoint Security console.
+1. Log in to the Symantec Endpoint Security console.
 2. Click **Integration** > **Client Applications**.
 3. Choose `Add Client Application`.
 4. Choose a name for the application, then click `Add`. The client application details screen will appear.

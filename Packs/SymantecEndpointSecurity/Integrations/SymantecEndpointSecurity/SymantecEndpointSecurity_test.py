@@ -24,7 +24,6 @@ def mock_client() -> Client:
         channel_id="test_channel_id",
         verify=True,
         proxy=False,
-        fetch_interval=60,
     )
 
 
@@ -235,7 +234,7 @@ def test_perform_long_running_loop_unauthorized_token(mocker: MockerFixture):
         "SymantecEndpointSecurity.get_events_command",
         side_effect=[UnauthorizedToken, Exception("Stop")],
     )
-    mock_get_token = mocker.patch.object(Client, "_update_access_token")
+    mock_get_token = mocker.patch.object(Client, "_update_access_token_in_headers")
     mocker.patch("SymantecEndpointSecurity.sleep_if_necessary")
     with pytest.raises(DemistoException, match="Failed to fetch logs from API"):
         perform_long_running_loop(mock_client())
@@ -256,7 +255,7 @@ def test_perform_long_running_loop_next_pointing_not_available(mocker: MockerFix
         "SymantecEndpointSecurity.get_events_command",
         side_effect=[NextPointingNotAvailable, Exception("Stop")],
     )
-    mocker.patch.object(Client, "_update_access_token")
+    mocker.patch.object(Client, "_update_access_token_in_headers")
     mocker.patch(
         "SymantecEndpointSecurity.get_integration_context",
         return_value=mock_integration_context,
@@ -307,7 +306,7 @@ def test_get_events_command_with_raises(
     class MockException:
         status_code = mock_status_code
 
-    mocker.patch.object(Client, "_update_access_token")
+    mocker.patch.object(Client, "_update_access_token_in_headers")
     mocker.patch.object(
         Client, "get_events", side_effect=DemistoException("Test", res=MockException())
     )
@@ -332,7 +331,7 @@ def test_sleep_if_necessary(mocker: MockerFixture, start_run: int, end_run: int,
     Then:
         - Ensure that the sleep function is called with the appropriate interval value or not called at all if unnecessary.
     """
-    mocker.patch.object(Client, "_update_access_token")
+    mocker.patch.object(Client, "_update_access_token_in_headers")
     mock_sleep = mocker.patch("SymantecEndpointSecurity.time.sleep")
     client = mock_client()
     sleep_if_necessary(client, start_run, end_run)

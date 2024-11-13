@@ -17,9 +17,11 @@ DEFAULT_CONNECTION_TIMEOUT = 30
 MAX_CHUNK_SIZE_TO_READ = 1024 * 1024 * 150  # 150 MB
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
-# Sleep time between fetch attempts when an error occurs in the retrieval process,
-# primarily used to avoid overloading with consecutive API calls
-# if an error is received from Symantec's side.
+"""
+Sleep time between fetch attempts when an error occurs in the retrieval process,
+primarily used to avoid overloading with consecutive API calls
+if an error is received from the API.
+"""
 FETCH_INTERVAL = 60
 
 
@@ -63,11 +65,11 @@ class Client(BaseClient):
             timeout=180,
         )
 
-        self._update_access_token()
+        self._update_access_token_in_headers()
 
-    def _update_access_token(self):
+    def _update_access_token_in_headers(self):
         """
-        Retrieves an access token using the `token` provided in the params.
+        Retrieves an access token using the `token` provided in the params, and updates `self.headers`.
         """
         get_token_headers: dict[str, str] = {
             "accept": "application/json",
@@ -410,7 +412,7 @@ def perform_long_running_loop(client: Client):
 
         except UnauthorizedToken:
             try:
-                client._update_access_token()
+                client._update_access_token_in_headers()
             except Exception as e:
                 raise DemistoException("Failed obtaining a new access token") from e
         except NextPointingNotAvailable:
@@ -433,7 +435,7 @@ def perform_long_running_loop(client: Client):
 
 def test_module() -> str:
     """
-    The test is performed by obtaining the `access_token` when defining the `Client`,
+    The test is performed by obtaining the `access_token` during `Client`'s initialization.
     avoiding the use of `test_module` with get_events due to the one-minute timeout
     set for the `test_module` command by the our server.
     """
