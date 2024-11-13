@@ -50,7 +50,7 @@ XSOAR endpoint URL-
 3. Enter the **App Name**.
 4. Click **Create**.
 
-![enter image description here](https://github.com/demisto/content-assets/raw/master/Assets/Zoom/create-team-chat-app.gif)
+![enter image description here](../../doc_files/create-team-chat-app.gif)
 ### Configure App Settings
 Enter your Cortex XSOAR endpoint URL in all Redirect URLS.
 
@@ -61,7 +61,7 @@ In the Team Chat Subscription section under BOT endpoint URL add:
    - For Cortex XSOAR 8.x / XSAIM you need to run using extrnal engine: `https://<Engine Url>:<port>`. For example, https://my-engine-url:7001. 
 
 
-![enter image description here](https://github.com/demisto/content-assets/raw/master/Assets/Zoom/bot_endpoint_url.gif)
+![enter image description here](../../doc_files/bot_endpoint_url.gif)
 
 1. Click **Scopes** > **+ Add Scopes** to add the following scope permissions.
 
