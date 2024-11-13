@@ -14,6 +14,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 VENDOR = 'MongoDB'
 PRODUCT = 'Atlas'
+MAX_NUMBER_OF_PAGES = 5
 # last_run = {}
 
 ''' CLIENT CLASS '''
@@ -121,17 +122,18 @@ class Client(BaseClient):
         Returns:
             list: A list of events, truncated to the `fetch_limit` if necessary.
         """
+        # TODO to change items_per_page=500
         results = []
-        items_per_page = min(fetch_limit, 500)
+        items_per_page = min(fetch_limit, 50)
 
-        for page_num in range(1, 6):
+        for page_num in range(1, MAX_NUMBER_OF_PAGES + 1):
             page_results = self.get_events_with_page_num(page_num=page_num, items_per_page=items_per_page).get('results')
             results.extend(page_results)
 
             if len(results) >= fetch_limit:
                 return results[:fetch_limit]
 
-            items_per_page = min(fetch_limit - len(results), 500)
+            items_per_page = min(fetch_limit - len(results), 50)
 
         return results
 
@@ -570,13 +572,11 @@ def test_module(client: Client, fetch_limit) -> str:
 def fetch_events(client: Client, fetch_limit: int):
     last_run = demisto.getLastRun()
     # global last_run
-    demisto.debug(f'This is the last run {last_run} directly from demisto')
 
     alerts_output, last_run_alerts = fetch_alert_type(client, fetch_limit, last_run)
     events_output, last_run_events = fetch_event_type(client, fetch_limit, last_run)
 
     last_run_new_obj = {**last_run_alerts, **last_run_events}
-    demisto.debug(f'This is the final output for fetch_events {alerts_output + events_output}')
     return (alerts_output + events_output), last_run_new_obj
 
 
