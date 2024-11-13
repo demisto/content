@@ -38,8 +38,7 @@ def test_add_new_comment(mocker):
     )
 
     table_to_markdown_mock.assert_called_once_with(
-        """The new comment has been recorded and will appear in your comments field shortly.
-        Note: This will only occur if you have the 'Mirror In' option enabled.""",
+        "The new comment has been recorded and will appear in your comments field shortly.",
         {"Instance Name": expected_instance_name, "New Comment": expected_new_comment},
         headers=["New Comment", "Instance Name"],
         removeNull=True,
