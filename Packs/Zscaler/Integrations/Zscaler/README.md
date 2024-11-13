@@ -821,9 +821,9 @@ Retrieves a full or summary report of the file that was analyzed by Sandbox. The
 
 #### Additional Information
 
-[![image](https://user-images.githubusercontent.com/44546251/56854828-8a921480-6945-11e9-8784-cb55e6c7d83e.png)](https://user-images.githubusercontent.com/44546251/56854828-8a921480-6945-11e9-8784-cb55e6c7d83e.png)
+[![image](../../doc_files/56854828-8a921480-6945-11e9-8784-cb55e6c7d83e.png)](../../doc_files/56854828-8a921480-6945-11e9-8784-cb55e6c7d83e.png)
 
-[![image](https://user-images.githubusercontent.com/44546251/56854735-291d7600-6944-11e9-8c05-b917cc25e322.png)](https://user-images.githubusercontent.com/44546251/56854735-291d7600-6944-11e9-8c05-b917cc25e322.png)
+[![image](../../doc_files/56854735-291d7600-6944-11e9-8c05-b917cc25e322.png)](../../doc_files/56854735-291d7600-6944-11e9-8c05-b917cc25e322.png)
 
 ### zscaler-login
 
