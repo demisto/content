@@ -2901,6 +2901,7 @@ def test_ensure_valid_json_format_invalid_inputs(invalid_events):
         
 from unittest.mock import patch, MagicMock
 @pytest.mark.parametrize("event, batch_event_data, entry_id, expected_data", [
+    ("Somthing happened", None, None, '{"event": "Somthing happened", "fields": {"field1": "value1"}, "index": "main"}'),
     (None, "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}", None,
      "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"),  # Batch event data
     (None, None, "some entry_id", "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}")  # Entry ID
@@ -2964,7 +2965,8 @@ def test_splunk_submit_event_hec(
         entry_id=entry_id,
         service=MagicMock(),
     )
-
+        #assert http_request.call_args.kwargs['json_data']['criteria']['event_id'] == [123]
+    #assert type(mock_post.call_args.kwargs['data']) == expected_data_type
     # Assert
     mock_post.assert_called_once_with(
         f"{baseurl}/services/collector/event",
