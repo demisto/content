@@ -2785,7 +2785,7 @@ def splunk_submit_event_hec_command(params: dict, service, args: dict):
     entry_id = args.get('entry_id')
     
     if not event and not batch_event_data and not entry_id:
-        raise DemistoException("Invalid input: Please specify one of the following arguments: `event`,",
+        raise DemistoException("Invalid input: Please specify one of the following arguments: `event`,"
                                "`batch_event_data`, or `entry_id`.")
 
     response_info = splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_,
