@@ -121,6 +121,28 @@ def test_add_time_field():
     assert event["_time"] == "2024-10-27T13:07:17Z"
 
 
+
+def test_remove_alerts_by_ids():
+    from MongoDBAtlas import remove_alerts_by_ids
+    alerts = [
+        {"id": 1, "name": "alert1"},
+        {"id": 2, "name": "alert2"},
+        {"id": 3, "name": "alert3"},
+        {"id": 4, "name": "alert4"},
+    ]
+
+    ids_to_remove = [2, 4]
+
+    expected_result = [
+        {"id": 1, "name": "alert1"},
+        {"id": 3, "name": "alert3"}
+    ]
+
+    result = remove_alerts_by_ids(alerts, ids_to_remove)
+
+    assert result == expected_result
+
+
 @pytest.mark.parametrize("fetch_limit, expected_alert_count", [
     (10, 5),  # Case: fetch_limit > available alerts
     (3, 3)  # Case: fetch_limit < available alerts
