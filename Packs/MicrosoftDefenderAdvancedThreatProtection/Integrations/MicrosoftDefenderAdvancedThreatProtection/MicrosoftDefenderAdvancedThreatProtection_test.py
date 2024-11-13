@@ -6,12 +6,13 @@ from freezegun import freeze_time
 import demistomock as demisto
 import json
 import pytest
+import dataclasses
 
 from CommonServerPython import DemistoException
 from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, get_machine_by_ip_command, \
     parse_ip_addresses, \
     print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action, \
-    get_live_response_file_action, put_live_response_file_action, HuntingQueryBuilder, assign_params, \
+    get_live_response_file_action, put_live_response_file_action, HuntingQueryBuilder, FileStatisticsAPIParser, assign_params, \
     get_machine_users_command, get_machine_alerts_command, get_advanced_hunting_command, create_filters_conjunction, \
     create_filters_disjunctions, create_filter, MICROSOFT_DEFENDER_FOR_ENDPOINT_API
 
@@ -2954,94 +2955,151 @@ def test_get_file_statistics_command(mocker):
     from MicrosoftDefenderAdvancedThreatProtection import get_file_statistics_command
 
     # Set
-    mocker.patch.object(client_mocker, 'get_file_statistics', return_value=FILE_STATISTICS_API_RESPONSE)
-    context_to_response_key_mapping: dict = {
-        'GlobalPrevalence': 'globalPrevalence',
-        'OrgPrevalence': 'orgPrevalence',
-        'GloballyPrevalence': 'globallyPrevalence',
-        'OrganizationPrevalence': 'organizationPrevalence',
-        'OrgFirstSeen': 'orgFirstSeen',
-        'OrgLastSeen': 'orgLastSeen',
-        'GlobalFirstObserved': 'globalFirstObserved',
-        'GlobalLastObserved': 'globalLastObserved',
-        'TopFileNames': 'topFileNames',
-    }
+    response = FILE_STATISTICS_API_RESPONSE
+    mocker.patch.object(client_mocker, 'get_file_statistics', return_value=response)
 
     # Arrange
     results = get_file_statistics_command(client_mocker, {'file_hash': '0991a395da64e1c5fbe8732ed11e6be064081d9f'})
-    statistics_context_output = results.outputs['Statistics']
+    context_output = results.outputs
 
-    # Assert
-    for context_key, response_key in context_to_response_key_mapping.items():
-        assert statistics_context_output[context_key] == FILE_STATISTICS_API_RESPONSE[response_key]
+    assert context_output['Sha1'] == response['sha1']
+    assert context_output['Statistics'] == {
+        'OrgPrevalence': response['orgPrevalence'],
+        'OrganizationPrevalence': response['organizationPrevalence'],
+        'OrgFirstSeen': response['orgFirstSeen'],
+        'OrgLastSeen': response['orgLastSeen'],
+        'GlobalPrevalence': response['globalPrevalence'],
+        'GloballyPrevalence': response['globallyPrevalence'],
+        'GlobalFirstObserved': response['globalFirstObserved'],
+        'GlobalLastObserved': response['globalLastObserved'],
+        'TopFileNames': response['topFileNames'],
+    }
 
-    assert results.raw_response == FILE_STATISTICS_API_RESPONSE
+    assert results.raw_response == response
 
 
-def test_get_file_statistics_indicator():
+@pytest.fixture
+def file_stats_parser():
+    """Fixture to create a FileStatisticsAPIParser instance."""
+    return FileStatisticsAPIParser.from_raw_response(FILE_STATISTICS_API_RESPONSE)
+
+
+def test_file_statistics_api_parser_from_raw_response(file_stats_parser: FileStatisticsAPIParser):
     """
     Given:
-    - SHA1 File hash and Defender for Endpoint file statistics API response
+    - An instance of FileStatisticsAPIParser created from file statistics API response
 
     When:
-    - Calling the get_file_statistics_indicator function
+    - Casting the FileStatisticsAPIParser dataclass to a dictionary
 
     Then:
-    - Assert correct indicator field values
+    - Assert no excluded fields in dictionary
+    - Assert all relevant fields in dictionary
     """
-    from MicrosoftDefenderAdvancedThreatProtection import get_file_statistics_indicator
-
     # Set
-    indicator_to_response_key_mapping: dict = {
-        'GlobalPrevalence': 'globallyPrevalence',
-        'OrganizationPrevalence': 'organizationPrevalence',
-        'OrganizationFirstSeen': 'orgFirstSeen',
-        'OrganizationLastSeen': 'orgLastSeen',
-        'FirstSeenBySource': 'globalFirstObserved',
-        'LastSeenBySource': 'globalLastObserved',
-    }
+    response = FILE_STATISTICS_API_RESPONSE
+    excluded_key = '@odata.context'
 
     # Arrange
-    file_indicator = get_file_statistics_indicator('0991a395da64e1c5fbe8732ed11e6be064081d9f', FILE_STATISTICS_API_RESPONSE)
-    indicator_data: dict = next(iter(file_indicator.to_context().values()))
+    file_stats_parser_dict = dataclasses.asdict(file_stats_parser)
 
     # Assert
-    for indicator_key, response_key in indicator_to_response_key_mapping.items():
-        assert indicator_data[indicator_key] == FILE_STATISTICS_API_RESPONSE[response_key]
+    assert excluded_key not in file_stats_parser_dict
+    assert file_stats_parser_dict == {key: value for key, value in response.items() if key != excluded_key}
 
 
-def test_get_file_statistics_human_readable(mocker):
+def test_file_statistics_api_parser_to_context(file_stats_parser: FileStatisticsAPIParser):
     """
     Given:
-    - SHA1 File hash and Defender for Endpoint file statistics API response
+    - An instance of FileStatisticsAPIParser created from file statistics API response
 
     When:
-    - Calling the get_file_statistics_human_readable function
+    - Calling the FileStatisticsAPIParser.to_context_output method
 
     Then:
-    - Assert correct human readable markdown table title and data
+    - Assert correct context output
     """
-    from MicrosoftDefenderAdvancedThreatProtection import get_file_statistics_human_readable
-
     # Set
-    human_readable_to_response_key_mapping: dict = {
-        'Global Prevalence': 'globalPrevalence',
-        'Organization Prevalence': 'orgPrevalence',
-        'Global First Observed': 'globalFirstObserved',
-        'Global Last Observed': 'globalLastObserved',
-        'Organization First Seen': 'orgFirstSeen',
-        'Organization Last Seen': 'orgLastSeen',
-        'Top File Names': 'topFileNames',
+    response = FILE_STATISTICS_API_RESPONSE
+
+    # Arrange
+    context_output = file_stats_parser.to_context_output()
+
+    # Assert
+    assert context_output['Sha1'] == response['sha1']
+    assert context_output['Statistics'] == {
+        'OrgPrevalence': response['orgPrevalence'],
+        'OrganizationPrevalence': response['organizationPrevalence'],
+        'OrgFirstSeen': response['orgFirstSeen'],
+        'OrgLastSeen': response['orgLastSeen'],
+        'GlobalPrevalence': response['globalPrevalence'],
+        'GloballyPrevalence': response['globallyPrevalence'],
+        'GlobalFirstObserved': response['globalFirstObserved'],
+        'GlobalLastObserved': response['globalLastObserved'],
+        'TopFileNames': response['topFileNames'],
     }
+
+
+def test_file_statistics_api_parser_to_file_indicator(file_stats_parser: FileStatisticsAPIParser):
+    """
+    Given:
+    - SHA1 file hash and an instance FileStatisticsAPIParser created from file statistics API response
+
+    When:
+    - Calling the FileStatisticsAPIParser.to_file_indicator method
+
+    Then:
+    - Assert correct human readable table name and data
+    """
+    # Set
     file_hash = '0991a395da64e1c5fbe8732ed11e6be064081d9f'
+    response = FILE_STATISTICS_API_RESPONSE
+
+    # Arrange
+    file_indicator = file_stats_parser.to_file_indicator(file_hash)
+    indicator_data: dict = next(iter(file_indicator.to_context().values()))
+    indicator_data.pop('Hashes', None)  # generated by Common.File, irrelevant in this unit test
+
+    # Assert
+    assert indicator_data == {
+        'SHA1': response['sha1'],
+        'OrganizationPrevalence': response['organizationPrevalence'],
+        'GlobalPrevalence': response['globallyPrevalence'],
+        'OrganizationFirstSeen': response['orgFirstSeen'],
+        'OrganizationLastSeen': response['orgLastSeen'],
+        'FirstSeenBySource': response['globalFirstObserved'],
+        'LastSeenBySource': response['globalLastObserved'],
+    }
+
+
+def test_file_statistics_api_parser_to_human_readable(mocker, file_stats_parser: FileStatisticsAPIParser):
+    """
+    Given:
+    - SHA1 file hash and an instance FileStatisticsAPIParser created from file statistics API response
+
+    When:
+    - Calling the FileStatisticsAPIParser.to_human_readable method
+
+    Then:
+    - Assert correct human readable table name and data
+    """
+    # Set
+    file_hash = '0991a395da64e1c5fbe8732ed11e6be064081d9f'
+    response = FILE_STATISTICS_API_RESPONSE
     table_to_markdown = mocker.patch('MicrosoftDefenderAdvancedThreatProtection.tableToMarkdown')
 
     # Arrange
-    get_file_statistics_human_readable(file_hash, FILE_STATISTICS_API_RESPONSE)
+    file_stats_parser.to_human_readable(file_hash)
     table_name, table_data = table_to_markdown.call_args[0]
 
     # Assert
     assert table_name == f'Statistics on {file_hash} file:'
-
-    for table_key, response_key in human_readable_to_response_key_mapping.items():
-        assert table_data[table_key] == FILE_STATISTICS_API_RESPONSE[response_key]
+    assert table_data == {
+        'Organization Prevalence': response['organizationPrevalence'],
+        'Organization First Seen': response['orgFirstSeen'],
+        'Organization Last Seen': response['orgLastSeen'],
+        'Global Prevalence': response['globallyPrevalence'],
+        'Global First Observed': response['globalFirstObserved'],
+        'Global Last Observed': response['globalLastObserved'],
+        'Top File Names': response['topFileNames'],
+    }

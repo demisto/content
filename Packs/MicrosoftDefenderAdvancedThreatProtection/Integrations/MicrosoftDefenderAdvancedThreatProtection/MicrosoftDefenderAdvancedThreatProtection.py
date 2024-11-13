@@ -5,6 +5,7 @@ from typing import Any
 from collections.abc import Callable
 from CommonServerPython import *
 import urllib3
+import dataclasses
 from dateutil.parser import parse
 from requests import Response
 from MicrosoftApiModule import *  # noqa: E402
@@ -77,6 +78,94 @@ DETECTION_SOURCE_TO_API_VALUE = {  # https://learn.microsoft.com/en-us/microsoft
 }
 
 INTEGRATION_NAME = 'Microsoft Defender ATP'
+
+
+@dataclasses.dataclass
+class FileStatisticsAPIParser:
+    sha1: str
+    orgPrevalence: str
+    organizationPrevalence: int
+    orgFirstSeen: str | None    # same as 'orgPrevalence', but as integer
+    orgLastSeen: str | None
+    globalPrevalence: str
+    globallyPrevalence: int    # same as 'globalPrevalence', but as integer
+    globalFirstObserved: str
+    globalLastObserved: str
+    topFileNames: list[str]
+
+    @classmethod
+    def from_raw_response(cls, raw_response: dict):
+        """Creates an instance from the file stats API raw response body (ignores extra fields, if any).
+
+        Args:
+            raw_response (dict): File stats API response
+
+        Returns:
+            FileStatisticsAPIParser
+        """
+        dataclass_field_names = {field.name for field in dataclasses.fields(cls)}
+        return cls(**{key: value for key, value in raw_response.items() if key in dataclass_field_names})
+
+    def to_context_output(self) -> dict:
+        """Generates context output from an instance of FileStatisticsAPIParser.
+
+        Returns:
+            dict: context output
+        """
+        return {
+            'Sha1': self.sha1,
+            'Statistics': assign_params(
+                OrgPrevalence=self.orgPrevalence,
+                OrganizationPrevalence=self.organizationPrevalence,
+                OrgFirstSeen=self.orgFirstSeen,
+                OrgLastSeen=self.orgLastSeen,
+                GlobalPrevalence=self.globalPrevalence,
+                GloballyPrevalence=self.globallyPrevalence,
+                GlobalFirstObserved=self.globalFirstObserved,
+                GlobalLastObserved=self.globalLastObserved,
+                TopFileNames=self.topFileNames,
+            )
+        }
+
+    def to_human_readable(self, file_hash: str) -> str:
+        """Generates a human readable table from an instance of FileStatisticsAPIParser.
+
+        Args:
+            file_hash (str): The hash of the file
+
+        Returns:
+            str: human readable markdown table
+        """
+        table_data = {
+            'Global Prevalence': self.globallyPrevalence,
+            'Organization Prevalence': self.organizationPrevalence,
+            'Global First Observed': self.globalFirstObserved,
+            'Global Last Observed': self.globalLastObserved,
+            'Organization First Seen': self.orgFirstSeen,
+            'Organization Last Seen': self.orgLastSeen,
+            'Top File Names': self.topFileNames,
+        }
+        return tableToMarkdown(f'Statistics on {file_hash} file:', table_data, removeNull=True)
+
+    def to_file_indicator(self, file_hash: str) -> Common.File:
+        """Generates a File indicator object from an instance of FileStatisticsAPIParser.
+
+        Args:
+            file_hash (str): The hash of the file
+
+        Returns:
+            Common.File
+        """
+        return Common.File(
+            dbot_score=Common.DBotScore(file_hash, DBotScoreType.FILE, INTEGRATION_NAME, Common.DBotScore.NONE),
+            sha1=self.sha1,
+            organization_prevalence=self.organizationPrevalence,
+            global_prevalence=self.globallyPrevalence,
+            organization_first_seen=self.orgFirstSeen,
+            organization_last_seen=self.orgLastSeen,
+            first_seen_by_source=self.globalFirstObserved,
+            last_seen_by_source=self.globalLastObserved,
+        )
 
 
 class HuntingQueryBuilder:
@@ -3391,91 +3480,17 @@ def get_file_statistics_command(client: MsClient, args: dict) -> CommandResults:
     Returns:
         CommandResults.
     """
-    file_sha1 = args.get('file_hash', '')
-    response = client.get_file_statistics(file_sha1)
-    file_stat = get_file_statistics_context(response)
-    context_output = {
-        'Sha1': file_sha1,
-        'Statistics': file_stat
-    }
-    human_readable = get_file_statistics_human_readable(file_sha1, response)
-    file_indicator = get_file_statistics_indicator(file_sha1, response)
+    file_hash = args.get('file_hash', '')
+    response = client.get_file_statistics(file_hash)
+    file_stats_parser = FileStatisticsAPIParser.from_raw_response(response)
 
     return CommandResults(
         outputs_prefix='MicrosoftATP.FileStatistics',
         outputs_key_field='Sha1',
-        indicator=file_indicator,
-        readable_output=human_readable,
-        outputs=context_output,
+        indicator=file_stats_parser.to_file_indicator(file_hash),
+        readable_output=file_stats_parser.to_human_readable(file_hash),
+        outputs=file_stats_parser.to_context_output(),
         raw_response=response,
-    )
-
-
-def get_file_statistics_human_readable(file_hash: str, file_stat_response: dict) -> str:
-    """Gets the file statistics response and returns as a human readable markdown table.
-
-    Args:
-        file_hash (str): Hash of file
-        file_stat_response (dict): File statistics response body
-
-    Returns:
-        (str). File statistics human readable
-    """
-    formatted_data = {
-        'Global Prevalence': file_stat_response.get('globalPrevalence'),
-        'Organization Prevalence': file_stat_response.get('orgPrevalence'),
-        'Global First Observed': file_stat_response.get('globalFirstObserved'),
-        'Global Last Observed': file_stat_response.get('globalLastObserved'),
-        'Organization First Seen': file_stat_response.get('orgFirstSeen'),
-        'Organization Last Seen': file_stat_response.get('orgLastSeen'),
-        'Top File Names': file_stat_response.get('topFileNames'),
-    }
-    return tableToMarkdown(f'Statistics on {file_hash} file:', formatted_data, removeNull=True)
-
-
-def get_file_statistics_context(file_stat_response: dict) -> dict:
-    """Gets the file statistics response and returns it in context format.
-
-    Args:
-        file_stat_response (dict): File statistics response body
-
-    Returns:
-        (dict). File statistics context
-    """
-    return assign_params(
-        OrgPrevalence=file_stat_response.get('orgPrevalence'),
-        OrganizationPrevalence=file_stat_response.get('organizationPrevalence'),  # same as 'orgPrevalence', but as integer
-        OrgFirstSeen=file_stat_response.get('orgFirstSeen'),
-        OrgLastSeen=file_stat_response.get('orgLastSeen'),
-        GlobalPrevalence=file_stat_response.get('globalPrevalence'),
-        GloballyPrevalence=file_stat_response.get('globallyPrevalence'),  # same as 'globalPrevalence', but as integer
-        GlobalFirstObserved=file_stat_response.get('globalFirstObserved'),
-        GlobalLastObserved=file_stat_response.get('globalLastObserved'),
-        TopFileNames=file_stat_response.get('topFileNames'),
-    )
-
-
-def get_file_statistics_indicator(file_hash: str, file_stat_response: dict) -> Common.File:
-    """Creates File indicator from the file statistics response
-
-    Args:
-        file_hash (str): Hash of file
-        file_stat_response (dict): File statistics response body
-
-    Returns:
-        Common.File: File indicator
-    """
-    dbot_score = Common.DBotScore(file_hash, DBotScoreType.FILE, INTEGRATION_NAME, Common.DBotScore.NONE)
-
-    return Common.File(
-        dbot_score=dbot_score,
-        sha1=file_stat_response.get('sha1'),
-        organization_prevalence=file_stat_response.get('organizationPrevalence'),
-        global_prevalence=file_stat_response.get('globallyPrevalence'),
-        organization_first_seen=file_stat_response.get('orgFirstSeen'),
-        organization_last_seen=file_stat_response.get('orgLastSeen'),
-        first_seen_by_source=file_stat_response.get('globalFirstObserved'),
-        last_seen_by_source=file_stat_response.get('globalLastObserved'),
     )
 
 
