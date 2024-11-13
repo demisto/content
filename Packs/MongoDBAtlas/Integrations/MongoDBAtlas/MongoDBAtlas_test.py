@@ -261,7 +261,6 @@ def test_fetch_event_type_min_time_repeat(mocker):
         client, 10, last_run
     )
 
-    events_with_created_min_time = last_run_new_dict.get('events_with_created_min_time')
     min_time = last_run_new_dict.get('min_time')
 
     assert len(output) == 10
