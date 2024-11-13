@@ -331,7 +331,7 @@ def main() -> None:  # pragma: no cover
             audit_logs, results = get_events_command(client=client, args=args, log_type=AUDIT, last_run=last_run)
             return_results(results)
 
-            if argToBoolean(args.get("should_push_events", "true")):
+            if argToBoolean(args.get("should_push_events", True)):
                 send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
 
         elif command == "service-now-get-syslog-transactions":
