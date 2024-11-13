@@ -1,8 +1,5 @@
 import copy
 import json
-import unittest
-from datetime import datetime
-from unittest.mock import patch
 import pytest
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -28,6 +25,13 @@ def util_load_json(path):
 
 
 def test_add_entry_status_field():
+    """
+    Given: A list of events with 'created' and 'updated' timestamps.
+    When: Calling the `add_entry_status_field` function to add the '_entry_status' field based on whether the event
+     has been updated.
+    Then: Ensure the '_entry_status' field is correctly added with the value 'new' if the 'created' and 'updated' timestamps
+     are the same, or 'updated' if the 'updated' timestamp differs from the 'created' timestamp.
+    """
     from MongoDBAtlas import add_entry_status_field
     test_cases = [
         {
@@ -46,6 +50,11 @@ def test_add_entry_status_field():
 
 
 def test_get_next_url():
+    """
+    Given: A list of links.
+    When: Calling the `get_next_url` function to extract the 'next' URL.
+    Then: Ensure the correct 'next' URL is returned if present, or None if no 'next' URL is found.
+    """
     from MongoDBAtlas import get_next_url
     # Test case where a "next" link is present
     links_with_next = [
@@ -65,6 +74,11 @@ def test_get_next_url():
 
 
 def test_get_self_url():
+    """
+    Given: A list of links.
+    When: Calling the `get_self_url` function to extract the 'self' URL.
+    Then: Ensure the correct 'self' URL is returned if present, or None if no 'self' URL is found.
+    """
     from MongoDBAtlas import get_self_url
     # Test case where a "self" link is present
     links_with_next = [
@@ -84,6 +98,12 @@ def test_get_self_url():
 
 
 def test_add_time_field():
+    """
+    Given: An event with either 'updated' or 'created' timestamp fields.
+    When: Calling the `add_time_field` function to add a '_time' field based on the available timestamp.
+    Then: Ensure the '_time' field is correctly added, using the 'updated' timestamp if present,
+     otherwise using the 'created' timestamp.
+    """
     from MongoDBAtlas import add_time_field
     # Case where 'updated' time is present in the event
     event = {
@@ -106,6 +126,12 @@ def test_add_time_field():
     (3, 3)  # Case: fetch_limit < available alerts
 ])
 def test_fetch_alert_type(mocker, fetch_limit, expected_alert_count):
+    """
+    Given: A mock MongoDB Atlas client with a page of alerts and a specified fetch limit.
+    When: Fetching alerts from the page with different fetch limits.
+    Then: Ensure the correct number of alerts are fetched, the page link is set correctly,
+     and the last page alert IDs are correctly recorded and validated.
+    """
     from MongoDBAtlas import fetch_alert_type
     mocked_alerts = util_load_json('test_data/raw_alerts_page_1.json')
     mocker.patch('MongoDBAtlas.get_page_from_last_run_for_alerts', return_value=mocked_alerts)
@@ -130,6 +156,12 @@ def test_fetch_alert_type(mocker, fetch_limit, expected_alert_count):
     (8, 8)
 ])
 def test_fetch_alert_type_using_next_page(mocker, fetch_limit, expected_alert_count):
+    """
+    Given: A mock MongoDB Atlas client with two pages of alert data.
+    When: Fetching alerts with a specified fetch limit and processing alerts from the first and second pages.
+    Then: Ensure the correct number of alerts are fetched, the next page link is set properly,
+     and the last page alert IDs are correctly updated after the fetch.
+    """
     from MongoDBAtlas import fetch_alert_type
 
     mocked_alerts_page_1 = util_load_json('test_data/raw_alerts_page_1.json')
@@ -162,6 +194,13 @@ def test_fetch_alert_type_using_next_page(mocker, fetch_limit, expected_alert_co
 
 
 def test_fetch_alert_type_while_more_alerts_created(mocker):
+    """
+    Given: A mock MongoDB Atlas client with an initial page of alert data, where more alerts are added after the initial fetch.
+    When: Running fetch_alert_type to fetch alerts in two stages – first fetching the initial set,
+     and then fetching only the newly added alerts.
+    Then: Ensure the correct number of alerts are returned in each fetch, that the last page link is set correctly,
+     and that the IDs in last_page_alerts_ids match the expected values after both fetches.
+    """
     from MongoDBAtlas import fetch_alert_type
 
     mocked_alerts_page_1 = util_load_json('test_data/raw_alerts_page_1.json')
@@ -175,6 +214,8 @@ def test_fetch_alert_type_while_more_alerts_created(mocker):
     output, last_run_new_dict = fetch_alert_type(
         client, len(mocked_alerts_page_1.get('results')), last_run
     )
+
+    seen_ids = {event.get('id') for event in output}
 
     assert len(output) == len(mocked_alerts_page_1.get('results'))
     assert last_run_new_dict.get('page_link') == 'self1'
@@ -195,12 +236,24 @@ def test_fetch_alert_type_while_more_alerts_created(mocker):
 
     assert set(last_page_alerts_ids) == set(expected_ids)
 
+    # checks for duplicates
+    for event in output:
+        event_id = event.get("id")
+        assert event_id not in seen_ids
+        seen_ids.add(event_id)
+
 
 @pytest.mark.parametrize("fetch_limit, expected_event_count", [
     (12, 11),  # Case: fetch_limit > available events
     (8, 8)  # Case: fetch_limit < available events
 ])
 def test_fetch_event_type(mocker, fetch_limit, expected_event_count):
+    """
+    Given: A mock MongoDB Atlas client with a single page of event data.
+    When: Running fetch_event_type with different fetch limits.
+    Then: Ensure that the number of events returned matches the expected count,
+     and the min_time in last_run is updated to the lasted creation time.
+    """
     from MongoDBAtlas import fetch_event_type
 
     mocked_events_page_1 = util_load_json('test_data/raw_events_page_1.json')
@@ -221,12 +274,11 @@ def test_fetch_event_type(mocker, fetch_limit, expected_event_count):
 
 def test_fetch_event_type_min_time_repeat(mocker):
     """
-    Test fetching events with the same min_time across following fetches.
-
-    Verifies that:
-    - The first fetch retrieves events up to `min_time`.
-    - The second fetch avoids duplicating events from the first.
-    - The final `min_time` advances correctly after both fetches.
+    Given: A mock MongoDB Atlas client with event data that includes duplicate timestamps for event creation.
+    When: Running fetch_event_type with a set fetch limit, where events initially fetched share the same min_time as new events
+     in a subsequent fetch.
+    Then: Ensure that events are retrieved up to the fetch limit, min_time is updated appropriately after each fetch,
+     and no duplicate event IDs are present in the final output.
     """
 
     from MongoDBAtlas import fetch_event_type
@@ -268,6 +320,11 @@ def test_fetch_event_type_min_time_repeat(mocker):
     (25, 22)  # Case: fetch_limit > available events
 ])
 def test_fetch_event_type_using_previous_page(mocker, fetch_limit, expected_event_count):
+    """
+    Given: A mock MongoDB Atlas client with a fetch limit and paginated event data spread across 2 pages.
+    When: Running fetch_event_type with a specified fetch limit and using previous page retrieval.
+    Then: Ensure that the total number of events matches the expected count, min_time is updated based on the last event's created time, and no duplicate event IDs are present in the output.
+    """
     from MongoDBAtlas import fetch_event_type, Client
 
     raw_events_page_1 = util_load_json('test_data/raw_events_page_1.json')
