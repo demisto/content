@@ -3168,7 +3168,7 @@ def get_connection_args(params: dict) -> dict:
     """
     app = params.get('app', '-')
     return {
-        'host': params['host'],
+        'host': params['host'].replace('https://', '').rstrip('/'),
         'port': params['port'],
         'app': app or "-",
         'verify': VERIFY_CERTIFICATE,
