@@ -1,4 +1,4 @@
-Generic SQL integration for the Databases: MySQL, PostgreSQL, Microsoft SQL Server, Oracle and Teradata.
+Generic SQL integration for the Databases: MySQL, PostgreSQL, Microsoft SQL Server, Oracle, Teradata and Trino.
 
 ## Default ports
 
@@ -15,11 +15,15 @@ If the port value is empty, a default port will be selected according to the dat
 
 Specify arguments for the configuration of an instance name-value pairs, for example:
 
-```charset=utf8```
+```
+charset=utf8
+```
 
 Separate pairs using __&amp;__ character, for example:
 
-```charset=utf8&read_timeout=10```
+```
+charset=utf8&read_timeout=10
+```
 
 ## Connection Pooling
 
@@ -344,7 +348,9 @@ In cases where you receive an error that is not clear when you __Test__ the inte
 1. Save the configured instance even though the __Test__ doesn't work.
 2. In the playground, run the `!sql-command` with `debug-mode=true`. For example:
 
-  ```!sql-command query="some simple query" debug-mode=true```
+  ```
+  !sql-command query="some simple query" debug-mode=true
+  ```
 
 A log file will be generated in the Playground. Examine the log file for further details that explain why the integration is failing.
 
@@ -374,17 +380,23 @@ echo "select @@version" | sudo docker run --rm -i  demisto/genericsql:1.1.0.9726
 
 __Autocommit__: If you are seeing that insert/update operations are NOT being performed and no error is received, it could be a case that autocommit is not enabled on the connection and the transaction is rolledback. To enable autocommit, add the following to the connection arguments instance configuration option:
 
-```autocommit=True```
+```
+autocommit=True
+```
 
 ### Oracle
 
 If you require connecting to Oracle via a __SERVICE_NAME__, leave the `Database Name` parameter empty and add to the `Connection Arguments` the following:
 
-```service_name=<SERVICE_NAME>```
+```
+service_name=<SERVICE_NAME>
+```
 
 For example:
 
-```service_name=XEXDB```
+```
+service_name=XEXDB
+```
 
 ## Possible Errors
 
