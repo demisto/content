@@ -41,8 +41,7 @@ def add_new_comment(context_results: dict):
     demisto.info(f"update remote incident with new XSOAR comment: {new_comment}")
 
     readable_output = tableToMarkdown(
-        """The new comment has been recorded and will appear in your comments field shortly.
-        Note: This will only occur if you have the 'Mirror In' option enabled.""",
+        "The new comment has been recorded and will appear in your comments field shortly.",
         {"Instance Name": instance_name, "New Comment": new_comment},
         headers=["New Comment", "Instance Name"],
         removeNull=True,

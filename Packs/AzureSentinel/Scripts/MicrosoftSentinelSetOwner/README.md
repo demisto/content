@@ -2,7 +2,7 @@ This script can be run from the war room or used by a layout to set the owner fi
 
 Note:
 
-- The `Owner` field can only be modified in XSOAR just when the `Mirroring Direction` in the Instance Settings is set to `Incoming` or `Incoming and Outgoing`.
+- The *Owner* field in XSOAR can only be modified when the *Mirroring Direction* in the *Instance Settings* is set to *Incoming* or *Incoming and Outgoing*.
 
 ## Script Data
 

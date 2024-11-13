@@ -22,7 +22,8 @@ def set_owner(context_results: dict):
     user_principal_email = args.get("user_principal_name")
     if not instance_name:
         return_error(
-            message="Please provide a not empty 'using' as an argument when executing the script from the War Room."
+            message="Missing instance name. \
+                Make sure to provide a non-empty 'using' argument when executing the script from the War Room."
         )
     if not user_principal_email:
         return_error(

@@ -3,7 +3,7 @@ Use this script to add a comment which will then be mirrored as a comment to a S
 
 Note:
 
-- Comments can only be added to XSOAR just when the `Mirroring Direction` in the Instance Settings is set to `Incoming` or `Incoming and Outgoing`.
+- Comments in XSOAR can only be added when the *Mirroring Direction* in the *Instance Settings* is set to *Incoming* or *Incoming and Outgoing*.
 
 ## Script Data
 
