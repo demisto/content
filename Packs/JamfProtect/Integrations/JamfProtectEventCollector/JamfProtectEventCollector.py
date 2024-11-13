@@ -432,7 +432,7 @@ def get_events_alert_type(client: Client, start_date: str, max_fetch: int, last_
     client_event_type_func = client.get_alerts
     next_page = last_run.get("alert", {}).get("next_page", "")
 
-    demisto.debug(f"Jamf Protect- Fetching alerts from {created}")
+    demisto.debug(f"Jamf Protect- Fetching alerts from {created} with next page: {next_page}")
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     for event in events:
         event["source_log_type"] = "alert"
@@ -447,7 +447,7 @@ def get_events_alert_type(client: Client, start_date: str, max_fetch: int, last_
                                              for event in events) if dt is not None]).strftime(
         DATE_FORMAT) if events else current_date
     new_last_run_without_next_page = {"last_fetch": new_last_fetch_date}
-    demisto.debug(f"Jamf Protect- Fetched {len(events)} alerts")
+    demisto.debug(f"Jamf Protect- Fetched {len(events)} alerts with new last fetch {new_last_run_without_next_page}.")
     return events, new_last_run_without_next_page
 
 
@@ -476,7 +476,7 @@ def get_events_computer_type(client: Client, start_date: str, max_fetch: int, la
     client_event_type_func = client.get_computer
     next_page = last_run.get("computer", {}).get("next_page", "")
 
-    demisto.debug(f"Fetching computers since {created}")
+    demisto.debug(f"Fetching computers since {created} with next page: {next_page}")
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     for event in events:
         event["source_log_type"] = "computers"
@@ -491,7 +491,7 @@ def get_events_computer_type(client: Client, start_date: str, max_fetch: int, la
                                             for event in events))).strftime(DATE_FORMAT) if events else current_date
     # If there is no next page, the last fetch date will be the max end date of the fetched events.
     new_last_run_without_next_page = {"last_fetch": new_last_fetch_date}
-    demisto.debug(f"Fetched {len(events)} computers")
+    demisto.debug(f"Fetched {len(events)} computers with new last fetch {new_last_run_without_next_page}.")
     return events, new_last_run_without_next_page
 
 
@@ -521,7 +521,7 @@ def get_events_audit_type(client: Client, start_date: str, end_date: str, max_fe
     client_event_type_func = client.get_audits
     next_page = last_run.get("audit", {}).get("next_page", "")
 
-    demisto.debug(f"Jamf Protect- Fetching audits from {start_date} to {end_date}")
+    demisto.debug(f"Jamf Protect- Fetching audits from {start_date} to {end_date} with next page: {next_page}")
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     for event in events:
         event["source_log_type"] = "audit"
@@ -537,7 +537,7 @@ def get_events_audit_type(client: Client, start_date: str, end_date: str, max_fe
                                              for event in events) if dt is not None]).strftime(
         DATE_FORMAT) if events else end_date
     new_last_run_without_next_page = {"last_fetch": new_last_fetch_date}
-    demisto.debug(f"Jamf Protect- Fetched {len(events)} audits")
+    demisto.debug(f"Jamf Protect- Fetched {len(events)} audits  with new last fetch {new_last_run_without_next_page}")
     return events, new_last_run_without_next_page
 
 
@@ -568,12 +568,17 @@ def get_events(
     while has_next:
         has_next = False
         if len(events) >= max_fetch:
+            demisto.debug(f"Jamf Protect - Fetched {len(events)} and returned next page {next_page} "
+                          f"since we reached the max fetch {max_fetch}")
             return events, next_page
         response = client_event_type_func(command_args, next_page)
         page_info, parsed_data = parse_response(response=response)
         if next_page := page_info.get("next"):
             has_next = True
         events.extend(parsed_data)
+    demisto.debug(
+        f'Jamf Protect - Fetched {len(events)} events with no next page since we do not reached the max fetch: {max_fetch}'
+    )
     return events, ""
 
 
