@@ -2,7 +2,6 @@ This playbook addresses the following alerts:
 
 - External Exchange inbox forwarding rule configured.
 - Suspicious Exchange inbox forwarding rule configured.
-- Possible BEC Exchange email-hiding inbox rule.
 - Suspicious Exchange email-hiding inbox rule.
 
 Playbook Stages:
@@ -22,7 +21,7 @@ Investigation:
 Containment:
 
 - If at least two suspicious evidences are found, the playbook executes soft response actions, including signing the user out and deleting the forwarding email address from the user account mailbox. The user will be notified of these actions via email.
-- If more than two suspicious evidences are found, the playbook executes both soft and hard response actions, recommending the analyst suspend the user account.
+- If more than two suspicious evidences are found and the alert severity is medium, the playbook executes both soft and hard response actions, recommending the analyst suspend the user account.
 
 Requirements: 
 
@@ -79,4 +78,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Exchange forwarding rule configured](../doc_files/Exchange_forwarding_rule_configured.png)
+![Exchange forwarding rule configured_copy](../doc_files/Exchange_forwarding_rule_configured_copy.png)

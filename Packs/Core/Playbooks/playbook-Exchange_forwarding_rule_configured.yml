@@ -1,7 +1,24 @@
-id: Exchange forwarding rule configured
-version: -1
-name: Exchange forwarding rule configured
-description: "This playbook addresses the following alerts:\n\n- External Exchange inbox forwarding rule configured.\n- Suspicious Exchange inbox forwarding rule configured.\n- Possible BEC Exchange email-hiding inbox rule.\n- Suspicious Exchange email-hiding inbox rule.\n\nPlaybook Stages:\n \nTriage: \n\n- The playbook retrieves the caller's IP, the forwarding email address, and the domain.\n\nEarly Containment:\n\n- The playbook checks if the IP or domain of the forwarding email address is malicious. If so, it suggests blocking the IP using PAN-OS while continuing the investigation in parallel.\n\nInvestigation:\n\n- The playbook checks for suspicious behaviors, including whether an Exchange admin created the rule outside of working hours, from unusual geolocation, or if the user who created the rule has a high-risk score. It then aggregates all evidence collected during the investigation.\n\nContainment:\n\n- If at least two suspicious evidence are found, the playbook executes soft response actions, including signing the user out and deleting the forwarding email address from the user account mailbox. The user will be notified of these actions via email.\n- If more than two suspicious evidence are found, the playbook executes both soft and hard response actions, recommending the analyst suspend the user account.\n\nRequirements: \n\nFor any response action, you need the following integration:\n- EWS Extension Online Powershell v3 integration."
+id: 5e298b36-911a-4dcc-82d2-bfb7a8d626eb
+version: 88
+vcShouldKeepItemLegacyProdMachine: false
+name: Exchange forwarding rule configured_copy
+description: "This playbook addresses the following alerts:\n\n- External Exchange
+  inbox forwarding rule configured.\n- Suspicious Exchange inbox forwarding rule configured.\n-
+  Suspicious Exchange email-hiding inbox rule.\n\nPlaybook Stages:\n \nTriage: \n\n-
+  The playbook retrieves the caller's IP, the forwarding email address, and the domain.\n\nEarly
+  Containment:\n\n- The playbook checks if the IP or domain of the forwarding email
+  address is malicious. If so, it suggests blocking the IP using PAN-OS while continuing
+  the investigation in parallel.\n\nInvestigation:\n\n- The playbook checks for suspicious
+  behaviors, including whether an Exchange admin created the rule outside of working
+  hours, from unusual geolocation, or if the user who created the rule has a high-risk
+  score. It then aggregates all evidence collected during the investigation.\n\nContainment:\n\n-
+  If at least two suspicious evidences are found, the playbook executes soft response
+  actions, including signing the user out and deleting the forwarding email address
+  from the user account mailbox. The user will be notified of these actions via email.\n-
+  If more than two suspicious evidences are found and the alert severity is medium,
+  the playbook executes both soft and hard response actions, recommending the analyst
+  suspend the user account.\n\nRequirements: \n\nFor any response action, you need
+  the following integration:\n- EWS Extension Online Powershell v3 integration."
 tags:
 - TA0009 - Collection
 - TA0010 - Exfiltration
@@ -924,7 +941,7 @@ tasks:
     task:
       id: 627d5819-cb1e-4b21-8e88-8b6d82ae21ac
       version: -1
-      name: Evidence counts more than 2
+      name: Checking soft remediation conditions
       type: condition
       iscommand: false
       brand: ""
@@ -1079,7 +1096,7 @@ tasks:
     task:
       id: 7a967a10-abda-42b5-8535-2b3502c52c05
       version: -1
-      name: Evaluate evidence count and alert severity
+      name: Checking medium severity conditions
       type: condition
       iscommand: false
       brand: ""
@@ -1529,7 +1546,7 @@ tasks:
     task:
       id: d4c540d3-adaf-4f1b-869f-32ddd550508f
       version: -1
-      name: Evidence counts more than 3
+      name: Checking hard remediation conditions
       type: condition
       iscommand: false
       brand: ""
