@@ -8,6 +8,8 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.8,<3.11"
 defusedxml = "^0.7.1"
+uuid = "^1.30"
+datetime = "^5.2"
 
 [tool.poetry.group.dev.dependencies]
 demisto_sdk = "1.14.5"

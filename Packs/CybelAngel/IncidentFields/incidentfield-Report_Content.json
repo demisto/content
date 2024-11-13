@@ -1,0 +1,31 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "reportcontent",
+    "closeForm": true,
+    "content": true,
+    "description": "Entire report content",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_reportcontent",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Report Content",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "longText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

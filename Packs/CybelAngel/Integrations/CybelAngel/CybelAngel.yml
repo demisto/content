@@ -1,0 +1,178 @@
+commonfields:
+  id: CybelAngel
+  version: -1
+configuration:
+- additionalinfo: Client ID for OAuth 2.0 Authentication for CybelAngel API
+  display: CybelAngel Client ID
+  name: client_id
+  required: true
+  type: 4
+- additionalinfo: Client Secret for OAuth 2.0 Authentication for CybelAngel API
+  display: CybelAngel Client Secret
+  name: client_secret
+  required: true
+  type: 4
+- additionalinfo: CybelAngel Tenant ID to create comments on reports
+  display: CybelAngel Tenant ID
+  name: tenant_id
+  required: true
+  type: 0
+- defaultvalue: "365"
+  display: First fetch Interval (Select amount of days to fetch back in time)
+  name: first_fetch_interval
+  required: true
+  type: 0
+- additionalinfo: Base Url for CybelAngel platform
+  defaultvalue: https://platform.cybelangel.com
+  display: Base URL
+  name: base_url
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: This integration connects your alerts from CybelAngel.
+detaileddescription: |-
+  #### Integration Author: CybelAngel
+  Support and maintenance for this integration are provided by the author. Please use the following contact details:
+  - **Email**: [support@cybelangel.com](mailto:support@cybelangel.com)
+  - **URL**: [https://support.cybelangel.com](https://support.cybelangel.com)
+  ***
+  ## BaseIntegration Help
+
+  Markdown file for integration configuration  help snippet. In this file add:
+
+  - Brief information about how to retrieve the API key of your product
+  - Other useful information on how to configure your integration in XSOAR
+
+  Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+
+
+  ---
+  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/cybel-angel)
+display: CybelAngel
+image: 
+  data:image/png;base64,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
+name: CybelAngel
+script:
+  commands:
+  - arguments: []
+    description: test the connectivity of the module.
+    name: test-module
+  - arguments: []
+    description: Get reports from Selected time interval.
+    name: fetch-incidents
+  - arguments:
+    - description: The ID of the report to retrieve.
+      name: report_id
+      required: true
+    description: Get a report by ID.
+    name: cybelangel-get-report-by-id
+    outputs:
+    - contextPath: CybelAngel.Report
+      description: Details of the report.
+      type: String
+  - arguments:
+    - description: The ID of the report to get the attachment from.
+      name: report_id
+      required: true
+    - description: The ID of the attachment to retrieve.
+      name: attachment_id
+      required: true
+    - description: The the name of the file.
+      name: file_name
+      required: true
+    description: Get an attachment of a report.
+    name: cybelangel-get-report-attachment
+    outputs:
+    - contextPath: CybelAngel.ReportAttachment
+      description: Attachment details.
+      type: String
+  - arguments:
+    - description: The ID of the report to download as PDF.
+      name: report_id
+      required: true
+    description: Downloads a PDF report from CybelAngel by report ID and saves it to the War Room.
+    name: cybelangel-get-report-pdf
+    outputs:
+    - contextPath: CybelAngel.PDFReport.fileID
+      description: The War Room file ID of the downloaded PDF.
+      type: String
+    - contextPath: CybelAngel.PDFReport.reportID
+      description: The report ID corresponding to the downloaded PDF.
+      type: String
+    - contextPath: CybelAngel.PDFReport.fileName
+      description: The filename of the downloaded PDF.
+      type: String
+  - arguments:
+    - description: The ID of the report to remediate.
+      name: report_id
+      required: true
+    - description: Email needed for the request.
+      name: email
+      required: true
+    - description: The full name of the requestor.
+      name: requester_fullname
+      required: true
+    description: Remediate a report by ID.
+    name: cybelangel-remediate
+    outputs:
+    - contextPath: CybelAngel.Remediation
+      description: Remediation status.
+      type: String
+  - arguments:
+    - description: The ID of the report to get comments for.
+      name: report_id
+      required: true
+    description: Get comments for a report.
+    name: cybelangel-get-comments
+    outputs:
+    - contextPath: CybelAngel.Comments
+      description: Comments on the report.
+      type: String
+  - arguments:
+    - description: The ID of the report to post a comment on.
+      name: report_id
+      required: true
+    - description: The comment to post.
+      name: comment
+      required: true
+    description: Post a comment on a report.
+    name: cybelangel-post-comment
+  - arguments:
+    - description: The ID of the report to update the status of.
+      name: report_id
+      required: true
+    - description: The new status of the report.
+      name: status
+      predefined:
+      - open
+      - in_progress
+      - resolved
+      - discarded
+      required: true
+    description: Update the status of a report.
+    name: cybelangel-update-status
+    outputs:
+    - contextPath: CybelAngel.StatusUpdate
+      description: Status update details.
+      type: String
+  dockerimage: demisto/python3:3.9.9.25564
+  isfetch: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,35 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "CybelAngel"
+    ],
+    "caseInsensitive": true,
+    "cliName": "abuseemail",
+    "closeForm": false,
+    "content": true,
+    "description": "Abuse email for domain threats ",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_abuseemail",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "abuse email",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "placeholder": "null",
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

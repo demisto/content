@@ -1,0 +1,97 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: CybelAngel - Update Status
+inputs:
+- description: "Status can be the following:\n-open\n- in_progress\n- resolved \n- discarded"
+  key: Status
+  playbookInputQuery:
+  required: true
+  value: {}
+name: CybelAngel - Update Status
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 06ba9d2e-19a9-46d9-87ac-0687207f500b
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 06ba9d2e-19a9-46d9-87ac-0687207f500b
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      report_id:
+        simple: ${incident.alertid}
+      status:
+        simple: ${inputs.Status}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: CybelAngel
+      description: Update the status of a report
+      id: 8c072357-3ff1-4b2a-8183-b012da652480
+      iscommand: true
+      name: cybelangel-update-status
+      script: CybelAngel|||cybelangel-update-status
+      type: regular
+      version: -1
+    taskid: 8c072357-3ff1-4b2a-8183-b012da652480
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 285,
+        "width": 380,
+        "x": 450,
+        "y": 40
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
+description: Updating the status of the CybelAngel Report.

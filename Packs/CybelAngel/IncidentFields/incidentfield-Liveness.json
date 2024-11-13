@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "CybelAngel"
+    ],
+    "caseInsensitive": true,
+    "cliName": "liveness",
+    "closeForm": false,
+    "content": true,
+    "description": "Status if the incident is still online",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_liveness",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Liveness",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

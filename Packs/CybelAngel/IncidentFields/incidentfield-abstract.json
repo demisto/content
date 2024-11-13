@@ -1,0 +1,35 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "CybelAngel"
+    ],
+    "caseInsensitive": true,
+    "cliName": "abstract",
+    "closeForm": false,
+    "content": true,
+    "description": "Description of the CybelAngel incident",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_abstract",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "abstract",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "placeholder": "null",
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

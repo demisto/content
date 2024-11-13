@@ -1,0 +1,35 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "CybelAngel"
+    ],
+    "caseInsensitive": true,
+    "cliName": "analysis",
+    "closeForm": false,
+    "content": true,
+    "description": "Additional analysis of the incident in question",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_analysis",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "analysis",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "placeholder": "null",
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

@@ -1,0 +1,152 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: CybelAngel - Get Attachement
+inputs:
+- description: |
+    Report ID
+  key: Report ID
+  playbookInputQuery:
+  required: true
+  value:
+    simple: ${incident.alertid}
+- description: Attachment ID
+  key: Attachment ID
+  playbookInputQuery:
+  required: true
+  value:
+    simple: ${incident.filenames.0.id}
+- description: |+
+    File name for the attachment
+
+  key: File Name
+  playbookInputQuery:
+  required: true
+  value:
+    simple: ${incident.filenames.0.name}
+name: CybelAngel - Get Attachement
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3b7c32f1-66f2-4f53-859a-3797905ebe02
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 3b7c32f1-66f2-4f53-859a-3797905ebe02
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      attachment_id:
+        simple: ${ReportFiles.id}
+      file_name:
+        simple: ${ReportFiles.name}
+      report_id:
+        simple: ${inputs.Report ID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: CybelAngel
+      description: Get an attachment of a report
+      id: ec3cce83-b449-4245-84f1-1a4c777f8d03
+      iscommand: true
+      name: Get attachment
+      script: CybelAngel|||cybelangel-get-report-attachment
+      type: regular
+      version: -1
+    taskid: ec3cce83-b449-4245-84f1-1a4c777f8d03
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 480
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      key:
+        simple: ReportFiles
+      value:
+        simple: ${incident.filenames}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: eb90ef46-7910-4692-8482-b5f80f7556db
+      iscommand: false
+      name: Set Array to Context
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: eb90ef46-7910-4692-8482-b5f80f7556db
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 260
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 525,
+        "width": 380,
+        "x": 240,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
+description: Retrieving Attachments for a CybelAngel Report.

@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "CybelAngel"
+    ],
+    "caseInsensitive": true,
+    "cliName": "board",
+    "closeForm": false,
+    "content": true,
+    "description": "Darkweb Board in which data is detected",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_board",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "board",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

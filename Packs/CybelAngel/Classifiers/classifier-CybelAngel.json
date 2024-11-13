@@ -1,0 +1,470 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "CybelAngel",
+    "mapping": {
+        "CybelAngel": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert Category": {
+                    "complex": {
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    }
+                },
+                "Alert ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    }
+                },
+                "Alert Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incident_id",
+                        "transformers": []
+                    }
+                },
+                "Alert Source": {
+                    "simple": "CybelAngel"
+                },
+                "Categories": {
+                    "complex": {
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    }
+                },
+                "Country": {
+                    "complex": {
+                        "filters": [],
+                        "root": "location",
+                        "transformers": []
+                    }
+                },
+                "Country Code": {
+                    "complex": {
+                        "filters": [],
+                        "root": "country_code",
+                        "transformers": []
+                    }
+                },
+                "Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "abstract",
+                        "transformers": []
+                    }
+                },
+                "External Link": {
+                    "complex": {
+                        "filters": [],
+                        "root": "url",
+                        "transformers": []
+                    }
+                },
+                "External Status": {
+                    "complex": {
+                        "accessor": "status",
+                        "filters": [],
+                        "root": "incident",
+                        "transformers": []
+                    }
+                },
+                "File Name": {
+                    "simple": "attachments.[0].name"
+                },
+                "File Names": {
+                    "simple": "attachments"
+                },
+                "Hostnames": {
+                    "complex": {
+                        "filters": [],
+                        "root": "hostnames",
+                        "transformers": []
+                    }
+                },
+                "IP": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ip",
+                        "transformers": []
+                    }
+                },
+                "Incident Link": {
+                    "complex": {
+                        "filters": [],
+                        "root": "url",
+                        "transformers": []
+                    }
+                },
+                "Incident Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incident_type",
+                        "transformers": []
+                    }
+                },
+                "Investigation ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "investigation_id",
+                        "transformers": []
+                    }
+                },
+                "Is Active": {
+                    "complex": {
+                        "accessor": "online",
+                        "filters": [],
+                        "root": "liveness",
+                        "transformers": []
+                    }
+                },
+                "Keywords": {
+                    "complex": {
+                        "accessor": "[0].id",
+                        "filters": [],
+                        "root": "keywords",
+                        "transformers": [
+                            {
+                                "operator": "ParseJSON"
+                            }
+                        ]
+                    }
+                },
+                "Liveness": {
+                    "complex": {
+                        "accessor": "online",
+                        "filters": [],
+                        "root": "liveness",
+                        "transformers": []
+                    }
+                },
+                "MX Servers": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mx_servers",
+                        "transformers": [
+                            {
+                                "operator": "ParseJSON"
+                            }
+                        ]
+                    }
+                },
+                "Machine Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "machine_name",
+                        "transformers": []
+                    }
+                },
+                "Malware Location": {
+                    "complex": {
+                        "filters": [],
+                        "root": "malware_location",
+                        "transformers": []
+                    }
+                },
+                "Malware Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "malware_name",
+                        "transformers": []
+                    }
+                },
+                "NS Servers ": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ns_servers",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "split"
+                            }
+                        ]
+                    }
+                },
+                "Origins": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [],
+                        "root": "origins",
+                        "transformers": []
+                    }
+                },
+                "Port": {
+                    "complex": {
+                        "filters": [],
+                        "root": "port",
+                        "transformers": []
+                    }
+                },
+                "Registrant Email": {
+                    "complex": {
+                        "filters": [],
+                        "root": "registrant_email",
+                        "transformers": []
+                    }
+                },
+                "Registrar Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "registrar_name",
+                        "transformers": []
+                    }
+                },
+                "Report Content": {
+                    "complex": {
+                        "filters": [],
+                        "root": "report_content",
+                        "transformers": []
+                    }
+                },
+                "Report Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "report_type",
+                        "transformers": []
+                    }
+                },
+                "Risks": {
+                    "complex": {
+                        "filters": [],
+                        "root": "risks",
+                        "transformers": []
+                    }
+                },
+                "Samples": {
+                    "complex": {
+                        "filters": [],
+                        "root": "samples",
+                        "transformers": [
+                            {
+                                "operator": "StringToArray"
+                            }
+                        ]
+                    }
+                },
+                "Screenshots": {
+                    "complex": {
+                        "filters": [],
+                        "root": "screenshots",
+                        "transformers": []
+                    }
+                },
+                "Sender": {
+                    "complex": {
+                        "filters": [],
+                        "root": "sender",
+                        "transformers": []
+                    }
+                },
+                "Sent At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "sent_at",
+                        "transformers": []
+                    }
+                },
+                "Solved At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "solved_at",
+                        "transformers": []
+                    }
+                },
+                "Source": {
+                    "complex": {
+                        "filters": [],
+                        "root": "source",
+                        "transformers": []
+                    }
+                },
+                "Source IP": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ip",
+                        "transformers": []
+                    }
+                },
+                "Source Port": {
+                    "complex": {
+                        "filters": [],
+                        "root": "port",
+                        "transformers": []
+                    }
+                },
+                "Suggestions": {
+                    "complex": {
+                        "filters": [],
+                        "root": "suggestions",
+                        "transformers": []
+                    }
+                },
+                "Tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    }
+                },
+                "Threat": {
+                    "complex": {
+                        "filters": [],
+                        "root": "threat",
+                        "transformers": []
+                    }
+                },
+                "URLs": {
+                    "complex": {
+                        "filters": [],
+                        "root": "asset_urls",
+                        "transformers": []
+                    }
+                },
+                "Updated At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "updated_at",
+                        "transformers": []
+                    }
+                },
+                "User Session": {
+                    "complex": {
+                        "filters": [],
+                        "root": "user_session",
+                        "transformers": []
+                    }
+                },
+                "Volume": {
+                    "complex": {
+                        "accessor": "emails",
+                        "filters": [],
+                        "root": "volume",
+                        "transformers": []
+                    }
+                },
+                "WhoIS": {
+                    "complex": {
+                        "filters": [],
+                        "root": "whois",
+                        "transformers": []
+                    }
+                },
+                "abstract": {
+                    "complex": {
+                        "filters": [],
+                        "root": "abstract",
+                        "transformers": []
+                    }
+                },
+                "abuse email": {
+                    "complex": {
+                        "filters": [],
+                        "root": "abuse_email",
+                        "transformers": []
+                    }
+                },
+                "analysis": {
+                    "complex": {
+                        "filters": [],
+                        "root": "analysis",
+                        "transformers": []
+                    }
+                },
+                "asset urls": {
+                    "complex": {
+                        "filters": [],
+                        "root": "asset_urls",
+                        "transformers": [
+                            {
+                                "operator": "toUpperCase"
+                            }
+                        ]
+                    }
+                },
+                "board": {
+                    "complex": {
+                        "filters": [],
+                        "root": "board",
+                        "transformers": []
+                    }
+                },
+                "created at": {
+                    "complex": {
+                        "filters": [],
+                        "root": "created_at",
+                        "transformers": []
+                    }
+                },
+                "details": {
+                    "complex": {
+                        "filters": [],
+                        "root": "abstract",
+                        "transformers": []
+                    }
+                },
+                "detected at": {
+                    "complex": {
+                        "filters": [],
+                        "root": "detected_at",
+                        "transformers": []
+                    }
+                },
+                "domain registered at": {
+                    "complex": {
+                        "filters": [],
+                        "root": "domain_registered_at",
+                        "transformers": []
+                    }
+                },
+                "incident id ": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incident_id",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": []
+                    }
+                },
+                "stream": {
+                    "complex": {
+                        "filters": [],
+                        "root": "stream",
+                        "transformers": []
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Report Content": {
+                    "complex": {
+                        "filters": [],
+                        "root": "report_content",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "name": "CybelAngel",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

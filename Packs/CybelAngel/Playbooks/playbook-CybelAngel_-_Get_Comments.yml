@@ -1,0 +1,90 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: CybelAngel - Get Comments
+inputs: []
+name: CybelAngel - Get Comments
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cd0aeedb-6c4c-421f-8221-195540626990
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: cd0aeedb-6c4c-421f-8221-195540626990
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      report_id:
+        simple: ${incident.alertid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: CybelAngel
+      description: Get comments for a report
+      id: fc421424-c6c2-4fca-86fa-ac416d841b82
+      iscommand: true
+      name: cybelangel-get-comments
+      script: CybelAngel|||cybelangel-get-comments
+      type: regular
+      version: -1
+    taskid: fc421424-c6c2-4fca-86fa-ac416d841b82
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
+description: Getting Comments from a CybelAngel Report.

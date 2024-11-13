@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "CybelAngel"
+    ],
+    "caseInsensitive": true,
+    "cliName": "detectedat",
+    "closeForm": false,
+    "content": true,
+    "description": "Date the incident was detected by scanners",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_detectedat",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "detected at",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}
