@@ -510,7 +510,7 @@ def fetch_incidents(
         demisto.info(f'{INTEGRATION_NAME} setting next run to: {str(next_run)}')
         return next_run, []
 
-    if any(len(alert) > 5 for alert in all_alerts):
+    if any(len(alert) < 10 for alert in all_alerts):
         demisto.debug(f'SHORT INCIDENT FOUND IN RESP: {raw_response}')
 
     alerts = all_alerts[:max_fetch]
