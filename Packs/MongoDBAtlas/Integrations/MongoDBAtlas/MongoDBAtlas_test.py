@@ -225,8 +225,8 @@ def test_fetch_alert_type_while_more_alerts_created(mocker):
 
     last_run = copy.deepcopy(last_run_new_dict)
     additional_alerts_amount = (
-        len(mocked_alerts_page_1_with_more_alerts.get('results')) -
-        len(mocked_alerts_page_1.get('results'))
+        len(mocked_alerts_page_1_with_more_alerts.get('results'))
+        - len(mocked_alerts_page_1.get('results'))
     )
     output, last_run_new_dict = fetch_alert_type(client, additional_alerts_amount, last_run)
     assert len(output) == additional_alerts_amount
@@ -315,6 +315,7 @@ def test_fetch_event_type_min_time_repeat(mocker):
         for event in output:
             assert event_id != event.get('id')
 
+
 @pytest.mark.parametrize("fetch_limit, expected_event_count", [
     (20, 20),  # Case: fetch_limit < available events
     (25, 22)  # Case: fetch_limit > available events
@@ -323,9 +324,10 @@ def test_fetch_event_type_using_previous_page(mocker, fetch_limit, expected_even
     """
     Given: A mock MongoDB Atlas client with a fetch limit and paginated event data spread across 2 pages.
     When: Running fetch_event_type with a specified fetch limit and using previous page retrieval.
-    Then: Ensure that the total number of events matches the expected count, min_time is updated based on the last event's created time, and no duplicate event IDs are present in the output.
+    Then: Ensure that the total number of events matches the expected count,
+     min_time is updated based on the last event's created time, and no duplicate event IDs are present in the output.
     """
-    from MongoDBAtlas import fetch_event_type, Client
+    from MongoDBAtlas import fetch_event_type
 
     raw_events_page_1 = util_load_json('test_data/raw_events_page_1.json')
     raw_events_page_2 = util_load_json('test_data/raw_events_page_2.json')

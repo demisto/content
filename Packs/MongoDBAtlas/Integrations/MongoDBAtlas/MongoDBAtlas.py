@@ -162,7 +162,7 @@ def add_entry_status_field(event: dict):
         event['_entry_status'] = 'updated'
 
 
-def get_next_url(links: list):
+def get_next_url(links):
     """
     Retrieves the URL for the next page from a list of links.
 
@@ -178,7 +178,7 @@ def get_next_url(links: list):
     return None
 
 
-def get_self_url(links: list):
+def get_self_url(links):
     """
     Retrieves the self-referential URL from a list of links.
 
@@ -199,7 +199,8 @@ def add_time_field(event: dict):
     Adds a `_time` field to an event based on its updated or created time.
 
     Args:
-        event (dict): The event dictionary to add the `_time` field to. If the event has an 'updated' time, `_time` will be set to this value; otherwise, it will default to the 'created' time.
+        event (dict): The event dictionary to add the `_time` field to. If the event has an 'updated' time,
+         `_time` will be set to this value; otherwise, it will default to the 'created' time.
     """
     if event.get('updated'):
         event['_time'] = event.get('updated')
@@ -242,7 +243,7 @@ def remove_alerts_by_ids(alerts: list, ids: list):
     return results
 
 
-def get_page_from_last_run_for_alerts(client: Client, page_link: str):
+def get_page_from_last_run_for_alerts(client: Client, page_link):
     """
     Retrieves alerts based on the last fetched page link or performs an initial fetch.
 
@@ -336,7 +337,7 @@ def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict):
 ################ EVENTS FUNCTIONS ################
 
 
-def get_previous_page(links: list) -> str | None:
+def get_previous_page(links) -> str | None:
     """
     Finds and returns the URL of the previous page from a list of link dictionaries.
 
@@ -511,7 +512,7 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[
     new_min_time = min_time
 
     while current_fetched_events_amount < fetch_limit:
-        for event in reversed(events):
+        for event in reversed(events):  # ignore
             event_id = event.get('id')
             if event_id in events_with_created_min_time:
                 continue
