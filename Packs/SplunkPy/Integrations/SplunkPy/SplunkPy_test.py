@@ -359,7 +359,7 @@ def test_splunk_submit_event_hec_command(mocker):
 
     mocker.patch.object(splunk, "splunk_submit_event_hec", return_value=MockRes(text))
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"}, args={})
+    splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"}, args={"entry_id": "some_entry"}, service=Service)
     err_msg = return_error_mock.call_args[0][0]
     assert err_msg == f"Could not send event to Splunk {text}"
 
@@ -391,13 +391,13 @@ def test_splunk_submit_event_hec_command_request_channel(mocker):
     Then
     - The return result object contains the correct message.
     """
-    args = {"request_channel": "11111111-1111-1111-1111-111111111111"}
+    args = {"request_channel": "11111111-1111-1111-1111-111111111111", "entry_id": "some_entry"}
     mocker.patch.object(splunk, "splunk_submit_event_hec", return_value=check_request_channel(args))
     moc = mocker.patch.object(demisto, 'results')
     splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"},
-                                           args=args)
+                                           args=args, service=Service)
     readable_output = moc.call_args[0][0]
-    assert readable_output == "The event was sent successfully to Splunk. AckID: 1"
+    assert readable_output == "The event/s was/were sent successfully to Splunk. AckID: 1"
 
 
 def test_splunk_submit_event_hec_command_without_request_channel(mocker):
@@ -409,12 +409,12 @@ def test_splunk_submit_event_hec_command_without_request_channel(mocker):
     Then
     - The return result object contains the correct message.
     """
-    args = {}
+    args = {"entry_id": "some_entry"}
     mocker.patch.object(splunk, "splunk_submit_event_hec", return_value=check_request_channel(args))
 
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"},
-                                           args=args)
+                                           args=args, service=Service)
     err_msg = return_error_mock.call_args[0][0]
     assert err_msg == 'Could not send event to Splunk {"text":"Data channel is missing","code":10}'
 
@@ -2803,7 +2803,7 @@ class Index:
     def __init__(self, name):
         self.name = name
 
-class Service:
+class ServiceIndex:
     def __init__(self, indexes):
         self.indexes = [Index(name) for name in indexes]
  
@@ -2828,7 +2828,7 @@ def test_validate_indexes(given_indexes, service_indexes, expected):
           otherwise, it returns `False`.
     """
     from SplunkPy import validate_indexes
-    service = Service(service_indexes)
+    service = ServiceIndex(service_indexes)
     # Assert that the function returns the expected result
     assert validate_indexes(given_indexes, service) == expected
     
