@@ -413,7 +413,7 @@ tasks:
     task:
       id: 146faa60-9405-4cf2-8f7c-7ce02160a0c4
       version: -1
-      name: Check if the rule was created outside of business hours
+      name: Check if rule creation occurred outside business hours
       description: Checks whether the given value is within the specified time (hour) range.
       scriptName: BetweenHours
       type: regular
@@ -458,7 +458,7 @@ tasks:
     task:
       id: cdba5566-f4de-4815-85ba-46d04083adf2
       version: -1
-      name: Assess geolocation anomalies
+      name: Analyze geolocation anomalies
       description: |-
         Returns all elements from the left side that have a substring that is equal to an element from the right side. Note: This filter is case-insensitive.
       scriptName: AnyMatch
@@ -1469,7 +1469,7 @@ tasks:
     task:
       id: 0ad3c032-8b63-40e8-8c30-edab2a540918
       version: -1
-      name: Check if the user is an admin exchange
+      name: Verify if user is an Exchange admin
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
