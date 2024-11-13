@@ -669,7 +669,7 @@ def close_incident_in_remote(delta: Dict[str, Any], data: Dict[str, Any]) -> boo
     return demisto.params().get('close_ticket') and bool(closing_reason)
 
 
-def extract_classification_reason(delta: Dict, data: Dict):
+def extract_classification_reason(delta: Dict[str, str], data: Dict[str, str]):
     """
     Returns the classification reason based on `delta` and `data`.
 
