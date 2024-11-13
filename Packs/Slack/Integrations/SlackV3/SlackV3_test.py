@@ -587,7 +587,7 @@ async def test_clean_message(mocker):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
 
-    user_message = 'Hello <@U012A3CDE>!'
+    user_message = "Hello <@U012A3CDE>!"
     channel_message = 'Check <#C012AB3CD>'
     link_message = 'Go to <https://www.google.com/lulz>'
 

@@ -2593,7 +2593,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
     """
 
     ticket_id = args.get('id', '')
-    demisto.debug(f'Getting update for remote {ticket_id}')
+    demisto.debug(f'Getting update for remote {ticket_id=}')
     last_update = arg_to_timestamp(
         arg=args.get('lastUpdate'),
         arg_name='lastUpdate',
