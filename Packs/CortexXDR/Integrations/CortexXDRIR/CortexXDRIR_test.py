@@ -826,12 +826,12 @@ def test_update_remote_system_command_closing_alerts_and_including_resolve_comme
         'data': {'CortexXDRIRstatus': 'resolved', 'close_reason': 'Resolved', 'status': 'test'},
         'entries': [],
         'incidentChanged': True,
-        'delta': {'close_reason': 'resolved', 'resolve_comment': '', 'closeNotes': 'resolved-true-positive'},
+        'delta': {'close_reason': 'resolved', 'resolve_comment': '', 'status': 'resolved_true_positive'},
         'status': 2,
     }
 
     mocker.patch("CortexXDRIR.update_incident_command")
-    mock_get_update_args = mocker.patch('CortexXDRIR.get_update_args')
+    mock_get_update_args = mocker.patch('CortexXDRIR.get_update_args', return_value=args.get('delta'))
     mock_update_related_alerts = mocker.patch('CortexXDRIR.update_related_alerts')
     incident_id = update_remote_system_command(client, args)
     assert mock_get_update_args.call_count == 1
