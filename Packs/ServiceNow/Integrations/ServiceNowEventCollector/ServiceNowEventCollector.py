@@ -80,7 +80,6 @@ def handle_log_types(event_types_to_fetch: list) -> list:
         else:
             raise DemistoException(
                 f"'{type_title}' is not valid event type, please select from the following list: {VALID_EVENT_TITLES}")
-
     return log_types
 
 
@@ -214,7 +213,7 @@ def get_events_command(client: Client, args: dict, log_type: str, last_run: dict
     limit = get_limit(args, client)
     logs = client.search_events(from_time=from_date, log_type=log_type, limit=limit, offset=offset)
     add_time_field(logs, log_type)
-    demisto.debug(f"Got a total of {len(logs)} events created after {from_date}")
+    demisto.debug(f"Got a total of {len(logs)} {log_type} events created after {from_date}")
     hr = tableToMarkdown(name=f'{types_to_titles[log_type]} Events', t=logs, removeNull=True,
                          headerTransform=lambda x: string_to_table_header(camel_case_to_underscore(x)))
     all_events.extend(logs)
@@ -238,7 +237,7 @@ def fetch_events_command(client: Client, last_run: dict, log_types: list):
     for log_type in log_types:
         previous_run_ids = set(last_run.get(PREVIOUS_RUN_IDS[log_type], set()))
         from_date = initialize_from_date(last_run, log_type)
-        demisto.debug(f"Getting Audit Logs {from_date=}.")
+        demisto.debug(f"Getting {log_type} Logs {from_date=}.")
         new_events = client.search_events(from_date, log_type)
 
         if new_events:
@@ -250,7 +249,6 @@ def fetch_events_command(client: Client, last_run: dict, log_types: list):
             demisto.debug(f"Done processing {len(events)} {log_type} events.")
             last_fetch_time = events[-1].get("sys_created_on") if events else from_date
             last_run = update_last_run(last_run, log_type, last_fetch_time, list(previous_run_ids))
-            demisto.debug(f"Saving last run as {last_run}")
             collected_events.extend(events)
 
     return collected_events, last_run
@@ -319,15 +317,14 @@ def main() -> None:  # pragma: no cover
             fetch_limit_audit=max_fetch_audit,
             fetch_limit_syslog=max_fetch_syslog
         )
-
+        last_run = demisto.getLastRun()
         if client.sn_client.use_oauth and not get_integration_context().get("refresh_token", None):
             client.sn_client.login(username=user_name, password=password)
-
+        
         if command == "test-module":
             return_results(module_of_testing(client, log_types))
 
         elif command == "service-now-get-audit-logs":
-            last_run = demisto.getLastRun()
             audit_logs, results = get_events_command(client=client, args=args, log_type=AUDIT, last_run=last_run)
             return_results(results)
 
@@ -335,7 +332,6 @@ def main() -> None:  # pragma: no cover
                 send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
 
         elif command == "service-now-get-syslog-transactions":
-            last_run = demisto.getLastRun()
             syslog_logs, results = get_events_command(client=client, args=args, log_type=SYSLOG_TRANSACTIONS, last_run=last_run)
             return_results(results)
 
@@ -343,7 +339,6 @@ def main() -> None:  # pragma: no cover
                 send_events_to_xsiam(syslog_logs, vendor=VENDOR, product=PRODUCT)
 
         elif command == "fetch-events":
-            last_run = demisto.getLastRun()
             demisto.debug(f"Starting new fetch with last_run as {last_run}")
             events, next_run = fetch_events_command(client=client, last_run=last_run, log_types=log_types)
 
