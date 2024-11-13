@@ -122,7 +122,7 @@ class Client(BaseClient):
         Returns:
             list: A list of events, truncated to the `fetch_limit` if necessary.
         """
-        # TODO to change items_per_page=500
+        # TODO to change items_per_page=500 + unittest
         results = []
         items_per_page = min(fetch_limit, 50)
 

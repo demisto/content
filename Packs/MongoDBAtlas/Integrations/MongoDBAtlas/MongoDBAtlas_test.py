@@ -357,8 +357,7 @@ def test_fetch_event_type_using_previous_page(mocker, fetch_limit, expected_even
 
 
 def test_get_events_first_five_pages(mocker):
-    from MongoDBAtlas import Client, MAX_NUMBER_OF_PAGES
-    # Mock `get_events_with_page_num`
+    from MongoDBAtlas import Client
     mock_get_events_with_page_num = mocker.patch.object(
         Client, 'get_events_with_page_num'
     )
