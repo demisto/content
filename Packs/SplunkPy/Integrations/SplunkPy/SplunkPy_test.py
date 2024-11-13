@@ -11,7 +11,8 @@ from splunklib import client
 from splunklib import results
 import SplunkPy as splunk
 from pytest_mock import MockerFixture
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
+
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
@@ -2873,7 +2874,8 @@ def test_parse_fields(fields, expected):
     """
     Given: A string representing fields, which may be a valid JSON string or a regular string.
     When: The parse_fields function is called with the given string.
-    Then: If the string is valid JSON, the function returns a dictionary of the parsed fields. If the string is not valid JSON, the function returns a dictionary with a single key-value pair, where the entire input string is the key.
+    Then: If the string is valid JSON, the function returns a dictionary of the parsed fields. If the string is not valid JSON,
+    the function returns a dictionary with a single key-value pair, where the entire input string is the key.
     """
     from SplunkPy import parse_fields
     result = parse_fields(fields)
@@ -2919,12 +2921,11 @@ def test_ensure_valid_json_format_invalid_inputs(invalid_events):
     with pytest.raises(DemistoException, match=r"Make sure that the events are in the correct format"):
         ensure_valid_json_format(invalid_events)
         
-from unittest.mock import patch, MagicMock
 @pytest.mark.parametrize("event, batch_event_data, entry_id, expected_data", [
     ("Somthing happened", None, None, '{"event": "Somthing happened", "fields": {"field1": "value1"}, "index": "main"}'),
     (None, "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}", None,
      "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"),  # Batch event data
-    (None, None, "some entry_id", "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}")  # Entry ID
+    (None, None, "some entry_id", "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}")
 ])
 @patch("requests.post")
 @patch("SplunkPy.get_events_from_file")  # Replace with the actual module
@@ -2963,11 +2964,14 @@ def test_splunk_submit_event_hec(
         mock_ensure_valid_json_format.return_value = [{"event": event}]
     elif batch_event_data:
         # Batch event data
-        mock_ensure_valid_json_format.return_value = [{'event': 'some event', 'index': 'some index'}, {'event': 'some event', 'index': 'some index'}]
+        mock_ensure_valid_json_format.return_value = [{'event': 'some event', 'index': 'some index'},
+                                                      {'event': 'some event', 'index': 'some index'}]
     elif entry_id:
         # Entry ID
-        mock_get_events_from_file.return_value = "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"
-        mock_ensure_valid_json_format.return_value = [{'event': 'some event', 'index': 'some index'}, {'event': 'some event', 'index': 'some index'}]
+        mock_get_events_from_file.return_value =\
+            "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"
+        mock_ensure_valid_json_format.return_value =\
+            [{'event': 'some event', 'index': 'some index'}, {'event': 'some event', 'index': 'some index'}]
     
     # Act
     splunk_submit_event_hec(
@@ -3004,5 +3008,7 @@ def test_splunk_submit_event_hec_command_no_required_arguments():
         Then: An exception is thrown
     """
     from SplunkPy import splunk_submit_event_hec_command
-    with pytest.raises(DemistoException, match=r"""Invalid input: Please specify one of the following arguments: `event`, `batch_event_data`, or `entry_id`."""):
+    with pytest.raises(DemistoException,
+        match=r"""Invalid input: Please specify one of the following arguments: `event`, `batch_event_data`, or `entry_id`."""):
         splunk_submit_event_hec_command({'hec_url': 'hec_url'}, None, {})
+        
