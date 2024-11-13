@@ -206,6 +206,7 @@ def set_playbook_on_alerts(playbook_id: str, alert_ids: list, playbooks_dict: di
         results_summary.update_failure_set(playbook_id, alert_ids)
         return
 
+    demisto.debug(f"Start setting playbook {playbook_id} on alerts {alert_ids}.")
     command_results = demisto.executeCommand(
         "core-api-post", {"uri": "/xsoar/inv-playbook/new", "body":
                           {"playbookId": playbook_id, "alertIds": alert_ids, "version": -1}})
