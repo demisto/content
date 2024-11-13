@@ -6,7 +6,7 @@ import logging
 import json
 import urllib3
 from stix2 import TAXIICollectionSource, Filter
-from taxii2client.v20 import Server, Collection, ApiRoot
+from taxii2client.v21 import Server, Collection, ApiRoot
 
 ''' CONSTANT VARIABLES '''
 MITRE_TYPE_TO_DEMISTO_TYPE = {  # pragma: no cover
@@ -59,13 +59,13 @@ FILTER_OBJS = {  # pragma: no cover
     "Tactic": {"name": "tactic", "filter": Filter("type", "=", "x-mitre-tactic")},
 }
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()   # pragma: no cover
-ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'                  # pragma: no cover
+ENTERPRISE_COLLECTION_NAME = 'enterprise att&ck'                  # pragma: no cover
 EXTRACT_TIMESTAMP_REGEX = r"\(([^()]+)\)"   # pragma: no cover
 SERVER_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"    # pragma: no cover
 DEFAULT_YEAR = datetime(1970, 1, 1)         # pragma: no cover
 
 # disable warnings coming from taxii2client - https://github.com/OTRF/ATTACK-Python-Client/issues/43#issuecomment-1016581436
-logging.getLogger("taxii2client.v20").setLevel(logging.ERROR)
+logging.getLogger("taxii2client.v21").setLevel(logging.ERROR)
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -85,7 +85,7 @@ class Client:
         self.collections: list[Collection]
 
     def get_server(self):
-        server_url = urljoin(self.base_url, '/taxii/')
+        server_url = urljoin(self.base_url, '/taxii2/')
         self.server = Server(server_url, verify=self.verify, proxies=self.proxies)
 
     def get_roots(self):
@@ -163,7 +163,7 @@ class Client:
         for collection in self.collections:
 
             # fetch only enterprise objects
-            if collection.id != ENTERPRISE_COLLECTION_ID:
+            if collection.title.lower() != ENTERPRISE_COLLECTION_NAME:
                 continue
 
             # Stop when we have reached the limit defined
@@ -171,7 +171,7 @@ class Client:
                 break
 
             # Establish TAXII2 Collection instance
-            collection_url = urljoin(self.base_url, f'stix/collections/{collection.id}/')
+            collection_url = urljoin(self.base_url, f'api/v21/collections/{collection.id}/')
             collection_data = Collection(collection_url, verify=self.verify, proxies=self.proxies)
 
             # Supply the collection to TAXIICollection
@@ -539,7 +539,7 @@ def get_mitre_data_by_filter(client, mitre_filter):
         if collection.id != ENTERPRISE_COLLECTION_ID:
             continue
 
-        collection_url = urljoin(client.base_url, f'stix/collections/{collection.id}/')
+        collection_url = urljoin(client.base_url, f'api/v21/collections/{collection.id}/')
         demisto.debug(f'MA: Trying to get mitre data from {collection_url} with filter {mitre_filter}')
         collection_data = Collection(collection_url, verify=client.verify, proxies=client.proxies)
         demisto.debug('MA: Getting collection source')
@@ -724,7 +724,7 @@ def get_mitre_value_from_id(client, args):
 def main():
     params = demisto.params()
     args = demisto.args()
-    url = 'https://cti-taxii.mitre.org'
+    url = 'https://attack-taxii.mitre.org'
     proxies = handle_proxy()
     verify_certificate = not params.get('insecure', False)
     tags = argToList(params.get('feedTags', []))
