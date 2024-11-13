@@ -2534,6 +2534,28 @@ def test_empty_string_as_app_param_value(mocker):
     assert connection_args.get('app') == '-'
 
 
+@pytest.mark.parametrize(argnames='host, expected_host', argvalues=[
+    ('8.8.8.8', '8.8.8.8'),
+    ('8.8.8.8/', '8.8.8.8'),
+    ('https://www.test.com', 'www.test.com'),
+    ('https://www.test.com/', 'www.test.com'),
+])
+def test_host_param(host, expected_host):
+    """
+    Given:
+        - Different host values
+    When:
+        - Run get_connection_args() function
+    Then:
+        - Ensure the host is as expected
+    """
+    params = {'host': host, 'port': '111'}
+
+    actuall_host = splunk.get_connection_args(params)['host']
+
+    assert actuall_host == expected_host
+
+
 OWNER_MAPPING = [{'xsoar_user': 'test_xsoar', 'splunk_user': 'test_splunk', 'wait': True},
                  {'xsoar_user': 'test_not_full', 'splunk_user': '', 'wait': True},
                  {'xsoar_user': '', 'splunk_user': 'test_not_full', 'wait': True}, ]
