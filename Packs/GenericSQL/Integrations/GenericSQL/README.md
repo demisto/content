@@ -27,7 +27,7 @@ charset=utf8&read_timeout=10
 
 ## Connection Pooling
 
-By default, the integration does not pool database connections. Thus, a connection is created and closed for each command run by the integration. When connection pooling is enabled, each Docker container will maintain a single connection open for time specified in the the _Connection Pool Time to Live_ parameter (default: 600 seconds). After the time to live expires, and upon execution of a new command, the database connection will close and a new connection will be created.
+By default, the integration does not pool database connections. Thus, a connection is created and closed for each command run by the integration. When connection pooling is enabled, each Docker container will maintain a single connection open for the time specified in the the _Connection Pool Time to Live_ parameter (default: 600 seconds). After the time to live expires, and upon execution of a new command, the database connection will close and a new connection will be created.
 
 __Note__: When pooling is enabled, the number of active open database connections will equal the number of active running __demisto/genericsql__ Docker containers.  
 
@@ -149,10 +149,10 @@ Permissions to the database are needed
 | __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | limit | Number of results you would like to get back | Optional |
-| query | The sql query | Required |
+| query | The SQL query | Required |
 | skip | Number of results you would like to skip on | Optional |
-| bind_variables_names | e.g: "foo","bar","alpha" | Optional |
-| bind_variables_values | e.g: 7,"foo",3 | Optional |
+| bind_variables_names | e.g.: "foo","bar","alpha" | Optional |
+| bind_variables_values | e.g.: 7,"foo",3 | Optional |
 
 ##### Context Output
 
@@ -251,10 +251,10 @@ Running a sql query
 | __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | limit | Number of results you would like to get back | Optional |
-| query | The sql query | Required |
+| query | The SQL query | Required |
 | skip | Number of results you would like to skip on | Optional |
-| bind_variables_names | e.g: "foo","bar","alpha" | Optional |
-| bind_variables_values | e.g: 7,"foo",3 | Optional |
+| bind_variables_names | e.g.: "foo","bar","alpha" | Optional |
+| bind_variables_values | e.g.: 7,"foo",3 | Optional |
 
 ##### Context Output
 
@@ -372,7 +372,7 @@ When configuring _SQL Server_, if you receive an error of the form:
 (Background on this error at: http://sqlalche.me/e/13/e3q8) 
 ```
 
-It means there is a communication problem from the Generic SQL docker to the SQL Server. It usually means the dns hostname of the sql server is not resolving. You can try using an IP instead of the DNS. You can further test the from docker by running the following command on the Cortex XSOAR machine:
+It means there is a communication problem from the Generic SQL Docker to the SQL Server. It usually means the dns hostname of the SQL Server is not resolving. You can try using an IP instead of the DNS. You can further test from Docker by running the following command on the Cortex XSOAR machine:
 
 ```
 echo "select @@version" | sudo docker run --rm -i  demisto/genericsql:1.1.0.9726 tsql -H <sql_server_host> -p <sql_port_number> -U <user> -P <password> -D <db_to_connect> -v -o v
@@ -400,5 +400,5 @@ service_name=XEXDB
 
 ## Possible Errors
 
-- The bind variables lists are not is the same length
-- Command is not an existing Generic SQL command
+- The bind variables lists are not the same length.
+- Command is not an existing Generic SQL command.
