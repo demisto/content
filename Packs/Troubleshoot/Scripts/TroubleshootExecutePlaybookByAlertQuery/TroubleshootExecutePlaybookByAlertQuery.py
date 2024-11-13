@@ -42,7 +42,6 @@ class ResultsSummary:
     def update_reopened(self, reopened_alerts: list):
         """Update the 'reopened' list with alerts from the provided alert_inv_status."""
         self.results_summary["reopened"].extend(reopened_alerts)
-        demisto.debug(f"reopened investigations: {reopened_alerts=}")
 
     def append_to_others(self, message: str):
         """Append a message to the 'others' list for missing playbook alerts."""
@@ -239,7 +238,7 @@ def loop_on_alerts(incidents: list[dict], playbook_id: str, limit: int, reopen_c
         playbooks_dict (dict): A dictionary mapping playbook IDs to their corresponding playbook names.
         results_summary (ResultsSummary): An object for summarizing the results, including tracking reopened alerts.
     """
-    demisto.debug(f"calling loop_on_alerts with {len(incidents)=}, {playbook_id=}.")
+    demisto.debug(f"Calling loop_on_alerts with {len(incidents)=}, {playbook_id=}.")
     alert_inv_status: dict[str, list] = {
         "close_ids": [],
         "open_ids": [],
@@ -267,7 +266,7 @@ def loop_on_alerts(incidents: list[dict], playbook_id: str, limit: int, reopen_c
     ]
     demisto.debug(
         f'{MAX_BULK_SIZE_ALLOWED=}, all ids: {len(alert_inv_status["all_ids"])}, closed ids:{len(alert_inv_status["close_ids"])},'
-        f'open_ids: {len(alert_inv_status["open_ids"])}')
+        f' open_ids: {len(alert_inv_status["open_ids"])}')
 
     reopened_alerts = []
     if reopen_closed_inv and alert_closed_bulks:
@@ -310,6 +309,7 @@ def split_by_playbooks(incidents: list[dict], limit: int, reopen_closed_inv: boo
     Raises:
         DemistoException: If a required attribute is missing in an incident or if processing fails.
     """
+    demisto.debug("Split by playbooks.")
     playbook_map: dict[str, list] = {}
     missing_playbook_alerts = []
 
