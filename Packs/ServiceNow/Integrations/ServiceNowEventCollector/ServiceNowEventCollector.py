@@ -339,7 +339,7 @@ def main() -> None:  # pragma: no cover
             syslog_logs, results = get_events_command(client=client, args=args, log_type=SYSLOG_TRANSACTIONS, last_run=last_run)
             return_results(results)
 
-            if argToBoolean(args.get("should_push_events", "true")):
+            if argToBoolean(args.get("should_push_events", True)):
                 send_events_to_xsiam(syslog_logs, vendor=VENDOR, product=PRODUCT)
 
         elif command == "fetch-events":
