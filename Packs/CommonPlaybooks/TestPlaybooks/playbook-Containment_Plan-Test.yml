@@ -5,7 +5,7 @@ contentitemexportablefields:
 name: Containment Plan - Test
 description: |-
   This playbook tests the ‘Containment Plan’ playbook which is part of the ‘Common Playbooks’ pack.
-  The playbook includes the following conducted tests to check if the containment plan actions were performed properly.
+  The playbook includes the following conducted tests to check if the containment plan actions were performed properly test.
 starttaskid: "0"
 tasks:
   "0":
