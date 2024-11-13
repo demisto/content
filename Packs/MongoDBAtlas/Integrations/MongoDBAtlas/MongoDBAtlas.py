@@ -162,7 +162,7 @@ def add_entry_status_field(event: dict):
         event['_entry_status'] = 'updated'
 
 
-def get_next_url(links):
+def get_next_url(links: list):
     """
     Retrieves the URL for the next page from a list of links.
 
@@ -170,15 +170,15 @@ def get_next_url(links):
         links (list): A list of dictionaries, each representing a link with "rel" and "href" keys.
 
     Returns:
-        str or None: The URL for the next page if found, otherwise None.
+        str or empty string: The URL for the next page if found, otherwise None.
     """
     for link in links:
         if link.get("rel") == "next":
             return link.get("href")
-    return None
+    return ""
 
 
-def get_self_url(links):
+def get_self_url(links: list):
     """
     Retrieves the self-referential URL from a list of links.
 
@@ -186,12 +186,12 @@ def get_self_url(links):
         links (list): A list of dictionaries, each representing a link with "rel" and "href" keys.
 
     Returns:
-        str or None: The self URL if found, otherwise None.
+        str or empty string: The self URL if found, otherwise None.
     """
     for link in links:
         if link.get("rel") == "self":
             return link.get("href")
-    return None
+    return ""
 
 
 def add_time_field(event: dict):
@@ -243,7 +243,7 @@ def remove_alerts_by_ids(alerts: list, ids: list):
     return results
 
 
-def get_page_from_last_run_for_alerts(client: Client, page_link):
+def get_page_from_last_run_for_alerts(client: Client, page_link: str):
     """
     Retrieves alerts based on the last fetched page link or performs an initial fetch.
 
@@ -294,7 +294,7 @@ def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict):
     """
 
     demisto.debug('Start to fetch alerts')
-    page_link = str(last_run.get('page_link')) if last_run.get('page_link') else None
+    page_link = last_run.get('page_link', "")
     response = get_page_from_last_run_for_alerts(client, page_link)  # get the last page or get the first page
     links = response.get('links')
     results = response.get('results')
@@ -337,7 +337,7 @@ def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict):
 ################ EVENTS FUNCTIONS ################
 
 
-def get_previous_page(links) -> str | None:
+def get_previous_page(links: list) -> str | None:
     """
     Finds and returns the URL of the previous page from a list of link dictionaries.
 
@@ -392,7 +392,7 @@ def get_last_page_of_events(client: Client, results: dict) -> dict:
     Returns:
         dict: The final page of events retrieved from the API.
     """
-    links = results.get('links')
+    links = results.get('links', [])
     next_url = get_next_url(links)
     last_response = results
 
@@ -504,8 +504,8 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[
         return results, new_last_run_obj
 
     response = get_last_page_of_events(client, results)
-    links = response.get('links')
-    events = response.get('results')
+    links = response.get('links', [])
+    events = response.get('results', [])
 
     current_fetched_events_amount = 0
     output = []
@@ -532,8 +532,8 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[
         previous_page = get_previous_page(links)
         if previous_page:
             response = client.get_response_from_page_link(previous_page)
-            events = response.get('results')
-            links = response.get('links')
+            events = response.get('results', [])
+            links = response.get('links', [])
         else:
             break
 

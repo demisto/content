@@ -53,7 +53,7 @@ def test_get_next_url():
     """
     Given: A list of links.
     When: Calling the `get_next_url` function to extract the 'next' URL.
-    Then: Ensure the correct 'next' URL is returned if present, or None if no 'next' URL is found.
+    Then: Ensure the correct 'next' URL is returned if present, or empty string if no 'next' URL is found.
     """
     from MongoDBAtlas import get_next_url
     # Test case where a "next" link is present
@@ -70,14 +70,14 @@ def test_get_next_url():
         {"rel": "first", "href": "http://example.com/page/1"},
         {"rel": "last", "href": "http://example.com/page/4"}
     ]
-    assert get_next_url(links_without_next) is None
+    assert get_next_url(links_without_next) == ""
 
 
 def test_get_self_url():
     """
     Given: A list of links.
     When: Calling the `get_self_url` function to extract the 'self' URL.
-    Then: Ensure the correct 'self' URL is returned if present, or None if no 'self' URL is found.
+    Then: Ensure the correct 'self' URL is returned if present, or empty string if no 'self' URL is found.
     """
     from MongoDBAtlas import get_self_url
     # Test case where a "self" link is present
@@ -94,7 +94,7 @@ def test_get_self_url():
         {"rel": "first", "href": "http://example.com/page/1"},
         {"rel": "last", "href": "http://example.com/page/4"}
     ]
-    assert get_self_url(links_without_next) is None
+    assert get_self_url(links_without_next) == ""
 
 
 def test_add_time_field():
