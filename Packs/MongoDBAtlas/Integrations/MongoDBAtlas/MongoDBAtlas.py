@@ -336,7 +336,7 @@ def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict):
 ################ EVENTS FUNCTIONS ################
 
 
-def get_previous_page(links: list):
+def get_previous_page(links: list) -> str | None:
     """
     Finds and returns the URL of the previous page from a list of link dictionaries.
 
@@ -478,7 +478,7 @@ def first_time_fetching_events(client: Client, fetch_limit: int):
     return results, new_min_time
 
 
-def fetch_event_type(client: Client, fetch_limit: int, last_run: dict):
+def fetch_event_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[list, dict]:
     """
     Fetches events until fetch_limit is reached, or no more events are available.
 
@@ -643,7 +643,6 @@ def main() -> None:
             return_results(command_results)
         elif command == 'fetch-events':
             # while True:
-            demisto.debug('fetch-events command is starting')
             events, last_run_new_obj = fetch_events(client, int(fetch_limit))
             # global last_run
             # last_run = last_run_new_obj
