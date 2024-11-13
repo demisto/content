@@ -509,13 +509,15 @@ def fetch_incidents(
         }
         demisto.info(f'{INTEGRATION_NAME} setting next run to: {str(next_run)}')
         return next_run, []
+    else:
+        if any(len(alert) > 5 for alert in all_alerts):
+            demisto.debug(f'SHORT INCIDENT FOUND IN RESP: {raw_response}')
 
     alerts = all_alerts[:max_fetch]
     last_alert_ids = last_run.get('last_alert_ids', [])
     incidents = []
 
     for alert in alerts:
-        demisto.debug(f'{list(alert)=}')
         alert_id = str(alert.get('id'))
         if alert_id not in last_alert_ids:  # check that event was not fetched in the last fetch
             incident = {
@@ -527,6 +529,8 @@ def fetch_incidents(
             }
             incidents.append(incident)
             last_alert_ids.append(alert_id)
+        
+        demisto.debug(f'ingest: {alert_id}, {list(alert)=}')
 
     if not incidents:
         demisto.info(f'{INTEGRATION_NAME} no new alerts were collected at: {str(next_run)}.')
