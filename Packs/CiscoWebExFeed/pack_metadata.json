@@ -2,7 +2,7 @@
     "name": "Cisco WebEx Feed",
     "description": "Whitelist feed for Cisco Webex using a screen scrape of the website.",
     "support": "xsoar",
-    "currentVersion": "1.2.15",
+    "currentVersion": "1.2.16",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
