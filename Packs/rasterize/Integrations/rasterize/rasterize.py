@@ -291,13 +291,6 @@ def count_running_chromes(port):
 
 
 def get_chrome_browser(port: str) -> pychrome.Browser | None:
-    counter_running_chrome = count_running_chromes(port=port)
-    demisto.debug(f' get_chrome_browser {counter_running_chrome=}')
-    if not counter_running_chrome:
-        update_counter_chrome_instances_file(port, increase_counter=False)
-        process = start_chrome_process(chrome_port=port)
-        if not process:
-            demisto.debug('fail starting chrome process..')
     browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
     demisto.debug(f'[test] get_chrome_browser {DEFAULT_RETRIES_COUNT}')
     for i in range(DEFAULT_RETRIES_COUNT):
@@ -555,25 +548,6 @@ def chrome_manager() -> tuple[Any | None, str | None]:
             - The Browser or None if an error occurred.
             - The chrome port or None if an error occurred.
     """
-def chrome_manager() -> tuple[Any | None, str | None]:
-    """
-    Manages Chrome instances based on user-specified chrome options and integration instance ID.
-
-    This function performs the following steps:
-    1. Retrieves the instance ID of the integration and the Chrome options set by the user.
-    2. Checks if the instance ID has been used previously.
-        - If the instance ID is new, generates a new Chrome instance with the specified Chrome options.
-        - If the instance ID has been used:
-            - If the current Chrome options differ from the saved options for this instance ID,
-              it terminates the existing Chrome instance and generates a new one with the new options.
-            - If the current Chrome options match the saved options for this instance ID,
-              it reuses the existing Chrome instance.
-
-    Returns:
-        tuple[Any | None, int | None]: A tuple containing:
-            - The Browser or None if an error occurred.
-            - The chrome port or None if an error occurred.
-    """
     # If instance_id or chrome_options are not set, assign 'None' to these variables.
     # This way, when fetching the content from the file, if there was no instance_id or chrome_options before,
     # it can compare between the fetched 'None' string and the 'None' that assigned.
@@ -581,30 +555,26 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     chrome_options = demisto.params().get('chrome_options', 'None')
     chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
     demisto.debug(f'[test] chrome_manager {chrome_instances_contents=} {chrome_options=} {instance_id=}')
-    chrome_options_dict = {
-        value[CHROME_INSTANCE_OPTIONS]: {
-            'chrome_port': key
+    instance_id_dict = {
+        value[INSTANCE_ID]: {
+            'chrome_port': key,
+            CHROME_INSTANCE_OPTIONS: value[CHROME_INSTANCE_OPTIONS]
         }
         for key, value in chrome_instances_contents.items()
     }
-    chrome_port = chrome_options_dict.get(chrome_options, {}).get('chrome_port', '')
-    demisto.debug(f'[test] chrome_manager {chrome_options_dict=} \n {chrome_instances_contents=}')
-    if not chrome_instances_contents:  # or instance_id not in chrome_options_dict.keys():
-        demisto.debug('[test] chrome_manager: first condition- chrome_instances_contents empty')
+    if not chrome_instances_contents or instance_id not in instance_id_dict.keys():
         return generate_new_chrome_instance(instance_id, chrome_options)
-    if chrome_options in chrome_options_dict:
-        demisto.debug('[test] chrome_manager: second condition chrome_options in chrome_options_dict='
-                      f'{chrome_options in chrome_options_dict}')
-        browser = get_chrome_browser(chrome_port)
-        return browser, chrome_port
-    for chrome_port_ in chrome_instances_contents:
-        if chrome_port_ == 'None':
-            terminate_port_chrome_instances_file(chrome_port_)
-            demisto.debug(f"chrome_manager {chrome_port_=}, removing the port from chrome_instances file")
-            continue
-        demisto.debug(f"chrome_manager {chrome_port_=}, terminating the port")
-        terminate_chrome(chrome_port=chrome_port_)
-    return generate_new_chrome_instance(instance_id, chrome_options)
+
+    elif chrome_options != instance_id_dict.get(instance_id, {}).get(CHROME_INSTANCE_OPTIONS, ''):
+        # If the current Chrome options differ from the saved options for this instance ID,
+        # it terminates the existing Chrome instance and generates a new one with the new options.
+        chrome_port = instance_id_dict.get(instance_id, {}).get('chrome_port', '')
+        terminate_chrome(chrome_port=chrome_port)
+        return generate_new_chrome_instance(instance_id, chrome_options)
+
+    chrome_port = instance_id_dict.get(instance_id, {}).get('chrome_port', '')
+    browser = get_chrome_browser(chrome_port)
+    return browser, chrome_port
 
     
 
