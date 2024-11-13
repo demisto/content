@@ -1,7 +1,7 @@
 id: Exchange forwarding rule configured
 version: -1
 name: Exchange forwarding rule configured
-description: "This playbook addresses the following alerts:\n\n- External Exchange inbox forwarding rule configured.\n- Suspicious Exchange inbox forwarding rule configured.\n- Suspicious Exchange email-hiding inbox rule.\n\nPlaybook Stages:\n \nTriage: \n\n- The playbook retrieves the caller's IP, the forwarding email address, and the domain.\n\nEarly Containment:\n\n- The playbook checks if the IP or domain of the forwarding email address is malicious. If so, it suggests blocking the IP using PAN-OS while continuing the investigation in parallel.\n\nInvestigation:\n\n- The playbook checks for suspicious behaviors, including whether an Exchange admin created the rule outside of working hours, from unusual geolocation, or if the user who created the rule has a high-risk score. It then aggregates all evidence collected during the investigation.\n\nContainment:\n\n- If at least two suspicious evidences are found, the playbook executes soft response actions, including signing the user out and deleting the forwarding email address from the user account mailbox. The user will be notified of these actions via email.\n- If more than two suspicious evidences are found and the alert severity is medium, the playbook executes both soft and hard response actions, recommending the analyst suspend the user account.\n\nRequirements: \n\nFor any response action, you need the following integration:\n- EWS Extension Online Powershell v3 integration."
+description: "This playbook addresses the following alerts:\n\n- External Exchange inbox forwarding rule configured.\n- Suspicious Exchange inbox forwarding rule configured.\n- Suspicious Exchange email-hiding inbox rule.\n\nPlaybook Stages:\n \nTriage: \n\n- The playbook retrieves the caller's IP, the forwarding email address, and the domain.\n\nEarly Containment:\n\n- The playbook checks if the IP or domain of the forwarding email address is malicious. If so, it suggests blocking the IP using PAN-OS while continuing the investigation in parallel.\n\nInvestigation:\n\n- The playbook checks for suspicious behaviors, including whether an Exchange admin created the rule outside of working hours, from unusual geolocation, or if the user who created the rule has a high-risk score. It then aggregates all evidence collected during the investigation.\n\nContainment:\n\n- If at least two suspicious evidence are found, the playbook executes soft response actions, including signing the user out and deleting the forwarding email address from the user account mailbox. The user will be notified of these actions via email.\n- If more than two suspicious evidence are found and the alert severity is medium, the playbook executes both soft and hard response actions, recommending the analyst suspend the user account.\n\nRequirements: \n\nFor any response action, you need the following integration:\n- EWS Extension Online Powershell v3 integration."
 tags:
 - TA0009 - Collection
 - TA0010 - Exfiltration
@@ -138,13 +138,8 @@ tasks:
     scriptarguments:
       domain:
         complex:
-          root: Core.OriginalAlert.raw_abioc.event.forwarding_domain_with_tld
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Core.OriginalAlert.raw_abioc.event.forwarding_domain_with_tld
-                iscontext: true
+          root: Core.OriginalAlert.raw_abioc.event
+          accessor: forwarding_domain_with_tld
           transformers:
           - operator: uniq
     separatecontext: false
@@ -436,6 +431,7 @@ tasks:
           transformers:
           - operator: TimeStampToDate
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -476,6 +472,7 @@ tasks:
       right:
         simple: "0"
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -517,7 +514,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
+          "x": 450,
           "y": 2120
         }
       }
@@ -585,8 +582,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 1430
+          "x": 760,
+          "y": 1440
         }
       }
     note: false
@@ -622,8 +619,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1600
+          "x": 920,
+          "y": 1610
         }
       }
     note: false
@@ -650,7 +647,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
+          "x": 450,
           "y": 2280
         }
       }
@@ -696,8 +693,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1310,
-          "y": 1930
+          "x": 1320,
+          "y": 1940
         }
       }
     note: false
@@ -1056,6 +1053,7 @@ tasks:
       - "25"
       - "30"
       - "41"
+      - "14"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1361,8 +1359,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 1300
+          "x": 760,
+          "y": 1310
         }
       }
     note: false
@@ -1406,8 +1404,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1760
+          "x": 920,
+          "y": 1770
         }
       }
     note: false
@@ -1451,8 +1449,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1930
+          "x": 920,
+          "y": 1940
         }
       }
     note: false
@@ -1490,22 +1488,32 @@ tasks:
         simple: Evidences
       value:
         complex:
-          root: Core.OriginalAlert.raw_abioc.event
-          filters:
-          - - operator: isEqualString
-              left:
+          root: ${
+          accessor: '}'
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
                 value:
-                  simple: Core.OriginalAlert.raw_abioc.event.service_sub_type
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else: {}
+              equals: {}
+              lhs:
+                value:
+                  simple: Core.OriginalAlert.event.service_sub_type
                 iscontext: true
-              right:
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
                 value:
                   simple: ExchangeAdmin
-          - - operator: isNotEmpty
-              left:
+              rhsB: {}
+              then:
                 value:
-                  simple: Core.OriginalAlert.raw_abioc.event
-                iscontext: true
-          accessor: service_sub_type
+                  simple: The user has admin privileges.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1624,7 +1632,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2655,
-        "width": 2100,
+        "width": 2110,
         "x": -410,
         "y": -310
       }
