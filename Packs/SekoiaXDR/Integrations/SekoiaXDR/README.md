@@ -569,6 +569,24 @@ available from Cortex XSOAR version 6.1.0. This command queries for incidents th
 
 There is no context output for this command.
 
+### get-mapping-fields
+
+***
+This command pulls the remote schema for the different incident types, and their associated incident fields, from the remote system.
+
+#### Base Command
+
+`get-mapping-fields`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
+
 ### sekoia-xdr-list-assets
 
 ***
@@ -817,7 +835,7 @@ To set up the mirroring:
     | None | Turns off incident mirroring. |
     | Incoming | Any changes in Sekoia XDR events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
     | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Sekoia XDR events (outgoing mirrored fields). |
-    | Incoming and Outgoing |  |
+    | Incoming and Outgoing | Changes made in Sekoia will be reflected in Cortex, and vice versa, ensuring status updates are synchronized between both systems. |
 
 3. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in Sekoia XDR.
 
@@ -831,8 +849,8 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 To troubleshoot possible issues with the SEKOIA XDR integration, consider the following steps:
 
 - **Debug Mode**: 
-  - In your integration instance, enable the Debug option.
-  - Navigate to `Settings > About > Troubleshooting > Download logs` to download the logs. Analyzing these logs can provide valuable insights into any issues.
+    - In your integration instance, enable the Debug option.
+    - Navigate to `Settings > About > Troubleshooting > Download logs` to download the logs. Analyzing these logs can provide valuable insights into any issues.
 
 - **Mirror Values**: 
   - To diagnose mirroring issues beyond what debug mode offers, you can inspect specific fields in the context data. Check if the following dbot fields are set:
