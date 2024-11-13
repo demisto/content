@@ -717,7 +717,7 @@ script:
   - description: Run this command if you need to rerun the authentication process.
     name: microsoft-teams-auth-reset
     arguments: []
-  dockerimage: demisto/teams:1.0.0.108119
+  dockerimage: demisto/teams:1.0.0.112095
   longRunning: true
   longRunningPort: true
   script: ''

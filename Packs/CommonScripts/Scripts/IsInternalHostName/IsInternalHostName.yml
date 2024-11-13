@@ -32,4 +32,4 @@ subtype: python3
 runas: DBotWeakRole
 tests:
 - IsInternalHostName Test
-dockerimage: demisto/python3:3.10.13.72123
+dockerimage: demisto/python3:3.11.10.113941

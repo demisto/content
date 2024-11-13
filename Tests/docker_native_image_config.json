@@ -11,7 +11,6 @@
                 "readpdf",
                 "parse-emails",
                 "docxpy",
-                "sklearn",
                 "pandas",
                 "ippysocks-py3",
                 "oauthlib",
@@ -44,7 +43,6 @@
                 "readpdf",
                 "parse-emails",
                 "docxpy",
-                "sklearn",
                 "pandas",
                 "ippysocks-py3",
                 "oauthlib",
@@ -78,7 +76,6 @@
                 "readpdf",
                 "parse-emails",
                 "docxpy",
-                "sklearn",
                 "pandas",
                 "ippysocks-py3",
                 "oauthlib",
@@ -108,7 +105,6 @@
                 "readpdf",
                 "parse-emails",
                 "docxpy",
-                "sklearn",
                 "pandas",
                 "ippysocks-py3",
                 "oauthlib",
@@ -181,6 +177,7 @@
             "id": "ParseEmailFilesV2",
             "reason": "Script uses an updated openssl lib than native, see CIAC-11469",
             "ignored_native_images": [
+                "native:8.8",
                 "native:8.7",
                 "native:8.6",
                 "native:dev",
@@ -242,7 +239,29 @@
             "ignored_native_images":[
                 "native:8.6"
             ]
+        },
+        {
+            "id": "Gmail Single User",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "RSA Archer v2",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id":"Cortex XDR - IOC",
+            "reason":"CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images":[
+                "native:8.6"
+            ]
         }
+
     ],
     "flags_versions_mapping": {
         "native:dev": "native:dev",
