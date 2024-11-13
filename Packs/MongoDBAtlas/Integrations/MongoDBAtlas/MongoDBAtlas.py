@@ -559,14 +559,15 @@ def test_module(client: Client, fetch_limit) -> str:
     if int(fetch_limit) < 1 or int(fetch_limit) > 2500:
         message = 'Invalid maximum number of events per fetch, should be between 1 and 2500.'
         return_error(message)
-    try:
-        client.get_alerts_with_page_num(page_num=1, items_per_page=10)
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure private key and public key are correctly set'
-        else:
-            raise e
+    else:
+        try:
+            client.get_alerts_with_page_num(page_num=1, items_per_page=10)
+            message = 'ok'
+        except DemistoException as e:
+            if 'Forbidden' in str(e) or 'Authorization' in str(e):
+                message = 'Authorization Error: make sure private key and public key are correctly set'
+            else:
+                raise e
     return message
 
 
@@ -610,7 +611,7 @@ def get_events(client: Client, args):
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None: # pragma: no cover
     """main function, parses params and runs command functions"""
     params = demisto.params()
     args = demisto.args()

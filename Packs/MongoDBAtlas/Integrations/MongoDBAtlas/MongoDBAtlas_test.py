@@ -121,7 +121,6 @@ def test_add_time_field():
     assert event["_time"] == "2024-10-27T13:07:17Z"
 
 
-
 def test_remove_alerts_by_ids():
     from MongoDBAtlas import remove_alerts_by_ids
     alerts = [
@@ -418,3 +417,20 @@ def test_get_events_first_five_pages(mocker):
     results = client.get_events_first_five_pages(fetch_limit)
     assert len(results) == 250
     assert results[-1]["id"] == 249
+
+
+def test_test_module(mocker):
+    from MongoDBAtlas import test_module
+
+    mock_return_error = mocker.patch('MongoDBAtlas.return_error')
+
+    client = create_client()
+    fetch_limit = 0
+
+    test_module(client, fetch_limit)
+    mock_return_error.assert_called_with('Invalid maximum number of events per fetch, should be between 1 and 2500.')
+
+    fetch_limit = 2501
+
+    test_module(client, fetch_limit)
+    mock_return_error.assert_called_with('Invalid maximum number of events per fetch, should be between 1 and 2500.')
