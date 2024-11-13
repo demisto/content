@@ -469,9 +469,9 @@ script:
       name: time
     - description: A channel identifier (ID) where to send the request, must be a Globally Unique Identifier (GUID). If the indexer acknowledgment is turned on, a channel is required.
       name: request_channel
-    - description: 'A  batch of events to send to splunk. For example, `{"event": "something happened at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test2, test2"}, "index": "index0","sourcetype": "sourcetype0","source": "/example/something" } {"event": "something happened at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1","source": "/exeample/something", "fields":{ "fields" : "severity: INFO, category: test2, test2"}}`'
+    - description: 'A  batch of events to send to splunk. For example, `{"event": "something happened at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test2, test2"}, "index": "index0","sourcetype": "sourcetype0","source": "/example/something" } {"event": "something happened at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1","source": "/exeample/something", "fields":{ "fields" : "severity: INFO, category: test2, test2"}}`'.
       name: batch_event_data
-    - description: The entry id in XSOAR
+    - description: The entry id in XSOAR.
       name: entry_id
     description: Sends events to an HTTP Event Collector using the Splunk platform JSON event protocol.
     name: splunk-submit-event-hec

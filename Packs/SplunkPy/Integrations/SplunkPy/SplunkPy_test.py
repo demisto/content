@@ -2895,6 +2895,7 @@ def test_ensure_valid_json_format_invalid_inputs(invalid_events):
     When: Calling ensure_valid_json_format.
     Then: The function should raise a DemistoException due to invalid JSON format.
     """
+    from SplunkPy import ensure_valid_json_format
     with pytest.raises(DemistoException, match=r"Make sure that the events are in the correct format"):
         ensure_valid_json_format(invalid_events)
         
