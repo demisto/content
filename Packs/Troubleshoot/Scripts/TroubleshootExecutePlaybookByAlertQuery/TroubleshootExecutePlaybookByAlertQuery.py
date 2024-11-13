@@ -7,7 +7,7 @@ DEFAULT_TIME_FIELD = "created"
 MAX_BULK_SIZE_ALLOWED = 10
 
 
-class RESULTS_SUMMARY:
+class ResultsSummary:
     def __init__(self, playbooks_dict):
         self.playbooks_dict = playbooks_dict
         self.results_summary: dict = {
@@ -42,6 +42,7 @@ class RESULTS_SUMMARY:
     def update_reopened(self, reopened_alerts: list):
         """Update the 'reopened' list with alerts from the provided alert_inv_status."""
         self.results_summary["reopened"].extend(reopened_alerts)
+        demisto.debug(f"reopened investigations: {reopened_alerts=}")
 
     def append_to_others(self, message: str):
         """Append a message to the 'others' list for missing playbook alerts."""
@@ -98,9 +99,15 @@ def get_playbook_info(playbook_id: str, playbook_dict: dict) -> str:
     return playbook_info
 
 
-def get_playbooks_dict():
+def get_playbooks_dict() -> dict:
     """
-    Fetches the playbook ID-to-name mapping and stores it in a global variable.
+    Fetches the mapping of playbook IDs to names by executing a command to retrieve the data.
+
+    This function stores the mapping in a local dictionary and raises an exception if the response is invalid
+    or no playbooks are found.
+
+    Returns:
+        dict: A dictionary containing the playbook ID-to-name mapping.
 
     Raises:
         DemistoException: If the response is in an invalid format or if no playbooks are found.
@@ -116,7 +123,7 @@ def get_playbooks_dict():
     return playbooks_dict
 
 
-def get_playbook_id(playbook_id: str, playbook_name: str, playbooks_dict: dict):
+def get_playbook_id(playbook_id: str, playbook_name: str, playbooks_dict: dict) -> str:
     """
     Retrieve the playbook ID based on the given playbook ID or name.
 
@@ -145,7 +152,7 @@ def get_playbook_id(playbook_id: str, playbook_name: str, playbooks_dict: dict):
     raise DemistoException(f"Playbook '{playbook_name or playbook_id}' wasn't found. Please check the name and try again.")
 
 
-def handle_results(command_results: dict, playbook_id: str, alert_ids: list, results_summary: RESULTS_SUMMARY):
+def handle_results(command_results: dict, playbook_id: str, alert_ids: list, results_summary: ResultsSummary):
     """Extract and format the relevant info from the result dict.
 
     Args:
@@ -189,10 +196,12 @@ def open_investigation(alert_ids: list) -> None:
         alert_ids (list): List of alert IDs for which the investigations need to be reopened.
     """
     for alert in alert_ids:
-        demisto.executeCommand("core-api-post", {"uri": "/investigation/:id/reopen", "body": {"id": alert, "version": -1}})
+        results = demisto.executeCommand("core-api-post", {"uri": "/investigation/:id/reopen", "body": {"id": alert,
+                                                                                                        "version": -1}})
+        demisto.debug(f"Reopened alert {alert} with the following results: {results}.")
 
 
-def set_playbook_on_alerts(playbook_id: str, alert_ids: list, playbooks_dict: dict, results_summary: RESULTS_SUMMARY):
+def set_playbook_on_alerts(playbook_id: str, alert_ids: list, playbooks_dict: dict, results_summary: ResultsSummary):
     """Using an API call, create a new investigation Playbook with a given playbook ID and alerts ID
 
     Args:
@@ -210,25 +219,27 @@ def set_playbook_on_alerts(playbook_id: str, alert_ids: list, playbooks_dict: di
     command_results = demisto.executeCommand(
         "core-api-post", {"uri": "/xsoar/inv-playbook/new", "body":
                           {"playbookId": playbook_id, "alertIds": alert_ids, "version": -1}})
-    
+
     demisto.debug(f"Results of setting playbook {playbook_id} on alerts {alert_ids}:\n{command_results}")
     handle_results(command_results, playbook_id, alert_ids, results_summary)
 
 
 def loop_on_alerts(incidents: list[dict], playbook_id: str, limit: int, reopen_closed_inv: bool, playbooks_dict: dict,
-                   results_summary: RESULTS_SUMMARY):
+                   results_summary: ResultsSummary):
     """
-    Loops through alerts and applies the specified playbook in batches.
+    Loops through alerts, processes them in batches, and assigns a specified playbook to the alerts.
+    Optionally reopens closed investigations based on the provided flag.
 
     Args:
-        incidents (list[dict]): The list of incidents.
-        playbook_id (str): The playbook ID to assign.
+        incidents (list[dict]): The list of incident dictionaries containing alert details.
+        playbook_id (str): The playbook ID to be assigned to the alerts.
         limit (int): The maximum number of alerts to process in this run.
-        reopen_closed_inv (bool): Whether to reopen closed investigations.
-
-    Returns:
-        tuple: A string indicating operation status and a list of reopened alerts.
+        reopen_closed_inv (bool): Flag indicating whether to reopen closed investigations.
+        If True, closed alerts will be reopened.
+        playbooks_dict (dict): A dictionary mapping playbook IDs to their corresponding playbook names.
+        results_summary (ResultsSummary): An object for summarizing the results, including tracking reopened alerts.
     """
+    demisto.debug(f"calling loop_on_alerts with {len(incidents)=}, {playbook_id=}.")
     alert_inv_status: dict[str, list] = {
         "close_ids": [],
         "open_ids": [],
@@ -254,6 +265,9 @@ def loop_on_alerts(incidents: list[dict], playbook_id: str, limit: int, reopen_c
         alert_inv_status["all_ids"][i:i + MAX_BULK_SIZE_ALLOWED]
         for i in range(0, len(alert_inv_status["all_ids"]), MAX_BULK_SIZE_ALLOWED)
     ]
+    demisto.debug(
+        f'{MAX_BULK_SIZE_ALLOWED=}, all ids: {len(alert_inv_status["all_ids"])}, closed ids:{len(alert_inv_status["close_ids"])},'
+        f'open_ids: {len(alert_inv_status["open_ids"])}')
 
     reopened_alerts = []
     if reopen_closed_inv and alert_closed_bulks:
@@ -281,17 +295,20 @@ def loop_on_alerts(incidents: list[dict], playbook_id: str, limit: int, reopen_c
 
 
 def split_by_playbooks(incidents: list[dict], limit: int, reopen_closed_inv: bool, playbooks_dict: dict,
-                       results_summary: RESULTS_SUMMARY) -> None:
+                       results_summary: ResultsSummary) -> None:
     """
-    Splits incidents by their playbook ID and processes them accordingly.
+    Groups incidents by their assigned playbook ID and processes each group.
+    If an incident does not have an assigned playbook, it is tracked and reported separately.
 
     Args:
-        incidents (list[dict]): The list of incidents to process.
-        limit (int): The maximum number of incidents to process.
-        reopen_closed_inv (bool): Whether to reopen closed investigations.
+        incidents (list[dict]): The list of incident dictionaries to process.
+        limit (int): The maximum number of incidents to process in this run.
+        reopen_closed_inv (bool): Flag indicating whether to reopen closed investigations for applicable incidents.
+        playbooks_dict (dict): A dictionary mapping playbook IDs to their respective names, used for validation and logging.
+        results_summary (ResultsSummary): An object for tracking the processing results, including alerts missing playbooks.
 
-    Returns:
-        str: A message summarizing the playbook execution results.
+    Raises:
+        DemistoException: If a required attribute is missing in an incident or if processing fails.
     """
     playbook_map: dict[str, list] = {}
     missing_playbook_alerts = []
@@ -317,11 +334,13 @@ def split_by_playbooks(incidents: list[dict], limit: int, reopen_closed_inv: boo
 def main():
     try:
         args = demisto.args()
+        if from_date := arg_to_datetime(args.get("fromDate")):
+            demisto.debug(f"Fetching alerts {from_date=}")
+
         incidents: list[dict] = get_incidents_by_query(args)
-        print(arg_to_datetime(args.get("fromDate")))
         if not incidents:
             return return_results("No alerts were found for the provided query and filter arguments.")
-        
+
         limit = int(args.get("limit", "500"))
         incidents_ids = [incident.get("id") for incident in incidents]
         demisto.debug(f"Found the following incidents: {incidents_ids}")
@@ -332,7 +351,7 @@ def main():
         if playbook_id or playbook_name:
             playbook_id = get_playbook_id(playbook_id, playbook_name, playbooks_dict)
 
-        results_summary = RESULTS_SUMMARY(playbooks_dict)
+        results_summary = ResultsSummary(playbooks_dict)
         if not playbook_id:
             split_by_playbooks(incidents, limit, reopen_closed_inv, playbooks_dict, results_summary)
         else:

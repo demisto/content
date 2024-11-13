@@ -114,7 +114,7 @@ def test_handle_results_insufficient_permissions(mocker):
     alert_ids = ["alert1", "alert2"]
 
     # WHEN: Calling handle_results with insufficient permissions
-    handle_results(command_results, playbook_id, alert_ids, results_summary=RESULTS_SUMMARY({}))
+    handle_results(command_results, playbook_id, alert_ids, results_summary=ResultsSummary({}))
 
     # THEN: return_error is called with the expected message
     mock_return_error.assert_called_once_with(
@@ -136,7 +136,7 @@ def test_handle_results_no_response():
     command_results = [{'Contents': {}}]
     playbook_id = "playbook_123"
     alert_ids = ["alert1", "alert2"]
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
 
     handle_results(command_results, playbook_id, alert_ids, results_summary_instance)
 
@@ -159,7 +159,7 @@ def test_handle_results_success():
     command_results = [{'Contents': {'response': {}}}]
     playbook_id = "playbook_123"
     alert_ids = ["alert1", "alert2", "alert3"]
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
 
     handle_results(command_results, playbook_id, alert_ids, results_summary_instance)
 
@@ -182,7 +182,7 @@ def test_handle_results_failure_and_success():
     command_results = [{'Contents': {'response': {'alert2': 'failed', 'alert3': 'failed'}}}]
     playbook_id = "playbook_123"
     alert_ids = ["alert1", "alert2", "alert3"]
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
 
     handle_results(command_results, playbook_id, alert_ids, results_summary_instance)
 
@@ -208,7 +208,7 @@ def test_handle_results_failure():
     command_results = [{'Contents': {'response': {'alert2': 'failed', 'alert3': 'failed'}}}]
     playbook_id = "playbook_123"
     alert_ids = ["alert2", "alert3"]
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
 
     handle_results(command_results, playbook_id, alert_ids, results_summary_instance)
 
@@ -230,7 +230,7 @@ def test_handle_results_empty_command_results():
     command_results = []
     playbook_id = "playbook_123"
     alert_ids = ["alert1", "alert2"]
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
 
     result = handle_results(command_results, playbook_id, alert_ids, results_summary_instance)
 
@@ -254,7 +254,7 @@ def test_unexpected_error_handle_results():
     command_results = [{
         "Contents": None
     }]
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
 
     result = handle_results(command_results, PLAYBOOK_ID, ALERT_IDS, results_summary_instance)
     assert result.startswith("Unexpected error occurred")
@@ -273,7 +273,7 @@ def test_set_playbook_on_alerts_success(mocker):
         It should execute the command to set the playbook on alerts and update the results
         summary to reflect the successful execution.
     """
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
     playbook_id = "playbook_123"
     alert_ids = ["alert1", "alert2"]
     playbooks_dict = {playbook_id: "name of playbook"}
@@ -308,7 +308,7 @@ def test_set_playbook_on_alerts_invalid_playbook():
     THEN:
         It should update the results summary to reflect the failure in setting the playbook on alerts.
     """
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
     playbook_id = "invalid_playbook"
     alert_ids = ["alert1", "alert2"]
     playbooks_dict = {"playbook_123": "name of playbook"}
@@ -331,7 +331,7 @@ def test_loop_on_alerts_success(mocker):
         It should successfully loop through the alerts and apply the playbook, calling the
         'set_playbook_on_alerts' function the expected number of times.
     """
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
     playbook_id = "playbook_123"
     incidents = [{"id": f"alert{i}", "closeReason": ""} for i in range(15)]
     playbooks_dict = {playbook_id: "name of playbook"}
@@ -359,7 +359,7 @@ def test_loop_on_alerts_with_closed_investigations(mocker):
         It should successfully open closed investigations, call the appropriate functions for both
         closed and open alerts, and update the results summary with the reopened alerts.
     """
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
     playbook_id = "playbook_123"
     incidents = [
         {"id": "alert1", "closeReason": "Closed"},
@@ -394,7 +394,7 @@ def test_loop_on_alerts_empty_incidents(mocker):
         It should not call any functions to open investigations or set playbooks,
         indicating that no actions were taken due to the absence of incidents.
     """
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
     playbook_id = "playbook_123"
     incidents = []
     playbooks_dict = {playbook_id: "name of playbook"}
@@ -421,7 +421,7 @@ def test_loop_on_alerts_with_limit(mocker):
         It should restrict the processing of incidents to the specified limit,
         and the 'set_playbook_on_alerts' function should be called only once for the limited number of alerts.
     """
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
     playbook_id = "playbook_123"
     incidents = [{"id": f"alert{i}", "closeReason": ""} for i in range(20)]
     playbooks_dict = {playbook_id: "name of playbook"}
@@ -448,7 +448,7 @@ def test_loop_on_alerts_with_closed_investigations_not_reopening(mocker):
         It should not attempt to reopen any closed investigations,
         and the 'set_playbook_on_alerts' function should only be called for open alerts.
     """
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
     playbook_id = "playbook_123"
     incidents = [
         {"id": "alert1", "closeReason": "Closed"},
@@ -482,7 +482,7 @@ def test_split_by_playbooks_success(mocker):
         call the 'loop_on_alerts' function for each unique playbook,
         and log any incidents without an attached playbook in the results summary.
     """
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
     incidents = [
         {"id": "alert1", "playbookId": "playbook_123"},
         {"id": "alert2", "playbookId": "playbook_456"},
@@ -529,7 +529,7 @@ def test_split_by_playbooks_missing_playbook(mocker):
         call the 'loop_on_alerts' function for each unique playbook,
         and log any incidents without an attached playbook in the results summary.
     """
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
     incidents = [
         {"id": "alert1", "playbookId": "playbook_123"},
         {"id": "alert2", "playbookId": ""},
@@ -577,7 +577,7 @@ def test_split_by_playbooks_all_missing_playbooks(mocker):
         It should not call the 'loop_on_alerts' function, as there are no valid playbook IDs,
         and it should log all incidents without an attached playbook in the results summary.
     """
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
     incidents = [
         {"id": "alert1", "playbookId": ""},
         {"id": "alert2", "playbookId": ""},
@@ -609,7 +609,7 @@ def test_split_by_playbooks_limit(mocker):
         processing only up to the specified limit of incidents per playbook,
         and correctly handle incidents exceeding the limit.
     """
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
     incidents = [
         {"id": "alert1", "playbookId": "playbook_123"},
         {"id": "alert2", "playbookId": "playbook_123"},
@@ -720,7 +720,7 @@ def test_get_playbooks_dict_no_playbooks_found(mocker):
 def test_generate_summary():
     """
     GIVEN:
-        A RESULTS_SUMMARY instance with predefined success, failure, reopened, and other messages.
+        A ResultsSummary instance with predefined success, failure, reopened, and other messages.
     WHEN:
         The generate_summary method is called.
     THEN:
@@ -731,7 +731,7 @@ def test_generate_summary():
             - Alerts that were reopened.
             - Any additional messages in the 'others' field.
     """
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
     results_summary_instance.results_summary = {
         "success": {
             "123": ["alert1", "alert2"],
@@ -765,13 +765,13 @@ def test_generate_summary():
 def test_update_success():
     """
     GIVEN:
-        A RESULTS_SUMMARY instance with an empty 'success' dictionary.
+        A ResultsSummary instance with an empty 'success' dictionary.
     WHEN:
         update_success is called with a playbook ID and a list of alert IDs.
     THEN:
         The 'success' dictionary should be updated with the alert IDs for the given playbook ID.
     """
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
     results_summary_instance.results_summary = {"success": {}}
 
     results_summary_instance.update_success("playbook_123", ["alert1", "alert2"])
@@ -785,13 +785,13 @@ def test_update_success():
 def test_update_failure_create():
     """
     GIVEN:
-        A RESULTS_SUMMARY instance with an empty 'failure_create' dictionary.
+        A ResultsSummary instance with an empty 'failure_create' dictionary.
     WHEN:
         update_failure_create is called with a playbook ID and a list of failed alert IDs.
     THEN:
         The 'failure_create' dictionary should be updated with the failed alert IDs for the given playbook ID.
     """
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
     results_summary_instance.results_summary = {"failure_create": {}}
 
     results_summary_instance.update_failure_create("playbook_789", ["alert4"])
@@ -805,13 +805,13 @@ def test_update_failure_create():
 def test_update_failure_set():
     """
     GIVEN:
-        A RESULTS_SUMMARY instance with an empty 'failure_set' dictionary.
+        A ResultsSummary instance with an empty 'failure_set' dictionary.
     WHEN:
         update_failure_set is called with a playbook ID and a list of alert IDs.
     THEN:
         The 'failure_set' dictionary should be updated with the alert IDs for the given playbook ID.
     """
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
     results_summary_instance.results_summary = {"failure_set": {}}
 
     results_summary_instance.update_failure_set("playbook_456", ["alert7", "alert8"])
@@ -825,13 +825,13 @@ def test_update_failure_set():
 def test_update_reopened():
     """
     GIVEN:
-        A RESULTS_SUMMARY instance with an empty 'reopened' list.
+        A ResultsSummary instance with an empty 'reopened' list.
     WHEN:
         update_reopened is called with a list of reopened alerts.
     THEN:
         The 'reopened' list should be updated with the provided alerts.
     """
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
     results_summary_instance.results_summary = {"reopened": []}
 
     results_summary_instance.update_reopened(["alert10", "alert11"])
@@ -842,13 +842,13 @@ def test_update_reopened():
 def test_append_to_others():
     """
     GIVEN:
-        A RESULTS_SUMMARY instance with an empty 'others' list.
+        A ResultsSummary instance with an empty 'others' list.
     WHEN:
         append_to_others is called with a message.
     THEN:
         The 'others' list should be updated with the provided message.
     """
-    results_summary_instance = RESULTS_SUMMARY(PLAYBOOKS_DICT)
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
     results_summary_instance.results_summary = {"others": []}
 
     results_summary_instance.append_to_others("Test message")
