@@ -1250,6 +1250,8 @@ def test_get_endpoint_activity_data(mocker):
         "query_op": "or",
         "select": "dpt,dst,endpointHostName",
         "get_activity_data_count": "true",
+        "fetch_all": "false",
+        "fetch_max_count": "50",
         "fields": json.dumps({"dpt": "443", "endpointHostName": "MSEDGEWIN10"}),
     }
     result = get_endpoint_activity_data(client, args)
@@ -1313,6 +1315,8 @@ def test_get_email_activity_data(mocker):
         "top": 50,
         "query_op": "or",
         "select": "mailFromAddresses,mailToAddresses",
+        "fetch_all": "false",
+        "fetch_max_count": "50",
         "fields": json.dumps(
             {"mailToAddresses": "testemail@gmail.com", "mailMsgSubject": "spam"}
         ),

@@ -59,7 +59,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "32"
     scriptarguments:
       comment:
         complex:
@@ -122,8 +122,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 1520
+          "x": 690,
+          "y": 1710
         }
       }
     note: false
@@ -208,7 +208,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 760
+          "y": 990
         }
       }
     note: false
@@ -246,7 +246,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 1350
+          "y": 1530
         }
       }
     note: false
@@ -412,7 +412,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "29"
+      - "31"
     scriptarguments:
       comment:
         complex:
@@ -612,7 +612,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 990
+          "y": 1170
         }
       }
     note: false
@@ -651,7 +651,7 @@ tasks:
       {
         "position": {
           "x": -10,
-          "y": 760
+          "y": 990
         }
       }
     note: false
@@ -692,7 +692,93 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 1160
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 5e12fc6b-2fa0-43d0-8a46-d2f213525a45
+    type: condition
+    task:
+      id: 5e12fc6b-2fa0-43d0-8a46-d2f213525a45
+      version: -1
+      name: Is the file hash was added to the block list?
+      description: Checks whether the file hash exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.blocklist.added_hashes.fileHash
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 5df17f17-1825-4ac0-8edf-c0e89f437551
+    type: condition
+    task:
+      id: 5df17f17-1825-4ac0-8edf-c0e89f437551
+      version: -1
+      name: Is the file hash was added to the block list?
+      description: Checks whether the file hash exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.blocklist.added_hashes.fileHash
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 780
         }
       }
     note: false
@@ -710,13 +796,15 @@ view: |-
       "26_28_#default#": 0.29,
       "30_11_yes": 0.52,
       "30_2_#default#": 0.38,
+      "31_29_yes": 0.51,
+      "32_10_yes": 0.57,
       "3_25_yes": 0.43,
       "3_2_#default#": 0.12
     },
     "paper": {
       "dimensions": {
-        "height": 1775,
-        "width": 1070,
+        "height": 1965,
+        "width": 1080,
         "x": -10,
         "y": -190
       }

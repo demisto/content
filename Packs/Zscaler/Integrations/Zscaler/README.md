@@ -382,7 +382,8 @@ Added the following IP addresses to the block list successfully:
 ### zscaler-category-add-url
 
 ***
-Adds URLs to the specified category.
+Adds URLs to the specified category.  
+Ensure that the URLs are properly formatted according to Zscaler's guidelines. For more information on valid URL formats, refer to the (Zscaler URL Format Guidelines)[https://help.zscaler.com/zia/url-format-guidelines].
 
 #### Base Command
 
@@ -614,13 +615,14 @@ Retrieves a list of all categories.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Zscaler.Category.ID | string | The ID of the category. | 
-| Zscaler.Category.CustomCategory | boolean | True, if the category is a custom category. Otherwise, false. | 
-| Zscaler.Category.URL | string | The URL of the category. | 
-| Zscaler.Category.Description | string | The description of the category. | 
-| Zscaler.Category.Name | string | The name of the category. | 
+| **Path**                                    | **Type** | **Description**                                               |
+|---------------------------------------------|----------|---------------------------------------------------------------|
+| Zscaler.Category.ID                         | string   | The ID of the category.                                       | 
+| Zscaler.Category.CustomCategory             | boolean  | True, if the category is a custom category. Otherwise, false. | 
+| Zscaler.Category.URL                        | string   | The URL of the category.                                      | 
+| Zscaler.Category.RetainingParentCategoryURL | string   | The URLs of the retaining parent category.                    | 
+| Zscaler.Category.Description                | string   | The description of the category.                              | 
+| Zscaler.Category.Name                       | string   | The name of the category.                                     | 
 
 #### Command Example
 
@@ -646,6 +648,10 @@ Retrieves a list of all categories.
          "demisto.com",
          "apple.com"
       ],
+      "RetainingParentCategoryURL":[  
+         "pandora.com",
+         "spotify.com"
+      ],
       "CustomCategory":"true"
    }
 }
@@ -653,10 +659,10 @@ Retrieves a list of all categories.
 
 #### Human Readable Output
 
-|CustomCategory|Description|ID|Name|URL|
-|--- |--- |--- |--- |--- |
-|false|INTERNET_SERVICES_DESC|INTERNET_SERVICES||google.com,facebook.com|
-|true||CUSTOM_01|CustomCategory|demisto.com,apple.com|
+| CustomCategory | Description            | ID                | Name           | URL                     | RetainingParentCategoryURL |
+|----------------|------------------------|-------------------|----------------|-------------------------|----------------------------|
+| false          | INTERNET_SERVICES_DESC | INTERNET_SERVICES |                | google.com,facebook.com |                            |
+| true           |                        | CUSTOM_01         | CustomCategory | demisto.com,apple.com   | pandora.com","spotify.com  |
 
 ### zscaler-get-blacklist
 
@@ -815,9 +821,9 @@ Retrieves a full or summary report of the file that was analyzed by Sandbox. The
 
 #### Additional Information
 
-[![image](https://user-images.githubusercontent.com/44546251/56854828-8a921480-6945-11e9-8784-cb55e6c7d83e.png)](https://user-images.githubusercontent.com/44546251/56854828-8a921480-6945-11e9-8784-cb55e6c7d83e.png)
+[![image](../../doc_files/56854828-8a921480-6945-11e9-8784-cb55e6c7d83e.png)](../../doc_files/56854828-8a921480-6945-11e9-8784-cb55e6c7d83e.png)
 
-[![image](https://user-images.githubusercontent.com/44546251/56854735-291d7600-6944-11e9-8c05-b917cc25e322.png)](https://user-images.githubusercontent.com/44546251/56854735-291d7600-6944-11e9-8c05-b917cc25e322.png)
+[![image](../../doc_files/56854735-291d7600-6944-11e9-8c05-b917cc25e322.png)](../../doc_files/56854735-291d7600-6944-11e9-8c05-b917cc25e322.png)
 
 ### zscaler-login
 

@@ -31,7 +31,8 @@
      "IAM - Sync User",
      "IAM - Rehire User",
      "Skyhigh Security Alert",
-     "Skyhigh Security Threat"
+     "Skyhigh Security Threat",
+     "IBM QRadar SOAR Incident"
  ],
  "systemAssociatedTypes":[
      "GDPR Data Breach",

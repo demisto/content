@@ -1,7 +1,9 @@
 id: NSA - 5 Security Vulnerabilities Under Active Nation-State Attack
 version: -1
 name: NSA - 5 Security Vulnerabilities Under Active Nation-State Attack
-description: "Russian Foreign Intelligence Service (SVR) actors (also known as APT29,\
+deprecated: true
+description: "Deprecated. No available replacement. \
+  \ Russian Foreign Intelligence Service (SVR) actors (also known as APT29,\
   \ Cozy Bear, and The Dukes) frequently use publicly known vulnerabilities to conduct\
   \ widespread scanning and exploitation.\nThis playbook should be trigger manually\
   \ and includes the following tasks:\n- Enrich related known CVEs reported in the US agencies alert.\n\

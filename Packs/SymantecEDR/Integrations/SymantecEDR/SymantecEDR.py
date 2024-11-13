@@ -1066,7 +1066,7 @@ def parse_event_object_data(data: dict[str, Any]) -> dict:
         ("edr_data_protocols", convert_list_to_str),
     ):
         if values := data.get(key):
-            result |= func(values)  # type: ignore[operator]
+            result |= func(values)  # type: ignore[operator, arg-type]
 
     for item in ("edr_data_protocols", "edr_files", "source_port", "target_port"):
         if values := data.get(item):

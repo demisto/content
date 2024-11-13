@@ -1225,6 +1225,15 @@ script:
       name: channel_id
     description: Delete a mirrored Zoom channel.
     name: close-channel
+  - name: zoom-delete-user-token
+    description: Revoke a user's Zoom SSO session. Use the zoom-list-users command to get the user ID or user email.
+    execution: true
+    arguments:
+      - name: user_id
+        description: Email or unique identifier of the user.
+        required: true
+        type: string
+    outputs: [ ]
   - name: send-notification
     description: Send a message using a chatbot app.
     arguments:
@@ -1245,6 +1254,7 @@ script:
       description: The UserID that allows a chatbot to send a message to a group channel when it has only one designated person in that group channel to see the message.
       type: string
     - name: zoom_ask
+      hidden: true
       description: The message as a JSON for asking questions to the user.
       type: boolean
     outputs: []
@@ -1280,7 +1290,7 @@ script:
   runonce: false
   longRunning: true
   longRunningPort: true
-  dockerimage: demisto/fastapi:0.111.0.101615
+  dockerimage: demisto/fastapi:0.115.4.115067
   script: "-"
   subtype: python3
   type: python

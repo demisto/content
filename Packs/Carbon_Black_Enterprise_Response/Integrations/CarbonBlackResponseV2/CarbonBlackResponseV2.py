@@ -4,7 +4,8 @@ import struct
 import dateparser
 import urllib3
 from CommonServerUserPython import *  # noqa
-from typing import Callable, Dict, List, Any, Union, Tuple
+from typing import Any
+from collections.abc import Callable
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -23,7 +24,7 @@ class ProcessEventDetail:
     Each sub-class representing a different piped-versioned field, and support the format method.
     """
 
-    def __init__(self, piped_version: Union[str, list], fields):
+    def __init__(self, piped_version: str | list, fields):
         self.fields = []
         if not isinstance(piped_version, list):
             piped_version = [piped_version]
@@ -156,7 +157,7 @@ class Client(BaseClient):
 
     def get_sensors(self, id: str = None, hostname: str = None, ipaddr: str = None,  # noqa: F841
                     groupid: str = None, inactive_filter_days: str = None,  # noqa: F841
-                    limit: Union[int, str] = None) -> Tuple[int, List[dict]]:
+                    limit: int | str | None = None) -> tuple[int, list[dict]]:
         url = f'/v1/sensor/{id}' if id else '/v1/sensor'
         query_params = assign_params(
             ip=ipaddr,
@@ -169,9 +170,9 @@ class Client(BaseClient):
         # When querying specific sensor without filters, the api returns dictionary instead of list.
         return len(res), res[:arg_to_number(limit, 'limit')] if isinstance(res, list) else [res]
 
-    def get_alerts(self, status: str = None, username: str = None, feedname: str = None,
-                   hostname: str = None, report: str = None, sort: str = None, query: str = None,
-                   facet: str = None, limit: Union[str, int] = None, start: str = None,
+    def get_alerts(self, status: str | None = None, username: str | None = None, feedname: str | None = None,
+                   hostname: str | None = None, report: str | None = None, sort: str | None = None, query: str | None = None,
+                   facet: str | None = None, limit: str | int | None = None, start: str | None = None,
                    allow_empty_params: bool = False) -> dict:
 
         query_params = assign_params(
@@ -362,7 +363,8 @@ def quarantine_device_command(client: Client, sensor_id: str) -> CommandResults:
 def sensors_list_command(client: Client, id: str = None, hostname: str = None, ip: str = None,
                          group_id: str = None, inactive_filter_days: str = None, limit: int = None) -> CommandResults:
     try:
-        total_num_of_sensors, res = client.get_sensors(id, hostname, ip, group_id, inactive_filter_days, limit)
+        total_num_of_sensors, res = client.get_sensors(
+            id, hostname, ip, group_id, inactive_filter_days, limit)  # type: ignore[arg-type]
 
         human_readable_data = []
         for sensor_data in res:
@@ -425,7 +427,7 @@ def watchlist_create_command(client: Client, name: str, search_query: str, index
     params = assign_params(name=name, search_query=search_query, description=description, index_type=index_type)
     res = client.http_request(url='/v1/watchlist', method='POST', json_data=params)
     watchlist_id = res.get('id')
-    if id:
+    if watchlist_id:
         output = {'id': watchlist_id}
         return CommandResults(outputs=output, outputs_prefix='CarbonBlackEDR.Watchlist', outputs_key_field='id',
                               readable_output=f"Successfully created new watchlist with id {watchlist_id}")
@@ -434,7 +436,7 @@ def watchlist_create_command(client: Client, name: str, search_query: str, index
 
 def get_watchlist_list_command(client: Client, id: str = None, limit: str = None) -> CommandResults:
     url = f'/v1/watchlist/{id}' if id else '/v1/watchlist'
-    res: Union[dict, list] = client.http_request(url=url, method='GET')
+    res: dict | list = client.http_request(url=url, method='GET')
 
     human_readable_data = []
     # Handling case of only one record.
@@ -508,7 +510,8 @@ def alert_update_command(client: Client, alert_ids: str, status: str = None, set
 def alert_search_command(client: Client, status: str = None, username: str = None, feedname: str = None,
                          hostname: str = None, report: str = None, sort: str = None, query: str = None,
                          facet: str = None, limit: str = None, start: str = '0') -> CommandResults:
-    res = client.get_alerts(status, username, feedname, hostname, report, sort, query, facet, limit, start)
+    res = client.get_alerts(status, username, feedname, hostname, report, sort,
+                            query, facet, limit, start)  # type: ignore[arg-type]
     if not res:
         raise Exception(f'{INTEGRATION_NAME} - Request cannot be processed.')
 
@@ -819,7 +822,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
 
     date_range = f'[{last_fetch.strftime("%Y-%m-%dT%H:%M:%S")} TO *]'
 
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
 
     alerts = []
     time_sort = 'created_time'
@@ -835,7 +838,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
             demisto.debug(f'{INTEGRATION_NAME} - Fetching incident from Server with status: {current_status}')
             query_params['status'] = f'"{current_status}"'
             # we create a new query containing params since we do not allow both query and params.
-            res = client.get_alerts(query=_create_query_string(query_params), limit=max_results, sort=time_sort)
+            res = client.get_alerts(query=_create_query_string(query_params),
+                                    limit=max_results, sort=time_sort)  # type: ignore[arg-type]
             alerts += res.get('results', [])
             demisto.debug(f'{INTEGRATION_NAME} - fetched {len(alerts)} so far.')
     else:
@@ -851,11 +855,10 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         incident_created_time_ms = incident_created_time.timestamp()
 
         # to prevent duplicates, adding incidents with creation_time > last fetched incident
-        if last_fetch:
-            if incident_created_time_ms <= last_fetch.timestamp():
-                demisto.debug(f'{INTEGRATION_NAME} - alert {str(alert)} was created at {incident_created_time_ms}.'
-                              f' Skipping.')
-                continue
+        if last_fetch and (incident_created_time_ms <= last_fetch.timestamp()):
+            demisto.debug(f'{INTEGRATION_NAME} - alert {str(alert)} was created at {incident_created_time_ms}.'
+                          f' Skipping.')
+            continue
 
         alert_id = alert.get('unique_id', '')
         alert_name = alert.get('process_name', '')
@@ -925,7 +928,7 @@ def main() -> None:
             use_proxy=proxy,
             apitoken=api_token
         )
-        commands: Dict[str, Callable] = {'cb-edr-processes-search': processes_search_command,
+        commands: dict[str, Callable] = {'cb-edr-processes-search': processes_search_command,
                                          'cb-edr-process-get': process_get_command,
                                          'cb-edr-process-segments-get': process_segments_get_command,
                                          'cb-edr-process-events-list': process_events_list_command,

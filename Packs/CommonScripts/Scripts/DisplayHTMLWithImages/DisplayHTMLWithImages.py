@@ -15,18 +15,19 @@ def create_html_with_images(email_html='', entry_id_list=None):
         return email_html
 
     account_name = get_tenant_account_name()
+    xsoar_prefix = '/xsoar' if is_xsiam_or_xsoar_saas() else ''
     for file_name, attach_content_id, file_entry_id in entry_id_list:
         # Handling inline attachments from Gmail mailboxes
         if re.search(f'src="[^>]+{attach_content_id}"(?=[^>]+alt="{file_name}")', email_html):
             email_html = re.sub(f'src="[^>]+{attach_content_id}"(?=[^>]+alt="{file_name}")',
-                                f'src={account_name}/entry/download/{file_entry_id}',
+                                f'src={account_name}{xsoar_prefix}/entry/download/{file_entry_id}',
                                 email_html
                                 )
         # Handling inline attachments from Outlook mailboxes
         # Note: the format of an image src are like this src="cid:THE CONTENT ID"
         else:
             email_html = re.sub(f'(src="cid(.*?{attach_content_id}.*?"))',
-                                f'src={account_name}/entry/download/{file_entry_id}',
+                                f'src={account_name}{xsoar_prefix}/entry/download/{file_entry_id}',
                                 email_html, count=1,
                                 )
     return email_html
@@ -93,15 +94,15 @@ def main():
     html_body = f'<div style="background-color: white; color:black;"> {html_body} </div>\n'
 
     if 'src="cid' in html_body:
-        attachments = incident.get('attachment', {})
         context = demisto.context()
         files = argToList(context.get('File', []))
-        # for backwards compatible
-        entry_id_list = get_entry_id_list_by_incident_attachments(attachments, files)
+        attachments = argToList(demisto.get(context, 'Email.AttachmentsData', []))
+        entry_id_list = get_entry_id_list_by_parsed_email_attachments(attachments, files)
 
         if not entry_id_list:
-            attachments = demisto.get(context, 'Email.AttachmentsData', [])
-            entry_id_list = get_entry_id_list_by_parsed_email_attachments(attachments, files)
+            # for backwards compatible
+            attachments = incident.get('attachment', {})
+            entry_id_list = get_entry_id_list_by_incident_attachments(attachments, files)
 
         html_body = create_html_with_images(html_body, entry_id_list)
 

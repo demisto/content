@@ -49,7 +49,7 @@ class DropboxEventsClient(IntegrationEventsClient):
     def get_access_token(self):
         request = IntegrationHTTPRequest(
             method=Method.POST,
-            url=f'{str(self.request.url).removesuffix("/")}/oauth2/token',
+            url=f'{str(self.request.url).removesuffix("/")}/oauth2/token',  # type: ignore[arg-type]
             data={'grant_type': 'refresh_token', 'refresh_token': f'{self.refresh_token}'},
             auth=HTTPBasicAuth(self.credentials.identifier, self.credentials.password),  # type: ignore[arg-type]
             verify=self.request.verify,

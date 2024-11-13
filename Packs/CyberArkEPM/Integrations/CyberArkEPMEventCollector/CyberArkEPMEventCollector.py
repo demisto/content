@@ -43,7 +43,7 @@ class Client(BaseClient):
         self.policy_audits_event_type = policy_audits_event_type
         self.raw_events_event_type = raw_events_event_type
 
-    def epm_auth_to_cyber_ark(self):
+    def epm_auth_to_cyber_ark(self):  # pragma: no cover
         data = {
             "Username": self.username,
             "Password": self.password,
@@ -55,24 +55,29 @@ class Client(BaseClient):
         self._base_url = urljoin(result.get('ManagerURL'), '/EPM/API/')
         self._headers['Authorization'] = f"basic {result.get('EPMAuthenticationResult')}"
 
-    def get_session_token(self) -> str:
+    def get_session_token(self) -> str:  # pragma: no cover
         # Reference: https://developer.okta.com/docs/reference/api/authn/#primary-authentication
         data = {
             "username": self.username,
             "password": self.password,
         }
         result = self._http_request('POST', full_url=self.authentication_url, json_data=data)
+        demisto.debug(f"result is: {result}")
+        if result.get("status", "") != "SUCCESS":
+            raise DemistoException(f"Retrieving Okta session token returned status: {result.get('status')},"
+                                   f" Check your Okta credentials and make sure the user is not blocked by a role.")
         return result.get('sessionToken')
 
-    def get_saml_response(self) -> str:
+    def get_saml_response(self) -> str:  # pragma: no cover
         # Reference: https://devforum.okta.com/t/how-to-get-saml-assertion-through-an-api/24580
         full_url = f'{self.application_url}?onetimetoken={self.get_session_token()}'
         result = self._http_request('POST', full_url=full_url, resp_type='response')
         soup = BeautifulSoup(result.text, features='html.parser')
         saml_response = soup.find("input", {'name': 'SAMLResponse'}).get('value')
+
         return saml_response
 
-    def saml_auth_to_cyber_ark(self):
+    def saml_auth_to_cyber_ark(self):  # pragma: no cover
         # Reference: https://docs.cyberark.com/EPM/Latest/en/Content/WebServices/SAMLAuthentication.htm
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -165,7 +170,7 @@ def prepare_datetime(date_time: Any, increase: bool = False) -> str:
     return f'{date_time_str}Z'
 
 
-def prepare_next_run(set_id: str, event_type: str, last_run: dict, last_fetch: dict):
+def prepare_next_run(set_id: str, event_type: str, last_run: dict, last_fetch: dict):      # pragma: nocover
     """
     Gets a list of events and adds the `_time` and the `eventTypeXsiam` keys.
     Args:
@@ -220,7 +225,7 @@ def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
     return list(context_set_items.values())
 
 
-def get_admin_audits(client: Client, last_run_per_id: dict, limit: int) -> dict[str, list]:
+def get_admin_audits(client: Client, last_run_per_id: dict, limit: int) -> dict[str, list]:     # pragma: nocover
     """
     Args:
         client (Client): CyberArkEPM client to use.

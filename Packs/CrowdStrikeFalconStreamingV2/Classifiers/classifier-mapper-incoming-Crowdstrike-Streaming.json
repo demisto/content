@@ -37,12 +37,50 @@
 					"complex": null
 				},
 				"details": {
-					"simple": "event.DetectDescription",
-					"complex": null
+					"complex": {
+						"accessor": "Description",
+						"filters": [],
+						"root": "event",
+						"transformers": [
+							{
+								"args": {
+									"applyIfEmpty": {
+										"isContext": false
+									},
+									"defaultValue": {
+										"isContext": true,
+										"value": {
+											"simple": "event.DetectDescription"
+										}
+									}
+								},
+								"operator": "SetIfEmpty"
+							}
+						]
+					}
 				},
 				"name": {
-					"simple": "event.DetectName",
-					"complex": null
+					"complex": {
+						"accessor": "Name",
+						"filters": [],
+						"root": "event",
+						"transformers": [
+							{
+								"args": {
+									"applyIfEmpty": {
+										"isContext": false
+									},
+									"defaultValue": {
+										"isContext": true,
+										"value": {
+											"simple": "event.DetectName"
+										}
+									}
+								},
+								"operator": "SetIfEmpty"
+							}
+						]
+					}
 				}
 			},
 			"dontMapEventToLabels": true

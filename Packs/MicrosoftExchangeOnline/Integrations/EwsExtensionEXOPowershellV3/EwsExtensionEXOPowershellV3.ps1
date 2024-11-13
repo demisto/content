@@ -599,7 +599,7 @@ class ExchangeOnlinePowershellV3Client
                 $cmd_params.User = $user
             }
             if ($release_to_all) {
-                $cmd_params.ReleaseToAll = $null
+                $cmd_params.ReleaseToAll = $release_to_all
             }
             if ($identities) {
                 $cmd_params.Identities = $identities
@@ -794,16 +794,18 @@ class ExchangeOnlinePowershellV3Client
             # Import and Execute command
             $cmd_params = @{
                 "Identity"                 = $mailbox
-                "BlockedSendersAndDomains" = @{Add = $add_blocked_senders_and_domains
-                    Remove                         = $remove_blocked_senders_and_domains
-                }
-                "TrustedSendersAndDomains" = @{Add = $add_trusted_senders_and_domains
-                    Remove                         = $remove_trusted_senders_and_domains
-                }
                 "TrustedListsOnly"         = $trusted_lists_only
                 "ContactsTrusted"          = $contacts_trusted
                 "Enabled"                  = $enabled
                 "Confirm"                  = $false
+            }
+            $blocked_senders_and_domains = CreateAddAndRemoveSections $add_blocked_senders_and_domains $remove_blocked_senders_and_domains
+            if ($blocked_senders_and_domains -ne $null){
+                $cmd_params["BlockedSendersAndDomains"] = $blocked_senders_and_domains
+            }
+            $trusted_senderns_and_domains = CreateAddAndRemoveSections $add_trusted_senders_and_domains $remove_trusted_senders_and_domains
+            if ($trusted_senderns_and_domains -ne $null){
+                $cmd_params["TrustedSendersAndDomains"] = $trusted_senderns_and_domains
             }
             Set-MailboxJunkEmailConfiguration @cmd_params
         }
@@ -855,16 +857,18 @@ class ExchangeOnlinePowershellV3Client
             $this.CreateSession()
             # Import and Execute command
             $cmd_params = @{
-                "BlockedSendersAndDomains" = @{Add = $add_blocked_senders_and_domains
-                    Remove                         = $remove_blocked_senders_and_domains
-                }
-                "TrustedSendersAndDomains" = @{Add = $add_trusted_senders_and_domains
-                    Remove                         = $remove_trusted_senders_and_domains
-                }
                 "TrustedListsOnly"         = $trusted_lists_only
                 "ContactsTrusted"          = $contacts_trusted
                 "Enabled"                  = $enabled
                 "Confirm"                  = $false
+            }
+            $blocked_senders_and_domains = CreateAddAndRemoveSections $add_blocked_senders_and_domains $remove_blocked_senders_and_domains
+            if ($blocked_senders_and_domains -ne $null){
+                $cmd_params["BlockedSendersAndDomains"] = $blocked_senders_and_domains
+            }
+            $trusted_senderns_and_domains = CreateAddAndRemoveSections $add_trusted_senders_and_domains $remove_trusted_senders_and_domains
+            if ($trusted_senderns_and_domains -ne $null){
+                $cmd_params["TrustedSendersAndDomains"] = $trusted_senderns_and_domains
             }
             Get-Mailbox -RecipientTypeDetails UserMailbox -ResultSize Unlimited | ForEach-Object {
                 Set-MailboxJunkEmailConfiguration -Identity $_.Name @cmd_params
@@ -1415,6 +1419,31 @@ class ExchangeOnlinePowershellV3Client
 
 }
 
+function Remove-EmptyItems {
+    param (
+        [PSObject]$inputObject
+    )
+
+    $newDict = @{}
+
+    foreach ($property in $inputObject.PSObject.Properties) {
+        $value = $property.Value
+
+        # Check if the value is not null, whitespace, or an empty collection
+        if (-not [string]::IsNullOrWhiteSpace($value)) {
+            # Check if it's an IEnumerable (like array or list) and if the collection is not empty
+            if ($value -is [System.Collections.IEnumerable] -and -not ($value -is [string]) -and $value.Count -eq 0) {
+                continue
+            }
+
+            # If it's not an empty collection, add it to the new dictionary
+            $newDict[$property.Name] = $value
+        }
+    }
+
+    return $newDict
+}
+
 function GetEXORecipientCommand
 {
     [CmdletBinding()]
@@ -1637,7 +1666,7 @@ function EXOExportQuarantineMessageCommand
     )
 
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.ExportQuarantineMessage(obj.Guid === val.Guid)" = $raw_response }
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.ExportQuarantineMessage(obj.Identity === val.Identity)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
 
@@ -1677,8 +1706,20 @@ function EXOGetQuarantineMessageCommand {
 
     $raw_response = $client.EXOGetQuarantineMessage($params)
 
-    $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.GetQuarantineMessage(obj.Guid === val.Guid)" = $raw_response}
+    $newResults = @()
+
+    if ($raw_response -is [System.Collections.IEnumerable]) {
+        # If raw_response is a list, process each dictionary
+        foreach ($item in $raw_response) {
+            $newResults += Remove-EmptyItems $item
+        }
+    } elseif ($raw_response -Is [Hashtable]) {
+        # If input is a single dictionary, process it directly
+        $newResults = Remove-EmptyItems $raw_response
+    }
+
+    $human_readable = TableToMarkdown $newResults "Results of $command"
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.GetQuarantineMessage(obj.Identity === val.Identity)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
 
@@ -1758,6 +1799,17 @@ function SetJunkRulesCommand([ExchangeOnlinePowershellV3Client]$client, [hashtab
     $entry_context = @{}
 
     return $human_readable, $entry_context, $raw_response
+}
+
+function  CreateAddAndRemoveSections([string[]]$items_to_add, [string[]]$items_to_remove ){
+    $params = @{}
+    if (-not [string]::IsNullOrEmpty($items_to_add)){
+        $params["Add"] = $items_to_add
+    }
+    if (-not [string]::IsNullOrEmpty($items_to_remove)){
+        $params["Remove"] =  $items_to_remove
+    }
+    return $params
 }
 
 function SetGlobalJunkRulesCommand([ExchangeOnlinePowershellV3Client]$client, [hashtable]$kwargs) {

@@ -6,6 +6,7 @@ import dateparser
 ''' CONSTANTS '''
 
 OAUTH_TOKEN_GENERATOR_URL = 'https://zoom.us/oauth/token'
+OAUTH_OGV_TOKEN_GENERATOR_URL = 'https://zoomgov.com/oauth/token'
 # The token’s time to live is 1 hour,
 # two minutes were subtract for extra safety.
 TOKEN_LIFE_TIME = timedelta(minutes=58)
@@ -63,7 +64,8 @@ class Zoom_Client(BaseClient):
 
         :return: valid token
         """
-        token_res = self._http_request(method="POST", full_url=OAUTH_TOKEN_GENERATOR_URL,
+        full_url = OAUTH_OGV_TOKEN_GENERATOR_URL if 'gov' in self._base_url else OAUTH_TOKEN_GENERATOR_URL
+        token_res = self._http_request(method="POST", full_url=full_url,
                                        params={"account_id": self.account_id,
                                                "grant_type": "account_credentials"},
                                        auth=(self.client_id, self.client_secret))
@@ -75,7 +77,8 @@ class Zoom_Client(BaseClient):
 
         :return: valid token
         """
-        token_res = self._http_request(method="POST", full_url=OAUTH_TOKEN_GENERATOR_URL,
+        full_url = OAUTH_OGV_TOKEN_GENERATOR_URL if 'gov' in self._base_url else OAUTH_TOKEN_GENERATOR_URL
+        token_res = self._http_request(method="POST", full_url=full_url,
                                        params={"account_id": self.account_id,
                                                "grant_type": "client_credentials"},
                                        auth=(self.bot_client_id, self.bot_client_secret))

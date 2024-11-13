@@ -1,3 +1,4 @@
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
 
@@ -35,6 +36,7 @@ SERVER = PARAMS['url'].removesuffix('/')
 USE_SSL = not PARAMS.get('insecure', False)
 # How many time before the first fetch to retrieve incidents
 FETCH_TIME = PARAMS.get('fetch_time', '3 days')
+MAX_FETCH_SIZE = 10000
 PROXY = PARAMS.get('proxy', False)
 BYTE_CREDS = f'{CLIENT_ID}:{SECRET}'.encode()
 # Headers to be sent in requests
@@ -278,7 +280,7 @@ CS_FALCON_INCIDENT_OUTGOING_ARGS = {'tag': 'A tag that have been added or remove
 LEGACY_CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
                                             'behaviors.technique', 'device.hostname', 'detection_id', 'behaviors.display_name']
 CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'tactic', 'scenario', 'objective',
-                                     'technique', 'device.hostname', "composite_id", 'display_name']
+                                     'technique', 'device.hostname', "composite_id", 'display_name', 'tags']
 CS_FALCON_INCIDENT_INCOMING_ARGS = ['state', 'fine_score', 'status', 'tactics', 'techniques', 'objectives',
                                     'tags', 'hosts.hostname', 'incident_id']
 
@@ -295,6 +297,11 @@ HOST_STATUS_DICT = {
     'unknown': 'Unknown'
 }
 
+
+QUARANTINE_FILES_OUTPUT_HEADERS = ['id', 'aid', 'cid', 'sha256', 'paths', 'state', 'detect_ids', 'alert_ids', 'hostname',
+                                   'username', 'date_updated', 'date_created', 'extracted',
+                                   'release_path_for_removable_media', 'primary_module', 'is_on_removable_disk',
+                                   'sandbox_report_id', 'sandbox_report_state']
 
 CPU_UTILITY_INT_TO_STR_KEY_MAP = {
     1: 'Lowest',
@@ -449,7 +456,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         demisto.debug(f'In http_request {get_token_flag=} updated retries, status_list_to_retry, valid_status_codes')
 
     headers['User-Agent'] = 'PANW-XSOAR'
-    int_timeout = int(timeout) if timeout else 10  # 10 is the default in generic_http_request
+    int_timeout = int(timeout) if timeout else 60  # 60 is the default in generic_http_request
 
     # Handling a case when we want to return an entry for 404 status code.
     if status_code:
@@ -735,6 +742,27 @@ def incident_to_incident_context(incident):
     return incident_context
 
 
+def fix_time_field(detection: dict, time_key: str):
+    """
+        Fix the value of the date to have only 6 figures after the ".".
+        The string representation of the created_timestamp value can contain from 6 to 9 figures after the dot,
+        for example: 2024-02-22T14:16:04.973070837Z. The template supports only 6 digits, so there is a need to remove the extra
+        digits to use datetime.strptime().
+
+        Args:
+            detection (dict): the detection.
+            time_key (str): the key of the wanted date&time field.
+    """
+    demisto.debug(f'fix_time_field {time_key=}')
+    str_date = detection[time_key]
+    split_date = str_date.split('.')
+    relevant_microseconds = split_date[1][:6]
+    # if 'Z' isn't in relevant_microseconds it means that it was removed since there was more than 5 digits in the microseconds.
+    fixed_date = f'{split_date[0]}.{relevant_microseconds}Z' if 'Z' not in relevant_microseconds else str_date
+    demisto.debug(f'fix_time_field, the original value in {time_key=} is {str_date} the updated value is {fixed_date} ')
+    detection[time_key] = fixed_date
+
+
 def detection_to_incident_context(detection, detection_type, start_time_key: str = 'start_time'):
     """
         Creates an incident context of an IDP/Mobile/ODS detection.
@@ -746,6 +774,10 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         :rtype ``dict``
     """
     add_mirroring_fields(detection)
+    demisto.debug(f'detection_to_incident_context, {detection_type=}')
+    if detection_type == IDP_DETECTION_FETCH_TYPE:
+        demisto.debug(f'detection_to_incident_context, {detection_type=} calling fix_time_field')
+        fix_time_field(detection, start_time_key)
 
     incident_context = {
         'occurred': detection.get(start_time_key),
@@ -1507,7 +1539,7 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
             text_to_encode += f"+{filter_arg}"
         endpoint_url += urllib.parse.quote_plus(text_to_encode)
         demisto.debug(f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=}")
-        return http_request('GET', endpoint_url)
+        return http_request('GET', endpoint_url, {'sort': 'created_timestamp.asc'})
     else:
         endpoint_url = '/detects/queries/detects/v1'
         demisto.debug(f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=} and {params=}")
@@ -1523,8 +1555,9 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
     Returns:
         Response json of the get detection endpoint (IDs of the detections)
     """
+    sort_key = 'first_behavior.asc' if LEGACY_VERSION else 'created_timestamp.asc'
     params = {
-        'sort': 'first_behavior.asc',
+        'sort': sort_key,
         'offset': offset,
     }
     if has_limit:
@@ -2026,14 +2059,15 @@ def get_username_uuid(username: str):
     return resources[0]
 
 
-def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
+def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag):
     """
         Sends a resolve detection request
-        :param ids: Single or multiple ids in an array string format
-        :param status: New status of the detection
-        :param assigned_to_uuid: uuid to assign the detection to
-        :param show_in_ui: Boolean flag in string format (true/false)
-        :param comment: Optional comment to add to the detection
+        :param ids: Single or multiple ids in an array string format.
+        :param status: New status of the detection.
+        :param assigned_to_uuid: uuid to assign the detection to.
+        :param show_in_ui: Boolean flag in string format (true/false).
+        :param comment: Optional comment to add to the detection.
+        :param The tag to add.
         :return: Resolve detection response json
     """
     payload = {
@@ -2051,9 +2085,11 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
         demisto.debug(f"in resolve_detection: {LEGACY_VERSION =} and {payload=}")
         # modify the payload to match the Raptor API
         ids = payload.pop('ids')
-        payload["assign_to_user_id"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
+        payload["assign_to_uuid"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
         payload["update_status"] = payload.pop("status") if "status" in payload else None
         payload["append_comment"] = payload.pop("comment") if "comment" in payload else None
+        if tag:
+            payload["add_tag"] = tag
 
         data = json.dumps(resolve_detections_prepare_body_request(ids, payload))
     else:
@@ -2213,7 +2249,7 @@ def update_detection_request(ids: list[str], status: str) -> dict:
     if status not in DETECTION_STATUS:
         raise DemistoException(f'CrowdStrike Falcon Error: '
                                f'Status given is {status} and it is not in {DETECTION_STATUS}')
-    return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None)
+    return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None, tag=None)
 
 
 def update_idp_or_mobile_detection_request(ids: list[str], status: str) -> dict:
@@ -2939,6 +2975,10 @@ def fetch_incidents():
         total_detections = demisto.get(response, "meta.pagination.total")
         detections_offset = calculate_new_offset(detections_offset, len(detections_ids), total_detections)
         if detections_offset:
+            if detections_offset + fetch_limit > MAX_FETCH_SIZE:
+                demisto.debug(f"CrowdStrikeFalconMsg: The new offset: {detections_offset} + limit: {fetch_limit} reached "
+                              f"{MAX_FETCH_SIZE}, resetting the offset to 0")
+                detections_offset = 0
             demisto.debug(f"CrowdStrikeFalconMsg: The new detections offset is {detections_offset}")
         raw_res = get_detections_entities(detections_ids)
 
@@ -3000,6 +3040,10 @@ def fetch_incidents():
         total_incidents = demisto.get(response, "meta.pagination.total")
         incidents_offset = calculate_new_offset(incidents_offset, len(incidents_ids), total_incidents)
         if incidents_offset:
+            if incidents_offset + fetch_limit > MAX_FETCH_SIZE:
+                demisto.debug(f"CrowdStrikeFalconMsg: The new offset: {incidents_offset} + limit: {fetch_limit} reached "
+                              f"{MAX_FETCH_SIZE}, resetting the offset to 0")
+                incidents_offset = 0
             demisto.debug(f"CrowdStrikeFalconMsg: The new incidents offset is {incidents_offset}")
 
         if incidents_ids:
@@ -3037,7 +3081,7 @@ def fetch_incidents():
             detections_type=IDP_DETECTION,
             product_type='idp',
             detection_name_prefix=IDP_DETECTION_FETCH_TYPE,
-            start_time_key='start_time')
+            start_time_key='created_timestamp')
 
     if MOBILE_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
         mobile_detections, current_fetch_info_mobile_detections = fetch_detections_by_product_type(
@@ -3172,6 +3216,10 @@ def fetch_detections_by_product_type(current_fetch_info: dict, look_back: int, p
     total_detections = demisto.get(response, "meta.pagination.total")
     offset = calculate_new_offset(offset, len(detections_ids), total_detections)
     if offset:
+        if offset + fetch_limit > MAX_FETCH_SIZE:
+            demisto.debug(f"CrowdStrikeFalconMsg: The new offset: {offset} + limit: {fetch_limit} reached "
+                          f"{MAX_FETCH_SIZE}, resetting the offset to 0")
+            offset = 0
         demisto.debug(f"CrowdStrikeFalconMsg: The new {detections_type} offset is {offset}")
 
     if detections_ids:
@@ -3942,8 +3990,31 @@ def get_ioc_device_count_command(ioc_type: str, value: str):
         ioc_id = f"{ioc_type}:{value}"
         if not device_count_res:
             return create_entry_object(raw_res, hr=f"Could not find any devices the IOC **{ioc_id}** was detected in.")
+
+        device_count = device_count_res[0].get("device_count")
+        if argToBoolean(device_count_res[0].get('limit_exceeded', False)):
+            demisto.debug(f'limit exceeded for {ioc_id}, trying to count by run_indicator_device_id_request')
+            # rate limit exceeded, so we will get the count by running the run_indicator_device_id_request function
+            # see https://falcon.crowdstrike.com/documentation/page/ed1b4a95/detection-and-prevention-policy-apis
+
+            device_count = 0
+            params = assign_params(
+                type=ioc_type,
+                value=value
+            )
+
+            while True:
+                device_ids_raw = run_indicator_device_id_request(params)
+                device_count += len(device_ids_raw.get('resources', []))
+                offset = demisto.get(device_ids_raw, 'meta.pagination.offset')
+                if not offset:
+                    break
+                params['offset'] = offset
+
+            device_count_res[0]['device_count'] = device_count
+
         context = [get_trasnformed_dict(device_count, IOC_DEVICE_COUNT_MAP) for device_count in device_count_res]
-        hr = f'Indicator of Compromise **{ioc_id}** device count: **{device_count_res[0].get("device_count")}**'
+        hr = f'Indicator of Compromise **{ioc_id}** device count: **{device_count}**'
         return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': context}, hr=hr)
 
 
@@ -3986,24 +4057,18 @@ def search_device_command():
         :return: EntryObject of search device command
     """
     raw_res = search_device()
+    device_ids = []
     if not raw_res:
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
     extended_data = argToBoolean(demisto.args().get('extended_data', False))
+    for device in devices:
+        device_id = device.get("device_id")
+        device_ids.append(device_id)
+    state_data = get_status(device_ids)
     command_results = []
     for single_device in devices:
-        # demisto.debug(f"single device info: {single_device}")
-        # status, is_isolated = generate_status_fields(single_device.get('status'), single_device.get("device_id"))
-        endpoint = Common.Endpoint(
-            id=single_device.get('device_id'),
-            hostname=single_device.get('hostname'),
-            ip_address=single_device.get('local_ip'),
-            os=single_device.get('platform_name'),
-            os_version=single_device.get('os_version'),
-            status=get_status(single_device.get("device_id")),
-            is_isolated=get_isolation_status(single_device.get('status')),
-            mac_address=single_device.get('mac_address'),
-            vendor=INTEGRATION_NAME)
+        endpoint = generate_endpoint_by_contex_standard(single_device, state_data)
         if not extended_data:
             entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
             headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
@@ -4045,7 +4110,7 @@ def enrich_groups(all_group_ids) -> dict[str, Any]:
     result = {}
     params = {'ids': all_group_ids}
     response_json = http_request('GET', '/devices/entities/host-groups/v1', params, status_code=404)
-    for resource in response_json['resources']:
+    for resource in response_json['resources'] or []:
         try:
             result[resource['id']] = resource['name']
         except KeyError:
@@ -4053,13 +4118,29 @@ def enrich_groups(all_group_ids) -> dict[str, Any]:
     return result
 
 
-def get_status(device_id):
-    raw_res = http_request('GET', '/devices/entities/online-state/v1', params={'ids': device_id})
-    state = raw_res.get('resources')[0].get('state', '')
-    if state == 'unknown':
-        demisto.debug(f"Device with id: {device_id} returned an unknown state, which indicates that the host has not"
-                      f" been seen recently and we are not confident about its current state")
-    return HOST_STATUS_DICT[state]
+def get_status(device_ids):
+    """
+    Get the online status for one or more hosts by specifying each host’s unique ID (up to 100 max).
+    The status can be online, offline, or unknown.
+    Args:
+        device_ids: list of device ids.
+
+    Returns: dictionary contains the id:state
+
+    """
+    state_data = {}
+    batch_size = 100
+    for i in range(0, len(device_ids), batch_size):
+        batch = device_ids[i:i + batch_size]
+        raw_res = http_request('GET', '/devices/entities/online-state/v1', params={'ids': batch})
+        for res in raw_res.get('resources'):
+            state = res.get('state', '')
+            device_id = res.get('id', '')
+            if state == 'unknown':
+                demisto.debug(f"Device with id: {device_id} returned an unknown state, which indicates that the host has not"
+                              f" been seen recently and we are not confident about its current state")
+            state_data[device_id] = HOST_STATUS_DICT[state]
+    return state_data
 
 
 def get_isolation_status(endpoint_status):
@@ -4076,22 +4157,19 @@ def get_isolation_status(endpoint_status):
     return is_isolated
 
 
-def generate_endpoint_by_contex_standard(devices):
-    standard_endpoints = []
-    for single_device in devices:
-        # status, is_isolated = generate_status_fields(single_device.get('status'), single_device.get("device_id"))
-        endpoint = Common.Endpoint(
-            id=single_device.get('device_id'),
-            hostname=single_device.get('hostname'),
-            ip_address=single_device.get('local_ip'),
-            os=single_device.get('platform_name'),
-            os_version=single_device.get('os_version'),
-            status=get_status(single_device.get("device_id")),
-            is_isolated=get_isolation_status(single_device.get('status')),
-            mac_address=single_device.get('mac_address'),
-            vendor=INTEGRATION_NAME)
-        standard_endpoints.append(endpoint)
-    return standard_endpoints
+def generate_endpoint_by_contex_standard(single_device, state_data):
+    device_id = single_device.get('device_id')
+    endpoint = Common.Endpoint(
+        id=device_id,
+        hostname=single_device.get('hostname'),
+        ip_address=single_device.get('local_ip'),
+        os=single_device.get('platform_name'),
+        os_version=single_device.get('os_version'),
+        status=state_data.get(device_id),
+        is_isolated=get_isolation_status(single_device.get('status')),
+        mac_address=single_device.get('mac_address'),
+        vendor=INTEGRATION_NAME)
+    return endpoint
 
 
 def get_endpoint_command():
@@ -4109,13 +4187,20 @@ def get_endpoint_command():
     if not raw_res:
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
+    device_ids = []
+    for device in devices:
+        device_id = device.get("device_id")
+        device_ids.append(device_id)
+    state_data = get_status(device_ids)
 
     # filter hostnames that will match the exact hostnames including case-sensitive
     if hostnames := argToList(args.get('hostname')):
         lowercase_hostnames = {hostname.lower() for hostname in hostnames}
         devices = [device for device in devices if (device.get('hostname') or '').lower() in lowercase_hostnames]
 
-    standard_endpoints = generate_endpoint_by_contex_standard(devices)
+    standard_endpoints = []
+    for single_device in devices:
+        standard_endpoints.append(generate_endpoint_by_contex_standard(single_device, state_data))
 
     command_results = []
     for endpoint in standard_endpoints:
@@ -4213,10 +4298,13 @@ def resolve_detection_command():
         assigned_to_uuid = get_username_uuid(username)
 
     status = args.get('status')
+    tag = args.get('tag')
     show_in_ui = args.get('show_in_ui')
-    if not (username or assigned_to_uuid or comment or status or show_in_ui):
+    if not (username or assigned_to_uuid or comment or status or show_in_ui or tag):
         raise DemistoException("Please provide at least one argument to resolve the detection with.")
-    raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment)
+    if LEGACY_VERSION and tag:
+        raise DemistoException("tag argument is only relevant when running with API V3.")
+    raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag)
     args.pop('ids')
     hr = f"Detection {str(ids)[1:-1]} updated\n"
     hr += 'With the following values:\n'
@@ -4870,6 +4958,10 @@ def validate_response(raw_res):
     return 'resources' in raw_res
 
 
+def run_indicator_device_id_request(params):
+    return http_request('GET', '/indicators/queries/devices/v1', params=params, status_code=404)
+
+
 def get_indicator_device_id():
     args = demisto.args()
     ioc_type = args.get('type')
@@ -4878,7 +4970,7 @@ def get_indicator_device_id():
         type=ioc_type,
         value=ioc_value
     )
-    raw_res = http_request('GET', '/indicators/queries/devices/v1', params=params, status_code=404)
+    raw_res = run_indicator_device_id_request(params=params)
     errors = raw_res.get('errors', [])
     for error in errors:
         if error.get('code') == 404:
@@ -5457,12 +5549,13 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
     detection_res = get_detections_by_behaviors(behaviors_id).get('resources', {})
     outputs = []
 
+    # detection_ids are under the alert_ids key in the new (raptor) API, see XSUP-41622
+    detection_ids_key = 'detection_ids' if LEGACY_VERSION else 'alert_ids'
     for detection in detection_res:
         outputs.append({
             'incident_id': detection.get('incident_id'),
             'behavior_id': detection.get('behavior_id'),
-            'detection_ids': detection.get('detection_ids'),
-
+            'detection_ids': detection.get(detection_ids_key),
         })
     return CommandResults(outputs_prefix='CrowdStrike.IncidentDetection',
                           outputs=outputs,
@@ -5914,8 +6007,18 @@ def list_quarantined_file_command(args: dict) -> CommandResults:
         )
 
     files = list_quarantined_files(ids).get('resources')
-    human_readable = tableToMarkdown('CrowdStrike Falcon Quarantined File', files, is_auto_json_transform=True,
-                                     headerTransform=underscoreToCamelCase, sort_headers=False, removeNull=True)
+    if isinstance(files, list):
+        for file in files:
+            if isinstance(file, dict) and 'composite_ids' in file:
+                file['detect_ids'] = file.pop('composite_ids')
+
+    human_readable = tableToMarkdown('CrowdStrike Falcon Quarantined File',
+                                     t=files,
+                                     headers=QUARANTINE_FILES_OUTPUT_HEADERS,
+                                     is_auto_json_transform=True,
+                                     headerTransform=underscoreToCamelCase,
+                                     sort_headers=False,
+                                     removeNull=True)
 
     return CommandResults(
         outputs_prefix='CrowdStrike.QuarantinedFile',
@@ -6568,7 +6671,7 @@ def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
                     "Accept": "application/json",
                     "Content-Type": "application/json"}
     }
-    transport = RequestsHTTPTransport(**kwargs)
+    transport = RequestsHTTPTransport(**kwargs)  # type: ignore[arg-type]
     client = Client(
         transport=transport,
         fetch_schema_from_transport=True,

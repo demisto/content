@@ -1538,7 +1538,7 @@ script:
     name: akamai-list-dns-zone-recordsets
     outputs:
     - contextPath: Akamai.EdgeDns.ZoneRecordSets
-  dockerimage: demisto/auth-utils:1.0.0.112930
+  dockerimage: demisto/auth-utils:1.0.0.115527
   script: ''
   subtype: python3
   type: python

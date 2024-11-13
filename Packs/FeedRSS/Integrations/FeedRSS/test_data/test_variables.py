@@ -69,7 +69,7 @@ FEED_DATA = [({'bozo': False,
                    "reliability": "F - Reliability cannot be judged",
                    "fields": {
                        'publications': [{
-                           'timestamp': 'Fri, 18 Jun 2021 15:35:41 +0000',
+                           'timestamp': '2021-06-18T15:35:41',
                            'link': 'https://test-article.com/',
                            'source': 'test.com',
                            'title': 'Test Article, with comma'

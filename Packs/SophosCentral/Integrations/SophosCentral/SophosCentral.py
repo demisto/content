@@ -448,6 +448,7 @@ class Client(BaseClient):
         view: Optional[str],
         limit: Optional[int],
         ip_addresses: Optional[List[str]],
+        hostname_contains: Optional[str]
     ) -> dict:
         """
         List all endpoints for a tenant.
@@ -463,6 +464,8 @@ class Client(BaseClient):
             view (str): Type of view to be returned in the response.
             limit (int): Max number of endpoints to return.
             ip_addresses (list(str)): Find endpoints by IP addresses.
+            hostname_contains (str): Find endpoints where the hostname contains the given string.
+                Only the first 10 characters of the given string are matched.
 
         Returns:
             response (Response): API response from Sophos.
@@ -478,6 +481,7 @@ class Client(BaseClient):
             "view": view,
             "pageSize": limit,
             "ipAddresses": ip_addresses,
+            "hostnameContains": hostname_contains
         }
         params = remove_empty_elements(params)
         url_suffix = "endpoint/v1/endpoints"
@@ -2009,8 +2013,10 @@ def sophos_central_endpoint_list_command(client: Client, args: dict) -> CommandR
         args.get("view"),
         min(int(args.get("limit", "")), 100),
         argToList(args.get("ip_addresses")),
+        args.get("hostname_contains")
     )
     full_match_ip = argToBoolean(args.get("full_match_ip", "false"))
+    full_match_hostname = argToBoolean(args.get("full_match_hostname", "false"))
     items = results.get("items")
     table_headers = [
         "id",
@@ -2037,6 +2043,13 @@ def sophos_central_endpoint_list_command(client: Client, args: dict) -> CommandR
                 matching_ips = [ip for ip in query_ips if ip in ips]
                 if not matching_ips:
                     continue
+
+            # The Sophos API does partial string matching, which can be unwanted for hostnames.
+            if full_match_hostname and (
+                object_data.get("hostname") is None or object_data.get("hostname") != args.get("hostname_contains")
+            ):
+                continue
+
             assigned_products = item.get("assignedProducts")
             if assigned_products:
                 object_data["assignedProductCodes"] = [

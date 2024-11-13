@@ -86,8 +86,12 @@ To setup the mirroring follow these instructions:
 5. Optional: Check the **Close Mirrored XSOAR Incident** integration parameter to close the Cortex XSOAR incident when the corresponding incident is closed in *Microsoft Sentinel*.
 6. Optional: Check the **Close Mirrored Microsoft Sentinel Ticket** integration parameter to close the *Microsoft Sentinel* incident when the corresponding Cortex XSOAR incident is closed.
 
-Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
-**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and *Microsoft Sentinel*.
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.  
+
+**Important Notes:**  
+
+- To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and *Microsoft Sentinel*.
+- If the **The minimum severity of incidents to fetch** integration parameter is set to a value other than `None`, incidents with a severity lower than the specified value will not be mirrored, even if their severity is changed in *Microsoft Sentinel* to a higher severity.
 
 
 ## Commands

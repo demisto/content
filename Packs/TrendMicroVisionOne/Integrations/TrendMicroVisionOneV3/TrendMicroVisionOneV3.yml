@@ -378,6 +378,16 @@ script:
       name: top
     - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields. e.g. select="dpt,dst,endpointHostName".'
       name: select
+    - description: 'Do you want to fetch all matching records or only records matching the top value.'
+      name: fetch_all
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      default: false
+    - description: 'Max results to be fetched by call.'
+      name: fetch_max_count
+      defaultValue: 5000
     description: Displays search results from the Endpoint Activity Data source that match the parameters provided.
     name: trendmicro-visionone-get-endpoint-activity-data
     outputs:
@@ -552,6 +562,16 @@ script:
       name: top
     - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields. e.g. select="mailMsgSubject,mailFromAddresses,mailToAddresses".'
       name: select
+    - description: 'Do you want to fetch all matching records or only records matching the top value.'
+      name: fetch_all
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      default: false
+    - description: 'Max results to be fetched by call.'
+      name: fetch_max_count
+      defaultValue: 5000
     description: Displays search results from the Email Activity Data source that match the parameters provided.
     name: trendmicro-visionone-get-email-activity-data
     outputs:
@@ -895,7 +915,7 @@ script:
     - description: URL pointing to the location of the file to be submitted. e.g. file_url="https://someurl.com/test.txt".
       name: file_url
       required: true
-    - description: Name of the file (including extension) to be analyzed. e.g. file_name="some-file.txt".
+    - description: Name of the file (including extension) to be analyzed. e.g. filename="some-file.txt".
       name: file_name
       required: true
     - description: The Base64 encoded password for decrypting the submitted document sample. e.g. document_password="dGVzdA==".

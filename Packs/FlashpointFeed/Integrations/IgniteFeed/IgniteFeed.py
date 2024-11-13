@@ -104,7 +104,7 @@ class Client(BaseClient):
 
         super().__init__(base_url=self.url, headers=self.headers, verify=self.verify, proxy=self.proxy)
 
-    def http_request(self, url_suffix: str, params: Optional[Dict[str, Any]], method: str = 'GET',
+    def http_request(self, url_suffix: str, params: Optional[dict[str, Any]], method: str = 'GET',
                      resp_type: str = 'json') -> Any:
         """
         Get http response based on url and given parameters.
@@ -300,7 +300,7 @@ def remove_space_from_args(args):
 
     :return: Argument's dictionary without spaces.
     """
-    for key in args.keys():
+    for key in args:
         if isinstance(args[key], str):
             args[key] = args[key].strip()
     return args
@@ -321,7 +321,7 @@ def check_value_of_total_records(total: Any, next_run: dict) -> None:
         next_run['total'] = total
 
 
-def validate_params(params: Dict):
+def validate_params(params: dict):
     """
     Validate the parameters.
 
@@ -419,7 +419,7 @@ def prepare_hr_for_indicators(indicators: list, platform_url: str) -> str:
     return tableToMarkdown(name='Indicator(s)', t=hr, headers=headers, removeNull=True)
 
 
-def validate_fetch_indicators_params(params: dict, last_run: Dict[str, Any]) -> Dict:
+def validate_fetch_indicators_params(params: dict, last_run: dict[str, Any]) -> dict:
     """
     Validate the parameter list for fetch indicators.
 
@@ -470,7 +470,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def fetch_indicators_command(client: Client, params: dict, last_run: Dict[str, Any], is_test: bool = False) -> Tuple[List, Dict]:
+def fetch_indicators_command(client: Client, params: dict, last_run: dict[str, Any], is_test: bool = False) -> tuple[List, dict]:
     """
     Fetch the indicators.
 
@@ -563,7 +563,7 @@ def main():
 
     try:
         validate_params(params=params)
-        headers: Dict = {
+        headers: dict = {
             'Authorization': f'Bearer {api_key}',
             'X-FP-IntegrationPlatform': INTEGRATION_PLATFORM,
             'X-FP-IntegrationPlatformVersion': get_demisto_version_as_str(),

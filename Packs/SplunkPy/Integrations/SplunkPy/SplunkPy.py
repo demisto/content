@@ -78,7 +78,7 @@ QUERY_NAME = 'query_name'
 QUERY_SEARCH = 'query_search'
 INCIDENT_CREATED = 'incident_created'
 
-DRILLDOWN_REGEX = r'([^\s\$]+)=(\$[^\$]+\$)|(\$[^\$]+\$)'
+DRILLDOWN_REGEX = r'([^\s\$]+)\s*=\s*"?(\$[^\s\$\\]+\$)"?|"?(\$[^\s\$\\]+\$)"?'
 
 ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS = {
     DRILLDOWN_ENRICHMENT: 'successful_drilldown_enrichment',
@@ -951,19 +951,6 @@ def get_notable_field_and_value(raw_field, notable_data, raw=None):
     return "", ""
 
 
-def remove_double_quotes(query: str) -> str:
-    """
-        query (str): query with double double quotes.
-
-        Return: query with no double double quotes. Example: "this is a ""test""\" -> "this is a "test""
-    """
-    # Regular expression to match two consecutive quotation marks with any character(s) in between
-    pattern = re.compile(r'""(.*?)""')
-
-    # Substitute the pattern with single quotes around the matched content
-    return pattern.sub(r'"\1"', query)
-
-
 def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
     """ Replaces all needed fields in a drilldown search query, or a search query name
     Args:
@@ -993,12 +980,6 @@ def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
             else:
                 replacement = get_fields_query_part(notable_data, prefix, [field], raw_dict)
 
-        elif field in USER_RELATED_FIELDS:
-            # User fields usually contains backslashes - to pass a literal backslash in an argument to Splunk we must escape
-            # the backslash by using the double-slash ( \\ ) string
-            replacement = replacement.replace('\\', '\\\\')
-            replacement = f""""{replacement.strip('"')}\""""
-
         end = match.start()
         searchable_search.extend((search[start:end], str(replacement)))
         start = match.end()
@@ -1006,8 +987,6 @@ def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
 
     parsed_query = ''.join(searchable_search)
 
-    # Avoiding double quotes in splunk variables that were surrounded by quotation marks in the original query (ex: '"$user|s"')
-    parsed_query = remove_double_quotes(parsed_query)
     demisto.debug(f"Parsed query is: {parsed_query}")
 
     return parsed_query
@@ -1043,6 +1022,29 @@ def get_drilldown_timeframe(notable_data, raw) -> tuple[str, str]:
     return earliest_offset, latest_offset
 
 
+def escape_invalid_chars_in_drilldown_json(drilldown_search):
+    """ Goes over the drilldown search, and replace the unescaped or invalid chars.
+
+    Args:
+        drilldown_search (str): The drilldown search.
+
+    Returns:
+        str: The escaped drilldown search.
+    """
+    # escape the " of string from the form of 'some_key="value"' which the " char are invalid in json value
+    for unescaped_val in re.findall(r'(?<==)\"[^\"]*\"', drilldown_search):
+        escaped_val = unescaped_val.replace('"', '\\"')
+        drilldown_search = drilldown_search.replace(unescaped_val, escaped_val)
+
+    # replace the new line (\n) with in the IN (...) condition with ','
+    # Splunk replace the value of some multiline fields to the value which contain \n
+    # due to the 'expandtoken' macro
+    for multiline_val in re.findall(r'(?<=in|IN)\s*\([^\)]*\n[^\)]*\)', drilldown_search):
+        csv_val = multiline_val.replace('\n', ',')
+        drilldown_search = drilldown_search.replace(multiline_val, csv_val)
+    return drilldown_search
+
+
 def parse_drilldown_searches(drilldown_searches: list) -> list[dict]:
     """ Goes over the drilldown searches list, parses each drilldown search and converts it to a python dictionary.
 
@@ -1058,6 +1060,7 @@ def parse_drilldown_searches(drilldown_searches: list) -> list[dict]:
     for drilldown_search in drilldown_searches:
         try:
             # drilldown_search may be a json list/dict represented as string
+            drilldown_search = escape_invalid_chars_in_drilldown_json(drilldown_search)
             search = json.loads(drilldown_search)
             if isinstance(search, list):
                 searches.extend(search)
@@ -1995,7 +1998,7 @@ class ResponseReaderWrapper(io.RawIOBase):
     def close(self):
         self.responseReader.close()
 
-    def read(self, n):
+    def read(self, n):  # type: ignore[override]
         return self.responseReader.read(n)
 
     def readinto(self, b):
@@ -2146,7 +2149,11 @@ def rawToDict(raw):
 
                 if '=' in key_value:
                     key_and_val = key_value.split('=', 1)
-                    result[key_and_val[0]] = key_and_val[1]
+                    if key_and_val[0] not in result.keys():
+                        result[key_and_val[0]] = key_and_val[1]
+                    else:
+                        # If there are multiple values for a key, append them.
+                        result[key_and_val[0]] = ", ".join([result[key_and_val[0]], key_and_val[1]])
 
     if REPLACE_FLAG:
         result = replace_keys(result)
@@ -2424,6 +2431,32 @@ def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
     return parsed_batch_results, batch_dbot_scores
 
 
+def raise_error_for_failed_job(job):
+    """
+    Handle the case that the search job failed due to dome reason like parsing issues etc
+    raise DemistoException in case there is a fatal error in the search job.
+    see https://docs.splunk.com/Documentation/Splunk/9.3.0/RESTTUT/RESTsearches#:~:text=the%20results%20returned.-,dispatchState,-dispatchState%20is%20one
+
+    Args:
+        job (Job): the created search job
+
+    Raises:
+        Exception: DemistoException in case there is a fatal error
+    """
+    err_msg = None
+    try:
+        if job and job['dispatchState'] == 'FAILED':
+            messages = job['messages']
+            for err_type in ['fatal', 'error']:
+                if messages.get(err_type):
+                    err_msg = ','.join(messages[err_type])
+                    break
+    except Exception:
+        pass
+    if err_msg:
+        raise DemistoException(f'Failed to run the search in Splunk: {err_msg}')
+
+
 def splunk_search_command(service: client.Service, args: dict) -> CommandResults | list[CommandResults]:
     query = build_search_query(args)
     polling = argToBoolean(args.get("polling", False))
@@ -2436,6 +2469,8 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
         search_job = service.jobs.create(query, **search_kwargs)
         job_sid = search_job["sid"]
         args['sid'] = job_sid
+        raise_error_for_failed_job(search_job)
+
     status_cmd_result: CommandResults | None = None
     if polling:
         status_cmd_result = splunk_job_status(service, args)

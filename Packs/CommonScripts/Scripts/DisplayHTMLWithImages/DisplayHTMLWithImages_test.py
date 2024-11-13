@@ -366,3 +366,48 @@ def test_content_id_none(mocker):
 
     expected = '<img src="cid:ii_wweegebl1">'
     assert expected in DisplayHTMLWithImages.return_results.call_args[0][0]['Contents']
+
+
+@pytest.mark.parametrize('is_xsoar_saas, expected_prefix', [
+    (True, '/xsoar'),
+    (False, '')
+])
+def test_xsoar_saas(mocker, is_xsoar_saas, expected_prefix):
+    """
+        Given
+        - The is_xsiam_or_xsoar_saas is True or False.
+        When
+        - Image were uploaded to the server
+        Then
+        - The image' src attribute would be replaced with the right download url (with /xsoar in case xsoar saas).
+    """
+    import DisplayHTMLWithImages
+    from DisplayHTMLWithImages import main
+
+    mocked_incident = {
+        'CustomFields': {
+            'emailhtml': '<img src="cid:ii_wweegebl1">'
+        },
+    }
+    mocked_file = {'Name': 'image_1.png', 'EntryID': '38@119'}
+
+    mocked_context = {
+        'Email': {
+            'AttachmentsData': {
+                'Content-ID': '<ii_wweegebl1>',
+                'Name': 'image_1.png'
+            }
+        },
+        'File': mocked_file
+    }
+
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'test_url'})
+    mocker.patch.object(demisto, 'incident', return_value=mocked_incident)
+    mocker.patch.object(demisto, 'context', return_value=mocked_context)
+    mocker.patch.object(DisplayHTMLWithImages, 'return_results')
+    mocker.patch.object(DisplayHTMLWithImages, 'is_xsiam_or_xsoar_saas', return_value=is_xsoar_saas)
+
+    main()
+
+    expected = f'<img src={expected_prefix}/entry/download/38@119>'
+    assert expected in DisplayHTMLWithImages.return_results.call_args[0][0]['Contents']

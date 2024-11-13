@@ -416,6 +416,8 @@ Displays search results from the Endpoint Activity Data source that match the pa
 | end | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made. e.g. end="2023-12-01T08:00:00Z". | Optional | 
 | top | Number of records displayed on a page. e.g. top=5. | Optional | 
 | select | List of fields to include in the search results. If no fields are specified, the query returns all supported fields. e.g. select="dpt,dst,endpointHostName". | Optional | 
+| fetch_max_count | Max results to be fetched by call. | Optional | 
+| fetch_all | Do you want to fetch all matching records or only records matching the top value. | Optional | 
 
 #### Context Output
 
@@ -509,6 +511,8 @@ Displays search results from the Email Activity Data source that match the param
 | end | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made. e.g. end="2023-12-01T08:00:00Z". | Optional | 
 | top | Number of records displayed on a page. e.g. top=5. | Optional | 
 | select | List of fields to include in the search results. If no fields are specified, the query returns all supported fields. e.g. select="mailMsgSubject,mailFromAddresses,mailToAddresses". | Optional | 
+| fetch_max_count | Max results to be fetched by call. | Optional | 
+| fetch_all | Do you want to fetch all matching records or only records matching the top value. | Optional | 
 
 #### Context Output
 

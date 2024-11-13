@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 import base64
 import json
 import platform
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import requests
 
@@ -17,7 +17,11 @@ STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 # pylint:disable=no-member
 requests.packages.urllib3.disable_warnings()  # type: ignore
 
-__version__ = "2.0.0"
+__version__ = "2.0.4"
+
+TIMEOUT_60 = 60
+TIMEOUT_90 = 90
+TIMEOUT_120 = 120
 
 
 class Client(BaseClient):
@@ -26,7 +30,7 @@ class Client(BaseClient):
         return self._http_request(
             method="get",
             url_suffix="info/whoami",
-            timeout=60,
+            timeout=TIMEOUT_60,
         )
 
     def _call(self, url_suffix: str, **kwargs):
@@ -49,11 +53,13 @@ class Client(BaseClient):
                 v = kwargs.pop(k)
                 json_data[k] = v
 
+        method = kwargs.get("method", "post")
+
         request_kwargs = {
-            "method": "post",
+            "method": method,
             "url_suffix": url_suffix,
             "json_data": json_data,
-            "timeout": 90,
+            "timeout": TIMEOUT_90,
             "retries": 3,
             "status_list_to_retry": STATUS_TO_RETRY,
         }
@@ -112,7 +118,7 @@ class Client(BaseClient):
         """Fetch incidents."""
         return self._call(
             url_suffix="/playbook_alert/fetch",
-            timeout=120,
+            timeout=TIMEOUT_120,
         )
 
     def search_playbook_alerts(self) -> Dict[str, Any]:
@@ -196,7 +202,7 @@ class Actions:
             if _key == "demisto_last_run":
                 demisto.setLastRun(_val)
             if _key == "incidents":
-                _transform_incidents_attachments(_val)
+                self._transform_incidents_attachments(_val)
                 demisto.incidents(_val)
 
     def playbook_alert_search_command(self) -> Optional[List[CommandResults]]:
@@ -211,35 +217,39 @@ class Actions:
         response = self.client.update_playbook_alerts()
         return self._process_result_actions(response=response)
 
+    @staticmethod
+    def _transform_incidents_attachments(incidents: list) -> None:
+        for incident in incidents:
+            attachments = []
+            incident_json = json.loads(incident.get("rawJSON", "{}"))
+            if incident_json.get("panel_evidence_summary", {}).get("screenshots"):
+                for screenshot_data in incident_json["panel_evidence_summary"][
+                    "screenshots"
+                ]:
+                    file_name = (
+                        f"{screenshot_data.get('image_id', '').replace('img:', '')}.png"
+                    )
+                    file_data = screenshot_data.get("base64", "")
+                    file = fileResult(file_name, base64.b64decode(file_data))
+                    attachment = {
+                        "description": screenshot_data.get("description"),
+                        "name": file.get("File"),
+                        "path": file.get("FileID"),
+                        "showMediaFile": True,
+                    }
+                    attachments.append(attachment)
+                incident["attachment"] = attachments
 
-def _transform_incidents_attachments(incidents: list) -> None:
-    for incident in incidents:
-        attachments = []
-        incident_json = json.loads(incident.get("rawJSON", "{}"))
-        if incident_json.get("panel_evidence_summary", {}).get("screenshots"):
-            for screenshot_data in incident_json["panel_evidence_summary"][
-                "screenshots"
-            ]:
-                file_name = (
-                    f'{screenshot_data.get("image_id", "").replace("img:", "")}.png'
-                )
-                file_data = screenshot_data.get("base64", "")
-                file = fileResult(file_name, base64.b64decode(file_data))
-                attachment = {
-                    "description": screenshot_data.get("description"),
-                    "name": file.get("File"),
-                    "path": file.get("FileID"),
-                    "showMediaFile": True,
-                }
-                attachments.append(attachment)
-            incident["attachment"] = attachments
+
+# === === === === === === === === === === === === === === ===
+# === === === === === === === MAIN === === === === === === ==
+# === === === === === === === === === === === === === === ===
 
 
-def get_client() -> Client:
+def get_client(proxies: dict) -> Client:
     demisto_params = demisto.params()
     base_url = demisto_params.get("server_url", "").rstrip("/")
     verify_ssl = not demisto_params.get("unsecure", False)
-    handle_proxy()
 
     api_token = demisto_params.get("credential", {}).get(
         "password"
@@ -248,7 +258,6 @@ def get_client() -> Client:
     if not api_token:
         return_error(message="Please provide a valid API token")
 
-    # If user has not set password properties we will get empty string but client require empty list
     headers = {
         "X-RFToken": api_token,
         "X-RF-User-Agent": (
@@ -261,6 +270,7 @@ def get_client() -> Client:
         base_url=base_url,
         verify=verify_ssl,
         headers=headers,
+        proxy=bool(proxies),
     )
 
     return client
@@ -269,16 +279,17 @@ def get_client() -> Client:
 def main() -> None:
     """Main method used to run actions."""
     try:
-        client = get_client()
+        proxies = handle_proxy()
+        client = get_client(proxies=proxies)
         actions = Actions(client)
 
         command = demisto.command()
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
-            # Returning 'ok' indicates that the integration works like it suppose to and
+            # Returning "ok" indicates that the integration works like it suppose to and
             # connection to the service is successful.
-            # Returning 'ok' will make the test result be green.
+            # Returning "ok" will make the test result be green.
             # Any other response will make the test result be red.
 
             try:
@@ -313,18 +324,22 @@ def main() -> None:
         elif command == "fetch-incidents":
             actions.fetch_incidents()
 
+        elif command == "recordedfuture-identity-playbook-alerts-search":
+            return_results(actions.playbook_alert_search_command())
+
         elif command == "recordedfuture-identity-playbook-alerts-details":
             return_results(actions.playbook_alert_details_command())
 
         elif command == "recordedfuture-identity-playbook-alerts-update":
             return_results(actions.playbook_alert_update_command())
 
-        elif command == "recordedfuture-identity-playbook-alerts-search":
-            return_results(actions.playbook_alert_search_command())
+        else:
+            return_error(message=f"Unknown command: {command}")
 
     except Exception as e:
         return_error(
-            message=f"Failed to execute {demisto.command()} command. Error: {str(e)}"
+            message=f"Failed to execute {demisto.command()} command. Error: {str(e)}",
+            error=e,
         )
 
 

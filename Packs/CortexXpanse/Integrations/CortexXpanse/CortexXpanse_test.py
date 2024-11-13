@@ -171,9 +171,16 @@ def test_get_external_ip_address_range_command(requests_mock):
     ({"azure_cloud_tags": ["Name:azure Lab"]}),
     ({"has_xdr_agent": "NO"}),
     ({"externally_detected_providers": ["Amazon Web Services"]}),
-    ({"has_bu_overrides": False}),
+    ({"has_bu_overrides": "false"}),
     ({"business_units": ["Acme"]}),
     ({"mac_address": ["00:11:22:33:44:55"]}),
+    ({"ipv6_address": "1111:2222:33333:4444:5555:6666:7777:8888"}),
+    ({"asm_id_list": ["3c176460-8735-333c-b618-8262e2fb660c"]}),
+    ({"has_active_external_services": "test"}),
+    ({"type": "IP"}),
+    ({"ip_address": "1.1.1.1"}),
+    ({"business_units_list": "test"}),
+    ({"mac_addresses": ["00:11:22:33:44:55"]})
 ])
 def test_list_asset_internet_exposure_command(requests_mock, args):
     """Tests list_asset_internet_exposure_command function.
@@ -253,7 +260,11 @@ def test_list_alerts_command(requests_mock):
     client = new_client()
     args = {
         'limit': '3',
-        'sort_by_creation_time': 'asc'
+        'sort_by_creation_time': 'asc',
+        'severity': ["critical", "high", "medium", "low"],
+        'status': ["new", "reopened", "in_progress"],
+        'business_units_list': "test",
+        'alert_id_list': ["231", "33", "34"]
     }
 
     response = list_alerts_command(client, args)
@@ -441,7 +452,11 @@ def test_list_incidents_command(requests_mock):
     client = new_client()
     args = {
         'limit': 1,
-        'status': 'new'
+        'status': 'new',
+        'description': "'Google WebFramework Angular at suppliers.expander.expanse.co:443' detected by ASM on 3 hosts",
+        'starred': "false",
+        'cloud_management_status': "active",
+        'incident_id_list': ["5471"]
     }
 
     response = list_incidents_command(client, args)
@@ -806,20 +821,20 @@ def test_fetch_incidents(requests_mock):
 
     client = new_client()
 
-    last_run = {'last_fetch': 1659452708759}
-    next_run, incidents = fetch_incidents(
+    last_run = {'found_incident_ids': {}, 'limit': 20, 'next_page_token': None, 'time': '2022-08-02T21:25:08Z'}
+    incidents = fetch_incidents(
         client=client,
         max_fetch=2,
         last_run=last_run,
         first_fetch_time=1658452708759,
         severity=None,
         status=None,
-        tags=None)
+        tags=None,
+        look_back=0)
 
     assert len(incidents) == 3
     assert incidents[0]['name'] == "Networking Infrastructure"
     assert json.loads(incidents[0]['rawJSON']).pop('local_insert_ts')
-    assert next_run == {'last_fetch': 1659455267908}
 
 
 def test_list_external_websites_command(requests_mock):
@@ -851,3 +866,58 @@ def test_list_external_websites_command(requests_mock):
 
     assert response.outputs == EXTERNAL_WEBSITES_RESULTS.get('ExternalWebsite', {}).get('websites')
     assert response.outputs_prefix == 'ASM.ExternalWebsite'
+
+
+@pytest.mark.parametrize('command_name, method_name', [('asm-list-alerts', 'list_alerts_command')])
+def test_main_parameters(command_name, method_name, mocker):
+    from CortexXpanse import main
+    import demistomock as demisto
+
+    params = {
+        'first_fetch': '3 days',
+        'severity': 'high',
+        'status': 'active',
+        'tags': ['tag1', 'tag2'],
+        'look_back': '5',
+        'max_fetch': '10',
+        'credentials': {
+            'password': 'api_key',
+            'identifier': 'auth_id'
+        },
+        'proxy': False,
+        'insecure': False,
+        'url': 'https://example.com'
+    }
+    mocker.patch.object(demisto, 'command', return_value=command_name)
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'args', return_value={})
+    env_method_mock = mocker.patch(f'CortexXpanse.{method_name}', return_value='OK')
+    main()
+    assert env_method_mock.called
+    assert env_method_mock.return_value == 'OK'
+
+
+def test_reset_last_run_command_success(mocker):
+    import demistomock as demisto
+    from CortexXpanse import reset_last_run_command
+    mock_setLastRun = mocker.patch.object(demisto, 'setLastRun')
+
+    result = reset_last_run_command()
+
+    mock_setLastRun.assert_called_once_with([])
+    assert result == 'fetch-incidents was reset successfully.'
+
+
+def test_reset_last_run_command_failure(mocker):
+    import demistomock as demisto
+    from CommonServerPython import DemistoException
+    from CortexXpanse import reset_last_run_command
+
+    mocker.patch.object(demisto, 'setLastRun', side_effect=DemistoException('Test error'))
+
+    with pytest.raises(DemistoException, match='Error: fetch-incidents was not reset. Reason: Test error'):
+        reset_last_run_command()
+
+
+if __name__ == "__main__":
+    pytest.main()

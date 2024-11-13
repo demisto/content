@@ -5,7 +5,6 @@ from json.decoder import JSONDecodeError
 
 import urllib3
 import traceback
-from typing import Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -17,7 +16,7 @@ SOCRADAR_API_ENDPOINT = 'https://platform.socradar.com/api'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # XSOAR default in ISO8601 format
 SOCRADAR_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 MAX_INDICATOR_FETCH_NUMBER = 1000
-MESSAGES: Dict[str, str] = {
+MESSAGES: dict[str, str] = {
     'BAD_REQUEST_ERROR': 'An error occurred while fetching the data.',
     'AUTHORIZATION_ERROR': 'Authorization Error: make sure API Key is correctly set.',
     'RATE_LIMIT_EXCEED_ERROR': 'Rate limit has been exceeded. Please make sure your your API key\'s rate limit is adequate.',
@@ -54,7 +53,7 @@ def parse_int_or_raise(str_to_parse: Any, error_msg=None) -> int:
     return res
 
 
-def build_entry_context(indicators: Union[Dict, List]) -> List[Dict]:
+def build_entry_context(indicators: Union[dict, List]) -> List[dict]:
     """Formatting indicators from SOCRadar Threat Feed/IOC API to Demisto Context
 
     :type indicators: ``Union[Dict, List]``
@@ -79,16 +78,15 @@ def build_entry_context(indicators: Union[Dict, List]) -> List[Dict]:
             'Seen Count': indicator_dict['fields']['extra_info'].get('seen_count', 1),
         }
 
-        if indicator_type == FeedIndicatorType.IP:
-            if indicator_dict['fields']['extra_info'].get('geo_location', []):
-                geo_location_dict = indicator_dict['fields']['extra_info']['geo_location']
-                asn_code = geo_location_dict.get('AsnCode', '')
-                asn_description = geo_location_dict.get('AsnName', '')
-                asn = f"[{asn_code}] {asn_description}"
-                geo_location_dict['ASN'] = asn
-                geo_location_dict = {key: value for key, value in geo_location_dict.items() if key.lower()
-                                     not in ('ip', 'asncode', 'asnname')}
-                indicator_context_dict['Geo Location'] = geo_location_dict
+        if indicator_type == FeedIndicatorType.IP and indicator_dict['fields']['extra_info'].get('geo_location', []):
+            geo_location_dict = indicator_dict['fields']['extra_info']['geo_location']
+            asn_code = geo_location_dict.get('AsnCode', '')
+            asn_description = geo_location_dict.get('AsnName', '')
+            asn = f"[{asn_code}] {asn_description}"
+            geo_location_dict['ASN'] = asn
+            geo_location_dict = {key: value for key, value in geo_location_dict.items() if key.lower()
+                                 not in ('ip', 'asncode', 'asnname')}
+            indicator_context_dict['Geo Location'] = geo_location_dict
 
         return_context.append(indicator_context_dict)
     return return_context
@@ -292,7 +290,7 @@ class Client(BaseClient):
             429: MESSAGES['RATE_LIMIT_EXCEED_ERROR']
         }
 
-        if response.status_code in status_code_messages.keys():
+        if response.status_code in status_code_messages:
             demisto.debug(f'Response Code: {response.status_code}, Reason: {status_code_messages[response.status_code]}')
             raise DemistoException(status_code_messages[response.status_code])
         else:
@@ -321,7 +319,7 @@ def test_module(client: Client, collections_to_fetch: List) -> str:
     return 'ok'
 
 
-def get_indicators_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def get_indicators_command(client: Client, args: dict[str, str]) -> CommandResults:
     """Retrieves indicators from the feed to the war-room.
 
     :type client: ``Client``
@@ -354,7 +352,7 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> CommandResul
     return command_results
 
 
-def fetch_indicators(client: Client, collections_to_fetch: List, limit=None, is_check_last_fetch=True) -> List[Dict]:
+def fetch_indicators(client: Client, collections_to_fetch: List, limit=None, is_check_last_fetch=True) -> List[dict]:
     """Retrieves indicators from the feed to the war-room.
 
     :type client: ``Client``

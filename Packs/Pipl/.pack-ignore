@@ -6,3 +6,7 @@ ignore=IM111
 
 [known_words]
 pipl
+
+# GR103 is temporary, see CIAC-11705
+[file:playbook-Pipl_Test.yml]
+ignore=GR103

@@ -1,44 +1,108 @@
 {
     "jamf_protect_raw": {
         "source_log_type": {
-        "type": "string",
-        "is_array": false
-      },
+            "type": "string",
+            "is_array": false
+        },
         "op": {
-        "type": "string",
-        "is_array": false
-      },
+            "type": "string",
+            "is_array": false
+        },
         "ips": {
-        "type": "string",
-        "is_array": false
-      },
+            "type": "string",
+            "is_array": false
+        },
         "resourceId": {
-        "type": "string",
-        "is_array": false
-      },
+            "type": "string",
+            "is_array": false
+        },
         "args": {
-        "type": "string",
-        "is_array": false
-      },
+            "type": "string",
+            "is_array": false
+        },
         "user": {
-        "type": "string",
-        "is_array": false
-      },
+            "type": "string",
+            "is_array": false
+        },
         "error": {
-        "type": "string",
-        "is_array": false
-      },
+            "type": "string",
+            "is_array": false
+        },
         "json": {
-        "type": "string",
-        "is_array": false
-      },
+            "type": "string",
+            "is_array": false
+        },
         "severity": {
-        "type": "string",
-        "is_array": false
-      },
+            "type": "string",
+            "is_array": false
+        },
         "computer": {
-        "type": "string",
-        "is_array": false
-      }
+            "type": "string",
+            "is_array": false
+        },
+        "checkin": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "created": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "hostName": {
+            "type": "string",
+            "is_array": false
+        },
+        "memorySize": {
+            "type": "string",
+            "is_array": false
+        },
+        "modelName": {
+            "type": "string",
+            "is_array": false
+        },
+        "osString": {
+            "type": "string",
+            "is_array": false
+        },
+        "serial": {
+            "type": "string",
+            "is_array": false
+        },
+        "uuid": {
+            "type": "string",
+            "is_array": false
+        },
+        "version": {
+            "type": "string",
+            "is_array": false
+        },
+        "signaturesVersion": {
+            "type": "string",
+            "is_array": false
+        },
+        "plan": {
+            "type": "string",
+            "is_array": false
+        },
+        "insightsStatsFail": {
+            "type": "string",
+            "is_array": false
+        },
+        "insightsStatsPass": {
+            "type": "string",
+            "is_array": false
+        },
+        "insightsStatsUnknown": {
+            "type": "string",
+            "is_array": false
+        },
+        "scorecard": {
+            "type": "string",
+            "is_array": false
+        },
+        "lastConnectionIp": {
+            "type": "string",
+            "is_array": false
+        }
     }
 }

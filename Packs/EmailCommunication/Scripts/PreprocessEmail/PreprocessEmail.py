@@ -53,7 +53,7 @@ def remove_html_conversation_history(email_html):
     return email_html
 
 
-def create_email_html(email_html='', entry_id_list=None):
+def create_email_html(email_html='', entry_id_list=[]):
     """Modify the email's html body to use entry IDs instead of CIDs and remove the original message body if exists.
     Args:
         email_html (str): The attachments of the email.
@@ -95,14 +95,21 @@ def get_entry_id_list(attachments, files, email_html):
     matches = re.findall(r'src="cid:([^"]+)"', email_html) or []
     entry_id_list = []
     files = [files] if not isinstance(files, list) else files
+    legacy_name = not any('-attachmentName-' in attachment.get('name') for attachment in attachments)
     for attachment in attachments:
         attachment_name = attachment.get('name', '')
-        if '-attachmentName-' in attachment_name:
-            identifier_id = attachment_name.split('-attachmentName-', 1)[0]
+        if not legacy_name:
+            if '-attachmentName-' in attachment_name:
+                identifier_id = attachment_name.split('-attachmentName-', 1)[0]
+                for file in files:
+                    file_name = file.get('Name')
+                    if attachment_name == file_name and identifier_id in matches:
+                        entry_id_list.append((attachment_name, file.get('EntryID')))
+        else:
             for file in files:
-                file_name = file.get('Name')
-                if attachment_name == file_name and identifier_id in matches:
+                if attachment_name == file.get('Name') and attachment.get('description', '') != FileAttachmentType.ATTACHED:
                     entry_id_list.append((attachment_name, file.get('EntryID')))
+
     return entry_id_list
 
 
@@ -221,51 +228,20 @@ def get_attachments_using_instance(email_related_incident, labels, email_to, ide
     if integration_name in ['EWS v2', 'EWSO365']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'ews-get-attachment', 'incidents': email_related_incident,
-                                'arguments': {'item-id': str(message_id),
-                                              'identifiers-filter': identifier_ids,
-                                              'using': instance_name}})
+                                'arguments': {'item-id': str(message_id), 'using': instance_name}})
 
     elif integration_name in ['Gmail', 'Gmail Single User']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'gmail-get-attachments', 'incidents': email_related_incident,
-                                'arguments': {'user-id': 'me', 'message-id': str(message_id),
-                                              'identifiers-filter': identifier_ids,
-                                              'using': instance_name}})
+                                'arguments': {'user-id': 'me', 'message-id': str(message_id), 'using': instance_name}})
 
     elif integration_name in ['MicrosoftGraphMail', 'Microsoft Graph Mail Single User']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'msgraph-mail-get-attachment', 'incidents': email_related_incident,
-                                'arguments': {'user_id': email_to, 'message_id': str(message_id),
-                                              'identifiers_filter': identifier_ids, 'using': instance_name}})
+                                'arguments': {'user_id': email_to, 'message_id': str(message_id), 'using': instance_name}})
 
     else:
         demisto.debug('Attachments could only be retrieved from EWS v2 or Gmail')
-
-
-def find_attachments_to_download(attachments, email_related_incident):
-    """ Filter only new attachment and their identifier.
-
-    Args:
-        attachments (Attachment): All attachments from the current thread mail
-        email_related_incident (str): email related incident to retrieve previous files
-        labels : labels to find the integration name
-    """
-    if attachments:
-        new_attachment_identifiers_list = ["dummyFileIdentifier"]
-        new_attachments = []
-        previous_files = get_incident_related_files(email_related_incident)
-        previous_files = [previous_files] if not isinstance(previous_files, list) else previous_files
-        previous_file_names = [file.get("Name") for file in previous_files]
-        for attachment in attachments:
-            attachment_name = attachment.get('name', '')
-            if attachment_name not in previous_file_names:
-                if new_attachment_identifiers_list == ["dummyFileIdentifier"]:
-                    new_attachment_identifiers_list = []
-                identifier_id = attachment.get('name', '').split('-attachmentName-', 1)[0]
-                new_attachment_identifiers_list.append(identifier_id)
-                new_attachments.append(attachment)
-        return ",".join(new_attachment_identifiers_list), new_attachments
-    return "", []
 
 
 def get_incident_related_files(incident_id):
@@ -455,11 +431,7 @@ def main():
 
         email_html = remove_html_conversation_history(email_html)
 
-        # Get attachments IDs for new attacments
-        attachment_identifiers_array, attachments = find_attachments_to_download(attachments,
-                                                                                 email_related_incident
-                                                                                 )
-        get_attachments_using_instance(email_related_incident, incident.get('labels'), email_to, attachment_identifiers_array)
+        get_attachments_using_instance(email_related_incident, incident.get('labels'), email_to)
 
         # Adding a 5 seconds sleep in order to wait for all the attachments to get uploaded to the server.
         time.sleep(5)

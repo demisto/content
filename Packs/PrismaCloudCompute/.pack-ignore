@@ -85,6 +85,24 @@ ignore=PB105
 [file:1_7_0.md]
 ignore=RN115
 
+[file:layoutscontainer-Prisma_Cloud_Compute_Audit_Layout_v3_XSIAM.json]
+ignore=LO107
+
+[file:layoutscontainer-Prisma_Cloud_Compute_Compliance_v2_XSIAM.json]
+ignore=LO107
+
+[file:incidenttype-Prisma_Cloud_Compute_Audit.json]
+ignore=GR107
+
+[file:incidenttype-Prisma_Cloud_Compute_Compliance.json]
+ignore=GR107
+
+[file:incidenttype-incidenttype-Prisma_Cloud_Compute_Audit_v2.jso]
+ignore=GR107
+
+[file:incidenttype-Prisma_Cloud_Compute_Audit_v2.json]
+ignore=GR107
+
 [known_words]
 resourceType
 resourceID
