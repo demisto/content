@@ -119,7 +119,7 @@
 <h5>Human Readable Output</h5>
 <p>Okta user deactivated</p>
 <h5>War Room Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/43458368-b70ff2a4-94d2-11e8-91b3-dd8467e3e076.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/35098543/43458368-b70ff2a4-94d2-11e8-91b3-dd8467e3e076.png" alt="image"></a></p>
+<p><a href="../../doc_files/43458368-b70ff2a4-94d2-11e8-91b3-dd8467e3e076.png" target="_blank" rel="noopener"><img src="../../doc_files/43458368-b70ff2a4-94d2-11e8-91b3-dd8467e3e076.png" alt="image"></a></p>
 <h3 id="h_9034513072641533631376432">3. Activate a user</h3>
 <hr>
 <p>Activate a specified user.</p>
@@ -147,7 +147,7 @@
 <h5>Command Example</h5>
 <pre>  !okta-activate-user username=test@this.com</pre>
 <h5>War Room  Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/43458391-cbbeda8a-94d2-11e8-99cd-7913ec999799.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/35098543/43458391-cbbeda8a-94d2-11e8-99cd-7913ec999799.png" alt="image"></a></p>
+<p><a href="../../doc_files/43458391-cbbeda8a-94d2-11e8-99cd-7913ec999799.png" target="_blank" rel="noopener"><img src="../../doc_files/43458391-cbbeda8a-94d2-11e8-99cd-7913ec999799.png" alt="image"></a></p>
 <h3> </h3>
 <h3 id="h_500186996231535524634082">4. Suspend a user</h3>
 <hr>
@@ -177,7 +177,7 @@
 <h5>Command Example</h5>
 <pre>  !okta-suspend-user username="test@this.com"</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/44389432-8189b180-a533-11e8-8984-b29dcd5851e5.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/44389432-8189b180-a533-11e8-8984-b29dcd5851e5.png" alt="image"></a></p>
+<p><a href="../../doc_files/44389432-8189b180-a533-11e8-8984-b29dcd5851e5.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/44389432-8189b180-a533-11e8-8984-b29dcd5851e5.png" alt="image"></a></p>
 <h3 id="h_8319773441521535524643764">5. Reactivate a suspended user</h3>
 <hr>
 <p>Returns a user to ACTIVE status. This operation can only be performed on users that have a SUSPENDED status.</p>
@@ -206,7 +206,7 @@
 <h5>Command Example</h5>
 <pre>  !okta-unsuspend-user username="test@this.com"</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/44389475-a0884380-a533-11e8-8c0f-365e1b9bc723.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/44389475-a0884380-a533-11e8-8c0f-365e1b9bc723.png" alt="image"></a></p>
+<p><a href="../../doc_files/44389475-a0884380-a533-11e8-8c0f-365e1b9bc723.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/44389475-a0884380-a533-11e8-8c0f-365e1b9bc723.png" alt="image"></a></p>
 <h3 id="h_45552536351544085822883">6. Get enrolled factors for a user</h3>
 <hr>
 <p>Returns all the enrolled factors for the specified user.</p>
@@ -313,7 +313,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/49521506-3e6b0880-f8ae-11e8-9f2a-37ec8d49d5b0.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49521506-3e6b0880-f8ae-11e8-9f2a-37ec8d49d5b0.png" alt="image"></a></p>
+<p><a href="../../doc_files/49521506-3e6b0880-f8ae-11e8-9f2a-37ec8d49d5b0.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49521506-3e6b0880-f8ae-11e8-9f2a-37ec8d49d5b0.png" alt="image"></a></p>
 <h3 id="h_5710465581891544085830891">7. Enroll and verify a push factor for a user</h3>
 <hr>
 <p>Enrolls and verifies a push factor for a specified user.</p>
@@ -376,7 +376,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/49521733-c2bd8b80-f8ae-11e8-878f-e10e60a951ac.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49521733-c2bd8b80-f8ae-11e8-878f-e10e60a951ac.png" alt="image"></a></p>
+<p><a href="../../doc_files/49521733-c2bd8b80-f8ae-11e8-878f-e10e60a951ac.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49521733-c2bd8b80-f8ae-11e8-878f-e10e60a951ac.png" alt="image"></a></p>
 <h3 id="h_2329685633421544085836123">8. Remove a factor from a user</h3>
 <hr>
 <p>Removes an existing factor for the specified user, allowing the user to enroll a new factor.</p>
@@ -415,7 +415,7 @@
 <h5>Command Example</h5>
 <pre>!okta-reset-factor factorId=osti2xdcf0FwcR9x80h7 userId=00ugo6k55kHeoJMYC0h7</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/49521874-00221900-f8af-11e8-8ab8-5c50575a372c.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49521874-00221900-f8af-11e8-8ab8-5c50575a372c.png" alt="image"></a></p>
+<p><a href="../../doc_files/49521874-00221900-f8af-11e8-8ab8-5c50575a372c.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49521874-00221900-f8af-11e8-8ab8-5c50575a372c.png" alt="image"></a></p>
 <h3 id="h_8088751833921533631384317">9. Get user groups associated with a specified user</h3>
 <hr>
 <p>Returns all user groups associated with a specified user.</p>
@@ -545,7 +545,7 @@
 }
 </pre>
 <h5>War Room Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/43457688-4e6ba010-94d0-11e8-9697-89a0edda4ba3.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/35098543/43457688-4e6ba010-94d0-11e8-9697-89a0edda4ba3.png" alt="image"></a></p>
+<p><a href="../../doc_files/43457688-4e6ba010-94d0-11e8-9697-89a0edda4ba3.png" target="_blank" rel="noopener"><img src="../../doc_files/43457688-4e6ba010-94d0-11e8-9697-89a0edda4ba3.png" alt="image"></a></p>
 <h3 id="h_7055088315201533631402532">10. Create a user without a recovery question</h3>
 <hr>
 <p>Creates a user without a recovery question-and-answer requirement. </p>
@@ -670,7 +670,7 @@
 }
 </pre>
 <h5>War Room Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/43457838-c2f59d64-94d0-11e8-99d5-743216e3cf57.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/35098543/43457838-c2f59d64-94d0-11e8-99d5-743216e3cf57.png" alt="image" width="751" height="278"></a></p>
+<p><a href="../../doc_files/43457838-c2f59d64-94d0-11e8-99d5-743216e3cf57.png" target="_blank" rel="noopener"><img src="../../doc_files/43457838-c2f59d64-94d0-11e8-99d5-743216e3cf57.png" alt="image" width="751" height="278"></a></p>
 <h3 id="h_9057374457721533631441455">12. Get a specified user</h3>
 <hr>
 <p>Fetches information for a specified user. You must enter one or more parameters for the command to run.</p>
@@ -759,7 +759,7 @@
 }
 </pre>
 <h5>War Room Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/43460338-02e11d74-94d9-11e8-86d5-058fa1e15651.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/35098543/43460338-02e11d74-94d9-11e8-86d5-058fa1e15651.png" alt="image"></a></p>
+<p><a href="../../doc_files/43460338-02e11d74-94d9-11e8-86d5-058fa1e15651.png" target="_blank" rel="noopener"><img src="../../doc_files/43460338-02e11d74-94d9-11e8-86d5-058fa1e15651.png" alt="image"></a></p>
 <h3 id="h_4036981438971533631452798">13. Create a new user</h3>
 <hr>
 <p>Creates a new user with the option to set a password, and recovery question and answer. This flow is common when developing a custom user registration experience.</p>
@@ -1041,7 +1041,7 @@
 }
 </pre>
 <h5>War Room Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/43460466-632e38c4-94d9-11e8-9f2a-2187b3076b18.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/35098543/43460466-632e38c4-94d9-11e8-9f2a-2187b3076b18.png" alt="image"></a></p>
+<p><a href="../../doc_files/43460466-632e38c4-94d9-11e8-9f2a-2187b3076b18.png" target="_blank" rel="noopener"><img src="../../doc_files/43460466-632e38c4-94d9-11e8-9f2a-2187b3076b18.png" alt="image"></a></p>
 <h3 id="h_45461698610211533631484056">14. Update user details</h3>
 <hr>
 <p>Updates account details for a specified user. The only required parameter is <em>username.</em></p>
@@ -1256,7 +1256,7 @@
 <h5>Command Example</h5>
 <p><code>!okta-update-user username=test@that.com displayName=alsotest</code></p>
 <h5>War Room Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/43460554-9fa5d1fe-94d9-11e8-8769-eddc01050544.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/35098543/43460554-9fa5d1fe-94d9-11e8-8769-eddc01050544.png" alt="image"></a></p>
+<p><a href="../../doc_files/43460554-9fa5d1fe-94d9-11e8-8769-eddc01050544.png" target="_blank" rel="noopener"><img src="../../doc_files/43460554-9fa5d1fe-94d9-11e8-8769-eddc01050544.png" alt="image"></a></p>
 <h3 id="h_66994856011431533631497329">15. Get failed logins</h3>
 <hr>
 <p>Returns event details of Okta issued sessions for user authentication for user failed logins.</p>
@@ -1599,7 +1599,7 @@
 }
 </pre>
 <h5>War Room Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/43462076-ccb0ee46-94dd-11e8-8bac-9a54b5315c9a.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/35098543/43462076-ccb0ee46-94dd-11e8-8bac-9a54b5315c9a.png" alt="image"></a></p>
+<p><a href="../../doc_files/43462076-ccb0ee46-94dd-11e8-8bac-9a54b5315c9a.png" target="_blank" rel="noopener"><img src="../../doc_files/43462076-ccb0ee46-94dd-11e8-8bac-9a54b5315c9a.png" alt="image"></a></p>
 <h3 id="h_70861071012651533631513724">16. Get information about a user that was added to a group</h3>
 <hr>
 <p>Returns event details for when a user is added to a group.</p>
@@ -1956,7 +1956,7 @@
 }
 </pre>
 <h5>War Room Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/43461863-3629ab34-94dd-11e8-8959-58bafde323ef.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/35098543/43461863-3629ab34-94dd-11e8-8959-58bafde323ef.png" alt="image"></a></p>
+<p><a href="../../doc_files/43461863-3629ab34-94dd-11e8-8959-58bafde323ef.png" target="_blank" rel="noopener"><img src="../../doc_files/43461863-3629ab34-94dd-11e8-8959-58bafde323ef.png" alt="image"></a></p>
 <h3 id="h_23395984213861533631524953">17. Get information about a user that was assigned to an application</h3>
 <hr>
 <p>Returns event details for when a user is assigned to an application.</p>
@@ -2320,7 +2320,7 @@
 }
 </pre>
 <h5>War Room Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/43462420-baffa5ec-94de-11e8-853f-bf02b25c9690.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/35098543/43462420-baffa5ec-94de-11e8-853f-bf02b25c9690.png" alt="image" width="750" height="523"></a></p>
+<p><a href="../../doc_files/43462420-baffa5ec-94de-11e8-853f-bf02b25c9690.png" target="_blank" rel="noopener"><img src="../../doc_files/43462420-baffa5ec-94de-11e8-853f-bf02b25c9690.png" alt="image" width="750" height="523"></a></p>
 <h3 id="h_79284513415061533631541893">18. Get information about a user who made an SSO attempt</h3>
 <hr>
 <p>Returns event details for when a user attempts to sign on using SSO to an application managed in Okta.</p>
@@ -2679,7 +2679,7 @@
 }
 </pre>
 <h5>War Room Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/43462731-91389038-94df-11e8-9fe5-39b030db28fe.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/35098543/43462731-91389038-94df-11e8-9fe5-39b030db28fe.png" alt="image"></a></p>
+<p><a href="../../doc_files/43462731-91389038-94df-11e8-9fe5-39b030db28fe.png" target="_blank" rel="noopener"><img src="../../doc_files/43462731-91389038-94df-11e8-9fe5-39b030db28fe.png" alt="image"></a></p>
 <h3 id="h_95355697816251533631551347">19. Add a user to a group</h3>
 <hr>
 <p>Adds a user to a group with the <em>OKTA_GROUP</em> type.</p>
@@ -2723,7 +2723,7 @@
 <h5>Command Example</h5>
 <p><code>!okta-add-to-group username=test@this.com groupName=test1</code></p>
 <h5>War Room Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/43463112-8652d6dc-94e0-11e8-88a0-e53e59dc79e4.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/35098543/43463112-8652d6dc-94e0-11e8-88a0-e53e59dc79e4.png" alt="image"></a></p>
+<p><a href="../../doc_files/43463112-8652d6dc-94e0-11e8-88a0-e53e59dc79e4.png" target="_blank" rel="noopener"><img src="../../doc_files/43463112-8652d6dc-94e0-11e8-88a0-e53e59dc79e4.png" alt="image"></a></p>
 <h3 id="h_18231657617431533631561439">20 Remove a user from a group</h3>
 <hr>
 <p>Removes a user from a group with the <em>OKTA_GROUP</em> type.</p>
@@ -2768,7 +2768,7 @@
 <pre>  !okta-remove-from-group username=test@this.com groupName=test1
 </pre>
 <h5>War Room Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/43463068-64380af4-94e0-11e8-9824-b7f9f0d0ed43.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/35098543/43463068-64380af4-94e0-11e8-9824-b7f9f0d0ed43.png" alt="image"></a></p>
+<p><a href="../../doc_files/43463068-64380af4-94e0-11e8-9824-b7f9f0d0ed43.png" target="_blank" rel="noopener"><img src="../../doc_files/43463068-64380af4-94e0-11e8-9824-b7f9f0d0ed43.png" alt="image"></a></p>
 <h3 id="h_34655219818591533631581113">21. Get logs</h3>
 <hr>
 <p>Returns logs using specified filters.</p>
@@ -3142,7 +3142,7 @@
 }
 </pre>
 <h5>War Room Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/43462076-ccb0ee46-94dd-11e8-8bac-9a54b5315c9a.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/35098543/43462076-ccb0ee46-94dd-11e8-8bac-9a54b5315c9a.png" alt="image"></a></p>
+<p><a href="../../doc_files/43462076-ccb0ee46-94dd-11e8-8bac-9a54b5315c9a.png" target="_blank" rel="noopener"><img src="../../doc_files/43462076-ccb0ee46-94dd-11e8-8bac-9a54b5315c9a.png" alt="image"></a></p>
 <h3 id="h_64954543619751533631591023">22. Get a list of groups</h3>
 <hr>
 <p>Enumerates groups in your organization. A subset of groups can be returned that match a supported filter expression or query.</p>
@@ -3272,7 +3272,7 @@
 }
 </pre>
 <h5>War Room Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/43464242-3cd6e748-94e3-11e8-974e-5d27d1b0ccbf.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/35098543/43464242-3cd6e748-94e3-11e8-974e-5d27d1b0ccbf.png" alt="image"></a></p>
+<p><a href="../../doc_files/43464242-3cd6e748-94e3-11e8-974e-5d27d1b0ccbf.png" target="_blank" rel="noopener"><img src="../../doc_files/43464242-3cd6e748-94e3-11e8-974e-5d27d1b0ccbf.png" alt="image"></a></p>
 <h3 id="h_18384912020901533631604427">23. Get members of a specified group</h3>
 <hr>
 <p>Returns members of a specified group.</p>
@@ -3446,7 +3446,7 @@
 }
 </pre>
 <h5>War Room Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/43464335-8cb9d3ec-94e3-11e8-900b-8b27c7789dd6.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/35098543/43464335-8cb9d3ec-94e3-11e8-900b-8b27c7789dd6.png" alt="image"></a></p>
+<p><a href="../../doc_files/43464335-8cb9d3ec-94e3-11e8-900b-8b27c7789dd6.png" target="_blank" rel="noopener"><img src="../../doc_files/43464335-8cb9d3ec-94e3-11e8-900b-8b27c7789dd6.png" alt="image"></a></p>
 <h2>Troubleshooting</h2>
 <hr>
 <p>This is a list of probable reasons for possible errors.</p>
