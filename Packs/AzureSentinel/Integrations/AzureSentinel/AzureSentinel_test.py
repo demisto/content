@@ -2127,7 +2127,10 @@ def test_extract_classification_reason():
     """
     test_cases = [
         {
-            "delta": {"classification": "FalsePositive", "classificationReason": "UserReported"},
+            "delta": {
+                "classification": "FalsePositive",
+                "classificationReason": "UserReported",
+            },
             "data": {},
             "expected": "UserReported",
             "description": "FalsePositive with specific reason in delta",
@@ -2166,4 +2169,6 @@ def test_extract_classification_reason():
 
     for case in test_cases:
         result = extract_classification_reason(case["delta"], case["data"])
-        assert result == case["expected"], f"{case['description']}: Expected {case['expected']} but got {result}"
+        assert (
+            result == case["expected"]
+        ), f"{case['description']}: Expected {case['expected']} but got {result}"

@@ -21,7 +21,7 @@ def test_set_owner(mocker):
     from MicrosoftSentinelSetOwner import set_owner
 
     result = set_owner(context_results)
-    
+
     info_mock.assert_any_call(
         f"Assigned remote incident owner: Incident ID {expected_incident_id}, \
             Instance Name {expected_instance_name}, Owner Email {expected_owner_email}."

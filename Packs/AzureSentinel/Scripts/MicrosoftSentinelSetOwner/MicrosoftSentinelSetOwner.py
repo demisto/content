@@ -33,7 +33,7 @@ def set_owner(context_results: dict):
             message="""The specified 'incident_id' was not found.
             Please ensure you provide a valid 'incident_id' as an argument when executing the script from the War Room."""
         )
-    
+
     result = execute_command(
         "azure-sentinel-update-incident",
         {
@@ -60,4 +60,3 @@ def main():  # pragma: no cover
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-
