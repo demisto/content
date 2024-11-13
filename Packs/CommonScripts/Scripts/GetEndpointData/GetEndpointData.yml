@@ -1,21 +1,47 @@
 args:
-- description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-  name: dummy
-  required: true
-comment: '[Enter a description of the script, including what function it performs and any important information users need to know, for example required permissions.]'
+- description: List of agent IDs of the agent to retrieve.
+  name: agent_id
+  isArray: true
+- description: List of agent IDs of the agent to retrieve.
+  name: agent_id
+  isArray: true
+- description: List of agent IDs of the agent to retrieve.
+  name: agent_id
+  isArray: true
+- description: |-
+    Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
+    For multi-select provide a comma-separated list. For example: "SailPointIdentityNow,Active Directory Query v2,PingOne".
+  name: brands
+  auto: PREDEFINED
+  predefined:
+  - 'Active Directory Query v2'
+  - 'Cylance Protect v2'
+  - 'McAfee ePO v2'
+  - 'VMware Carbon Black EDR v2'
+  - 'ExtraHop v2'
+  - 'CrowdstrikeFalcon'
+  - 'Cortex XDR - IR'
+  - 'Cortex Core - IR'
+- description: Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to human readable only for the final result.
+  name: verbose
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+comment: This script gathers endpoint data from multiple integrations and returns an Endpoint entity with consolidated information to the context.
 commonfields:
-  id: GetEndpointData
+  id: get-endpoint-data
   version: -1
-name: GetEndpointData
+name: get-endpoint-data
 outputs:
 - contextPath: BaseScript.Output
   description: '[Enter a description of the data returned in this output.]'
   type: String
 script: '-'
-tags:
-- basescript
 timeout: '0'
 type: python
 subtype: python3
 dockerimage: demisto/python3:3.10.14.100715
 fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
