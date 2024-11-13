@@ -2421,7 +2421,7 @@ def parse_incident_from_item(item):  # pragma: no cover
     return incident
 
 
-def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter):
+def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip_unparsable_emails: bool = False):
     """
     Fetch incidents
     :param client: EWS Client
@@ -2454,21 +2454,32 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter):
             last_modification_time = last_modification_time.ewsformat()
 
         for item in last_emails:
-            if item.message_id:
-                current_fetch_ids.add(item.message_id)
-                incident = parse_incident_from_item(item)
-                incidents.append(incident)
+            try:
+                if item.message_id:
+                    current_fetch_ids.add(item.message_id)
+                    incident = parse_incident_from_item(item)
+                    incidents.append(incident)
 
-                if incident_filter == MODIFIED_FILTER:
-                    item_modified_time = item.last_modified_time.ewsformat()
-                    if last_modification_time is None or last_modification_time < item_modified_time:
-                        last_modification_time = item_modified_time
+                    if incident_filter == MODIFIED_FILTER:
+                        item_modified_time = item.last_modified_time.ewsformat()
+                        if last_modification_time is None or last_modification_time < item_modified_time:
+                            last_modification_time = item_modified_time
 
-                if item.id:
-                    emails_ids.append(item.id)
+                    if item.id:
+                        emails_ids.append(item.id)
 
-                if len(incidents) >= client.max_fetch:
-                    break
+                    if len(incidents) >= client.max_fetch:
+                        break
+            except (UnicodeEncodeError, UnicodeDecodeError, IndexError) as e:
+                if skip_unparsable_emails:
+                    error_msg = (
+                        "Encountered email parsing issue while fetching. "
+                        f"Skipping item with message id: {item.message_id if item.message_id else ''}"
+                    )
+                    demisto.debug(error_msg + f", Error: {str(e)}")
+                    demisto.updateModuleHealth(error_msg, is_error=False)
+                else:
+                    raise e
 
         demisto.debug(f'{APP_NAME} - ending fetch - got {len(incidents)} incidents.')
 
@@ -2657,9 +2668,11 @@ def sub_main():  # pragma: no cover
             if incident_filter not in [RECEIVED_FILTER, MODIFIED_FILTER]:  # Ensure it's one of the allowed filter values
                 incident_filter = RECEIVED_FILTER  # or if not, force it to the default, RECEIVED_FILTER
             demisto.debug(f"{incident_filter=}")
-            incidents = fetch_emails_as_incidents(client, last_run, incident_filter)
+            skip_unparsable_emails: bool = argToBoolean(params.get("skip_unparsable_emails", False))
+            incidents = fetch_emails_as_incidents(client, last_run, incident_filter, skip_unparsable_emails)
             demisto.debug(f"Saving incidents with size {sys.getsizeof(incidents)}")
             demisto.incidents(incidents)
+
         elif command == "send-mail":
             commands_res = send_email(client, **args)
             return_results(commands_res)
