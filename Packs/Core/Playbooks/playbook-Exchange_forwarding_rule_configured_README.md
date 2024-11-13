@@ -78,4 +78,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Exchange forwarding rule configured_copy](../doc_files/Exchange_forwarding_rule_configured_copy.png)
+![Exchange forwarding rule configured](../doc_files/Exchange_forwarding_rule_configured.png)
