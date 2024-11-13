@@ -1,6 +1,8 @@
-import json
 import demistomock as demisto  # noqa: F401
+import json
 import sys
+
+from datetime import datetime
 
 if sys.version_info[0] >= 3:
     try:
@@ -12,7 +14,23 @@ if sys.version_info[0] >= 3:
         class DemistoScript(DemistoWrapper):
             def getFilePath(self, id):
                 res = super(DemistoScript, self).getFilePath(id)
-                self.debug("File path of entry with ID {} is: {}".format(id, str(res)))
+                self.debug("File path of entry with ID [{}] is [{}]".format(id, json.dumps(res)))
+                return res
+
+            def executeCommand(self, command, args):
+                start_time = datetime.now()
+                self.debug("Going to execute [{}] with args: [{}]".format(command, json.dumps(args)))
+                res = super(DemistoScript, self).executeCommand(command, args)
+                duration = (datetime.now() - start_time).total_seconds()
+                if isinstance(res, list):
+                    is_error = any(entry['Type'] == 4 for entry in res)
+                elif isinstance(res, dict):
+                    is_error = res['Type'] == 4
+                else:
+                    is_error = False
+                self.debug(
+                    "Finished execution of [{}] after {} seconds, success: {}".format(duration, not is_error)
+                )
                 return res
 
         class DemistoIntegration(DemistoWrapper):
