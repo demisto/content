@@ -9,11 +9,6 @@ def util_load_json(path) -> dict:
         return json.loads(file.read())
 
 
-def util_load_file(path) -> str:
-    with open(path, encoding='utf-8') as file:
-        return file.read()
-
-
 def test_list_events_command(requests_mock) -> None:
     """
     Scenario: List events.
@@ -28,14 +23,16 @@ def test_list_events_command(requests_mock) -> None:
      - Ensure outputs key fields is correct.
     """
     from QualysFIM import Client, list_events_command
+
     mock_response = util_load_json('test_data/list_events.json')
     requests_mock.post(f'{BASE_URL}fim/v2/events/search', json=mock_response)
     requests_mock.post(f'{BASE_URL}/auth', json={})
     client = Client(base_url=BASE_URL, verify=False, proxy=False, auth=('a', 'b'))
     result = list_events_command(client, {'sort': 'most_recent'})
+
     assert result.outputs_prefix == 'QualysFIM.Event'
-    assert len(result.raw_response) == 2
     assert result.outputs_key_field == 'id'
+    assert result.raw_response == mock_response
 
 
 def test_get_event_command(requests_mock) -> None:
@@ -51,13 +48,17 @@ def test_get_event_command(requests_mock) -> None:
      - Ensure outputs key fields is correct.
     """
     from QualysFIM import Client, get_event_command
+
     mock_response = util_load_json('test_data/get_event.json')
     requests_mock.get(f'{BASE_URL}fim/v2/events/123456', json=mock_response)
     requests_mock.post(f'{BASE_URL}/auth', json={})
     client = Client(base_url=BASE_URL, verify=False, proxy=False, auth=('a', 'b'))
     result = get_event_command(client, {'event_id': '123456'})
+
     assert result.outputs_prefix == 'QualysFIM.Event'
     assert result.outputs_key_field == 'id'
+
+    assert result.raw_response == mock_response
 
 
 def test_list_incidents_command(requests_mock) -> None:
@@ -74,18 +75,22 @@ def test_list_incidents_command(requests_mock) -> None:
      - Ensure a sample value from the API matches what is generated in the context.
      - Ensure outputs key fields is correct.
     """
-
     from QualysFIM import Client, list_incidents_command
+
     mock_response = util_load_json('test_data/list_incidents.json')
     requests_mock.post(f'{BASE_URL}fim/v3/incidents/search', json=mock_response)
     requests_mock.post(f'{BASE_URL}/auth', json={})
     client = Client(base_url=BASE_URL, verify=False, proxy=False, auth=('a', 'b'))
     result = list_incidents_command(client, {'sort': 'most_recent'})
+
     assert result.outputs_prefix == 'QualysFIM.Incident'
+    assert result.outputs_key_field == 'id'
+
     assert len(result.raw_response) == 2
     assert result.outputs[0].get('id') == '75539bfc-c0e7-4bcb-b55a-48065ef89ebe'
     assert result.outputs[1].get('id') == '5a6d0462-1c2e-4e36-a13b-6264bd3c222f'
-    assert result.outputs_key_field == 'id'
+
+    assert result.raw_response == mock_response
 
 
 def test_get_incident_events_command(requests_mock) -> None:
@@ -101,17 +106,20 @@ def test_get_incident_events_command(requests_mock) -> None:
      - Ensure outputs prefix is correct.
      - Ensure outputs key fields is correct.
     """
-
     from QualysFIM import Client, list_incident_events_command
+
     mock_response = util_load_json('test_data/get_incident_events.json')
     requests_mock.post(f'{BASE_URL}fim/v2/incidents/None/events/search',
                        json=mock_response)
     requests_mock.post(f'{BASE_URL}/auth', json={})
     client = Client(base_url=BASE_URL, verify=False, proxy=False, auth=('a', 'b'))
     result = list_incident_events_command(client, {'limit': '10'})
+
     assert result.outputs_prefix == 'QualysFIM.Event'
-    assert len(result.raw_response) == 10
     assert result.outputs_key_field == 'id'
+
+    assert len(result.raw_response) == 10  # same as limit
+    assert result.raw_response == mock_response
 
 
 def test_create_incident_command(requests_mock) -> None:
@@ -127,15 +135,21 @@ def test_create_incident_command(requests_mock) -> None:
          - Ensure outputs key fields is correct.
         """
     from QualysFIM import Client, create_incident_command
-    mock_response = util_load_json('test_data/create_incident.json')
-    requests_mock.post(f'{BASE_URL}fim/v3/incidents/create', json=mock_response)
-    mock_response = util_load_json('test_data/list_incidents.json')
-    requests_mock.post(f'{BASE_URL}fim/v3/incidents/search', json=mock_response)
+
+    create_incident_mock_response = util_load_json('test_data/create_incident.json')
+    requests_mock.post(f'{BASE_URL}fim/v3/incidents/create', json=create_incident_mock_response)
+
+    search_incidents_mock_response = util_load_json('test_data/list_incidents.json')
+    requests_mock.post(f'{BASE_URL}fim/v3/incidents/search', json=search_incidents_mock_response)
     requests_mock.post(f'{BASE_URL}/auth', json={})
+
     client = Client(base_url=BASE_URL, verify=False, proxy=False, auth=('a', 'b'))
     result = create_incident_command(client, {'name': 'test'})
+
     assert result.outputs_prefix == 'QualysFIM.Incident'
     assert result.outputs_key_field == 'id'
+
+    assert result.raw_response == search_incidents_mock_response[0].get('data')  # first result from incidents search
 
 
 def test_approve_incident_command(requests_mock) -> None:
@@ -161,6 +175,7 @@ def test_approve_incident_command(requests_mock) -> None:
                                                'disposition_category': 'test'})
     assert result.outputs_prefix == 'QualysFIM.Incident'
     assert result.outputs_key_field == 'id'
+    assert result.raw_response == mock_response
 
 
 def test_list_assets_command(requests_mock) -> None:
@@ -182,9 +197,12 @@ def test_list_assets_command(requests_mock) -> None:
     requests_mock.post(f'{BASE_URL}/auth', json={})
     client = Client(base_url=BASE_URL, verify=False, proxy=False, auth=('a', 'b'))
     result = list_assets_command(client, {})
+
     assert result.outputs_prefix == 'QualysFIM.Asset'
-    assert len(result.outputs) == 2
     assert result.outputs_key_field == 'id'
+
+    assert len(result.outputs) == 2
+    assert result.raw_response == mock_response
 
 
 def test_fetch_incidents_command(requests_mock) -> None:
@@ -204,8 +222,8 @@ def test_fetch_incidents_command(requests_mock) -> None:
     requests_mock.post(f'{BASE_URL}fim/v3/incidents/search', json=mock_response)
     requests_mock.post(f'{BASE_URL}/auth', json={})
     client = Client(base_url=BASE_URL, verify=False, proxy=False, auth=('a', 'b'))
-    next_run, incidents = fetch_incidents(client=client, last_run={}, fetch_filter='',
-                                          first_fetch_time='3 days', max_fetch='2')
+    _, incidents = fetch_incidents(client=client, last_run={}, fetch_filter='',
+                                   first_fetch_time='3 days', max_fetch='2')
     raw_json = json.loads(incidents[0].get('rawJSON'))
     assert raw_json.get('id') == '75539bfc-c0e7-4bcb-b55a-48065ef89ebe'
     assert raw_json.get('createdBy').get('date') == 1613378492427
