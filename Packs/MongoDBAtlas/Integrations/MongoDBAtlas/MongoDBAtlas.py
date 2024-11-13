@@ -255,7 +255,7 @@ def get_page_from_last_run_for_alerts(client: Client, page_link: str):
         dict: The API response containing alerts data.
     """
     if page_link:
-        demisto.debug(f'Getting a response from the saved page {page_link}')
+        demisto.debug(f'Getting a response from page {page_link}')
         response = client.get_response_from_page_link(page_link)
     else:
         demisto.debug('Initialize the first page')

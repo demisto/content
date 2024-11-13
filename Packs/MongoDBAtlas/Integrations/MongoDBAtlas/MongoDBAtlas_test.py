@@ -354,3 +354,46 @@ def test_fetch_event_type_using_previous_page(mocker, fetch_limit, expected_even
         event_id = event.get("id")
         assert event_id not in seen_ids
         seen_ids.add(event_id)
+
+
+def test_get_events_first_five_pages(mocker):
+    from MongoDBAtlas import Client, MAX_NUMBER_OF_PAGES
+    # Mock `get_events_with_page_num`
+    mock_get_events_with_page_num = mocker.patch.object(
+        Client, 'get_events_with_page_num'
+    )
+
+    page1 = {"results": [{"id": i} for i in range(50)]}
+    page2 = {"results": [{"id": i} for i in range(50, 100)]}
+    page3 = {"results": [{"id": i} for i in range(100, 150)]}
+    page4 = {"results": [{"id": i} for i in range(150, 200)]}
+    page5 = {"results": [{"id": i} for i in range(200, 250)]}
+
+    client = create_client()
+
+    mock_get_events_with_page_num.side_effect = [
+        page1
+    ]
+    # Case 1: Fetch limit within one page
+    fetch_limit = 30
+    results = client.get_events_first_five_pages(fetch_limit)
+    assert len(results) == fetch_limit
+    assert results[-1]["id"] == 29
+
+    mock_get_events_with_page_num.side_effect = [
+        page1, page2, page3
+    ]
+    # Case 2: Fetch limit across multiple pages
+    fetch_limit = 120
+    results = client.get_events_first_five_pages(fetch_limit)
+    assert len(results) == fetch_limit
+    assert results[-1]["id"] == 119
+
+    mock_get_events_with_page_num.side_effect = [
+        page1, page2, page3, page4, page5
+    ]
+    # Case 3: Fetch limit exceeds total available events in five pages
+    fetch_limit = 300
+    results = client.get_events_first_five_pages(fetch_limit)
+    assert len(results) == 250
+    assert results[-1]["id"] == 249
