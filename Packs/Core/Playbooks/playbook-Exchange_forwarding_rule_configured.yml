@@ -427,6 +427,8 @@ tasks:
         simple: "22:00:00"
       end_time:
         simple: "06:00:00"
+      extend-context:
+        simple: IsOutOfWorkingHours=
       value:
         complex:
           root: Core.OriginalAlert.event
@@ -516,7 +518,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 2100
+          "y": 2120
         }
       }
     note: false
@@ -574,11 +576,16 @@ tasks:
             iscontext: true
           right:
             value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Core.OriginalAlert.raw_abioc.event.exchange_rule_name}
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 680,
+          "x": 750,
           "y": 1430
         }
       }
@@ -615,7 +622,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
+          "x": 910,
           "y": 1600
         }
       }
@@ -644,7 +651,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 2260
+          "y": 2280
         }
       }
     note: false
@@ -689,7 +696,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1240,
+          "x": 1310,
           "y": 1930
         }
       }
@@ -882,7 +889,8 @@ tasks:
               equals: {}
               lhs:
                 value:
-                  simple: BetweenHours
+                  simple: IsOutOfWorkingHours
+                iscontext: true
               lhsB: {}
               options: {}
               optionsB: {}
@@ -916,7 +924,7 @@ tasks:
     task:
       id: 627d5819-cb1e-4b21-8e88-8b6d82ae21ac
       version: -1
-      name: Evaluate evidence count
+      name: Evidence counts more than 2
       type: condition
       iscommand: false
       brand: ""
@@ -1047,6 +1055,7 @@ tasks:
       '#none#':
       - "25"
       - "30"
+      - "41"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1103,22 +1112,11 @@ tasks:
           right:
             value:
               simple: "2"
-        - operator: greaterThanOrEqual
-          left:
-            value:
-              complex:
-                root: Evidences
-                transformers:
-                - operator: count
-            iscontext: true
-          right:
-            value:
-              simple: "3"
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 210,
+          "x": 240,
           "y": 1130
         }
       }
@@ -1149,8 +1147,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 1430
+          "x": 150,
+          "y": 1440
         }
       }
     note: false
@@ -1224,8 +1222,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 1930
+          "x": 150,
+          "y": 1940
         }
       }
     note: false
@@ -1269,8 +1267,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 1590
+          "x": 150,
+          "y": 1600
         }
       }
     note: false
@@ -1294,14 +1292,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "18"
+      - "14"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -410,
-          "y": 2115
+          "y": 1975
         }
       }
     note: false
@@ -1331,8 +1329,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 1300
+          "x": 150,
+          "y": 1310
         }
       }
     note: false
@@ -1363,7 +1361,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
+          "x": 750,
           "y": 1300
         }
       }
@@ -1381,7 +1379,7 @@ tasks:
     task:
       id: 3b4840c0-990a-42d1-835b-a3bc6e18f5ad
       version: -1
-      name: Notify the user of forwarding rule removal
+      name: Check user notification requirement
       type: condition
       iscommand: false
       brand: ""
@@ -1408,7 +1406,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
+          "x": 910,
           "y": 1760
         }
       }
@@ -1453,7 +1451,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
+          "x": 910,
           "y": 1930
         }
       }
@@ -1524,27 +1522,108 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: d4c540d3-adaf-4f1b-869f-32ddd550508f
+    type: condition
+    task:
+      id: d4c540d3-adaf-4f1b-869f-32ddd550508f
+      version: -1
+      name: Evidence counts more than 3
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Evidences
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ip
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: domain
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
+                accessor: Indicator
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "15_14_#default#": 0.2,
       "15_17_yes": 0.46,
-      "25_14_#default#": 0.15,
-      "25_37_Yes": 0.61,
+      "25_14_#default#": 0.19,
+      "25_37_Yes": 0.5,
       "28_3_yes": 0.43,
       "28_6_#default#": 0.25,
       "30_14_#default#": 0.15,
       "30_36_yes": 0.4,
-      "34_14_#default#": 0.23,
+      "34_14_#default#": 0.41,
       "34_33_yes": 0.61,
       "38_14_#default#": 0.49,
       "38_39_yes": 0.42,
+      "41_14_#default#": 0.72,
       "4_5_yes": 0.38
     },
     "paper": {
       "dimensions": {
-        "height": 2635,
-        "width": 2040,
+        "height": 2655,
+        "width": 2100,
         "x": -410,
         "y": -310
       }
