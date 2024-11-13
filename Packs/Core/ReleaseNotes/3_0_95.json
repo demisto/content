@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "All playbooks and Triggers moved to Cortex Response pack. After installing the pack, please make sure that all the Triggers you added are in place."
+}
