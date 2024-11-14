@@ -888,7 +888,7 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
     last_update: str
     if mirroring_last_update:
         last_update = mirroring_last_update
-        demisto.debug("using {mirroring_last_update=} for last_update")
+        demisto.debug(f"using {mirroring_last_update=} for last_update")
     else:
         last_update = remote_args.last_update
         demisto.debug(f"using {remote_args.last_update=} for last_update")
