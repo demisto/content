@@ -1493,7 +1493,7 @@ script:
     - description: Specify the contract on which to operate or view.
       name: contract_id
       required: true
-    description: 'Lists enrollments with active certificates. Note that the rate limit for this operation is 10 requests per minute per account. '
+    description: 'Lists enrollments with active certificates. Note that the rate limit for this operation is 10 requests per minute per account.'
     name: akamai-list-cps-active-certificates
     outputs:
     - contextPath: Akamai.Cps.Active.Certificates.Enrollments
