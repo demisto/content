@@ -15,9 +15,9 @@ Triage:
 
 Early Containment:
 
-- Identify whether an agent prevention rule was triggered for the same process ID, which means the activity was blocked.
-  - **If triggered in prevent mode**: This indicates a high-confidence verdict, and the playbook proceeds with endpoint isolation.
-  - **If triggered in report mode**: This also indicates a high-confidence verdict. The playbook will notify the customer, advising an update to **prevent mode** for better protection in the future and will proceed with the investigation.
+- Identify whether an agent prevention rule was triggered for the same process ID. If so, there is high confidence that the alert is malicious.
+  - **If triggered in prevent mode**: This indicates a high-confidence verdict and the playbook proceeds with endpoint isolation.
+  - **If triggered in report mode**: This also indicates a high-confidence verdict. The playbook will notify the customer, advise an update to **prevent mode** for better protection in the future, and proceed with the investigation.
   - **If no rule is triggered**: The playbook will continue with additional checks to ensure thorough assessment.
 
 Investigation:
