@@ -5,8 +5,7 @@
     "support": "partner",
     "author": "CybelAngel",
     "marketplaces": [
-        "xsoar",
-        "marketplacev2"
+        "xsoar"
     ],
     "url": "https://cybelangel.com",
     "supportDetails": {
