@@ -1,6 +1,6 @@
 ## Feedly
 
-Use the Feedly integration to import articles as incidents from your Feedly boards and folders.
+Use the IncidentsFeedly integration to import articles as incidents from your Feedly boards and folders.
 
 **Note** You also need to setup the `FeedFeedly` integration with the same feeds, to ingest entities (intrusion sets, malware, TTPs) as indicators, and relationships between them. The `IncidentsFeedly` integration will work without it, but the incidents will be missing context.
 
