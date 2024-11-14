@@ -73,13 +73,15 @@ def mock_set_integration_context(context: dict = None) -> dict | None:
 def test_remove_integration_context_for_user(mocker):
     import CiscoWebexEventCollector
 
-    mock_integration_context = {'test_user': {'context_key': 'context_value'}}
+    mock_integration_context = {'test_user1': {'context_key': 'context_value'}, 'test_user2': {'context_key': 'context_value'}}
     mocker.patch.object(CiscoWebexEventCollector, 'get_integration_context', return_value=mock_integration_context)
     mock_context = mocker.patch('CiscoWebexEventCollector.set_integration_context', side_effect=mock_set_integration_context)
 
     assert CiscoWebexEventCollector.get_integration_context() == mock_integration_context
-    CiscoWebexEventCollector.remove_integration_context_for_user('test_user')
-    assert mock_context.call_args.args[0] == {'test_user': {}}
+    CiscoWebexEventCollector.remove_integration_context_for_user('test_user1')
+    assert mock_context.call_args.args[0] == {'test_user1': {}, 'test_user2': {'context_key': 'context_value'}}
+    CiscoWebexEventCollector.remove_integration_context_for_user('test_user2')
+    assert mock_context.call_args.args[0] == {'test_user1': {}, 'test_user2': {}}
 
 
 @freeze_time("2023-12-20 13:40:00 UTC")
@@ -174,14 +176,16 @@ def test_increase_datetime_for_next_fetch(latest_datetime_previous_fetch, expect
 """ TEST COMMAND FUNCTION """
 
 
-@pytest.mark.parametrize('client, expected_url', [
+@pytest.mark.parametrize('client, expected_url, expected_integration_context', [
     (mocked_admin_client(),
      'https://url.com/authorize?response_type=code&scope=admin_scope&client_id=1'
-     '&redirect_uri=https%3A%2F%2Fredirect.com'),
+     '&redirect_uri=https%3A%2F%2Fredirect.com',
+     {}),
     (mocked_compliance_officer_client(),
-     'https://url.com/authorize?response_type=code&scope=co_scope&client_id=1&redirect_uri=https%3A%2F%2Fredirect.com'),
+     'https://url.com/authorize?response_type=code&scope=co_scope&client_id=1&redirect_uri=https%3A%2F%2Fredirect.com',
+     {}),
 ])
-def test_oauth_start(client, expected_url):
+def test_oauth_start(mocker, client, expected_url, expected_integration_context):
     """
         Given:
             - An AdminClient and a ComplianceOfficerClient.
