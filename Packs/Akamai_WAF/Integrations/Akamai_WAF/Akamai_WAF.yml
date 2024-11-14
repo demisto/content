@@ -1542,7 +1542,7 @@ script:
     name: akamai-list-dns-zone-recordsets
     outputs:
     - contextPath: Akamai.EdgeDns.ZoneRecordSets
-      description: A collection of Edge DNS Zone's Record Sets.
+      description: A collection of Edge DNS zone's record sets.
       type: Dictionary
   dockerimage: demisto/auth-utils:1.0.0.115527
   script: ''
