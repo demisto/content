@@ -42,7 +42,6 @@ def mocked_admin_client():
         'https://redirect.com',
         'admin_scope',
         '1',
-        command='fake_command',
     )
 
 
@@ -61,7 +60,6 @@ def mocked_compliance_officer_client():
         '1',
         'https://redirect.com',
         'co_scope',
-        command='fake_command',
     )
 
 
