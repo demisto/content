@@ -385,6 +385,8 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
+      closeNotes:
+        simple: The alert has been resolved, confirmed as a True Positive
       closeReason:
         simple: Resolved - Handled by the playbook "Unsigned and unpopular process performed an injection" as True Positive
     separatecontext: false
@@ -717,6 +719,8 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
+      closeNotes:
+        simple: The alert has been resolved, confirmed as a False Positive
       closeReason:
         simple: Resolved - Handled by the playbook "Unsigned and unpopular process performed an injection" as False Positive
     separatecontext: false
