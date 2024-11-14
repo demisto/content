@@ -82,7 +82,7 @@
             ]
         }
     },
-    "xsiam": {
+    "marketplacev2": {
         "updated_corepacks_content": {
             "corePacks": [
                 "ImageOCR/1.1.33/ImageOCR.zip",
