@@ -1532,7 +1532,7 @@ script:
     name: akamai-list-dns-zones
     outputs:
     - contextPath: Akamai.EdgeDns.Zones
-      description: A collection of Edge DNS Zones.
+      description: A collection of Edge DNS zones.
       type: Dictionary
   - arguments:
     - description: The name of the zone.
