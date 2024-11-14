@@ -8,8 +8,7 @@ description: |-
   - Checks the enrichment of the file.
   - Checks the enrichment of the domain.
   - Checks the enrichment of the account.
-  - Checks if the DBotScore exist test.
-  
+  - Checks if the DBotScore exist.
 starttaskid: "0"
 tasks:
   "0":
