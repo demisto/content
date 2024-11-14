@@ -1,7 +1,7 @@
 id: Send Investigation Summary Reports
 version: -1
 name: Send Investigation Summary Reports
-description: 'This playbook iterates over closed incidents, generates a summary report for each closed incident, and emails the reports to specified users. '
+description: 'This playbook iterates over closed incidents, generates a summary report for each closed incident, and emails the reports to specified users test. '
 starttaskid: "0"
 fromversion: "5.0.0"
 marketplaces:
