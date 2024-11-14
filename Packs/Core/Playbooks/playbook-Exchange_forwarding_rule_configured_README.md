@@ -20,8 +20,8 @@ Investigation:
 
 Containment:
 
-- If at least two suspicious evidences are found, the playbook executes soft response actions, including signing the user out and deleting the forwarding email address from the user account mailbox. The user will be notified of these actions via email.
-- If more than two suspicious evidences are found and the alert severity is medium, the playbook executes both soft and hard response actions, recommending the analyst suspend the user account.
+- If at least two suspicious evidence are found, the playbook executes soft response actions, including signing the user out and deleting the forwarding email address from the user account mailbox. The user will be notified of these actions via email.
+- If more than two suspicious evidence are found and the alert severity is medium, the playbook executes both soft and hard response actions, recommending the analyst suspend the user account.
 
 Requirements: 
 
