@@ -56,19 +56,17 @@ def test_get_next_url():
     Then: Ensure the correct 'next' URL is returned if present, or empty string if no 'next' URL is found.
     """
     from MongoDBAtlas import get_next_url
-    # Test case where a "next" link is present
     links_with_next = [
-        {"rel": "prev", "href": "http://example.com/page/1"},
-        {"rel": "next", "href": "http://example.com/page/3"},
-        {"rel": "last", "href": "http://example.com/page/4"}
+        {"rel": "prev", "href": "page/1"},
+        {"rel": "next", "href": "page/3"},
+        {"rel": "last", "href": "page/4"}
     ]
-    assert get_next_url(links_with_next) == "http://example.com/page/3"
+    assert get_next_url(links_with_next) == "/page/3"
 
-    # Test case where no "next" link is present
     links_without_next = [
-        {"rel": "prev", "href": "http://example.com/page/1"},
-        {"rel": "first", "href": "http://example.com/page/1"},
-        {"rel": "last", "href": "http://example.com/page/4"}
+        {"rel": "prev", "href": "page/1"},
+        {"rel": "first", "href": "page/1"},
+        {"rel": "last", "href": "page/4"}
     ]
     assert get_next_url(links_without_next) == ""
 
@@ -80,19 +78,17 @@ def test_get_self_url():
     Then: Ensure the correct 'self' URL is returned if present, or empty string if no 'self' URL is found.
     """
     from MongoDBAtlas import get_self_url
-    # Test case where a "self" link is present
     links_with_next = [
-        {"rel": "prev", "href": "http://example.com/page/1"},
-        {"rel": "self", "href": "http://example.com/page/3"},
-        {"rel": "last", "href": "http://example.com/page/4"}
+        {"rel": "prev", "href": "page/1"},
+        {"rel": "self", "href": "page/3"},
+        {"rel": "last", "href": "page/4"}
     ]
-    assert get_self_url(links_with_next) == "http://example.com/page/3"
+    assert get_self_url(links_with_next) == "page/3"
 
-    # Test case where no "self" link is present
     links_without_next = [
-        {"rel": "prev", "href": "http://example.com/page/1"},
-        {"rel": "first", "href": "http://example.com/page/1"},
-        {"rel": "last", "href": "http://example.com/page/4"}
+        {"rel": "prev", "href": "page/1"},
+        {"rel": "first", "href": "page/1"},
+        {"rel": "last", "href": "page/4"}
     ]
     assert get_self_url(links_without_next) == ""
 
@@ -105,7 +101,6 @@ def test_add_time_field():
      otherwise using the 'created' timestamp.
     """
     from MongoDBAtlas import add_time_field
-    # Case where 'updated' time is present in the event
     event = {
         "created": "2024-10-27T12:07:17Z",
         "updated": "2024-10-27T13:07:17Z"
@@ -113,7 +108,6 @@ def test_add_time_field():
     add_time_field(event)
     assert event["_time"] == "2024-10-27T13:07:17Z"
 
-    # Case where only 'created' time is present in the event
     event = {
         "created": "2024-10-27T13:07:17Z"
     }
@@ -122,6 +116,13 @@ def test_add_time_field():
 
 
 def test_remove_alerts_by_ids():
+    """
+    Given: A list of alerts, each with an 'id', and a list of alert IDs to remove.
+    When: Calling remove_alerts_by_ids with the list of alerts and specified IDs.
+    Then: Verify that:
+      - The function returns a list of alerts with only the alerts whose IDs are not in the removal list.
+      - The output matches the expected list, confirming that only the specified alerts were removed.
+    """
     from MongoDBAtlas import remove_alerts_by_ids
     alerts = [
         {"id": 1, "name": "alert1"},
@@ -377,60 +378,69 @@ def test_fetch_event_type_using_previous_page(mocker, fetch_limit, expected_even
         seen_ids.add(event_id)
 
 
-def test_get_events_first_five_pages(mocker):
-    from MongoDBAtlas import Client
-    mock_get_events_with_page_num = mocker.patch.object(
-        Client, 'get_events_with_page_num'
-    )
 
-    page1 = {"results": [{"id": i} for i in range(50)]}
-    page2 = {"results": [{"id": i} for i in range(50, 100)]}
-    page3 = {"results": [{"id": i} for i in range(100, 150)]}
-    page4 = {"results": [{"id": i} for i in range(150, 200)]}
-    page5 = {"results": [{"id": i} for i in range(200, 250)]}
+@pytest.mark.parametrize(
+    "fetch_limit, mock_side_effect, expected_length, expected_last_id",
+    [
+        # Case 1: Fetch limit within one page
+        (30, [{"results": [{"id": i} for i in range(50)]}], 30, 29),
+        # Case 2: Fetch limit across multiple pages
+        (120, [
+            {"results": [{"id": i} for i in range(50)]},
+            {"results": [{"id": i} for i in range(50, 100)]},
+            {"results": [{"id": i} for i in range(100, 150)]}
+        ], 120, 119),
+        # Case 3: Fetch limit exceeds total available events in five pages
+        (300, [
+            {"results": [{"id": i} for i in range(50)]},
+            {"results": [{"id": i} for i in range(50, 100)]},
+            {"results": [{"id": i} for i in range(100, 150)]},
+            {"results": [{"id": i} for i in range(150, 200)]},
+            {"results": [{"id": i} for i in range(200, 250)]}
+        ], 250, 249)
+    ]
+)
+def test_get_events_first_five_pages(mocker, fetch_limit, mock_side_effect, expected_length, expected_last_id):
+    """
+    Given: A mock MongoDB Atlas client with paginated event data.
+    When: Running get_events_first_five_pages with fetch limit to test retrieval within a single page,
+     across multiple pages, and beyond available data.
+    Then: Verify that:
+      - The number of events returned matches the specified fetch limit, unless it exceeds available data.
+      - The last event ID in the results aligns with the expected ID based on the fetch limit.
+      - No duplicate events are returned.
+    """
+    from MongoDBAtlas import Client
+
+    mock_get_events_with_page_num = mocker.patch.object(Client, 'get_events_with_page_num')
+    mock_get_events_with_page_num.side_effect = mock_side_effect
 
     client = create_client()
-
-    mock_get_events_with_page_num.side_effect = [
-        page1
-    ]
-    # Case 1: Fetch limit within one page
-    fetch_limit = 30
     results = client.get_events_first_five_pages(fetch_limit)
-    assert len(results) == fetch_limit
-    assert results[-1]["id"] == 29
 
-    mock_get_events_with_page_num.side_effect = [
-        page1, page2, page3
+    assert len(results) == expected_length
+    assert results[-1]["id"] == expected_last_id
+
+
+@pytest.mark.parametrize(
+    "fetch_limit",
+    [
+        0,
+        2501
     ]
-    # Case 2: Fetch limit across multiple pages
-    fetch_limit = 120
-    results = client.get_events_first_five_pages(fetch_limit)
-    assert len(results) == fetch_limit
-    assert results[-1]["id"] == 119
-
-    mock_get_events_with_page_num.side_effect = [
-        page1, page2, page3, page4, page5
-    ]
-    # Case 3: Fetch limit exceeds total available events in five pages
-    fetch_limit = 300
-    results = client.get_events_first_five_pages(fetch_limit)
-    assert len(results) == 250
-    assert results[-1]["id"] == 249
-
-
-def test_test_module(mocker):
+)
+def test_test_module(mocker, fetch_limit):
+    """
+    Given: A MongoDB Atlas client and invalid fetch limits (either below minimum or above maximum).
+    When: Running test_module with out-of-bounds fetch limits.
+    Then: Verify that the function calls return_error with the expected error message,
+          indicating the fetch limit is outside the allowed range.
+    """
     from MongoDBAtlas import test_module
 
     mock_return_error = mocker.patch('MongoDBAtlas.return_error')
 
     client = create_client()
-    fetch_limit = 0
-
     test_module(client, fetch_limit)
-    mock_return_error.assert_called_with('Invalid maximum number of events per fetch, should be between 1 and 2500.')
 
-    fetch_limit = 2501
-
-    test_module(client, fetch_limit)
     mock_return_error.assert_called_with('Invalid maximum number of events per fetch, should be between 1 and 2500.')
