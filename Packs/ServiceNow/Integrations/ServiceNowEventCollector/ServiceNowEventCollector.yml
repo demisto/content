@@ -91,7 +91,7 @@ script:
       isArray: false
       defaultValue: ""
     outputs: []
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.113941
   isfetchevents: true
   runonce: false
   script: ''

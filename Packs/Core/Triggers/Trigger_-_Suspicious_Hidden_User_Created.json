@@ -1,0 +1,19 @@
+{
+  "trigger_id": "4ce60e9949d518fdc734c3151e2cfe4a",
+  "playbook_id": "Suspicious Hidden User Created",
+  "suggestion_reason": "Recommended for Suspicious Hidden User Created alerts.",
+  "description": "This trigger is responsible for handling alerts where a suspicious hidden user is created.",
+  "trigger_name": "Alert Trigger - Suspicious Hidden User Created",
+  "fromVersion": "8.8.0",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "Suspicious hidden user created"
+        }
+      ]
+    }
+  }
+}
