@@ -1743,7 +1743,7 @@ Lists all record sets for this zone. It works only for PRIMARY and SECONDARY zon
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Akamai.EdgeDns.ZoneRecordSets | unknown |  | 
+| Akamai.EdgeDns.ZoneRecordSets | Dictionary | Dictionary of Edge DNS zone's recordsets | 
 
 ### akamai-list-dns-zones
 
