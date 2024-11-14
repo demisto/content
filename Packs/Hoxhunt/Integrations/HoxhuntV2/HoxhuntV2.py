@@ -326,13 +326,14 @@ class Client(BaseClient):
         self._headers = headers
         self._base_url = base_url
 
-    def query(self, data: str, variables={}) -> GqlResult:
+    def query(self, data: str, variables=None) -> GqlResult:
         '''
         Fire GraphQl requests towards Hoxhunt external API
 
         :return: GqlResult containing .data (and .errors)
         :rtype: ``GqlResult``
         '''
+        variables = variables or {}
 
         response = self._http_request(
             method='POST',
@@ -340,12 +341,10 @@ class Client(BaseClient):
             error_handler=http_error_handler
         )
 
-        gql_result = GqlResult()
-        gql_result.data = response.get('data')
-        gql_result.errors = [
+        gql_result = GqlResult(data=response.get('data'), errors=[
             error.get('message', '')
             for error in response.get('errors', [])
-        ]
+        ])
 
         return gql_result
 
@@ -402,7 +401,7 @@ class Client(BaseClient):
     def get_incident_by_id(self, incident_id: str, last_update: str):
         results = self.query(QUERIES['GetIncidentById'], {'lastUpdate': last_update, 'id': incident_id})
         incidents = results.data.get('incidents')
-        if not incidents or len(incidents) == 0:
+        if not incidents:
             return {}
 
         return incidents[0]
@@ -724,8 +723,8 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
 def fetch_incidents_command(client: Client, args: dict, params: dict):
     first_fetch = params.get('first_fetch')
     max_fetch = params.get('max_fetch')
-    only_open_incidents = params.get('only_open_incidents')
-    only_escalated_incidents = params.get('only_escalated_incidents')
+    only_open_incidents = argToBoolean(params.get('only_open_incidents') or True)
+    only_escalated_incidents = argToBoolean(params.get('only_escalated_incidents') or False)
 
     incidents, next_run = fetch_incidents(
         client=client,
@@ -815,8 +814,7 @@ def hoxhunt_send_incident_soc_feedback_command(client: Client, args: dict, param
 
 def hoxhunt_set_incident_sensitive_command(client: Client, args: dict, params: dict):
     incident_id = args.get('incident_id')
-    is_sensitive_str = args.get('is_sensitive', 'false').lower()
-    is_sensitive_bool = argToBoolean(is_sensitive_str)
+    is_sensitive_bool = argToBoolean(args.get('is_sensitive') or 'false')
     response = client.set_incident_sensitive(incident_id, is_sensitive_bool)
     sensitive_data = {'incident_id': str(response.get('_id', '')),
                       'is_sensitive': str(response.get('hasSensitiveInformation', ''))}
@@ -869,7 +867,7 @@ def main():  # pragma: no cover
 
     headers = {'Authorization': f'Bearer {api_key}'}
 
-    demisto.info(f'Command being called is {demisto.command()}')
+    demisto.info(f'Command being called is {command}')
 
     try:
         client = Client(
@@ -919,7 +917,7 @@ def main():  # pragma: no cover
             case "get-modified-remote-data":
                 return_error(f'skip update - {e}')
             case _:
-                return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+                return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
