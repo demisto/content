@@ -43,18 +43,17 @@ class Client(BaseClient):
              headers with token.
         """
         try:
-            data = {
-                'username': auth[0],
-                'password': auth[1],
-                'token': True}
+            data = {'username': auth[0], 'password': auth[1], 'token': True}
             headers = {'ContentType': 'application/x-www-form-urlencoded'}
-            auth_response = requests.post(url=f'{base_url}/auth', headers=headers, data=data, verify=verify)
+            url = urljoin(base_url, '/auth')
+            auth_response = requests.post(url=url, headers=headers, data=data, verify=verify)
+            auth_response.raise_for_status()
+
             token = auth_response.text
             return {'Authorization': f'Bearer {token}', 'content-type': 'application/json'}
-        except Exception:
-            raise ValueError('URL is not set correctly, please review URL,\n'
-                             'Read URL instructions at ? button in "Qualys API Platform URL" '
-                             'parameter')
+
+        except requests.exceptions.HTTPError:
+            raise ValueError('Authentication failed. Please check the "Qualys API Platform URL" parameter and access credentials')
 
     def incidents_list_test(self):
         """

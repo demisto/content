@@ -1,24 +1,51 @@
 import json
+from urllib.parse import urljoin
 import pytest
 from QualysFIM import Client
 
 BASE_URL = 'https://gateway.qg2.apps.qualys.eu/'
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+USERNAME = 'Foo'
+PASSWORD = 'Bar'
 
 
-def util_load_json(path) -> dict:
+def util_load_json(path: str) -> dict:
     with open(path, encoding='utf-8') as file:
         return json.loads(file.read())
 
 
 @pytest.fixture
-def qualysfim_client(requests_mock):
+def qualysfim_client(requests_mock) -> Client:
     """Fixture to create a QualysFIM.Client instance."""
-    requests_mock.post(f'{BASE_URL}/auth', json={})
-    return Client(base_url=BASE_URL, verify=False, proxy=False, auth=('a', 'b'))
+    auth_url = urljoin(BASE_URL, '/auth')
+    requests_mock.post(auth_url, json={})
+    return Client(base_url=BASE_URL, verify=False, proxy=False, auth=(USERNAME, PASSWORD))
 
 
-def test_list_events_command(requests_mock, qualysfim_client) -> None:
+def test_get_token_and_set_headers(mocker) -> None:
+    """
+    Given:
+        - QualysFIM.Client and access credentials
+
+    When:
+        - Client.get_token_and_set_headers is called
+
+    Assert:
+        - Correct authentication request URL and JSON body
+    """
+    # Set
+    auth_request = mocker.patch('requests.post')
+
+    # Arrange
+    Client.get_token_and_set_headers(BASE_URL, (USERNAME, PASSWORD), verify=False)
+    auth_request_kwargs: dict = auth_request.call_args.kwargs
+
+    # Assert
+    assert auth_request.call_count == 1
+    assert auth_request_kwargs['url'] == urljoin(BASE_URL, '/auth')
+    assert auth_request_kwargs['data'] == {'username': USERNAME, 'password': PASSWORD, 'token': True}
+
+
+def test_list_events_command(requests_mock, qualysfim_client: Client) -> None:
     """
     Scenario: List events.
     Given:
@@ -46,7 +73,7 @@ def test_list_events_command(requests_mock, qualysfim_client) -> None:
     assert result.raw_response == mock_response
 
 
-def test_get_event_command(requests_mock, qualysfim_client) -> None:
+def test_get_event_command(requests_mock, qualysfim_client: Client) -> None:
     """
     Scenario: List events.
     Given:
@@ -75,7 +102,7 @@ def test_get_event_command(requests_mock, qualysfim_client) -> None:
     assert result.outputs == mock_response
 
 
-def test_list_incidents_command(requests_mock, qualysfim_client) -> None:
+def test_list_incidents_command(requests_mock, qualysfim_client: Client) -> None:
     """
     Scenario: List incidents
     Given:
@@ -106,7 +133,7 @@ def test_list_incidents_command(requests_mock, qualysfim_client) -> None:
     assert result.raw_response == mock_response
 
 
-def test_get_incident_events_command(requests_mock, qualysfim_client) -> None:
+def test_get_incident_events_command(requests_mock, qualysfim_client: Client) -> None:
     """
     Scenario: List incident's events
     Given:
@@ -136,7 +163,7 @@ def test_get_incident_events_command(requests_mock, qualysfim_client) -> None:
     assert result.raw_response == mock_response
 
 
-def test_create_incident_command(requests_mock, qualysfim_client) -> None:
+def test_create_incident_command(requests_mock, qualysfim_client: Client) -> None:
     """
         Scenario: Create Incident.
         Given:
@@ -168,7 +195,7 @@ def test_create_incident_command(requests_mock, qualysfim_client) -> None:
     assert result.outputs == first_search_result
 
 
-def test_approve_incident_command(requests_mock, qualysfim_client) -> None:
+def test_approve_incident_command(requests_mock, qualysfim_client: Client) -> None:
     """
         Scenario: Approve Incident.
         Given:
@@ -197,7 +224,7 @@ def test_approve_incident_command(requests_mock, qualysfim_client) -> None:
     assert result.outputs == mock_response
 
 
-def test_list_assets_command(requests_mock, qualysfim_client) -> None:
+def test_list_assets_command(requests_mock, qualysfim_client: Client) -> None:
     """
     Scenario: List Assets.
     Given:
@@ -224,7 +251,7 @@ def test_list_assets_command(requests_mock, qualysfim_client) -> None:
     assert result.raw_response == mock_response
 
 
-def test_fetch_incidents_command(requests_mock, qualysfim_client) -> None:
+def test_fetch_incidents_command(requests_mock, qualysfim_client: Client) -> None:
     """
     Scenario: Fetch Incidents.
     Given:
@@ -249,7 +276,7 @@ def test_fetch_incidents_command(requests_mock, qualysfim_client) -> None:
     assert raw_json.get('createdBy').get('date') == 1613378492427
 
 
-def test_create_event_or_incident_output():
+def test_create_event_or_incident_output() -> None:
     """
     Given:
         - A list of table headers and a QualysFIM API event
