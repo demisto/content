@@ -27,11 +27,11 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, verify: bool, proxy: bool, auth: tuple):
-        headers = self.get_token_and_set_headers(base_url, auth)
+        headers = self.get_token_and_set_headers(base_url, auth, verify)
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
     @staticmethod
-    def get_token_and_set_headers(base_url: str, auth: tuple):
+    def get_token_and_set_headers(base_url: str, auth: tuple, verify: bool):
         """
         Get JWT token by authentication and set headers.
 
@@ -48,9 +48,8 @@ class Client(BaseClient):
                 'password': auth[1],
                 'token': True}
             headers = {'ContentType': 'application/x-www-form-urlencoded'}
-            token = requests.post(url=f'{base_url}/auth',
-                                  headers=headers,
-                                  data=data).text
+            auth_response = requests.post(url=f'{base_url}/auth', headers=headers, data=data, verify=verify)
+            token = auth_response.text
             return {'Authorization': f'Bearer {token}', 'content-type': 'application/json'}
         except Exception:
             raise ValueError('URL is not set correctly, please review URL,\n'
@@ -64,8 +63,7 @@ class Client(BaseClient):
         return:
             response (Response): API response from Qualys FIM.
         """
-        return self._http_request(method='GET', url_suffix='fim/v2/incidents/',
-                                  params={'pageSize': '1'}, resp_type='response')
+        return self._http_request(method='POST', url_suffix='fim/v3/incidents/search', json_data={'pageSize': '1'})
 
     def events_list(self, data: dict):
         """
@@ -634,9 +632,8 @@ def test_module(client: Client):
         'ok' if test passed, anything else will fail the test.
     """
     try:
-        result = client.incidents_list_test()
-        if result.ok:
-            return 'ok'
+        client.incidents_list_test()  # raises exception if non-okay response
+        return 'ok'
     except Exception as exception:
         error_msg = None
         if 'Authorization' in str(exception):
