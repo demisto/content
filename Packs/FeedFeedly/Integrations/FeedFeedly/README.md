@@ -21,6 +21,7 @@ Ingest articles with indicators, entities and relationships from Feedly into XSO
     |  |  | False |
     | Stream ID | The stream id you want to fetch articles from. You can find it in Feedly by going to the stream, clicking on \`...\` &gt; \`Sharing\`, then \`Copy ID\` in the \`Feedly API Stream ID\` section. | True |
     | Days to fetch for first run | Number of days to fetch articles from when running the integration for the first time | True |
+    | Ingest Articles as Indicators | When selected, the integration will ingest articles as indicators. If not selected, you may want to use the IncidentsFeedly integration to ingest articles as incidents. The current FeedFeedly integration will still be needed to ingest entities as indicators, and to create relationships between indicators. | False |
     | Incremental feed | Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side, so only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.

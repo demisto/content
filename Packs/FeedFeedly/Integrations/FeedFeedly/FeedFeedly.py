@@ -1,5 +1,6 @@
 import copy
 from contextlib import suppress
+from typing import Any
 from urllib.parse import parse_qs
 
 from CommonServerPython import *  # noqa: F401
@@ -115,7 +116,9 @@ THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
 
 
 class Client(BaseClient):
-    def fetch_indicators_from_stream(self, stream_id: str, newer_than: float, *, limit: Optional[int] = None) -> list:
+    def fetch_indicators_from_stream(
+        self, stream_id: str, newer_than: float, *, limit: int | None = None, ingest_reports: bool = True
+    ) -> list:
         params = {
             "streamId": stream_id,
             "count": 20,
@@ -137,7 +140,7 @@ class Client(BaseClient):
 
         demisto.debug(f"Fetched {len(objects)} objects from stream {stream_id}")
 
-        indicators = STIX2Parser().parse_stix2_objects(objects)
+        indicators = STIX2Parser(ingest_reports=ingest_reports).parse_stix2_objects(objects)
 
         if limit:
             indicators = indicators[:limit]
@@ -180,7 +183,7 @@ class STIX2Parser:
         "vulnerability",
     ]
 
-    def __init__(self):
+    def __init__(self, ingest_reports: bool):
         self.indicator_regexes = [
             re.compile(INDICATOR_EQUALS_VAL_PATTERN),
             re.compile(INDICATOR_IN_VAL_PATTERN),
@@ -193,6 +196,8 @@ class STIX2Parser:
         ]
         self.id_to_object: dict[str, Any] = {}
         self.parsed_object_id_to_object: dict[str, Any] = {}
+
+        self.ingest_reports = ingest_reports
 
     @staticmethod
     def get_indicator_publication(indicator: dict[str, Any]):
@@ -300,13 +305,14 @@ class STIX2Parser:
 
         return [attack_pattern]
 
-    @staticmethod
-    def parse_report(report_obj: dict[str, Any]):
+    def parse_report(self, report_obj: dict[str, Any]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
         """
         Parses a single report object
         :param report_obj: report object
         :return: report extracted from the report object in cortex format
         """
+        if not self.ingest_reports:
+            return [], []
         object_refs = report_obj.get("object_refs", [])
         new_relationships = []
         for obj_id in object_refs:
@@ -331,7 +337,7 @@ class STIX2Parser:
         fields = {
             "stixid": report_obj.get("id"),
             "firstseenbysource": report_obj.get("created"),
-            "published": report_obj.get("published"),
+            "published": report_obj.get("created"),  # todo
             "description": report_obj.get("description", ""),
             "report_types": report_obj.get("report_types", []),
             "tags": list(set(report_obj.get("labels", []))),
@@ -957,7 +963,7 @@ def test_module(client: Client, params: dict) -> str:  # pragma: no cover
 
 
 def get_indicators_command(
-    client: Client, params: dict[str, str], args: dict[str, str]
+    client: Client, params: dict[str, Any], args: dict[str, Any]
 ) -> CommandResults:  # pragma: no cover
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
@@ -968,7 +974,10 @@ def get_indicators_command(
         Outputs.
     """
     indicators = client.fetch_indicators_from_stream(
-        params["feedly_stream_id"], newer_than=time.time() - 24 * 3600, limit=int(args.get("limit", "10"))
+        params["feedly_stream_id"],
+        newer_than=time.time() - 24 * 3600,
+        limit=int(args.get("limit", "10")),
+        ingest_reports=args.get("ingest_articles_as_indicators", True),
     )
     demisto.createIndicators(indicators)  # type: ignore
     return CommandResults(readable_output=f"Created {len(indicators)} indicators.")
@@ -985,10 +994,30 @@ def fetch_indicators_command(client: Client, params: dict[str, str], context: di
     """
     return client.fetch_indicators_from_stream(
         params["feedly_stream_id"],
-        newer_than=float(
-            context.get("last_successful_run", time.time() - int(params.get("days_to_backfill", 7)) * 24 * 3600)
-        ),
+        newer_than=get_newer_than_timestamp(params, context),
+        ingest_reports=params.get("ingest_articles_as_indicators", True),  # type: ignore
     )
+
+
+def get_newer_than_timestamp(params: dict[str, str], context: dict[str, str]) -> float:
+    return float(
+        context.get(
+            "last_fetched_article_crawled_time", time.time() - int(params.get("days_to_backfill", 7)) * 24 * 3600
+        )
+    )
+
+
+def set_next_newer_than(indicators: list[dict[str, str]]) -> None:
+    if not indicators:
+        return
+    newer_than = datetime.fromisoformat(
+        max(
+            indicator["fields"]["published"]  # type: ignore
+            for indicator in indicators
+            if indicator["type"] == "Feedly Report"
+        )
+    ).timestamp()
+    demisto.setLastRun({"last_fetched_article_crawled_time": newer_than})
 
 
 def main():  # pragma: no cover
@@ -1014,11 +1043,10 @@ def main():  # pragma: no cover
             return_results(get_indicators_command(client, params, args))
 
         elif command == "fetch-indicators":
-            now = time.time()
             indicators = fetch_indicators_command(client, params, demisto.getLastRun())
             for indicators_batch in batch(indicators, batch_size=2000):
                 demisto.createIndicators(indicators_batch)  # type: ignore
-            demisto.setLastRun({"last_successful_run": str(now)})
+            set_next_newer_than(indicators)
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")

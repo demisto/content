@@ -961,7 +961,7 @@ def create_incident_from_report_indicator(indicator: dict) -> dict:
 
     event = {
         "name": indicator["value"],
-        "create_time": indicator["rawJSON"].get("published"),
+        "create_time": indicator["rawJSON"].get("created"),  # todo
         "event_id": entry_id,
         "feedly_url": feedly_url,
         "tags": indicator["rawJSON"].get("labels", []),
@@ -986,10 +986,40 @@ def create_incident_from_report_indicator(indicator: dict) -> dict:
 def fetch_incidents(client: Client, params: dict[str, str], context: dict[str, str]) -> list[dict]:
     return client.fetch_incidents_from_stream(
         params["feedly_stream_id"],
-        newer_than=float(
-            context.get("last_successful_run", time.time() - int(params.get("days_to_backfill", 7)) * 24 * 3600)
-        ),
+        newer_than=get_newer_than_timestamp(params, context),
     )
+
+
+def get_newer_than_timestamp(params: dict[str, str], context: dict[str, str]) -> float:
+    return float(
+        context.get(
+            "last_fetched_article_crawled_time", time.time() - int(params.get("days_to_backfill", 7)) * 24 * 3600
+        )
+    )
+
+
+def set_next_newer_than(incidents: list[dict]) -> None:
+    if not incidents:
+        return
+    newer_than = datetime.fromisoformat(max(incident["occured"] for incident in incidents)).timestamp()
+    demisto.setLastRun({"last_fetched_article_crawled_time": newer_than})
+
+
+def test_module(client: Client, params: dict) -> str:  # pragma: no cover
+    """Builds the iterator to check that the feed is accessible.
+    Args:
+        client: Client object.
+        params: demisto.params()
+    Returns:
+        Outputs.
+    """
+    try:
+        client.fetch_incidents_from_stream(params["feedly_stream_id"], newer_than=time.time() - 3600)
+        return "ok"
+    except DemistoException as e:
+        return e.message
+    except Exception as e:
+        return str(e)
 
 
 def main() -> None:
@@ -1006,9 +1036,11 @@ def main() -> None:
         )
 
         if command == "fetch-incidents":
-            now = time.time()
-            demisto.incidents(fetch_incidents(client, params, demisto.getLastRun()))
-            demisto.setLastRun({"last_successful_run": str(now)})
+            incidents = fetch_incidents(client, params, demisto.getLastRun())
+            demisto.incidents(incidents)
+            set_next_newer_than(incidents)
+        if command == "test-module":
+            return_results(test_module(client, params))
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception as e:
