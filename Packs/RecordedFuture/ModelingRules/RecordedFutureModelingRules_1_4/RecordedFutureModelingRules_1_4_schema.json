@@ -1,5 +1,17 @@
 {
     "recorded_future_intelligence_cloud_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "hits": {
+            "type": "string",
+            "is_array": false
+        },
+        "url": {
+            "type": "string",
+            "is_array": false
+        },
         "rule": {
             "type": "string",
             "is_array": false
@@ -8,7 +20,11 @@
             "type": "string",
             "is_array": false
         },
-        "review": {
+        "title": {
+            "type": "string",
+            "is_array": false
+        },
+        "ai_insights": {
             "type": "string",
             "is_array": false
         }

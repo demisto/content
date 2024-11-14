@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Changed that indicators of type 'Host' from the ThreatConnect to be of type 'Domain' in the Cortex XSOAR."
+}

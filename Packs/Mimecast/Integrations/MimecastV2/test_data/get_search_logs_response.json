@@ -1,0 +1,28 @@
+{
+    "meta": {
+        "pagination": {
+            "pageSize": 1,
+            "totalCount": 169,
+            "next": "eNodjskOgSZLtvp3x9nzD75"
+        },
+        "status": 200
+    },
+    "data": [
+        {
+            "logs": [
+                {
+                    "createTime": "2024-03-25T12:04:48+0000",
+                    "emailAddr": "example@test.com",
+                    "source": "archive",
+                    "searchText": "{'mailbox':'example@test.com','query':'[]'}",
+                    "searchPath": "/INBOX/",
+                    "searchReason": "",
+                    "isAdmin": "true",
+                    "museQuery": "[]",
+                    "description": "Archive Mailbox"
+                }
+            ]
+        }
+    ],
+    "fail": []
+}

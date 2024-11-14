@@ -1,7 +1,7 @@
 id: Block IP - Generic v3
 version: -1
 name: Block IP - Generic v3
-description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall."
 starttaskid: "0"
 tasks:
   "0":
@@ -1290,7 +1290,8 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Analyst,Administrator
+        simple: Analyst
+        simple:marketplacev2: Investigator
       subject:
         simple: Block IP Playbook - Analyst's Verification
       body:
@@ -1307,7 +1308,6 @@ tasks:
       format: html
       bcc:
       cc:
-        simple: Administrator
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -3054,7 +3054,8 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Analyst,Administrator
+        simple: Analyst
+        simple:marketplacev2: Investigator
       subject:
         simple: Block IP Playbook - Analyst's Verification
       body:
@@ -3069,7 +3070,6 @@ tasks:
       format: html
       bcc:
       cc:
-        simple: Administrator
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -3723,7 +3723,7 @@ inputs:
     For prisma SASE usage - Specify the scope for a newly created security rule to be applied.
     Remember, this input will only be used when there is no input to the CategoryName.
     Default: Shared
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Aria.BlockDestSubnet.Rule
   description: The rule name/ID which was created in the system for this playbook.

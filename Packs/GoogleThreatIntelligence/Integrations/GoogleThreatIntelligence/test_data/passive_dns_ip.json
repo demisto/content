@@ -1,0 +1,61 @@
+{
+    "data": [
+        {
+            "id": "8.8.8.8franttini.com.ua",
+            "type": "resolution",
+            "links": {
+                "self": "https://www.virustotal.com/api/v3/resolutions/8.8.8.8franttini.com.ua"
+            },
+            "attributes": {
+                "ip_address": "8.8.8.8",
+                "resolver": "VirusTotal",
+                "date": 1715236628,
+                "host_name": "franttini.com.ua",
+                "host_name_last_analysis_stats": {
+                    "malicious": 0,
+                    "suspicious": 0,
+                    "undetected": 26,
+                    "harmless": 64,
+                    "timeout": 0
+                },
+                "ip_address_last_analysis_stats": {
+                    "malicious": 1,
+                    "suspicious": 0,
+                    "undetected": 23,
+                    "harmless": 66,
+                    "timeout": 0
+                }
+            }
+        },
+        {
+            "id": "8.8.8.8pxl.pl",
+            "type": "resolution",
+            "links": {
+                "self": "https://www.virustotal.com/api/v3/resolutions/8.8.8.8pxl.pl"
+            },
+            "attributes": {
+                "ip_address": "8.8.8.8",
+                "resolver": "VirusTotal",
+                "date": 1715231875,
+                "host_name": "pxl.pl",
+                "host_name_last_analysis_stats": {
+                    "malicious": 0,
+                    "suspicious": 0,
+                    "undetected": 53,
+                    "harmless": 37,
+                    "timeout": 0
+                },
+                "ip_address_last_analysis_stats": {
+                    "malicious": 1,
+                    "suspicious": 0,
+                    "undetected": 23,
+                    "harmless": 66,
+                    "timeout": 0
+                }
+            }
+        }
+    ],
+    "links": {
+        "self": "https://www.virustotal.com/api/v3/ip_addresses/8.8.8.8/resolutions"
+    }
+}

@@ -4,7 +4,7 @@ commonfields:
 name: Zendesk v2
 display: Zendesk v2
 category: Case Management
-description: IT service management
+description: IT service management.
 detaileddescription: Zendesk integration requires the API key and a username.
 configuration:
 - display: Server URL (e.g., https://demisto.zendesk.com)
@@ -352,7 +352,7 @@ script:
     - name: custom_role_id
       description: A custom role if the user is an agent on the Enterprise plan or above.
     - name: identities
-      description: 'Users external identities (JSON-formatted argument) e.g., [{"type": "email", "value": "test@user.com"}, {"type": "twitter", "value": "tester84"}]'
+      description: 'Users external identities (JSON-formatted argument) e.g., [{"type": "email", "value": "test@user.com"}, {"type": "twitter", "value": "tester84"}].'
     - name: user_fields
       description: Values of custom fields in the user's profile (json formated field).
     - name: check_if_user_exists
@@ -536,7 +536,7 @@ script:
     - name: custom_role_id
       description: A custom role if the user is an agent on the Enterprise plan or above.
     - name: identities
-      description: 'Users external identities (JSON-formatted argument) e.g., [{"type": "email", "value": "test@user.com"}, {"type": "twitter", "value": "tester84"}]'
+      description: 'Users external identities (JSON-formatted argument) e.g., [{"type": "email", "value": "test@user.com"}, {"type": "twitter", "value": "tester84"}].'
     - name: user_fields
       description: Values of custom fields in the user's profile (JSON-formatted field).
     outputs:
@@ -635,7 +635,7 @@ script:
       description: The user's tags. Only present if your account has user tagging enabled.
     - contextPath: Zendesk.User.ticket_restriction
       type: string
-      description: 'Specifies which tickets the user has access to. Possible values are: "organization", "groups", "assigned", "requested", null'
+      description: 'Specifies which tickets the user has access to. Possible values are: "organization", "groups", "assigned", "requested", null.'
     - contextPath: Zendesk.User.time_zone
       type: string
       description: The user's time zone.
@@ -872,7 +872,7 @@ script:
       description: The group ID.
       type: Number
     - contextPath: Zendesk.Group.is_public
-      description: If true, the group is public. If false, the group is private. You can't change a private group to a public group
+      description: If true, the group is public. If false, the group is private. You can't change a private group to a public group.
       type: Boolean
     - contextPath: Zendesk.Group.name
       description: The name of the group.
@@ -1066,8 +1066,8 @@ script:
       defaultValue: 'true'
       auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - name: collaborators
       isArray: true
       description: Users to add as CC's when creating a ticket.
@@ -1270,8 +1270,8 @@ script:
       defaultValue: 'true'
       auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - name: recipient
       description: The original recipient email address of the ticket.
     - name: status
@@ -1586,7 +1586,7 @@ script:
     name: get-modified-remote-data
   - description: Updates local incident changes in the remote incident. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.11.10.111039
   isfetch: true
   subtype: python3
   ismappable: true

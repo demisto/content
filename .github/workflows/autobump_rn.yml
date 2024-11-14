@@ -32,7 +32,7 @@ jobs:
         uses: Gr1N/setup-poetry@v9
       - name: Install python dependencies
         run: |
-          poetry install --with ci
+          poetry install --with github-actions
       - name: set pythonpath
         run: |
           echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
@@ -45,4 +45,4 @@ jobs:
           git config --global user.email "bot@demisto.com"
           git config --global user.name "Content Bot"
           echo "Someone merged to master. Starting to check if conflicts in release notes created."
-          poetry run python Utils/github_workflow_scripts/autobump_release_notes/autobump_rn.py -g $CONTENTBOT_GH_ADMIN_TOKEN -r $RUN_ID
+          poetry run python .github/github_workflow_scripts/autobump_rn.py -g $CONTENTBOT_GH_ADMIN_TOKEN -r $RUN_ID

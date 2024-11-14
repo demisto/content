@@ -1370,6 +1370,39 @@
             "search_id": "abcd-1234"
         }
     },
+    "search_cancel":{
+        "response":{
+            "cursor_id":"abcd-1234",
+            "status":"SORTING",
+            "compressed_data_file_count":0,
+            "compressed_data_total_size":0,
+            "data_file_count":8560,
+            "data_total_size":876521343,
+            "index_file_count":0,
+            "index_total_size":0,
+            "processed_record_count":0,
+            "desired_retention_time_msec":86400000,
+            "progress":8,
+            "progress_details":[
+               
+            ],
+            "query_execution_time":18767,
+            "query_string":"SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME(\"creEventList\"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime FROM events WHERE INOFFENSE(210)  limit 20 START 1713099871139",
+            "record_count":0,
+            "size_on_disk":24,
+            "save_results":false,
+            "completed":true,
+            "subsearch_ids":[
+               
+            ],
+            "snapshot":"None",
+            "search_id":"abcd-1234"
+         },
+         "expected": {},
+         "args": {
+            "search_id": "abcd-1234"
+        }
+    },
     "reference_sets_list": {
         "response": [
             {

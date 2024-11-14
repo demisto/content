@@ -11,7 +11,7 @@ from collections.abc import Iterator, Sequence
 import urllib.parse
 import urllib3
 from akamai.edgegrid import EdgeGridAuth
-
+import hashlib
 # Local imports
 from CommonServerUserPython import *
 
@@ -96,18 +96,20 @@ class Client(BaseClient):
         self,
         config_ids: str,
         offset: str | None = '',
-        limit: str | int | None = None,
-        from_epoch: str | None = ''
+        limit: int = 20,
+        from_epoch: str = ''
     ) -> tuple[list[dict], str | None]:
-        params = {
-            'offset': offset,
-            'limit': limit,
-            'from': from_epoch,
+        params: dict[str, int | str] = {
+            'limit': limit
         }
+        if offset:
+            params["offset"] = offset
+        else:
+            params["from"] = int(from_epoch)
         raw_response: str = self._http_request(
             method='GET',
             url_suffix=f'/{config_ids}',
-            params=assign_params(**params),
+            params=params,
             resp_type='text',
         )
         events: list[dict] = [json.loads(e) for e in raw_response.split('\n') if e]
@@ -141,7 +143,8 @@ def date_format_converter(from_format: str, date_before: str, readable_format: s
         converted_date = datetime.utcfromtimestamp(int(date_before)).strftime(readable_format)
     elif from_format == 'readable':
         date_before += 'UTC'
-        converted_date = int(datetime.strptime(date_before, readable_format).replace(tzinfo=timezone.utc).timestamp())
+        converted_date = int(datetime.strptime(date_before,
+                                               readable_format).replace(tzinfo=timezone.utc).timestamp())  # noqa: UP017
 
     return str(converted_date)
 
@@ -169,7 +172,7 @@ def decode_message(msg: str) -> Sequence[str | None]:
     readable_msg = []
     translated_msg = urllib.parse.unquote(msg).split(';')
     for word in translated_msg:
-        word = b64decode(word.encode('utf8')).decode('utf8')
+        word = b64decode(word).decode('utf-8', errors='replace')
         if word:
             readable_msg.append(word)
     return readable_msg
@@ -373,13 +376,40 @@ def get_events_command(client: Client, config_ids: str, offset: str | None = Non
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
 
+def reset_offset_command(client: Client):  # pragma: no cover
+    ctx = get_integration_context()
+    if "offset" in ctx:
+        del ctx["offset"]
+    set_integration_context(ctx)
+    return 'Offset was reset successfully.', {}, {}
+
+
+def dedup_events(hashed_events_mapping: dict[str, dict], hashed_events_from_previous_run: set[str]) -> tuple[List[dict],
+                                                                                                             set[str]]:
+    """Implement the dedup logic and mapping between the hashes and the related events.
+
+    Args:
+        hashed_events_mapping (dict[str, dict]): A mapping between the event's httpMessage hash and the event itself.
+        hashed_events_from_previous_run (set[str]): The set of httpMessage hashes from previous run.
+
+    Returns:
+        tuple[List[dict], set[str]]: The list of deduped event and the set of hashes from the current run to save to context.
+    """
+    hashed_events_from_current_run = set(hashed_events_mapping.keys())
+    filtered_hashed_events = hashed_events_from_current_run - hashed_events_from_previous_run
+    deduped_events: List[dict] = [event for hashed_event,
+                                  event in hashed_events_mapping.items() if hashed_event in filtered_hashed_events]
+    return deduped_events, hashed_events_from_current_run
+
+
 @logger
 def fetch_events_command(
     client: Client,
     fetch_time: str,
-    fetch_limit: str | int,
+    fetch_limit: int,
     config_ids: str,
     ctx: dict,
+    page_size: int,
 ) -> Iterator[Any]:
     """Iteratively gathers events from Akamai SIEM. Stores the offset in integration context.
 
@@ -389,39 +419,46 @@ def fetch_events_command(
         fetch_limit: limit of events in a fetch
         config_ids: security configuration ids to fetch, e.g. `51000;56080`
         ctx: The integration context
+        page_size: The number of events to limit for every request.
 
     Yields:
-        (list[dict], str): events and new offset.
+        (list[dict], str, int, str): events, new offset, total number of events fetched, and new last_run time to set.
     """
     total_events_count = 0
-
     from_epoch, _ = parse_date_range(date_range=fetch_time, date_format='%s')
     offset = ctx.get("offset")
+    hashed_events_from_previous_run = ctx.get("hashed_events_from_previous_run", set())
     while total_events_count < int(fetch_limit):
-        events, offset = client.get_events_with_offset(config_ids, offset, FETCH_EVENTS_PAGE_SIZE, from_epoch)
+        demisto.info(f"Preparing to get events with {offset=}, {page_size=}, and {fetch_limit=}")
+        events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
         if not events:
+            demisto.info("Didn't receive any events, breaking.")
             break
+        hashed_events_mapping = {}
         for event in events:
             try:
                 event["_time"] = event["httpMessage"]["start"]
                 if "attackData" in event:
-                    event['attackData']['rules'] = decode_message(event.get('attackData', {}).get('rules', ""))
-                    event['attackData']['ruleMessages'] = decode_message(event.get('attackData', {}).get('ruleMessages', ""))
-                    event['attackData']['ruleTags'] = decode_message(event.get('attackData', {}).get('ruleTags', ""))
-                    event['attackData']['ruleData'] = decode_message(event.get('attackData', {}).get('ruleData', ""))
-                    event['attackData']['ruleSelectors'] = decode_message(event.get('attackData', {}).get('ruleSelectors', ""))
-                    event['attackData']['ruleActions'] = decode_message(event.get('attackData', {}).get('ruleActions', ""))
-                    event['attackData']['ruleVersions'] = decode_message(event.get('attackData', {}).get('ruleVersions', ""))
+                    for attack_data_key in ['rules', 'ruleMessages', 'ruleTags', 'ruleData', 'ruleSelectors',
+                                            'ruleActions', 'ruleVersions']:
+                        event['attackData'][attack_data_key] = decode_message(event.get('attackData', {}).get(attack_data_key,
+                                                                                                              ""))
                 if "httpMessage" in event:
+                    hashed_events_mapping[(hashlib.sha256(json.dumps(event['httpMessage'],
+                                                                     sort_keys=True).encode('utf-8'))).hexdigest()] = event
                     event['httpMessage']['requestHeaders'] = decode_url(event.get('httpMessage', {}).get('requestHeaders', ""))
                     event['httpMessage']['responseHeaders'] = decode_url(event.get('httpMessage', {}).get('responseHeaders', ""))
             except Exception as e:
                 config_id = event.get('attackData', {}).get('configId', "")
                 policy_id = event.get('attackData', {}).get('policyId', "")
                 demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
-        demisto.debug(f"Got {len(events)} events, and {offset=}")
-        total_events_count += len(events)
-        yield events, offset, total_events_count
+        demisto.info("Preparing to deduplicate events, currently got {len(events)} events.")
+        deduped_events, hashed_events_from_current_run = dedup_events(hashed_events_mapping, hashed_events_from_previous_run)
+        total_events_count += len(deduped_events)
+        demisto.info(f"After deduplicate events, Got {len(deduped_events)} events, and {offset=}")
+        hashed_events_from_previous_run = hashed_events_from_current_run
+        yield deduped_events, offset, total_events_count, hashed_events_from_previous_run
+    yield [], offset, total_events_count, hashed_events_from_previous_run
 
 
 def decode_url(headers: str) -> dict:
@@ -446,7 +483,7 @@ def decode_url(headers: str) -> dict:
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     client = Client(
         base_url=urljoin(params.get('host'), '/siem/v1/configs'),
@@ -460,7 +497,8 @@ def main():
     )
     commands = {
         "test-module": test_module_command,
-        f"{INTEGRATION_COMMAND_NAME}-get-events": get_events_command
+        f"{INTEGRATION_COMMAND_NAME}-get-events": get_events_command,
+        f"{INTEGRATION_COMMAND_NAME}-reset-offset": reset_offset_command
     }
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -478,16 +516,26 @@ def main():
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         elif command == "fetch-events":
-            for events, offset, total_events_count in fetch_events_command(  # noqa: B007
+            page_size = int(params.get("page_size", FETCH_EVENTS_PAGE_SIZE))
+            limit = int(params.get("fetchLimit", 300000))
+            for events, offset, total_events_count, hashed_events_from_previous_run in fetch_events_command(  # noqa: B007
                 client,
-                params.get("fetchTime"),
-                params.get("fetchLimit"),
-                params.get("configIds"),
+                "5 minutes",
+                fetch_limit=limit,
+                config_ids=params.get("configIds", ""),
                 ctx=get_integration_context() or {},
+                page_size=page_size
             ):
-                send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
-                set_integration_context({"offset": offset})
-            demisto.updateModuleHealth({'eventsPulled': total_events_count})
+                if events:
+                    demisto.info(f"Sending events to xsiam with latest event time is: {events[-1]['_time']}")
+                    send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
+                set_integration_context({"offset": offset, "hashed_events_from_previous_run": hashed_events_from_previous_run})
+            demisto.updateModuleHealth({'eventsPulled': (total_events_count or 0)})
+            next_run = {}
+            if total_events_count >= limit:
+                next_run["nextTrigger"] = "0"
+            demisto.setLastRun(next_run)
+
         else:
             human_readable, entry_context, raw_response = commands[command](client, **demisto.args())
             return_outputs(human_readable, entry_context, raw_response)

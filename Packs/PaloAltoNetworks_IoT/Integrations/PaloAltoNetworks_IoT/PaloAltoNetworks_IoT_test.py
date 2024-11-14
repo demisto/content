@@ -57,7 +57,8 @@ def test_fetch_incidents(requests_mock, monkeypatch):
 
     mock_vuln_response = json.loads('''{"ver":"v4.0","api":"/vulnerability/list","items":[{"name":"HPD41936",
 "ip":"10.55.132.114","deviceid":"a0:d3:c1:d4:19:36","detected_date":"2020-05-31T23:59:59.000Z",
-"vulnerability_name":"SMB v1 Usage"}]}''')
+"vulnerability_name":"SMB v1 Usage"},{"name":"HPD41936","ip":"10.55.132.114","deviceid":"a0:d3:c1:d4:19:36",
+"detected_date":["2020-05-31T23:59:59.000Z"],"vulnerability_name":"SMB v1 Usage"}]}''')
     requests_mock.get('https://test.com/pub/v4.0/vulnerability/list?customerid=foobar&offset=0&pagelength=10'
                       '&stime=1970-01-01T00:00:00.001000Z&type=vulnerability&status=Confirmed&groupby=device',
                       json=mock_vuln_response)
@@ -71,7 +72,9 @@ def test_fetch_incidents(requests_mock, monkeypatch):
         'last_alerts_fetch': 1579064810.54,
         'last_vulns_fetch': 1590969599.0
     }
-    assert len(incidents) == 3
+    assert len(incidents) == 4
+    for incident in incidents:
+        assert (isinstance(incident.get('occurred'), str))
 
 
 def test_fetch_incidents_special(requests_mock, monkeypatch):

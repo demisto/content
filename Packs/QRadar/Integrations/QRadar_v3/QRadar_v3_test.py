@@ -41,6 +41,7 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_log_source_languages_list_command, qradar_log_source_groups_list_command, qradar_log_source_create_command, \
     qradar_log_source_delete_command, qradar_log_source_update_command, convert_dict_to_actual_values, \
     enrich_offense_with_events, perform_long_running_loop, validate_integration_context, convert_list_to_actual_values, \
+    qradar_search_cancel_command, \
     MIRRORED_OFFENSES_FETCHED_CTX_KEY, FetchMode, IndicatorsSearcher
 
 from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
@@ -846,6 +847,7 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
                              (qradar_search_create_command, 'search_create'),
                              (qradar_search_status_get_command, 'search_status_get'),
                              (qradar_search_results_get_command, 'search_results_get'),
+                             (qradar_search_cancel_command, 'search_cancel'),
                              (qradar_reference_sets_list_command, 'reference_sets_list'),
                              (qradar_reference_set_create_command, 'reference_set_create'),
                              (qradar_reference_set_delete_command, 'reference_set_delete'),
@@ -1921,3 +1923,57 @@ def test_recovery_lastrun(mocker):
     context_data = get_integration_context()
     assert context_data[LAST_FETCH_KEY] == 2
     assert not update_context_mock.called
+
+
+@pytest.mark.parametrize('quiet_mode', [False, True])
+def test_qradar_reference_set_value_upsert_command_quiet_mode(mocker, quiet_mode):
+    """
+    Given:
+        - A reference set with data
+    When:
+        - Running qradar-reference-set-value-upsert with quiet_mode, once set to true and once to false
+        - The polling status is "completed" (i.e. the results should be returned in the current interval)
+    Then:
+        - Ensure the command does not output the reference set data iff quiet_mode=true
+        - Ensure the data is always in the raw response
+    """
+    args = {"ref_name": "test_ref", "value": "value1", "task_id": "test", "quiet_mode": quiet_mode}
+
+    mocker.patch.object(QRadar_v3.ScheduledCommand, "raise_error_if_not_supported")
+    mocker.patch.object(client, "get_reference_data_bulk_task_status", return_value={"status": "COMPLETED"})
+    mock_response = command_test_data["reference_set_bulk_load"]['response'] | {"data": ["some_data"]}
+    mocker.patch.object(client, "reference_sets_list", return_value=mock_response)
+
+    result = qradar_reference_set_value_upsert_command(args, client=client, params={"api_version": "17.0"})
+
+    assert all("Name" in i for i in result.outputs)
+    assert all("Data" not in i for i in result.outputs) or not quiet_mode
+    assert "data" in result.raw_response
+
+
+@pytest.mark.parametrize('quiet_mode', [False, True])
+def test_qradar_indicators_upload_command_quiet_mode(mocker, quiet_mode):
+    """
+    Given:
+        - A reference set with data
+    When:
+        - Running qradar-indicators-upload with quiet_mode, once set to true and once to false
+        - The polling status is "completed" (i.e. the results should be returned in the current interval)
+    Then:
+        - Ensure the command does not output the reference set data iff quiet_mode=true
+        - Ensure the data is always in the raw response
+    """
+    args = {"ref_name": "test_ref", "quiet_mode": quiet_mode, "task_id": "test"}
+
+    mocker.patch.object(QRadar_v3.ScheduledCommand, "raise_error_if_not_supported")
+    mocker.patch.object(client, "get_reference_data_bulk_task_status", return_value={"status": "COMPLETED"})
+    mocker.patch.object(IndicatorsSearcher, "search_indicators_by_version",
+                        return_value={"iocs": [{"value": "test", "indicator_type": "ip"}]})
+    mock_response = command_test_data["reference_set_bulk_load"]['response'] | {"data": ["some_data"]}
+    mocker.patch.object(client, "reference_sets_list", return_value=mock_response)
+
+    result = qradar_indicators_upload_command(args, client=client, params={"api_version": "17.0"})
+
+    assert all("Name" in i for i in result.outputs)
+    assert all("Data" not in i for i in result.outputs) or not quiet_mode
+    assert "data" in result.raw_response

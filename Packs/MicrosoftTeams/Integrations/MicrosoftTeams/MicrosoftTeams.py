@@ -2,23 +2,24 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-from enum import Enum
 import re
 import time
+import urllib.parse
 from distutils.util import strtobool
+from enum import Enum
+from re import Match
+from ssl import PROTOCOL_TLSv1_2, SSLContext, SSLError
 from tempfile import NamedTemporaryFile
 from threading import Thread
 from traceback import format_exc
 from typing import Any, cast
-from re import Match
 
 import jwt
 import requests
+from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey
 from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
 from jwt.algorithms import RSAAlgorithm
-from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
-from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
@@ -44,7 +45,7 @@ PRIVATE_KEY = replace_spaces_in_credential(PARAMS.get('creds_certificate', {}).g
     or demisto.params().get('key', '')
 
 INCIDENT_TYPE: str = PARAMS.get('incidentType', '')
-URL_REGEX = r'https?://[^\s]*'
+URL_REGEX = r'(?<!\]\()https?://[^\s]*'
 ENTITLEMENT_REGEX: str = \
     r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
 MENTION_REGEX = r'^@([^@;]+);| @([^@;]+);'
@@ -56,6 +57,8 @@ MESSAGE_TYPES: dict = {
     'incident_opened': 'incidentOpened',
     'status_changed': 'incidentStatusChanged'
 }
+
+NEW_INCIDENT_WELCOME_MESSAGE: str = "Successfully created incident <incident_name>.\nView it on: <incident_link>"
 
 if '@' in BOT_ID:
     demisto.debug("setting tenant id in the integration context")
@@ -316,8 +319,21 @@ def process_incident_create_message(demisto_user: dict, message: str, request_bo
         server_links: dict = demisto.demistoUrls()
         server_link: str = server_links.get('server', '')
         server_link = server_link + '/#' if not is_demisto_version_ge('8.0.0') else server_link
-        data = f"Successfully created incident {created_incident.get('name', '')}.\n" \
-               f"View it on: {server_link}/WarRoom/{created_incident.get('id', '')}"
+        newIncidentWelcomeMessage = demisto.params().get('new_incident_welcome_message', '')
+        if not newIncidentWelcomeMessage:
+            newIncidentWelcomeMessage = NEW_INCIDENT_WELCOME_MESSAGE
+        elif newIncidentWelcomeMessage == "no_welcome_message":
+            newIncidentWelcomeMessage = ""
+
+        if (
+            newIncidentWelcomeMessage
+            and ("<incident_name>" in newIncidentWelcomeMessage)
+            and ("<incident_link>" in newIncidentWelcomeMessage)
+        ):
+            newIncidentWelcomeMessage = newIncidentWelcomeMessage.replace(
+                "<incident_name>", f"{created_incident.get('name', '')}"
+            ).replace("<incident_link>", f"{server_link}/WarRoom/{created_incident.get('id', '')}")
+        data = newIncidentWelcomeMessage
 
     return data
 
@@ -343,12 +359,15 @@ def urlify_hyperlinks(message: str, url_header: str | None = EXTERNAL_FORM_URL_D
     :return: Formatted message with hyperlinks.
     """
     url_header = url_header or EXTERNAL_FORM_URL_DEFAULT_HEADER
-    formatted_message: str = message
 
-    for url_match in re.finditer(URL_REGEX, message):
-        url = url_match.group()
+    def replace_url(match):
+        url = match.group()
         # is the url is a survey link coming from Data Collection task
-        formatted_message = formatted_message.replace(url, f'[{url_header if EXTERNAL_FORM in url else url}]({url})')
+        return f'[{url_header if EXTERNAL_FORM in url else url}]({url})'
+
+    # Replace all URLs that are not already part of markdown links
+    formatted_message: str = re.sub(URL_REGEX, replace_url, message)
+
     return formatted_message
 
 
@@ -537,6 +556,7 @@ def process_ask_user(message: str) -> dict:
         body.append({
             'type': 'TextBlock',
             'text': text,
+            'wrap': True
         })
 
         for option in options:
@@ -561,7 +581,8 @@ def process_ask_user(message: str) -> dict:
                 'horizontalAlignment': 'Center',
                 'size': 'Medium',
                 'weight': 'Bolder',
-                'color': 'Accent'
+                'color': 'Accent',
+                'wrap': True
             },
             {
                 'type': 'Container',
@@ -593,6 +614,48 @@ def process_ask_user(message: str) -> dict:
         })
 
     return create_adaptive_card(body, actions)
+
+
+def add_data_to_actions(card_json, data_value):
+
+    # If the current item is a list, iterate over it
+    if isinstance(card_json, list):
+        for item in card_json:
+            add_data_to_actions(item, data_value)
+
+    # If the current item is a dictionary
+    elif isinstance(card_json, dict):
+        # Check if this dictionary is an Action.Submit or Action.Execute
+        if card_json.get("type") in ["Action.Submit", "Action.Execute"]:
+            # Add the 'data' key with the provided value
+            card_json["data"] = data_value
+
+        # Only check nested elements within 'actions'
+        if "actions" in card_json:
+            add_data_to_actions(card_json["actions"], data_value)
+
+        # Handle nested card inside Action.ShowCard
+        if card_json.get("type") == "Action.ShowCard" and "card" in card_json:
+            add_data_to_actions(card_json["card"], data_value)
+
+
+def process_adaptive_card(adaptive_card_obj: dict) -> dict:
+    """
+    Processes adaptive cards coming from MicrosoftTeamsAsk. It will find all action elements
+    of type Action.Submit or Action.Execute within adaptive_card_obj['adaptive_card'] and add entitlement,
+    investigation_id and task_id to them.
+    :param adaptive_card_obj: The adaptive card object.
+    :return: Adaptive card with entitlement.
+    """
+
+    adaptive_card = adaptive_card_obj.get('adaptive_card', '')
+    data_obj: dict = {}
+    data_obj["entitlement"] = str(adaptive_card_obj.get('entitlement', ''))
+    data_obj["investigation_id"] = str(adaptive_card_obj.get('investigation_id', ''))
+    data_obj["task_id"] = str(adaptive_card_obj.get('task_id', ''))
+
+    add_data_to_actions(adaptive_card.get('content', ''), data_obj)
+    return adaptive_card
 
 
 def get_bot_access_token() -> str:
@@ -947,8 +1010,8 @@ def get_team_aad_id(team_name: str) -> str:
         for team in teams:
             if team_name == team.get('team_name', ''):
                 return team.get('team_aad_id', '')
-    url: str = f"{GRAPH_BASE_URL}/v1.0/groups?$filter=displayName eq '{team_name}' " \
-               "and resourceProvisioningOptions/Any(x:x eq 'Team')"
+    url: str = (f"{GRAPH_BASE_URL}/v1.0/groups?$filter=displayName eq '{urllib.parse.quote(team_name)}' "
+                f"and resourceProvisioningOptions/Any(x:x eq 'Team')")
     response: dict = cast(dict[Any, Any], http_request('GET', url))
     demisto.debug(f'Response {response}')
     teams = response.get('value', [])
@@ -2074,11 +2137,11 @@ def send_message():
 
     recipient: str = channel_id or personal_conversation_id
 
-    conversation: dict
+    conversation: dict = {}
 
     if message:
-        entitlement_match: Match[str] | None = re.search(ENTITLEMENT_REGEX, message)
-        if entitlement_match and is_teams_ask_message(message):
+        entitlement_match_msg: Match[str] | None = re.search(ENTITLEMENT_REGEX, message)
+        if entitlement_match_msg and is_teams_ask_message(message):
             # In TeamsAsk process
             adaptive_card = process_ask_user(message)
             conversation = {
@@ -2098,10 +2161,13 @@ def send_message():
                 'entities': entities
             }
     else:  # Adaptive card
-        conversation = {
-            'type': 'message',
-            'attachments': [adaptive_card]
-        }
+        entitlement_match_ac: Match[str] | None = re.search(ENTITLEMENT_REGEX, adaptive_card.get('entitlement', ''))
+        if entitlement_match_ac:
+            adaptive_card_processed = process_adaptive_card(adaptive_card)
+            conversation = {
+                'type': 'message',
+                'attachments': [adaptive_card_processed]
+            }
 
     service_url: str = integration_context.get('service_url', '')
     if not service_url:
@@ -2423,6 +2489,13 @@ def entitlement_handler(integration_context: dict, request_body: dict, value: di
     :return: None
     """
     response: str = value.get('response', '')
+    if not response:
+        # Adaptive Card Response Received
+        remove_keys = ['entitlement', 'investigation_id', 'task_id']
+        response_dict = {key: value for key, value in value.items() if key not in remove_keys}
+        response = tableToMarkdown("Response", response_dict, headers=list(response_dict.keys()))
+
+    demisto.debug(f"Entitlement Response Received\n{value}")
     entitlement_guid: str = value.get('entitlement', '')
     investigation_id: str = value.get('investigation_id', '')
     task_id: str = value.get('task_id', '')
@@ -2483,6 +2556,12 @@ def message_handler(integration_context: dict, request_body: dict, channel_data:
                         return
 
 
+@APP.route('/health', methods=['GET'])
+def health_check():
+    demisto.debug("Microsoft Teams Integration received a local health check")
+    return Response('Microsoft Teams long running integration server is up.', status=200, mimetype='text/plain')
+
+
 @APP.route('/', methods=['POST'])
 def messages() -> Response:
     """
@@ -2496,7 +2575,7 @@ def messages() -> Response:
         if validate_auth_header(headers) is False:
             demisto.info(f'Authorization header failed: {str(headers)}')
         else:
-            request_body: dict = request.json
+            request_body: dict = request.json   # type: ignore[assignment]
             integration_context: dict = get_integration_context()
             service_url: str = request_body.get('serviceUrl', '')
             if service_url:
@@ -2753,7 +2832,7 @@ def generate_login_url_command():
                         " and the bot is added to a team.")
     login_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
                 f'response_type=code&scope=offline_access%20https://graph.microsoft.com/.default' \
-                f'&client_id={BOT_ID}&redirect_uri={REDIRECT_URI}&prompt=consent'
+                f'&client_id={BOT_ID}&redirect_uri={REDIRECT_URI}'
 
     result_msg = f"""### Authorization instructions
 1. Click on the [login URL]({login_url}) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.

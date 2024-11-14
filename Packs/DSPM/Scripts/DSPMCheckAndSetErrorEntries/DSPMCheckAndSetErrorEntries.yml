@@ -1,0 +1,28 @@
+commonfields:
+  id: DSPMCheckAndSetErrorEntries
+  version: -1
+name: DSPMCheckAndSetErrorEntries
+script: ''
+type: python
+tags: []
+comment: This script checks for error entries based on provided entry IDs and returns "yes" if any errors are found or "no" if no errors are present. If errors are detected, it sets the error messages in the XSOAR context.
+enabled: true
+args:
+- name: entry_id
+  required: true
+  description: Entry to check.
+  isArray: true
+outputs:
+- contextPath: yes
+  description: If one or more entries is an error.
+- contextPath: no
+  description: If none of the entries is not an error.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

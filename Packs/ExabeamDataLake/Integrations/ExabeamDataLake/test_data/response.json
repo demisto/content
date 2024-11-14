@@ -1,0 +1,225 @@
+{
+    "responses": [
+        {
+            "took": 10,
+            "timed_out": false,
+            "_shards": {
+                "total": 1,
+                "successful": 1,
+                "skipped": 0,
+                "failed": 0
+            },
+            "hits": {
+                "total": 159608,
+                "max_score": null,
+                "hits": [
+                    {
+                        "_index": "exabeam-2023",
+                        "_type": "logs",
+                        "_id": "test_id_1",
+                        "_score": null,
+                        "_routing": "test_routing_1",
+                        "_source": {
+                            "exa_parser_name": "test_parser_1",
+                            "forwarder": "test_forwarder_1",
+                            "app_protocol": "test",
+                            "is_threat_dest_ip": false,
+                            "@timestamp": "2022-06-12T23:59:57.458Z",
+                            "exa_rsc": {
+                                "hostname": "localhost",
+                                "timezone": "00",
+                                "time_off": 10800,
+                                "timestamp": "2021-09-12T23:59:58.459Z"
+                            },
+                            "exa_adjustedEventTime": "2021-09-12T23:55:05.000Z",
+                            "dest_translated_ip": "0.0.0.0",
+                            "exa_activity_type": [
+                                "network-traffic"
+                            ],
+                            "host": "local",
+                            "exa-message-size": 1006,
+                            "is_tor_dest_ip": false,
+                            "exa_outcome": [
+                                "success"
+                            ],
+                            "src_port": 0,
+                            "event_name": "Accept",
+                            "outcome": "Accept",
+                            "rule": "test rule",
+                            "src_translated_ip": "test_src_translated_ip_1",
+                            "direction": "inbound",
+                            "src_ip": "test_src_ip_1",
+                            "rule_id": "test_rule_id_1",
+                            "is_ransomware_dest_ip": false,
+                            "dest_ip": "test_dest_ip_1",
+                            "indexTime": "2022-06-12T23:59:59.298Z",
+                            "interface_name": "test_interface_name_1",
+                            "Vendor": "test_vendor_1",
+                            "origin_ip": "test_origin_ip_1",
+                            "data_type": "network",
+                            "product_name": "VPN",
+                            "dest_port": 0,
+                            "dest_translated_port": "0",
+                            "exa_rawEventTime": "2022-06-12T23:55:05.000Z",
+                            "message": "<134>1 2022-06-12T23:55:05Z",
+                            "time": "2022-06-12T23:55:05.000Z",
+                            "src_translated_port": "0",
+                            "Product": "test_product_1",
+                            "@version": "1",
+                            "exa_category": "Network",
+                            "exa_device_type": [
+                                "network",
+                                "network"
+                            ],
+                            "is_threat_src_ip": false,
+                            "action": "Accept",
+                            "protocol": "00",
+                            "is_ransomware_src_ip": false,
+                            "is_tor_src_ip": false
+                        },
+                        "sort": [
+                            1689206397458
+                        ]
+                    },
+                    {
+                        "_index": "exabeam-2023",
+                        "_type": "logs",
+                        "_id": "test_id_2",
+                        "_score": null,
+                        "_routing": "test_routing_2",
+                        "_source": {
+                            "exa_parser_name": "test_parser_2",
+                            "forwarder": "test_forwarder_2",
+                            "app_protocol": "test",
+                            "is_threat_dest_ip": false,
+                            "@timestamp": "2022-06-12T23:59:57.458Z",
+                            "exa_rsc": {
+                                "hostname": "localhost",
+                                "timezone": "+03",
+                                "time_off": 10800,
+                                "timestamp": "2022-06-12T23:59:58.459Z"
+                            },
+                            "exa_adjustedEventTime": "2022-06-12T23:55:05.000Z",
+                            "dest_translated_ip": "0.0.0.0",
+                            "exa_activity_type": [
+                                "network"
+                            ],
+                            "host": "local",
+                            "exa-message-size": 1006,
+                            "is_tor_dest_ip": false,
+                            "exa_outcome": [
+                                "success"
+                            ],
+                            "src_port": 0,
+                            "event_name": "Accept",
+                            "outcome": "Accept",
+                            "rule": "test rule",
+                            "src_translated_ip": "test_src_translated_ip_2",
+                            "direction": "inbound",
+                            "src_ip": "test_src_ip_2",
+                            "rule_id": "test_rule_id_2",
+                            "is_ransomware_dest_ip": false,
+                            "dest_ip": "test_dest_ip_2",
+                            "indexTime": "2022-06-12T23:59:59.298Z",
+                            "interface_name": "test_interface_name_2",
+                            "Vendor": "test_vendor_2",
+                            "origin_ip": "test_origin_ip_2",
+                            "data_type": "network-connection",
+                            "product_name": "VPN",
+                            "dest_port": 0,
+                            "dest_translated_port": "0",
+                            "exa_rawEventTime": "2022-06-12T23:55:05.000Z",
+                            "message": "<134>1 2022-06-12T23:55:05Z",
+                            "time": "2022-06-12T23:55:05.000Z",
+                            "src_translated_port": "0",
+                            "Product": "test_product_2",
+                            "@version": "1",
+                            "exa_category": "Network",
+                            "exa_device_type": [
+                                "network",
+                                "network"
+                            ],
+                            "is_threat_src_ip": false,
+                            "action": "Accept",
+                            "protocol": "00",
+                            "is_ransomware_src_ip": false,
+                            "is_tor_src_ip": false
+                        },
+                        "sort": [
+                            1689206397458
+                        ]
+                    },
+                    {
+                        "_index": "exabeam-2023",
+                        "_type": "logs",
+                        "_id": "test_id_3",
+                        "_score": null,
+                        "_routing": "test_routing_1",
+                        "_source": {
+                            "exa_parser_name": "test_parser_3",
+                            "forwarder": "test_forwarder_3",
+                            "app_protocol": "test",
+                            "is_threat_dest_ip": false,
+                            "@timestamp": "2022-06-12T23:59:57.458Z",
+                            "exa_rsc": {
+                                "hostname": "localhost",
+                                "timezone": "+03",
+                                "time_off": 10800,
+                                "timestamp": "2022-06-12T23:59:58.459Z"
+                            },
+                            "exa_adjustedEventTime": "2022-06-12T23:55:05.000Z",
+                            "dest_translated_ip": "0.0.0.0",
+                            "exa_activity_type": [
+                                "network-traffic"
+                            ],
+                            "host": "local",
+                            "exa-message-size": 1006,
+                            "is_tor_dest_ip": false,
+                            "exa_outcome": [
+                                "success"
+                            ],
+                            "src_port": 0,
+                            "event_name": "Accept",
+                            "outcome": "Accept",
+                            "rule": "test rule",
+                            "src_translated_ip": "test_src_translated_ip_3",
+                            "direction": "inbound",
+                            "src_ip": "test_src_ip_3",
+                            "rule_id": "test_rule_id_3",
+                            "is_ransomware_dest_ip": false,
+                            "dest_ip": "test_dest_ip_3",
+                            "indexTime": "2022-06-12T23:59:59.298Z",
+                            "interface_name": "test_interface_name_3",
+                            "Vendor": "test_vendor_3",
+                            "origin_ip": "test_origin_ip_3",
+                            "data_type": "network-connection",
+                            "product_name": "VPN",
+                            "dest_port": 0,
+                            "dest_translated_port": "0",
+                            "exa_rawEventTime": "2022-06-12T23:55:05.000Z",
+                            "message": "<134>1 2022-06-12T23:55:05Z",
+                            "time": "2022-06-12T23:55:05.000Z",
+                            "src_translated_port": "0",
+                            "Product": "test_product_3",
+                            "@version": "1",
+                            "exa_category": "Network",
+                            "exa_device_type": [
+                                "network",
+                                "network"
+                            ],
+                            "is_threat_src_ip": false,
+                            "action": "Accept",
+                            "protocol": "00",
+                            "is_ransomware_src_ip": false,
+                            "is_tor_src_ip": false
+                        },
+                        "sort": [
+                            1689206397458
+                        ]
+                    }
+                ]
+            },
+            "status": 200
+        }
+    ]
+}

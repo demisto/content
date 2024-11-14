@@ -5,7 +5,7 @@ import ssl
 import email
 from datetime import timezone
 from typing import Any
-
+from email.message import Message
 from dateparser import parse
 from mailparser import parse_from_bytes, parse_from_string
 from imap_tools import OR
@@ -31,8 +31,12 @@ class Email:
                          '\nWill replace backslash and try to parse again')
             message_bytes = self.handle_message_slashes(message_bytes)
             email_object = parse_from_bytes(message_bytes)
-        except Exception:
-            email_object = parse_from_string(message_bytes.decode('ISO-8859-1'))
+        except TypeError as e:
+            demisto.info(f'Failed parsing mail from bytes: [{e}]\n{traceback.format_exc()}.'
+                         '\nWill try to parse from string')
+            message_string = message_bytes.decode('ISO-8859-1')
+            email_object = parse_from_string(message_string)
+
         eml_attachments = self.get_eml_attachments(message_bytes)
         self.id = id_
         self.to = [mail_addresses for _, mail_addresses in email_object.to]
@@ -48,7 +52,7 @@ class Email:
         self.headers = email_object.headers
         self.raw_body = email_object.body if include_raw_body else None
         # According to the mailparser documentation the datetime object is in utc
-        self.date = email_object.date.replace(tzinfo=timezone.utc) if email_object.date else None
+        self.date = email_object.date.replace(tzinfo=timezone.utc) if email_object.date else None  # noqa: UP017
         self.raw_json = self.generate_raw_json()
         self.save_eml_file = save_file
         self.labels = self._generate_labels()
@@ -56,23 +60,39 @@ class Email:
 
     @staticmethod
     def get_eml_attachments(message_bytes: bytes) -> list:
+
+        def get_attachment_payload(part: Message) -> bytes:
+            """Returns the payload of the email attachment as bytes object"""
+            payload = part.get_payload(decode=False)
+            if isinstance(payload, list) and isinstance(payload[0], Message):
+                payload = payload[0].as_bytes()
+            elif isinstance(payload, str):
+                payload = payload.encode('utf-8')
+            else:
+                raise DemistoException(f'Could not parse the email attachment: {part.get_filename()}')
+
+            return payload
+
         eml_attachments = []
         msg = email.message_from_bytes(message_bytes)
+
         if msg:
             for part in msg.walk():
                 if part.get_content_maintype() == "multipart" or part.get("Content-Disposition") is None:
                     continue
+
                 filename = part.get_filename()
                 if filename and filename.endswith('.eml'):
                     eml_attachments.append({
                         "filename": filename,
-                        "payload": part.get_payload(decode=False)[0].as_bytes(),
+                        "payload": get_attachment_payload(part),
                         "binary": False,
                         "mail_content_type": part.get_content_subtype(),
                         "content-id": part.get('content-id'),
                         "content-disposition": part.get('content-disposition'),
                         "charset": part.get_content_charset(),
                         "content_transfer_encoding": part.get_content_charset()})
+
         return eml_attachments
 
     @staticmethod
@@ -131,7 +151,7 @@ class Email:
                            'value': ','.join([attachment['filename'] for attachment in self.attachments])})
         return labels
 
-    def parse_attachments(self) -> list:
+    def parse_attachments(self, output_to_warroom: bool = False) -> list:
         """
         Writes the attachments of the files and returns a list of file entry details.
         If self.save_eml_file is set, will also save the email itself as file
@@ -142,10 +162,16 @@ class Email:
         for attachment in self.attachments:
             payload = attachment.get('payload')
 
-            file_data = base64.b64decode(payload) if attachment.get('binary') else payload
+            try:
+                file_data = base64.b64decode(payload) if attachment.get('binary') else payload
+            except Exception as e:
+                file_data = payload
+                demisto.error(f'parse_attachments: Failed to decode the attachment data - {str(e)}')
 
             # save the attachment
-            file_result = fileResult(attachment.get('filename'), file_data, attachment.get('mail_content_type'))
+            file_result = fileResult(attachment.get('filename'), file_data)
+            if output_to_warroom:
+                demisto.results(file_result)
 
             # check for error
             if file_result['Type'] == entryTypes['error']:
@@ -172,20 +198,20 @@ class Email:
         date = self.date
         if not date:
             demisto.info(f'Could not identify date for mail with ID {self.id}. Setting its date to be now.')
-            date = datetime.now(timezone.utc).isoformat()
+            date = datetime.now(timezone.utc).isoformat()  # noqa: UP017
         else:
             date = self.date.isoformat()
         return {
             'labels': self._generate_labels(),
             'occurred': date,
-            'created': datetime.now(timezone.utc).isoformat(),
+            'created': datetime.now(timezone.utc).isoformat(),  # noqa: UP017
             'details': self.text or self.html,
             'name': self.subject,
             'attachment': self.parse_attachments(),
             'rawJSON': json.dumps(self.raw_json)
         }
 
-    def generate_raw_json(self, parse_attachments: bool = False) -> dict:
+    def generate_raw_json(self, parse_attachments: bool = False, output_to_warroom: bool = False) -> dict:
         """
 
         Args:
@@ -200,7 +226,7 @@ class Email:
             'format': self.format,
             'text': self.text,
             'subject': self.subject,
-            'attachments': self.parse_attachments() if parse_attachments else ','.join(
+            'attachments': self.parse_attachments(output_to_warroom) if parse_attachments else ','.join(
                 [attachment['filename'] for attachment in self.attachments]),
             'rawHeaders': self.parse_raw_headers(),
             'headers': remove_empty_elements(self.headers)
@@ -284,7 +310,8 @@ def fetch_incidents(client: IMAPClient,
         save_file=save_file,
         uid_to_fetch_from=uid_to_fetch_from     # type: ignore[arg-type]
     )
-    incidents = []
+    incidents: list = []
+    demisto.debug(f'fetched {len(incidents)} incidents')
     for mail in mails_fetched:
         incidents.append(mail.convert_to_incident())
         uid_to_fetch_from = max(uid_to_fetch_from, mail.id)
@@ -326,6 +353,10 @@ def fetch_mails(client: IMAPClient,
         messages_fetched: A list of the ids of the messages fetched
         last_message_in_current_batch: The UID of the last message fetchedd
     """
+
+    if uid_to_fetch_from:
+        uid_to_fetch_from = int(uid_to_fetch_from)
+
     if message_id:
         messages_uids = [message_id]
         demisto.debug("message_id provided, using it for message_uids")
@@ -337,6 +368,9 @@ def fetch_mails(client: IMAPClient,
                                                uid_to_fetch_from)
         demisto.debug(f'message_id not provided, using generated query {messages_query}')
         messages_uids = client.search(messages_query)
+        # convert the uids to int in case one of them is str
+        messages_uids = [int(x) for x in messages_uids]
+
         demisto.debug(f"client returned {len(messages_uids)} message ids: {messages_uids=}")
 
         if len(messages_uids) > limit:  # If there's any reason to shorten the list
@@ -353,6 +387,7 @@ def fetch_mails(client: IMAPClient,
     demisto.debug(f'Messages to fetch: {messages_uids}')
 
     for mail_id, message_data in client.fetch(messages_uids, 'RFC822').items():
+        demisto.debug(f"Starting to parse the mail with {mail_id=}")
         message_bytes = message_data.get(b'RFC822')
         # For cases the message_bytes is returned as a string. If failed, will try to use the message_bytes returned.
         try:
@@ -361,18 +396,20 @@ def fetch_mails(client: IMAPClient,
             demisto.debug(f"{mail_id=}: Converting to bytest failed. {message_data=}. Error: {e}")
 
         if not message_bytes:
-            demisto.debug(f"{mail_id=}: {message_bytes=}, skipping")
+            demisto.debug(f"{mail_id=}: Skipping because did not managed to convert to bytes")
             continue
 
         try:
+            demisto.debug("Creating email object")
             email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
             demisto.debug(f"{mail_id=}: Created email object.")
         except Exception as e:
             demisto.debug(f"{mail_id=}: Failed creating Email object, skipping. {message_data=}. Error: {e}")
             continue
 
+        demisto.debug(f"{mail_id=}: Created email object successfully.")
         # Add mails if the current email UID is higher than the previous incident UID
-        if int(email_message_object.id) > int(uid_to_fetch_from):
+        if int(email_message_object.id) > uid_to_fetch_from:
             fetched_email_objects.append(email_message_object)
             demisto.debug(f"{mail_id=}: Collecting {email_message_object.id=} since it's > {uid_to_fetch_from=}")
         else:
@@ -489,7 +526,7 @@ def list_emails(client: IMAPClient,
                                       permitted_from_domains=permitted_from_domains,
                                       limit=_limit)
     results = [{'Subject': email.subject,
-                'Date': email.date.isoformat() if email.date else datetime.now(timezone.utc).isoformat(),
+                'Date': email.date.isoformat() if email.date else datetime.now(timezone.utc).isoformat(),  # noqa: UP017
                 'To': email.to,
                 'From': email.from_,
                 'ID': email.id} for email in mails_fetched]
@@ -501,7 +538,7 @@ def list_emails(client: IMAPClient,
 
 def get_email(client: IMAPClient, message_id: int) -> CommandResults:
     mails_fetched, _, _ = fetch_mails(client, message_id=message_id)
-    mails_json = [mail.generate_raw_json(parse_attachments=True) for mail in mails_fetched]
+    mails_json = [mail.generate_raw_json(parse_attachments=True, output_to_warroom=True) for mail in mails_fetched]
     return CommandResults(outputs_prefix='MailListener.Email',
                           outputs_key_field='ID',
                           outputs=mails_json)
@@ -511,13 +548,6 @@ def get_email_as_eml(client: IMAPClient, message_id: int) -> dict:
     mails_fetched, _, _ = fetch_mails(client, message_id=message_id)
     mail_file = [fileResult('original-email-file.eml', mail.mail_bytes) for mail in mails_fetched]
     return mail_file[0] if mail_file else {}
-
-
-def _convert_to_bytes(data) -> bytes:
-    demisto.debug("Converting data to bytes.")
-    bytes_data = bytes(data)
-    demisto.debug("Converted data successfully.")
-    return bytes_data
 
 
 def replace_spaces_in_credentials(credentials: str | None) -> str | None:
@@ -611,10 +641,10 @@ def main():     # pragma: no cover
                                            _limit=limit))
             elif demisto.command() == 'mail-listener-get-email':
                 return_results(get_email(client=client,
-                                         message_id=args.get('message-id')))
+                                         message_id=arg_to_number(args.get('message-id')) or 0))
             elif demisto.command() == 'mail-listener-get-email-as-eml':
                 return_results(get_email_as_eml(client=client,
-                                                message_id=args.get('message-id')))
+                                                message_id=arg_to_number(args.get('message-id')) or 0))
             elif demisto.command() == 'fetch-incidents':
                 next_run, incidents = fetch_incidents(client=client, last_run=demisto.getLastRun(),
                                                       first_fetch_time=first_fetch_time,

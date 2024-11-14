@@ -1,17 +1,16 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, List
 
 
 def main():
     try:
-        args: Dict = demisto.args()
+        args: dict = demisto.args()
         root = args.get('key')
         if root:
             if not isinstance(root, list):
                 root = [root]
 
-            t: List = []
+            t: list = []
             for obj in root:
                 internet_message_id = obj.get('internetMessageId')
                 recipients = obj.get('recipients', [])

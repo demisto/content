@@ -13,7 +13,7 @@ def redmine_client(url: str = 'url', verify_certificate: bool = True, proxy: boo
 def test_create_issue_command(mocker, redmine_client):
     """
     Given:
-        - All relevant arguments for the command that is executed without list id
+        - All relevant arguments for the command that is executed
     When:
         - redmine-issue-create command is executed
     Then:
@@ -23,7 +23,7 @@ def test_create_issue_command(mocker, redmine_client):
     http_request = mocker.patch.object(redmine_client, '_http_request')
     http_request.return_value = {"issue": {"id": "1"}}
     args = {'project_id': '1', 'issue_id': '1', 'subject': 'changeFromCode', 'priority_id': '1', 'tracker_id': '1',
-            'watcher_user_ids': '[1]', 'custom_fields': '1:https://test:appear'}
+            'watcher_user_ids': '[1]', 'custom_fields': '{"1":"https://test:appear"}'}
     create_issue_command(redmine_client, args=args)
     http_request.assert_called_with('POST', '/issues.json',
                                     params={},
@@ -40,6 +40,34 @@ def test_create_issue_command(mocker, redmine_client):
                                     headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
 
 
+def test_create_issue_command_with_multiselect_cf(mocker, redmine_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed (with multiselect custom field)
+    When:
+        - redmine-issue-create command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Redmine import create_issue_command
+    http_request = mocker.patch.object(redmine_client, '_http_request')
+    http_request.return_value = {"issue": {"id": "1"}}
+    args = {'project_id': '1', 'issue_id': '1', 'subject': 'changeFromCode', 'priority_id': '1', 'tracker_id': '1',
+            'watcher_user_ids': '[1]', 'custom_fields': '{"4":["a","b","c"],"1":"hello [], my name is paloalto, paloalto"}'}
+    create_issue_command(redmine_client, args=args)
+    http_request.assert_called_with('POST', '/issues.json', params={}, json_data={'issue':
+                                                                                  {'issue_id': '1', 'subject': 'changeFromCode',
+                                                                                   'priority_id': '1', 'tracker_id': '1',
+                                                                                   'custom_fields': [
+                                                                                       {'id': '4', 'value': ['a', 'b', 'c']},
+                                                                                       {'id': '1',
+                                                                                        'value': ('hello [], my name is paloalto,'
+                                                                                                  ' paloalto')}
+                                                                                   ],
+                                                                                   'project_id': '1', 'watcher_user_ids': [1]}},
+                                    headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
+
+
 def test_create_issue_command_not_url_cf(mocker, redmine_client):
     """
     Given:
@@ -53,7 +81,7 @@ def test_create_issue_command_not_url_cf(mocker, redmine_client):
     http_request = mocker.patch.object(redmine_client, '_http_request')
     http_request.return_value = {"issue": {"id": "1"}}
     args = {'project_id': '1', 'issue_id': '1', 'subject': 'changeFromCode', 'tracker_id': '2', 'priority_id': '2',
-            'watcher_user_ids': '[1]', 'custom_fields': '1:hello'}
+            'watcher_user_ids': '[1]', 'custom_fields': '{"1":"hello"}'}
     create_issue_command(redmine_client, args=args)
     http_request.assert_called_with('POST', '/issues.json',
                                     params={},
@@ -82,7 +110,7 @@ def test_create_issue_command_response(mocker, redmine_client):
         'issue_id': '1',
         'subject': 'testResponse',
         'tracker_id': '1',
-        'custom_fields': '1:https://test:appear,,,,'
+        'custom_fields': '{"1":"https://test:appear,,,,"}'
     }
     create_issue_request_mock = mocker.patch.object(redmine_client, 'create_issue_request')
     create_issue_request_mock.return_value = {'issue': {'id': '789', 'project': {'name': 'testing', 'id': '1'},
@@ -96,6 +124,38 @@ def test_create_issue_command_response(mocker, redmine_client):
                                       'https://test:appear |\n')
 
 
+def test_create_issue_command_with_multiselect_cf_response(mocker, redmine_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed without list id (multiselect custom field)
+    When:
+        - redmine-issue-create command is executed
+    Then:
+        - The http request return with the expected response
+    """
+    from Redmine import create_issue_command
+    args = {
+        'project_id': '1',
+        'issue_id': '1',
+        'subject': 'testResponse',
+        'tracker_id': '1',
+        'custom_fields': '{"4":["a","b","c"],"1":"hello [], my name is paloalto, paloalto"}'
+    }
+    create_issue_request_mock = mocker.patch.object(redmine_client, 'create_issue_request')
+    create_issue_request_mock.return_value = {'issue': {'id': '789', 'project': {'name': 'testing', 'id': '1'},
+                                                        'subject': 'testResponse', 'tracker': {'name': 'bug', 'id': '1'},
+                                                        'custom_fields': [{'name': 'test', 'value': ["a", "b", "c"]},
+                                                                          {'name': 'test2', 'value': ("hello [], my name is "
+                                                                                                      "paloalto, paloalto")}]
+                                                        }
+                                              }
+    result = create_issue_command(redmine_client, args)
+    assert result.readable_output == ('### The issue you created:\n|Id|Project|Tracker|Subject|Custom Fields|\n|---|---|---|---'
+                                      '|---|\n| 789 | testing | bug | testResponse | **-**\t***name***: test<br>\t**value**:<br>'
+                                      '\t\t***values***: a, b, c<br>**-**\t***name***: test2<br>\t***value***: hello [], my name'
+                                      ' is paloalto, paloalto |\n')
+
+
 def test_create_issue_command_invalid_custom_fields(redmine_client):
     """
     Given:
@@ -107,11 +167,13 @@ def test_create_issue_command_invalid_custom_fields(redmine_client):
     """
     from Redmine import create_issue_command
     from CommonServerPython import DemistoException
-    args = {'project_id': '1', 'custom_fields': '1:https://test:appear,111', 'issue_id': '1', 'subject': 'testSub',
+    args = {'project_id': '1', 'custom_fields': '{"1https://test:appear,111"}', 'issue_id': '1', 'subject': 'testSub',
             'tracker': 'bug', 'watcher_user_ids': '[1]', 'priority': 'high'}
     with pytest.raises(DemistoException) as e:
         create_issue_command(redmine_client, args)
-    assert e.value.message == "Custom fields not in format, please follow the instructions"
+    assert e.value.message == ('Custom fields not in format, please follow this format: `{"customFieldID2": "value3", '
+                               '"customFieldID1": ["value1","value2"]}` - Please use an array if the field is of multiselect type'
+                               '. with error: Expecting \':\' delimiter: line 1 column 28 (char 27)')
 
 
 def test_create_issue_command_no_token_created_for_file(mocker, redmine_client):
@@ -247,6 +309,33 @@ def test_update_issue_command(mocker, redmine_client):
                                     empty_valid_codes=[204], return_empty_response=True)
 
 
+def test_update_issue_command_with_multiselect_cf(mocker, redmine_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed (with multiselect custom field)
+    When:
+        - redmine-issue-update command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Redmine import update_issue_command
+    http_request = mocker.patch.object(redmine_client, '_http_request')
+    args = {'issue_id': '1', 'subject': 'changeFromCode', 'tracker_id': '1', 'status_id': '1', 'priority_id': '1',
+            'watcher_user_ids': '[1]', 'custom_fields': '{"4":["a","b","c"],"1":"hello [], my name is paloalto, paloalto"}'
+            }
+    update_issue_command(redmine_client, args=args)
+    http_request.assert_called_with('PUT', '/issues/1.json', json_data={'issue': {'subject': 'changeFromCode', 'tracker_id': '1',
+                                                                                  'status_id': '1', 'priority_id': '1',
+                                                                                  'custom_fields': [{'id': '4', 'value':
+                                                                                                     ['a', 'b', 'c']},
+                                                                                                    {'id': '1', 'value':
+                                                                                                     ('hello [], my name is '
+                                                                                                      'paloalto, paloalto')}],
+                                                                                  'watcher_user_ids': [1]}},
+                                    headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True},
+                                    empty_valid_codes=[204], return_empty_response=True)
+
+
 def test_update_issue_command_response(mocker, redmine_client):
     """
     Given:
@@ -260,7 +349,7 @@ def test_update_issue_command_response(mocker, redmine_client):
     update_issue_request_mock = mocker.patch.object(redmine_client, 'update_issue_request')
     args = {'issue_id': '1', 'subject': 'changefortest', 'tracker_id': '1',
             'status_id': '1', 'priority_id': '1', 'watcher_user_ids': '[1]',
-            'custom_fields': '1:https://test:appear'}
+            'custom_fields': '{"4":["a","b","c"],"1":"hello [], my name is paloalto, paloalto"}'}
     update_issue_request_mock.return_value = {}
     result = update_issue_command(redmine_client, args=args)
     assert result.readable_output == 'Issue with id 1 was successfully updated.'
@@ -281,7 +370,9 @@ def test_update_issue_command_invalid_custom_fields(redmine_client):
             'status_id': '1', 'priority_id': 'high'}
     with pytest.raises(DemistoException) as e:
         update_issue_command(redmine_client, args)
-        assert e.value.message == "Custom fields not in format, please follow the instructions"
+    assert e.value.message == ('Custom fields not in format, please follow this format: `{"customFieldID2": "value3", '
+                               '"customFieldID1": ["value1","value2"]}` - Please use an array if the field is of multiselect type'
+                               '. with error: Expecting value: line 1 column 1 (char 0)')
 
 
 def test_update_issue_command_no_token_created_for_file(mocker, redmine_client):

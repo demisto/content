@@ -3,7 +3,7 @@ commonfields:
   id: ZeroDayLiveTIFUSION Feed
   version: -1
 configuration:
-- defaultvalue: "true"
+- defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   type: 8
@@ -43,7 +43,7 @@ configuration:
   type: 15
   required: false
 - defaultvalue: indicatorType
-  display: ""
+  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -52,12 +52,12 @@ configuration:
   - suddenDeath
   type: 17
   required: false
-- defaultvalue: "20160"
-  display: ""
+- defaultvalue: '20160'
+  display: ''
   name: feedExpirationInterval
   type: 1
   required: false
-- defaultvalue: "240"
+- defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
@@ -68,7 +68,7 @@ configuration:
   type: 8
   required: false
 - additionalinfo: If selected, the indicator type will be auto detected for each indicator.
-  defaultvalue: "true"
+  defaultvalue: 'true'
   display: Auto detect indicator type
   name: auto_detect_type
   type: 8
@@ -90,10 +90,10 @@ configuration:
   display: Field Names
   name: fieldnames
   type: 0
-  defaultvalue: "value"
+  defaultvalue: value
   required: false
 - additionalinfo: Time (in seconds) before HTTP requests timeout.
-  defaultvalue: "20"
+  defaultvalue: '20'
   display: Request Timeout
   name: polling_timeout
   required: true
@@ -107,11 +107,11 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: 'Zero Day Live is Blackwired’s flagship product that delivers proprietary cyber threat intelligence, enabling our clients to operate at the same speed as the adversary. Zero Day Live specializes in unknown, zero day and early warning threats. Our intelligence is delivered finished, actionable and seamlessly orchestrated, directly into the existing security infrastructure – measurably reducing the risk of breach.'
+description: "Zero Day Live is Blackwired's flagship product that delivers proprietary cyber threat intelligence, enabling our clients to operate at the same speed as the adversary. Zero Day Live specializes in unknown, zero day and early warning threats. Our intelligence is delivered finished, actionable and seamlessly orchestrated, directly into the existing security infrastructure - measurably reducing the risk of breach."
 display: Zero Day Live TI FUSION Feed
 name: ZeroDayLiveTIFUSION Feed
 script:
-  dockerimage: demisto/py3-tools:1.0.0.63856
+  dockerimage: demisto/py3-tools:1.0.0.114656
   feed: true
   runonce: true
   script: '-'

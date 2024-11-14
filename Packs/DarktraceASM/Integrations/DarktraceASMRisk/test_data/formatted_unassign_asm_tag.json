@@ -1,0 +1,8 @@
+{
+    "success": true,
+    "asset": {
+      "id": "QXBwbGljYXRpb25UeXBlOjI2NjI4",
+      "tags": []
+    },
+    "readable_output": "Successfully unassigned tag API TEST from asset QXBwbGljYXRpb25UeXBlOjI2NjI4.  Tags applied to asset:\n"
+}

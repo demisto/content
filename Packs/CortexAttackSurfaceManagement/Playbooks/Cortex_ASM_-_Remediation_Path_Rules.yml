@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f53e0e04-0bde-4421-81c2-3408fbb0ad52
+    taskid: 21d5081e-7e2a-4269-86f4-ec16219239e9
     type: start
     task:
-      id: f53e0e04-0bde-4421-81c2-3408fbb0ad52
+      id: 21d5081e-7e2a-4269-86f4-ec16219239e9
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 0207b014-5eb8-4ef5-8f8c-c614cd144f9a
+    taskid: f5a08734-d17a-4fb1-8463-38fef0c3c540
     type: regular
     task:
-      id: 0207b014-5eb8-4ef5-8f8c-c614cd144f9a
+      id: f5a08734-d17a-4fb1-8463-38fef0c3c540
       version: -1
       name: List remediation path rules
       description: Returns list of remediation path rules.
@@ -82,10 +82,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 6665e4f1-2958-4a7e-85f8-95111f0a8024
+    taskid: dd594f41-21ad-4b5b-857d-c581e2fbf153
     type: condition
     task:
-      id: 6665e4f1-2958-4a7e-85f8-95111f0a8024
+      id: dd594f41-21ad-4b5b-857d-c581e2fbf153
       version: -1
       name: Was there a result?
       description: Determines if there was a result from the previous command to continue.
@@ -125,17 +125,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: f2a13bb9-2de5-46b3-8b11-f37790e5e7aa
+    taskid: c4f9c21c-5836-414a-822c-51497dc91b01
     type: regular
     task:
-      id: f2a13bb9-2de5-46b3-8b11-f37790e5e7aa
+      id: c4f9c21c-5836-414a-822c-51497dc91b01
       version: -1
       name: Evaluate remediation path rules
       description: For a given alert and remediation path rules that are defined for that alert's attack surface rule, this takes each remediation path rule and looks at the rule criteria too see if the rule matches for the given alert. If multiple rules match, it will return the most recently created rule. This assumes that the rules passed in are filtered to correlate with the alert's attack surface rule.
-      scriptName: RemediationPathRuleEvaluation
       type: regular
       iscommand: false
       brand: ""
+      script: RemediationPathRuleEvaluation
     nexttasks:
       '#none#':
       - "22"
@@ -189,10 +189,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 475baaab-5fc4-404b-83a3-12d3d7ab2fcf
+    taskid: 1a5064d9-30a7-4d7b-8a48-4595d514d0c3
     type: title
     task:
-      id: 475baaab-5fc4-404b-83a3-12d3d7ab2fcf
+      id: 1a5064d9-30a7-4d7b-8a48-4595d514d0c3
       version: -1
       name: Complete
       type: title
@@ -217,10 +217,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: d46de1a3-299d-4a2b-8a5d-541d684b5183
+    taskid: 06d9bc06-59ea-4f26-8e72-62158cfaaefa
     type: condition
     task:
-      id: d46de1a3-299d-4a2b-8a5d-541d684b5183
+      id: 06d9bc06-59ea-4f26-8e72-62158cfaaefa
       version: -1
       name: Meets automated remediation requirements?
       description: Determines if the alert meets the criteria for automated remediation.
@@ -234,11 +234,135 @@ tasks:
       - "52"
       Unclaimed S3 Bucket:
       - "33"
-      "yes":
+      AWS Systems Manager:
+      - "58"
+      Restrict Open Ports:
       - "34"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: "AWS Systems Manager"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: AWS - System Manager
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: alert.asmsystemids
+                accessor: id
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: alert.asmsystemids.type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: ASSET-SSM-PLATFORM-NAME
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: ubuntu
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: asmattacksurfaceruleid
+                transformers:
+                - args:
+                    chars:
+                      value:
+                        simple: '[\"]'
+                  operator: StripChars
+            iscontext: true
+          right:
+            value:
+              simple: InsecureOpenSSH
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: alert.asmsystemids
+                accessor: id
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: alert.asmsystemids.type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: ASSET-SSM-PLATFORM-TYPE
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: linux
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: alert.asmsystemids.type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: ASSET-SSM-AGENT-STATUS
+                root: alert.asmsystemids
+                transformers:
+                - operator: toLowerCase
+          operator: isEqualString
+          right:
+            value:
+              simple: active
+      - - left:
+            iscontext: true
+            value:
+              simple: alert.asmdevcheckdetails.result
+          operator: isTrue
+        - left:
+            iscontext: true
+            value:
+              simple: inputs.BypassDevCheck
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      - - left:
+            iscontext: true
+            value:
+              simple: alert.asmserviceowner
+          operator: isNotEmpty
+    - label: "Restrict Open Ports"
       condition:
       - - operator: inList
           left:
@@ -420,10 +544,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: ee07dc79-0d84-44b7-855e-c22a0c02245f
+    taskid: 1d34e7f1-89dd-4e52-8e68-aeefba08d1ab
     type: condition
     task:
-      id: ee07dc79-0d84-44b7-855e-c22a0c02245f
+      id: 1d34e7f1-89dd-4e52-8e68-aeefba08d1ab
       version: -1
       name: Is Cortex ASM enabled?
       description: Determines if the "Cortex Attack Surface Management" integration instance is configured to pull Remediation Path Rules.
@@ -481,10 +605,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: dc8ed22e-42a4-4f17-865d-748a6497b01f
+    taskid: 69e5192d-ad2f-4a44-8aac-0a45ad590fbe
     type: condition
     task:
-      id: dc8ed22e-42a4-4f17-865d-748a6497b01f
+      id: 69e5192d-ad2f-4a44-8aac-0a45ad590fbe
       version: -1
       name: Is ServiceNow v2 enabled?
       description: Determines if the "ServiceNow v2" integration instance is enabled in order to send ServiceNow tickets as notifications.
@@ -529,8 +653,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": -720
+          "x": -170,
+          "y": -750
         }
       }
     note: false
@@ -542,17 +666,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 61f1db44-72bc-4ac5-820c-e9cd290ac79c
+    taskid: 32d41c9c-ef4b-43eb-8629-9cad1bfffa4e
     type: regular
     task:
-      id: 61f1db44-72bc-4ac5-820c-e9cd290ac79c
+      id: 32d41c9c-ef4b-43eb-8629-9cad1bfffa4e
       version: -1
       name: Set ServiceNowv2Enabled to true
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "37"
@@ -566,8 +690,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": -520
+          "x": -170,
+          "y": -550
         }
       }
     note: false
@@ -579,17 +703,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: e9b92d4e-6ad9-42ad-8664-73071081b9e0
+    taskid: 66158556-6cc6-4c11-8cb6-af2202cc02a8
     type: regular
     task:
-      id: e9b92d4e-6ad9-42ad-8664-73071081b9e0
+      id: 66158556-6cc6-4c11-8cb6-af2202cc02a8
       version: -1
       name: Set ServiceNowv2Enabled to false
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "43"
@@ -603,8 +727,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -170,
-          "y": -510
+          "x": -580,
+          "y": -540
         }
       }
     note: false
@@ -616,17 +740,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 3c333ac9-103f-4df3-877c-ef08a0b2ce2c
+    taskid: 08373f55-01ab-487c-8a1a-628d0e094e18
     type: regular
     task:
-      id: 3c333ac9-103f-4df3-877c-ef08a0b2ce2c
+      id: 08373f55-01ab-487c-8a1a-628d0e094e18
       version: -1
       name: Set AutoRemediationRequirements to true
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "36"
@@ -653,17 +777,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 98f3fdfd-a9a7-43ea-8fc1-d10bf21bb126
+    taskid: 400a7a8b-004b-48e6-877f-8db9b91d3bd4
     type: regular
     task:
-      id: 98f3fdfd-a9a7-43ea-8fc1-d10bf21bb126
+      id: 400a7a8b-004b-48e6-877f-8db9b91d3bd4
       version: -1
       name: Set AutoRemediationRequirements to false
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "36"
@@ -677,8 +801,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -110,
-          "y": -1475
+          "x": -450,
+          "y": -1485
         }
       }
     note: false
@@ -690,10 +814,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 29f89903-4450-4edb-89a8-4dcb7eefb484
+    taskid: f74a74e6-61b3-4843-8e2b-3713727c3345
     type: condition
     task:
-      id: 29f89903-4450-4edb-89a8-4dcb7eefb484
+      id: f74a74e6-61b3-4843-8e2b-3713727c3345
       version: -1
       name: Was there a match?
       description: Determines if a matching remediation path rule was found based on population of the "ASM - Remediation Path Rule" field.
@@ -735,10 +859,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 1c420f97-4985-4bba-8cee-d8ed51cce2ff
+    taskid: cbc75f55-18a5-4da5-8367-76d54c82dc35
     type: condition
     task:
-      id: 1c420f97-4985-4bba-8cee-d8ed51cce2ff
+      id: cbc75f55-18a5-4da5-8367-76d54c82dc35
       version: -1
       name: What is the action of the matched rule?
       description: Determines what is returned to the parent playbook based on contents of "ASM - Remediation Path Rule" field and other requirements.
@@ -758,6 +882,8 @@ tasks:
       - "26"
       return SNOW:
       - "25"
+      Slack:
+      - "57"
     separatecontext: false
     conditions:
     - label: return AR
@@ -845,6 +971,24 @@ tasks:
           right:
             value:
               simple: "True"
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.RemediationRule.action
+          operator: isEqualString
+          right:
+            value:
+              simple: slack
+        - left:
+            iscontext: true
+            value:
+              simple: SlackEnabled
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: Slack
     continueonerrortype: ""
     view: |-
       {
@@ -862,17 +1006,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 68e6d8ee-e670-4beb-8dce-9e34b64f585f
+    taskid: dcd0c02a-1157-49c9-8afa-d4faeffaa8a5
     type: regular
     task:
-      id: 68e6d8ee-e670-4beb-8dce-9e34b64f585f
+      id: dcd0c02a-1157-49c9-8afa-d4faeffaa8a5
       version: -1
       name: Return AR
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "31"
@@ -899,17 +1043,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 09502b4c-8588-4a1b-8530-f854e6c995e2
+    taskid: ac3fd175-bf39-42f7-8874-eb6e183cbc0d
     type: regular
     task:
-      id: 09502b4c-8588-4a1b-8530-f854e6c995e2
+      id: ac3fd175-bf39-42f7-8874-eb6e183cbc0d
       version: -1
       name: Return SNOW
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "31"
@@ -936,17 +1080,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 3fda1c2d-d726-4835-8540-1c2aa16f474a
+    taskid: b5c1a6f2-b3a5-4f2d-8f67-eef2b8b83687
     type: regular
     task:
-      id: 3fda1c2d-d726-4835-8540-1c2aa16f474a
+      id: b5c1a6f2-b3a5-4f2d-8f67-eef2b8b83687
       version: -1
       name: Return Email
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "31"
@@ -973,17 +1117,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: c7a1c4d2-0e40-44ac-8d66-5361aeb0c4ad
+    taskid: 6d4daab5-8668-42ed-8dda-a91fc6d4357d
     type: regular
     task:
-      id: c7a1c4d2-0e40-44ac-8d66-5361aeb0c4ad
+      id: 6d4daab5-8668-42ed-8dda-a91fc6d4357d
       version: -1
       name: Return Manual
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "31"
@@ -1010,18 +1154,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 2f03729d-b3a7-4a6c-8f85-71b5f6f15ef5
+    taskid: a907d910-10fc-4d9c-8c99-3efce090b3d2
     type: regular
     task:
-      id: 2f03729d-b3a7-4a6c-8f85-71b5f6f15ef5
+      id: a907d910-10fc-4d9c-8c99-3efce090b3d2
       version: -1
       name: Get current time
       description: |
         Retrieves the current date and time.
-      scriptName: GetTime
       type: regular
       iscommand: false
       brand: ""
+      script: GetTime
     nexttasks:
       '#none#':
       - "32"
@@ -1043,17 +1187,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 26734940-913f-4bd8-8652-a63e5068f0d1
+    taskid: 459223ef-daed-41f1-8114-cccdd677c737
     type: regular
     task:
-      id: 26734940-913f-4bd8-8652-a63e5068f0d1
+      id: 459223ef-daed-41f1-8114-cccdd677c737
       version: -1
       name: Set timestamp
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "6"
@@ -1083,10 +1227,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: dabc7f51-0ced-4b11-8b38-165e5b9077b5
+    taskid: a8cce078-4e13-499d-8364-7dc9db8a271f
     type: title
     task:
-      id: dabc7f51-0ced-4b11-8b38-165e5b9077b5
+      id: a8cce078-4e13-499d-8364-7dc9db8a271f
       version: -1
       name: Also True
       type: title
@@ -1101,8 +1245,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1210,
-          "y": -1590
+          "x": 1380,
+          "y": -1600
         }
       }
     note: false
@@ -1114,17 +1258,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 717271bd-270f-4db9-86c4-22aa8a9535a0
+    taskid: 096532c1-dd74-4367-8d80-bb8c4723de75
     type: regular
     task:
-      id: 717271bd-270f-4db9-86c4-22aa8a9535a0
+      id: 096532c1-dd74-4367-8d80-bb8c4723de75
       version: -1
       name: Set remediationoptions context (AR ports)
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "19"
@@ -1140,8 +1284,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 300,
-          "y": -1475
+          "x": -40,
+          "y": -1485
         }
       }
     note: false
@@ -1153,17 +1297,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 74551098-9d92-446b-8eb2-30301c0196d4
+    taskid: dfc35f93-b585-4dfc-80ab-0232bf901677
     type: regular
     task:
-      id: 74551098-9d92-446b-8eb2-30301c0196d4
+      id: dfc35f93-b585-4dfc-80ab-0232bf901677
       version: -1
       name: Set remediationoptions context (AR S3)
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "19"
@@ -1179,8 +1323,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1210,
-          "y": -1475
+          "x": 1380,
+          "y": -1485
         }
       }
     note: false
@@ -1192,10 +1336,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: a78048a8-0b1d-4f50-81d1-ec9a638828fb
+    taskid: 9d23c5f0-606e-4ba1-8c2d-81ac7a4c68db
     type: title
     task:
-      id: a78048a8-0b1d-4f50-81d1-ec9a638828fb
+      id: 9d23c5f0-606e-4ba1-8c2d-81ac7a4c68db
       version: -1
       name: Notification Check
       type: title
@@ -1206,6 +1350,7 @@ tasks:
       '#none#':
       - "16"
       - "49"
+      - "56"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1224,17 +1369,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 581af6af-fb23-49b8-84d0-b55c3917143b
+    taskid: 68e55153-7505-4154-8cb6-66dbc63a3c73
     type: regular
     task:
-      id: 581af6af-fb23-49b8-84d0-b55c3917143b
+      id: 68e55153-7505-4154-8cb6-66dbc63a3c73
       version: -1
       name: Set remediationoptions context (SNOW)
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "43"
@@ -1250,8 +1395,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": -360
+          "x": -170,
+          "y": -390
         }
       }
     note: false
@@ -1263,17 +1408,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: c9fcfadd-d65c-403c-85b7-3fe6c92ebe26
+    taskid: 3aaee7fd-4302-42eb-8cd1-61a070e172b8
     type: regular
     task:
-      id: c9fcfadd-d65c-403c-85b7-3fe6c92ebe26
+      id: 3aaee7fd-4302-42eb-8cd1-61a070e172b8
       version: -1
       name: Set JiraEnabled to true
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "42"
@@ -1287,8 +1432,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": -520
+          "x": 270,
+          "y": -550
         }
       }
     note: false
@@ -1300,17 +1445,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 7805e705-95f5-418c-88fb-84fccde4e45d
+    taskid: 148d6abb-00cb-4444-81c4-d63b880e6353
     type: regular
     task:
-      id: 7805e705-95f5-418c-88fb-84fccde4e45d
+      id: 148d6abb-00cb-4444-81c4-d63b880e6353
       version: -1
       name: Set JiraEnabled to false
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "43"
@@ -1324,8 +1469,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1090,
-          "y": -520
+          "x": 680,
+          "y": -550
         }
       }
     note: false
@@ -1337,17 +1482,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 82db1979-3555-498d-8483-c3c12bc9fec3
+    taskid: 31981082-5856-4eba-8278-a6ca48bf2907
     type: regular
     task:
-      id: 82db1979-3555-498d-8483-c3c12bc9fec3
+      id: 31981082-5856-4eba-8278-a6ca48bf2907
       version: -1
       name: Set remediationoptions context (Jira)
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "43"
@@ -1363,8 +1508,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": -360
+          "x": 270,
+          "y": -390
         }
       }
     note: false
@@ -1376,17 +1521,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: d3342595-7841-4e8d-829c-2b5fb00d8bbd
+    taskid: 30ce7f6b-5825-4e42-8546-e2248718d6e0
     type: regular
     task:
-      id: d3342595-7841-4e8d-829c-2b5fb00d8bbd
+      id: 30ce7f6b-5825-4e42-8546-e2248718d6e0
       version: -1
       name: Set remediationoptions context (Email)
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "44"
@@ -1415,17 +1560,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 8ef9ae63-6742-4910-8cad-82b870a3b035
+    taskid: 2e55ccd2-0577-4ac9-8dc9-7bbc9c1f04eb
     type: regular
     task:
-      id: 8ef9ae63-6742-4910-8cad-82b870a3b035
+      id: 2e55ccd2-0577-4ac9-8dc9-7bbc9c1f04eb
       version: -1
       name: Set remediationoptions context (Manual)
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "13"
@@ -1454,10 +1599,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 3dae14eb-59a7-478d-85ac-a8ef1de6e844
+    taskid: 79eb4fd7-1804-40e1-8a4e-a22b40296203
     type: collection
     task:
-      id: 3dae14eb-59a7-478d-85ac-a8ef1de6e844
+      id: 79eb4fd7-1804-40e1-8a4e-a22b40296203
       version: -1
       name: Select remediation action (dynamic)
       description: Determines the next action (remediation or ticket) based on user input. Options are based on if ServiceNowV2 integration is set up and/or the alert meets the requirement for automated remediation.
@@ -1524,19 +1669,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 6e6043e3-9638-4940-8c37-e862b439ee6a
+    taskid: 44017a99-2d7b-4cfe-82b8-c5cdfcd093ec
     type: regular
     task:
-      id: 6e6043e3-9638-4940-8c37-e862b439ee6a
+      id: 44017a99-2d7b-4cfe-82b8-c5cdfcd093ec
       version: -1
       name: Set data collection grid field
       description: |-
         Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "47"
@@ -1579,19 +1724,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: e44336e3-305e-4d96-8731-f5aef3c67e7a
+    taskid: b9ea6816-55e3-49f3-8260-f9495b32cc19
     type: regular
     task:
-      id: e44336e3-305e-4d96-8731-f5aef3c67e7a
+      id: b9ea6816-55e3-49f3-8260-f9495b32cc19
       version: -1
       name: Set playbook stage grid field (decision)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "6"
@@ -1622,17 +1767,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: c35cce8e-1c8e-4432-831c-65df7e04b004
+    taskid: 30198f95-cbb7-4bb6-869d-9b6e4f3f0ec3
     type: regular
     task:
-      id: c35cce8e-1c8e-4432-831c-65df7e04b004
+      id: 30198f95-cbb7-4bb6-869d-9b6e4f3f0ec3
       version: -1
       name: Return Jira
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "31"
@@ -1659,10 +1804,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: fdfbace2-fb0b-48b1-895f-6d17a21b55a1
+    taskid: 12d27d63-68ff-48ed-8042-9b7df6031760
     type: condition
     task:
-      id: fdfbace2-fb0b-48b1-895f-6d17a21b55a1
+      id: 12d27d63-68ff-48ed-8042-9b7df6031760
       version: -1
       name: Is Atlassian Jira v2 or v3 enabled?
       description: Determines if the "Atlassian Jira v2" or "Atlassian Jira v3" integration instance is enabled in order to send Jira tickets as notifications.
@@ -1715,8 +1860,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": -720
+          "x": 470,
+          "y": -750
         }
       }
     note: false
@@ -1728,17 +1873,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 42b54db4-31bd-45e0-8d37-b6e83f853688
+    taskid: 1579a8f3-bf24-4911-81a4-1da8456b3625
     type: regular
     task:
-      id: 42b54db4-31bd-45e0-8d37-b6e83f853688
+      id: 1579a8f3-bf24-4911-81a4-1da8456b3625
       version: -1
       name: Set Attack Surface Rules list
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "10"
@@ -1746,7 +1891,7 @@ tasks:
       key:
         simple: remediationattacksurfacerules
       value:
-        simple: RdpServer,InsecureOpenSSH,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer,SnmpServer,MysqlServer,MongoServer,PostgresServer,ElasticsearchServer,SSHTerrapinAttack
+        simple: RdpServer,InsecureOpenSSH,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer,SnmpServer,MysqlServer,MongoServer,PostgresServer,ElasticsearchServer,SSHTerrapinAttack,TftpServer,InsecureSFTPGo,InsecureBitviseSSHServer,Libssh,RpcBindServer,SmbServer,KubernetesControlPlaneComponent,NfsRpcBindServer,NetBiosNameServer,LDAPServer
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1765,17 +1910,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: fd96a27b-b711-488a-8bb9-946f95720fea
+    taskid: a24d37a0-b4de-4610-880b-7115b65e02df
     type: regular
     task:
-      id: fd96a27b-b711-488a-8bb9-946f95720fea
+      id: a24d37a0-b4de-4610-880b-7115b65e02df
       version: -1
       name: Set remediationoptions context (AR Cortex Endpoint)
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "19"
@@ -1791,8 +1936,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": -1475
+          "x": 920,
+          "y": -1485
         }
       }
     note: false
@@ -1802,19 +1947,271 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "53":
+    continueonerrortype: ""
+    id: "53"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "55"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: SlackEnabled
+      value:
+        simple: "True"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 08b8619c-ab9a-4195-8102-2de2f16a44e0
+      iscommand: false
+      name: Set SlackEnabled to true
+      script: Set
+      type: regular
+      version: -1
+    taskid: 08b8619c-ab9a-4195-8102-2de2f16a44e0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": -550
+        }
+      }
+  "54":
+    continueonerrortype: ""
+    id: "54"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: SlackEnabled
+      value:
+        simple: "False"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: c8b4e73c-bc67-456c-83fe-a2102124e99b
+      iscommand: false
+      name: Set SlackEnabled to false
+      script: Set
+      type: regular
+      version: -1
+    taskid: c8b4e73c-bc67-456c-83fe-a2102124e99b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1510,
+          "y": -550
+        }
+      }
+  "55":
+    continueonerrortype: ""
+    id: "55"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: remediationoptions
+      value:
+        simple: Send a Slack message
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 56cb6392-ed52-45b2-8194-b4e05730c350
+      iscommand: false
+      name: Set remediationoptions context (Slack)
+      script: Set
+      type: regular
+      version: -1
+    taskid: 56cb6392-ed52-45b2-8194-b4e05730c350
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": -390
+        }
+      }
+  "56":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: SlackV3
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "56"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "54"
+      "yes":
+      - "53"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if the Slack integration (v3) instance is enabled in order to send Slack messages as notifications.
+      id: 84e72fc4-8d45-44b2-8c3d-ce4ec92ad200
+      iscommand: false
+      name: Is Slack enabled?
+      type: condition
+      version: -1
+    taskid: 84e72fc4-8d45-44b2-8c3d-ce4ec92ad200
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": -750
+        }
+      }
+  "57":
+    continueonerrortype: ""
+    id: "57"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: RemediationAction
+      value:
+        simple: Slack
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: bfcc975f-d7db-46ad-8a1d-b9be5cfd186c
+      iscommand: false
+      name: Return Slack
+      script: Set
+      type: regular
+      version: -1
+    taskid: bfcc975f-d7db-46ad-8a1d-b9be5cfd186c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2130,
+          "y": 1350
+        }
+      }
+  "58":
+    continueonerrortype: ""
+    id: "58"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: remediationoptions
+      value:
+        simple: Automated remediation by patching vulnerable software
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 5a0f0dc0-2fc1-44a0-8256-339e9db69aea
+      iscommand: false
+      name: Set remediationoptions context (AWS Systems manager)
+      script: Set
+      type: regular
+      version: -1
+    taskid: 5a0f0dc0-2fc1-44a0-8256-339e9db69aea
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": -1485
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {
       "10_33_Unclaimed S3 Bucket": 0.55,
-      "10_34_yes": 0.83,
+      "10_34_Restrict Open Ports": 0.83,
       "10_52_Cortex Endpoint": 0.66,
-      "16_17_yes": 0.55
+      "16_17_yes": 0.55,
+      "23_48_Jira": 0.88,
+      "23_57_Slack": 0.89
     },
     "paper": {
       "dimensions": {
         "height": 4070,
-        "width": 2470,
-        "x": -370,
+        "width": 3090,
+        "x": -580,
         "y": -2150
       }
     }

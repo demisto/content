@@ -88,7 +88,7 @@ There is no context output for this command.
                     "externalReferences": [],
                     "id": "700c8187-2dce-4aeb-bf3a-0864cb7b02c7",
                     "labels": [
-                        "devdemisto"
+                        "dev1"
                     ],
                     "marking": [
                         "TLP:AMBER"
@@ -103,7 +103,7 @@ There is no context output for this command.
                     "externalReferences": [],
                     "id": "33bd535b-fa1c-41e2-a6f9-80d82dd29a9b",
                     "labels": [
-                        "devdemisto",
+                        "dev1",
                         "test-label-1"
                     ],
                     "marking": [],

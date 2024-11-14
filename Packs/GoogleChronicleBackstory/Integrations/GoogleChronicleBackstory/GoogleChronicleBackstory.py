@@ -25,6 +25,8 @@ BACKSTORY_API_V1_URL = 'https://{}backstory.googleapis.com/v1'
 BACKSTORY_API_V2_URL = 'https://{}backstory.googleapis.com/v2'
 MAX_ATTEMPTS = 60
 DEFAULT_FIRST_FETCH = "3 days"
+DEFAULT_CONTENT_TYPE = 'PLAIN_TEXT'
+VALID_CONTENT_TYPE = ['PLAIN_TEXT', 'CIDR', 'REGEX']
 REGIONS = {
     "General": "",
     "Europe": "europe-",
@@ -54,6 +56,7 @@ CHRONICLE_OUTPUT_PATHS = {
     'LiveRuleStatusChange': 'GoogleChronicleBackstory.LiveRuleStatusChange(val.ruleId == obj.ruleId)',
     'RetroHunt': 'GoogleChronicleBackstory.RetroHunt(val.retrohuntId == obj.retrohuntId)',
     'ReferenceList': 'GoogleChronicleBackstory.ReferenceList(val.name == obj.name)',
+    'VerifyReferenceList': 'GoogleChronicleBackstory.VerifyReferenceList(val.command_name == obj.command_name)',
     'ListReferenceList': 'GoogleChronicleBackstory.ReferenceLists(val.name == obj.name)',
     'StreamRules': 'GoogleChronicleBackstory.StreamRules(val.id == obj.id)',
     'AssetAliases': 'GoogleChronicleBackstory.AssetAliases(val.asset.asset_ip_address == obj.asset.asset_ip_address '
@@ -165,6 +168,7 @@ LAST_SEEN = 'Last Seen'
 FIRST_SEEN_AGO = 'First Seen Ago'
 FIRST_SEEN = 'First Seen'
 ALERT_NAMES = 'Alert Names'
+MARKDOWN_CHARS = r"\*_{}[]()#+-!"
 
 ''' CLIENT CLASS '''
 
@@ -188,8 +192,6 @@ class Client:
         service_account_credential = json.loads(encoded_service_account, strict=False)
         # Create a credential using the Google Developer Service Account Credential and Chronicle API scope.
         credentials = service_account.Credentials.from_service_account_info(service_account_credential, scopes=SCOPES)
-        # Build an HTTP client which can make authorized OAuth requests.
-        self.http_client = auth_requests.AuthorizedSession(credentials)
 
         proxies = {}
         if proxy:
@@ -199,6 +201,11 @@ class Client:
             https_proxy = proxies['https']
             if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
                 proxies['https'] = 'https://' + https_proxy
+        else:
+            skip_proxy()
+
+        # Build an HTTP client which can make authorized OAuth requests.
+        self.http_client = auth_requests.AuthorizedSession(credentials)
         self.proxy_info = proxies
         self.disable_ssl = disable_ssl
 
@@ -350,6 +357,24 @@ def trim_args(args):
         args[key] = value.strip()
 
     return args
+
+
+def string_escape_markdown(data: Any):
+    """
+    Escape any chars that might break a markdown string.
+    :param data: The data to be modified (required).
+    :return: A modified data.
+    """
+    if isinstance(data, str):
+        data = "".join(["\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in data])
+    elif isinstance(data, list):
+        new_data = []
+        for sub_data in data:
+            if isinstance(sub_data, str):
+                sub_data = "".join(["\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in sub_data])
+            new_data.append(sub_data)
+        data = new_data
+    return data
 
 
 def validate_argument(value, name) -> str:
@@ -3696,7 +3721,7 @@ def prepare_hr_for_gcb_cancel_retrohunt(json_data):
     return hr
 
 
-def gcb_create_reference_list(client_obj, name, description, lines):
+def gcb_create_reference_list(client_obj, name, description, lines, content_type):
     """
     Return context data and raw response for gcb_create_reference_list command.
 
@@ -3712,16 +3737,22 @@ def gcb_create_reference_list(client_obj, name, description, lines):
     :type lines: list
     :param lines: items to put in the list
 
+    :type content_type: str
+    :param content_type: the content_type of lines
+
     :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
     :return: ec, json_data: Context data and raw response of the request
     """
+    content_type = 'CONTENT_TYPE_DEFAULT_STRING' if content_type == DEFAULT_CONTENT_TYPE else content_type
     body = {
         "name": name,
         "description": description,
-        "lines": lines
+        "lines": lines,
+        "content_type": content_type,
     }
     request_url = f'{BACKSTORY_API_V2_URL}/lists'
     json_data = validate_response(client_obj, request_url, method='POST', body=json.dumps(body))
+    json_data['contentType'] = json_data.get('contentType', DEFAULT_CONTENT_TYPE)
     ec = {
         CHRONICLE_OUTPUT_PATHS['ReferenceList']: json_data
     }
@@ -3745,10 +3776,11 @@ def prepare_hr_for_gcb_create_get_update_reference_list(json_data, table_name='R
         'Name': json_data.get('name'),
         'Description': json_data.get('description'),
         'Creation Time': json_data.get('createTime'),
-        'Content': json_data.get('lines')
+        'Content Type': json_data.get('contentType'),
+        'Content': string_escape_markdown(json_data.get('lines'))
     }
 
-    headers = ['Name', 'Description', 'Creation Time', 'Content']
+    headers = ['Name', 'Content Type', 'Description', 'Creation Time', 'Content']
 
     return tableToMarkdown(table_name, hr_output, headers=headers, removeNull=True)
 
@@ -3777,8 +3809,11 @@ def gcb_list_reference_list(client_obj, page_size, page_token, view):
     request_url = f'{BACKSTORY_API_V2_URL}/lists?{encoded_params}'
 
     json_data = validate_response(client_obj, request_url, method='GET')
+    references_list = json_data.get('lists')
+    for reference in references_list:
+        reference['contentType'] = reference.get('contentType', DEFAULT_CONTENT_TYPE)
     ec = {
-        CHRONICLE_OUTPUT_PATHS['ListReferenceList']: json_data.get('lists')
+        CHRONICLE_OUTPUT_PATHS['ListReferenceList']: references_list
     }
     return ec, json_data
 
@@ -3801,10 +3836,11 @@ def prepare_hr_for_gcb_list_reference_list(json_data):
             'Name': output.get('name'),
             'Creation Time': output.get('createTime'),
             'Description': output.get('description'),
-            'Content': output.get('lines')
+            'Content Type': output.get('contentType'),
+            'Content': string_escape_markdown(output.get('lines'))
         })
     hr = tableToMarkdown('Reference List Details', hr_output,
-                         headers=['Name', 'Creation Time', 'Description', 'Content'], removeNull=True)
+                         headers=['Name', 'Content Type', 'Creation Time', 'Description', 'Content'], removeNull=True)
     if page_token:
         hr += '\nMaximum number of reference lists specified in page_size has been returned. To fetch the next set of' \
               ' lists, execute the command with the page token as {}'.format(page_token)
@@ -3830,13 +3866,14 @@ def gcb_get_reference_list(client_obj, name, view):
     encoded_params = urllib.parse.urlencode(assign_params(view=view))
     request_url = f'{BACKSTORY_API_V2_URL}/lists/{name}?{encoded_params}'
     json_data = validate_response(client_obj, request_url, method='GET')
+    json_data['contentType'] = json_data.get('contentType', DEFAULT_CONTENT_TYPE)
     ec = {
         CHRONICLE_OUTPUT_PATHS['ReferenceList']: json_data
     }
     return ec, json_data
 
 
-def gcb_update_reference_list(client_obj, name, lines, description):
+def gcb_update_reference_list(client_obj, name, lines, description, content_type):
     """
     Return context data and raw response for gcb_update_reference_list command.
 
@@ -3852,21 +3889,87 @@ def gcb_update_reference_list(client_obj, name, lines, description):
     :type lines: list
     :param lines: items to put in the list
 
+    :type content_type: str
+    :param content_type: the content_type of lines
+
     :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
     :return: ec, json_data: Context data and raw response of the request
     """
     request_url = f'{BACKSTORY_API_V2_URL}/lists?update_mask=list.lines'
+    content_type = 'CONTENT_TYPE_DEFAULT_STRING' if content_type == DEFAULT_CONTENT_TYPE else content_type
     body = {
         "name": name,
         "lines": lines,
-        "description": description
+        "description": description,
+        "content_type": content_type,
     }
     if description:
         request_url += ',list.description'
         # body["description"] = description
     json_data = validate_response(client_obj, request_url, method='PATCH', body=json.dumps(body))
+    json_data['contentType'] = json_data.get('contentType', DEFAULT_CONTENT_TYPE)
     ec = {
         CHRONICLE_OUTPUT_PATHS['ReferenceList']: json_data
+    }
+    return ec, json_data
+
+
+def prepare_hr_for_verify_reference_list(json_data, content_type):
+    """
+    Prepare human-readable for gcb-verify-reference-list.
+
+    :type json_data: Dict[str, Any]
+    :param json_data: Response of gcb-verify-reference-list
+
+    :type content_type: str
+    :param content_type: the content_type of lines
+
+    :rtype: str
+    :return: Human readable string for gcb-verify-reference-list
+    """
+    success = json_data.get('success', False)
+    if success:
+        return '### All provided lines meet validation criteria.'
+    json_data = json_data.get('errors', [])
+    hr_output = []
+    for output in json_data:
+        hr_output.append({
+            'Line Number': output.get('lineNumber'),
+            'Message': string_escape_markdown(output.get('errorMessage')),
+        })
+    hr = tableToMarkdown(f'The following lines contain invalid {content_type} pattern.', hr_output,
+                         headers=['Line Number', 'Message'], removeNull=True)
+    return hr
+
+
+def gcb_verify_reference_list(client_obj, lines, content_type):
+    """
+    Return context data and raw response for gcb_verify_reference_list command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type lines: list
+    :param lines: items to validate
+
+    :type content_type: str
+    :param content_type: the content_type of lines
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response of the request
+    """
+    request_url = f'{BACKSTORY_API_V2_URL}/lists:verifyReferenceList'
+    content_type = 'CONTENT_TYPE_DEFAULT_STRING' if content_type == DEFAULT_CONTENT_TYPE else content_type
+    body = {
+        'lines': lines,
+        'content_type': content_type
+    }
+    json_data = validate_response(client_obj, request_url, method='POST', body=json.dumps(body))
+    json_data['command_name'] = 'gcb-verify-reference-list'
+    json_data['success'] = json_data.get('success', False)
+    json_data['errors'] = json_data.get('errors', [])
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['VerifyReferenceList']: json_data
     }
     return ec, json_data
 
@@ -4863,7 +4966,12 @@ def gcb_create_reference_list_command(client_obj, args):
     description = validate_argument(args.get('description'), 'description')
     lines = validate_argument(args.get('lines'), 'lines')
     lines = argToList(lines, args.get('delimiter', ','))
-    ec, json_data = gcb_create_reference_list(client_obj, name=name, description=description, lines=lines)
+    valid_lines = [line for line in lines if line]  # Remove the empty("") lines
+    lines = validate_argument(valid_lines, 'lines')  # Validation for empty lines list
+    content_type = validate_single_select(
+        args.get('content_type', DEFAULT_CONTENT_TYPE).upper(), 'content_type', VALID_CONTENT_TYPE)
+    ec, json_data = gcb_create_reference_list(client_obj, name=name, description=description,
+                                              lines=lines, content_type=content_type)
     hr = prepare_hr_for_gcb_create_get_update_reference_list(json_data)
     return hr, ec, json_data
 
@@ -4930,9 +5038,45 @@ def gcb_update_reference_list_command(client_obj, args):
     name = validate_argument(args.get('name'), 'name')
     lines = validate_argument(args.get('lines'), 'lines')
     lines = argToList(lines, args.get('delimiter', ','))
+    valid_lines = [line for line in lines if line]  # Remove the empty("") lines
+    lines = validate_argument(valid_lines, 'lines')  # Validation for empty lines list
     description = args.get('description')
-    ec, json_data = gcb_update_reference_list(client_obj, name=name, lines=lines, description=description)
+    content_type = args.get('content_type')
+    if not content_type:
+        # Get the content type from the reference list
+        request_url = f'{BACKSTORY_API_V2_URL}/lists/{name}'
+        json_data = validate_response(client_obj, request_url, method='GET')
+        content_type = json_data.get('contentType', DEFAULT_CONTENT_TYPE)
+
+    content_type = validate_single_select(content_type.upper(), 'content_type', VALID_CONTENT_TYPE)
+    ec, json_data = gcb_update_reference_list(client_obj, name=name, lines=lines,
+                                              description=description, content_type=content_type)
     hr = prepare_hr_for_gcb_create_get_update_reference_list(json_data, 'Updated Reference List Details')
+    return hr, ec, json_data
+
+
+def gcb_verify_reference_list_command(client_obj, args):
+    """
+    Validate lines contents.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type args: Dict[str, str]
+    :param args: it contains arguments for gcb-update-reference-list command
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+    lines = validate_argument(args.get('lines'), 'lines')
+    lines = argToList(lines, args.get('delimiter', ','))
+    valid_lines = [line for line in lines if line]  # Remove the empty("") lines
+    lines = validate_argument(valid_lines, 'lines')  # Validation for empty lines list
+    content_type = validate_single_select(
+        args.get('content_type', DEFAULT_CONTENT_TYPE).upper(), 'content_type', VALID_CONTENT_TYPE)
+
+    ec, json_data = gcb_verify_reference_list(client_obj, lines=lines, content_type=content_type)
+    hr = prepare_hr_for_verify_reference_list(json_data, content_type)
     return hr, ec, json_data
 
 
@@ -5209,6 +5353,7 @@ def main():
         'gcb-list-useraliases': gcb_list_user_aliases_command,
         'gcb-list-curatedrule-detections': gcb_list_curatedrule_detections_command,
         'gcb-udm-search': gcb_udm_search_command,
+        'gcb-verify-reference-list': gcb_verify_reference_list_command,
     }
     # initialize configuration parameter
     proxy = demisto.params().get('proxy')

@@ -7,7 +7,8 @@ var countSuccess = 0;
 var instances = [];
 
 Object.keys(all).forEach(function(m) {
-    if (all[m].state === 'active' && all[m].defaultIgnored !== 'true' && INTERNAL_MODULES_BRANDS.indexOf(all[m].brand) === -1) {
+    var isShouldBeTesting = all[m].defaultIgnored !== 'true' && INTERNAL_MODULES_BRANDS.indexOf(all[m].brand) === -1;
+    if (all[m].state === 'active' && isShouldBeTesting) {
         var cmd = m.replace(/\s/g,'_') + '-test-module';
         var firstRest = executeCommand("addEntries", {"entries": JSON.stringify([{
             Type: entryTypes.note,
@@ -17,6 +18,12 @@ Object.keys(all).forEach(function(m) {
         }])});
 
         var res =  executeCommand(cmd, {});
+        var content = res[0].Contents
+        var result = content.includes("Test button cannot be used") && (all[m].brand === "ServiceNow v2" || all[m].brand === "ServiceNow CMDB");
+        if (result === true) {
+            cmd = all[m].brand === "ServiceNow v2" ? "servicenow-oauth-test" : "servicenow-cmdb-oauth-test"
+            res =  executeCommand(cmd, {});
+        }
         executeCommand("addEntries", {"entries": JSON.stringify([{
             Type: entryTypes.note,
             Contents: 'done testing **' + m + '**:\n' + res[0].Contents,
@@ -37,6 +44,16 @@ Object.keys(all).forEach(function(m) {
             instances.push({instance: m, brand: all[m].brand, category: all[m].category, information: 'succeed', status: 'success' });
         }
 
+    } else if (all[m].state === 'error' && isShouldBeTesting) {
+            var errorMessage = 'The instance is in an error state, potentially due to an issue with the engine.';
+            executeCommand("addEntries", {"entries": JSON.stringify([{
+                Type: entryTypes.note,
+                Contents: 'done testing **' + m + '**:\n' + errorMessage,
+                HumanReadable: 'done testing **' + m + '**:\n' + errorMessage,
+                ContentsFormat: formats.markdown
+            }])});
+            countFailed++;
+            failedInstances.push({instance: m, brand: all[m].brand, category: all[m].category, information: errorMessage, status: 'failure' });
     }
 });
 

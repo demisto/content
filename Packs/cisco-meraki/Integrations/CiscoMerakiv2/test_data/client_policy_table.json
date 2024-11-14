@@ -1,0 +1,20 @@
+[
+    {
+        "Client ID": "abc",
+        "Name": "my phone",
+        "Assigned Group Policy ID": [
+            "100"
+        ],
+        "Assigned Name": [
+            "Allowed"
+        ],
+        "Assigned Type": [
+            "ssid"
+        ],
+        "Assigned SSID": [
+            [
+                1
+            ]
+        ]
+    }
+]

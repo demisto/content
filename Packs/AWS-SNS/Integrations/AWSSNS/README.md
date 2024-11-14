@@ -12,7 +12,7 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | AWS Default Region |  | False |
+    | AWS Default Region |  | True |
     | Role Arn | When using Access Key and Secret Key, there is no need to use Role Arn | False |
     | Role Session Name |  | False |
     | Access Key |  | True |
@@ -20,10 +20,12 @@ For detailed instructions about setting up authentication, see: [AWS Integration
     | Role Session Duration |  | False |
     | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
     | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
+    | AWS STS Regional Endpoints | Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration. | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -241,5 +243,4 @@ Returns a list of the subscriptions to a specific topic. Each call returns a lim
 ``` ```
 
 #### Human Readable Output
-
 

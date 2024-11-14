@@ -1,5 +1,3 @@
-# type: ignore
-
 from CommonServerPython import *
 from dateutil import parser  # type: ignore[import]
 

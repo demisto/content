@@ -32,4 +32,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Hurukai - Hunt IOCs](./doc_files/Hurukai_-_Hunt_IOCs.png)
+![Hurukai - Hunt IOCs](../doc_files/Hurukai_-_Hunt_IOCs.png)

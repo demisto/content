@@ -4,6 +4,7 @@ commonfields:
   version: -1
 name: ExtractEmailTransformer
 script: '-'
+enabled: true
 args:
 - name: value
   required: true

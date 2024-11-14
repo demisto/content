@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:AzureLogAnalytics_image.png]
 ignore=IM111
+
+[known_words]
+GCC

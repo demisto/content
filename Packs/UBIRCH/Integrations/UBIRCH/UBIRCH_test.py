@@ -1,10 +1,9 @@
-import io
 from UBIRCH import AUTHENTICITY_TYPE, get_error_definition, create_incidents, AUTHENTICATION_TYPE, LOW_SEVERITY, \
     HIGH_SEVERITY, SEQUENCE_TYPE
 
 
 def util_load_json(path: str) -> str:
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return f.read()
 
 

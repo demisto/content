@@ -1134,5 +1134,22 @@ Retrieve anomalies for specified case id from GRA and update in XSOAR.
 ```
 
 #### Human Readable Output
+### gra-validate-api
+***
+Verifies the Gurucul platform's operational status by assessing system health, reviewing logs, and checking key performance indicators for any errors.
+
+#### Base Command
+
+`gra-validate-api`
+
+#### Command Example
+```!gra-validate-api```
+
+#### Context Example
+```
+ok
+```
+
+#### Human Readable Output
 
 

@@ -1,0 +1,5 @@
+# GR103 is temporary, see CIAC-11705
+[file:layoutscontainer-SkyhighSecurity_Alert.json]
+ignore=GR103
+[file:layoutscontainer-SkyhighSecurity_Threat.json]
+ignore=GR103

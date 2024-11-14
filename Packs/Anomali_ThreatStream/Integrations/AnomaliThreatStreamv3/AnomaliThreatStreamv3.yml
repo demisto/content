@@ -2501,6 +2501,7 @@ script:
       - medium
       - high
       - very-high
+      auto: PREDEFINED
     - description: 'A comma-separated list of tags applied to the imported observables. For example, tag1,tag2. Note: In cases where tags are specified at both the global and per observable level, tags specified per observable overwrite global tags.'
       name: tags
     - description: A comma-separated list of trusted circle IDs with which threat data should be shared.
@@ -3154,8 +3155,7 @@ script:
       isArray: true
       name: url
       required: true
-    - auto: PREDEFINED
-      description: If confidence is greater than the threshold the URL is considered malicious, otherwise it is considered good. This argument overrides the default URL threshold defined as a parameter.
+    - description: If confidence is greater than the threshold the URL is considered malicious, otherwise it is considered good. This argument overrides the default URL threshold defined as a parameter.
       name: threshold
     - auto: PREDEFINED
       description: Whether to include results with an inactive status.
@@ -6431,7 +6431,32 @@ script:
       isArray: true
     description: Remove tags from the indicators.
     name: threatstream-remove-indicator-tag
-  dockerimage: demisto/py3-tools:1.0.0.93223
+  - name: threatstream-clone-imported-indicator
+    arguments:
+    - name: indicator_id
+      required: true
+      description: ID of the indicator to clone.
+    outputs:
+    - contextPath: ThreatStream.Clone.ID
+      description: Indicator ID.
+      type: string
+    - contextPath: ThreatStream.Clone.Import_Session_ID
+      description: Import Session ID for the clone request.
+      type: string
+    - contextPath: ThreatStream.Clone.Job_ID
+      description: Job ID for the clone request.
+      type: string
+    description: Clones already imported indicators (observables), used with the edit classification to move to a trusted circle.
+  - name: threatstream-edit-classification
+    arguments:
+    - name: import_id
+      required: true
+      description: Import Session ID of the import session from the clone-imported-indicator command.
+    - name: data
+      required: true
+      description: JSON data of edits to be made {"is_public":false,"circles":[12866]}.
+    description: Edit the values for observable that have been cloned.
+  dockerimage: demisto/py3-tools:1.0.0.114656
   runonce: false
   script: '-'
   subtype: python3

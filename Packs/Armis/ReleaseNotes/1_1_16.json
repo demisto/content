@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Raised the default value of device events max fetch and events max fetch to 50k and 100k respectively and lowered the device fetch interval default value to 4 hours."
+}

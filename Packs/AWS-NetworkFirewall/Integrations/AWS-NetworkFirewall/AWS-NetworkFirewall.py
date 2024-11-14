@@ -1052,10 +1052,8 @@ def main():  # pragma: no cover
             command=demisto.command()))
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
-            client = aws_session()
-            response = client.REPLACE_WITH_TEST_FUNCTION()
-            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-                demisto.results('ok')
+            response = list_firewalls_command(args)
+            demisto.results('ok')
 
         elif demisto.command() == 'aws-network-firewall-associate-firewall-policy':
             human_readable, outputs, response = associate_firewall_policy_command(

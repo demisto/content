@@ -30,6 +30,11 @@ class AKSClient:
                 'grant_type': DEVICE_CODE,
                 'resource': azure_cloud.endpoints.management,
                 'scope': urljoin(azure_cloud.endpoints.resource_manager, 'user_impersonation offline_access user.read'),
+            },
+            'Client Credentials': {
+                'grant_type': CLIENT_CREDENTIALS,
+                'resource': None,
+                'scope': urljoin(azure_cloud.endpoints.resource_manager, '.default'),
             }
         }
 
@@ -42,7 +47,8 @@ class AKSClient:
         client_args = assign_params(
             self_deployed=True,
             auth_id=app_id,
-            token_retrieval_url=urljoin(azure_cloud.endpoints.active_directory, 'organizations/oauth2/v2.0/token'),
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if 'Device Code' in
+                                                                                                       auth_type else None,
             grant_type=auth_types_dict.get(auth_type, {}).get('grant_type'),
             base_url=urljoin(azure_cloud.endpoints.resource_manager, f'subscriptions/{subscription_id}'),
             verify=verify,
@@ -294,6 +300,9 @@ def test_module(client):
                         "Please enable the integration and run the !azure-ks-auth-test command in order to test it")
     elif params.get('auth_type') == 'Azure Managed Identities':
         test_connection(client=client)
+        return 'ok'
+    elif params.get('auth_type') == 'Client Credentials':
+        client.ms_client.get_access_token()
         return 'ok'
     return None
 

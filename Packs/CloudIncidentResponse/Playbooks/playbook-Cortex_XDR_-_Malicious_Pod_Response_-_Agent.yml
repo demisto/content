@@ -1,0 +1,653 @@
+id: Cortex XDR - Malicious Pod Response - Agent
+version: -1
+name: Cortex XDR - Malicious Pod Response - Agent
+description: "This playbook ensures a swift and effective response to malicious activities within Kubernetes environments, leveraging cloud-native tools to maintain cluster security and integrity.\n\nThe playbook is designed to handle agent-generated alerts due to malicious activities within Kubernetes (K8S) pods, such as mining activities, which require immediate action. The playbook also addresses scenarios where the malicious pod is killed, but the malicious K8S workload repeatedly creates new pods.\n\n### Key Features:\n\nAWS Function Integration: This utilizes an AWS Lambda function that can manage resources and facilitate rapid response actions within an Amazon EKS cluster without the need for third-party tools such as Kubectl.\n\nThe Lambda function can initiate the following response actions:\n\n    - Pod Termination: The playbook includes steps to safely terminate the affected pod within the K8S environment.\n    - Workload Suspension: If necessary, the playbook can be escalated to suspend the entire workload associated with the mining activity.\n\nOnce the Lambda function execution is completed, the playbook deletes all of the created objects to ensure undesirable usage.\n\n### Workflow:\n\n1. Alert Detection: The playbook begins with the monitoring agent detecting a mining alert within a Kubernetes pod.\n2. Alert Validation: Validates the alert to ensure it is not a false positive.\n3. Response Decision: \n    - Pod Termination: If the mining activity is isolated to a single pod, the AWS Lambda function is invoked to terminate the affected pod within the K8S environment.\n    - Workload Suspension: If the mining activity is widespread or poses a significant threat, the AWS Lambda function suspends the entire workload within the K8S environment.\n4. Cleanup: This action initiates the complete removal of all objects created for the Lambda execution for security and hardening purposes.\n\n### Required Integration\n\n#### AWS IAM (Identity and Access Management)\n- [AWS IAM API Documentation](https://docs.aws.amazon.com/IAM/latest/APIReference/Welcome.html)\n- [Cortex XSOAR AWS IAM Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSIAM/)\n\n#### AWS EC2 (Elastic Compute Cloud)\n- [AWS EC2 API Documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/Welcome.html)\n- [Cortex XSOAR AWS EC2 Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSEC2/)\n\n#### AWS EKS (Elastic Kubernetes Service)\n- [AWS EKS API Documentation](https://docs.aws.amazon.com/eks/latest/APIReference/Welcome.html)\n- [Cortex XSOAR AWS EKS Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSEKS/)\n\n#### AWS Lambda\n- [AWS Lambda API Documentation](https://docs.aws.amazon.com/lambda/latest/dg/API_Reference.html)\n- [Cortex XSOAR AWS Lambda Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSLambda/)."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 95df4c10-3e22-4cbc-8777-a23ddd0ac508
+    type: start
+    task:
+      id: 95df4c10-3e22-4cbc-8777-a23ddd0ac508
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: d96cdfcf-465a-439f-8165-d35257dc9fdf
+    type: regular
+    task:
+      id: d96cdfcf-465a-439f-8165-d35257dc9fdf
+      version: -1
+      name: Initiate Pod Deletion
+      description: Invokes a Lambda function. Specify just a function name to invoke the latest version of the function. To invoke a published version, use the Qualifier parameter to specify a version or alias.  If you use the RequestResponse (synchronous) invocation option, note that the function may be invoked multiple times if a timeout is reached. For functions with a long timeout, your client may be disconnected during synchronous invocation while it waits for a response. Use the "timeout" and "retries" arguments to control this behavior. If you use the Event (asynchronous) invocation option, the function will be invoked at least once in response to an event and the function must be idempotent to handle this.
+      script: '|||aws-lambda-invoke'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      functionName:
+        simple: ClusterResponse
+      invocationType:
+        simple: RequestResponse
+      payload:
+        simple: ${ResponsePayload}
+      region:
+        simple: ${inputs.region}
+      retry-count:
+        simple: "10"
+      retry-interval:
+        simple: "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: ac7527ab-877c-4ae0-89a1-d300de959d08
+    type: title
+    task:
+      id: ac7527ab-877c-4ae0-89a1-d300de959d08
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 6611e8f6-3101-4a4b-8da5-6523338cda09
+    type: playbook
+    task:
+      id: 6611e8f6-3101-4a4b-8da5-6523338cda09
+      version: -1
+      name: Function Removal - AWS
+      description: |
+        This playbook automates the removal of an AWS Lambda function and its associated resources used for managing resources within an Amazon EKS cluster. It ensures all related roles, policies, and security configurations are properly detached and deleted.
+
+        **Resource Detachment and Deletion**
+
+        - **Get the Lambda Role**: Retrieve the IAM role associated with the Lambda function.
+        - **Detach Policy from Lambda Role**: Remove the policy attached to the Lambda role.
+        - **Delete IAM Role**: Delete the IAM role that was used for the Lambda function.
+        - **Delete Lambda Policy**: Remove the policy specifically created for the Lambda function.
+        - **Delete Security Group**: Delete the security group that was managing the Lambda function's traffic.
+
+        **Access Entry Check**
+
+        - **Check if Access Entry was Created**: Verify if the access entry for the EKS cluster was created.
+          - **If YES**: Proceed to delete additional resources.
+          - **If NO**: Skip the deletion of additional resources.
+
+        **Additional Resource Deletion**
+
+        - **Delete Kubernetes Layer**: Remove the Kubernetes layer that was used by the Lambda function.
+        - **Delete Lambda Function**: Delete the Lambda function itself, ensuring all related code and configurations are removed.
+
+        **Conclusion**
+
+        - **Final Cleanup**: Ensure all specified resources have been deleted successfully.
+        - **Completion**: Confirm that the removal process is complete, providing a clean environment free from the previously deployed Lambda function and its configurations.
+
+        This playbook provides a comprehensive, automated approach to removing an AWS Lambda function and its related resources, ensuring all configurations and dependencies are properly managed and deleted.
+      playbookName: Function Removal - AWS
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      LambdaFunctionName:
+        simple: ${AWS.Lambda.Functions.FunctionName}
+      LambdaLayerName:
+        complex:
+          root: AWS.Lambda.Layers
+          accessor: LayerArn
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: ':'
+              fields:
+                value:
+                  simple: "7"
+      LambdaLayerVersion:
+        complex:
+          root: AWS.Lambda.Layers
+          accessor: LayerArn
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: ':'
+              fields:
+                value:
+                  simple: "8"
+      LambdaRoleName:
+        simple: ${AWS.IAM.Roles.RoleName}
+      LambdaRolePolicyARN:
+        simple: ${AWS.IAM.Policies.Arn}
+      SecurityGroupID:
+        simple: ${AWS.EC2.SecurityGroups.GroupId}
+      region:
+        simple: ${inputs.region}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 3fe9c288-89fe-433b-8121-127edc79ed96
+    type: regular
+    task:
+      id: 3fe9c288-89fe-433b-8121-127edc79ed96
+      version: -1
+      name: Prepare payload for ClusterResponse function
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      key:
+        simple: ResponsePayload
+      stringify:
+        simple: "true"
+      value:
+        simple: |-
+          {
+            "cluster_name": "${inputs.ClusterName}",
+            "pod_name": "${PaloAltoNetworksXDR.OriginalAlert.messageData.containers.[0].runtimeInfo.extra.pod_name}",
+            "pod_namespace": "${PaloAltoNetworksXDR.OriginalAlert.messageData.containers.[0].runtimeInfo.extra.pod_namespace}"
+          }
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 284a508c-1f66-43b0-81de-b73204f3570b
+    type: condition
+    task:
+      id: 284a508c-1f66-43b0-81de-b73204f3570b
+      version: -1
+      name: Was the remediation completed successfully?
+      description: Checks if the remediation (CloudResponse function using AWS Lambda) completed successfully.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: AWS.Lambda.InvokedFunctions.Payload
+            iscontext: true
+          right:
+            value:
+              simple: Workload Scale Updated
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: AWS.Lambda.InvokedFunctions.Payload
+            iscontext: true
+          right:
+            value:
+              simple: Pod Deleted
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: f52a28ce-1249-491d-8075-00dc52126ace
+    type: collection
+    task:
+      id: f52a28ce-1249-491d-8075-00dc52126ace
+      version: -1
+      name: Complete the remediation manually
+      description: The analyst is prompted to acknowledge manual remediation is needed.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${alert.assigneduser}
+      subject:
+        simple: Action Required - Manual Remediation - Alert ID ${alert.id}
+      body:
+        simple: |-
+          A manual remediation is required for:
+
+          Alert ID: ${alert.id}
+          Alert Name: ${alert.name}
+          Alert Time: ${alert.occurred}
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Acknowledge the manual remediation required by clicking 'Yes'.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Action Required - Manual Remediation for Malicious Pod
+      description: A manual remediation is required for incident ${incident.id}
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 85a100e3-e025-41f7-8b21-c575c36a47b2
+    type: playbook
+    task:
+      id: 85a100e3-e025-41f7-8b21-c575c36a47b2
+      version: -1
+      name: Function Deployment - AWS
+      description: |+
+        This playbook automates the deployment of an AWS Lambda function to manage resources within an Amazon EKS cluster. It ensures that all necessary configurations are created, updated, and verified.
+
+        **Setup**
+
+        - **Describe EKS Cluster**: Gather essential details of the EKS cluster.
+        - **Create IAM Role**: Set up a new IAM role for the Lambda function.
+        - **Create and Attach Policy**: Define and attach a policy to the IAM role to grant necessary permissions.
+
+        **Authentication Mode Check**
+
+        - **Verify Authentication Mode**: Ensure the current authentication mode allows API access.
+          - **If not**: Update the cluster authentication mode to permit API access.
+
+        **Access Entry Configuration**
+
+        - **Create Access Entry**: Establish a new access entry in the EKS cluster.
+        - **Associate Access Policy**: Link the access policy with the created access entry.
+        - **Update Access Entry**: Apply the latest configurations to the access entry.
+
+        **VPC and Security Group Setup**
+
+        - **Describe VPCs**: Identify the appropriate VPC for the Lambda function.
+        - **Create Security Group**: Define a security group to manage Lambda function traffic.
+        - **Set Ingress Rules**: Configure ingress rules for the security group.
+
+        **VPC Endpoint Creation**
+
+        - **Create VPC Endpoint for eks-auth**: Establish a VPC endpoint for EKS authentication.
+        - **Check for Errors**: Verify if there are any errors during the creation of the VPC endpoint.
+          - **If errors**: Handle and log them.
+        - **Verify VPC Endpoint Existence**: Ensure the VPC endpoint already exists.
+          - **If exists**: Proceed with the next steps.
+
+        **Lambda Function Deployment**
+
+        - **Download Kubernetes Library**: Fetch the necessary Kubernetes library.
+        - **Publish AWS Lambda Layer**: Publish a new layer version for the AWS Lambda function.
+        - **Create Lambda Code**: Develop the Lambda function code.
+        - **Zip Lambda Code**: Compress the Lambda function code for deployment.
+        - **Create AWS Lambda Function**: Deploy the Lambda function using the zipped code.
+
+        **Conclusion**
+
+        - **Final Verification**: Ensure all operations have been successfully completed.
+        - **Completion**: Confirm the deployment process is finished, ensuring robust management of EKS authentication through AWS Lambda.
+
+
+
+        This playbook provides a comprehensive, automated approach to deploying an AWS Lambda function for managing resources within an EKS cluster, efficiently handling all configurations and potential errors.
+
+      playbookName: Function Deployment - AWS
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      ClusterName:
+        simple: ${inputs.ClusterName}
+      FunctionArchitecture:
+        simple: x86_64
+      FunctionCode:
+        simple: "import base64\nimport re\nimport boto3\nfrom botocore.signers import RequestSigner\nfrom kubernetes import client, config\n\n# Initialize EKS client\neks_client = boto3.client('eks')\ncore_v1_api = None\napps_v1_api = None\n\n# Initialize STS client\nSTS_TOKEN_EXPIRES_IN = 60\nsession = boto3.session.Session()\nsts = session.client('sts')\nservice_id = sts.meta.service_model.service_id\n\n\ndef get_cluster_info(cluster_name):\n    \"Retrieve cluster endpoint and certificate\"\n    cluster_response = eks_client.describe_cluster(name=cluster_name)\n    cluster_endpoint = cluster_response['cluster']['endpoint']\n    cluster_ca_data = cluster_response['cluster']['certificateAuthority']['data']\n    cluster_info = {\n        \"endpoint\" : cluster_endpoint,\n        \"ca\" : cluster_ca_data\n    }\n    return cluster_info\n    \ndef get_bearer_token(cluster_name):\n    \"Create authentication token\"\n    signer = RequestSigner(\n        service_id,\n        session.region_name,\n        'sts',\n        \"v4\",\n        session.get_credentials(),\n        session.events\n    )\n    \n    params = {\n        'method': 'GET',\n        'url': 'https://sts.{}.amazonaws.com/?Action=GetCallerIdentity&Version=2011-06-15'.format(session.region_name),\n        'body': {},\n        'headers': {\n            'x-k8s-aws-id': cluster_name\n        },\n        'context': {}\n    }\n    \n    signed_url = signer.generate_presigned_url(\n        params,\n        region_name=session.region_name,\n        expires_in=STS_TOKEN_EXPIRES_IN,\n        operation_name=''\n    )\n    \n    base64_url = base64.urlsafe_b64encode(signed_url.encode('utf-8')).decode('utf-8')\n    \n    # remove any base64 encoding padding:\n    return 'k8s-aws-v1.' + re.sub(r'=*', '', base64_url)\n\ndef get_workload_info(pod_name, pod_namespace):\n    global core_v1_api\n    workload_type = None\n    workload_name = None\n    pod_details = core_v1_api.read_namespaced_pod(pod_name, pod_namespace)\n    \n    if isinstance(pod_details.metadata.owner_references, list):\n        for owner in pod_details.metadata.owner_references:\n            if owner.controller == True:\n                workload_type = owner.kind\n                workload_name = owner.name\n                # Is replicaset?\n                if workload_type == 'ReplicaSet':\n                    replicaset = apps_v1_api.read_namespaced_replica_set(name=workload_name, namespace=pod_namespace)\n                    # Is deployment?\n                    if isinstance(replicaset.metadata.owner_references, list):\n                        for owner in replicaset.metadata.owner_references:\n                            if owner.controller == True:\n                                workload_type = owner.kind\n                                workload_name = owner.name\n    \n    return workload_type, workload_name\n\ndef delete_pod(pod_namespace, pod_name):\n    global core_v1_api\n    core_v1_api.delete_namespaced_pod(pod_name, pod_namespace)\n    return\n\ndef delete_workload(workload_type, workload_name, workload_namespace):\n    global apps_v1_api\n    match workload_type:\n        case \"ReplicaSet\":\n            replicaset = apps_v1_api.read_namespaced_replica_set(workload_name, workload_namespace)\n            body = {\"spec\":{\"replicas\":0}}\n            apps_v1_api.patch_namespaced_replica_set_scale(workload_name, workload_namespace, body)\n            return \"ReplicaSet Scale Updated\"\n        case \"Deployment\":\n            deployment = apps_v1_api.read_namespaced_deployment(workload_name, workload_namespace)\n            body = {\"spec\":{\"replicas\":0}}\n            apps_v1_api.patch_namespaced_deployment_scale(workload_name, workload_namespace, body)\n            return \"Deployment Scale Updated\"\n        case \"StatefulSet\":\n            statefulset = apps_v1_api.read_namespaced_stateful_set(workload_name, workload_namespace)\n            body = {\"spec\":{\"replicas\":0}}\n            apps_v1_api.patch_namespaced_stateful_set_scale(workload_name, workload_namespace, body)\n            return \"StatefulSet Scale Updated\"\n        case \"DaemonSet\":\n            daemonset = apps_v1_api.read_namespaced_daemon_set(workload_name, workload_namespace)\n            body = {\"spec\":{\"template\":{\"spec\":{\"nodeSelector\":{\"non-existing\":\"true\"}}}}}\n            apps_v1_api.patch_namespaced_daemon_set(workload_name, workload_namespace, body)\n            return \"DaemonSet Scale Updated\"\n        case _:\n            return \"Could Not Identify Pod Type\"\n\ndef lambda_handler(event, context):\n    \n    cluster_name = event['cluster_name']\n    pod_name = event['pod_name']\n    pod_namespace = event['pod_namespace']\n    \n    # Kubeconfig Configuration\n    cluster_info = get_cluster_info(cluster_name)\n    token = get_bearer_token(cluster_name)\n    kubeconfig = {\n            'apiVersion': 'v1',\n            'clusters': [{\n                'name': 'cluster1',\n   \
+          \             'cluster': {\n                    'certificate-authority-data': cluster_info[\"ca\"],\n                    'server': cluster_info[\"endpoint\"]\n                }\n            }],\n            'contexts': [{'name': 'context1', 'context': {'cluster': 'cluster1', \"user\": \"user1\"}}],\n            'current-context': 'context1',\n            'kind': 'config',\n            'preferences': {},\n            'users': [{'name': 'user1', \"user\" : {'token': token}}]\n        }\n    config.load_kube_config_from_dict(config_dict=kubeconfig)\n    \n    # Kubernetes Client Configuration\n    global core_v1_api, apps_v1_api\n    core_v1_api = client.CoreV1Api()\n    apps_v1_api = client.AppsV1Api()\n    \n    # Extract Workload Information\n    workload_type, workload_name = get_workload_info(pod_name, pod_namespace)\n    \n    # Delete Pods\n    if workload_type is None or workload_name is None:\n        delete_pod(pod_namespace, pod_name)\n        return \"Pod Deleted\"\n    else: \n        print(\"Workload Type: \" + workload_type)\n        print(\"Workload Name: \" + workload_name)\n        delete_workload(workload_type, workload_name, pod_namespace)\n        return \"Workload Scale Updated\"\n        \n    return"
+      FunctionHandler:
+        simple: lambda_function.lambda_handler
+      FunctionName:
+        simple: ClusterResponse
+      FunctionRuntime:
+        simple: python3.12
+      LambdaPolicyName:
+        simple: LambdaHandlerPolicy
+      LambdaRoleName:
+        simple: LambdaHandlerRole
+      LayerArchitecture:
+        simple: x86_64
+      LayerName:
+        simple: kubernetes
+      LayerRuntime:
+        simple: python3.12
+      LibraryName:
+        simple: kubernetes
+      SecurityGroupName:
+        simple: LambdaHandlerSG
+      TrustPolicyDocument:
+        simple: |-
+          {
+            "Version": "2012-10-17",
+            "Statement": {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          }
+      region:
+        simple: ${inputs.region}
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 2f0a7656-b5e5-42b8-8ec4-bb778acf5957
+    type: playbook
+    task:
+      id: 2f0a7656-b5e5-42b8-8ec4-bb778acf5957
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      Ids:
+        simple: ClusterResponse
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: functionName
+      PollingCommandName:
+        simple: aws-lambda-get-function
+      Timeout:
+        simple: "10"
+      dt:
+        simple: AWS.Lambda.Functions.Configuration(val.State!=='Active').RevisionId
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 5e7e9144-ac89-4c1e-8214-c50dc8ce6b88
+    type: regular
+    task:
+      id: 5e7e9144-ac89-4c1e-8214-c50dc8ce6b88
+      version: -1
+      name: Get alert extra data
+      description: Returns information about each alert ID.
+      script: '|||xdr-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      alert_ids:
+        simple: ${inputs.AlertID}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "32_33_#default#": 0.4
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1525,
+        "width": 380,
+        "x": 310,
+        "y": -140
+      }
+    }
+  }
+inputs:
+- key: ClusterName
+  value: {}
+  required: false
+  description: The name of the cluster.
+  playbookInputQuery:
+- key: region
+  value: {}
+  required: false
+  description: The resource region.
+  playbookInputQuery:
+- key: AlertID
+  value: {}
+  required: false
+  description: The alert id.
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - ClusterName
+  - region
+  - AlertID
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+tests:
+- No tests (auto formatted)
+marketplaces: ["xsoar"]
+fromversion: 6.10.0

@@ -1,0 +1,101 @@
+{
+    "clientId": "k74272e",
+    "mac": "00:00:00:00:00:00",
+    "manufacturer": "Apple",
+    "records": [
+        {
+            "network": {
+                "id": "N_24329156",
+                "organizationId": "2930418",
+                "name": "Main Office",
+                "productTypes": [
+                    "appliance",
+                    "switch",
+                    "wireless"
+                ],
+                "timeZone": "America/Los_Angeles",
+                "tags": [
+                    "tag1",
+                    "tag2"
+                ],
+                "enrollmentString": "my-enrollment-string",
+                "url": "http://www.example.com",
+                "notes": "Additional description of the network",
+                "isBoundToConfigTemplate": false
+            },
+            "ip": "0.0.0.0",
+            "ip6": "0000:000:0000:00::1",
+            "description": "Miles's phone",
+            "firstSeen": 1518365681,
+            "lastSeen": 1526087474,
+            "os": "iOS",
+            "user": "milesmeraki",
+            "vlan": "100",
+            "ssid": "My SSID",
+            "switchport": "My switch port",
+            "wirelessCapabilities": "802.11b - 2.4 GHz",
+            "smInstalled": true,
+            "recentDeviceMac": "00:00:00:00:00:00",
+            "clientVpnConnections": [
+                {
+                    "remoteIp": "0.0.0.0",
+                    "connectedAt": 1522613355,
+                    "disconnectedAt": 1522613360
+                }
+            ],
+            "lldp": [
+                [
+                    "System name",
+                    "Some system name"
+                ],
+                [
+                    "System description",
+                    "Some system description"
+                ],
+                [
+                    "Port ID",
+                    "1"
+                ],
+                [
+                    "Chassis ID",
+                    "00:00:00:00:00:00"
+                ],
+                [
+                    "Port description",
+                    "eth0"
+                ],
+                [
+                    "System capabilities",
+                    "Two-port MAC Relay"
+                ]
+            ],
+            "cdp": [
+                [
+                    "System name",
+                    "Some system name"
+                ],
+                [
+                    "System description",
+                    "Some system description"
+                ],
+                [
+                    "Port ID",
+                    "1"
+                ],
+                [
+                    "Chassis ID",
+                    "00:00:00:00:00:00"
+                ],
+                [
+                    "Port description",
+                    "eth0"
+                ],
+                [
+                    "System capabilities",
+                    "Two-port MAC Relay"
+                ]
+            ],
+            "status": "Online"
+        }
+    ]
+}

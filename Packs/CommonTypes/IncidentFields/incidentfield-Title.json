@@ -41,10 +41,12 @@
         "Exabeam Incident",
         "AWS Security Hub Finding",
         "FreshworksFreshservice Ticket",
-        "FreshworksFreshservice Release Request",
-        "FreshworksFreshservice Problem Request",
-        "FreshworksFreshservice Change Request",
-        "Graph Security Alert"
+        "FreshworksFreshservice Release Request",
+        "FreshworksFreshservice Problem Request",
+        "FreshworksFreshservice Change Request",
+        "Graph Security Alert",
+        "Exabeam Notable User",
+        "Netskope DLP Incident"
     ],
     "associatedToAll": false,
     "unmapped": false,

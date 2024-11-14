@@ -1,10 +1,11 @@
 import json
+import uuid
 import pytest
+from pytest_mock import MockerFixture
 import demistomock as demisto
 
-from GmailSingleUser import Client, send_mail_command, MIMEMultipart
+from GmailSingleUser import Client, send_mail_command, MIMEMultipart, execute_gmail_action
 from email.utils import parsedate_to_datetime
-import base64
 
 
 @pytest.fixture
@@ -12,6 +13,86 @@ def gmail_client(mocker):
     client = Client()
     mocker.patch.object(client, 'get_access_token', return_value='token')
     return client
+
+
+class MockAttachments:
+    def get(self, **kwargs):
+        return MockExecute()
+
+
+class MockExecute:
+    def execute(self):
+        return {'attachmentId': '67890', 'size': 1024, 'data': 'mock_data'}
+
+
+class MockSend:
+    def execute(self):
+        return {'id': '12345'}
+
+
+class MockGet:
+    def execute(self):
+        return {'id': '12345', 'snippet': 'Test email content'}
+
+
+class MockList:
+    def execute(self):
+        return {'messages': [{'id': '12345'}, {'id': '67890'}]}
+
+
+class MockMessages:
+    def send(self, **kwargs):
+        return MockSend()
+
+    def get(self, **kwargs):
+        return MockGet()
+
+    def attachments(self, **kwargs):
+        return MockAttachments()
+
+    def list(self, **kwargs):
+        return MockList()
+
+
+class MockUsers:
+    def messages(self):
+        return MockMessages()
+
+
+class MockService:
+    def users(self):
+        return MockUsers()
+
+
+@pytest.fixture
+def mock_service():
+    return MockService()
+
+
+def test_execute_gmail_action_send(mock_service):
+    result = execute_gmail_action(mock_service, "send", {})
+    assert result == {'id': '12345'}
+
+
+def test_execute_gmail_action_get(mock_service):
+    result = execute_gmail_action(mock_service, "get", {})
+    assert result == {'id': '12345', 'snippet': 'Test email content'}
+
+
+def test_execute_gmail_action_get_attachments(mock_service):
+    result = execute_gmail_action(mock_service, "get_attachments", {})
+    assert result == {'attachmentId': '67890', 'size': 1024, 'data': 'mock_data'}
+
+
+def test_execute_gmail_action_list(mock_service):
+    result = execute_gmail_action(mock_service, "list", {})
+    assert result == {'messages': [{'id': '12345'}, {'id': '67890'}]}
+
+
+def test_execute_gmail_action_unsupported(mock_service):
+    action_kwargs = {}
+    with pytest.raises(ValueError, match="Unsupported action: unsupported_action"):
+        execute_gmail_action(mock_service, "unsupported_action", action_kwargs)
 
 
 MOCK_MAIL_NO_LABELS = {
@@ -26,7 +107,7 @@ MOCK_MAIL_NO_LABELS = {
             {
                 'name': 'Received',
                 'value': 'from 1041831412594 named unknown by gmailapi.google.com with '
-                u'HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
+                'HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
             }, {
                 'name': 'Content-Type',
                 'value': 'mixed; boundary="===============4922146810840031257=="'
@@ -103,7 +184,7 @@ EXPECTED_GMAIL_CONTEXT = {
         {
             'Name': 'Received',
             'Value': 'from 1041831412594 named '
-                     u'unknown by gmailapi.google.com with HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
+                     'unknown by gmailapi.google.com with HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
         }, {
             'Name': 'Content-Type',
             'Value': 'mixed; boundary="===============4922146810840031257=="'
@@ -291,7 +372,7 @@ def test_send_mail_with_reference(gmail_client: Client, mocker):
     )
 
 
-def test_send_mail_MIMEMultipart_constructor(mocker):
+def test_send_mail_MIMEMultipart_constructor(mocker: MockerFixture):
     """
     Given:
         - Client object
@@ -304,13 +385,19 @@ def test_send_mail_MIMEMultipart_constructor(mocker):
     import GmailSingleUser
 
     gmail_single_user_client = Client()
+    # Mock the chain of calls: service.users().messages().send().execute()
+    mock_execute = mocker.Mock(return_value={'id': 'mock_message_id'})
+    mock_send = mocker.Mock(return_value=mock_execute)
+    mock_messages = mocker.Mock(send=mocker.Mock(return_value=mock_send))
+    mock_users = mocker.Mock(messages=mocker.Mock(return_value=mock_messages))
+    mock_service = mocker.Mock(users=mocker.Mock(return_value=mock_users))
+    # Patch the service object in the Client class to use the mocked service
+    mocker.patch.object(GmailSingleUser.Client, 'get_service', new=mock_service)
     # Replace MIMEMultipart with the mock object
     mocker_obj = mocker.patch.object(
         GmailSingleUser, "MIMEMultipart", return_value=MIMEMultipart()
     )
-    mocker = mocker.patch.object(
-        gmail_single_user_client, "send_email_request", return_value=True
-    )
+
     gmail_single_user_client.send_mail(
         emailto="test@gmail.com",
         emailfrom="test@gmail.com",
@@ -331,6 +418,7 @@ def test_send_mail_MIMEMultipart_constructor(mocker):
         additional_headers=[],
         templateParams=None,
     )
+
     mocker_obj.assert_called_once()
     assert mocker_obj.call_args.args == ()
 
@@ -345,7 +433,9 @@ def test_handle_html(mocker):
         - Ensure attachments list contains 2 items with correct data, name and cid fields.
     """
     client = Client()
+    mocker.patch.object(demisto, "uniqueFile", return_value="1234567")
     mocker.patch.object(demisto, "getFilePath", return_value={"path": "", "name": ""})
+    mocker.patch.object(uuid, "uuid4", return_value="11111111")
     htmlBody = """<html>
                         <body>
                             <img src="data:image/png;base64,Aa=="/>
@@ -354,28 +444,22 @@ def test_handle_html(mocker):
                       </html>"""
 
     expected_attachments = [
-        {
-            "maintype": "image",
-            "subtype": "png",
-            "data": base64.b64decode("Aa=="),
-            "name": "image0.png",
-            "cid": "image0.png",
-        },
-        {
-            "maintype": "image",
-            "subtype": "jpeg",
-            "data": base64.b64decode("Bb=="),
-            "name": "image1.jpeg",
-            "cid": "image1.jpeg",
-        },
+        {'maintype': 'image',
+         'subtype': 'png',
+         'data': b'\x01',
+         'name': 'image0.png',
+         'cid': 'image0.png@11111111_11111111',
+         'ID': 'image0.png@11111111_11111111'
+         },
+        {'maintype': 'image',
+         'subtype': 'jpeg',
+         'data': b'\x05',
+         'name': 'image1.jpeg',
+         'cid': 'image1.jpeg@11111111_11111111',
+         'ID': 'image1.jpeg@11111111_11111111'
+         }
     ]
-    expected_cleanBody = """<html>
-                        <body>
-                            <img src="cid:image0.png"/>
-                            <img src="cid:image1.jpeg"/>
-                        </body>
-                      </html>"""
-
+    expected_cleanBody = '<html>\n                        <body>\n                            <img src="cid:image0.png@11111111_11111111"/>\n                            <img src="cid:image1.jpeg@11111111_11111111"/>\n                        </body>\n                      </html>'  # noqa: E501
     cleanBody, attachments = client.handle_html(htmlBody)
 
     assert expected_cleanBody == cleanBody
@@ -392,7 +476,9 @@ def test_handle_html_image_with_new_line(mocker):
         - Ensure attachments list contains correct data, name and cid fields.
     """
     client = Client()
+    mocker.patch.object(demisto, "uniqueFile", return_value="1234567")
     mocker.patch.object(demisto, "getFilePath", return_value={"path": "", "name": ""})
+    mocker.patch.object(uuid, "uuid4", return_value="11111111")
     htmlBody = """
 <html>
     <body>
@@ -401,23 +487,92 @@ def test_handle_html_image_with_new_line(mocker):
 </html>"""
 
     expected_attachments = [
-        {
-            "maintype": "image",
-            "subtype": "png",
-            "data": base64.b64decode("Aa=="),
-            "name": "image0.png",
-            "cid": "image0.png",
-        }
+        {'maintype': 'image',
+         'subtype': 'png',
+         'data': b'\x01',
+         'name': 'image0.png',
+         'cid': 'image0.png@11111111_11111111',
+         'ID': 'image0.png@11111111_11111111'}
     ]
-    expected_cleanBody = """
-<html>
-    <body>
-        <img
-\t\t\t\t\t  src="cid:image0.png"/>
-    </body>
-</html>"""
+    expected_cleanBody = '\n<html>\n    <body>\n        <img\n\t\t\t\t\t  src="cid:image0.png@11111111_11111111"/>\n    </body>\n</html>'  # noqa: E501
 
     cleanBody, attachments = client.handle_html(htmlBody)
 
     assert expected_cleanBody == cleanBody
     assert expected_attachments == attachments
+
+
+part_test1 = [{
+    'filename': 'image-1.png',
+    'headers': [{
+        'name': 'Content-ID', 'value': '<5678>'},
+        {'name': 'Content-Disposition', 'value': 'inline'}],
+    'body': {
+        'attachmentId': '1234'},
+    'mimeType': ''
+}]
+
+part_test2 = [{
+    'filename': 'image-1.png',
+    'headers': [{
+        'name': 'Content-ID', 'value': '5678'},
+        {'name': 'Content-Disposition', 'value': 'attachment'}],
+    'body': {
+        'attachmentId': '1234'},
+    'mimeType': ''
+}]
+
+part_test3 = [{
+    'filename': 'image-1.png',
+    'headers': [{
+        'name': 'Content-ID', 'value': 'None'},
+        {'name': 'Content-Disposition', 'value': 'attachment'}],
+    'body': {
+        'attachmentId': '1234'},
+    'mimeType': ''
+}]
+
+
+@pytest.mark.parametrize(
+    "part, expected_result",
+    [
+        (part_test1, ('', '', [{'ID': '1234', 'Name': '5678-attachmentName-image-1.png'}])),
+        (part_test2, ('', '', [{'ID': '1234', 'Name': 'image-1.png'}])),
+        (part_test3, ('', '', [{'ID': '1234', 'Name': 'image-1.png'}])),
+    ],
+)
+def test_parse_mail_parts(part, expected_result):
+    """
+    Given:
+        - Part of message from Gmail API response.
+    When:
+        - Run parse_mail_parts function with LEGACY_NAME is false.
+    Then:
+        - Ensure attachment's name was correctly constructed and parsing was correctly done.
+    """
+    client = Client()
+    result = client.parse_mail_parts(part)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "part, expected_result",
+    [
+        (part_test1, ('', '', [{'ID': '1234', 'Name': 'image-1.png'}])),
+        (part_test2, ('', '', [{'ID': '1234', 'Name': 'image-1.png'}])),
+        (part_test3, ('', '', [{'ID': '1234', 'Name': 'image-1.png'}])),
+    ],
+)
+def test_parse_mail_parts_use_legacy_name(monkeypatch, part, expected_result):
+    """
+    Given:
+        - Part of message from Gmail API response.
+    When:
+        - Run parse_mail_parts function LEGACY_NAME is true.
+    Then:
+        - Ensure attachment's name was correctly constructed and parsing was correctly done.
+    """
+    client = Client()
+    monkeypatch.setattr('GmailSingleUser.LEGACY_NAME', True)
+    result = client.parse_mail_parts(part)
+    assert result == expected_result

@@ -1,15 +1,32 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import oletools.oleid
-from oletools.olevba import VBA_Parser
+
 import subprocess
-from oletools import crypto
 import os
 import hashlib
-# suppress logs from oletools
 import logging
-vba_logger = logging.getLogger("olevba")
-vba_logger.setLevel(logging.CRITICAL)
+
+
+class CustomHandler(logging.Handler):
+    def __init__(self):
+        super().__init__()
+        self.last_log_msg = None
+
+    def emit(self, record):
+        self.last_log_msg = record.msg
+
+    def get_last_log_msg(self):
+        return self.last_log_msg
+
+
+custom_handler = CustomHandler()
+root_logger = logging.getLogger()
+root_logger.addHandler(custom_handler)
+root_logger.setLevel(logging.DEBUG)
+
+# should be imported after adding log handler to the root logger
+from oletools import crypto, oleid  # noqa: E402
+from oletools.olevba import VBA_Parser  # noqa: E402
 
 
 class OleClient:
@@ -77,7 +94,7 @@ class OleClient:
         return indicator.replace(' ', '_')
 
     def oleid(self):
-        oid = oletools.oleid.OleID(self.processed_file_path)
+        oid = oleid.OleID(self.processed_file_path)
         indicators = oid.check()
         indicators_list = []
         dbot_score = None
@@ -208,7 +225,8 @@ def main():  # pragma: no cover
         ole_client = OleClient(file_info, ole_command, password=password, decoded=show_decoded)
         return_results(ole_client.run())
     except Exception as e:
-        return_error(f'The script failed with the following error:\n {e}')
+        return_error(f'The script failed with the following error:\n {e}'
+                     f'\n Logs form oletools:\n {custom_handler.get_last_log_msg()}')
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

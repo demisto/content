@@ -1245,7 +1245,7 @@ tasks:
       id: 2baa3614-121a-4e84-88dd-3fc88195fccf
       version: -1
       name: Create a new File
-      scriptName: FileCreateAndUpload
+      scriptName: FileCreateAndUploadV2
       type: regular
       iscommand: false
       brand: ""

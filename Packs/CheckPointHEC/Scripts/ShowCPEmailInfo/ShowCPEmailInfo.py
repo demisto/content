@@ -30,21 +30,29 @@ def dict_to_md(info: dict) -> str:
     return '\n'.join(lines)
 
 
-def get_email_info(entity: str):
+def get_email_info(entity: str, instance: str) -> tuple[bool, str]:
     email_info = demisto.executeCommand(
         "checkpointhec-get-entity",
-        {'entity': entity}
+        {'entity': entity, 'using': instance}
     )[0]['Contents']
 
-    return dict_to_md(email_info)
+    if isinstance(email_info, str):
+        return False, email_info
+
+    return True, dict_to_md(email_info)
 
 
 def main():  # pragma: no cover
     try:
-        custom_fields = demisto.incident()['CustomFields']
+        incident = demisto.incident()
+        instance = incident['sourceInstance']
+        custom_fields = incident['CustomFields']
         if not (email_info := custom_fields.get(EMAIL_INFO_FIELD)):
             entity = custom_fields.get('checkpointhecentity')
-            email_info = get_email_info(entity)
+            success, email_info = get_email_info(entity, instance)
+            if not success:
+                raise Exception(email_info)
+
             demisto.executeCommand(
                 "setIncident",
                 {

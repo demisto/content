@@ -25,7 +25,58 @@
     "detached": false,
     "extractSettings": {
         "mode": "Specific",
-        "fieldCliNameToExtractSettings": {}
+        "fieldCliNameToExtractSettings": {
+            "deviceexternalip": {
+                "extractAsIsIndicatorTypeId": "ipRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "deviceinternalips": {
+                "extractAsIsIndicatorTypeId": "IPv6",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "devicelocalip": {
+                "extractAsIsIndicatorTypeId": "ipRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "devicemacaddress": {
+                "extractAsIsIndicatorTypeId": "hostRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "devicename": {
+                "extractAsIsIndicatorTypeId": "hostRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "domainname": {
+                "extractAsIsIndicatorTypeId": "domainRepUnified",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "filemd5": {
+                "extractAsIsIndicatorTypeId": "unifiedFileRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "filepath": {
+                "extractAsIsIndicatorTypeId": "unifiedFileRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "filesha1": {
+                "extractAsIsIndicatorTypeId": "unifiedFileRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "filesha256": {
+                "extractAsIsIndicatorTypeId": "unifiedFileRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            }
+        }
     },
     "fromVersion": "5.0.0"
 }

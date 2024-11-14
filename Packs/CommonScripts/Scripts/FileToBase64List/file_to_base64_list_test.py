@@ -9,16 +9,15 @@ import zlib
 TEST_FILE_PATH = os.path.join('test_data', 'file.txt')
 
 
-def executeCommand(name, args=None):
-    if name == 'createList':
+def executeCommand(command, args=None):
+    if command == 'createList':
         return [
             {
                 'Type': entryTypes['note'],
                 'Contents': 'List created successfully'
             }
         ]
-    else:
-        raise ValueError('Unimplemented command called: {}'.format(name))
+    raise ValueError(f'Unimplemented command called: {command}')
 
 
 def test_file_to_base64_list(mocker):
@@ -32,7 +31,8 @@ def test_file_to_base64_list(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'results')
     result_entry = main()
-    assert 'Success' in result_entry['HumanReadable'] and 'Size' in result_entry['HumanReadable']
+    assert result_entry['HumanReadable'] == (
+        '### File successfully stored in list\n|File Entry ID|List Name|Size|\n|---|---|---|\n| 1 | test | 28 |\n')
     assert len(result_entry['Contents']) > 0
 
 

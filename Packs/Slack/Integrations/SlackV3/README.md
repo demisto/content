@@ -31,7 +31,6 @@ to learn about configuring SlackV3 using the app manifest.
    | `bot_icon` | Bot icon in Slack - Image URL (Cortex XSOAR icon by default).                                                                                                                                                                                                                         | False |
    | `max_limit_time` | Maximum time to wait for a rate limiting call in seconds.                                                                                                                                                                                                                             | False |
    | `paginated_count` | Number of objects to return in each paginated call.                                                                                                                                                                                                                                   | False |
-   | `proxy_url` | Proxy URL to use in Slack API calls.                                                                                                                                                                                                                                                  | False |
    | `filtered_tags` | Comma-separated list of tags by which to filter the messages sent from Cortex XSOAR. Only supported in Cortex XSOAR V6.1 and above.                                                                                                                                                   | False |
    | `permitted_notifications` | Types of notifications to send (to individual users and to the dedicated Slack channel, if specified).                                                                                                                                                                                | False |
    | `common_channels` | For workspaces where a handful of channels are consistently being used, you may add them as a CSV in the format ChannelName:ChannelID.                                                                                                                                                | False |
@@ -137,11 +136,11 @@ This will bring up a page which confirms that you are installing the app to your
 
 ![install-app-8](../../doc_files/SlackDocs_install_workspace8.png)
 
-:::note
-When utilizing long-running features such as mirroring or SlackAsk, each integration instance must have a dedicated bot
+
+**NOTE: When utilizing long-running features such as mirroring or SlackAsk, each integration instance must have a dedicated bot
 and tokens that should not be used elsewhere. Failure to comply with this requirement may result in issues with incoming
-messages and the steady flow of the integration.
-:::
+messages and the steady flow of the integration.**
+
 
 ### Testing the Bot
 
@@ -288,10 +287,26 @@ the channel exists).
 
 `slack-send-file`
 
+#### Permissions
+
+Permission scopes required for this command:
+
+| **Token Type**    | **Scope**                     |
+| --- | --- | 
+| Granular bot      | files:write                   |
+| User              | files:write files:write:user  |
+| Legacy bot        | bot                           |
+
+The full list of Slack API scopes can be accessed [here](https://api.slack.com/scopes).
+
+#### Limitations
+
+There are no known limitations for this command.
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                     | **Required** |
-|-------------------|-----------------------------------------------------------------------------------------------------|--------------|
+| --- | --- | --- |
 | file              | The ID of the file entry to send.                                                                   | Required     | 
 | to                | The user to whom to send the file. Can be the username or the email address.                        | Optional     | 
 | group             | The name of the Slack group (private channel) to which to send the file.                            | Optional     | 

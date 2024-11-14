@@ -1,0 +1,356 @@
+{
+    "uuid": "80ee2ccc-11e3-4416",
+    "title": "Feed Enriched",
+    "created_at": 1574343159,
+    "created_by": "59899459-d385-48da",
+    "created_by_type": "application",
+    "updated_at": 1687958505,
+    "updated_by": "59899459-d385-48da",
+    "updated_by_type": "application",
+    "community_uuid": "52bd045f-4199-4361",
+    "short_id": "ALL1A4SKUiU2",
+    "entity": {
+        "uuid": "7f7676e7-a254-43c3",
+        "name": "Information Technology test"
+    },
+    "urgency": {
+        "current_value": 20,
+        "value": 20,
+        "severity": 40,
+        "criticity": 0,
+        "display": "Moderate"
+    },
+    "alert_type": {
+        "value": "brute-force",
+        "category": "intrusion-attempts"
+    },
+    "status": {
+        "uuid": "8f206505-af6d-433e",
+        "name": "Acknowledged",
+        "description": "The alert was checked by an operator"
+    },
+    "rule": {
+        "uuid": "ebcb5113-dcd1-4563",
+        "name": "Feed Enriched",
+        "description": "description test",
+        "severity": 40,
+        "type": null,
+        "pattern": "[ipv4-addr:value = '1.2.3.4']"
+    },
+    "detection_type": null,
+    "source": "1.2.3.4",
+    "target": null,
+    "similar": 11,
+    "details": "details description",
+    "ttps": [],
+    "adversaries": [],
+    "stix": {},
+    "kill_chain_short_id": "KCXKNfnJuUUU",
+    "number_of_unseen_comments": 0,
+    "first_seen_at": "2019-11-21T13:32:39.839600Z",
+    "last_seen_at": null,
+    "assets": [],
+    "time_to_detect": null,
+    "time_to_acknowledge": 113615345,
+    "time_to_respond": null,
+    "time_to_resolve": 111893849,
+    "comments": [
+        {
+            "uuid": "40528f74-2523-428f",
+            "content": "Alert has been closed automatically because it is older than 2 weeks.",
+            "author": "apikey:f93a35e0-b9aa-4c00",
+            "date": 1686237010,
+            "created_by": "f93a35e0-b9aa-4c95",
+            "created_by_type": "apikey",
+            "unseen": false
+        }
+    ],
+    "history": [
+        {
+            "uuid": "be86c882-7ca2-4d23",
+            "created_at": 1713431780,
+            "created_by": "f870d496-a37b-4aec",
+            "created_by_type": "apikey",
+            "entry_type": "comment",
+            "comment": {
+                "uuid": "5661ca10-33cf-4b49",
+                "status": "created",
+                "display_name": "apikey:f870d496-a37b-4aec",
+                "content": "Alert has been closed automatically"
+            },
+            "history_comments": []
+        },
+        {
+            "uuid": "bcf71278-6dd4-41b7",
+            "created_at": 1687958505,
+            "created_by": "59899459-d385-48da",
+            "created_by_type": "application",
+            "entry_type": "alert",
+            "alert": {
+                "status": "Acknowledged",
+                "previous_status": "Closed"
+            },
+            "history_comments": []
+        },
+        {
+            "uuid": "792d6585-61b3-4da4",
+            "created_at": 1686237009,
+            "created_by": "f93a35e0-b9aa-4c95",
+            "created_by_type": "apikey",
+            "entry_type": "alert",
+            "alert": {
+                "status": "Closed",
+                "previous_status": "Pending"
+            },
+            "history_comments": [
+                {
+                    "uuid": "40528f74-2523-428f-adb9-b1b3da5b3bcc",
+                    "content": "Alert has been closed automatically because it is older than 2 weeks.",
+                    "author": "apikey:f93a35e0-b9aa-4c95-ab31-40f1e9aea5a4",
+                    "date": 1686237010,
+                    "created_by": "f93a35e0-b9aa-4c95-ab31-40f1e9aea5a4",
+                    "created_by_type": "apikey"
+                }
+            ]
+        },
+        {
+            "uuid": "400e4f8f-9473-41c0",
+            "created_at": 1574343164,
+            "created_by": "59899459-d385-48da",
+            "created_by_type": "application",
+            "entry_type": "alert",
+            "alert": {
+                "status": "Pending",
+                "previous_status": null
+            },
+            "history_comments": []
+        },
+        {
+            "uuid": "94589f34-9c01-4592",
+            "created_at": 1574343159,
+            "created_by": "59899459-d385-48da",
+            "created_by_type": "application",
+            "entry_type": "countermeasure_action_step",
+            "countermeasure": {
+                "uuid": "43caf7af-06ff-4821",
+                "status": "created"
+            },
+            "history_comments": [],
+            "countermeasure_action_step": {
+                "status": "created",
+                "name": "1"
+            }
+        },
+        {
+            "uuid": "f143ebf4-d3e1-4930",
+            "created_at": 1574343159,
+            "created_by": "59899459-d385-48da",
+            "created_by_type": "application",
+            "entry_type": "countermeasure",
+            "countermeasure": {
+                "uuid": "9f2a40ae-add5-49f8",
+                "status": "created"
+            },
+            "history_comments": []
+        },
+        {
+            "uuid": "b77f2a3e-fd30-43be",
+            "created_at": 1574343159,
+            "created_by": "59899459-d385-48da",
+            "created_by_type": "application",
+            "entry_type": "countermeasure_action_step",
+            "countermeasure": {
+                "uuid": "9f2a40ae-add5-49f8",
+                "status": "created"
+            },
+            "history_comments": [],
+            "countermeasure_action_step": {
+                "status": "created",
+                "name": "3"
+            }
+        },
+        {
+            "uuid": "8c22657d-4d55-4842",
+            "created_at": 1574343159,
+            "created_by": "59899459-d385-48da",
+            "created_by_type": "application",
+            "entry_type": "countermeasure",
+            "countermeasure": {
+                "uuid": "43caf7af-06ff-4821",
+                "status": "created"
+            },
+            "history_comments": []
+        }
+    ],
+    "countermeasures": [
+        {
+            "uuid": "43caf7af-06ff-4821-9770-2023c16153f7",
+            "model_uuid": "55117974-f59e-46df",
+            "relevance": 50,
+            "dynamic_relevance": 0,
+            "duration": null,
+            "status": "created",
+            "created_at": "2019-11-21T13:32:39.839600Z",
+            "created_by": "59899459-d385-48da",
+            "created_by_type": "application",
+            "activated_at": null,
+            "activated_by": null,
+            "activated_by_type": null,
+            "denied_at": null,
+            "denied_by": null,
+            "denied_by_type": null,
+            "course_of_action": {
+                "id": "course-of-action--43caf7af-06ff",
+                "type": "course-of-action",
+                "created_by_ref": "identity--59899459-d385",
+                "created": "2019-11-21T13:32:39.839600+00:00",
+                "name": "countermeasure--55117974-f59e",
+                "description": "Report the issue to security team",
+                "action-steps": [
+                    {
+                        "name": "1",
+                        "description": "Notify the security team",
+                        "type": "openc2",
+                        "object": {
+                            "action": "investigate",
+                            "target": {
+                                "uri": "$ALERT_URI"
+                            }
+                        }
+                    }
+                ],
+                "x_sic_countermeasure": {
+                    "relevance": 50,
+                    "dynamic_relevance": 0,
+                    "uuid": "55117974-f59e-46df"
+                },
+                "modified": "2019-11-21T13:32:39.839600+00:00"
+            },
+            "action_steps": [
+                {
+                    "uuid": "1aacb24b-7ec6-41c5",
+                    "name": "1",
+                    "description": "Notify the security team",
+                    "status": "created",
+                    "created_at": "2019-11-21T13:32:39.839600Z",
+                    "created_by": "59899459-d385-48da",
+                    "created_by_type": "application",
+                    "activated_at": null,
+                    "activated_by": null,
+                    "activated_by_type": null,
+                    "denied_at": null,
+                    "denied_by": null,
+                    "denied_by_type": null,
+                    "action_order": 0,
+                    "object": {
+                        "action": "investigate",
+                        "target": {
+                            "uri": "$ALERT_URI"
+                        }
+                    },
+                    "comments": [],
+                    "assignee": null,
+                    "type": null
+                }
+            ],
+            "name": "countermeasure--55117974-f59e",
+            "description": "Report the issue to security team",
+            "comments": [],
+            "assignee": null,
+            "type": "openc2",
+            "external_ref": null,
+            "alert_uuid": "80ee2ccc-11e3-4416"
+        },
+        {
+            "uuid": "9f2a40ae-add5-49f8",
+            "model_uuid": "7d2bb069-b3ff-40ca",
+            "relevance": 76,
+            "dynamic_relevance": 0,
+            "duration": null,
+            "status": "created",
+            "created_at": "2019-11-21T13:32:39.839600Z",
+            "created_by": "59899459-d385-48da",
+            "created_by_type": "application",
+            "activated_at": null,
+            "activated_by": null,
+            "activated_by_type": null,
+            "denied_at": null,
+            "denied_by": null,
+            "denied_by_type": null,
+            "course_of_action": {
+                "id": "course-of-action--9f2a40ae-add5",
+                "type": "course-of-action",
+                "created_by_ref": "identity--59899459-d385a",
+                "created": "2019-11-21T13:32:39.839600+00:00",
+                "name": "countermeasure--7d2bb069-b3ff",
+                "description": "Temporarily block the concerned system",
+                "action-steps": [
+                    {
+                        "name": "3",
+                        "description": "Block the IP address temporarily",
+                        "type": "openc2",
+                        "object": {
+                            "action": "deny",
+                            "target": {
+                                "ipv4_net": "1.2.3.4"
+                            },
+                            "actuator": {
+                                "slpf": {}
+                            },
+                            "args": {
+                                "duration": 7800000000
+                            }
+                        }
+                    }
+                ],
+                "x_sic_countermeasure": {
+                    "relevance": 76,
+                    "dynamic_relevance": 0,
+                    "uuid": "7d2bb069-b3ff-40ca"
+                },
+                "modified": "2019-11-21T13:32:39.839600+00:00"
+            },
+            "action_steps": [
+                {
+                    "uuid": "905e5315-a3a9-4efd",
+                    "name": "3",
+                    "description": "Block the IP address temporarily",
+                    "status": "created",
+                    "created_at": "2019-11-21T13:32:39.839600Z",
+                    "created_by": "59899459-d385-48da",
+                    "created_by_type": "application",
+                    "activated_at": null,
+                    "activated_by": null,
+                    "activated_by_type": null,
+                    "denied_at": null,
+                    "denied_by": null,
+                    "denied_by_type": null,
+                    "action_order": 0,
+                    "object": {
+                        "action": "deny",
+                        "target": {
+                            "ipv4_net": "1.2.3.4"
+                        },
+                        "actuator": {
+                            "slpf": {}
+                        },
+                        "args": {
+                            "duration": 7800000000
+                        }
+                    },
+                    "comments": [],
+                    "assignee": null,
+                    "type": null
+                }
+            ],
+            "name": "countermeasure--7d2bb069-b3ff",
+            "description": "Temporarily block the concerned system",
+            "comments": [],
+            "assignee": null,
+            "type": "openc2",
+            "external_ref": null,
+            "alert_uuid": "80ee2ccc-11e3-4416"
+        }
+    ],
+    "similarity_strategy": null
+}

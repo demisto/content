@@ -3,7 +3,8 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Recorded Future Identity - Create Incident (sub)
-description: This playbook was developed as a sub-playbook to generate incidents for
+deprecated: true
+description: Deprecated. Use Recorded Future - Identity Exposure instead. This playbook was developed as a sub-playbook to generate incidents for
   each exposed identity found in the Recorded Future Identity - Lookup Identities
   (parent) playbook.
 starttaskid: "0"

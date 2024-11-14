@@ -18,7 +18,7 @@ class Client(BaseClient):
 
     def get_contact(self, contact_id: str = None, email: str = None):
         url_suffix = '/contacts'
-        params = dict()
+        params = {}
         if contact_id:
             url_suffix = f"{url_suffix}/{contact_id}"
         elif email:

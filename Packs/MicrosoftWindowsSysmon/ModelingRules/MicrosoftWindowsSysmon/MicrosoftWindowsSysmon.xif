@@ -72,12 +72,12 @@ alter
 	clean_eventdata_details = lowercase(get_eventdata_Details),
 	clean_target_localip_10 = incidr(check_avilable_ip,"10.0.0.0/8"),
 	clean_target_localip_127 = incidr(check_avilable_ip,"127.0.0.0/8"),
-	clean_target_localip_169 = incidr(check_avilable_ip,"169.254.0.0/168"),
+	clean_target_localip_169 = incidr(check_avilable_ip,"169.254.0.0/16"),
 	clean_target_localip_172 = incidr(check_avilable_ip,"172.16.0.0/12"),
 	clean_target_localip_192 = incidr(check_avilable_ip,"192.168.0.0/16"),
 	clean_source_localip_10 = incidr(check_avilable_ip2,"10.0.0.0/8"),
 	clean_source_localip_127 = incidr(check_avilable_ip2,"127.0.0.0/8"),
-	clean_source_localip_169 = incidr(check_avilable_ip,"169.254.0.0/168"),
+	clean_source_localip_169 = incidr(check_avilable_ip,"169.254.0.0/16"),
 	clean_source_localip_172 = incidr(check_avilable_ip2,"172.16.0.0/12"),
 	clean_source_localip_192 = incidr(check_avilable_ip2,"192.168.0.0/16") 
 | alter

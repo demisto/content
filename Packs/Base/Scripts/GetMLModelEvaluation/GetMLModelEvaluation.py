@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import precision_score, recall_score, precision_recall_curve
 from tabulate import tabulate
-from typing import Dict
 from CommonServerPython import *
 
 # pylint: disable=no-member
@@ -20,7 +19,7 @@ METRICS['Total'] = 'The total number of incidents from the class in the evaluati
 
 
 def bold_hr(s):
-    return '**{}:**'.format(s)
+    return f'**{s}:**'
 
 
 def binarize(arr, threshold):
@@ -61,8 +60,8 @@ def generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class, thre
     ], ignore_index=True)
     df = df[['Class', 'Precision', 'TP', 'FP', 'Coverage', 'Total']]
     explained_metrics = ['Precision', 'TP (true positive)', 'FP (false positive)', 'Coverage', 'Total']
-    explanation = ['{} {}'.format(bold_hr(metric), METRICS[metric]) for metric in explained_metrics]
-    df.set_index('Class', inplace=True)
+    explanation = [f'{bold_hr(metric)} {METRICS[metric]}' for metric in explained_metrics]
+    df = df.set_index('Class')
     return df, explanation
 
 
@@ -153,7 +152,7 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, found_thre
     if detailed_output:
         human_readable += human_readable_threshold + ['\n']
     else:
-        human_readable += ['## Results for confidence threshold = {:.2f}'.format(found_threshold)] + ['\n']
+        human_readable += [f'## Results for confidence threshold = {found_threshold:.2f}'] + ['\n']
     human_readable += class_metrics_human_readable + ['\n']
     human_readable += class_metrics_explanation_human_readable
     human_readable += csr_matrix_readable
@@ -193,9 +192,8 @@ def merge_entries(entry, per_class_entry):
     return entry
 
 
-def find_threshold(y_true_str, y_pred_str, customer_target_precision, target_recall, detailed_output=True):
-    y_true = convert_str_to_json(y_true_str, 'yTrue')
-    y_pred_all_classes = convert_str_to_json(y_pred_str, 'yPred')
+def find_threshold(y_true, y_pred_all_classes, customer_target_precision, target_recall, detailed_output=True):
+
     labels = sorted(set(y_true + list(y_pred_all_classes[0].keys())))
     n_instances = len(y_true)
     y_true_per_class = {class_: np.zeros(n_instances) for class_ in labels}
@@ -248,7 +246,7 @@ def find_best_threshold_for_target_precision(class_to_arrs, customer_target_prec
                     precision_per_class[class_] = precision
                     break
         if len(threshold_per_class) == len(labels):
-            threshold_candidates = sorted(list(threshold_per_class.values()))
+            threshold_candidates = sorted(threshold_per_class.values())
             for threshold in threshold_candidates:
                 legal_threshold_for_all_classes = True
                 threshold_precision = sys.maxsize
@@ -276,7 +274,7 @@ def calculate_per_class_report_entry(class_to_arrs, labels, y_pred_per_class, y_
         'The following tables present evlauation of the model per class at different confidence thresholds:']
     class_to_thresholds = {}
     for class_ in labels:
-        class_to_thresholds[class_] = set([0.001])  # using no threshold
+        class_to_thresholds[class_] = {0.001}  # using no threshold
         for target_precision in np.arange(0.95, 0.5, -0.05):
             # indexing is done by purpose - the ith precision corresponds with threshold i-1. Last precision is 1
             for i, precision in enumerate(class_to_arrs[class_]['precisions'][:-1]):
@@ -296,15 +294,15 @@ def calculate_per_class_report_entry(class_to_arrs, labels, y_pred_per_class, y_
             row['Threshold'] = threshold
             class_threshold_df = pd.concat([class_threshold_df, pd.DataFrame([row])], ignore_index=True)
         class_threshold_df = reformat_df_fractions_to_percentage(class_threshold_df)
-        class_threshold_df['Threshold'] = class_threshold_df['Threshold'].apply(lambda p: '{:.2f}'.format(p))
+        class_threshold_df['Threshold'] = class_threshold_df['Threshold'].apply(lambda p: f'{p:.2f}')
         class_threshold_df = class_threshold_df[['Threshold', 'Precision', 'TP', 'FP', 'Coverage', 'Total']]
-        class_threshold_df.sort_values(by='Coverage', ascending=False, inplace=True)
-        class_threshold_df.drop_duplicates(subset='Threshold', inplace=True, keep='first')
-        class_threshold_df.drop_duplicates(subset='Precision', inplace=True, keep='first')
-        class_threshold_df.set_index('Threshold', inplace=True)
+        class_threshold_df = class_threshold_df.sort_values(by='Coverage', ascending=False)
+        class_threshold_df = class_threshold_df.drop_duplicates(subset='Threshold', keep='first')
+        class_threshold_df = class_threshold_df.drop_duplicates(subset='Precision', keep='first')
+        class_threshold_df = class_threshold_df.set_index('Threshold')
         per_class_context[class_] = class_threshold_df.to_json()
         tabulated_class_df = tabulate(class_threshold_df, tablefmt="pipe", headers="keys")
-        per_class_hr += ['### {}'.format(class_), tabulated_class_df]
+        per_class_hr += [f'### {class_}', tabulated_class_df]
     per_class_entry = {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -321,31 +319,40 @@ def convert_str_to_json(str_json, var_name):
         y_true = json.loads(str_json)
         return y_true
     except Exception as e:
-        return_error('Exception while reading {} :{}'.format(var_name, e))
+        return_error(f'Exception while reading {var_name} :{e}')
 
 
 def main():
-    y_pred_all_classes = demisto.args()["yPred"]
-    y_true = demisto.args()["yTrue"]
-    target_precision = calculate_and_validate_float_parameter("targetPrecision")
-    target_recall = calculate_and_validate_float_parameter("targetRecall")
-    detailed_output = 'detailedOutput' in demisto.args() and demisto.args()['detailedOutput'] == 'true'
-    entries = find_threshold(y_true_str=y_true,
-                             y_pred_str=y_pred_all_classes,
-                             customer_target_precision=target_precision,
-                             target_recall=target_recall,
-                             detailed_output=detailed_output)
+    try:
+        y_pred_all_classes = demisto.args()["yPred"]
+        y_true = demisto.args()["yTrue"]
+        target_precision = calculate_and_validate_float_parameter("targetPrecision")
+        target_recall = calculate_and_validate_float_parameter("targetRecall")
+        detailed_output = 'detailedOutput' in demisto.args() and demisto.args()['detailedOutput'] == 'true'
+        y_true = convert_str_to_json(y_true, 'yTrue')
+        y_pred_all_classes = convert_str_to_json(y_pred_all_classes, 'yPred')
 
-    demisto.results(entries)
+        if not (y_true and y_pred_all_classes):
+            raise DemistoException('Either "yPred" or "yTrue" are empty.')
+
+        entries = find_threshold(y_true=y_true,
+                                 y_pred_all_classes=y_pred_all_classes,
+                                 customer_target_precision=target_precision,
+                                 target_recall=target_recall,
+                                 detailed_output=detailed_output)
+
+        demisto.results(entries)
+    except Exception as e:
+        return_error(f'Error in GetMLModelEvaluation:\n{e}')
 
 
 def calculate_and_validate_float_parameter(var_name):
     try:
         res = float(demisto.args()[var_name]) if var_name in demisto.args() else 0
     except Exception:
-        return_error('{} must be a float between 0-1 or left empty'.format(var_name))
+        return_error(f'{var_name} must be a float between 0-1 or left empty')
     if res < 0 or res > 1:
-        return_error('{} must be a float between 0-1 or left empty'.format(var_name))
+        return_error(f'{var_name} must be a float between 0-1 or left empty')
     return res
 
 

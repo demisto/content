@@ -1,0 +1,31 @@
+{
+    "id": "Stellar Cyber Case",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Stellar Cyber Case",
+    "prevName": "Stellar Cyber Case",
+    "color": "#0f1740",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "disabled": false,
+    "layout": "Stellar Cyber Case",
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "details": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            }
+        }
+    },
+    "fromVersion": "6.6.0"
+}

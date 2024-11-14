@@ -1,8 +1,8 @@
 {
     "name": "Office 365 Feed",
-    "description": "The Office 365 IP Address and URL web service is a read-only API provided by Microsoft to expose the URLs and IPs used by Office 365. The Office 365 Feed integration fetches indicators from the service, with which you can create a list (whitelist, blacklist, EDL, etc.) for your SIEM or firewall service to ingest and apply to its policy rules.",
+    "description": "The Office 365 IP Address and URL web service is a read-only API provided by Microsoft to expose the URLs and IPs used by Office 365. The Office 365 Feed integration fetches indicators from the service, with which you can create a list (allowlist, blocklist, EDL, etc.) for your SIEM or firewall service to ingest and apply to its policy rules.",
     "support": "xsoar",
-    "currentVersion": "1.2.12",
+    "currentVersion": "1.2.16",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

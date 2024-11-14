@@ -378,7 +378,7 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "flashpointfeedmalwaredescription",
+                                "fieldId": "flashpointfeedhtmlmalwaredescription",
                                 "height": 44,
                                 "id": "06280310-dd80-11eb-bce6-1da739b1c4c0",
                                 "index": 2,

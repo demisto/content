@@ -1,5 +1,7 @@
 import os
 from datetime import datetime
+from pathlib import Path
+
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -8,7 +10,7 @@ import re
 from base64 import b64decode
 from flask import Flask, Response, request, send_file
 from netaddr import IPSet, IPNetwork
-from typing import IO, Tuple
+from typing import IO
 from collections.abc import Iterable, Callable
 from math import ceil
 from enum import Enum
@@ -299,7 +301,7 @@ def create_new_edl(request_args: RequestArguments) -> tuple[str, int, dict]:
     )
     demisto.debug(f"Creating a new EDL file in {request_args.out_format} format")
     formatted_indicators = ''
-    new_log_stats = dict()
+    new_log_stats = {}
     if request_args.out_format == FORMAT_TEXT:
         if request_args.drop_invalids or request_args.collapse_ips != "Don't Collapse":
             # Because there may be illegal indicators or they may turn into cider, the limit is increased
@@ -731,31 +733,33 @@ def store_log_data(request_args: RequestArguments, created: datetime, log_stats:
         created (datetime): The time the log was created. This will be added to the header.
         log_stats (dict): A statistics dict for the indicator modifications (e.g. {'Added': 5, 'Dropped': 3, 'Modified': 2}
     """
-    added_count = log_stats.get(IndicatorAction.ADDED.value, 0)
-    dropped_count = log_stats.get(IndicatorAction.DROPPED.value, 0)
-    modified_count = log_stats.get(IndicatorAction.MODIFIED.value, 0)
+    log_file_wip = Path(EDL_FULL_LOG_PATH_WIP)
+    if log_file_wip.exists():
+        added_count = log_stats.get(IndicatorAction.ADDED.value, 0)
+        dropped_count = log_stats.get(IndicatorAction.DROPPED.value, 0)
+        modified_count = log_stats.get(IndicatorAction.MODIFIED.value, 0)
 
-    total_count = added_count + dropped_count + modified_count
+        total_count = added_count + dropped_count + modified_count
 
-    header = f"# Created new EDL at {created.isoformat()}\n\n" \
-             f"## Configuration Arguments: {request_args.to_context_json()}\n\n" \
-             f"## EDL stats: {total_count} indicators in total, {modified_count} modified, {dropped_count} dropped, " \
-             f"{added_count} added.\n" \
-             f"\nAction | Indicator | Raw Indicator | Reason"
+        header = f"# Created new EDL at {created.isoformat()}\n\n" \
+            f"## Configuration Arguments: {request_args.to_context_json()}\n\n" \
+            f"## EDL stats: {total_count} indicators in total, {modified_count} modified, {dropped_count} dropped, " \
+            f"{added_count} added.\n" \
+            f"\nAction | Indicator | Raw Indicator | Reason"
 
-    with open(EDL_FULL_LOG_PATH, 'w+') as new_full_log_file, open(EDL_FULL_LOG_PATH_WIP, 'r') as log_file_data:
-        # Finalize the current log: write the headers and the WIP log to full_log_path
-        new_full_log_file.write(header)
-        for log_line in log_file_data:
-            new_full_log_file.write(log_line)
+        with open(EDL_FULL_LOG_PATH, 'w+') as new_full_log_file, log_file_wip.open('r') as log_file_data:
+            # Finalize the current log: write the headers and the WIP log to full_log_path
+            new_full_log_file.write(header)
+            for log_line in log_file_data:
+                new_full_log_file.write(log_line)
 
-    with open(EDL_FULL_LOG_PATH_WIP, 'w+') as log_file_data:
-        # Empty WIP log file after finalization.
-        log_file_data.seek(0)
+        with open(EDL_FULL_LOG_PATH_WIP, 'w+') as log_file_data:
+            # Empty WIP log file after finalization.
+            log_file_data.seek(0)
 
 
 @debug_function
-def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Tuple[Union[IO, IO[str]], dict]:
+def create_text_out_format(iocs: IO, request_args: RequestArguments) -> tuple[Union[IO, IO[str]], dict]:
     """
     Create a list in new file of formatted_indicators, and log the modifications.
      * IP / CIDR:
@@ -774,7 +778,7 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Tuple[Un
     ipv6_formatted_indicators = set()
     iocs.seek(0)
     formatted_indicators = tempfile.TemporaryFile(mode='w+t')
-    log_stats: dict = dict()
+    log_stats: dict = {}
     new_line = ''  # For the first time he will not add a new line
     for str_ioc in iocs:
         ioc = json.loads(str_ioc.rstrip())
@@ -1065,7 +1069,7 @@ def get_edl_log_file() -> str:
         if os.path.getsize(EDL_FULL_LOG_PATH) > MAX_DISPLAY_LOG_FILE_SIZE:
             return LARGE_LOG_DISPLAY_MSG
 
-        with open(EDL_FULL_LOG_PATH, 'r') as log_file:
+        with open(EDL_FULL_LOG_PATH) as log_file:
             log_file.seek(0)
             edl_data_log = log_file.read()
             log_file.seek(0)

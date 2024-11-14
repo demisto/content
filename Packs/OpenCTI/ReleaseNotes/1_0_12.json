@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Fixed an issue where the **Trust any certificate (not secure)** parameter wasn't parsed correctly. Please note if you have an instance configured, you will need to toggle this value."
+}

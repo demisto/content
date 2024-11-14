@@ -1,0 +1,448 @@
+{
+    "description": "The incoming mapper for the Ignite Alert.",
+    "feed": false,
+    "id": "Ignite Alert - Incoming Mapper",
+    "mapping": {
+        "Ignite Alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Flashpoint Alert Text": {
+                    "complex": {
+                        "filters": [],
+                        "root": "highlight_text",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Basetypes": {
+                    "complex": {
+                        "accessor": "basetypes",
+                        "filters": [],
+                        "root": "resource",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Container": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "resource.container"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "resource.container",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {},
+                                    "is_auto_json_transform": {},
+                                    "json_transform_properties": {},
+                                    "title": {
+                                        "value": {
+                                            "simple": "Flashpoint Container"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Flashpoint Created Date": {
+                    "complex": {
+                        "filters": [],
+                        "root": "created_at",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Data Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "data_type",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Entity ID": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "reason.entity",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Entity Name": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "reason.entity",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Entity Type": {
+                    "complex": {
+                        "accessor": "type",
+                        "filters": [],
+                        "root": "reason.entity",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Generated Date": {
+                    "complex": {
+                        "filters": [],
+                        "root": "generated_at",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Alert ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Image Safe Search": {
+                    "complex": {
+                        "accessor": "safe_search",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "resource.media_v2.image_enrichment.enrichments.v1.image-analysis"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "resource.media_v2.image_enrichment.enrichments.v1.image-analysis",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {},
+                                    "is_auto_json_transform": {},
+                                    "json_transform_properties": {},
+                                    "title": {
+                                        "value": {
+                                            "simple": "Flashpoint Image Safe Search"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Flashpoint Media Storage URI": {
+                    "complex": {
+                        "accessor": "storage_uri",
+                        "filters": [],
+                        "root": "resource.media_v2",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Media Type": {
+                    "complex": {
+                        "accessor": "media_type",
+                        "filters": [],
+                        "root": "resource.media_v2",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Mime Type": {
+                    "complex": {
+                        "accessor": "mime_type",
+                        "filters": [],
+                        "root": "resource.media_v2",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Parent Basetypes": {
+                    "complex": {
+                        "accessor": "parent_basetypes",
+                        "filters": [],
+                        "root": "resource",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Parent Data Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "parent_data_type",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Phash": {
+                    "complex": {
+                        "accessor": "phash",
+                        "filters": [],
+                        "root": "resource.media_v2",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Ports": {
+                    "complex": {
+                        "accessor": "ports",
+                        "filters": [],
+                        "root": "highlights",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ", "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Flashpoint Read Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "is_read",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Reason Name": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "reason",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Reason ID": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "reason",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Reason Origin": {
+                    "complex": {
+                        "accessor": "origin",
+                        "filters": [],
+                        "root": "reason",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Reason Sources": {
+                    "complex": {
+                        "accessor": "sources",
+                        "filters": [],
+                        "root": "reason.details",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Reason Text": {
+                    "complex": {
+                        "accessor": "text",
+                        "filters": [],
+                        "root": "reason",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Reason Type": {
+                    "complex": {
+                        "accessor": "type",
+                        "filters": [],
+                        "root": "reason.details",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Resource URL": {
+                    "complex": {
+                        "accessor": "url",
+                        "filters": [],
+                        "root": "resource",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Services": {
+                    "complex": {
+                        "accessor": "services",
+                        "filters": [],
+                        "root": "highlights",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ", "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Flashpoint Shodan Host": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "resource.shodan_host"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "resource.shodan_host",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {},
+                                    "is_auto_json_transform": {},
+                                    "json_transform_properties": {},
+                                    "title": {
+                                        "value": {
+                                            "simple": "Flashpoint Shodan Host"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Flashpoint Site Actor Name": {
+                    "complex": {
+                        "accessor": "handle",
+                        "filters": [],
+                        "root": "resource.site_actor.names",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Site Name": {
+                    "complex": {
+                        "accessor": "title",
+                        "filters": [],
+                        "root": "resource.site",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Site Native ID": {
+                    "complex": {
+                        "accessor": "native_id",
+                        "filters": [],
+                        "root": "resource.site_actor",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Source": {
+                    "complex": {
+                        "filters": [],
+                        "root": "source",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Source File": {
+                    "complex": {
+                        "accessor": "file",
+                        "filters": [],
+                        "root": "resource",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Source ID": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "resource",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Source Name": {
+                    "complex": {
+                        "accessor": "source",
+                        "filters": [],
+                        "root": "resource",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Source Owner": {
+                    "complex": {
+                        "accessor": "owner",
+                        "filters": [],
+                        "root": "resource",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Source Repo": {
+                    "complex": {
+                        "accessor": "repo",
+                        "filters": [],
+                        "root": "resource",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Source Snippet": {
+                    "complex": {
+                        "accessor": "snippet",
+                        "filters": [],
+                        "root": "resource",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Source Sort Date": {
+                    "complex": {
+                        "accessor": "sort_date",
+                        "filters": [],
+                        "root": "resource",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "status",
+                        "transformers": []
+                    }
+                },
+                "SHA1": {
+                    "complex": {
+                        "accessor": "sha1",
+                        "filters": [],
+                        "root": "resource.media_v2",
+                        "transformers": []
+                    }
+                },
+                "Tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tag_as_list",
+                        "transformers": []
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Tags": {
+                    "simple": "tags"
+                }
+            }
+        }
+    },
+    "name": "Ignite Alert - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

@@ -124,6 +124,70 @@ def test_risky_users_list_command_with_limit(requests_mock) -> None:
     assert 'RiskyUserListNextToken' not in result[0].outputs
 
 
+def test_risky_users_list_command_with_order_by(requests_mock) -> None:
+    """
+    Scenario: List Risky Users.
+    Given:
+     - User has provided valid credentials.
+     - Headers and JWT token have been set.
+    When:
+     - risky_users_list_command is called.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure outputs key fields is correct.
+    """
+    from AzureRiskyUsers import risky_users_list_command
+    mock_response = load_mock_response('list_risky_users.json')
+    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
+    requests_mock.get(f'{BASE_URL}identityProtection/riskyUsers', json=mock_response)
+
+    args = {
+        'order_by': 'riskLastUpdatedDateTime desc',
+        'limit': '10'
+    }
+
+    result = risky_users_list_command(mock_client(), args)
+    assert len(result) == 1
+    assert result[0].outputs_prefix == 'AzureRiskyUsers.RiskyUser'
+    assert result[0].outputs_key_field == 'id'
+
+    assert result[0].outputs[0].get('id') == '111'
+    assert 'RiskyUserListNextToken' not in result[0].outputs
+
+
+def test_risky_users_list_command_with_updated_after(requests_mock) -> None:
+    """
+    Scenario: List Risky Users.
+    Given:
+     - User has provided valid credentials.
+     - Headers and JWT token have been set.
+    When:
+     - risky_users_list_command is called.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure outputs key fields is correct.
+    """
+    from AzureRiskyUsers import risky_users_list_command
+    mock_response = load_mock_response('list_risky_users.json')
+    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
+    requests_mock.get(f'{BASE_URL}identityProtection/riskyUsers', json=mock_response)
+
+    args = {
+        'updated_after': '500 days ago',
+        'limit': '10'
+    }
+
+    result = risky_users_list_command(mock_client(), args)
+    assert len(result) == 1
+    assert result[0].outputs_prefix == 'AzureRiskyUsers.RiskyUser'
+    assert result[0].outputs_key_field == 'id'
+
+    assert result[0].outputs[0].get('id') == '111'
+    assert 'RiskyUserListNextToken' not in result[0].outputs
+
+
 def test_risky_user_get_command(requests_mock) -> None:
     """
     Scenario: Get Risky User.

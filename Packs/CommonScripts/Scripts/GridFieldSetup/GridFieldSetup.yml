@@ -23,6 +23,26 @@ args:
   name: val9
 - description: A value for the 10th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
   name: val10
+- description: A value for the 11th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val11
+- description: A value for the 12th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val12
+- description: A value for the 13th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val13
+- description: A value for the 14th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val14
+- description: A value for the 15th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val15
+- description: A value for the 16th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val16
+- description: A value for the 17th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val17
+- description: A value for the 18th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val18
+- description: A value for the 19th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val19
+- description: A value for the 20th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val20
 - description: Grid field to populate.
   name: gridfield
   required: true
@@ -39,7 +59,7 @@ comment: |-
 commonfields:
   id: GridFieldSetup
   version: -1
-dockerimage: demisto/python3:3.10.13.89009
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: GridFieldSetup
 runas: DBotWeakRole

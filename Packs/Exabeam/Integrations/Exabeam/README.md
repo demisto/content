@@ -44,6 +44,25 @@ For additional information, refer to [Exabeam Administration Guide](https://docs
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+
+### Fetch
+
+#### Exabeam Incident
+
+- Description: Information about incidents collected from the Exabeam system.
+- Details: The incidents include details about events and actions identified in the Exabeam system, intended for monitoring and response.
+
+#### Exabeam Notable User
+
+- Description: Information about notable users collected from the Exabeam system.
+- Details: Notable users are identified by the Exabeam system based on suspicious or abnormal behavior, and the information includes details about their actions in the system.
+- Important: Duplicate notable users are never fetched unless the "Reset the 'last run' timestamp" button is pressed.
+
+#### Note
+The "Reset the 'last run' timestamp" button resets both the regular fetch and the Exabeam Notable User fetch.
+
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

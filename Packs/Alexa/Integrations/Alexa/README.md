@@ -78,5 +78,5 @@ Provides an Alexa ranking of the Domain in question.
 ```
 
 #### Human Readable Output
-![image](https://user-images.githubusercontent.com/42912128/51466171-3b4ead80-1d72-11e9-9cff-14e997e9346a.png)
+![image](../../doc_files/51466171-3b4ead80-1d72-11e9-9cff-14e997e9346a.png)
 

@@ -8,9 +8,12 @@ import urllib3
 urllib3.disable_warnings()
 
 API_VERSION = '2022-09-01'
-GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE}
+GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE,
+                       'Authorization Code': AUTHORIZATION_CODE,
+                       'Client Credentials': CLIENT_CREDENTIALS}
 SCOPE_BY_CONNECTION = {'Device Code': "https://management.azure.com/user_impersonation offline_access user.read",
-                       'Authorization Code': "https://management.azure.com/.default"}
+                       'Authorization Code': "https://management.azure.com/.default",
+                       'Client Credentials': "https://management.azure.com/.default"}
 PREFIX_URL = 'https://management.azure.com/subscriptions/'
 
 
@@ -28,7 +31,8 @@ class ASClient:
         client_args = assign_params(
             self_deployed=True,
             auth_id=app_id,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if 'Device Code' in
+                                                                                                       connection_type else None,
             grant_type=GRANT_BY_CONNECTION.get(connection_type),
             base_url=f'{PREFIX_URL}{subscription_id}',
             verify=verify,
@@ -388,6 +392,7 @@ class ASClient:
                                            params={'$filter': filter_by_tag, '$top': limit,
                                                    'api-version': API_VERSION})
 
+
 # Storage Account Commands
 
 
@@ -606,10 +611,11 @@ def storage_blob_service_properties_set(client: ASClient, params: Dict, args: Di
             'Azure Storage Blob Service Properties',
             readable_output,
             ['Name', 'Account Name', 'Subscription ID', 'Resource Group', 'Change Feed', 'Delete Retention Policy',
-                'Versioning'],
+             'Versioning'],
         ),
         raw_response=response
     )
+
 
 # Blob Containers Commands
 
@@ -895,7 +901,7 @@ def test_module(client: ASClient) -> str:
                                "You can validate the connection by running `!azure-storage-auth-test`\n"
                                "For more details press the (?) button.")
 
-    elif client.connection_type == 'Azure Managed Identities':
+    elif client.connection_type == 'Azure Managed Identities' or client.connection_type == 'Client Credentials':
         client.ms_client.get_access_token()
         return 'ok'
     else:

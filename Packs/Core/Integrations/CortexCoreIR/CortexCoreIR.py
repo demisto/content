@@ -26,6 +26,9 @@ PREVALENCE_COMMANDS = {
     'core-get-cmd-analytics-prevalence': 'cmd',
 }
 
+TERMINATE_BUILD_NUM = '1398786'
+TERMINATE_SERVER_VERSION = '8.8.0'
+
 
 class Client(CoreClient):
 
@@ -148,27 +151,30 @@ def main():  # pragma: no cover
     args = demisto.args()
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
-    api_key = demisto.params().get('apikey')
-    api_key_id = demisto.params().get('apikey_id')
-    url = demisto.params().get('url')
+    headers = {}
     url_suffix = '/xsiam' if command in PREVALENCE_COMMANDS else "/public_api/v1"
+    if not FORWARD_USER_RUN_RBAC:
+        api_key = demisto.params().get('apikey')
+        api_key_id = demisto.params().get('apikey_id')
+        url = demisto.params().get('url')
 
-    if not api_key or not api_key_id or not url:
-        headers = {
-            "HOST": demisto.getLicenseCustomField("Core.ApiHostName"),
-            demisto.getLicenseCustomField("Core.ApiHeader"): demisto.getLicenseCustomField("Core.ApiKey"),
-            "Content-Type": "application/json"
-        }
-        url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"
-        add_sensitive_log_strs(demisto.getLicenseCustomField("Core.ApiKey"))
+        if not api_key or not api_key_id or not url:
+            headers = {
+                "HOST": demisto.getLicenseCustomField("Core.ApiHostName"),
+                demisto.getLicenseCustomField("Core.ApiHeader"): demisto.getLicenseCustomField("Core.ApiKey"),
+                "Content-Type": "application/json"
+            }
+            url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"
+            add_sensitive_log_strs(demisto.getLicenseCustomField("Core.ApiKey"))
+        else:
+            headers = {
+                "Content-Type": "application/json",
+                "x-xdr-auth-id": str(api_key_id),
+                "Authorization": api_key
+            }
+            add_sensitive_log_strs(api_key)
     else:
-        headers = {
-            "Content-Type": "application/json",
-            "x-xdr-auth-id": str(api_key_id),
-            "Authorization": api_key
-        }
-        add_sensitive_log_strs(api_key)
-
+        url = "/api/webapp/"
     base_url = urljoin(url, url_suffix)
     proxy = demisto.params().get('proxy')
     verify_cert = not demisto.params().get('insecure', False)
@@ -178,13 +184,12 @@ def main():  # pragma: no cover
     except ValueError as e:
         demisto.debug(f'Failed casting timeout parameter to int, falling back to 120 - {e}')
         timeout = 120
-
     client = Client(
         base_url=base_url,
         proxy=proxy,
         verify=verify_cert,
         headers=headers,
-        timeout=timeout
+        timeout=timeout,
     )
 
     try:
@@ -348,6 +353,10 @@ def main():  # pragma: no cover
         elif command == 'core-run-script':
             return_results(run_script_command(client, args))
 
+        elif command == 'core-script-run':
+            args = args | {'is_core': True}
+            return_results(script_run_polling_command(args, client))
+
         elif command == 'core-run-snippet-code-script':
             return_results(run_polling_command(client=client,
                                                args=args,
@@ -465,6 +474,45 @@ def main():  # pragma: no cover
         elif command == 'core-get-incidents':
             return_outputs(*get_incidents_command(client, args))
 
+        elif command == 'core-terminate-process':
+            if not is_demisto_version_ge(version=TERMINATE_SERVER_VERSION,
+                                         build_number=TERMINATE_BUILD_NUM):
+                raise DemistoException('This command is only available for XSIAM 2.4')
+            return_results(run_polling_command(client=client,
+                                               args=args,
+                                               cmd="core-terminate-process",
+                                               command_function=terminate_process_command,
+                                               command_decision_field="action_id",
+                                               results_function=action_status_get_command,
+                                               polling_field="status",
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"
+                                                              ],
+                                               values_raise_error=["FAILED",
+                                                                   "TIMEOUT",
+                                                                   "ABORTED",
+                                                                   "CANCELED"]))
+
+        elif command == 'core-terminate-causality':
+            if not is_demisto_version_ge(version=TERMINATE_SERVER_VERSION,
+                                         build_number=TERMINATE_BUILD_NUM):
+                raise DemistoException("This command is only available for XSIAM 2.4")
+            return_results(run_polling_command(client=client,
+                                               args=args,
+                                               cmd="core-terminate-causality",
+                                               command_function=terminate_causality_command,
+                                               command_decision_field="action_id",
+                                               results_function=action_status_get_command,
+                                               polling_field="status",
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"],
+                                               values_raise_error=["FAILED",
+                                                                   "TIMEOUT",
+                                                                   "ABORTED",
+                                                                   "CANCELED"]
+                                               ))
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
 

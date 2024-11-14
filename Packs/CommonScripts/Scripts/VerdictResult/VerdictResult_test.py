@@ -8,6 +8,7 @@ import pytest
     [
         ('Malicious', '<h1 style=color:#FF1744;text-align:center;font-size:300%;padding-top:1em>Malicious</h1>'),
         ('Non-Malicious', '<h1 style=color:#00CD33;text-align:center;font-size:300%;padding-top:1em>Non-Malicious</h1>'),
+        ('Suspicious', '<h1 style=color:#FF9000;text-align:center;font-size:300%;padding-top:1em>Suspicious</h1>'),
         ('blabla', '<h1 style=color:#808080;text-align:center;font-size:300%;padding-top:1em>Not Determined</h1>')
     ]
 )

@@ -992,5 +992,81 @@
         "result": "key2 doesn't exist"
       }
     ]
+  },
+  {
+    "comments": "caseless test for literal: caseless=false",
+    "algorithm": "literal",
+    "caseless": "false",
+    "priority": "first_match",
+    "context": null,
+    "flags": "",
+    "compare_fields": "",
+    "wildcards": "",
+    "mappings": {
+      "xxx": "match"
+    },
+    "patterns": [
+      {
+        "value": "xxx",
+        "result": "match"
+      }
+    ]
+  },
+  {
+    "comments": "caseless test for literal: caseless=false",
+    "algorithm": "literal",
+    "caseless": "false",
+    "priority": "first_match",
+    "context": null,
+    "flags": "",
+    "compare_fields": "",
+    "wildcards": "",
+    "mappings": {
+      "XXX": "match"
+    },
+    "patterns": [
+      {
+        "value": "xxx",
+        "result": "xxx"
+      }
+    ]
+  },
+  {
+    "comments": "caseless test for literal: caseless=true",
+    "algorithm": "literal",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": null,
+    "flags": "",
+    "compare_fields": "",
+    "wildcards": "",
+    "mappings": {
+      "XXX": "match"
+    },
+    "patterns": [
+      {
+        "value": "XXX",
+        "result": "match"
+      }
+    ]
+  },
+  {
+    "comments": "caseless test for literal: caseless=true",
+    "algorithm": "literal",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": null,
+    "flags": "",
+    "compare_fields": "",
+    "wildcards": "",
+    "mappings": {
+      "XXX": "match"
+    },
+    "patterns": [
+      {
+        "value": "xxx",
+        "result": "match"
+      }
+    ]
   }
 ]

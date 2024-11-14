@@ -7,6 +7,7 @@ ACCOUNT_NAME = "test"
 BASE_URL = f'https://{ACCOUNT_NAME}.blob.core.windows.net/'
 SAS_TOKEN = "XXXX"
 API_VERSION = "2020-10-02"
+SHARED_KEY = "XXXX"
 
 
 def load_mock_response(file_name: str, file_type: str = "json"):
@@ -43,7 +44,7 @@ def test_azure_storage_list_containers_command(requests_mock):
     from AzureStorageContainer import Client, list_containers_command
     mock_response = load_mock_response('containers.xml', "xml")
 
-    url = f'{BASE_URL}{SAS_TOKEN}&maxresults=50&comp=list'
+    url = f'{BASE_URL}?{SAS_TOKEN}&maxresults=50&comp=list'
     requests_mock.get(url, text=mock_response)
 
     client = Client(server_url=BASE_URL, verify=False, proxy=False,
@@ -72,7 +73,7 @@ def test_azure_storage_create_container_command(requests_mock):
     from AzureStorageContainer import Client, create_container_command
 
     container_name = "test"
-    url = f'{BASE_URL}{container_name}{SAS_TOKEN}&restype=container'
+    url = f'{BASE_URL}{container_name}?{SAS_TOKEN}&restype=container'
 
     requests_mock.put(url, text="")
 
@@ -138,7 +139,7 @@ def test_azure_storage_get_container_properties_command(requests_mock):
     from AzureStorageContainer import Client, get_container_properties_command
 
     container_name = "test"
-    url = f'{BASE_URL}{container_name}{SAS_TOKEN}&restype=container'
+    url = f'{BASE_URL}{container_name}?{SAS_TOKEN}&restype=container'
     headers_response = json.loads(load_mock_response('container_properties.json'))
 
     requests_mock.get(url, headers=headers_response)
@@ -169,7 +170,7 @@ def test_azure_storage_delete_container_command(requests_mock):
     from AzureStorageContainer import Client, delete_container_command
 
     container_name = "test"
-    url = f'{BASE_URL}{container_name}{SAS_TOKEN}&restype=container'
+    url = f'{BASE_URL}{container_name}?{SAS_TOKEN}&restype=container'
 
     requests_mock.delete(url, text="")
 
@@ -198,7 +199,7 @@ def test_azure_storage_list_blobs_command(requests_mock):
     from AzureStorageContainer import Client, list_blobs_command
 
     container_name = "test"
-    url = f'{BASE_URL}{container_name}{SAS_TOKEN}&container_name={container_name}&maxresults=50&restype=container&comp=list'
+    url = f'{BASE_URL}{container_name}?{SAS_TOKEN}&container_name={container_name}&maxresults=50&restype=container&comp=list'
     response = load_mock_response('blobs.xml', 'xml')
 
     requests_mock.get(url, text=response)
@@ -230,7 +231,7 @@ def test_azure_storage_get_blob_command(requests_mock):
 
     container_name = "test"
     blob_name = "blob.txt"
-    url = f'{BASE_URL}{container_name}/{blob_name}{SAS_TOKEN}'
+    url = f'{BASE_URL}{container_name}/{blob_name}?{SAS_TOKEN}'
 
     with open('test_data/blob.txt', 'rb') as text_file_mock:
         requests_mock.get(url, content=text_file_mock.read())
@@ -264,7 +265,7 @@ def test_azure_storage_get_blob_tags_command(requests_mock):
     container_name = "test"
     blob_name = "blob.txt"
 
-    url = f'{BASE_URL}{container_name}/{blob_name}{SAS_TOKEN}&comp=tags'
+    url = f'{BASE_URL}{container_name}/{blob_name}?{SAS_TOKEN}&comp=tags'
     mock_response = load_mock_response('tags.xml', "xml")
 
     requests_mock.get(url, text=mock_response)
@@ -283,6 +284,55 @@ def test_azure_storage_get_blob_tags_command(requests_mock):
     assert result.outputs.get('Blob').get('Tag')[0].get('Value') == 'Azure'
 
 
+def test_azure_storage_block_public_access_command(mocker, requests_mock):
+    """
+    Scenario: Block public access for the specified container.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - azure-storage-container-block-public-access called.
+    Then:
+     - Ensure readable output message content.
+    """
+    from AzureStorageContainer import Client, block_public_access_command
+    params = {
+        'shared_key': {'password': SHARED_KEY},
+        'credentials': {'identifier': ACCOUNT_NAME}
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    container_name = "test"
+    url = f"https://{ACCOUNT_NAME}.blob.core.windows.net/{container_name}?restype=container&comp=acl"
+    requests_mock.put(url, status_code=200, text="")
+    client = Client(server_url=BASE_URL, verify=False, proxy=False,
+                    account_sas_token=SAS_TOKEN,
+                    storage_account_name=ACCOUNT_NAME, api_version=API_VERSION)
+    result = block_public_access_command(client, {
+        'container_name': container_name
+    })
+
+    expected_response = f"Public access to container '{container_name}' has been successfully blocked"
+    assert result.readable_output == expected_response
+
+    # Test for invalid shared key
+    with pytest.raises(ValueError, match="Incorrect shared key provided"):
+        # Here we need to set params to have an invalid key
+        invalid_shared_key_params = {
+            'shared_key': {'password': "invalid-key"},
+            'credentials': {'identifier': ACCOUNT_NAME}
+        }
+        mocker.patch.object(demisto, 'params', return_value=invalid_shared_key_params)
+        block_public_access_command(client, {'container_name': container_name})
+
+    # Test for missing shared key
+    with pytest.raises(KeyError, match="The 'shared_key' parameter must be provided."):
+        missing_shared_key_params = {
+            'shared_key': {'password': ""},
+            'credentials': {'identifier': ACCOUNT_NAME}
+        }
+        mocker.patch.object(demisto, 'params', return_value=missing_shared_key_params)
+        block_public_access_command(client, {'container_name': container_name})
+
+
 def test_azure_storage_set_blob_tags_command(requests_mock):
     """
     Scenario: Set the tags for the specified Blob.
@@ -298,7 +348,7 @@ def test_azure_storage_set_blob_tags_command(requests_mock):
 
     container_name = "test"
     blob_name = "blob.txt"
-    url = f'{BASE_URL}{container_name}/{blob_name}{SAS_TOKEN}&comp=tags'
+    url = f'{BASE_URL}{container_name}/{blob_name}?{SAS_TOKEN}&comp=tags'
 
     requests_mock.put(url, text="")
 
@@ -329,7 +379,7 @@ def test_azure_storage_delete_blob_command(requests_mock):
 
     container_name = "test"
     blob_name = "blob.txt"
-    url = f'{BASE_URL}{container_name}/{blob_name}{SAS_TOKEN}'
+    url = f'{BASE_URL}{container_name}/{blob_name}?{SAS_TOKEN}'
 
     requests_mock.delete(url, text="")
 
@@ -361,7 +411,7 @@ def test_azure_storage_get_blob_properties_command(requests_mock):
     container_name = "test"
     blob_name = "blob.txt"
 
-    url = f'{BASE_URL}{container_name}/{blob_name}{SAS_TOKEN}'
+    url = f'{BASE_URL}{container_name}/{blob_name}?{SAS_TOKEN}'
     headers_response = json.loads(load_mock_response('blob_properties.json'))
 
     requests_mock.head(url, headers=headers_response)
@@ -396,7 +446,7 @@ def test_azure_storage_set_blob_properties_command(requests_mock):
 
     container_name = "test"
     blob_name = "blob.txt"
-    url = f'{BASE_URL}{container_name}/{blob_name}{SAS_TOKEN}&comp=properties'
+    url = f'{BASE_URL}{container_name}/{blob_name}?{SAS_TOKEN}&comp=properties'
 
     requests_mock.put(url, text="")
 
@@ -436,6 +486,24 @@ def test_generate_sas_signature():
     from AzureStorageContainer import generate_sas_signature
     assert generate_sas_signature('test', 'test', 'test', 'test', 'test', 'test', 'test',
                                   'test', ) == 'sp=test&st=test&se=test&sip=test&spr=https&sv=test&sr=test&sig=pyUQ25%2BIijJ2TstI5Q6Sre3jJWI0b4qwvRg2LtD9uhc%3D'  # noqa
+
+
+def test_generate_sas_signature_no_key(mocker):
+    """
+    Given:
+     - User hasn't provided an account key to create the SAS token.
+    When:
+     - azure-storage-container-sas-create called.
+    Then:
+     - Ensure command raises an exception.
+    """
+    from AzureStorageContainer import generate_sas_token_command, Client
+    mocker.patch.object(demisto, "params", return_value={})
+    client = Client(server_url=BASE_URL, verify=False, proxy=False,
+                    account_sas_token=SAS_TOKEN,
+                    storage_account_name=ACCOUNT_NAME, api_version=API_VERSION)
+    with pytest.raises(DemistoException):
+        generate_sas_token_command(client, {"signed_permissions": "c"})
 
 
 def test_check_valid_permission():

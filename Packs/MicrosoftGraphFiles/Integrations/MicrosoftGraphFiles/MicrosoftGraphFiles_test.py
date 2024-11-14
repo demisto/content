@@ -934,7 +934,7 @@ def test_generate_login_url(mocker):
     main()
     expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
                    f'response_type=code&scope=offline_access%20{Scopes.graph}' \
-                   f'&client_id={client_id}&redirect_uri={redirect_uri}&prompt=consent)'
+                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
     res = return_results.call_args[0][0].readable_output
     assert expected_url in res
 

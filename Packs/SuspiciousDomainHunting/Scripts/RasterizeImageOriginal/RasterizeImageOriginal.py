@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-
 def get_entry_id(demisto_context):
     entry_id = ''
     files = []
@@ -16,7 +15,7 @@ def get_entry_id(demisto_context):
                     break
         else:
             entry_id = files['EntryID']
-        
+
         return entry_id
     except Exception as e:
         demisto.debug(f"Error: {e}")

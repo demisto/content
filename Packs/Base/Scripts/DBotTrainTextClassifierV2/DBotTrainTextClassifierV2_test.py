@@ -22,10 +22,10 @@ def test_read_file(mocker):
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': './TestData/input_json_file_test'})
     obj = read_file('231342@343', 'json')
     assert len(obj) >= 1
-    with open('./TestData/input_json_file_test', 'r') as f:
+    with open('./TestData/input_json_file_test') as f:
         obj = read_file(f.read(), 'json_string')
         assert len(obj) >= 1
-    with open('./TestData/input_json_file_test', 'r') as f:
+    with open('./TestData/input_json_file_test') as f:
         b64_input = base64.b64encode(f.read().encode('utf-8'))  # base64.b64encode(f.read())
         obj = read_file(b64_input, 'json_b64_string')
         assert len(obj) >= 1

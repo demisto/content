@@ -10,116 +10,79 @@
         "Carbon Black Endpoint Standard": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Alert Category": {
-                    "complex": null,
-                    "simple": "category"
-                },
                 "Alert ID": {
-                    "complex": null,
                     "simple": "id"
                 },
                 "Carbon Black ES Alert Severity": {
-                    "complex": null,
                     "simple": "severity"
                 },
                 "Carbon Black ES First Event Time": {
-                    "complex": null,
-                    "simple": "first_event_time"
+                    "simple": "first_event_timestamp"
                 },
                 "Carbon Black ES IOC Hit": {
-                    "complex": null,
                     "simple": "ioc_hit"
                 },
                 "Carbon Black ES IOC Id": {
-                    "complex": null,
                     "simple": "ioc_id"
                 },
                 "Carbon Black ES Last Event Time": {
-                    "complex": null,
-                    "simple": "last_event_time"
+                    "simple": "last_event_timestamp"
                 },
                 "Carbon Black ES Process Id": {
-                    "complex": null,
                     "simple": "process_guid"
                 },
                 "Carbon Black ES Process Name": {
-                    "complex": null,
                     "simple": "process_name"
                 },
                 "Carbon Black ES Report Name": {
-                    "complex": null,
                     "simple": "report_name"
                 },
                 "Carbon Black ES Reputation": {
-                    "complex": null,
-                    "simple": "threat_cause_reputation"
+                    "simple": "process_reputation"
                 },
                 "Carbon Black ES Target Value": {
-                    "complex": null,
-                    "simple": "target_value"
-                },
-                "Carbon Black ES Threat Category": {
-                    "complex": null,
-                    "simple": "threat_cause_threat_category"
+                    "simple": "device_target_value"
                 },
                 "Carbon Black ES Threat Id": {
-                    "complex": null,
                     "simple": "threat_id"
                 },
-                "Carbon Black ES Vector": {
-                    "complex": null,
-                    "simple": "threat_cause_vector"
-                },
                 "Changed": {
-                    "complex": null,
                     "simple": "workflow.changed_by"
                 },
                 "Description": {
-                    "complex": null,
                     "simple": "reason"
                 },
                 "Device Id": {
-                    "complex": null,
                     "simple": "device_id"
                 },
                 "Device Name": {
-                    "complex": null,
                     "simple": "device_name"
                 },
                 "Device Username": {
-                    "complex": null,
                     "simple": "device_username"
                 },
                 "Last Update Time": {
-                    "complex": null,
-                    "simple": "last_update_time"
+                    "simple": "backend_update_timestamp"
                 },
                 "OS": {
-                    "complex": null,
                     "simple": "device_os"
                 },
                 "OS Version": {
-                    "complex": null,
                     "simple": "device_os_version"
                 },
                 "Policy ID": {
-                    "complex": null,
-                    "simple": "policy_id"
+                    "simple": "device_policy_id"
                 },
                 "Carbon Black ES Report ID": {
-                    "complex": null,
                     "simple": "report_id"
                 },
                 "SHA256": {
-                    "complex": null,
-                    "simple": "threat_cause_actor_sha256"
+                    "simple": "process_sha256"
                 },
                 "State": {
-                    "complex": null,
-                    "simple": "workflow.state"
+                    "simple": "workflow.status"
                 },
                 "Tags": {
-                    "complex": null,
                     "simple": "tags"
                 }
             }

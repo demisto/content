@@ -1,5 +1,7 @@
-Exports a given array to a CSV file.
+Export given array to csv file
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -7,16 +9,18 @@ Exports a given array to a CSV file.
 | Script Type | javascript |
 | Tags | Utility, csv |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| fileName | The output filename. |
-| csvArray | The array to export. |
-| headers | The array to hold the file headers in order.  This also will accept a comma-separated list. |
+| fileName | output filename |
+| csvArray | Array to export |
+| headers | Array to hold the file headers in order.  Also excepts a comma separated list. |
+| codec | UTF-16-BOM to encode Non English characters. Default is: UTF-8 |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

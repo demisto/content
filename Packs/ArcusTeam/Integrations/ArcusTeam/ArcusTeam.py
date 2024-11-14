@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import urllib3
 import traceback
-from typing import Any, Dict
+from typing import Any
 
 
 # Disable insecure warnings
@@ -60,7 +60,7 @@ class Client(BaseClient):
                 "returnFields": returnFields,
             })
 
-    def get_authentication_token(self, authentication_url: str, headers: Dict, payload: Dict):
+    def get_authentication_token(self, authentication_url: str, headers: dict, payload: dict):
         return self._http_request(
             method='POST',
             full_url=authentication_url,
@@ -93,7 +93,7 @@ def getEditIssue(returnFields):
             key = returnFields[0]
             if key == "risk":
                 issue = str(round(issue * 100, 2)) + '%'
-            data = dict()
+            data = {}
             data[key] = issue
             return data
         else:
@@ -104,7 +104,7 @@ def getEditIssue(returnFields):
     return editIssue
 
 
-def arcusteam_get_devices(client: Client, args: Dict[str, Any]):
+def arcusteam_get_devices(client: Client, args: dict[str, Any]):
     """
     Search for matching devices giving a device name
     :param device_name: device name to search for in the DB.
@@ -122,7 +122,7 @@ def arcusteam_get_devices(client: Client, args: Dict[str, Any]):
     )
 
 
-def arcusteam_get_vulnerabilities(client: Client, args: Dict[str, Any]) -> CommandResults:
+def arcusteam_get_vulnerabilities(client: Client, args: dict[str, Any]) -> CommandResults:
 
     returnFields = str(args.get("return_fields", 'risk,cve')).split(',')
     firmwareId = args.get("firmware_id", "")

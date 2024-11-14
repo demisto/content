@@ -28,6 +28,8 @@ FETCH_QUERY_EXCEPTION_MSG = 'If you marked the "Query only application events co
                             '"Fetch Query Filter" parameter instead.'
 GET_USER_ATTRIBUTES = ['id', 'login', 'email']
 
+MAX_LOGS_LIMIT = 1000
+
 '''CLIENT CLASS'''
 
 
@@ -246,7 +248,7 @@ class Client(BaseClient):
         return logs_batch, next_page
 
     def get_logs(self, next_page=None, last_run_time=None, time_now=None,
-                 query_filter=None, auto_generate_filter=False, context=None):
+                 query_filter=None, auto_generate_filter=False, context=None, limit=None):
         logs = []
 
         uri = 'logs'
@@ -257,13 +259,27 @@ class Client(BaseClient):
         params = {
             'filter': query_filter,
             'since': last_run_time,
-            'until': time_now
+            'until': time_now,
+            'limit': limit
         }
+        limit = int(limit) if limit else None
+        if limit and limit <= MAX_LOGS_LIMIT:
+            return self._http_request(
+                method='GET',
+                url_suffix=uri,
+                params=params,
+            ), None
+
+        if limit and limit > MAX_LOGS_LIMIT:
+            params['limit'] = MAX_LOGS_LIMIT
+
         logs_batch, next_page = self.get_logs_batch(url_suffix=uri, params=params, full_url=next_page)
 
         try:
             while logs_batch:
                 logs.extend(logs_batch)
+                if limit and len(logs) > limit:
+                    return logs[:limit], next_page
                 logs_batch, next_page = self.get_logs_batch(full_url=next_page)
         except DemistoException as e:
             # in case of too many API calls, we return what we got and save the next_page for next fetch
@@ -899,7 +915,11 @@ def get_logs_command(client, args):
     filter = args.get('filter')
     since = args.get('since')
     until = args.get('until')
-    log_events, _ = client.get_logs(query_filter=filter, last_run_time=since, time_now=until)
+    limit = args.get('limit')
+    log_events, _ = client.get_logs(query_filter=filter, last_run_time=since, time_now=until, limit=limit)
+
+    if not log_events:
+        return CommandResults(readable_output='No logs found.', outputs={}, raw_response=log_events)
 
     return CommandResults(
         raw_response=log_events,

@@ -1,0 +1,139 @@
+{
+  "type": "file",
+  "id": "0000000000000000000000000000000000000000000000000000000000000000",
+  "links": {
+    "self": "https://www.virustotal.com/api/v3/files/0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "relationships": {
+    "contacted_domains": {
+      "data": [
+        {
+          "type": "domain",
+          "id": "test.org"
+        }
+      ],
+      "links": {
+        "self": "https://www.virustotal.com/api/v3/files/0000000000000000000000000000000000000000000000000000000000000000/relationships/contacted_domains?limit=20",
+        "related": "https://www.virustotal.com/api/v3/files/0000000000000000000000000000000000000000000000000000000000000000/contacted_domains"
+      }
+    }
+  },
+  "attributes": {
+    "first_seen_itw_date": 1075654056,
+    "first_submission_date": 1170892383,
+    "last_analysis_date": 1502355193,
+    "last_analysis_stats": {
+      "harmless": 0,
+      "malicious": 0,
+      "suspicious": 0,
+      "timeout": 0,
+      "type-unsupported": 8,
+      "undetected": 59
+    },
+    "last_submission_date": 1502355193,
+    "magic": "data",
+    "md5": ":md5:",
+    "names": [
+      "zipnew.dat",
+      "327916-1502345099.zip",
+      "ac3plug.zip",
+      "IMG_6937.zip",
+      "DOC952.zip",
+      "20170801486960.zip"
+    ],
+    "nsrl_info": {
+      "filenames": [
+        "WINDOWS DIALUP.ZIP",
+        "kemsetup.ZIP",
+        "Data_Linux.zip",
+        "2003.zip",
+        "_6A271FB199E041FC82F4D282E68B01D6"
+      ],
+      "products": [
+        "Master Hacker Internet Terrorism (Core Publishing Inc.)",
+        "Read Rabbits Math Ages 6-9 (Smart Saver)",
+        "Neverwinter Nights Gold (Atari)",
+        "Limited Edition Print Workshop 2004 (ValuSoft)",
+        "Crysis (Electronic Arts Inc.)"
+      ]
+    },
+    "reputation": -889,
+    "sha1": ":sha1:",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "size": 22,
+    "ssdeep": ":ssdeep:",
+    "tags": [
+      "software-collection",
+      "nsrl",
+      "attachment",
+      "trusted",
+      "via-tor"
+    ],
+    "times_submitted": 26471,
+    "total_votes": {
+      "harmless": 639,
+      "malicious": 958
+    },
+    "trid": [
+      {
+        "file_type": "ZIP compressed archive (empty)",
+        "probability": 100
+      }
+    ],
+    "trusted_verdict": {
+      "filename": "somefile.zip",
+      "link": "example.com/somefile.zip",
+      "organization": "Google",
+      "verdict": "goodware"
+    },
+    "type_description": "unknown",
+    "gti_assessment": {
+      "threat_score": {
+        "value": 100
+      },
+      "severity": {
+        "value": "SEVERITY_HIGH"
+      },
+      "contributing_factors": {
+        "mandiant_association_report": true,
+        "mandiant_association_actor": true,
+        "gavs_detections": 3,
+        "normalised_categories": [
+          "trojan"
+        ],
+        "mandiant_association_malware": true,
+        "mandiant_confidence_score": 100
+      },
+      "verdict": {
+        "value": "VERDICT_MALICIOUS"
+      },
+      "description": "This indicator is malicious (high severity) with high impact."
+    },
+    "sigma_analysis_stats": {
+      "high": 0,
+      "medium": 1,
+      "critical": 0,
+      "low": 1
+    },
+    "sigma_analysis_results": [
+      {
+        "match_context": [],
+        "rule_level": "medium",
+        "rule_description": "Description 1",
+        "rule_source": "Source 1",
+        "rule_title": "Title 1",
+        "rule_id": "random_id_1",
+        "rule_author": "Author 1"
+      },
+      {
+        "match_context": [],
+        "rule_level": "low",
+        "rule_description": "Description 2",
+        "rule_source": "Source 2",
+        "rule_title": "Title 2",
+        "rule_id": "random_id_2",
+        "rule_author": "Author 2"
+      }
+    ]
+  }
+}

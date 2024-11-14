@@ -17,9 +17,12 @@ args:
   isArray: true
 outputs:
 - contextPath: yes
-  description: If incident contains an email attachment. Will also set reportedemailentryid with the entry id.
+  description: If incident contains an email attachment.
 - contextPath: no
   description: If incident does not contain an email attachment.
+- contextPath: reportedemailentryid
+  description: The entry IDs of the email attachments found.
+  type: String
 system: true
 scripttarget: 0
 dependson: {}
@@ -28,4 +31,4 @@ tests:
 - Process Email - Generic - Test - Incident Starter
 - Phishing v2 - Test - Incident Starter
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.87159
+dockerimage: demisto/python3:3.11.10.115186

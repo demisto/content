@@ -1,6 +1,7 @@
 Manage suspicious activities, monitoring alerts and entities on Microsoft ATA.
 
 This integration was integrated and tested with version 1.9.7478.57683 of Microsoft Advanced Threat Analytics.
+
 ## Configure Microsoft Advanced Threat Analytics on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -22,10 +23,14 @@ This integration was integrated and tested with version 1.9.7478.57683 of Micros
 | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ms-ata-suspicious-activities-list
+
 ***
 Retrieves suspicious activities.
 
@@ -33,6 +38,7 @@ Retrieves suspicious activities.
 #### Base Command
 
 `ms-ata-suspicious-activities-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -85,9 +91,11 @@ Retrieves suspicious activities.
 
 
 #### Command Example
+
 ```!ms-ata-suspicious-activities-list```
 
 #### Context Example
+
 ```
 {
     "MicrosoftATA": {
@@ -150,12 +158,14 @@ Retrieves suspicious activities.
 #### Human Readable Output
 
 >### Microsoft Advanced Threat Analytics Suspicious Activity
+
 >|Id|Type|Status|Severity|StartTime|EndTime|
 >|---|---|---|---|---|---|
 >| 5f1fe6b383eaed101ce19b58 | HoneytokenActivitySuspiciousActivity | Open | Medium | 2020-07-28T08:49:54.1366697Z | 2020-07-28T08:51:09.7050476Z |
 
 
 ### ms-ata-suspicious-activity-status-set
+
 ***
 Sets suspicious activity status.
 
@@ -163,6 +173,7 @@ Sets suspicious activity status.
 #### Base Command
 
 `ms-ata-suspicious-activity-status-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -176,6 +187,7 @@ Sets suspicious activity status.
 There is no context output for this command.
 
 #### Command Example
+
 ```!ms-ata-suspicious-activity-status-set id="5f1fe6b383eaed101ce19b58" status="Closed"```
 
 #### Human Readable Output
@@ -183,6 +195,7 @@ There is no context output for this command.
 >Suspicious activity 5f1fe6b383eaed101ce19b58 status was updated to Closed successfully.
 
 ### ms-ata-monitoring-alerts-list
+
 ***
 Retrieves health alerts.
 
@@ -190,6 +203,7 @@ Retrieves health alerts.
 #### Base Command
 
 `ms-ata-monitoring-alerts-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -225,9 +239,11 @@ Retrieves health alerts.
 
 
 #### Command Example
+
 ```!ms-ata-monitoring-alerts-list```
 
 #### Context Example
+
 ```
 {
     "MicrosoftATA": {
@@ -275,6 +291,7 @@ Retrieves health alerts.
 #### Human Readable Output
 
 >### Microsoft Advanced Threat Analytics Monitoring Alert
+
 >|Id|Type|Status|Severity|StartTime|EndTime|
 >|---|---|---|---|---|---|
 >| 5f159bbd83eaed101cd5c4e5 | GatewayDomainSynchronizerNotAssignedMonitoringAlert | Closed | Low | 2020-07-20T13:27:25.7800034Z | 2020-07-28T11:17:28.6742502Z |
@@ -282,6 +299,7 @@ Retrieves health alerts.
 
 
 ### ms-ata-entity-get
+
 ***
 Retrieves information of distinct entity, such as computers and users.
 
@@ -289,6 +307,7 @@ Retrieves information of distinct entity, such as computers and users.
 #### Base Command
 
 `ms-ata-entity-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -346,9 +365,11 @@ Retrieves information of distinct entity, such as computers and users.
 
 
 #### Command Example
+
 ```!ms-ata-entity-get id="7a58c171-fa19-44f9-bf1e-81b544b318ad"```
 
 #### Context Example
+
 ```
 {
     "MicrosoftATA": {
@@ -444,10 +465,13 @@ Retrieves information of distinct entity, such as computers and users.
 #### Human Readable Output
 
 >### Microsoft Advanced Threat Analytics Entity 7a58c171-fa19-44f9-bf1e-81b544b318ad
+
 >|Id|SystemDisplayName|DistinguishedName|UpnName|Type|CreationTime|
 >|---|---|---|---|---|---|
 >| 7a58c171-fa19-44f9-bf1e-81b544b318ad | Test ATA | CN=Test ATA,CN=Users,DC=demisto,DC=local | testata@demisto.local | User | 2020-07-21T13:58:11Z |
+
 >### Entity Profile
+
 >|Type|SuspiciousActivitySeverityToCountMapping|UpdateTime|IsBehaviorChanged|
 >|---|---|---|---|
 >| UserProfile | Low: 0<br/>Medium: 0<br/>High: 0 | 2020-07-28T09:00:13.8696377Z | true |

@@ -1,6 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # pragma: no cover
+
 
 def main():
     res = demisto.executeCommand('addEntitlement', {
@@ -22,18 +24,40 @@ def main():
         option2 = 'no'
     entitlementString = entitlement + '@' + demisto.investigation()['id']
 
-    if demisto.get(demisto.args(), 'task'):
-        entitlementString += '|' + demisto.get(demisto.args(), 'task')
-    message = '%s - Please reply `%s %s` or `%s %s`' % (demisto.args()['message'],
-                                                        option1,
-                                                        entitlementString,
-                                                        option2,
-                                                        entitlementString)
-    demisto.results(demisto.executeCommand('send-notification', {
-        'to': demisto.get(demisto.args(), 'user'),
+    args = demisto.args()
+    lifetime = args.get('lifetime', '1 day')
+    try:
+        parsed_date = arg_to_datetime('in ' + lifetime)
+        assert parsed_date is not None, f'Could not parse in {lifetime}'
+        expiry = datetime.strftime(parsed_date, DATE_FORMAT)
+    except Exception:
+        demisto.debug(f'Could not parse the argument "lifetime" , got {lifetime}. will use "in 1 day" instead')
+        parsed_date = arg_to_datetime('in 1 day')
+        assert parsed_date is not None
+        expiry = datetime.strftime(parsed_date,
+                                   DATE_FORMAT)
+    default_response = args.get('default_response')
+    reply = args.get('reply')
+
+    if task := demisto.get(args, 'task'):
+        entitlementString += '|' + task
+
+    message = f'**{args.get("message")}** - Please reply to this thread with `{option1}` or `{option2}`.'
+
+    message_dict = json.dumps({
         'message': message,
+        'entitlement': entitlementString,
+        'reply': reply,
+        'expiry': expiry,
+        'default_response': default_response
+    })
+
+    return_results(demisto.executeCommand('send-notification', {
+        'to': demisto.get(demisto.args(), 'user'),
+        'message': message_dict,
         'ignoreAddURL': 'true',
-        'using-brand': 'mattermost'
+        'mattermost_ask': True,
+        'using-brand': 'MattermostV2',
     }))
 
 

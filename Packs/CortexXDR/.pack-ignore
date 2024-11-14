@@ -2,7 +2,7 @@
 ignore=PA116
 
 [file:CortexXDRIR.yml]
-ignore=IN126,IN136,IN124,IN139
+ignore=IN126,IN139
 
 [file:XDR_iocs.yml]
 ignore=BA108,BA109
@@ -160,3 +160,13 @@ ignore=PB105
 
 [file:Cortex_XDR_-_Large_Upload.yml]
 ignore=PB121
+
+# GR103 is temporary, see CIAC-11705
+[file:Test_Playbook_-_Cortex_XDR_-_False_Positive_Incident_Handling.yml]
+ignore=GR103
+
+[file:Cortex_XDR_Alerts_Handling_v2.yml]
+ignore=GR107
+
+[file:Cortex_XDR_Port_Scan.json]
+ignore=GR107

@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from itertools import zip_longest
-from typing import Callable, Dict
+from collections.abc import Callable
 
 import urllib3
 
@@ -13,15 +13,15 @@ from gql.transport.requests import RequestsHTTPTransport
 urllib3.disable_warnings()
 
 
-CAST_MAPPING: Dict[str, Callable] = {
+CAST_MAPPING: dict[str, Callable] = {
     'string': str,
     'boolean': bool,
     'number': arg_to_number,
 }
 
 
-def execute_query(client: Client, args: Dict) -> CommandResults:
-    query = gql(args.get('query'))
+def execute_query(client: Client, args: dict) -> CommandResults:
+    query = gql(args['query'])
     variables_names = argToList(args.get('variables_names', ''))
     variables_values = argToList(args.get('variables_values', ''))
     variables_types = argToList(args.get('variables_types', ''))

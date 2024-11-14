@@ -1049,7 +1049,6 @@ def main():  # pragma: no cover
                 demisto.createIndicators(indicators_batch)  # type: ignore
             if next_newer_than:
                 set_next_newer_than(next_newer_than)
-
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
 

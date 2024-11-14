@@ -1,0 +1,32 @@
+{
+    "id": "incident_clarotyxdomedevicelabels",
+    "version": -1,
+    "modified": "2024-04-18T10:35:36.72474268Z",
+    "name": "Claroty xDome Device Labels",
+    "ownerOnly": false,
+    "description": "The labels added to the device manually or automatically",
+    "cliName": "clarotyxdomedevicelabels",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": true,
+    "associatedTypes": [
+        "Claroty xDome Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

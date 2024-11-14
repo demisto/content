@@ -43,19 +43,16 @@ configuration:
   type: 9
   displaypassword: Secret Key
   required: false
-  hiddenusername: false
 - display: Access Key
   name: access_key
   type: 0
   hidden: true
   required: false
-  defaultvalue:
 - display: Secret Key
   name: secret_key
   type: 4
   hidden: true
   required: false
-  defaultvalue:
 - display: Timeout
   name: timeout
   defaultvalue: 60,10
@@ -65,19 +62,17 @@ configuration:
 - display: Retries
   name: retries
   type: 0
-  defaultvalue: 5
+  defaultvalue: '5'
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. You may also override the value when executing the aws-lambda-invoke command."
   required: false
 - display: PrivateLink service URL.
   name: endpoint_url
   type: 0
   required: false
-  defaultvalue:
 - display: STS PrivateLink URL
   name: sts_endpoint_url
   type: 0
   required: false
-  defaultvalue:
 - display: AWS STS Regional Endpoints
   additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
   name: sts_regional_endpoint
@@ -457,6 +452,9 @@ script:
     - contextPath: AWS.Lambda.InvokedFunctions.Region
       description: The AWS Region.
       type: string
+    - contextPath: AWS.Lambda.InvokedFunctions.RequestPayload
+      description: The JSON representation of the object passed to the Lambda function as input.
+      type: unknown
   - arguments:
     - description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
@@ -955,7 +953,6 @@ script:
       name: qualifier
     description: Deletes a Lambda function URL. When you delete a function URL, you can’t recover it. Creating a new function URL results in a different URL address.
     name: aws-lambda-delete-function-url-config
-    outputs: []
   - arguments:
     - description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
@@ -990,125 +987,83 @@ script:
       name: qualifier
     description: Deletes a Lambda function. To delete a specific function version, use the Qualifier parameter. Otherwise, all versions and aliases are deleted.
     name: aws-lambda-delete-function
-    outputs: []
   - name: aws-lambda-create-function
     description: Creates a Lambda function. To create a function, you need a deployment package and an execution role.
-    deprecated: false
     arguments:
     - name: functionName
       description: The name of the Lambda function.
       required: true
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - name: runtime
       description: The runtime environment for the function.
       required: true
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - name: handler
       description: "The name of the method within your code that Lambda calls to execute your function. Example: lambda_function.lambda_handler'."
       required: true
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - name: code
       description: Entry ID of the uploaded base64-encoded contents of the deployment package. Amazon Web Services SDK and CLI clients handle the encoding for you.
-      required: false
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - name: S3-bucket
       description: An Amazon S3 bucket in the same Amazon Web Services Region as your function. The bucket can be in a different Amazon Web Services account.
-      required: false
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - name: description
       description: A description of the function.
-      required: false
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - name: functionTimeout
       description: The amount of time that Lambda allows a function to run before stopping it.
-      required: false
-      isArray: false
       defaultValue: "3"
       predefined:
       - ""
     - name: memorySize
       description: The amount of memory available to the function at runtime.
-      required: false
-      isArray: false
       defaultValue: "128"
       predefined:
       - ""
     - name: publish
       description: Set to true to publish the first version of the function during creation.
-      required: false
-      isArray: false
-      defaultValue: ""
       auto: PREDEFINED
       predefined:
       - "True"
       - "False"
     - name: vpcConfig
       description: Json string contains SubnetIds - list of VPC subnet IDs, SecurityGroupIds - A list of VPC security group IDs,  and boolean Ipv6AllowedForDualStack - allows outbound IPv6 traffic.
-      required: false
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - name: packageType
       description: The type of deployment package.
-      required: false
-      isArray: false
       auto: PREDEFINED
-      defaultValue: ""
       predefined:
       - "Image"
       - "Zip"
     - name: environment
       description: The environment variables for the function. Should be given as key-value pairs in a json string.
-      required: false
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - name: tracingConfig
       description: The tracing configuration for the function. Set to Active to sample and trace a subset of incoming requests with X-Ray.
-      required: false
-      isArray: false
       defaultValue: "Active"
       predefined:
       - ""
     - name: tags
       description: The list of tags to apply to the function.
-      required: false
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - name: role
       description: The Amazon Resource Name (ARN) of the function’s execution role.
       required: true
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - name: layers
       description: A list of function layers to add to the function's execution environment.
-      required: false
       isArray: true
-      defaultValue: ""
       predefined:
       - ""
     - auto: PREDEFINED
@@ -1188,55 +1143,35 @@ script:
       type: string
   - name: aws-lambda-publish-layer-version
     description: Creates an Lambda layer from a ZIP archive.
-    deprecated: false
     arguments:
     - name: layer-name
       description: The name or Amazon Resource Name (ARN) of the layer.
       required: true
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - name: description
       description: The description of the version.
-      required: false
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - name: s3-bucket
       description: The Amazon S3 bucket of the layer archive.
-      required: false
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - name: s3-key
       description: The Amazon S3 key of the layer archive.
-      required: false
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - name: s3-object-version
       description: For versioned objects, the version of the layer archive object to use.
-      required: false
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - name: zip-file
       description: Entry ID of the base64-encoded contents of the layer archive.
-      required: false
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - name: compatible-runtimes
       description: " The name of the method within your code that Lambda calls to execute your function."
-      required: false
       isArray: true
-      defaultValue: ""
       predefined:
       - ""
     - auto: PREDEFINED
@@ -1295,41 +1230,26 @@ script:
       type: list
   - name: aws-lambda-list-layer-version
     description: Lists the versions of an Lambda layer.
-    deprecated: false
     arguments:
     - name: compatible-runtime
       description: A runtime identifier. For example, java21.
-      required: false
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - name: layer-name
       description: The name or Amazon Resource Name (ARN) of the layer.
       required: true
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - name: token
       description: A pagination token returned by a previous call.
-      required: false
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - name: limit
       description: The maximum number of versions to return.
-      required: false
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - name: compatible-architecture
       description: The compatible instruction set architecture.
-      required: false
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - auto: PREDEFINED
@@ -1385,20 +1305,15 @@ script:
       type: list
   - name: aws-lambda-delete-layer-version
     description: Deletes a version of an Lambda layer.
-    deprecated: false
     arguments:
     - name: version-number
       description: The version number.
       required: true
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - name: layer-name
       description: The name or Amazon Resource Name (ARN) of the layer.
       required: true
-      isArray: false
-      defaultValue: ""
       predefined:
       - ""
     - auto: PREDEFINED
@@ -1428,7 +1343,7 @@ script:
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
     outputs: []
-  dockerimage: demisto/boto3py3:1.0.0.91694
+  dockerimage: demisto/boto3py3:1.0.0.115129
   runonce: false
   subtype: python3
   script: ''

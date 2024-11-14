@@ -9,8 +9,8 @@ commonfields:
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-dockerimage: demisto/py3-tools:1.0.0.47433
+    fromServerVersion: ''
+dockerimage: demisto/py3-tools:1.0.0.114656
 enabled: true
 name: UnzipGZFile
 outputs:

@@ -26,5 +26,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "defaultDataSource": "Cohesity Helios Event Collector"
 }

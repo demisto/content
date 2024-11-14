@@ -7,7 +7,7 @@ import pytest
 import CommonServerPython
 
 
-class TestClient(object):
+class TestClient:
     def test_headers(self, requests_mock):
         apikey = 'abcdef'
         c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, apikey)
@@ -30,11 +30,7 @@ class TestClient(object):
         c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
 
         requests_mock.get(
-            '{server}/dnsdb/v2/rate_limit?swclient={swclient}&version={version}'.format(
-                server=DNSDB.DEFAULT_DNSDB_SERVER,
-                swclient=DNSDB.SWCLIENT,
-                version=DNSDB.VERSION,
-            ),
+            f'{DNSDB.DEFAULT_DNSDB_SERVER}/dnsdb/v2/rate_limit?swclient={DNSDB.SWCLIENT}&version={DNSDB.VERSION}',
             json={})
 
         c.rate_limit()
@@ -495,14 +491,7 @@ class TestClient(object):
         value = 'farsightsecurity'
 
         requests_mock.get(
-            '{server}/dnsdb/v2/{method}/{key}/{value}?swclient={swclient}&version={version}'.format(
-                server=DNSDB.DEFAULT_DNSDB_SERVER,
-                method=method,
-                key=key,
-                value=value,
-                swclient=DNSDB.SWCLIENT,
-                version=DNSDB.VERSION,
-            ),
+            f'{DNSDB.DEFAULT_DNSDB_SERVER}/dnsdb/v2/{method}/{key}/{value}?swclient={DNSDB.SWCLIENT}&version={DNSDB.VERSION}',
             text=_saf_wrap(records))
 
         for rrset in c.flex(method, key, value):
@@ -527,7 +516,7 @@ class TestClient(object):
 
         with pytest.raises(CommonServerPython.DemistoException):
             for rrset in c.lookup_rrset(name):
-                pytest.fail('received {0}'.format(rrset))  # pragma: no cover
+                pytest.fail(f'received {rrset}')  # pragma: no cover
 
     def test_limit(self, requests_mock):
         c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
@@ -547,7 +536,7 @@ class TestClient(object):
             text=_saf_wrap([]))
 
         for rrset in c.lookup_rrset(name, limit=limit):
-            pytest.fail('received {0}'.format(rrset))  # pragma: no cover
+            pytest.fail(f'received {rrset}')  # pragma: no cover
 
     def test_time_first_before(self, requests_mock):
         self._test_time_param(requests_mock, "time_first_before")
@@ -579,7 +568,7 @@ class TestClient(object):
             text=_saf_wrap([]))
 
         for rrset in c.lookup_rrset(name, aggr=aggr):
-            pytest.fail('received {0}'.format(rrset))  # pragma: no cover
+            pytest.fail(f'received {rrset}')  # pragma: no cover
 
     def test_offset(self, requests_mock):
         c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
@@ -599,7 +588,7 @@ class TestClient(object):
             text=_saf_wrap([]))
 
         for rrset in c.lookup_rrset(name, offset=offset):
-            pytest.fail('received {0}'.format(rrset))  # pragma: no cover
+            pytest.fail(f'received {rrset}')  # pragma: no cover
 
     def test_max_count(self, requests_mock):
         c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
@@ -619,7 +608,7 @@ class TestClient(object):
 
         with pytest.raises(DNSDB.QueryError):
             for rrset in c.summarize_rrset(name, max_count=max_count):
-                pytest.fail('received {0}'.format(rrset))  # pragma: no cover
+                pytest.fail(f'received {rrset}')  # pragma: no cover
 
     @staticmethod
     def _test_time_param(requests_mock, param: str):
@@ -641,10 +630,10 @@ class TestClient(object):
             text=_saf_wrap([]))
 
         for rrset in c.lookup_rrset(name, **{param: when}):
-            pytest.fail('received {0}'.format(rrset))  # pragma: no cover
+            pytest.fail(f'received {rrset}')  # pragma: no cover
 
 
-class TestBuildResultContext(object):
+class TestBuildResultContext:
     def test_lookup_rrset(self):
         self._run_test(
             {
@@ -727,7 +716,7 @@ class TestBuildResultContext(object):
         assert DNSDB.build_result_context(input) == expected
 
 
-class TestBuildLimitsContext(object):
+class TestBuildLimitsContext:
     def test_no_rate(self):
         with pytest.raises(ValueError):
             DNSDB.build_rate_limits_context({})

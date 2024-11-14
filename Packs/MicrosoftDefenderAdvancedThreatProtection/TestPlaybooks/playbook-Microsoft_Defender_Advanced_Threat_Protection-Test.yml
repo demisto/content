@@ -1048,9 +1048,21 @@ tasks:
       - "48"
     scriptarguments:
       left:
-        simple: ${Endpoint.ID}
+        complex:
+          root: Endpoint
+          accessor: ID
+          transformers:
+          - operator: sort
+            args:
+              descending: {}
       right:
-        simple: ${MicrosoftATP.Machine.ID}
+        complex:
+          root: MicrosoftATP.Machine
+          accessor: ID
+          transformers:
+          - operator: sort
+            args:
+              descending: {}
     results:
     - AreValuesEqual
     separatecontext: false
@@ -1088,9 +1100,21 @@ tasks:
       - "49"
     scriptarguments:
       left:
-        simple: ${Endpoint.Hostname}
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: sort
+            args:
+              descending: {}
       right:
-        simple: ${MicrosoftATP.Machine.ComputerDNSName}
+        complex:
+          root: MicrosoftATP.Machine
+          accessor: ComputerDNSName
+          transformers:
+          - operator: sort
+            args:
+              descending: {}
     results:
     - AreValuesEqual
     separatecontext: false

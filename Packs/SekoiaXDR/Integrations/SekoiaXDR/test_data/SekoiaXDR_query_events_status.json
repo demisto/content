@@ -1,0 +1,28 @@
+{
+    "uuid": "df904d2e-2c57-488f",
+    "status": 2,
+    "total": 203912,
+    "term": "sekoiaio.intake.uuid:834a2d7f-3623",
+    "term_lang": "es-query-string",
+    "filters": [],
+    "created_by": "f870d496-a37b-4aec",
+    "created_by_type": "apikey",
+    "created_at": "2024-04-30T13:56:32.338174Z",
+    "started_at": "2024-04-30T13:56:32.409996Z",
+    "canceled_by": null,
+    "canceled_by_type": null,
+    "canceled_at": null,
+    "ended_at": "2024-04-30T13:56:33.802894Z",
+    "earliest_time": "2024-04-25T10:00:23",
+    "latest_time": "2024-04-25T15:00:23",
+    "results_ttl": 1800,
+    "expiration_date": "2024-04-30T14:26:33.838485Z",
+    "expired": true,
+    "view_uuid": null,
+    "community_uuids": [
+        "52bd045f-4199-4361"
+    ],
+    "only_eternal": false,
+    "max_last_events": null,
+    "date_field": null
+}

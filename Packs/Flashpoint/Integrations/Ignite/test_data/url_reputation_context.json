@@ -1,0 +1,86 @@
+{
+    "URL(val.Data && val.Data == obj.Data)": [
+        {
+            "Data": "http://dummy.com",
+            "Malicious": {
+                "Vendor": "Ignite",
+                "Description": "Found in malicious indicators dataset"
+            },
+            "Relationships": [
+                {
+                    "Relationship": "indicator-of",
+                    "EntityA": "http://dummy.com",
+                    "EntityAType": "URL",
+                    "EntityB": "T1016",
+                    "EntityBType": "Attack Pattern"
+                },
+                {
+                    "Relationship": "indicator-of",
+                    "EntityA": "http://dummy.com",
+                    "EntityAType": "URL",
+                    "EntityB": "T1027",
+                    "EntityBType": "Attack Pattern"
+                },
+                {
+                    "Relationship": "indicator-of",
+                    "EntityA": "http://dummy.com",
+                    "EntityAType": "URL",
+                    "EntityB": "T1033",
+                    "EntityBType": "Attack Pattern"
+                },
+                {
+                    "Relationship": "indicator-of",
+                    "EntityA": "http://dummy.com",
+                    "EntityAType": "URL",
+                    "EntityB": "T1047",
+                    "EntityBType": "Attack Pattern"
+                },
+                {
+                    "Relationship": "indicator-of",
+                    "EntityA": "http://dummy.com",
+                    "EntityAType": "URL",
+                    "EntityB": "T1048",
+                    "EntityBType": "Attack Pattern"
+                }
+            ]
+        }
+    ],
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+        {
+            "Indicator": "http://dummy.com",
+            "Reliability": "B - Usually reliable",
+            "Type": "url",
+            "Vendor": "Ignite",
+            "Score": 3
+        }
+    ],
+    "Ignite.URL.Event(val.Fpid && val.Fpid == obj.Fpid)": [
+        {
+            "Fpid": "sample_fpid",
+            "EventDetails": {
+                "Tags": [
+                    "sample_tags"
+                ],
+                "attack_ids": [
+                    "T1016",
+                    "T1027",
+                    "T1033",
+                    "T1047",
+                    "T1048"
+                ],
+                "event_uuid": "sample_uuid",
+                "fpid": "sample_fpid",
+                "href": "https://api.flashpoint.io/technical-intelligence/v1/event/sample_fpid",
+                "info": "Sample info",
+                "timestamp": "1000000001"
+            },
+            "Category": "Network activity",
+            "Href": "https://api.flashpoint.io/technical-intelligence/v1/attribute/sample_fpid",
+            "Timestamp": "1000000001",
+            "Type": "url",
+            "Uuid": "sample_uuid",
+            "Comment": "",
+            "Url": "http://dummy.com"
+        }
+    ]
+}

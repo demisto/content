@@ -4,6 +4,7 @@ ignore=IN122,BA108,BA109
 [file:pack_metadata.json]
 ignore=PA129
 
+
 [known_words]
 dhs
 stixid

@@ -60,12 +60,12 @@ script:
       name: hostname
       required: true
     - auto: PREDEFINED
-      defaultValue: "true"
+      defaultValue: 'true'
       description: Only return children subdomains
       name: children_only
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     description: Returns child and sibling subdomains for a given hostname.
     name: securitytrails-get-subdomains
     outputs:
@@ -531,21 +531,21 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      defaultValue: "false"
+      defaultValue: 'false'
       description: Resolves any A records and additionally returns IP addresses.
       name: include_ips
       predefined:
-      - "false"
-      - "true"
+      - 'false'
+      - 'true'
     - description: The page of the returned results, starting at 1. A page returns 100 results.
       name: page
     - auto: PREDEFINED
-      defaultValue: "false"
+      defaultValue: 'false'
       description: Request scrolling. Only supported when query is used and not filter. See the Scrolling API endpoint.
       name: scroll
       predefined:
-      - "false"
-      - "true"
+      - 'false'
+      - 'true'
     - description: The DSL query you want to run (https://docs.securitytrails.com/docs/how-to-use-the-dsl).
       name: query
     - description: JSON dicitonary of filter terms (https://docs.securitytrails.com/reference#domain-search). Can not be used together with query.
@@ -643,7 +643,7 @@ script:
       description: Associated Domain Count
       type: number
   - arguments:
-    - defaultValue: "1"
+    - defaultValue: '1'
       description: The page of the returned results, starting at 1. A page returns 100 results.
       name: page
     - description: The DSL query you want to run (https://docs.securitytrails.com/docs/how-to-use-the-dsl).
@@ -730,7 +730,7 @@ script:
     - description: IP Address
       name: ipaddress
       required: true
-    - defaultValue: "1"
+    - defaultValue: '1'
       description: The page of the returned results, starting at 1. A page returns 100 results.
       name: page
     description: Fetch user agents seen during the last 30 days for a specific IPv4 address. It shows devices with egressing traffic based on large scale web server logs. The number of results is not limited.
@@ -866,7 +866,7 @@ script:
       description: The phone number of the registrant.
       type: String
     - contextPath: Domain.WHOIS.Registrar.Name
-      description: "The name of the registrar, for example: `GoDaddy`"
+      description: 'The name of the registrar, for example: `GoDaddy`'
       type: String
     - contextPath: Domain.WHOIS.Registrar.Email
       description: The email address of the contact.
@@ -899,16 +899,16 @@ script:
     - name: sql
       description: 'The SQL query to execute (example: SELECT attribute FROM table WHERE condition = "value")'
       required: true
-      defaultValue: ""
+      defaultValue: ''
       predefined:
-      - ""
+      - ''
     - name: timeout
       description: Read timeout for calls (default is 20 seconds)
-      defaultValue: "20"
+      defaultValue: '20'
       predefined:
-      - ""
+      - ''
     name: securitytrails-sql-query
-    description: "Queries the SecurityTrails SQL endpoint. The SecurityTrails SQL API provides a powerful SQL-like query interface to data via certain API endpoints. For a full reference of properties and operators please check the following link: https://securitytrails.com/reference/sql"
+    description: 'Queries the SecurityTrails SQL endpoint. The SecurityTrails SQL API provides a powerful SQL-like query interface to data via certain API endpoints. For a full reference of properties and operators please check the following link: https://securitytrails.com/reference/sql'
     outputs:
     - contextPath: Securitytrails.SQL.total
       description: The total number of hits discovered
@@ -929,14 +929,14 @@ script:
     - name: id
       description: The ID to use to retrieve the next page of results
       required: true
-      defaultValue: ""
+      defaultValue: ''
       predefined:
-      - ""
+      - ''
     - name: timeout
       description: Read timeout for calls (default is 20 seconds)
-      defaultValue: "20"
+      defaultValue: '20'
       predefined:
-      - ""
+      - ''
     name: securitytrails-sql-get-next
     description: Retrieves the next page of results returned from a SQL query where the results exceeded the last page.
     outputs:
@@ -951,7 +951,7 @@ script:
     - contextPath: Securitytrails.SQL.query
       description: The original query used
       type: string
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.14.100715
   runonce: false
   script: ''
   subtype: python3

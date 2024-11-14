@@ -387,7 +387,7 @@ script:
       description: Status of the application.
       type: String
   - arguments:
-    - description: Group SCIM Data
+    - description: Group SCIM Data.
       name: scim
       required: true
     - auto: PREDEFINED
@@ -436,6 +436,9 @@ script:
       predefined:
       - ASCENDING
       - DESCENDING
+    - defaultValue: '100'
+      description: The maximum number of results to return, between 0 and 1000 maximum. The default is 100.
+      name: limit
     description: Gets logs by providing optional filters.
     name: okta-get-logs
     outputs:
@@ -532,7 +535,7 @@ script:
     - contextPath: Okta.Logs.Events.target.displayName
       description: Display name of a target.
       type: String
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.10.14.95663
   isfetch: true
   runonce: false
   script: '-'

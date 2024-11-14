@@ -13,8 +13,8 @@ import urllib.parse
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-BATCH_SIZE = 2000
-CHUNK_SIZE = 1024 * 1024 * 10  # 10 MB
+BATCH_SIZE = 10000
+CHUNK_SIZE = 1024 * 1024 * 10 * 5  # 50 MB
 DEFAULT_MALICIOUS_THRESHOLD_VALUE: int = 65
 DEFAULT_SUSPICIOUS_THRESHOLD_VALUE: int = 25
 DEFAULT_RISK_SCORE_THRESHOLD_VALUE: int = 0
@@ -53,7 +53,7 @@ class Client(BaseClient):
                  fusion_file_path: str = None, insecure: bool = False,
                  polling_timeout: int = 20, proxy: bool = False,
                  malicious_threshold: int = 65, suspicious_threshold: int = 25, risk_score_threshold: int = 0,
-                 tags: list | None = None, tlp_color: str | None = None):
+                 tags: list | None = None, tlp_color: str | None = None, performance: bool = False):
         """
         Attributes:
              indicator_type: string, the indicator type of the feed.
@@ -87,6 +87,7 @@ class Client(BaseClient):
         self.risk_score_threshold = int(risk_score_threshold) if risk_score_threshold else DEFAULT_RISK_SCORE_THRESHOLD_VALUE
         self.tags = tags
         self.tlp_color = tlp_color
+        self.performance = performance
 
         if self.malicious_threshold <= self.suspicious_threshold:
             raise DemistoException('The Suspicious Threshold must be less than the Malicious Threshold.')
@@ -175,12 +176,12 @@ class Client(BaseClient):
         if service == 'connectApi':
             self.stream_compressed_data(response=response, chunk_size=CHUNK_SIZE)
         else:
-            demisto.debug("Will now stream the response's data")
+            demisto.debug("RF: Will now stream the response's data")
             with open("response.txt", "w") as f:
                 for chunk in response.iter_content(CHUNK_SIZE, decode_unicode=True):
                     if chunk:
                         f.write(chunk)
-        demisto.info('done build_iterator')
+        demisto.info('RF: done build_iterator')
 
     def stream_compressed_data(self, response: requests.Response, chunk_size: int) -> None:
         """This will stream the response's compressed data and write it to a file. The streamed data is compressed,
@@ -195,7 +196,7 @@ class Client(BaseClient):
             response (requests.Response): The response object.
             chunk_size (int): The chunk size to use while streaming the data.
         """
-        demisto.debug("Will now stream the response's compressed data")
+        demisto.debug("RF: Will now stream the response's compressed data")
         # Since we need to decompress gzip compressed data, we add 16 to zlib.MAX_WBITS, to tell the decompressor object
         # that we are dealing with gzip
         decompressor = zlib.decompressobj(zlib.MAX_WBITS + 16)
@@ -225,10 +226,10 @@ class Client(BaseClient):
                             f.write(decoded_str.replace('\0', '').replace('\x00', ''))
                             break
                         except UnicodeDecodeError:
-                            demisto.debug(f'Decoding chunk number {chunks_counter} with {bytes_to_cut} bytes cut off using UTF-8'
-                                          ' failed due to cut-off character while streaming.'
+                            demisto.debug(f'RF: Decoding chunk number {chunks_counter} with {bytes_to_cut} bytes cut off using '
+                                          'UTF-8 failed due to cut-off character while streaming.'
                                           ' Going to cut off one more byte and decode')
-        demisto.debug(f'{CHUNK_SIZE=}. Number of chunks received = {chunks_counter}.'
+        demisto.debug(f'RF: {CHUNK_SIZE=}. Number of chunks received = {chunks_counter}.'
                       f' Number of failed decoding = {decoded_counter-chunks_counter}')
 
     def decode_bytes(self, bytes_to_decode: bytes, encoding: str = 'utf-8') -> str:
@@ -239,7 +240,7 @@ class Client(BaseClient):
         return bytes_to_decode.decode(encoding=encoding)
 
     def get_batches_from_file(self, limit):
-        demisto.info('reading from file')
+        demisto.info('RF: Reading from file')
         # we do this try to make sure the file gets deleted at the end
         try:
             file_stream = open("response.txt")
@@ -254,14 +255,14 @@ class Client(BaseClient):
                 if not feed_batch:
                     file_stream.close()
                     return
-                demisto.info(f'yielding, {batch_size=}')
+                demisto.info(f'RF: yielding, {batch_size=}')
                 yield csv.DictReader(feed_batch, fieldnames=columns)
         finally:
             try:
                 os.remove("response.txt")
-                demisto.info('file was deleted')
+                demisto.info('RF: File was deleted')
             except OSError:
-                demisto.info('file could not be deleted')
+                demisto.info('RF: File could not be deleted')
 
     def calculate_indicator_score(self, risk_from_feed):
         """Calculates the Dbot score of an indicator based on its Risk value from the feed.
@@ -343,7 +344,7 @@ def test_module(client: Client, *args) -> tuple[str, dict, dict]:
     client.run_parameters_validations()
 
     for service in client.services:
-        demisto.debug(f'iterating over {service=}')
+        demisto.debug(f'RF: Iterating over {service=}')
         # if there are risk rules, select the first one for test
         risk_rule = client.risk_rule[0] if client.risk_rule else None
         client.build_iterator(service, client.indicator_type, risk_rule)
@@ -437,6 +438,7 @@ def fetch_and_create_indicators(client, risk_rule: str | None = None):
 
     """
     for indicators in fetch_indicators_command(client, client.indicator_type, risk_rule):
+        demisto.debug('RF: Creating indicators')
         demisto.createIndicators(indicators)
 
 
@@ -450,11 +452,13 @@ def fetch_indicators_command(client, indicator_type, risk_rule: str | None = Non
     Returns:
         list. List of indicators from the feed
     """
+    demisto.debug('RF: Starting to fetch indicators')
     indicators_value_set: Set[str] = set()
     for service in client.services:
-        demisto.debug(f'iterating over {service=}')
+        demisto.debug(f'RF: Iterating over {service=}')
         client.build_iterator(service, indicator_type, risk_rule)
         feed_batches = client.get_batches_from_file(limit)
+        demisto.debug(f'RF: Got {feed_batches} batches')
         for feed_dicts in feed_batches:
             indicators = []
             for item in feed_dicts:
@@ -487,10 +491,11 @@ def fetch_indicators_command(client, indicator_type, risk_rule: str | None = Non
                 indicator_obj = {
                     'value': value,
                     'type': raw_json['type'],
-                    'rawJSON': raw_json,
+                    'rawJSON': raw_json if not client.performance else {},
                     'fields': {
                         'recordedfutureevidencedetails': lower_case_evidence_details_keys,
                         'tags': client.tags,
+                        'recordedfutureriskscore': risk,
                     },
                     'score': score
                 }
@@ -500,6 +505,8 @@ def fetch_indicators_command(client, indicator_type, risk_rule: str | None = Non
                 indicators.append(indicator_obj)
 
             yield indicators
+
+    demisto.debug('RF: finished getting indicators')
 
 
 def get_indicators_command(client, args) -> tuple[str, dict[Any, Any], list[dict]]:  # pragma: no cover
@@ -576,11 +583,13 @@ def main():  # pragma: no cover
     api_token = params.get('credentials_api_token', {}).get('password') or params.get('api_token')
     if not api_token:
         raise DemistoException('API Token must be provided.')
+    demisto.debug('RF: Initializing client')
     client = Client(RF_INDICATOR_TYPES[params.get('indicator_type')], api_token, params.get('services'),
                     params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),
                     params.get('polling_timeout'), params.get('proxy'), params.get('threshold'),
                     params.get('suspicious_threshold'), params.get('risk_score_threshold'),
-                    argToList(params.get('feedTags')), params.get('tlp_color'))
+                    argToList(params.get('feedTags')), params.get('tlp_color'), argToBoolean(params.get('performance') or False))
+    demisto.debug('RF: Finished initializing client')
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
     # Switch case
@@ -593,8 +602,10 @@ def main():  # pragma: no cover
         if demisto.command() == 'fetch-indicators':
             if client.risk_rule:
                 for risk_rule in client.risk_rule:
+                    demisto.debug(f'RF: Fetching indicators for {risk_rule=}')
                     fetch_and_create_indicators(client, risk_rule)
             else:  # there are no risk rules
+                demisto.debug('RF: Fetching indicators without risk rules')
                 fetch_and_create_indicators(client)
 
         else:

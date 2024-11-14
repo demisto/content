@@ -53,10 +53,10 @@ script:
     name: wolken-add-internal-notes
     outputs:
     - contextPath: Wolken.UpdateIncidents.status
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.UpdateIncidents.message
-      description: ""
+      description: ''
       type: String
   - arguments:
     - description: Pass Subject of the Incident
@@ -109,32 +109,32 @@ script:
     name: wolken-create-incident-requestv1
     outputs:
     - contextPath: Wolken.CreateIncidents.status
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.CreateIncidents.message
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.CreateIncidents.data.requestId
-      description: ""
+      description: ''
       type: String
   - arguments: []
     description: Use to get access token and save it in integration context . Refresh Token saved in integration context will be used to create new access token after expiration.
     name: wolken-get-access-token
     outputs:
     - contextPath: Wolken.Token.access_token
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.Token.token_type
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.Token.refresh_token
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.Token.expires_in
-      description: ""
+      description: ''
       type: Number
     - contextPath: Wolken.Token.scope
-      description: ""
+      description: ''
       type: String
   - arguments:
     - description: Pass Incident Id required for searching
@@ -144,7 +144,7 @@ script:
     name: wolken-get-incident-by-id
     outputs:
     - contextPath: Wolken.GetIncidents.status
-      description: ""
+      description: ''
       type: String
   - arguments:
     - description: Pass Incident Id
@@ -160,10 +160,10 @@ script:
     name: wolken-post-api-v1-incidents-add-attachments
     outputs:
     - contextPath: Wolken.UpdateIncidents.status
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.UpdateIncidents.message
-      description: ""
+      description: ''
       type: String
   - arguments:
     - description: pass incidentId
@@ -176,10 +176,10 @@ script:
     name: wolken-post-api-v1-incidents-add-outbound-notes
     outputs:
     - contextPath: Wolken.UpdateIncidents.status
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.UpdateIncidents.message
-      description: ""
+      description: ''
       type: String
   - arguments:
     - description: Pass Incident Id
@@ -198,10 +198,10 @@ script:
     name: wolken-post-api-v1-incidents-by-incident-id
     outputs:
     - contextPath: Wolken.UpdateIncidents.status
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.UpdateIncidents.message
-      description: ""
+      description: ''
       type: String
   - arguments:
     - description: Pass Incident Id
@@ -229,10 +229,10 @@ script:
     name: wolken-post-api-v1-incidents-close
     outputs:
     - contextPath: Wolken.UpdateIncidents.status
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.UpdateIncidents.message
-      description: ""
+      description: ''
       type: String
   - arguments:
     - description: Pass Incident Id
@@ -245,10 +245,10 @@ script:
     name: wolken-put-api-v1-incidents-cancel
     outputs:
     - contextPath: Wolken.UpdateIncidents.status
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.UpdateIncidents.message
-      description: ""
+      description: ''
       type: String
   - arguments:
     - description: Pass limit
@@ -291,9 +291,9 @@ script:
     name: wolken-search-incidents-by-params
     outputs:
     - contextPath: Wolken.GetIncidents.status
-      description: ""
+      description: ''
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.14.100715
   runonce: false
   script: ''
   subtype: python3

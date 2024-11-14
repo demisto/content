@@ -1182,3 +1182,30 @@ def test_route_edl_log_too_big(mocker):
     downloaded_expected_path = f"{edl.LOGS_ZIP_FILE_PREFIX}_{datetime.now().strftime('%Y%m%d-%H%M%S')}.zip"
     assert os.path.exists(downloaded_expected_path)
     os.remove(downloaded_expected_path)
+
+
+@pytest.mark.parametrize(argnames='wip_exist', argvalues=[True, False])
+def test_store_log_data(mocker, wip_exist):
+    """
+    Given:
+        - previous log file exist/missing.
+    When:
+        - call to store_log_data.
+    Then:
+        - ensure full_log will create only if previous log exist
+    """
+    import EDL as edl
+    from pathlib import Path
+    from datetime import datetime
+    tmp_dir = mkdtemp()
+    wip_log_file = Path(tmp_dir) / 'wip_log_file'
+    full_log_file = Path(tmp_dir) / 'full_log_file'
+
+    if wip_exist:
+        wip_log_file.write_text('')
+        mocker.patch.object(edl, 'EDL_FULL_LOG_PATH_WIP', new=wip_log_file.absolute())
+
+    mocker.patch.object(edl, 'EDL_FULL_LOG_PATH', new=full_log_file.absolute())
+    request_args = edl.RequestArguments()
+    edl.store_log_data(request_args, datetime.now(), {})
+    assert Path(edl.EDL_FULL_LOG_PATH).exists() == wip_exist
