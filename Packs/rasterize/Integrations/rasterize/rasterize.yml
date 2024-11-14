@@ -60,7 +60,7 @@ configuration:
   required: false
   type: 8
   additionalinfo:
-description: Converts URLs, PDF files, and emails to an image file or PDF file.
+description: Converts URLs, PDF files, and emails to an image file or PDF file test.
 display: Rasterize
 name: Rasterize
 script:
