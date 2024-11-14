@@ -456,10 +456,9 @@ def create_incident_from_log(incident: dict[str, Any], now: float) -> dict[str, 
     incident['mirror_instance'] = demisto.integrationInstance()
     incident['mirror_direction'] = MIRROR_DIRECTION
     incident['last_mirrored_in'] = int(now * 1000)
-    formatted_description = f'Hoxhunt Incident: {human_readable_id}'
 
     return {
-        'name': formatted_description,
+        'name': human_readable_id,
         'dbotMirrorId': dbot_mirror_id,
         'rawJSON': json.dumps(incident),
         'occurred': occurred
