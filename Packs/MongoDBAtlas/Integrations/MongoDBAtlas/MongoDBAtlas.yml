@@ -67,6 +67,10 @@ script:
     - description: Maximum number of events to return.
       name: limit
       required: true
+    outputs:
+      - contextPath: MongoDBAtlas
+        description: The list of the events and the alerts.
+        type: String
   runonce: false
   script: '-'
   type: python

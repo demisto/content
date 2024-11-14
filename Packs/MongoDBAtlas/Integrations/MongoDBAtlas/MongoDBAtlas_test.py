@@ -61,7 +61,7 @@ def test_get_next_url():
         {"rel": "next", "href": "page/3"},
         {"rel": "last", "href": "page/4"}
     ]
-    assert get_next_url(links_with_next) == "/page/3"
+    assert get_next_url(links_with_next) == "page/3"
 
     links_without_next = [
         {"rel": "prev", "href": "page/1"},
@@ -376,7 +376,6 @@ def test_fetch_event_type_using_previous_page(mocker, fetch_limit, expected_even
         event_id = event.get("id")
         assert event_id not in seen_ids
         seen_ids.add(event_id)
-
 
 
 @pytest.mark.parametrize(

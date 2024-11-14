@@ -576,7 +576,8 @@ def fetch_events(client: Client, fetch_limit: int):
     return (alerts_output + events_output), last_run_new_obj
 
 
-def get_events(client: Client, fetch_limit):
+def get_events(client: Client, args):
+    fetch_limit = int(args.get('limit'))
     last_run = demisto.getLastRun()
 
     alerts_output, _ = fetch_alert_type(client, fetch_limit, last_run)
@@ -596,7 +597,8 @@ def get_events(client: Client, fetch_limit):
     human_readable = tableToMarkdown(name='MongoDB Atlas Events', t=filtered_events, removeNull=True)
     command_results = CommandResults(
         readable_output=human_readable,
-        raw_response=output
+        outputs=output,
+        outputs_prefix='MongoDBAtlas',
     )
     return output, command_results
 
@@ -632,7 +634,7 @@ def main() -> None:  # pragma: no cover
             result = test_module(client, fetch_limit)
             return_results(result)
         elif command == 'mongo-db-atlas-get-events':
-            events, command_results = get_events(client, fetch_limit)
+            events, command_results = get_events(client, args)
             if events and argToBoolean(args.get('should_push_events')):
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             return_results(command_results)
