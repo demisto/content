@@ -103,9 +103,12 @@ class Client(BaseClient):
             'limit': limit
         }
         if offset:
+            demisto.info(f"received {offset=} will run an offset based request.")
             params["offset"] = offset
         else:
-            params["from"] = int(from_epoch)
+            from_param = int(from_epoch)
+            params["from"] = from_param
+            demisto.info(f"did not receive an offset. will run a time based request with {from_param=}")
         raw_response: str = self._http_request(
             method='GET',
             url_suffix=f'/{config_ids}',
@@ -427,7 +430,7 @@ def fetch_events_command(
     total_events_count = 0
     from_epoch, _ = parse_date_range(date_range=fetch_time, date_format='%s')
     offset = ctx.get("offset")
-    hashed_events_from_previous_run = ctx.get("hashed_events_from_previous_run", set())
+    hashed_events_from_previous_run = set(ctx.get("hashed_events_from_previous_run", set()))
     while total_events_count < int(fetch_limit):
         demisto.info(f"Preparing to get events with {offset=}, {page_size=}, and {fetch_limit=}")
         events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
@@ -452,7 +455,7 @@ def fetch_events_command(
                 config_id = event.get('attackData', {}).get('configId', "")
                 policy_id = event.get('attackData', {}).get('policyId', "")
                 demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
-        demisto.info("Preparing to deduplicate events, currently got {len(events)} events.")
+        demisto.info(f"Preparing to deduplicate events, currently got {len(events)} events.")
         deduped_events, hashed_events_from_current_run = dedup_events(hashed_events_mapping, hashed_events_from_previous_run)
         total_events_count += len(deduped_events)
         demisto.info(f"After deduplicate events, Got {len(deduped_events)} events, and {offset=}")
@@ -518,7 +521,7 @@ def main():  # pragma: no cover
         elif command == "fetch-events":
             page_size = int(params.get("page_size", FETCH_EVENTS_PAGE_SIZE))
             limit = int(params.get("fetchLimit", 300000))
-            for events, offset, total_events_count, hashed_events_from_previous_run in fetch_events_command(  # noqa: B007
+            for events, offset, total_events_count, hashed_events_from_current_run in fetch_events_command(  # noqa: B007
                 client,
                 "5 minutes",
                 fetch_limit=limit,
@@ -529,11 +532,15 @@ def main():  # pragma: no cover
                 if events:
                     demisto.info(f"Sending events to xsiam with latest event time is: {events[-1]['_time']}")
                     send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
-                set_integration_context({"offset": offset, "hashed_events_from_previous_run": hashed_events_from_previous_run})
+                set_integration_context({"offset": offset,
+                                         "hashed_events_from_previous_run": list(hashed_events_from_current_run)})
             demisto.updateModuleHealth({'eventsPulled': (total_events_count or 0)})
             next_run = {}
             if total_events_count >= limit:
+                demisto.info(f"got at least {limit} events this interval - will automatically trigger next run.")
                 next_run["nextTrigger"] = "0"
+            else:
+                demisto.info(f"Got less than {limit} events this interval - will not trigger next run automatically.")
             demisto.setLastRun(next_run)
 
         else:
