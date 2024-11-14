@@ -1,15 +1,11 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
-id: CybelAngel - Post Comment
+id: 'CybelAngel - Update Status'
 inputs:
-- description: Please post the comment that you would like to leave on the report
-  key: Comment
+- description: "Status can be the following:\n-open\n- in_progress\n- resolved \n- discarded"
+  key: Status
   playbookInputQuery:
   required: true
   value: {}
-name: CybelAngel - Post Comment
+name: CybelAngel - Update Status
 outputs: []
 quiet: true
 starttaskid: "0"
@@ -29,19 +25,19 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: c28417c3-4e1d-42cf-8f9d-2ff4c5bc8341
+      id: 06ba9d2e-19a9-46d9-87ac-0687207f500b
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: c28417c3-4e1d-42cf-8f9d-2ff4c5bc8341
+    taskid: 06ba9d2e-19a9-46d9-87ac-0687207f500b
     timertriggers: []
     type: start
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": 40
         }
       }
   "1":
@@ -53,22 +49,22 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      comment:
-        simple: ${inputs.Comment}
       report_id:
         simple: ${incident.alertid}
+      status:
+        simple: ${inputs.Status}
     separatecontext: false
     skipunavailable: false
     task:
       brand: CybelAngel
-      description: Post a comment on a report
-      id: 106ef4c3-1d46-44dc-861e-e056fbce79a6
+      description: Update the status of a report
+      id: 8c072357-3ff1-4b2a-8183-b012da652480
       iscommand: true
-      name: cybelangel-post-comment
-      script: CybelAngel|||cybelangel-post-comment
+      name: cybelangel-update-status
+      script: CybelAngel|||cybelangel-update-status
       type: regular
       version: -1
-    taskid: 106ef4c3-1d46-44dc-861e-e056fbce79a6
+    taskid: 8c072357-3ff1-4b2a-8183-b012da652480
     timertriggers: []
     type: regular
     view: |-
@@ -84,14 +80,14 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 275,
+        "height": 285,
         "width": 380,
         "x": 450,
-        "y": 50
+        "y": 40
       }
     }
   }
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
-description: Posting a comment to a CybelAngel Report.
+description: Update Status for an Incident Report.

@@ -1,20 +1,6 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
-id: CybelAngel - Send Remediation Request
-inputs:
-- description: User Email that will handle the remediation.
-  key: Requestor Email
-  playbookInputQuery:
-  required: true
-  value: {}
-- description: Full Name of the requestor
-  key: Requestor Full Name
-  playbookInputQuery:
-  required: false
-  value: {}
-name: CybelAngel - Send Remediation Request
+id: 'CybelAngel - Get Comments'
+inputs: []
+name: CybelAngel - Get Comments
 outputs: []
 quiet: true
 starttaskid: "0"
@@ -34,12 +20,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 6f3882a0-4e0b-447f-8d0a-d7dc997a83b8
+      id: cd0aeedb-6c4c-421f-8221-195540626990
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 6f3882a0-4e0b-447f-8d0a-d7dc997a83b8
+    taskid: cd0aeedb-6c4c-421f-8221-195540626990
     timertriggers: []
     type: start
     view: |-
@@ -58,24 +44,20 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      email:
-        simple: ${inputs.Requestor Email}
       report_id:
         simple: ${incident.alertid}
-      requester_fullname:
-        simple: ${inputs.Requestor Full Name}
     separatecontext: false
     skipunavailable: false
     task:
       brand: CybelAngel
-      description: Remediate a report by ID
-      id: 31574620-8ed8-4c3d-8218-893627ca0f90
+      description: Get comments for a report
+      id: fc421424-c6c2-4fca-86fa-ac416d841b82
       iscommand: true
-      name: Remediation Request
-      script: CybelAngel|||cybelangel-remediate
+      name: cybelangel-get-comments
+      script: CybelAngel|||cybelangel-get-comments
       type: regular
       version: -1
-    taskid: 31574620-8ed8-4c3d-8218-893627ca0f90
+    taskid: fc421424-c6c2-4fca-86fa-ac416d841b82
     timertriggers: []
     type: regular
     view: |-
@@ -101,4 +83,4 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
-description: Sending a remediation request for a CybelAngel Incident Report.
+description: Get Commments from Incident Report.

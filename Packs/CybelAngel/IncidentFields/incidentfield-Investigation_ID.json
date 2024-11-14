@@ -4,7 +4,7 @@
         "CybelAngel"
     ],
     "caseInsensitive": true,
-    "cliName": "investigationid",
+    "cliName": "incidentinvestigationid",
     "closeForm": false,
     "content": true,
     "description": "Disregard this ID.",
@@ -18,9 +18,6 @@
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
-    "propagationLabels": [
-        "all"
-    ],
     "required": false,
     "sla": 0,
     "system": false,

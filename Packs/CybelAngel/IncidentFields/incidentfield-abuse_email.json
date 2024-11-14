@@ -19,9 +19,6 @@
     "openEnded": false,
     "ownerOnly": false,
     "placeholder": "null",
-    "propagationLabels": [
-        "all"
-    ],
     "required": false,
     "sla": 0,
     "system": false,
