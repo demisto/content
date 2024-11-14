@@ -1,15 +1,12 @@
 {
-    "id": "a96117ba-4972-45c0-8515-6688904cbb38",
-    "version": "1.0.0",
     "currentVersion": "1.0.0",
     "name": "CybelAngel",
     "description": "Integration for handling CybelAngel Incident reports in XSOAR",
     "support": "partner",
-    "author": "David Neil",
+    "author": "CybelAngel",
     "marketplaces": [
         "xsoar",
-        "xsoar_saas",
-        "xsoar_on_prem"
+        "marketplacev2"
     ],
     "url": "https://cybelangel.com",
     "authorImage": "Packs/$PACK_NAME/Author_Image.png",
@@ -17,22 +14,11 @@
         "url": "https://support.cybelangel.com",
         "email": "support@cybelangel.com"
     },
-    "beta": false,
-    "deprecated": false,
     "certification": "certified",
-    "serverMinVersion": "",
-    "serverMaxVersion": "",
-    "general": null,
     "tags": [],
-    "rawTags": null,
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "integrations": null,
+    "categories": [],
     "useCases": [],
-    "rawUseCases": null,
-    "keywords": null,
-    "rawKeywords": null,
+    "keywords": [],
     "dependencies": {
         "CommonScripts": {
             "mandatory": true,
@@ -69,11 +55,5 @@
             "certification": "certified",
             "author": "Cortex XSOAR"
         }
-    },
-    "legacy": false,
-    "price": 0,
-    "premium": false,
-    "installMessage": "",
-    "versionInfo": "",
-    "disabledMonthly": false
+    }
 }
