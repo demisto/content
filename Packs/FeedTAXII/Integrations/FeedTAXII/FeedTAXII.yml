@@ -83,7 +83,7 @@ configuration:
   required: false
   section: Collect
   advanced: true
-- additionalinfo: TAXII discovery service endpoint. For example, http://hailataxii.com/taxii-discovery-service
+- additionalinfo: TAXII discovery service endpoint. For example, http://example.com/taxii-discovery-service
   display: Discovery Service
   name: discovery_service
   required: true
