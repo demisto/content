@@ -8,14 +8,18 @@
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Cloud Service Provider"
+        "Cloud Service Provider",
+        "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [
         "Amazon",
         "AWS",
-        "CloudTrail"
+        "CloudTrail",
+        "Cloud Trail"
     ],
     "marketplaces": [
         "xsoar",
