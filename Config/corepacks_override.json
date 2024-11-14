@@ -81,5 +81,59 @@
                 "Tenable_io"
             ]
         }
+    },
+    "xsiam": {
+        "updated_corepacks_content": {
+            "corePacks": [
+                "ImageOCR/1.1.33/ImageOCR.zip",
+                "FiltersAndTransformers/1.2.81/FiltersAndTransformers.zip",
+                "CommonPlaybooks/2.6.47/CommonPlaybooks.zip",
+                "CommonScripts/1.15.86/CommonScripts.zip",
+                "FeedUnit42v2/1.0.56/FeedUnit42v2.zip",
+                "Unit42Intel/1.0.25/Unit42Intel.zip",
+                "VirusTotal/2.6.23/VirusTotal.zip",
+                "Whois/1.5.16/Whois.zip",
+                "Core/3.0.94/Core.zip",
+                "AutoFocus/2.2.3/AutoFocus.zip",
+                "EDL/3.3.3/EDL.zip",
+                "CoreAlertFields/1.0.37/CoreAlertFields.zip",
+                "Palo_Alto_Networks_WildFire/2.1.50/Palo_Alto_Networks_WildFire.zip",
+                "DemistoRESTAPI/1.3.58/DemistoRESTAPI.zip",
+                "CortexAttackSurfaceManagement/1.7.47/CortexAttackSurfaceManagement.zip",
+                "CommonTypes/3.5.13/CommonTypes.zip",
+                "rasterize/2.0.26/rasterize.zip",
+                "PrismaCloud/4.3.9/PrismaCloud.zip",
+                "ThreatIntelligenceManagement/1.1.11/ThreatIntelligenceManagement.zip",
+                "FeedMitreAttackv2/1.1.40/FeedMitreAttackv2.zip",
+                "DemistoLocking/1.1.3/DemistoLocking.zip",
+                "Base/1.34.46/Base.zip",
+                "HelloWorld/3.0.12/HelloWorld.zip"
+            ],
+            "upgradeCorePacks": [
+                "AutoFocus",
+                "Base",
+                "CommonPlaybooks",
+                "CommonScripts",
+                "CommonTypes",
+                "Core",
+                "CoreAlertFields",
+                "CortexAttackSurfaceManagement",
+                "DemistoLocking",
+                "DemistoRESTAPI",
+                "EDL",
+                "FeedMitreAttackv2",
+                "FeedUnit42v2",
+                "FiltersAndTransformers",
+                "HelloWorld",
+                "ImageOCR",
+                "Palo_Alto_Networks_WildFire",
+                "PrismaCloud",
+                "ThreatIntelligenceManagement",
+                "Unit42Intel",
+                "VirusTotal",
+                "Whois",
+                "rasterize"
+            ]
+        }
     }
 }
