@@ -3,14 +3,6 @@
 alter
     src_ipv6 = arrayindex(regextract(data -> origin, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0)
 | alter
-    xdm.source.location.continent = geoip -> continent_name,
-    xdm.source.asn.as_name = geoip -> as_org,
-    xdm.source.location.city = geoip -> city_name,
-    xdm.source.location.country = geoip -> country_name,
-    xdm.source.location.region = geoip -> region_name,
-    xdm.source.location.longitude = to_float(geoip -> location.lon),
-    xdm.source.location.latitude = to_float(geoip -> location.lat),
-    xdm.source.asn.as_number = to_integer(geoip -> asn),
     xdm.event.type = if(event_type in ("sso", "authentication"), "authentication", event_type),
     xdm.event.id = id,
     xdm.source.ipv4 = if(incidr(data -> origin, "0.0.0.0/0"), data -> origin, ""),
@@ -80,15 +72,15 @@ filter event_type = "authentication"
 | alter
     res = lowercase(data -> result),
     src_user = arrayindex(regextract(data -> username, "(.+)\@") ,0), // The username can sometimes appear as a username and other times as an email.
-    subtype = data -> subtype,
-    mfamethod = data -> mfamethod,
+    subtype = lowercase(data -> subtype),
+    mfamethod = lowercase(data -> mfamethod),
     cause_lower = lowercase(data -> cause),
     mfaresult_lower = lowercase(data -> mfaresult)
 | alter
     xdm.event.outcome = if(res ~= "[Ss]uccess" OR res = "sent", XDM_CONST.OUTCOME_SUCCESS, res ~= "fail", XDM_CONST.OUTCOME_FAILED, res),
-    xdm.event.outcome_reason = if(mfaresult_lower = "user_denied" or cause_lower ~= "one-time password .*? was invalid", "mfa_failure", cause_lower ~= "the account for the user [^\s]+ is locked" or cause_lower contains "locked_pwd_failures", "account_locked", cause_lower contains "invalid_creds", "bad_credentials", cause_lower ~= "user [^\s]+ is not authorized to access this resource", "auth_login_restrictions", cause_lower contains "user_fraudulent", "risky_signin" ,cause_lower contains "user_denied","user_reject", cause_lower ~= "user [^\s]+ is not an active user", "account_expired_or_disabled", cause_lower ~= "unexpected error - unable to fetch the tenant's state from cache." or cause_lower ~= "unexpected error - [\S]+ an error occurred while mapping the user", "failed_login", to_string(data -> cause)),
-    xdm.event.operation = if(lowercase(data.subtype) = "MFA",  XDM_CONST.OPERATION_TYPE_AUTH_MFA, XDM_CONST.OPERATION_TYPE_AUTH_LOGIN),
-    xdm.event.operation_sub_type = if(mfamethod = "FIDO2", "hardware_token", mfamethod = "Email OTP", "email", mfamethod = "IBM Verify push", "application", mfamethod = "SMS OTP", "sms", subtype in ("certificate", "social", "socialjwt"), "application", subtype = "user_password", "password", subtype = "federation", "Generic SSO", subtype = "device trust", "trusted_login", subtype),
+    xdm.event.outcome_reason = if(mfaresult_lower = "user_denied" or cause_lower ~= "one-time password .*? was invalid", "mfa_failure", cause_lower ~= "the account for the user [^\s]+ is locked" or cause_lower contains "locked_pwd_failures", "account_locked", cause_lower contains "invalid_creds", "bad_credentials", cause_lower ~= "user [^\s]+ is not authorized to access this resource", "auth_login_restrictions", cause_lower contains "user_fraudulent", "risky_signin" ,cause_lower contains "user_denied","user_reject", cause_lower ~= "user [^\s]+ is not an active user", "account_expired_or_disabled", cause_lower ~= "unexpected error - unable to fetch the tenant's state from cache." or cause_lower ~= "unexpected error - [\S]+ an error occurred while mapping the user", "failed_login", cause_lower ~= "unexpected error", "OTHER", to_string(data -> cause)),
+    xdm.event.operation = if(subtype = "mfa",  XDM_CONST.OPERATION_TYPE_AUTH_MFA, XDM_CONST.OPERATION_TYPE_AUTH_LOGIN),
+    xdm.event.operation_sub_type = if(mfamethod = "fido2", "hardware_token", mfamethod = "email otp", "email", mfamethod = "ibm verify push", "application", mfamethod = "sms otp", "sms", subtype in ("certificate", "social", "socialjwt"), "application", subtype = "user_password", "password", subtype = "federation", "Generic SSO", subtype = "device trust", "trusted_login", subtype),
     xdm.event.description = data -> cause,
     xdm.auth.service = data -> sourcetype,
     xdm.source.user.identifier = if(data -> subject = "UNKNOWN", null, coalesce(data -> subject, data -> performedby)),
@@ -96,6 +88,7 @@ filter event_type = "authentication"
     xdm.source.user.username = coalesce(src_user, data -> username),
     xdm.source.user.upn = if(src_user != null, data -> username),
     xdm.source.host.device_id = data -> deviceid,
+    xdm.source.host.device_category = if(lowercase(data -> mfadevice) ~= "iphone" or lowercase(data -> devicetype) ~= "verify/3" or lowercase(data -> devicetype) ~= "com.ibm.security.verifyapp", "Mobile", null),
     xdm.auth.mfa.method = data -> mfamethod,
     xdm.auth.mfa.client_details = data -> mfadevice,
     xdm.event.original_event_type = event_type,
