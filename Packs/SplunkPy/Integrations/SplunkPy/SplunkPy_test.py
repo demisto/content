@@ -2839,17 +2839,19 @@ def test_escape_invalid_chars_in_drilldown_json(drilldown_search, expected_res):
     res = splunk.escape_invalid_chars_in_drilldown_json(drilldown_search)
 
     assert expected_res in json.loads(res)['query']
-    
+
 
 # Define minimal classes to simulate the service and index behavior
 class Index:
     def __init__(self, name):
         self.name = name
 
+
 class ServiceIndex:
     def __init__(self, indexes):
         self.indexes = [Index(name) for name in indexes]
- 
+
+
 @pytest.mark.parametrize(
     "given_indexes, service_indexes, expected",
     [
@@ -2874,8 +2876,8 @@ def test_validate_indexes(given_indexes, service_indexes, expected):
     service = ServiceIndex(service_indexes)
     # Assert that the function returns the expected result
     assert validate_indexes(given_indexes, service) == expected
-    
-    
+
+
 @pytest.mark.parametrize(
     "fields, expected",
     [
@@ -2902,8 +2904,8 @@ def test_parse_fields(fields, expected):
     from SplunkPy import parse_fields
     result = parse_fields(fields)
     assert result == expected
-    
-    
+
+
 @pytest.mark.parametrize(
     "events, expected",
     [
@@ -2921,8 +2923,8 @@ def test_ensure_valid_json_format_valid_inputs(events, expected):
     """
     from SplunkPy import ensure_valid_json_format
     assert ensure_valid_json_format(events) == expected
-    
-    
+
+
 @pytest.mark.parametrize(
     "invalid_events",
     [
@@ -2942,7 +2944,8 @@ def test_ensure_valid_json_format_invalid_inputs(invalid_events):
     from SplunkPy import ensure_valid_json_format
     with pytest.raises(DemistoException, match=r"Make sure that the events are in the correct format"):
         ensure_valid_json_format(invalid_events)
-        
+
+
 @pytest.mark.parametrize("event, batch_event_data, entry_id, expected_data", [
     ("Somthing happened", None, None, '{"event": "Somthing happened", "fields": {"field1": "value1"}, "index": "main"}'),
     (None, "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}", None,
@@ -2976,11 +2979,11 @@ def test_splunk_submit_event_hec(
     baseurl = "https://splunk.example.com"
     fields = '{"field1": "value1"}'
     parsed_fields = {"field1": "value1"}
-    
+
     # Mocks
     mock_parse_fields.return_value = parsed_fields
     mock_validate_indexes.return_value = True
-    
+
     if event:
         # Single event
         mock_ensure_valid_json_format.return_value = [{"event": event}]
@@ -2994,7 +2997,7 @@ def test_splunk_submit_event_hec(
             "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"
         mock_ensure_valid_json_format.return_value =\
             [{'event': 'some event', 'index': 'some index'}, {'event': 'some event', 'index': 'some index'}]
-    
+
     # Act
     splunk_submit_event_hec(
         hec_token=hec_token,
@@ -3011,7 +3014,7 @@ def test_splunk_submit_event_hec(
         entry_id=entry_id,
         service=MagicMock(),
     )
-        
+
     mock_post.assert_called_once_with(
         f"{baseurl}/services/collector/event",
         data=expected_data,
@@ -3031,6 +3034,5 @@ def test_splunk_submit_event_hec_command_no_required_arguments():
     """
     from SplunkPy import splunk_submit_event_hec_command
     with pytest.raises(DemistoException,
-        match=r"""Invalid input: Please specify one of the following arguments: `event`, `batch_event_data`, or `entry_id`."""):
+                       match=r"""Invalid input: Please specify one of the following arguments: `event`, `batch_event_data`, or `entry_id`."""):
         splunk_submit_event_hec_command({'hec_url': 'hec_url'}, None, {})
-        
