@@ -6,16 +6,21 @@ description: |-
 
   Playbook Stages:
 
-  Investigation:
-
-  During the alert investigation, the playbook will perform the following:
+  Analysis:
 
   - Checks the suspicious process reputation.
-  - Searches for Cortex XSIAM agent alerts related to any malicious activity on the server.
+
+  Investigation:
+
+  - Searches for related XSIAM agent alerts to identify any malicious activity on the server.
 
   Remediation:
 
-  - Remediation actions will be taken if the suspicious process reputation is malicious, or if a related alert is found. In such cases, the playbook will disable the scheduled task, terminate the malicious process, and close the alert.
+  If the suspicious process reputation is malicious, or if a related alert is found, the following remediation actions will be taken:
+
+  - Disable the scheduled task responsible for executing the process.
+  - Terminate the malicious process.
+  - Automatically Close the alert.
 tags:
 - TA0002 - Execution
 - T1053 - Scheduled Task/Job
@@ -34,14 +39,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "43"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": -90
+          "y": -220
         }
       }
     note: false
@@ -65,14 +70,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "39"
+      - "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": 205
         }
       }
     note: false
@@ -262,7 +267,7 @@ tasks:
     task:
       id: 8f551570-3805-49d7-879a-cae5facbe566
       version: -1
-      name: Found any alerts indicating a malicious schedule task?
+      name: Found any alerts indicating a malicious process execution?
       description: Determines whether the alert contains agent alerts indicating that the alert was part of an attack pattern.
       type: condition
       iscommand: false
@@ -642,7 +647,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "1"
     scriptarguments:
       file:
         simple: ${alert.targetprocesssha256}
@@ -652,7 +657,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 180
+          "y": 40
         }
       }
     note: false
@@ -770,6 +775,37 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: edb87387-6638-4845-84b3-ead6433e8f54
+    type: title
+    task:
+      id: edb87387-6638-4845-84b3-ead6433e8f54
+      version: -1
+      name: Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -780,10 +816,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2495,
+        "height": 2625,
         "width": 1480,
         "x": 20,
-        "y": -90
+        "y": -220
       }
     }
   }

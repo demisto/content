@@ -2,16 +2,21 @@ This playbook handles "Suspicious process execution by scheduled task on a sensi
 
 Playbook Stages:
 
-Investigation:
-
-During the alert investigation, the playbook will perform the following:
+Analysis:
 
 - Checks the suspicious process reputation.
-- Searches for Cortex XSIAM agent alerts related to any malicious activity on the server.
+
+Investigation:
+
+- Searches for related XSIAM agent alerts to identify any malicious activity on the server.
 
 Remediation:
 
-- Remediation actions will be taken if the suspicious process reputation is malicious, or if a related alert is found. In such cases, the playbook will disable the scheduled task, terminate the malicious process, and close the alert.
+If the suspicious process reputation is malicious, or if a related alert is found, the following remediation actions will be taken:
+
+- Disable the scheduled task responsible for executing the process.
+- Terminate the malicious process.
+- Automatically Close the alert.
 
 ## Dependencies
 
