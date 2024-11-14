@@ -438,7 +438,7 @@ tasks:
     task:
       id: 358ad811-3ae6-4e1d-826e-ba15c09f050c
       version: -1
-      name: Remediation
+      name: Containment
       type: title
       iscommand: false
       brand: ""
@@ -552,7 +552,7 @@ tasks:
       version: -1
       name: Should terminate the causality (CGO)?
       description: |-
-        Our only verdict is an unsigned causality process, we need the analyst's approval to continue the remediation phase.
+        Our only verdict is an unsigned causality process, we need the analyst's approval to continue the containment phase.
 
         Unmatched verdicts:
         - No BTP rule found for the same causality ID
@@ -675,7 +675,7 @@ tasks:
       description: |-
         Dear Analyst,
 
-        During the remediation process, the playbook couldn’t terminate the process: ${alert.cgoname}
+        During the containment phase, the playbook couldn’t terminate the process: ${alert.cgoname}
 
         Please terminate the process manually if possible.
       type: regular
