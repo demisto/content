@@ -142,7 +142,7 @@ class BoxEventsClient(IntegrationEventsClient):
             self.box_credentials.boxAppSettings.appAuth
         )
         assertion = jwt.encode(
-            payload=claims.dict(),
+            payload=claims.model_dump(mode='json'),  # type: ignore[attr-defined]
             key=decrypted_private_key,
             algorithm='RS512',
             headers={
