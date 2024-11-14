@@ -892,7 +892,7 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
     else:
         last_update = remote_args.last_update
         demisto.debug(f"using {remote_args.last_update=} for last_update")
-        
+
     last_update_utc = dateparser.parse(last_update,
                                        settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
 
@@ -911,10 +911,10 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
     # Format with milliseconds as string, truncate microseconds
     last_run_mirroring_str = last_run_mirroring.replace(tzinfo=pytz.UTC).strftime(  # type: ignore
         '%Y-%m-%d %H:%M:%S.%f')[:-3] + '+02:00'  # type: ignore
-    
+
     id_to_modification_time = {raw.get('incident_id'): raw.get('modification_time') for raw in raw_incidents}
     demisto.debug(f"{last_run_mirroring_str=}, modified alerts {json.dumps(id_to_modification_time)=}")
-    
+
     return GetModifiedRemoteDataResponse(list(id_to_modification_time.keys())), last_run_mirroring_str
 
 
