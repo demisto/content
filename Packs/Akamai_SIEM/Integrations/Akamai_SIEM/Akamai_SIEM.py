@@ -427,7 +427,7 @@ def fetch_events_command(
     total_events_count = 0
     from_epoch, _ = parse_date_range(date_range=fetch_time, date_format='%s')
     offset = ctx.get("offset")
-    hashed_events_from_previous_run = ctx.get("hashed_events_from_previous_run", set())
+    hashed_events_from_previous_run = set(ctx.get("hashed_events_from_previous_run", set()))
     while total_events_count < int(fetch_limit):
         demisto.info(f"Preparing to get events with {offset=}, {page_size=}, and {fetch_limit=}")
         events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
@@ -529,7 +529,7 @@ def main():  # pragma: no cover
                 if events:
                     demisto.info(f"Sending events to xsiam with latest event time is: {events[-1]['_time']}")
                     send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
-                set_integration_context({"offset": offset, "hashed_events_from_previous_run": hashed_events_from_previous_run})
+                set_integration_context({"offset": offset, "hashed_events_from_previous_run": list(hashed_events_from_previous_run)})
             demisto.updateModuleHealth({'eventsPulled': (total_events_count or 0)})
             next_run = {}
             if total_events_count >= limit:

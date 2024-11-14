@@ -60,7 +60,7 @@ class TestCommandsFunctions:
         expected_last_run = {'lastRun': "1576002507"}
         assert expected_incidents == tested_incidents, "Incidents - No last time exsits and event available"
         assert tested_last_run == expected_last_run, "Last run - No last time exsits and event available"
-
+    
     @pytest.mark.fetch
     def test_fetch_incidents_command_2(self, client, datadir, requests_mock):
         """Test - Last time exsits and events available"""
@@ -319,6 +319,17 @@ class TestCommandsFunctions:
         for event_not_in_list in events_not_in_list:
             assert event_not_in_list not in events
 
+
+    def test_something(self, mocker, client):
+        for events, offset, total_events_count, hashed in Akamai_SIEM.fetch_events_command(  # noqa: B007
+                client,
+                "5 minutes",
+                fetch_limit=5000,
+                config_ids="sdad",
+                ctx={},
+                page_size=3000
+            ):
+            print("hi")
 
 @pytest.mark.parametrize(
     "header",
