@@ -17,5 +17,5 @@
     "marketplaces": [
         "marketplacev2"
     ],
-    "defaultDataSource": "MongoDBAtlasCollector"
+    "defaultDataSource": "MongoDBAtlasEventCollector"
 }
