@@ -516,7 +516,7 @@ Parses the raw part of the event.
 
 ### splunk-submit-event-hec
 ***
-Sends events to an HTTP event collector using the Splunk platform JSON event protocol.
+Sends events to an HTTP event collector using the Splunk platform JSON event protocol. if `batch_event_data` or `entry_id` arguments are provided then all arguments related to a single event are ignored.
 ##### Base Command
 
 `splunk-submit-event-hec`
@@ -532,9 +532,15 @@ Sends events to an HTTP event collector using the Splunk platform JSON event pro
 | source | The user-defined event source. | Optional | 
 | time | The epoch-formatted time. | Optional | 
 | request_channel | A channel identifier (ID) where to send the request, must be a Globally Unique Identifier (GUID). **If the indexer acknowledgment is turned on, a channel is required.** | Optional |
-| batch_event_data | A  batch of events to send to splunk. For example, `{"event": "something happened at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test2, test2"}, "index": "index0","sourcetype": "sourcetype0","source": "/example/something" } {"event": "something happened at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1","source": "/exeample/something", "fields":{ "fields" : "severity: INFO, category: test2, test2"}}` | Optional |
-| entry_id | The entry id in XSOAR | Optional |
+| batch_event_data | A  batch of events to send to splunk. For example, `{"event": "something happened at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test2, test2"}, "index": "index0","sourcetype": "sourcetype0","source": "/example/something" } {"event": "something happened at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1","source": "/exeample/something", "fields":{ "fields" : "severity: INFO, category: test2, test2"}}`. **If provided, the arguments related to a single event and the `entry_id` argument are ignored.** | Optional |
+| entry_id | The entry id in XSOAR of the file containing a batch of events. **If provided, the arguments related to a single event are ignored.** | Optional |
 
+##### Batched events description
+This command allows sending events to Splunk, either as a single event or a batch of multiple events.
+To send a single event: Use the `event`, `fields`, `host`, `index`, `source`, `source_type`, and `time` arguments.
+To send a batch of events, there are two options, either use the batch_event_data argument or use the entry_id argument (for a file uploaded to XSOAR).
+Batch format requirements: The batch must be a single string containing valid dictionaries, each representing an event. Events should not be separated by commas. Each dictionary should include all necessary fields for an event. For example: `{"event": "event occurred at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test1"}, "index": "index0", "sourcetype": "sourcetype0", "source": "/path/event1"} {"event": "event occurred at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1", "source": "/path/event2", "fields": {"severity": "INFO", "category": "test2"}}`.
+This formatted string can be passed directly via `batch_event_data`, or, if saved in a file, the file can be uploaded to XSOAR, and the `entry_id` (e.g., ${File.[4].EntryID}) should be provided.
 ##### Context Output
 
 There is no context output for this command.
