@@ -273,6 +273,6 @@ You should work to find the balance between them in a way that both the command,
 
 ### Known limitations
 
-## Each config ID should be configured on one instance at most:
-Due to limitations from Akamai side, each config ID can be configured on one instance at most on the same machine or on different machines (i.e, the same config ID can't be configured both on dev and prod tenants).
+## The config ID can only be configured on one instance:
+Due to limitations from Akamai, the config ID can only be configured on one instance on the same machine or on different machines (i.e. the same config ID can't be configured both on dev and prod tenants or twice on the same tenant).
 Configuring on multiple machines may lead to duplications or missing events.
