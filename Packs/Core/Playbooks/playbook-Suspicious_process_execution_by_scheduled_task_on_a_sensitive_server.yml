@@ -166,7 +166,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 860
+          "y": 1070
         }
       }
     note: false
@@ -183,7 +183,7 @@ tasks:
     task:
       id: d6cce08c-349e-44db-807d-b6348886db73
       version: -1
-      name: No Results Found
+      name: False Positive
       type: title
       iscommand: false
       brand: ""
@@ -196,8 +196,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1120,
-          "y": 860
+          "x": 1200,
+          "y": 1070
         }
       }
     note: false
@@ -249,7 +249,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 780,
+          "x": 720,
           "y": 525
         }
       }
@@ -274,7 +274,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+      - "44"
       "yes":
       - "3"
     separatecontext: false
@@ -303,7 +303,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 780,
+          "x": 720,
           "y": 690
         }
       }
@@ -321,7 +321,7 @@ tasks:
     task:
       id: 4ddeb53e-ca31-47cf-8a68-30b6fd21e81c
       version: -1
-      name: Close Alert - No results returned
+      name: Close Alert - False Positive
       description: commands.local.cmd.close.inv
       script: Builtin|||closeInvestigation
       type: regular
@@ -332,7 +332,7 @@ tasks:
       - "42"
     scriptarguments:
       closeNotes:
-        simple: No Results Found
+        simple: False Positive
       closeReason:
         simple: Resolved - Handled by the playbook "Suspicious process execution by scheduled task on a sensitive server"
       id:
@@ -342,8 +342,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1120,
-          "y": 1000
+          "x": 1200,
+          "y": 1200
         }
       }
     note: false
@@ -382,7 +382,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2170
+          "y": 2380
         }
       }
     note: false
@@ -410,7 +410,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2340
+          "y": 2550
         }
       }
     note: false
@@ -455,7 +455,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 990
+          "y": 1200
         }
       }
     note: false
@@ -513,7 +513,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1660
+          "y": 1870
         }
       }
     note: false
@@ -555,7 +555,7 @@ tasks:
       {
         "position": {
           "x": 180,
-          "y": 1830
+          "y": 2040
         }
       }
     note: false
@@ -591,7 +591,7 @@ tasks:
       {
         "position": {
           "x": 180,
-          "y": 1490
+          "y": 1700
         }
       }
     note: false
@@ -622,7 +622,7 @@ tasks:
       {
         "position": {
           "x": 20,
-          "y": 2000
+          "y": 2210
         }
       }
     note: false
@@ -692,7 +692,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1160
+          "y": 1370
         }
       }
     note: false
@@ -737,7 +737,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1320
+          "y": 1530
         }
       }
     note: false
@@ -764,8 +764,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1120,
-          "y": 1160
+          "x": 1200,
+          "y": 1360
         }
       }
     note: false
@@ -806,18 +806,79 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 2d8044c7-5bce-4043-84f2-5044da195500
+    type: condition
+    task:
+      id: 2d8044c7-5bce-4043-84f2-5044da195500
+      version: -1
+      name: Analyst decision to proceed with remediation actions
+      description: Analyst review is required to determine whether to take remediation actions, such as disabling the scheduled task and terminating the process if malicious, or to close the alert as a false positive.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      False Positive:
+      - "5"
+      Remediation:
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: |
+          Dear Analyst,
+
+          The playbook did not identify any related alerts indicating malicious process execution, and the file reputation is not flagged as malicious.
+
+          Please review the alert to determine if remediation actions are necessary, such as disabling the scheduled task and terminating the process, or if the alert should be closed as a false positive.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Remediation
+      - False Positive
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "21_37_#error#": 0.53,
       "27_13_Blocked": 0.34,
       "29_38_#error#": 0.49,
-      "41_27_yes": 0.4
+      "2_3_yes": 0.29,
+      "41_27_yes": 0.4,
+      "44_3_Remediation": 0.39,
+      "44_5_False Positive": 0.4,
+      "8_3_yes": 0.49,
+      "8_44_#default#": 0.59
     },
     "paper": {
       "dimensions": {
-        "height": 2625,
-        "width": 1480,
+        "height": 2835,
+        "width": 1560,
         "x": 20,
         "y": -220
       }
