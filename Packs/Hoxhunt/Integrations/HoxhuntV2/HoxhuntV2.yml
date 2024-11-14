@@ -36,7 +36,7 @@ configuration:
 - display: API Key
   name: api_key
   type: 4
-  required: false
+  required: true
   additionalinfo: Input your api key from Hoxhunt
 - display: Fetch incidents
   name: isFetch
