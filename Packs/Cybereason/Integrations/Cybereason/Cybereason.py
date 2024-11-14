@@ -103,6 +103,7 @@ HEADERS = {
     'Cookie': f"JSESSIONID={JSESSIONID}"
 }
 
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -1634,9 +1635,9 @@ def fetch_incidents(client: Client):
             if malop_update_time > max_update_time:
                 max_update_time = malop_update_time
 
-            guid_string = malop.get('guidString', '')
+            guid_string = non_edr_malops.get('guidString', '')
             if not guid_string:
-                guid_string = malop.get('guid', '')
+                guid_string = non_edr_malops.get('guid', '')
 
             try:
                 incident = malop_to_incident(non_edr_malops)
@@ -1662,23 +1663,20 @@ def login(client: Client):
         'username': USERNAME,
         'password': PASSWORD
     }
-    demisto.debug("Login function is getting called")
     response = client.cybereason_api_call('POST', '/login.html', data=data, headers=headers, custom_response=True, return_json=False)
     JSESSIONID = client._session.cookies.get("JSESSIONID")
     creation_time = int(time.time())
     return JSESSIONID, creation_time
 
-def validate_jsession(client: Client, creation_time):
+def validate_jsession(client: Client):
     creation_time = int(time.time())
     integration_context = get_integration_context()
     token = integration_context.get('jsession_id')
-    demisto.debug(f"access token: {token}")
     valid_until = integration_context.get('valid_until')
-    demisto.debug(f"token valid until: {valid_until}")
-    demisto.debug(f"current time in save_jsession function: {creation_time}")
     if token and valid_until:
         if creation_time < valid_until:
             demisto.debug(f"Token is still valid - did not expire. token: {token}")
+            HEADERS["Cookie"] =  f"JSESSIONID={token}"
             return
     token, creation_time = login(client)
     integration_context = {
@@ -1686,7 +1684,7 @@ def validate_jsession(client: Client, creation_time):
         'valid_until': creation_time + 28000
     }
     set_integration_context(integration_context)
-    demisto.debug(f"set integration")
+    HEADERS["Cookie"] =  f"JSESSIONID={token}"
  
 
 def client_certificate():
@@ -2320,7 +2318,6 @@ def main():
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
     finally:
-        logout(client)
         if auth and auth == 'CERT':
             os.remove(os.path.abspath('client.pem'))
             os.remove(os.path.abspath('client.cert'))
