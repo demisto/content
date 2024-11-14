@@ -521,7 +521,7 @@ def main():  # pragma: no cover
         elif command == "fetch-events":
             page_size = int(params.get("page_size", FETCH_EVENTS_PAGE_SIZE))
             limit = int(params.get("fetchLimit", 300000))
-            for events, offset, total_events_count, hashed_events_from_previous_run in fetch_events_command(  # noqa: B007
+            for events, offset, total_events_count, hashed_events_from_current_run in fetch_events_command(  # noqa: B007
                 client,
                 "5 minutes",
                 fetch_limit=limit,
@@ -533,12 +533,14 @@ def main():  # pragma: no cover
                     demisto.info(f"Sending events to xsiam with latest event time is: {events[-1]['_time']}")
                     send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
                 set_integration_context({"offset": offset,
-                                         "hashed_events_from_previous_run": list(hashed_events_from_previous_run)})
+                                         "hashed_events_from_previous_run": list(hashed_events_from_current_run)})
             demisto.updateModuleHealth({'eventsPulled': (total_events_count or 0)})
             next_run = {}
             if total_events_count >= limit:
                 demisto.info(f"got at least {limit} events this interval - will automatically trigger next run.")
                 next_run["nextTrigger"] = "0"
+            else:
+                demisto.info(f"Got less than {limit} events this interval - will not trigger next run automatically.")
             demisto.setLastRun(next_run)
 
         else:
