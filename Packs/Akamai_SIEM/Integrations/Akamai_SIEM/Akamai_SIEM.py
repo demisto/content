@@ -537,6 +537,7 @@ def main():  # pragma: no cover
             demisto.updateModuleHealth({'eventsPulled': (total_events_count or 0)})
             next_run = {}
             if total_events_count >= limit:
+                demisto.info(f"got at least {limit} events this interval - will automatically trigger next run.")
                 next_run["nextTrigger"] = "0"
             demisto.setLastRun(next_run)
 
