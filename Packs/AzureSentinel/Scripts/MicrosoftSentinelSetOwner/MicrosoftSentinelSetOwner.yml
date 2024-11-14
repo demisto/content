@@ -1,14 +1,14 @@
 args:
   - name: user_principal_name
     required: true
-    description: The owner email to set as user principal name. If a user associated with this email exists in Microsoft Sentinel, their full name and details will be displayed and mirrored in the remote system. If no such user exists, only the email will be displayed and mirrored, with all other details remaining null.
+    description: The owner email to set as the user principal name. If a user associated with this email exists in Microsoft Sentinel, their full name and details will be displayed and mirrored in the remote system. If no such user exists, only the email will be displayed and mirrored, with all other details remaining null.
   - name: incident_id
     required: false
     description: The ID of the remote incident to update. Relevant only when the script is called directly from the War Room.
 commonfields:
   id: MicrosoftSentinelSetOwner
   version: -1
-comment: This script can be run from the war room or used by a layout to set the owner field in Microsoft Sentinel.
+comment: This script can be run from the War Room or used by a layout to set the Owner field in Microsoft Sentinel.
 name: MicrosoftSentinelSetOwner
 outputs:
   - contextPath: AzureSentinel.Incident.ID
@@ -60,7 +60,7 @@ outputs:
     description: The incident number.
     type: Number
   - contextPath: AzureSentinel.Incident.AlertsCount
-    description: The number of the alerts in the incident.
+    description: The number of alerts in the incident.
     type: Number
   - contextPath: AzureSentinel.Incident.BookmarkCount
     description: The number of bookmarks in the incident.

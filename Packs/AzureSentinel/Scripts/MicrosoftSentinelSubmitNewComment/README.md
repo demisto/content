@@ -1,9 +1,7 @@
 
 Use this script to add a comment which will then be mirrored as a comment to a Sentinal event. This script should be run within an incident.
 
-Note:
-
-- Comments in XSOAR can only be added when the *Mirroring Direction* in the *Instance Settings* is set to *Incoming* or *Incoming and Outgoing*.
+Note: Comments in Cortex XSOAR can only be added when the *Mirroring Direction* in the *Instance Settings* is set to *Incoming* or *Incoming and Outgoing*.
 
 ## Script Data
 
@@ -22,7 +20,7 @@ Note:
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | new_comment | The comment text to be added to the incident comments. | Required |
-| incident_id | The ID of the incident to add the comment to. This argument is relevant only when the script is called directly from the War Room. | Optional (Required When the script is called directly from the war room).|
+| incident_id | The ID of the incident to add the comment to. This argument is relevant only when the script is called directly from the War Room. | Optional (Required When the script is called directly from the War Room).|
 
 ## Outputs
 
