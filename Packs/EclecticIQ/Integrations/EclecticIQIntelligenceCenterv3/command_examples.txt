@@ -9,5 +9,7 @@
 !eclecticiq-get-entity-by-id entity_id=eab96e3a-8af2-4017-ae60-d2823ad80a72
 !eclecticiq-request-get uri=/api/v2/datasets
 !eclecticiq-request-post uri=/api/v2/datasets body=`{"data": {"workspaces": "1", "name": "test123"}}`
+!eclecticiq-request-put uri=/api/v2/datasets body=`{"data": {"workspaces": "1", "name": "test123"}}`
+!eclecticiq-request-patch uri=/api/v2/datasets/1 body=`{"data": {"workspaces": "1", "name": "test123"}}`
 !eclecticiq-get-indicators
 !eclecticiq-request-delete uri=/api/v2/datasets/139
