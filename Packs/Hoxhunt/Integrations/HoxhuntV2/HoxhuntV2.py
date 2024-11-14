@@ -469,13 +469,11 @@ def fetch_incidents(
     client: Client,
     first_fetch: str | None,
     max_fetch: str | None,
-    only_open_incidents: bool | None,
-    only_escalated_incidents: bool | None,
+    only_open_incidents: bool,
+    only_escalated_incidents: bool,
     now: float,
     last_run: dict[str, Any]
 ) -> tuple[list[dict], dict | None]:
-    filter_escalated_incidents = bool(only_escalated_incidents)
-    filter_open_incidents = bool(only_open_incidents)
     first_fetch = first_fetch or '7 days'
     max_fetch = max_fetch or '50'
     first_fetch_parsed = dateparser.parse(first_fetch)
@@ -491,9 +489,9 @@ def fetch_incidents(
 
     filters = [f'createdAt_gt: "{start_time}"']
 
-    if filter_escalated_incidents:
+    if only_escalated_incidents:
         filters.append('escalation__escalatedAt_exists: true')
-    if filter_open_incidents:
+    if only_open_incidents:
         filters.append('state_eq: OPEN')
 
     filters_str = ', '.join(filters)
@@ -751,7 +749,7 @@ def hoxhunt_send_incident_soc_feedback_command(client: Client, args: dict, param
 
 def hoxhunt_set_incident_sensitive_command(client: Client, args: dict, params: dict):
     incident_id = args.get('incident_id')
-    is_sensitive_bool = argToBoolean(args.get('is_sensitive') or 'false')
+    is_sensitive_bool = argToBoolean(args.get('is_sensitive') or False)
     response = client.set_incident_sensitive(incident_id, is_sensitive_bool)
     sensitive_data = {'incident_id': str(response.get('_id', '')),
                       'is_sensitive': str(response.get('hasSensitiveInformation', ''))}
