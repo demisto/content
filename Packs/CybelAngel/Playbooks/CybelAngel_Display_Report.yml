@@ -1,27 +1,13 @@
-id: 'CybelAngel - Get Attachement'
+description: 'Display Report PDF to show all image.'
+id: CybelAngel Display Report
 inputs:
-- description: |
-    Report ID
-  key: Report ID
+- description: Incident ID (Alertid) needed to retrieve the report PDF
+  key: Incident ID
   playbookInputQuery:
-  required: true
+  required: false
   value:
     simple: ${incident.alertid}
-- description: Attachment ID
-  key: Attachment ID
-  playbookInputQuery:
-  required: true
-  value:
-    simple: ${incident.filenames.0.id}
-- description: |+
-    File name for the attachment
-
-  key: File Name
-  playbookInputQuery:
-  required: true
-  value:
-    simple: ${incident.filenames.0.name}
-name: CybelAngel - Get Attachement
+name: CybelAngel Display Report
 outputs: []
 quiet: true
 starttaskid: "0"
@@ -34,25 +20,25 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "2"
+      - "1"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: 3b7c32f1-66f2-4f53-859a-3797905ebe02
+      id: 7f05244b-b9a0-499b-834e-1a8dd2f78777
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 3b7c32f1-66f2-4f53-859a-3797905ebe02
+    taskid: 7f05244b-b9a0-499b-834e-1a8dd2f78777
     timertriggers: []
     type: start
     view: |-
       {
         "position": {
-          "x": 240,
+          "x": 450,
           "y": 50
         }
       }
@@ -62,34 +48,33 @@ tasks:
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
     note: false
     quietmode: 0
     scriptarguments:
-      attachment_id:
-        simple: ${ReportFiles.id}
-      file_name:
-        simple: ${ReportFiles.name}
       report_id:
-        simple: ${inputs.Report ID}
+        simple: ${incident.alertid}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: CybelAngel
-      description: Get an attachment of a report
-      id: ec3cce83-b449-4245-84f1-1a4c777f8d03
+      brand: ""
+      description: Downloads a PDF report from CybelAngel by report ID and saves it to the War Room.
+      id: 676a9179-2f3f-4890-84e6-fa9477865718
       iscommand: true
-      name: Get attachment
-      script: CybelAngel|||cybelangel-get-report-attachment
+      name: Get Report PDF
+      script: '|||cybelangel-get-report-pdf'
       type: regular
       version: -1
-    taskid: ec3cce83-b449-4245-84f1-1a4c777f8d03
+    taskid: 676a9179-2f3f-4890-84e6-fa9477865718
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 480
+          "x": 450,
+          "y": 230
         }
       }
   "2":
@@ -98,35 +83,30 @@ tasks:
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
-    nexttasks:
-      '#none#':
-      - "1"
     note: false
-    quietmode: 2
+    quietmode: 0
     scriptarguments:
-      key:
-        simple: ReportFiles
-      value:
-        simple: ${incident.filenames}
+      EntryID:
+        simple: '${.=(val.File instanceof Array ? val.File[val.File.length-1].EntryID : val.File.EntryID)}'
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Set a value in context under the key you entered.
-      id: eb90ef46-7910-4692-8482-b5f80f7556db
-      iscommand: false
-      name: Set Array to Context
-      script: Set
+      description: Converts a PDF file to an image file.
+      id: 9cc1ed53-b0e2-4e8e-8e75-46fb7117501e
+      iscommand: true
+      name: Rasterize Report PDF
+      script: '|||rasterize-pdf'
       type: regular
       version: -1
-    taskid: eb90ef46-7910-4692-8482-b5f80f7556db
+    taskid: 9cc1ed53-b0e2-4e8e-8e75-46fb7117501e
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 260
+          "x": 450,
+          "y": 410
         }
       }
 version: -1
@@ -135,9 +115,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 525,
+        "height": 455,
         "width": 380,
-        "x": 240,
+        "x": 450,
         "y": 50
       }
     }
@@ -145,4 +125,3 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
-description: Get attachments for a specified incident report.

@@ -1,11 +1,11 @@
-id: 'CybelAngel - Update Status'
+id: CybelAngel Update Status
 inputs:
 - description: "Status can be the following:\n-open\n- in_progress\n- resolved \n- discarded"
   key: Status
   playbookInputQuery:
   required: true
   value: {}
-name: CybelAngel - Update Status
+name: CybelAngel Update Status
 outputs: []
 quiet: true
 starttaskid: "0"
