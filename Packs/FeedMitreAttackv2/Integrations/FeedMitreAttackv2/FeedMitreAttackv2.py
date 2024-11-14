@@ -118,7 +118,7 @@ class Client:
         elif self.tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
 
-        if item_type in ("Attack Pattern", "STIX Attack Pattern") and not mitre_item_json["x_mitre_is_subtechnique"]:
+        if item_type in ("Attack Pattern", "STIX Attack Pattern") and not mitre_item_json.get("x_mitre_is_subtechnique", None):
             tactics = []
             for tactic in mitre_item_json["kill_chain_phases"]:
                 if tactic.get("kill_chain_name", "") != "mitre-attack":
@@ -510,7 +510,7 @@ def get_indicators_command(client, args):
             'Type': entryTypes['note'],
             'Contents': indicators,
             'ContentsFormat': formats['json'],
-            'HumanReadable': tableToMarkdown('MITRE ATT&CK v2 Indicators:', indicators, ['value', 'score', 'type']),
+            'HumanReadable': tableToMarkdown('MITRE ATT&CK v2 Indicators:', indicators[0], ['value', 'score', 'type']),
             'ReadableContentsFormat': formats['markdown'],
             'EntryContext': {'MITRE.ATT&CK(val.value && val.value == obj.value)': indicators}
         }
@@ -536,7 +536,7 @@ def get_mitre_data_by_filter(client, mitre_filter):
     for collection in client.collections:
 
         # fetch only enterprise data
-        if collection.id != ENTERPRISE_COLLECTION_ID:
+        if collection.title.lower() != ENTERPRISE_COLLECTION_NAME:
             continue
 
         collection_url = urljoin(client.base_url, f'api/v21/collections/{collection.id}/')
