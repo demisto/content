@@ -1,7 +1,7 @@
 id: PAN-OS URL Filtering enrichment - Test
 version: -1
 name: PAN-OS URL Filtering enrichment - Test
-description: testing the !url filtering of the integration
+description: testing the !url filtering of the integration test
 starttaskid: "0"
 tasks:
   "0":
