@@ -1,13 +1,10 @@
 import itertools
 import demistomock as demisto
-from urllib3 import disable_warnings
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from datetime import datetime
 import dateparser
 import time
-
-disable_warnings()
 
 
 # CONSTANTS
