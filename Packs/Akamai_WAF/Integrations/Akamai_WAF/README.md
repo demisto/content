@@ -1783,7 +1783,7 @@ Lists available security configurations. Products: All
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Akamai.AppSecConfigAll | unknown | Akamai Security Configuration All. | 
+| Akamai.AppSecConfigAll | List | A list of dictionaries of all Application Security Configurations. | 
 
 ### akamai-list-cps-active-certificates
 
