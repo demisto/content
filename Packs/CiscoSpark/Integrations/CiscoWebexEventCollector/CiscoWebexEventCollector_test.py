@@ -176,16 +176,14 @@ def test_increase_datetime_for_next_fetch(latest_datetime_previous_fetch, expect
 """ TEST COMMAND FUNCTION """
 
 
-@pytest.mark.parametrize('client, expected_url, expected_integration_context', [
+@pytest.mark.parametrize('client, expected_url', [
     (mocked_admin_client(),
      'https://url.com/authorize?response_type=code&scope=admin_scope&client_id=1'
-     '&redirect_uri=https%3A%2F%2Fredirect.com',
-     {}),
+     '&redirect_uri=https%3A%2F%2Fredirect.com'),
     (mocked_compliance_officer_client(),
-     'https://url.com/authorize?response_type=code&scope=co_scope&client_id=1&redirect_uri=https%3A%2F%2Fredirect.com',
-     {}),
+     'https://url.com/authorize?response_type=code&scope=co_scope&client_id=1&redirect_uri=https%3A%2F%2Fredirect.com'),
 ])
-def test_oauth_start(mocker, client, expected_url, expected_integration_context):
+def test_oauth_start(client, expected_url):
     """
         Given:
             - An AdminClient and a ComplianceOfficerClient.
