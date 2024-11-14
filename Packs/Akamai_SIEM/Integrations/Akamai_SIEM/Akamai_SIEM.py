@@ -529,7 +529,8 @@ def main():  # pragma: no cover
                 if events:
                     demisto.info(f"Sending events to xsiam with latest event time is: {events[-1]['_time']}")
                     send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
-                set_integration_context({"offset": offset, "hashed_events_from_previous_run": list(hashed_events_from_previous_run)})
+                set_integration_context({"offset": offset,
+                                         "hashed_events_from_previous_run": list(hashed_events_from_previous_run)})
             demisto.updateModuleHealth({'eventsPulled': (total_events_count or 0)})
             next_run = {}
             if total_events_count >= limit:
