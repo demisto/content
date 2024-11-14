@@ -31,7 +31,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
     @staticmethod
-    def get_token_and_set_headers(base_url: str, auth: tuple, verify: bool):
+    def get_token_and_set_headers(base_url: str, auth: tuple, verify: bool) -> dict:
         """
         Get JWT token by authentication and set headers.
 
@@ -40,7 +40,10 @@ class Client(BaseClient):
             auth (tuple): credentials for authentication.
 
         Returns:
-             headers with token.
+            headers with token.
+
+        Raises:
+            DemistoException if authentication request was not successful.
         """
         try:
             data = {'username': auth[0], 'password': auth[1], 'token': True}
@@ -53,7 +56,8 @@ class Client(BaseClient):
             return {'Authorization': f'Bearer {token}', 'content-type': 'application/json'}
 
         except requests.exceptions.HTTPError:
-            raise ValueError('Authentication failed. Please check the "Qualys API Platform URL" parameter and access credentials')
+            raise DemistoException('Authentication failed. Verify the Qualys API Platform URL, '
+                                   'access credentials, and other connection parameters.')
 
     def incidents_list_test(self):
         """
