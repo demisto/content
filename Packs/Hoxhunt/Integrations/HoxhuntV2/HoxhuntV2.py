@@ -323,8 +323,6 @@ def http_error_handler(res):
 class Client(BaseClient):
     def __init__(self, base_url: str, headers: dict, proxy: bool = False, verify: bool = False):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
-        self._headers = headers
-        self._base_url = base_url
 
     def query(self, data: str, variables=None) -> GqlResult:
         '''
