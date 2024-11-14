@@ -171,6 +171,19 @@ CAMPAIGN_INCIDENT_TYPE_NAME = "Hoxhunt Campaign"
 USER_ACTED_TYPE_NAME = "Hoxhunt User Acted"
 BEC_TYPE_NAME = "Hoxhunt BEC"
 
+HOXHUNT_STATE_TO_REMOTE_DATA_ENTRY_MAP = {
+    'RESOLVED': {
+        'Type': EntryType.NOTE,
+        'Contents': {'closeReason': 'Incident was resolved in Hoxhunt platform', 'dbotIncidentClose': True},
+        'ContentsFormat': EntryFormat.JSON,
+    },
+    'OPEN': {
+        'Type': EntryType.NOTE,
+        'Contents': {'dbotIncidentReopen': True},
+        'ContentsFormat': EntryFormat.JSON,
+    }
+}
+
 INCIDENT_MAPPING_FIELDS = {
     "state": {
         "description": "incident can be either open or resolved",
@@ -565,23 +578,9 @@ def get_remote_data_command(client: Client, args: dict, params: dict):
         new_incident_data['id'] = new_incident_data['_id']
 
     entries = []
-
-    entry_actions = {
-        'RESOLVED': {
-            'Type': EntryType.NOTE,
-            'Contents': {'closeReason': 'Incident was resolved in Hoxhunt platform', 'dbotIncidentClose': True},
-            'ContentsFormat': EntryFormat.JSON,
-        },
-        'OPEN': {
-            'Type': EntryType.NOTE,
-            'Contents': {'dbotIncidentReopen': True},
-            'ContentsFormat': EntryFormat.JSON,
-        }
-    }
-
     state = new_incident_data.get('state')
-    if state in entry_actions:
-        entries.append(entry_actions[state])
+    if state in HOXHUNT_STATE_TO_REMOTE_DATA_ENTRY_MAP:
+        entries.append(HOXHUNT_STATE_TO_REMOTE_DATA_ENTRY_MAP[state])
 
     return GetRemoteDataResponse(new_incident_data, entries)
 
