@@ -19,22 +19,22 @@ description: |-
 
   Early Containment:
 
-  - Identify if an agent prevention rule was triggered.
-    - If triggered in **block mode**, proceed to endpoint isolation.
-    - If triggered in **report mode**, notify the customer to consider updating the rule to **prevent mode**.
-    - If no rule was triggered, proceed with further checks.
+  - Identify whether an agent prevention rule was triggered for the same process ID, which means the activity was blocked.
+    - **If triggered in prevent mode**: This indicates a high-confidence verdict, and the playbook proceeds with endpoint isolation.
+    - **If triggered in report mode**: This also indicates a high-confidence verdict. The playbook will notify the customer, advising an update to **prevent mode** for better protection in the future and will proceed with the investigation.
+    - **If no rule is triggered**: The playbook will continue with additional checks to ensure thorough assessment.
 
   Investigation:
 
   - Check for commonly triggered alerts that often precede process injection:
-    - If found, initiate remediation actions.
+    - If found, initiate containment.
     - If not found, proceed with additional checks.
   - Analyze if any alerts align with MITRE ATT&CK tactics **TA0004 (Privilege Escalation)** and **TA0005 (Defense Evasion)**:
-    - If matching tactics are found, initiate remediation actions.
+    - If matching tactics are found, initiate containment.
     - If not, proceed with further investigation.
   - Determine if the causality (parent) process is signed:
     - If signed by a trusted authority, close the alert.
-    - If unsigned, escalate for manual approval for remediation actions.
+    - If unsigned, escalate for manual approval for containment.
 
   Containment:
 
@@ -71,7 +71,7 @@ tasks:
       {
         "position": {
           "x": -300,
-          "y": 30
+          "y": 260
         }
       }
     note: false
@@ -102,7 +102,7 @@ tasks:
       {
         "position": {
           "x": -300,
-          "y": 170
+          "y": 400
         }
       }
     note: false
@@ -154,7 +154,7 @@ tasks:
       {
         "position": {
           "x": -300,
-          "y": 305
+          "y": 535
         }
       }
     note: false
@@ -239,7 +239,7 @@ tasks:
       {
         "position": {
           "x": -300,
-          "y": 470
+          "y": 700
         }
       }
     note: false
@@ -308,12 +308,14 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "17"
-      "yes":
+      - "5"
+      Behavioral Alerts:
       - "10"
+      MITRE Tactic:
+      - "14"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: Behavioral Alerts
       condition:
       - - operator: startWith
           left:
@@ -333,12 +335,30 @@ tasks:
             value:
               simple: Unsigned process injecting into a Windows system binary with no command line
           ignorecase: true
+    - label: MITRE Tactic
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: foundIncidents.CustomFields.mitreattcktactic
+            iscontext: true
+          right:
+            value:
+              simple: TA0004 - Privilege Escalation
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: foundIncidents.CustomFields.mitreattcktactic
+            iscontext: true
+          right:
+            value:
+              simple: TA0005 - Defense Evasion
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 560,
-          "y": 790
+          "y": 900
         }
       }
     note: false
@@ -592,61 +612,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 790
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: cd3ec521-6d66-44e7-8fef-c27e3a4edf94
-    type: condition
-    task:
-      id: cd3ec521-6d66-44e7-8fef-c27e3a4edf94
-      version: -1
-      name: Were known preceding MITRE tactics alerts detected?
-      description: Search for commonly triggered MITRE tactics preceding the injection alert.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "10"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: foundIncidents.CustomFields.mitreattcktactic
-            iscontext: true
-          right:
-            value:
-              simple: TA0004 - Privilege Escalation
-          ignorecase: true
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: foundIncidents.CustomFields.mitreattcktactic
-            iscontext: true
-          right:
-            value:
-              simple: TA0005 - Defense Evasion
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 560,
-          "y": 980
+          "y": 900
         }
       }
     note: false
@@ -868,25 +834,23 @@ view: |-
       "12_13_Isolate": 0.42,
       "12_8_#default#": 0.44,
       "14_10_Yes": 0.37,
-      "17_10_yes": 0.22,
-      "17_5_#default#": 0.4,
       "18_19_#error#": 0.65,
       "21_12_#default#": 0.3,
       "21_8_Weak": 0.32,
-      "4_12_Blocked": 0.32,
+      "4_12_Blocked": 0.1,
       "4_15_Reported": 0.66,
       "4_7_#default#": 0.81,
       "5_14_#default#": 0.4,
       "5_20_Signed": 0.12,
-      "7_10_yes": 0.2,
-      "7_17_#default#": 0.5
+      "7_10_Behavioral Alerts": 0.46,
+      "7_5_#default#": 0.64
     },
     "paper": {
       "dimensions": {
-        "height": 2785,
+        "height": 2555,
         "width": 1660,
         "x": -300,
-        "y": 30
+        "y": 260
       }
     }
   }

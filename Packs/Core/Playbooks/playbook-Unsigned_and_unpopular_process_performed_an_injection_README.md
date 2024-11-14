@@ -15,22 +15,22 @@ Triage:
 
 Early Containment:
 
-- Identify if an agent prevention rule was triggered.
-  - If triggered in **block mode**, proceed to endpoint isolation.
-  - If triggered in **report mode**, notify the customer to consider updating the rule to **prevent mode**.
-  - If no rule was triggered, proceed with further checks.
+- Identify whether an agent prevention rule was triggered for the same process ID, which means the activity was blocked.
+  - **If triggered in prevent mode**: This indicates a high-confidence verdict, and the playbook proceeds with endpoint isolation.
+  - **If triggered in report mode**: This also indicates a high-confidence verdict. The playbook will notify the customer, advising an update to **prevent mode** for better protection in the future and will proceed with the investigation.
+  - **If no rule is triggered**: The playbook will continue with additional checks to ensure thorough assessment.
 
 Investigation:
 
 - Check for commonly triggered alerts that often precede process injection:
-  - If found, initiate remediation actions.
+  - If found, initiate containment.
   - If not found, proceed with additional checks.
 - Analyze if any alerts align with MITRE ATT&CK tactics **TA0004 (Privilege Escalation)** and **TA0005 (Defense Evasion)**:
-  - If matching tactics are found, initiate remediation actions.
+  - If matching tactics are found, initiate containment.
   - If not, proceed with further investigation.
 - Determine if the causality (parent) process is signed:
   - If signed by a trusted authority, close the alert.
-  - If unsigned, escalate for manual approval for remediation actions.
+  - If unsigned, escalate for manual approval for containment.
 
 Containment:
 
