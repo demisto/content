@@ -236,7 +236,7 @@ class Client(BaseClient):
 
     def get_computer(self, args: dict, next_page: str) -> dict:
         """
-        Fetches computer from the Jamf Protect API, with date filter
+        Fetches computer from the Jamf Protect API, with date filter.
 
         Args:
             args (dict): The arguments to be used in the GraphQL query.
