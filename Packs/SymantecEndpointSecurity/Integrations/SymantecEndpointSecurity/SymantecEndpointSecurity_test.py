@@ -331,8 +331,6 @@ def test_sleep_if_necessary(mocker: MockerFixture, start_run: int, end_run: int,
     Then:
         - Ensure that the sleep function is called with the appropriate interval value or not called at all if unnecessary.
     """
-    mocker.patch.object(Client, "_update_access_token_in_headers")
     mock_sleep = mocker.patch("SymantecEndpointSecurity.time.sleep")
-    client = mock_client()
-    sleep_if_necessary(client, start_run, end_run)
+    sleep_if_necessary(end_run - start_run)
     assert mock_sleep.call_count == call_count

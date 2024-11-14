@@ -56,7 +56,6 @@ class Client(BaseClient):
         self.token = token
         self.stream_id = stream_id
         self.channel_id = channel_id
-        self.fetch_interval = FETCH_INTERVAL
 
         super().__init__(
             base_url=base_url,
@@ -117,21 +116,16 @@ class Client(BaseClient):
         return json.loads(res)
 
 
-def sleep_if_necessary(client, start_run: float, end_run: float) -> None:
+def sleep_if_necessary(last_run_duration: float) -> None:
     """
     Manages the fetch interval by sleeping if necessary.
 
-    This function calculates the fetch runtime against client.fetch_interval.
-    If the runtime is less than the client.fetch_interval time, it will sleep
-    for the time difference between client.fetch_interval and the fetch runtime.
+    This function calculates the fetch runtime against FETCH_INTERVAL.
+    If the runtime is less than the FETCH_INTERVAL time, it will sleep
+    for the time difference between FETCH_INTERVAL and the fetch runtime.
     Otherwise, the next fetch will occur immediately.
-
-    Args:
-        client: The client object containing the fetch_interval attribute.
-        start_run: The start time of the fetch operation.
-        end_run: The end time of the fetch operation.
     """
-    fetch_sleep = client.fetch_interval - (end_run - start_run)
+    fetch_sleep = FETCH_INTERVAL - last_run_duration
     if fetch_sleep > 0:
         demisto.debug(f"Sleeping for {fetch_sleep} seconds")
         time.sleep(fetch_sleep)
@@ -430,7 +424,7 @@ def perform_long_running_loop(client: Client):
         # Used to calculate the duration of the fetch run.
         end_timestamp = time.time()
 
-        sleep_if_necessary(client, start_timestamp, end_timestamp)
+        sleep_if_necessary(end_timestamp - start_timestamp)
 
 
 def test_module() -> str:
