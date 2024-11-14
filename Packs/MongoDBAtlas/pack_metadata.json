@@ -1,6 +1,6 @@
 {
     "name": "MongoDB Atlas",
-    "description": "TODO",
+    "description": "Cloud-based database service for deploying, managing, and scaling MongoDB clusters.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -15,7 +15,6 @@
         "event collector"
     ],
     "marketplaces": [
-        "xsoar",
         "marketplacev2"
     ],
     "defaultDataSource": "MongoDBAtlasCollector"
