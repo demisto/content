@@ -15,7 +15,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 VENDOR = 'MongoDB'
 PRODUCT = 'Atlas'
 MAX_NUMBER_OF_PAGES = 5
-# last_run = {}
 
 ''' CLIENT CLASS '''
 
@@ -137,6 +136,12 @@ class Client(BaseClient):
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def check_fetch_limit(fetch_limit):
+    if int(fetch_limit) < 1 or int(fetch_limit) > 2500:
+        message = 'Invalid maximum number of events per fetch, should be between 1 and 2500.'
+        return_error(message)
 
 
 ################ ALERTS AND EVENTS FUNCTIONS ################
@@ -295,7 +300,9 @@ def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict):
 
     demisto.debug('Start to fetch alerts')
     page_link = last_run.get('page_link', "")
-    response = get_page_from_last_run_for_alerts(client, page_link)  # get the last page or get the first page
+
+    response = get_page_from_last_run_for_alerts(client, page_link)  # get the last page or the first page
+
     links = response.get('links')
     results = response.get('results')
 
@@ -578,6 +585,8 @@ def fetch_events(client: Client, fetch_limit: int):
 
 def get_events(client: Client, args):
     fetch_limit = int(args.get('limit'))
+    check_fetch_limit(fetch_limit)
+
     last_run = demisto.getLastRun()
 
     alerts_output, _ = fetch_alert_type(client, fetch_limit, last_run)

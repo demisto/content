@@ -1,9 +1,10 @@
-MongoDBAtlas is integration that supports fetching and managing alerts and events within XSIAM.
+MongoDBAtlas is integration that supports fetching and managing alerts and events within Cortex XSIAM.
+
 This integration was integrated and tested with version 2.0 of MongoDB Atlas.
 
-## Configure MongoDBAtlas on Cortex XSOAR
+## Configure MongoDBAtlas on Cortex XSIAM
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Configurations** > **Automation & Feed Integrations**.
 2. Search for MongoDBAtlas.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -17,7 +18,7 @@ This integration was integrated and tested with version 2.0 of MongoDB Atlas.
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+4. Click **Test** to validate the URLs, keys, and connection.
 
 
 ## Additional Information
@@ -48,8 +49,10 @@ Retrieves a list of events from the MongoDB Atlas instance.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | Set this argument to True in order to create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum number of events to return. | Required | 
+| limit | Maximum number of events to return. Value range: 1-2500.| Required | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path**     | **Type** | **Description** |
+|--------------|------| --- |
+| MongoDBAtlas | List | The list of the events and the alerts. | 

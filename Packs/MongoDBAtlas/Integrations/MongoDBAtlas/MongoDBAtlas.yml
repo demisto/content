@@ -48,7 +48,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: 'MongoDBAtlas is integration that supports fetching and managing alerts and events within XSIAM.'
+description: 'MongoDBAtlas is integration that supports fetching and managing alerts and events within Cortex XSIAM.'
 display: MongoDBAtlas
 name: MongoDBAtlasEventCollector
 script:
@@ -64,13 +64,13 @@ script:
       - 'true'
       - 'false'
       required: true
-    - description: Maximum number of events to return.
+    - description: 'Maximum number of events to return. Value range: 1-2500.'
       name: limit
       required: true
     outputs:
       - contextPath: MongoDBAtlas
         description: The list of the events and the alerts.
-        type: String
+        type: List
   runonce: false
   script: '-'
   type: python

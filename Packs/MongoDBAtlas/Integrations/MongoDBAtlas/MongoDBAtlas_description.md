@@ -15,16 +15,14 @@ If it is not already displayed, select the organization that contains your desir
     - Click Next.
     - Copy and save the Public Key. The public key acts as the username when making API requests.
     - Copy and save the Private Key. The private key acts as the password when making API requests.
-WARNING
-Save Private Key. The Private Key is only shown once: on this page. Click the Copy button to add the Private Key to the clipboard. Save and secure both the Public and Private Keys.
-8. Add an API Access List Entry.
-9. Click Add Access List Entry.
-10. Enter an IP address from which you want Atlas to accept API requests for this API Key. You can also click Use Current IP Address if the host you are using to access Atlas will also make API requests using this API Key.
-11. Click Save.
-12. Click Done.
+    - *WARNING* - Save the Private Key! The Private Key is only shown once, on this page. Click the Copy button to add the Private Key to the clipboard. Save and secure both the Public and Private Keys.
+8. Add an API Access List Entry by clicking Add Access List Entry.
+9. Enter an IP address from which you want Atlas to accept API requests for this API Key. You can also click Use Current IP Address if the host you are using to access Atlas will also make API requests using this API Key.
+10. Click Save.
+11. Click Done.
 
 ### IMPORTANT
 
-Customer needs to allow access from XSIAM to mongoDB via UI:
-https://cloud.mongodb.com/v2/<customer organizationid>#/security/network/accessList 
-by adding an XSIAM IP address.
+Customer needs to allow access from Cortex XSIAM to mongoDB via UI:
+https://cloud.mongodb.com/v2/<customer_organization_id>#/security/network/accessList 
+by adding an Cortex XSIAM IP address.
