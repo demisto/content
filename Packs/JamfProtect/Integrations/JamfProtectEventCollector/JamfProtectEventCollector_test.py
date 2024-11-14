@@ -151,22 +151,22 @@ def test_nextTrigger(
     client = Client(base_url=MOCK_BASEURL, verify=False, proxy=False, client_id=MOCK_CLIENT_ID,
                     client_password=MOCK_CLIENT_PASSWORD)
 
-    _, _, _, next_run = fetch_events(client, 1, 1, 1)
+    _, _, _, next_run = fetch_events(client, 1, 1, 1, True)
     if with_alert_next_page:
         assert next_run.get("nextTrigger") == "0"
-        assert next_run.get("alert").get("next_page") == "example_next_page"
+        assert next_run.get("alert", {}).get("next_page") == "example_next_page"
     if not with_alert_next_page:
-        assert not next_run.get("alert").get("next_page")
+        assert not next_run.get("alert", {}).get("next_page")
     if with_audit_next_page:
         assert next_run.get("nextTrigger") == "0"
-        assert next_run.get("audit").get("next_page") == "example_next_page"
+        assert next_run.get("audit", {}).get("next_page") == "example_next_page"
     if not with_audit_next_page:
-        assert not next_run.get("audit").get("next_page")
+        assert not next_run.get("audit", {}).get("next_page")
     if with_computer_next_page:
         assert next_run.get("nextTrigger") == "0"
-        assert next_run.get("computer").get("next_page") == "example_next_page"
+        assert next_run.get("computer", {}).get("next_page") == "example_next_page"
     if not with_computer_next_page:
-        assert not next_run.get("computer").get("next_page")
+        assert not next_run.get("computer", {}).get("next_page")
 
 
 def test_next_trigger(mocker):
@@ -182,4 +182,4 @@ def test_next_trigger(mocker):
                     client_password=MOCK_CLIENT_PASSWORD)
     mocker.patch('JamfProtectEventCollector.get_events_alert_type', return_value=([], {}))
     mocker.patch('JamfProtectEventCollector.get_events_audit_type', return_value=([], {}))
-    fetch_events(client, 1, 1, 1)
+    fetch_events(client, 1, 1, 1, False)

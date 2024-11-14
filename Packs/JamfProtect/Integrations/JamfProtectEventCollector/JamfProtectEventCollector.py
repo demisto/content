@@ -236,7 +236,7 @@ class Client(BaseClient):
 
     def get_computer(self, args: dict, next_page: str) -> dict:
         """
-        Fetches computer from the Jamf Protect API.
+        Fetches computer from the Jamf Protect API, with date filter
 
         Args:
             args (dict): The arguments to be used in the GraphQL query.
@@ -321,6 +321,87 @@ class Client(BaseClient):
             variables["next"] = next_page
         return self.graphql(query, variables)
 
+    def get_all_computers(self, args: dict, next_page: str) -> dict:
+        """
+        Fetches a complete list of computers from the Jamf Protect API, without a date filter.
+
+        Args:
+            args (dict): This argument is not used in this function, but is kept for compatibility
+                         with similar client functions.
+            next_page (str): The next page token for pagination.
+
+        Returns:
+            dict: The response from the API.
+        """
+        query = """
+        query listComputers($page_size: Int, $next: String ) {
+            listComputers( input: {
+                    pageSize: $page_size  next: $next
+                }
+            ) {
+            items {
+                serial
+                uuid
+                provisioningUDID
+                updated
+                checkin
+                connectionStatus
+                lastConnection
+                lastConnectionIp
+                lastDisconnection
+                lastDisconnectionReason
+                insightsUpdated
+                insightsStatsFail
+                insightsStatsPass
+                insightsStatsUnknown
+                version
+                signaturesVersion
+                installType
+                plan {
+                    hash
+                    id
+                    name
+                    logLevel
+                    }
+                scorecard {
+                    uuid
+                    label
+                    section
+                    pass
+                    tags
+                    enabled
+                    }
+                osMajor
+                osMinor
+                osPatch
+                osString
+                arch
+                certid
+                configHash
+                created
+                hostName
+                kernelVersion
+                memorySize
+                modelName
+                label
+                webProtectionActive
+                fullDiskAccess
+                tags
+                }
+                pageInfo {
+                    next
+                    total
+                }
+            }
+        }
+        """
+        variables: dict[str, Any] = {
+            "page_size": COMPUTER_PAGE_SIZE
+        }
+        if next_page:
+            variables["next"] = next_page
+        return self.graphql(query, variables)
+
     def get_audits(self, args: dict, next_page: str) -> dict:
         """
         Fetches audit logs from the Jamf Protect API.
@@ -382,7 +463,7 @@ def test_module(client: Client) -> str:
     Returns:
         str: Returns "ok" if the client is able to interact with the API successfully, raises an exception otherwise.
     """
-    fetch_events(client, max_fetch_audits=1, max_fetch_alerts=1, max_fetch_computer=1)
+    fetch_events(client, max_fetch_audits=1, max_fetch_alerts=1, max_fetch_computer=1, fetch_all_computers=False)
     return "ok"
 
 
@@ -451,7 +532,9 @@ def get_events_alert_type(client: Client, start_date: str, max_fetch: int, last_
     return events, new_last_run_without_next_page
 
 
-def get_events_computer_type(client: Client, start_date: str, max_fetch: int, last_run: dict) -> tuple[list[dict], dict]:
+def get_events_computer_type(
+    client: Client, start_date: str, max_fetch: int, last_run: dict, fetch_all_computers: bool
+) -> tuple[list[dict], dict]:
     """
     Fetches computer type events from the Jamf Protect API within a specified date range.
 
@@ -473,10 +556,14 @@ def get_events_computer_type(client: Client, start_date: str, max_fetch: int, la
     """
     created, current_date = calculate_fetch_dates(start_date, last_run=last_run, last_run_key="computer")
     command_args = {"created": created}
-    client_event_type_func = client.get_computer
     next_page = last_run.get("computer", {}).get("next_page", "")
+    if fetch_all_computers and not last_run:
+        client_event_type_func = client.get_all_computers
+        demisto.debug("Fetching all computers")
+    else:
+        client_event_type_func = client.get_computer
+        demisto.debug(f"Fetching computers since {created}")
 
-    demisto.debug(f"Fetching computers since {created}")
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     for event in events:
         event["source_log_type"] = "computers"
@@ -606,8 +693,8 @@ def calculate_fetch_dates(start_date: str, last_run_key: str, last_run: dict, en
     return start_date, end_date
 
 
-def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, max_fetch_computer: int, start_date_arg: str = "",
-                 end_date_arg: str = "") -> EventResult:
+def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, max_fetch_computer: int, fetch_all_computers: bool,
+                 start_date_arg: str = "", end_date_arg: str = "") -> EventResult:
     """
     Fetches events from the Jamf Protect API within a specified date range.
 
@@ -639,7 +726,9 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
         audit_events, audit_next_run = get_events_audit_type(client, start_date_arg, end_date_arg, max_fetch_audits, last_run)
     if no_next_pages or computer_next_page:
         # The only case we don't trigger the computer event type cycle is when have only the alert and audit next page token.
-        computer_events, computer_next_run = get_events_computer_type(client, start_date_arg, max_fetch_computer, last_run)
+        computer_events, computer_next_run = get_events_computer_type(
+            client, start_date_arg, max_fetch_computer, last_run, fetch_all_computers
+        )
     next_run: dict[str, Any] = {"alert": alert_next_run, "audit": audit_next_run, 'computer': computer_next_run}
     if "next_page" in (alert_next_run | audit_next_run | computer_next_run):
         # Will instantly re-trigger the fetch command.
@@ -708,7 +797,8 @@ def get_events_command(
         max_fetch_audits=limit,
         max_fetch_computer=limit,
         start_date_arg=start_date,
-        end_date_arg=end_date
+        end_date_arg=end_date,
+        fetch_all_computers=False
     )
     events_with_time = {event_type: add_time_field(events[:limit])
                         for event_type, events in event_result.as_dict().items() if events}
@@ -762,6 +852,7 @@ def main() -> None:  # pragma: no cover
         max_fetch_audits = arg_to_number(params.get('max_fetch_audits')) or DEFAULT_MAX_FETCH_AUDIT
         max_fetch_alerts = arg_to_number(params.get('max_fetch_alerts')) or DEFAULT_MAX_FETCH_ALERT
         max_fetch_computer = arg_to_number(params.get('max_fetch_computer')) or DEFAULT_MAX_FETCH_COMPUTER
+        fetch_all_computers = argToBoolean(params.get('fetch_all_computers')) or False
 
         demisto.debug(f'Command being called is {command}')
 
@@ -785,7 +876,8 @@ def main() -> None:  # pragma: no cover
             alert_events, audit_events, computer_events, new_last_run = fetch_events(client=client,
                                                                                      max_fetch_alerts=max_fetch_alerts,
                                                                                      max_fetch_audits=max_fetch_audits,
-                                                                                     max_fetch_computer=max_fetch_computer
+                                                                                     max_fetch_computer=max_fetch_computer,
+                                                                                     fetch_all_computers=fetch_all_computers
                                                                                      )
             events = alert_events + audit_events + computer_events
             if events:

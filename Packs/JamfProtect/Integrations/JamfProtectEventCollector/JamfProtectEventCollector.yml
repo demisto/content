@@ -56,6 +56,13 @@ configuration:
   type: 0
   advanced: true
   section: Collect
+- display: Fetch all computers
+  name: fetch_all_computers
+  defaultvalue: "false"
+  type: 8
+  required: false
+  advanced: true
+  section: Collect
 description: Use this integration to fetch audit logs, alerts and computer events from Jamf Protect as events in Cortex XSIAM.
 display: Jamf Protect Event Collector
 name: Jamf Protect Event Collector
