@@ -1039,7 +1039,7 @@ def main() -> None:
             incidents = fetch_incidents(client, params, demisto.getLastRun())
             demisto.incidents(incidents)
             set_next_newer_than(incidents)
-        if command == "test-module":
+        elif command == "test-module":
             return_results(test_module(client, params))
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
