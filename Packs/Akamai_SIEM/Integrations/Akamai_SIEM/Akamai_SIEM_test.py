@@ -318,6 +318,8 @@ class TestCommandsFunctions:
         assert total_events_count == 247
         for event_not_in_list in events_not_in_list:
             assert event_not_in_list not in events
+        ctx = {"offset": offset, "hashed_events_from_previous_run": list(hashed)}
+        assert isinstance(json.dumps(ctx), str)
 
 
 @pytest.mark.parametrize(
