@@ -537,70 +537,6 @@ def is_closed_in_xsoar(xsoar_status: str) -> bool:
     return xsoar_status == IncidentStatus.DONE
 
 
-def dict_to_query_options_str(opts: dict) -> str:
-    return ', '.join(f"{k}: {v}" for k, v in opts.items())
-
-
-def query_options_str_to_dict(opts: str | None):
-    if not opts:
-        return {}
-
-    pattern = re.compile(r'''
-        (\w+)                           # Key
-        \s*:\s*
-        (                               # Value
-            "(?:[^"\\]|\\.)*"           # Double-quoted string
-            |
-            '(?:[^'\\]|\\.)*'           # Single-quoted string
-            |
-            \[[^\]]*\]                  # List enclosed in []
-            |
-            \{(?:\{[^}]*\}|[^}])*\}     # Dict enclosed in {}, allowing nested {}
-            |
-            [^,]+                       # Unquoted value
-        )
-        \s*(?:,|$)
-    ''', re.VERBOSE | re.DOTALL)
-
-    matches = pattern.findall(opts)
-    return {k: v.strip() for k, v in matches}
-
-
-def apply_defaults(opts: dict, defaults: dict) -> dict:
-    options = defaults.copy()
-
-    if "filter" not in opts or "filter" not in defaults:
-        options.update(opts)
-        return options
-
-    default_filter_dict = query_options_str_to_dict(defaults["filter"][1:-1])
-    opts_filter_dict = query_options_str_to_dict(opts["filter"][1:-1])
-    merged_filter = {**default_filter_dict, **opts_filter_dict}
-    options.update(opts)
-
-    options["filter"] = f'{{{dict_to_query_options_str(merged_filter)}}}'
-
-    return options
-
-
-def limit_max_100(opts: dict) -> dict:
-    options = opts.copy()
-    options['first'] = min(int(options['first']), 100)
-    return options
-
-
-def apply_threats_options_defaults(incident_id: str, opts: str | None) -> str:
-    options = query_options_str_to_dict(opts)
-    options = apply_defaults(options, {
-        "first": 50,
-        "sort": "createdAt_DESC",
-        "filter": f'{{incidentIds_in: ["{incident_id}"]}}'
-    })
-    options = limit_max_100(options)
-
-    return dict_to_query_options_str(options)
-
-
 ''' COMMANDS '''
 
 
@@ -753,20 +689,24 @@ def hoxhunt_get_current_user_command(client: Client, args: dict, params: dict):
 
 
 def hoxhunt_get_incident_threats_command(client: Client, args: dict, params: dict):
-    incident_id = args.get('incident_id', '')
+    incident_id = args.get('incident_id')
 
     if not incident_id:
         raise Exception("incident_id must be present")
 
-    query_options = apply_threats_options_defaults(incident_id, args.get('query_options'))
+    query_filter = args.get('filter') or ''
+    query_sort = args.get('sort') or 'createdAt_DESC'
+    query_limit = min(int(args.get('limit') or 50), 100)
 
-    query = f'{{threats({query_options}){{{GET_THREATS_FIELDS}}}}}'
-    results = client.query(query)
+    query_options = f'filter: {{{query_filter}}}, sort: {query_sort}, first: {query_limit}'
+    query = f'{{incidents(filter: {{_id_eq: "{incident_id}"}}) {{ threats({query_options}) {{ {GET_THREATS_FIELDS} }} }}}}'
 
-    if results.has_errors():
-        raise Exception(results.errors)
+    result = client.query(query)
 
-    threats = results.data.get('threats', [])
+    if result.has_errors():
+        raise Exception(result.errors)
+
+    threats = result.data.get('incidents', [])[0].get('threats', [])
 
     return create_output(threats, 'Threats', '_id')
 

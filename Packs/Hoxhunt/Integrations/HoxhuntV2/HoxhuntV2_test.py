@@ -110,56 +110,6 @@ def incident_2():
 def mock_incidents(incident_1, incident_2):
     return [incident_1, incident_2]
 
-# options validation
-
-
-@pytest.mark.parametrize(
-    "options_str, expected_output",
-    [
-        (
-            "",
-            'first: 50, sort: createdAt_DESC, filter: {incidentIds_in: ["test_id"]}'
-        ),
-        (
-            "filter: {field_eq: 123}",
-            'first: 50, sort: createdAt_DESC, filter: {incidentIds_in: ["test_id"], field_eq: 123}'
-        ),
-        (
-            'first: 30, sort: severity_ASC',
-            'first: 30, sort: severity_ASC, filter: {incidentIds_in: ["test_id"]}'
-        ),
-        (
-            "first: 150",
-            'first: 100, sort: createdAt_DESC, filter: {incidentIds_in: ["test_id"]}'
-        ),
-        (
-            'sort: createdAt_ASC, filter: {AND: [{state_eq: OPEN}, {threatCount_gte: 100}]}',
-            (
-                'first: 50, sort: createdAt_ASC, filter: {incidentIds_in: ["test_id"], '
-                'AND: [{state_eq: OPEN}, {threatCount_gte: 100}]}'
-            )
-        ),
-        (
-            "first: 20, extra_key: extra_value",
-            'first: 20, sort: createdAt_DESC, filter: {incidentIds_in: ["test_id"]}, extra_key: extra_value'
-        ),
-        (
-            "sort: [createdAt_ASC, name_DESC]",
-            'first: 50, sort: [createdAt_ASC, name_DESC], filter: {incidentIds_in: ["test_id"]}'
-        ),
-        (
-            'ooga: "booga,jooga"',
-            'first: 50, sort: createdAt_DESC, filter: {incidentIds_in: ["test_id"]}, ooga: "booga,jooga"'
-        ),
-        (
-            'ooga: "booga"',
-            'first: 50, sort: createdAt_DESC, filter: {incidentIds_in: ["test_id"]}, ooga: "booga"'
-        ),
-    ]
-)
-def test_parse_query_options(options_str, expected_output):
-    assert apply_threats_options_defaults("test_id", options_str) == expected_output
-
 #  GqlResult
 
 
@@ -253,7 +203,7 @@ def test_http_error_handler_json_error():
                     }
                 ]
             },
-            None,
+            {},
             [
                 'An error occurred'
             ]
@@ -644,7 +594,7 @@ def test_get_modified_remote_data_command_no_incidents(mock_client, mock_demisto
         (
             hoxhunt_get_incident_threats_command,
             {"incident_id": "123"},
-            {'data': {'threats': [{'id': 't1', 'name': 'Threat 1'}]}},
+            {'data': {'incidents': [{'threats': [{'id': 't1', 'name': 'Threat 1'}]}]}},
             [{'id': 't1', 'name': 'Threat 1'}],
         ),
         (

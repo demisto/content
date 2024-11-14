@@ -91,9 +91,14 @@ script:
     - name: incident_id
       required: true
       description: The ID of the Hoxhunt incident the threats will be from.
-    - name: query_options
-      description: >
-        Optional string for query options. Inserted directly into the query with following validation in place: first (max 100, default 50), sort (default createdAt_DESC), and filter (default {}).  Example: `first: 10, filter: {state_eq: OPEN}, sort: createdAt_DESC`  Refer to the Hoxhunt API documentation for more information.
+    - name: sort
+      description: Sorting strategy to use when returning threats from API. Defaults to createdAt_DESC. See Hoxhunt API documentation for more information.
+      type: string
+    - name: limit
+      description: Limit the amount of threats returned. Defaults to 50, maximum is 100.
+      type: number
+    - name: filter
+      description: Filter string to use to pick only threats of interest. See Hoxhunt API documentation for more information.
       type: string
     outputs:
     - contextPath: Hoxhunt.Threats

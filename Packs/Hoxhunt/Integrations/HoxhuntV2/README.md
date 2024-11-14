@@ -68,7 +68,9 @@ Gets threats from Hoxhunt.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The ID of the Hoxhunt incident the threats will be from. | Required | 
-| query_options | Optional string for query options. Inserted directly into the query with following validation in place: first (max 100, default 50), sort (default createdAt_DESC), and filter (default {}).  Example: `first: 10, filter: {state_eq: OPEN}, sort: createdAt_DESC`  Refer to the Hoxhunt API documentation for more information.<br/>. | Optional | 
+| sort | Sorting strategy to use when returning threats from API. Defaults to createdAt_DESC. See Hoxhunt API documentation for more information. | Optional | 
+| limit | Limit the amount of threats returned. Defaults to 50, maximum is 100. | Optional | 
+| filter | Filter string to use to pick only threats of interest. See Hoxhunt API documentation for more information. | Optional | 
 
 #### Context Output
 
@@ -78,7 +80,7 @@ Gets threats from Hoxhunt.
 
 ##### Command Example
 
-```!hoxhunt-incident-threats-get incident_id="12345" query_options="first: 5, sort: createdAt_DESC```
+```!hoxhunt-incident-threats-get incident_id="12345" limit=5 sort="createdAt_DESC"```
 
 ### hoxhunt-incident-note-add
 
