@@ -651,13 +651,13 @@ def prepare_incidents_from_compromised_credentials_data(response: dict, next_run
     severity = demisto.params().get('severity', DEFAULT_SEVERITY)
 
     for hit in hits:
-        name = hit.get('_source', {}).get('email')
-        if not name:
-            name = hit.get('_source', {}).get('fpid', 'Compromised Credential Alert')
+        hit_source = hit.get('_source', {})
+        name = hit_source.get('username', hit_source.get(
+            'email', hit_source.get('fpid', 'Compromised Credential Alert')))
         incidents.append({
             'name': name,
             'severity': IncidentSeverity.__dict__.get(severity.upper()),
-            'occurred': hit.get('_source', {}).get('breach', {}).get('created_at', {}).get('date-time'),
+            'occurred': hit_source.get('breach', {}).get('created_at', {}).get('date-time'),
             'rawJSON': json.dumps(hit)
         })
 
@@ -951,6 +951,7 @@ def prepare_hr_for_compromised_credentials(hits: list) -> str:
         data = {
             'FPID': source.get('fpid', ''),
             'Email': source.get('email', ''),
+            'Username': source.get('username', ''),
             'Breach Source': source.get('breach', {}).get('source'),
             'Breach Source Type': source.get('breach', {}).get('source_type'),
             'Password': source.get('password'),
@@ -959,9 +960,10 @@ def prepare_hr_for_compromised_credentials(hits: list) -> str:
         }
         hr.append(data)
 
-    return tableToMarkdown("Compromised Credential(s)", hr, ['FPID', 'Email', 'Breach Source', 'Breach Source Type',
-                                                             'Password', 'Created Date (UTC)',
-                                                             'First Observed Date (UTC)'], removeNull=True)
+    return tableToMarkdown("Compromised Credential(s)", hr,
+                           ['FPID', 'Email', 'Username', 'Breach Source', 'Breach Source Type',
+                            'Password', 'Created Date (UTC)', 'First Observed Date (UTC)'],
+                           removeNull=True)
 
 
 def parse_indicator_response(indicators):
