@@ -1727,7 +1727,7 @@ There is no context output for this command.
 ### akamai-list-dns-zone-recordsets
 
 ***
-Lists all record sets for this Zone. It works only for PRIMARY and SECONDARY zones.
+Lists all record sets for this zone. It works only for PRIMARY and SECONDARY zones.
 
 #### Base Command
 
