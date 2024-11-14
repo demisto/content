@@ -29,6 +29,7 @@ filter
     xdm.source.asn.as_name =  json_extract_scalar(securityContext,"$.asOrg")
     //First and last name extraction
     | alter displayName = json_extract_scalar(actor, "$.displayName")
+    | alter check = "eido"
     | alter
         lastName = arrayindex(regextract(displayName, "\s([\S]*)"),0),
         firstName= arrayindex(regextract(displayName, "([\S]*)\s"),0)

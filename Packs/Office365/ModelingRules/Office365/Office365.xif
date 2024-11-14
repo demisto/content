@@ -11,6 +11,7 @@ alter
 
 [MODEL: dataset="msft_o365_general_raw"]
 call o365_common_fields
+| alter check = "eido"
 | alter
 	EnforcementMode = to_integer(EnforcementMode), 
 	sourceworkload = to_integer(sourceworkload), 
