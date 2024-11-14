@@ -77,6 +77,7 @@ The following commands are available once the integration is configured:
 ## Incident Types and Fields
 
 CybelAngel incidents will be automatically fetched and populated in XSOAR. Incident types include:
+
 - **Incident ID**
 - **Keywords**
 - **Report Content**
@@ -92,5 +93,6 @@ CybelAngel incidents will be automatically fetched and populated in XSOAR. Incid
 ## Support
 
 For any issues or questions, please contact CybelAngel Support:
+
 - Email: [support@cybelangel.com](mailto:support@cybelangel.com)
 - Website: [https://cybelangel.com](https://cybelangel.com)

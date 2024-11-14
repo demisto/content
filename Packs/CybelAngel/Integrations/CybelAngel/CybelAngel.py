@@ -380,7 +380,7 @@ def test_command(client: Client):
     #         'details': r.get('abstract'),
     #         'rawJSON': json.dumps(r)
     #     }
-        # incidents.append(incident)
+    # incidents.append(incident)
 
     test_creds = f"client ID: {client.client_id}"
 

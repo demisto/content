@@ -16,7 +16,9 @@
     },
     "certification": "certified",
     "tags": [],
-    "categories": [],
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
     "useCases": [],
     "keywords": [],
     "dependencies": {

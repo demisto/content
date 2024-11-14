@@ -174,25 +174,6 @@
                         "transformers": []
                     }
                 },
-                "NS Servers ": {
-                    "complex": {
-                        "filters": [],
-                        "root": "ns_servers",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "delimiter": {
-                                        "isContext": false,
-                                        "value": {
-                                            "simple": ","
-                                        }
-                                    }
-                                },
-                                "operator": "split"
-                            }
-                        ]
-                    }
-                },
                 "Origins": {
                     "complex": {
                         "accessor": "value",
@@ -424,13 +405,6 @@
                     "complex": {
                         "filters": [],
                         "root": "domain_registered_at",
-                        "transformers": []
-                    }
-                },
-                "incident id ": {
-                    "complex": {
-                        "filters": [],
-                        "root": "incident_id",
                         "transformers": []
                     }
                 },
