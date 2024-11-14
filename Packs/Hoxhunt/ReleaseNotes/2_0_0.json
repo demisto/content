@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "The first version of the ingration was deprecated. Please remove the old integration and install the new one."
+    "breakingChangesNotes": "The *Hoxhunt* integration was deprecated. Please use the *Hoxhunt v2* integration instead."
 }
