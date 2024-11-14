@@ -1525,7 +1525,7 @@ script:
     name: akamai-list-appsec-config
     outputs:
     - contextPath: Akamai.AppSecConfigAll
-      description: Akamai Security Configuration All.
+      description: A list of dictionaries for all Akamai Security Configurations.
       type: unknown
   - arguments: []
     description: List all zones that the current user has access to manage.
