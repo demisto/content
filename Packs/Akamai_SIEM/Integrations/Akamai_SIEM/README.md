@@ -270,3 +270,9 @@ The proposed solution in that case is to use the two parameters **Fetch limit** 
 **Akamai Page size** is the number of events we want to retrieve each request. Note that the suggested maximum for **Akamai Page size** is 200k.
 Meaning that an interval may execute multiple requests and therefore you should configure **Akamai Page size** < **Fetch limit**
 You should work to find the balance between them in a way that both the command, and the request won't get any timeout.
+
+### Known limitations
+
+## The config ID can only be configured on one instance:
+Due to limitations from Akamai, the config ID can only be configured on one instance on the same machine or on different machines (i.e. the same config ID can't be configured both on dev and prod tenants or twice on the same tenant).
+Configuring on multiple machines may lead to duplications or missing events.
