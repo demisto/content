@@ -1538,7 +1538,7 @@ script:
     - description: The name of the zone.
       name: zone
       required: true
-    description: Lists all record sets for this Zone. It works only for PRIMARY and SECONDARY zones.
+    description: Lists all record sets for this zone. It works only for PRIMARY and SECONDARY zones.
     name: akamai-list-dns-zone-recordsets
     outputs:
     - contextPath: Akamai.EdgeDns.ZoneRecordSets
