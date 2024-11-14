@@ -3034,5 +3034,6 @@ def test_splunk_submit_event_hec_command_no_required_arguments():
     """
     from SplunkPy import splunk_submit_event_hec_command
     with pytest.raises(DemistoException,
-        match=r"""Invalid input: Please specify one of the following arguments: `event`, `batch_event_data`, or `entry_id`."""):
+                       match=r"Invalid input: Please specify one of the following arguments: `event`, \
+`batch_event_data`, or `entry_id`."):
         splunk_submit_event_hec_command({'hec_url': 'hec_url'}, None, {})
