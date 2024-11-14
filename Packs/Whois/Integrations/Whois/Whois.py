@@ -24,7 +24,7 @@ RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT: bool = False
 """
 
 ''' HELPER FUNCTIONS '''
-# About the drop some mean regex right now disable-secrets-detection-start
+# About the drop some mean regex right now disable-secrets-detection-start  test
 tlds = {
     "_": {
         "schema": "2",
