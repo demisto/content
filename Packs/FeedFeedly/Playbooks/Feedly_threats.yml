@@ -1,0 +1,265 @@
+id: 5e043079-e3a4-44b4-863f-80774c07c1e7
+version: 13
+vcShouldKeepItemLegacyProdMachine: false
+name: Feedly threats
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c1841fcb-b6ec-40b6-89e9-3a68f6c62b43
+    type: start
+    task:
+      id: c1841fcb-b6ec-40b6-89e9-3a68f6c62b43
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "3"
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 5933c19b-36f8-4f1b-8410-e0d0b2a5631a
+    type: regular
+    task:
+      id: 5933c19b-36f8-4f1b-8410-e0d0b2a5631a
+      version: -1
+      name: Search TTP Indicators
+      description: |-
+        Searches Cortex XSOAR Indicators.
+
+        Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
+
+        You can add additional fields from the indicators using the add_field_to_context argument.
+      scriptName: SearchIndicator
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      add_fields_to_context:
+        simple: mitreid
+      query:
+        complex:
+          root: incident
+          accessor: mitretechniqueid
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' or '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: mitreid:(
+              suffix:
+                value:
+                  simple: )
+      size:
+        simple: "100"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 4033a0ca-5137-475a-82d4-628041ce1942
+    type: regular
+    task:
+      id: 4033a0ca-5137-475a-82d4-628041ce1942
+      version: -1
+      name: Search Malware indicators
+      description: |-
+        Searches Cortex XSOAR Indicators.
+
+        Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
+
+        You can add additional fields from the indicators using the add_field_to_context argument.
+      scriptName: SearchIndicator
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      query:
+        complex:
+          root: incident
+          accessor: feedlymalwarenames
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: '" or "'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: type:Malware value:("
+              suffix:
+                value:
+                  simple: '")'
+      size:
+        simple: "100"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: d581f385-d714-4ae1-8a8d-ca4ae527a944
+    type: regular
+    task:
+      id: d581f385-d714-4ae1-8a8d-ca4ae527a944
+      version: -1
+      name: Associate Indicators
+      description: commands.local.cmd.associate.indicators
+      script: Builtin|||associateIndicatorsToIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      indicatorsIDs:
+        simple: ${foundIndicators.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 456dd4a5-485f-44fe-8085-e19f70c9ac3a
+    type: regular
+    task:
+      id: 456dd4a5-485f-44fe-8085-e19f70c9ac3a
+      version: -1
+      name: Search Threat Actor Indicators
+      description: |-
+        Searches Cortex XSOAR Indicators.
+
+        Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
+
+        You can add additional fields from the indicators using the add_field_to_context argument.
+      scriptName: SearchIndicator
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      query:
+        complex:
+          root: incident
+          accessor: feedlythreatactornames
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: '" or "'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: type:"Intrusion Set" value:("
+              suffix:
+                value:
+                  simple: '")'
+      size:
+        simple: "100"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 785,
+        "width": 1340,
+        "x": 140,
+        "y": -160
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true

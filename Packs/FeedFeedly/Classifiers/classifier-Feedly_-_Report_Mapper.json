@@ -13,7 +13,7 @@
 	"itemVersion": "",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 8,
+	"logicalVersion": 10,
 	"mapping": {
 		"dbot_classification_incident_type_all": {
 			"dontMapEventToLabels": true,
@@ -32,6 +32,12 @@
 				},
 				"Event ID": {
 					"simple": "event_id"
+				},
+				"Feedly Malware Names": {
+					"simple": "indicators.Malware"
+				},
+				"Feedly Threat Actor Names": {
+					"simple": "indicators.Threat Actor"
 				},
 				"Feedly crawled date": {
 					"simple": "create_time"
@@ -60,6 +66,9 @@
 						"root": "tags",
 						"transformers": []
 					}
+				},
+				"Threat Name": {
+					"simple": "indicators.Malware"
 				},
 				"URLs": {
 					"simple": "indicators.URL"

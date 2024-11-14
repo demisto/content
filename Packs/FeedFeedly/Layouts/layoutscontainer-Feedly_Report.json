@@ -60,11 +60,13 @@
 								"startCol": 0
 							},
 							{
+								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "feedlyurl",
 								"height": 22,
 								"id": "bc06e420-8701-11ef-88e5-01f8fe79530d",
 								"index": 1,
+								"listId": "h2hjyyhld4-zfhf0tdhhj-h2hjyyhld4-caseinfoid-c90b5e90-8700-11ef-88e5-01f8fe79530d",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -73,15 +75,6 @@
 								"fieldId": "sourcename",
 								"height": 22,
 								"id": "b4bf55d0-8701-11ef-88e5-01f8fe79530d",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "sourceurl",
-								"height": 22,
-								"id": "b8e44760-8701-11ef-88e5-01f8fe79530d",
 								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -89,11 +82,20 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
+								"fieldId": "sourceurl",
+								"height": 22,
+								"id": "b8e44760-8701-11ef-88e5-01f8fe79530d",
+								"index": 3,
+								"listId": "h2hjyyhld4-zfhf0tdhhj-h2hjyyhld4-caseinfoid-c90b5e90-8700-11ef-88e5-01f8fe79530d",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
 								"fieldId": "tags",
 								"height": 22,
-								"id": "e64b9ec0-8700-11ef-88e5-01f8fe79530d",
+								"id": "88895d10-a1de-11ef-823c-870772ed0f9a",
 								"index": 4,
-								"listId": "h2hjyyhld4-caseinfoid-c90b5e90-8700-11ef-88e5-01f8fe79530d",
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -176,20 +178,20 @@
 								"width": 190
 							}
 						],
-						"h": 4,
+						"h": 3,
 						"i": "h2hjyyhld4-zfhf0tdhhj-h2hjyyhld4-e33dd7a0-8702-11ef-88e5-01f8fe79530d",
 						"items": [],
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
 						"name": "Indicators of compromise",
-						"query": "-type:\"Attack Pattern\"",
+						"query": "-type:\"Attack Pattern\" -type:Malware -type:\"Intrusion Set\"",
 						"queryType": "input",
 						"static": false,
 						"type": "indicators",
 						"w": 1,
 						"x": 2,
-						"y": 2
+						"y": 5
 					},
 					{
 						"columns": [
@@ -260,7 +262,7 @@
 								"width": 190
 							}
 						],
-						"h": 5,
+						"h": 3,
 						"i": "h2hjyyhld4-b282caf0-870f-11ef-88e5-01f8fe79530d",
 						"items": [],
 						"maxW": 3,
@@ -273,7 +275,91 @@
 						"type": "indicators",
 						"w": 1,
 						"x": 2,
-						"y": 6
+						"y": 8
+					},
+					{
+						"columns": [
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "indicator_type",
+								"width": 120
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "value",
+								"width": 300
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "score",
+								"width": 120
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "firstSeen",
+								"width": 275
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "lastSeen",
+								"width": 275
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "timestamp",
+								"width": 190
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "relatedIncCount",
+								"width": 150
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "sourceBrands",
+								"width": 175
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "sourceInstances",
+								"width": 175
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "expirationStatus",
+								"width": 175
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "expiration",
+								"width": 190
+							}
+						],
+						"h": 3,
+						"i": "h2hjyyhld4-6e0a9cf0-a1d5-11ef-aeae-93c18a8c3773",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Threats",
+						"query": "type:\"Intrusion Set\" or type:Malware",
+						"queryType": "input",
+						"static": false,
+						"type": "indicators",
+						"w": 1,
+						"x": 2,
+						"y": 2
 					}
 				],
 				"type": "custom"
@@ -358,13 +444,11 @@
 							}
 						],
 						"description": "The list of indicators related to the incident.",
-						"h": 5,
-						"i": "zfhf0tdhhj-h2hjyyhld4-caseinfoid-indeooemoh-1840e830-6dd5-11ea-9e64-73fcd6758f5c",
+						"h": 7,
+						"i": "h2hjyyhld4-zfhf0tdhhj-h2hjyyhld4-caseinfoid-indeooemoh-1840e830-6dd5-11ea-9e64-73fcd6758f5c",
 						"items": [],
-						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
-						"minW": 3,
 						"moved": false,
 						"name": "Indicators related to incident",
 						"query": "",

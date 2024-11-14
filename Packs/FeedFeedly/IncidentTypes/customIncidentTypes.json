@@ -1,9 +1,9 @@
 [
 	{
 		"id": "Feedly Report",
-		"version": 6,
+		"version": 7,
 		"cacheVersn": 0,
-		"modified": "2024-10-10T13:51:44.813997902Z",
+		"modified": "2024-11-13T15:01:36.04775714Z",
 		"created": "0001-01-01T00:00:00Z",
 		"sizeInBytes": 0,
 		"packID": "",
@@ -20,6 +20,7 @@
 		"name": "Feedly Report",
 		"prevName": "Feedly Report",
 		"color": "#F8E7A5",
+		"playbookId": "5e043079-e3a4-44b4-863f-80774c07c1e7",
 		"hours": 0,
 		"days": 0,
 		"weeks": 0,
@@ -29,7 +30,7 @@
 		"system": false,
 		"readonly": false,
 		"default": false,
-		"autorun": false,
+		"autorun": true,
 		"preProcessingScript": "",
 		"closureScript": "",
 		"disabled": false,
@@ -92,16 +93,12 @@
 				"mitretechniqueid": {
 					"extractAsIsIndicatorTypeId": "",
 					"isExtractingAllIndicatorTypes": false,
-					"extractIndicatorTypesIDs": [
-						"Attack Pattern"
-					]
+					"extractIndicatorTypesIDs": []
 				},
 				"mitretechniquename": {
 					"extractAsIsIndicatorTypeId": "",
 					"isExtractingAllIndicatorTypes": false,
-					"extractIndicatorTypesIDs": [
-						"Attack Pattern"
-					]
+					"extractIndicatorTypesIDs": []
 				},
 				"selectedindicators": {
 					"extractAsIsIndicatorTypeId": "",
