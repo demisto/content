@@ -30,20 +30,22 @@ if sys.version_info[0] >= 3:
                 return res
 
             def executeCommand(self, command, args):
-                start_time = datetime.now()
-                self.debug("Going to execute [{}] with args: [{}]".format(command, json.dumps(args)))
-                res = super(DemistoScript, self).executeCommand(command, args)
-                duration = (datetime.now() - start_time).total_seconds()
-                if isinstance(res, list):
-                    is_error = any(entry['Type'] == 4 for entry in res)
-                elif isinstance(res, dict):
-                    is_error = res['Type'] == 4
-                else:
-                    is_error = False
-                self.debug(
-                    "Finished execution of [{}] after {} seconds, success: {}".format(duration, not is_error)
-                )
-                return res
+                if self.is_debug:
+                    self.debug("Going to execute [{}] with args: [{}]".format(command, json.dumps(args)))
+                    start_time = datetime.now()
+                    res = super(DemistoScript, self).executeCommand(command, args)
+                    duration = (datetime.now() - start_time).total_seconds()
+                    if isinstance(res, list):
+                        is_error = any(entry['Type'] == 4 for entry in res)
+                    elif isinstance(res, dict):
+                        is_error = res['Type'] == 4
+                    else:
+                        is_error = False
+                    self.debug(
+                        "Finished execution of [{}] after {} seconds, success: {}".format(duration, not is_error)
+                    )
+                    return res
+                return super(DemistoScript, self).executeCommand(command, args)
 
         class DemistoIntegration(DemistoWrapper):
             def info(self, msg):
@@ -84,7 +86,11 @@ if sys.version_info[0] >= 3:
 
             def createIndicators(self, indicators_batch, noUpdate=False):
                 self.debug("Creating {} indicators".format(len(indicators_batch)))
+                start_time = datetime.now()
                 super(DemistoIntegration, self).createIndicators(indicators_batch, noUpdate)
+                duration = (datetime.now() - start_time).total_seconds()
+                if self.is_debug:
+                    self.debug("createIndicators took {} seconds {}".format(duration))
 
         args_str = json.dumps(demisto.args())
         if demisto.callingContext.get('context', {}).get('IntegrationBrand'):
