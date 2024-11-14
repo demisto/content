@@ -118,19 +118,23 @@ def test_list_incidents_command(requests_mock, qualysfim_client: Client) -> None
     """
     from QualysFIM import list_incidents_command
 
+    # Set
     mock_response = util_load_json('test_data/list_incidents.json')
     requests_mock.post(f'{BASE_URL}fim/v3/incidents/search', json=mock_response)
 
+    # Arrange
     result = list_incidents_command(qualysfim_client, {'sort': 'most_recent'})
 
+    # Assert
     assert result.outputs_prefix == 'QualysFIM.Incident'
     assert result.outputs_key_field == 'id'
 
     assert len(result.raw_response) == len(mock_response)
-    assert result.outputs[0].get('id') == '75539bfc-c0e7-4bcb-b55a-48065ef89ebe'
-    assert result.outputs[1].get('id') == '5a6d0462-1c2e-4e36-a13b-6264bd3c222f'
-
     assert result.raw_response == mock_response
+
+    assert result.outputs[0]['id'] == mock_response[0]['data']['id']
+    assert result.outputs[1]['id'] == mock_response[1]['data']['id']
+    assert result.outputs == [incident['data'] for incident in mock_response]
 
 
 def test_get_incident_events_command(requests_mock, qualysfim_client: Client) -> None:
