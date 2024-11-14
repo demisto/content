@@ -118,7 +118,7 @@ THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
 class Client(BaseClient):
     def fetch_indicators_from_stream(
         self, stream_id: str, newer_than: float, *, limit: int | None = None, ingest_reports: bool = True
-    ) -> list:
+    ) -> tuple[list, float | None]:
         params = {
             "streamId": stream_id,
             "count": 20,
@@ -149,7 +149,7 @@ class Client(BaseClient):
             indicator["type"] = indicator.get("indicator_type", "")
             indicator["fields"] = indicator.get("customFields", {})
 
-        return indicators
+        return indicators, extract_next_newer_than(objects)
 
 
 class STIX2Parser:
@@ -973,7 +973,7 @@ def get_indicators_command(
     Returns:
         Outputs.
     """
-    indicators = client.fetch_indicators_from_stream(
+    indicators, _ = client.fetch_indicators_from_stream(
         params["feedly_stream_id"],
         newer_than=time.time() - 24 * 3600,
         limit=int(args.get("limit", "10")),
@@ -983,7 +983,9 @@ def get_indicators_command(
     return CommandResults(readable_output=f"Created {len(indicators)} indicators.")
 
 
-def fetch_indicators_command(client: Client, params: dict[str, str], context: dict[str, str]) -> list[dict]:
+def fetch_indicators_command(
+    client: Client, params: dict[str, str], context: dict[str, str]
+) -> tuple[list, float | None]:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
     Args:
         client: Client object with request
@@ -1007,17 +1009,16 @@ def get_newer_than_timestamp(params: dict[str, str], context: dict[str, str]) ->
     )
 
 
-def set_next_newer_than(indicators: list[dict[str, str]]) -> None:
-    if not indicators:
-        return
-    newer_than = datetime.fromisoformat(
-        max(
-            indicator["fields"]["published"]  # type: ignore
-            for indicator in indicators
-            if indicator["type"] == "Feedly Report"
-        )
+def extract_next_newer_than(stix_objects: list[dict[str, str]]) -> float | None:
+    if not stix_objects:
+        return None
+    return datetime.fromisoformat(
+        max(stix_object["created"] for stix_object in stix_objects if stix_object.get("type") == "report")
     ).timestamp()
-    demisto.setLastRun({"last_fetched_article_crawled_time": newer_than})
+
+
+def set_next_newer_than(next_newer_than: float) -> None:
+    demisto.setLastRun({"last_fetched_article_crawled_time": next_newer_than})
 
 
 def main():  # pragma: no cover
@@ -1043,10 +1044,11 @@ def main():  # pragma: no cover
             return_results(get_indicators_command(client, params, args))
 
         elif command == "fetch-indicators":
-            indicators = fetch_indicators_command(client, params, demisto.getLastRun())
+            indicators, next_newer_than = fetch_indicators_command(client, params, demisto.getLastRun())
             for indicators_batch in batch(indicators, batch_size=2000):
                 demisto.createIndicators(indicators_batch)  # type: ignore
-            set_next_newer_than(indicators)
+            if next_newer_than:
+                set_next_newer_than(next_newer_than)
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
