@@ -268,9 +268,6 @@
 				"GIB Phishing Domain Puny": {
 					"simple": "domainInfo.domainPuny"
 				},
-				"GIB Phishing IP": {
-					"simple": "phishing_ip.ip"
-				},
 				"GIB Phishing IP Table": {
 					"simple": "phishing_ip"
 				},
@@ -283,17 +280,11 @@
 				"GIB Phishing Objectives": {
 					"simple": "objective"
 				},
-				"GIB Phishing Provider": {
-					"simple": "phishing_ip.provider"
-				},
 				"GIB Phishing Registrar": {
 					"simple": "domainInfo.registrar"
 				},
 				"GIB Phishing Sources": {
 					"simple": "source"
-				},
-				"GIB Phishing URL": {
-					"simple": "phishing.url"
 				},
 				"GIB Phishing URLs": {
 					"simple": "phishing_urls"
@@ -1268,9 +1259,6 @@
 				"GIB Cybercriminal Threat Actor Description": {
 					"simple": "description"
 				},
-				"GIB Cybercriminal Threat Actor Reports": {
-					"simple": "reports"
-				},
 				"GIB Cybercriminal Threat Actor Reports Table": {
 					"simple": "reports"
 				},
@@ -1852,17 +1840,8 @@
 				"GIB Admiralty Code": {
 					"simple": "evaluation.admiraltyCode"
 				},
-				"GIB Affected Software Name": {
-					"simple": "affectedSoftware.name"
-				},
-				"GIB Affected Software Operator": {
-					"simple": "affectedSoftware.operator"
-				},
 				"GIB Affected Software Table": {
 					"simple": "affectedSoftware"
-				},
-				"GIB Affected Software Version": {
-					"simple": "affectedSoftware.version"
 				},
 				"GIB Bulletin Family": {
 					"simple": "bulletinFamily"
@@ -1920,9 +1899,6 @@
 				},
 				"GIB Portal Link": {
 					"simple": "portalLink"
-				},
-				"GIB Provider": {
-					"simple": "provider"
 				},
 				"GIB Related Indicators Data": {
 					"simple": "indicators"

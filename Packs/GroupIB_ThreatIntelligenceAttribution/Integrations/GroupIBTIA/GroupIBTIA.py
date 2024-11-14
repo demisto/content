@@ -14,7 +14,6 @@ from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings as urllib3_disable_warnings
 from cyberintegrations import TIPoller
 from traceback import format_exc
-from functools import wraps
 import re
 
 
@@ -33,8 +32,8 @@ INDICATORS_TYPES = {
             "events_ipv4_ip": "IP",
         },
         "add_fields_types": {
-            "event_url":{},
-            "event_domain":{},
+            "event_url": {},
+            "event_domain": {},
             "events_ipv4_ip": {
                 "asn": "asn",
                 "country_name": "geocountry",
@@ -49,8 +48,8 @@ INDICATORS_TYPES = {
             "cnc_ipv4_ip": "IP",
         },
         "add_fields_types": {
-            "cnc_url":{},
-            "cnc_domain":{},
+            "cnc_url": {},
+            "cnc_domain": {},
             "cnc_ipv4_ip": {
                 "cnc_ipv4_asn": "asn",
                 "cnc_ipv4_country_name": "geocountry",
@@ -65,8 +64,8 @@ INDICATORS_TYPES = {
             "cnc_ipv4_ip": "IP",
         },
         "add_fields_types": {
-            "cnc_url":{},
-            "cnc_domain":{},
+            "cnc_url": {},
+            "cnc_domain": {},
             "cnc_ipv4_ip": {
                 "cnc_ipv4_asn": "asn",
                 "cnc_ipv4_country_name": "geocountry",
@@ -81,8 +80,8 @@ INDICATORS_TYPES = {
             "cnc_ipv4_ip": "IP",
         },
         "add_fields_types": {
-            "cnc_url":{},
-            "cnc_domain":{},
+            "cnc_url": {},
+            "cnc_domain": {},
             "cnc_ipv4_ip": {
                 "cnc_ipv4_asn": "asn",
                 "cnc_ipv4_country_name": "geocountry",
@@ -117,11 +116,11 @@ INDICATORS_TYPES = {
             "hash": "GIB Hash",
         },
         "add_fields_types": {
-            "contributors_emails":{},
-            "hash":{}
+            "contributors_emails": {},
+            "hash": {}
         },
     },
-    "attacks/phishing_kit": {"types": {"emails": "Email"}, "add_fields_types": {"emails":{}}},
+    "attacks/phishing_kit": {"types": {"emails": "Email"}, "add_fields_types": {"emails": {}}},
     "attacks/phishing_group": {
         "types": {
             "url": "URL",
@@ -129,7 +128,7 @@ INDICATORS_TYPES = {
             "ipv4_ip": "IP",
         },
         "add_fields_types": {
-            "url":{},
+            "url": {},
             "phishing_domain_domain": {"phishing_domain_registrar": "registrarname"},
             "ipv4_ip": {
                 "ipv4_country_name": "geocountry",
@@ -139,8 +138,8 @@ INDICATORS_TYPES = {
     "attacks/deface": {
         "types": {"url": "URL", "target_domain": "Domain", "target_ip_ip": "IP"},
         "add_fields_types": {
-            "url":{},
-            "target_domain":{},
+            "url": {},
+            "target_domain": {},
             "target_ip_ip": {
                 "target_ip_asn": "asn",
                 "target_ip_country_name": "geocountry",
@@ -151,8 +150,8 @@ INDICATORS_TYPES = {
     "attacks/ddos": {
         "types": {"cnc_url": "URL", "cnc_domain": "Domain", "cnc_ipv4_ip": "IP"},
         "add_fields_types": {
-            "cnc_url":{},
-            "cnc_domain":{},
+            "cnc_url": {},
+            "cnc_domain": {},
             "cnc_ipv4_ip": {
                 "cnc_ipv4_asn": "asn",
                 "cnc_ipv4_country_name": "geocountry",
@@ -166,7 +165,7 @@ INDICATORS_TYPES = {
             "domain": "Domain",
         },
         "add_fields_types": {
-            "url":{},
+            "url": {},
             "domain": {
                 "ipv4_ip": "IP",
                 "ipv4_asn": "asn",
@@ -239,9 +238,9 @@ INDICATORS_TYPES = {
             "hashes_md5": "File",
         },
         "add_fields_types": {
-            "ipv4":{},
-            "domain":{},
-            "url":{},
+            "ipv4": {},
+            "domain": {},
+            "url": {},
             "hashes_md5": {
                 "name": "gibfilename",
                 "hashes_md5": "md5",
@@ -259,9 +258,9 @@ INDICATORS_TYPES = {
             "hashes_md5": "File",
         },
         "add_fields_types": {
-            "ipv4":{},
-            "domain":{},
-            "url":{},
+            "ipv4": {},
+            "domain": {},
+            "url": {},
             "hashes_md5": {
                 "name": "gibfilename",
                 "hashes_md5": "md5",
@@ -272,7 +271,6 @@ INDICATORS_TYPES = {
         },
     },
 }
-
 
 PREFIXES = {
     "compromised/account_group": "Compromised Account Group",
@@ -405,9 +403,11 @@ PORTAL_LINKS = {
     "suspicious_ip/vpn": "https://tap.group-ib.com/suspicious/vpn?q=",
 }
 
-COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES = ["osi/git_repository", "osi/public_leak"]
+COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES = ["osi/git_repository", "osi/public_leak", "compromised/breached"]
 
 COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED = ["compromised/breached"]
+
+
 
 MAPPING = {
     "compromised/account_group": {  # GIB Source:sourceType, severity:systemSeverity
@@ -811,6 +811,7 @@ MAPPING = {
         },
         # END Group-IB DDOS Request
         "indicators": {  # GIB Related Indicators Data
+            "target_ipv4_ip": "target.ipv4.ip",
             "cnc_url": "cnc.url",
             "cnc_domain": "cnc.domain",
             "cnc_ipv4_ip": "cnc.ipv4.ip",
@@ -879,7 +880,7 @@ MAPPING = {
         "id": "id",  # GIB ID
         "brand": "brand",  # GIB Phishing Brand
         "phishing_urls": "phishing.url",  # GIB Phishing URLs
-        "objective": "objective",  #  GIB Phishing Objectives
+        "objective": "objective",  # GIB Phishing Objectives
         "source": "source",  # GIB Phishing Sources
         "portalLink": {  # GIB Portal Link
             "__concatenate": {
@@ -1000,7 +1001,7 @@ MAPPING = {
             "ipv4_region": "ipv4.region",
         },
     },
-    "suspicious_ip/open_proxy": {  # GIB Source:sourceType, severity:systemSeverity 
+    "suspicious_ip/open_proxy": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "ipv4.ip",
         # Information from Group-IB
         "id": "id",  # GIB ID
@@ -1369,6 +1370,7 @@ MAPPING = {
     },
 }
 
+
 class Client(BaseClient):
     """
     Client will implement the service API, and should not contain any Demisto logic.
@@ -1386,7 +1388,7 @@ class Client(BaseClient):
         self.poller = TIPoller(
             username=self._auth[0],
             api_key=self._auth[1],
-            api_url="https://tap.group-ib.com/api/v2/",
+            api_url=base_url,
         )
         self.poller.set_product(
             product_type="SOAR",
@@ -1414,22 +1416,8 @@ class Client(BaseClient):
 
         return last_fetch, date_from  # type: ignore
 
-    def json_errors_interceptor():
-        def decorator(func):
-            @wraps(func)
-            def wrapper(*args, **kwargs):
-                try:
-                    return func(*args, **kwargs)
-                except requests.exceptions.JSONDecodeError as e:
-                    demisto.error(format_exc())
-
-            return wrapper
-
-        return decorator
-
-    @json_errors_interceptor()
     def create_poll_generator(
-        self, collection_name: str, max_requests: int, hunting_rules: bool, **kwargs
+        self, collection_name: str, hunting_rules: int, **kwargs
     ):
         """
         Interface to work with different types of indicators.
@@ -1438,18 +1426,18 @@ class Client(BaseClient):
         last_fetch, date_from = Client.handle_first_time_fetch(kwargs)
 
         if collection_name == "compromised/breached":
+            hunting_rules = 1
+
             # we need the isinstance check for BC because it used to be a string
 
             if last_fetch and isinstance(last_fetch, dict):
                 starting_date_from = last_fetch.get("starting_date_from")
                 starting_date_to = last_fetch.get("starting_date_to")
                 date_to = last_fetch.get("current_date_to")
-                page = last_fetch.get("page", 0)
             else:
                 starting_date_from = date_from
                 starting_date_to = datetime.now().strftime(DATE_FORMAT)
                 date_to = starting_date_to
-                page = 0
 
             return self.poller.create_search_generator(
                 collection_name=collection_name,
@@ -1459,7 +1447,6 @@ class Client(BaseClient):
                 apply_hunting_rules=hunting_rules,
             ), {
                 "starting_date_from": starting_date_from,
-                "page": page,
                 "starting_date_to": starting_date_to,
                 "current_date_to": date_to,
             }
@@ -1481,6 +1468,7 @@ class Client(BaseClient):
 
 """ Support functions """
 
+
 class CommonHelpers:
     @staticmethod
     def transform_dict(
@@ -1490,7 +1478,7 @@ class CommonHelpers:
             return [{}]
 
         normalized_dict = {
-            k: v if isinstance(v, list) else [v] for k, v in input_dict.items()
+            k: v if isinstance(v, list) else [v] for k, v in input_dict.items()  # type: ignore
         }
 
         max_length = max(
@@ -1510,7 +1498,7 @@ class CommonHelpers:
 
     @staticmethod
     def remove_underscore_and_lowercase_keys(
-        dict_list: list[dict[str, Any]]
+        dict_list: list[dict[str, Any]] | list[dict[str, Any]]
     ) -> list[dict[str, Any]]:
         updated_dicts = []
 
@@ -1537,12 +1525,12 @@ class CommonHelpers:
 
         elif isinstance(data, list):
             if not data:
-                return None
+                return None  # type: ignore
 
             if all(isinstance(item, list) and not item for item in data):
-                return None
+                return None  # type: ignore
 
-            return [CommonHelpers.replace_empty_values(item) for item in data]
+            return [CommonHelpers.replace_empty_values(item) for item in data]  # type: ignore
 
         else:
             if data == "":
@@ -1558,14 +1546,12 @@ class CommonHelpers:
                 if isinstance(value, list):
                     if value:
                         all_empty = False
-                elif isinstance(value, dict):
-                    if not CommonHelpers.all_lists_empty(value):
-                        all_empty = False
+                elif isinstance(value, dict) and not CommonHelpers.all_lists_empty(value):
+                    all_empty = False
         elif isinstance(data, list):
             for item in data:
-                if isinstance(item, dict):
-                    if not CommonHelpers.all_lists_empty(item):
-                        all_empty = False
+                if isinstance(item, dict) and not CommonHelpers.all_lists_empty(item):
+                    all_empty = False
 
         return all_empty
 
@@ -1582,7 +1568,7 @@ class CommonHelpers:
 
     @staticmethod
     def remove_html_tags(entry: dict, collection_name: str) -> dict:
-        if collection_name in HTML_FIELDS.keys():
+        if collection_name in HTML_FIELDS:
             fields = HTML_FIELDS.get(collection_name, [])
             for field in fields:
                 entry_field_value = entry.get(field, None)
@@ -1751,7 +1737,7 @@ class IncidentBuilder:
         self.collection_name = collection_name
         self.incident = incident
         self.mapping = mapping
-        
+
     def get_system_severity(self) -> int:
         severity = self.incident.get("evaluation", {}).get("severity")
         system_severity = 0
@@ -1832,11 +1818,10 @@ class IncidentBuilder:
 
     def check_dates(self):
         for field, value in self.incident.items():
-            if field in SET_WITH_ALL_DATE_FIELDS:
-                if value is not None:
-                    new_value = self.date_conversion(value)
-                    if new_value:
-                        self.incident[field] = new_value
+            if field in SET_WITH_ALL_DATE_FIELDS and value is not None:
+                new_value = self.date_conversion(value)
+                if new_value:
+                    self.incident[field] = new_value
 
     def osi_public_leak_mathes_transform_to_grid_table(self, field: str):
         field_data = self.incident.get(field, {})
@@ -1855,30 +1840,23 @@ class IncidentBuilder:
                 CommonHelpers.replace_empty_values(new_matches)
             )
             clean_data = CommonHelpers.remove_underscore_and_lowercase_keys(
-                transformed_and_replaced_empty_values_data
-            )
-            demisto.debug(
-                f"osi_public_leak_mathes_transform_to_grid_table, {self.collection_name}, {clean_data}"
+                transformed_and_replaced_empty_values_data  # type: ignore
             )
             self.incident[field] = clean_data
 
     def transform_fields_to_grid_table(self):
-        fields_for_modify_in_table = TABLES_MAPPING.get(self.collection_name, {})
-        demisto.debug(
-            f"transform_fields_to_grid_table_start, {fields_for_modify_in_table}, {self.collection_name}, {self.incident['id']}"
-        )
+        fields_for_modify_in_table = TABLES_MAPPING.get(self.collection_name, [])
+
         if fields_for_modify_in_table:
             for field in fields_for_modify_in_table:
                 if self.collection_name == "osi/public_leak" and field == "matches":
                     self.osi_public_leak_mathes_transform_to_grid_table(field=field)
                 else:
                     field_data = self.incident.get(field, {})
-                    demisto.debug(
-                        f"transform_fields_to_grid_table_field_data {field_data}, {type(field_data)}"
-                    )
+
                     if (
                         field_data
-                        and CommonHelpers.all_lists_empty(field_data) == False
+                        and CommonHelpers.all_lists_empty(field_data) is False
                     ):
                         transformed_data = CommonHelpers.transform_dict(
                             input_dict=field_data
@@ -1887,24 +1865,18 @@ class IncidentBuilder:
                             self.collection_name == "osi/git_repository"
                             and field == "files"
                         ):
-                            demisto.debug(
-                                f"start git_repository transformed_data, {str(field)}, {str(transformed_data)}"
-                            )
+
                             transformed_data = CommonHelpers.transform_list_to_str(
                                 transformed_data
                             )
-                            demisto.debug(
-                                f"end git_repository transformed_data, {str(field)}, {str(transformed_data)}"
-                            )
+
                         transformed_and_replaced_empty_values_data = (
                             CommonHelpers.replace_empty_values(transformed_data)
                         )
                         clean_data = CommonHelpers.remove_underscore_and_lowercase_keys(
-                            transformed_and_replaced_empty_values_data
+                            transformed_and_replaced_empty_values_data  # type: ignore
                         )
-                        demisto.debug(
-                            f"transform_fields_to_grid_table_transformed_data, {self.collection_name}, {str(clean_data)}"
-                        )
+
                         self.incident[field] = clean_data
                     else:
                         self.incident[field] = None
@@ -1916,7 +1888,7 @@ class IncidentBuilder:
         ):
             # generating just for compromised/breached
             self.incident["portalLink"] = PORTAL_LINKS.get(
-                "compromised/breached"
+                "compromised/breached", ""
             ) + str(self.incident["emails"][0])
 
     def build_incident(self) -> dict:
@@ -1943,7 +1915,6 @@ class IncidentBuilder:
             "rawJSON": json_dumps(self.incident),
             "dbotMirrorId": self.incident.get("id"),
         }
-        demisto.debug(f"{data}")
         return data
 
 
@@ -2073,8 +2044,8 @@ def fetch_incidents_command(
     last_run: dict,
     first_fetch_time: str,
     incident_collections: list[str],
-    requests_count: int,
-    hunting_rules: bool,
+    max_requests: int,
+    hunting_rules: int,
 ) -> tuple[dict, list]:
     """
     This function will execute each interval (default is 1 minute).
@@ -2083,7 +2054,7 @@ def fetch_incidents_command(
     :param last_run: the greatest sequpdate we fetched from last fetch.
     :param first_fetch_time: if last_run is None then fetch all incidents since first_fetch_time.
     :param incident_collections: list of collections enabled by client.
-    :param requests_count: count of requests to API per collection.
+    :param max_requests: count of requests to API per collection.
     :param hunting_rules: enable this parameter to collect using hunting rules
 
     :return: next_run will be last_run in the next fetch-incidents; incidents and indicators will be created in Demisto.
@@ -2092,18 +2063,18 @@ def fetch_incidents_command(
     next_run: dict[str, dict[str, int | Any]] = {"last_fetch": {}}
     for collection_name in incident_collections:  # noqa: B007
         last_fetch = last_run.get("last_fetch", {}).get(collection_name)
-
+        requests_count = 0
+        sequpdate = 0
         portions, last_fetch = client.create_poll_generator(
             collection_name=collection_name,
             hunting_rules=hunting_rules,
-            max_requests=requests_count,
             last_fetch=last_fetch,
             first_fetch_time=first_fetch_time,
         )
 
         mapping = MAPPING.get(collection_name, {})
         for portion in portions:
-
+            sequpdate = portion.sequpdate
             new_parsed_json = portion.bulk_parse_portion(
                 keys_list=[mapping], as_json=False
             )
@@ -2119,7 +2090,14 @@ def fetch_incidents_command(
             else:
                 raise Exception("new_parsed_json in portion should not be a string")
 
-        next_run["last_fetch"][collection_name] = last_fetch
+            requests_count += 1
+            if requests_count > max_requests:
+                break
+
+        if collection_name == "compromised/breached":
+            next_run["last_fetch"][collection_name] = last_fetch
+
+        next_run["last_fetch"][collection_name] = sequpdate
 
     return next_run, incidents
 
@@ -2328,6 +2306,7 @@ def main():
                         f"Collection {collection} Does't support hunting rules"
                     )
 
+        
         info_comands = {
             "gibtia-get-compromised-account-info": "compromised/account_group",
             "gibtia-get-compromised-card-group-info": "compromised/bank_card_group",
@@ -2369,7 +2348,7 @@ def main():
                 last_run=demisto.getLastRun(),
                 first_fetch_time=incidents_first_fetch,
                 incident_collections=incident_collections,
-                requests_count=requests_count,
+                max_requests=requests_count,
                 hunting_rules=hunting_rules,
             )
             demisto.info(f"{str(incidents)}")

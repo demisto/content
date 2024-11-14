@@ -1,125 +1,65 @@
 import pytest
-from json import load
 from GroupIBTIA import (
     fetch_incidents_command,
     Client,
     main,
     get_available_collections_command,
 )
-import os
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings as urllib3_disable_warnings
-from cyberintegrations.utils import ParserHelper
-from GroupIBTIA import TransformFieldsToMarkdown
 import GroupIBTIA
 
 # Disable insecure warnings
 urllib3_disable_warnings(InsecureRequestWarning)
 
 
-BASE_URL = (
-    "https://example.com"  # Replace this value before the tests. https://example.com
-)
+BASE_URL = "https://tap.group-ib.com/api/v2/"
 USERNAME = (
-    "example@example.com"  # Replace this value before the tests. example@example.com
+    "example@roup-ib.com"  # Replace this value before the tests. example@roup-ib.com
 )
-PASSWORD = "example"  # Replace this value before the tests. example
-
-realpath = os.path.join(os.path.dirname(os.path.realpath(__file__)))
-with open(f"{realpath}/test_data/example.json") as example:
-    RAW_JSON = load(example)
-with open(f"{realpath}/test_data/results.json") as results:
-    RESULTS = load(results)
-
-
-RESULTS.update(
-    {
-        "osi/git_repository": (
-            (
-                {"last_fetch": {"osi/git_repository": 1611862631144674}},
-                [
-                    {
-                        "name": "Git Leak: https://github.com/somegit",
-                        "occurred": "2021-01-28T22:32:54Z",
-                        "rawJSON": '{"company": [], "companyId": [3150], "contributors": '
-                        '[{"authorEmail": "some@email.com", "authorName": "somename"}, '
-                        '{"authorEmail": "some@email.com", "authorName": "somename"}, '
-                        '{"authorEmail": "some@email.com", "authorName": "somename"}], '
-                        '"dataFound": {"password": 8, "apikey": 2, "secret": 1}, '
-                        '"dateCreated": "2021-01-23T22:12:58+03:00", "dateDetected": '
-                        '"2021-01-28T22:32:54+03:00", "evaluation": {"admiraltyCode": '
-                        '"A1", "credibility": 50, "reliability": 50, "severity": '
-                        '"orange", "tlp": "amber", "ttl": 30}, "favouriteForCompanies": '
-                        '[], "files": "| URL  |   Author Email  | Author Name  | Date '
-                        "Created| TimeStamp    |\\n| ---- | --------------- | "
-                        "------------ | ----------- | ------------ |\\n| "
-                        "https://github.com/somegit | some@email.com | TEST | "
-                        '1970-01-01T03:00:00+03:00 | [1611429178] |\\n", '
-                        '"hideForCompanies": [], "id": '
-                        '"21aed9b86d2e6cbb15180d803a84f6d27f673db4", '
-                        '"ignoreForCompanies": [], "isFavourite": false, "isHidden": '
-                        'false, "isIgnore": false, "matchesTypes": [], "name": "Git '
-                        'Leak: https://github.com/somegit", "numberOf": {"contributors": '
-                        '3, "files": 10}, "relations": {"infobip.com": "some.com", '
-                        '"Infobip": "some"}, "seqUpdate": 1611862631144674, "source": '
-                        '"github", "gibType": "osi/git_repository", '
-                        '"relatedIndicatorsData": [], "systemSeverity": 2}',
-                    }
-                ],
-            )
-        ),
-        "osi/public_leak": (
-            {"last_fetch": {"osi/public_leak": 1601909532153438}},
-            [
-                {
-                    "name": "Public Leak: a9a5b5cb9b971a2a037e3a0a30654185ea148095",
-                    "occurred": "2020-10-05T17:51:31Z",
-                    "rawJSON": '{"bind": [], "created": "2020-10-05T17:51:31+03:00", "data": '
-                    '"Pasted at: 05/10/2020 15:45", "displayOptions": null, '
-                    '"evaluation": {"admiraltyCode": "C3", "credibility": 50, '
-                    '"reliability": 50, "severity": "orange", "tlp": "amber", "ttl": '
-                    '30}, "hash": "a9a5b5cb9b971a2a037e3a0a30654185ea148095", "id": '
-                    '"a9a5b5cb9b971a2a037e3a0a30654185ea148095", "language": "c", '
-                    '"linkList": "| Author | Date Detected | Date Published | Hash | Link | Source |\\n'
-                    "| ------ | ------------- | -------------- | ---- |----- | ------ |\\n| whaaaaaat | "
-                    "2020-10-05T17:51:31+03:00 | 2020-10-05T17:45:46+03:00 | "
-                    "3066db9f57b7997607208fedc45d7203029d9cb3 | "
-                    "[https://some.ru](https://some.ru) | some.ru "
-                    '|\\n", "matches": "| Type | Sub Type | Value |\\n| ---- | -------- | ----- |\\n| email '
-                    '| email | some@gmail.ru |\\n", '
-                    '"oldId": null, '
-                    '"portalLink": "https://bt.group-ib.com/osi/public_leak?'
-                    'searchValue=id:a9a5b5cb9b971a2a037e3a0a30654186ea248094", '
-                    '"seqUpdate": 1601909532153438, "size": "345 B", "updated": '
-                    '"2020-10-05T17:51:31+03:00", "useful": 1, "name": '
-                    '"Public Leak: a9a5b5cb9b971a2a037e3a0a30654185ea148095", "gibType": '
-                    '"osi/public_leak", "relatedIndicatorsData": [], "systemSeverity": 2}',
-                }
-            ],
-        ),
-    }
-)
+PASSWORD = "exampleAPI_TOKEN"  # Replace this value before the tests. exampleAPI_TOKEN
 
 COLLECTION_NAMES = [
-    "compromised/card",
+    "compromised/account_group",
+    "compromised/bank_card_group",
+    "compromised/breached",
+    "compromised/mule",
     "osi/git_repository",
     "osi/public_leak",
-    "compromised/breached",
-    "compromised/account_group",
+    "osi/vulnerability",
+    "attacks/ddos",
+    "attacks/deface",
+    "attacks/phishing_group",
+    "attacks/phishing_kit",
+    "suspicious_ip/tor_node",
+    "suspicious_ip/open_proxy",
+    "suspicious_ip/socks_proxy",
+    "suspicious_ip/vpn",
+    "suspicious_ip/scanner",
+    "malware/cnc",
+    "malware/malware",
+    "hi/threat",
+    "hi/threat_actor",
+    "apt/threat_actor",
+    "apt/threat"
 ]
 
 
-@pytest.fixture(scope="function", params=COLLECTION_NAMES, ids=COLLECTION_NAMES)
+@pytest.fixture(scope="function", params=COLLECTION_NAMES)
 def session_fixture(request):
     """
-    Given:
-      - A list of collection names from the integration
+    Fixture for creating a client instance specific to each collection name.
 
+    Given:
+      - A list of predefined collection names that represent different types of data.
+    
     When:
-      - Using each collection name as a parameter to the session_fixture
+      - Each test function requests an instance of this fixture.
 
     Then:
-      - The fixture creates the expected client for each collection name
+      - Returns a tuple with the current collection name and an instantiated Client object.
+      - The Client instance is configured to interact with the appropriate collection by connecting
+        to the integration's base URL, using authentication, and including necessary headers.
     """
     return request.param, Client(
         base_url=BASE_URL,
@@ -128,30 +68,54 @@ def session_fixture(request):
         headers={"Accept": "*/*"},
     )
 
-
-def test_fetch_incidents(mocker, session_fixture):
+@pytest.fixture(scope="function")
+def single_session_fixture():
     """
+    Fixture for creating a generic client instance to be used across multiple tests.
+
     Given:
-    - Mocked API responses for fetch_incidents
-    - last_run dict, first_fetch_time str, etc.
+      - No specific parameters; only a need for a Client object with common configuration.
 
     When:
-    - Calling fetch_incidents_command()
+      - A test requires a general Client instance without needing to specify a collection.
 
     Then:
-    - next_run and incidents have expected types
-    - Number of incidents matches mock response
+      - Returns a Client instance configured with the base URL, authentication, and headers.
+      - The instance can be reused by any test that doesn't depend on a specific collection name.
+    """
+    return Client(
+        base_url=BASE_URL,
+        auth=(USERNAME, PASSWORD),
+        verify=True,
+        headers={"Accept": "*/*"},
+    )
+    
+
+def test_fetch_incidents(session_fixture):
+    """
+    Test for verifying the behavior of the fetch_incidents_command function.
+
+    Given:
+      - session_fixture, which provides a client instance associated with a specific collection name.
+      - last_run, a dictionary representing the previous state of incident fetching.
+      - first_fetch_time, a string specifying the starting time frame for incident retrieval.
+
+    When:
+      - fetch_incidents_command() is invoked with the above parameters.
+
+    Then:
+      - Ensures that the command returns the correct types for next_run and incidents.
+      - Verifies that incidents is a list, as expected.
+      - This test validates that the command correctly retrieves incidents for each collection
+        and that the returned data structure matches the expected format.
     """
     collection_name, client = session_fixture
-    mocker.patch.object(
-        client, "create_poll_generator", return_value=[RAW_JSON[collection_name]]
-    )
     next_run, incidents = fetch_incidents_command(
         client=client,
         last_run={},
         first_fetch_time="3 days",
         incident_collections=[],
-        requests_count=3,
+        max_requests=3,
         hunting_rules=False
     )
     assert isinstance(incidents, list)
@@ -159,212 +123,70 @@ def test_fetch_incidents(mocker, session_fixture):
 
 def test_main_error():
     """
+    Test for verifying the error-handling behavior in the main() function.
+
     Given:
-      - main() setup to raise an exception
+      - A main() function configured to raise an exception when calling error_command.
 
     When:
-      - Calling the error_command() via main()
+      - The main function invokes error_command(), which is expected to trigger an error.
 
     Then:
-      - An exception is raised as expected
+      - Ensures that a SystemExit exception is raised as expected.
+      - The test checks that the main function handles errors in a predictable and controlled
+        manner, allowing graceful exits during failure.
     """
     with pytest.raises(SystemExit):
         main()["error_command"]()  # type: ignore
 
 
-def test_global_search_command(mocker, session_fixture):
+def test_global_search_command(single_session_fixture):
+    """
+    Test for verifying the functionality of the global_search_command function.
 
-    test_response = [
-        {
-            "apiPath": "suspicious_ip/open_proxy",
-            "label": "Suspicious IP :: Open Proxy",
-            "link": "",
-            "count": 14,
-            "time": 0.299055199,
-            "detailedLinks": None,
-        }
-    ]
+    Given:
+      - single_session_fixture provides a client instance for performing a search.
+      - A test_query dictionary with a "query" key specifying a search term, in this case, an IP address.
 
-    collection_name, client = session_fixture
-    mocker.patch.object(Client, "_http_request", return_value=test_response)
-    mocker.patch.object(ParserHelper, "find_element_by_key", return_value=test_response)
-    test_query = {"query": "test"}
+    When:
+      - The global_search_command() function is called with the client and test_query arguments.
+
+    Then:
+      - Ensures that the command’s outputs_prefix and outputs_key_field are correctly set to expected values.
+      - Verifies that the command returns the data structure with the correct outputs_key_field ("query"),
+        ensuring compatibility with other functions that depend on this structure.
+      - This test validates that the search command integrates smoothly with the client and returns
+        consistent output formatting.
+    """
+    client = single_session_fixture
+    test_query = {"query": "8.8.8.8"}
     result = GroupIBTIA.global_search_command(client=client, args=test_query)
 
     assert result.outputs_prefix == "GIBTIA.search.global"
     assert result.outputs_key_field == "query"
 
 
-def test_get_available_collections(mocker, session_fixture):
+def test_get_available_collections(single_session_fixture):
     """
+    Test for validating the get_available_collections_command function.
+
     Given:
-      - Mock client with a mocked get_available_collections method
+      - single_session_fixture, which provides a client instance for retrieving available collections.
 
     When:
-      - Calling get_available_collections_command()
+      - The get_available_collections_command() function is invoked with the client instance.
 
     Then:
-      - Outputs prefix and key field are as expected
-      - Result outputs is a list
+      - Verifies that the outputs_prefix is correctly set to "GIBTIA.OtherInfo", indicating that
+        the response data is categorized as general information.
+      - Checks that the outputs_key_field is "collections", matching the expected key for collections data.
+      - Ensures that the "collections" field in the output contains a list of collection names, as expected.
+      - This test confirms that the command accurately retrieves and formats the list of available
+        collections from the server response.
     """
-    collection_name, client = session_fixture
-    mocker.patch.object(Client, "_http_request", return_value=RAW_JSON)
-    mocker.patch.object(
-        ParserHelper, "find_element_by_key", return_value=RAW_JSON[collection_name]
-    )
-
+    client = single_session_fixture
     result = get_available_collections_command(client=client)
 
     assert result.outputs_prefix == "GIBTIA.OtherInfo"
     assert result.outputs_key_field == "collections"
     assert isinstance(result.outputs["collections"], list)
-
-
-def test_find_element_by_key_nested_dict():
-    """
-    Given:
-      - A nested input dict
-
-    When:
-      - Calling find_element_by_key() with a nested key
-
-    Then:
-      - The expected nested value is returned
-    """
-    test_dict = {"a": {"b": "value"}}
-    result = ParserHelper.find_element_by_key(test_dict, "a.b")
-    assert result == "value"
-
-
-def test_find_element_by_key_list():
-    """
-    Given:
-      - A list input
-
-    When:
-      - Calling find_element_by_key() to get all values of a key
-
-    Then:
-      - A list containing all values is returned
-    """
-    test_list = [{"a": "value1"}, {"a": "value2"}]
-    result = ParserHelper.find_element_by_key(test_list, "a")
-    assert len(result) == 2
-    assert "value1" in result
-    assert "value2" in result
-
-
-def test_find_element_by_key_missing():
-    """
-    Given:
-      - An input dict without the specified key
-
-    When:
-      - Calling find_element_by_key() with a missing key
-
-    Then:
-      - None is returned as expected
-    """
-    test_dict = {"a": 1}
-    result = ParserHelper.find_element_by_key(test_dict, "b")
-    assert result is None
-
-
-def test_transform_some_fields_into_markdown():
-
-    collection_name = "osi/git_repository"
-    feed = {
-        "revisions": [
-            {
-                "dataFound": [],
-                "dateCreated": "1970-01-01T03:00:00+03:00",
-                "dateDetected": "2021-01-28T19:37:08+00:00",
-                "evaluation": {
-                    "admiraltyCode": "A1",
-                    "credibility": 30,
-                    "reliability": 100,
-                    "severity": "gray",
-                    "tlp": "amber",
-                    "ttl": 30
-                },
-                "id": "1212213123",
-                "matchesType": [
-                    "readme"
-                ],
-                "matchesTypeCount": {
-                    "readme": 1
-                },
-                "name": "README.md",
-                "revisions": [
-                        {
-                            "bind": [
-                                {
-                                    "bindBy": "",
-                                    "companyId": 0,
-                                    "data": "",
-                                    "ruleId": 0,
-                                    "type": "readme"
-                                }
-                            ],
-                            "data": None,
-                            "hash": "test",
-                            "info": {
-                                "authorEmail": "test@users.noreply.github.com",
-                                "authorName": "ThreepreneurGlobal",
-                                "timestamp": 1611429178
-                            }
-                        }
-                ],
-                "rules": None,
-                "url": "https://github.com/test/README.md"
-            },
-        ]
-    }
-
-    expected_output = {
-        "revisions": '| URL  |   Author Email  | Author Name  | Date Created  |   '
-        'TimeStamp  |\n| ---- | --------------- | ------------ | ------------- | --'
-        '---------- |\n| https://github.com/test/README.md | test@users.noreply.git'
-        'hub.com | ThreepreneurGlobal | None | 1611429178 |\n'
-    }
-
-    result = TransformFieldsToMarkdown(
-        collection_name=collection_name, feed=feed
-    ).run_transform()
-
-    assert result == expected_output
-
-
-def test_transform_some_fields_into_markdown_public_leak():
-
-    collection_name = "osi/public_leak"
-    feed = {
-        "linkList":
-            {
-                "author": ["John Doe"],
-                "detected": ["2023-10-16"],
-                "published": ["2023-10-15"],
-                "hash": ["abcdef123456"],
-                "link": ["https://example.com"],
-                "source": ["Example Source"],
-            },
-        "matches": {
-            "Type1": {"SubType1": ["Value1", "Value2"], "SubType2": ["Value3"]},
-            "Type2": {"SubType3": ["Value4"]},
-                },
-    }
-
-    expected_output = {
-        'linkList': '| Author | Date Detected | Date Published | Hash | Link | '
-        'Source |\n| ------ | ------------- | -------------- | ---- |----- | ---'
-        '--- |\n| John Doe | 2023-10-16 | 2023-10-15 | abcdef123456 | '
-        '[https://example.com](https://example.com) | Example Source |\n',
-        'matches': '| Type | Sub Type | Value |\n| ---- | -------- | ----- |\n| Type1 '
-        '| SubType1 | Value1 |\n| Type1 | SubType1 | Value2 |\n| Type1 | SubType2 | '
-        'Value3 |\n| Type2 | SubType3 | Value4 |\n'}
-
-    result = TransformFieldsToMarkdown(
-        collection_name=collection_name, feed=feed
-    ).run_transform()
-
-    assert result == expected_output

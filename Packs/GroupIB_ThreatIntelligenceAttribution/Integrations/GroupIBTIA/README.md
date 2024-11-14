@@ -23,8 +23,12 @@ This integration was integrated and tested with version 1.0 of Group-IB Threat I
     | Colletions to fetch            | Type\(s\) of incidents to fetch from the third party API. | False |
     | Incidents first fetch          | Date to start fetching incidents from. | False |
     | Number of requests per collection | A number of requests per collection that integration sends in one faetch iteration \(each request picks up to 200 incidents\). If you face some runtime errors, lower the value. | False |
+    | Hunting Rules | To enable the collection of data using hunting rules, please select this parameter. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Note:
+Requests to the following collections come with the Hunting Rules parameter by default: `osi/git_repository, osi/public_leak, compromised/breached`
 
 ## Commands
 

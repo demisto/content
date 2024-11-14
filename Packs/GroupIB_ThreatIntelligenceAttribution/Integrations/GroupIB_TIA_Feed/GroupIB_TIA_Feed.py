@@ -22,6 +22,7 @@ COMMON_MAPPING = {
             "event_url": "URL",
             "event_domain": "Domain",
             "events_ipv4_ip": "IP",
+            "service_url":"URL",
         },
         "add_fields_types": {
             "event_url": {
@@ -36,6 +37,9 @@ COMMON_MAPPING = {
                 "country_name": "geocountry",
                 "region": "geolocation",
             },
+            "service_url":{
+                "id": "gibid",
+            }
         },
         "parser_mapping": {
             "id": "id",
@@ -45,6 +49,7 @@ COMMON_MAPPING = {
             "asn": "events.client.ipv4.asn",
             "country_name": "events.client.ipv4.countryName",
             "region": "events.client.ipv4.region",
+            "service_url":"service.url",
         },
     },
     "compromised/bank_card_group": {
@@ -232,9 +237,13 @@ COMMON_MAPPING = {
             "evaluation_severity": "evaluation.severity",
             "date_begin": "dateBegin",
             "date_end": "dateEnd",
+            "cnc_url": "cnc.url",
+            "cnc_domain": "cnc.domain",
+            "cnc_ipv4_ip": "cnc.ipv4.ip",
             "cnc_ipv4_asn": "cnc.ipv4.asn",
             "cnc_ipv4_country_name": "cnc.ipv4.countryName",
             "cnc_ipv4_region": "cnc.ipv4.region",
+            "target_ipv4_ip": "target.ipv4.ip",
             "target_ipv4_asn": "target.ipv4.asn",
             "target_ipv4_country_name": "target.ipv4.countryName",
             "target_ipv4_region": "target.ipv4.region",
@@ -831,7 +840,7 @@ COMMON_MAPPING = {
     },
 }
 
-
+COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES = ["osi/git_repository", "osi/public_leak", "compromised/breached"]
 class Client(BaseClient):
     """
     Client will implement the service API, and should not contain any Demisto logic.
@@ -847,7 +856,7 @@ class Client(BaseClient):
         self.poller = TIPoller(
             username=self._auth[0],
             api_key=self._auth[1],
-            api_url="https://tap.group-ib.com/api/v2/",
+            api_url=base_url,
         )
         self.poller.set_product(
             product_type="SOAR",
@@ -980,7 +989,6 @@ class IndicatorBuilding:
 
         return sorted_indicators
 
-    
     def build_indicator_value_for_software_mixed(self, feed: dict) -> str:
         markdowns = self.collection_mapping.get("markdowns", {})
         software_mixed_data = feed.get("software_mixed", {})
@@ -991,13 +999,13 @@ class IndicatorBuilding:
         if num_rows > 0:
             for i in range(num_rows):
                 row = (
-                                " | "
-                                + " | ".join(
-                                    software_mixed_data[key][i]
-                                    for key in software_mixed_data
-                                )
-                                + " \n"
-                            )
+                    " | "
+                    + " | ".join(
+                        software_mixed_data[key][i]
+                        for key in software_mixed_data
+                    )
+                    + " \n"
+                )
                 rows += row
 
             software_mixed = rows
@@ -1006,13 +1014,13 @@ class IndicatorBuilding:
 
         indicator_value = software_mixed
         return indicator_value
-    
+
     def build_indicator_value_for_date_field(self, feed: dict, indicator_type_name: str):
         indicator_value = dateparser.parse(feed.get(indicator_type_name))  # type: ignore
         if indicator_value is not None:
-            indicator_value = indicator_value.strftime(DATE_FORMAT)  # type: ignore      
+            indicator_value = indicator_value.strftime(DATE_FORMAT)  # type: ignore
         return indicator_value
-    
+
     def extract_single_value(self, value):
         """
         Extracts a single non-empty value from a potentially nested list.
@@ -1026,9 +1034,10 @@ class IndicatorBuilding:
                 result = self.extract_single_value(item)
                 if result is not None and result != "":
                     return result
+            return None
         else:
-            return value if value is not None and value != "" else None   
-    
+            return value if value is not None and value != "" else None
+
     def find_iocs_in_feed(self, feed: dict) -> list:
         """
         Finds IOCs in the feed and transforms them to the appropriate format to ingest them into Demisto.
@@ -1041,11 +1050,12 @@ class IndicatorBuilding:
         indicators = []
 
         demisto.debug(f"Starting to process find_iocs_in_feed feed: {feed}, collection: {self.collection_name}")
-        
+
         for indicator_type_name, indicator_type in indicators_types.items():
             add_fields = {}
-            demisto.debug(f"Processing find_iocs_in_feed indicator type: {indicator_type_name}, corresponding type: {indicator_type}")
-            
+            demisto.debug(
+                f"Processing find_iocs_in_feed indicator type: {indicator_type_name}, corresponding type: {indicator_type}")
+
             if indicator_type in self.fields_list_for_parse:
                 indicator_value = self.build_indicator_value_for_date_field(feed=feed, indicator_type_name=indicator_type_name)
                 demisto.debug(f"Extracted date field find_iocs_in_feed indicator value: {indicator_value}")
@@ -1053,29 +1063,31 @@ class IndicatorBuilding:
                 if indicator_type_name == "software_mixed":
                     indicator_value = self.build_indicator_value_for_software_mixed(feed=feed)
                     demisto.debug(f"Extracted software mixed find_iocs_in_feed indicator value: {indicator_value}")
-                    
+
                 elif indicator_type_name in indicators_add_fields_types:
                     # Retrieve the initial indicator value
                     indicator_value = feed.get(indicator_type_name)
                     demisto.debug(f"Raw find_iocs_in_feed indicator value for {indicator_type_name}: {indicator_value}")
-                    
+
                     # If the value is a list, flatten it to get a single non-list value
                     indicator_value = self.extract_single_value(indicator_value)
                     demisto.debug(f"Flattened find_iocs_in_feed indicator value: {indicator_value}")
 
                     # Now process additional fields
-                    for additional_field_name, additional_field_type in indicators_add_fields_types.get(indicator_type_name).items():
+                    for additional_field_name, additional_field_type in indicators_add_fields_types.get(indicator_type_name).items():  # noqa: E501
                         additional_field_value = feed.get(additional_field_name)
-                        
+
                         # Process additional_field_value similarly
                         additional_field_value = self.extract_single_value(additional_field_value)
 
-                        demisto.debug(f"Processed find_iocs_in_feed additional field '{additional_field_name}': {additional_field_value}")
-                        
+                        demisto.debug(
+                            f"Processed find_iocs_in_feed additional field '{additional_field_name}': {additional_field_value}")
+
                         # Only add to add_fields if additional_field_value is not None or empty
                         if additional_field_value is not None and additional_field_value != "":
                             add_fields[additional_field_type] = additional_field_value
-                            demisto.debug(f"Added additional field find_iocs_in_feed '{additional_field_type}': {additional_field_value}")
+                            demisto.debug(
+                                f"Added additional field find_iocs_in_feed '{additional_field_type}': {additional_field_value}")
 
                     add_fields.update(
                         {
@@ -1084,7 +1096,6 @@ class IndicatorBuilding:
                         }
                     )
                     demisto.debug(f"Updated find_iocs_in_feed additional fields: {add_fields}")
-
 
             # Create the raw JSON object
             if indicator_value is not None and indicator_value != "":
@@ -1106,12 +1117,12 @@ class IndicatorBuilding:
                     }
                 )
                 demisto.debug(f"Added indicator find_iocs_in_feed: {indicator_value} of type: {indicator_type}")
-        
+
         demisto.debug(f"Final list of find_iocs_in_feed indicators: {indicators}")
-        
+
         indicators = IndicatorBuilding.transform_list_to_str(indicators)
         return indicators
-    
+
     def get_indicators(self) -> list:
         indicators = []
         results = []
@@ -1212,10 +1223,16 @@ def fetch_indicators_command(
             first_fetch_time=first_fetch_time,
         )
 
+        if collection_name in COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES:
+            hunting_rules = 1
+        else:
+            hunting_rules = None
+            
         generator = client.poller.create_update_generator(
             collection_name=collection_name,
             date_from=date_from,
-            sequpdate=seq_update,  # type: ignore
+            sequpdate=seq_update,
+            apply_hunting_rules=hunting_rules,
         )
 
         for portion in generator:
@@ -1227,6 +1244,7 @@ def fetch_indicators_command(
                 common_fields=common_fields,
                 collection_mapping=mapping,
             ).get_indicators()
+            
             indicators.extend(builded_indicators)
             requests_sent += 1
             if requests_sent >= requests_count:

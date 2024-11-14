@@ -152,18 +152,22 @@ script:
       description: GIB Collection to get indicators from.
       name: collection
       predefined:
+      - compromised/account_group
+      - compromised/bank_card_group
       - compromised/mule
-      - compromised/imei
       - attacks/ddos
       - attacks/deface
-      - attacks/phishing
       - attacks/phishing_kit
+      - attacks/phishing_group
       - hi/threat
       - apt/threat
       - osi/vulnerability
+      - osi/git_repository
       - suspicious_ip/tor_node
       - suspicious_ip/open_proxy
       - suspicious_ip/socks_proxy
+      - suspicious_ip/vpn
+      - suspicious_ip/scanner
       - malware/cnc
       - ioc/common
       required: true
