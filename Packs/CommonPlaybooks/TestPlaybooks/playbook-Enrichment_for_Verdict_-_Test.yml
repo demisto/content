@@ -2,7 +2,7 @@ id: Enrichment for Verdict - Test
 version: -1
 name: Enrichment for Verdict - Test
 description: |-
-  This playbook tests the ‘Enrichment for Verdict’ playbook which is part of the ‘Common Playbooks’ pack.
+  This playbook tests the ‘Enrichment for Verdict’ playbook which is part of the ‘Common Playbooks’ pack test.
   The playbook includes the following conducted tests:
   - Checks the enrichment of the url.
   - Checks the enrichment of the file.
