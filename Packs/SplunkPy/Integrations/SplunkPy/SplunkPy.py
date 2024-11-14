@@ -1022,6 +1022,29 @@ def get_drilldown_timeframe(notable_data, raw) -> tuple[str, str]:
     return earliest_offset, latest_offset
 
 
+def escape_invalid_chars_in_drilldown_json(drilldown_search):
+    """ Goes over the drilldown search, and replace the unescaped or invalid chars.
+
+    Args:
+        drilldown_search (str): The drilldown search.
+
+    Returns:
+        str: The escaped drilldown search.
+    """
+    # escape the " of string from the form of 'some_key="value"' which the " char are invalid in json value
+    for unescaped_val in re.findall(r'(?<==)\"[^\"]*\"', drilldown_search):
+        escaped_val = unescaped_val.replace('"', '\\"')
+        drilldown_search = drilldown_search.replace(unescaped_val, escaped_val)
+
+    # replace the new line (\n) with in the IN (...) condition with ','
+    # Splunk replace the value of some multiline fields to the value which contain \n
+    # due to the 'expandtoken' macro
+    for multiline_val in re.findall(r'(?<=in|IN)\s*\([^\)]*\n[^\)]*\)', drilldown_search):
+        csv_val = multiline_val.replace('\n', ',')
+        drilldown_search = drilldown_search.replace(multiline_val, csv_val)
+    return drilldown_search
+
+
 def parse_drilldown_searches(drilldown_searches: list) -> list[dict]:
     """ Goes over the drilldown searches list, parses each drilldown search and converts it to a python dictionary.
 
@@ -1037,6 +1060,7 @@ def parse_drilldown_searches(drilldown_searches: list) -> list[dict]:
     for drilldown_search in drilldown_searches:
         try:
             # drilldown_search may be a json list/dict represented as string
+            drilldown_search = escape_invalid_chars_in_drilldown_json(drilldown_search)
             search = json.loads(drilldown_search)
             if isinstance(search, list):
                 searches.extend(search)
@@ -3033,7 +3057,7 @@ def get_connection_args(params: dict) -> dict:
     """
     app = params.get('app', '-')
     return {
-        'host': params['host'],
+        'host': params['host'].replace('https://', '').rstrip('/'),
         'port': params['port'],
         'app': app or "-",
         'verify': VERIFY_CERTIFICATE,
