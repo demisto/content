@@ -1763,7 +1763,7 @@ List all zones that the current user has access to manage.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Akamai.EdgeDns.Zones | unknown |  | 
+| Akamai.EdgeDns.Zones | Dictionary | Dictionary of Edge DNS zones. | 
 
 ### akamai-list-appsec-config
 
