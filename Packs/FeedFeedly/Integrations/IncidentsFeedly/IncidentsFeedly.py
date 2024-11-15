@@ -991,18 +991,20 @@ def fetch_incidents(client: Client, params: dict[str, str], context: dict[str, s
 
 
 def get_newer_than_timestamp(params: dict[str, str], context: dict[str, str]) -> float:
-    return float(
-        context.get(
-            "last_fetched_article_crawled_time", time.time() - int(params.get("days_to_backfill", 7)) * 24 * 3600
-        )
-    )
+    stream_id = params["feedly_stream_id"]
+    if "/tag/" in stream_id:
+        saved_timestamp = context.get("last_run")
+    else:
+        saved_timestamp = context.get("last_fetched_article_crawled_time")
+
+    return float(saved_timestamp or (time.time() - int(params.get("days_to_backfill", 7)) * 24 * 3600))
 
 
-def set_next_newer_than(incidents: list[dict]) -> None:
+def set_next_newer_than(incidents: list[dict], now: float) -> None:
     if not incidents:
         return
-    newer_than = datetime.fromisoformat(max(incident["occured"] for incident in incidents)).timestamp()
-    demisto.setLastRun({"last_fetched_article_crawled_time": newer_than})
+    last_fetched_article_time = datetime.fromisoformat(max(incident["occured"] for incident in incidents)).timestamp()
+    demisto.setLastRun({"last_fetched_article_crawled_time": last_fetched_article_time, "last_run": now})
 
 
 def test_module(client: Client, params: dict) -> str:  # pragma: no cover
@@ -1036,9 +1038,10 @@ def main() -> None:
         )
 
         if command == "fetch-incidents":
+            now = time.time()
             incidents = fetch_incidents(client, params, demisto.getLastRun())
             demisto.incidents(incidents)
-            set_next_newer_than(incidents)
+            set_next_newer_than(incidents, now)
         elif command == "test-module":
             return_results(test_module(client, params))
         else:

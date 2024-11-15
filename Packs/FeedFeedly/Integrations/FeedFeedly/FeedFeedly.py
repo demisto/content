@@ -1002,11 +1002,13 @@ def fetch_indicators_command(
 
 
 def get_newer_than_timestamp(params: dict[str, str], context: dict[str, str]) -> float:
-    return float(
-        context.get(
-            "last_fetched_article_crawled_time", time.time() - int(params.get("days_to_backfill", 7)) * 24 * 3600
-        )
-    )
+    stream_id = params["feedly_stream_id"]
+    if "/tag/" in stream_id:
+        saved_timestamp = context.get("last_run")
+    else:
+        saved_timestamp = context.get("last_fetched_article_crawled_time")
+
+    return float(saved_timestamp or (time.time() - int(params.get("days_to_backfill", 7)) * 24 * 3600))
 
 
 def extract_next_newer_than(stix_objects: list[dict[str, str]]) -> float | None:
@@ -1017,8 +1019,8 @@ def extract_next_newer_than(stix_objects: list[dict[str, str]]) -> float | None:
     ).timestamp()
 
 
-def set_next_newer_than(next_newer_than: float) -> None:
-    demisto.setLastRun({"last_fetched_article_crawled_time": next_newer_than})
+def set_next_newer_than(last_article_time: float, now: float) -> None:
+    demisto.setLastRun({"last_fetched_article_crawled_time": last_article_time, "last_run": now})
 
 
 def main():  # pragma: no cover
@@ -1044,11 +1046,12 @@ def main():  # pragma: no cover
             return_results(get_indicators_command(client, params, args))
 
         elif command == "fetch-indicators":
-            indicators, next_newer_than = fetch_indicators_command(client, params, demisto.getLastRun())
+            now = time.time()
+            indicators, last_fetched_article_time = fetch_indicators_command(client, params, demisto.getLastRun())
             for indicators_batch in batch(indicators, batch_size=2000):
                 demisto.createIndicators(indicators_batch)  # type: ignore
-            if next_newer_than:
-                set_next_newer_than(next_newer_than)
+            if indicators:
+                set_next_newer_than(last_fetched_article_time, now)  # type: ignore
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
 
