@@ -40,11 +40,11 @@ def session_fixture(request):
     Fixture for setting up a session with a client instance specific to each collection.
 
     Given:
-      - COLLECTION_NAMES, a list of collection names representing different data types 
+      - COLLECTION_NAMES, a list of collection names representing different data types
         that the integration handles.
 
     When:
-      - Each test function uses this fixture to set up a unique session with a particular 
+      - Each test function uses this fixture to set up a unique session with a particular
         collection name.
 
     Then:
@@ -52,9 +52,11 @@ def session_fixture(request):
           - The current collection name as a parameter for test functions that may need it.
           - An instance of Client configured with the specified base URL, authentication,
             and necessary headers for the integration.
-      - This fixture allows parameterized tests that run independently for each collection, 
+      - This fixture allows parameterized tests that run independently for each collection,
         providing an isolated client setup for each run.
     """
+    if USERNAME == "example@roup-ib.com" or PASSWORD == "exampleAPI_TOKEN":
+        raise Exception("You must replace the basic credentials to run the tests")
     return request.param, Client(
         base_url=BASE_URL,
         auth=(USERNAME, PASSWORD),
@@ -68,7 +70,7 @@ def test_fetch_indicators_command(session_fixture):
     Test for validating the functionality of fetch_indicators_command with multiple collection types.
 
     Given:
-      - A session_fixture that supplies a client instance configured for a specific collection 
+      - A session_fixture that supplies a client instance configured for a specific collection
         name for each test iteration.
       - collection_name, the current collection name being tested (e.g., "compromised/mule").
 
@@ -78,20 +80,20 @@ def test_fetch_indicators_command(session_fixture):
           - first_fetch_time set based on specific collection conditions:
             - For "compromised/mule", first_fetch_time is set to a fixed date of "2023-01-01".
             - For "attacks/deface", first_fetch_time is set to "2024-10-01".
-            - For all other collections, first_fetch_time is set to "15 days" as a general 
+            - For all other collections, first_fetch_time is set to "15 days" as a general
               recent timeframe.
           - indicator_collections set to a list containing only the current collection_name.
           - requests_count set to 3, which limits the number of requests per fetch.
-          - common_fields set to an empty dictionary for simplicity, as no specific common 
+          - common_fields set to an empty dictionary for simplicity, as no specific common
             fields are required for this test.
 
     Then:
       - Validates that:
-          - "last_fetch" is a key in next_run, indicating that the command updates last_run 
+          - "last_fetch" is a key in next_run, indicating that the command updates last_run
             data with the latest fetch time.
-          - The first indicator in the indicators list contains a "fields" dictionary with 
+          - The first indicator in the indicators list contains a "fields" dictionary with
             a "gibid" key, verifying that each indicator has the expected structure.
-      - This test ensures that fetch_indicators_command retrieves data according to each 
+      - This test ensures that fetch_indicators_command retrieves data according to each
         collection’s parameters and formats the output consistently.
     """
     collection_name, client = session_fixture
@@ -101,7 +103,7 @@ def test_fetch_indicators_command(session_fixture):
         first_fetch_time = "2024-10-01"
     else:
         first_fetch_time = "15 days"
-        
+
     next_run, indicators = fetch_indicators_command(
         client=client,
         last_run={},
@@ -110,7 +112,7 @@ def test_fetch_indicators_command(session_fixture):
         requests_count=3,
         common_fields={}
     )
-    
+
     assert "last_fetch" in next_run, (
         "Expected 'last_fetch' key in next_run to indicate the last data retrieval time."
     )

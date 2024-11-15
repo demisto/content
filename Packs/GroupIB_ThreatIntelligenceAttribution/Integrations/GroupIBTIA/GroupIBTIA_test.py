@@ -52,7 +52,7 @@ def session_fixture(request):
 
     Given:
       - A list of predefined collection names that represent different types of data.
-    
+
     When:
       - Each test function requests an instance of this fixture.
 
@@ -61,12 +61,15 @@ def session_fixture(request):
       - The Client instance is configured to interact with the appropriate collection by connecting
         to the integration's base URL, using authentication, and including necessary headers.
     """
+    if USERNAME == "example@roup-ib.com" or PASSWORD == "exampleAPI_TOKEN":
+        raise Exception("You must replace the basic credentials to run the tests")
     return request.param, Client(
         base_url=BASE_URL,
         auth=(USERNAME, PASSWORD),
         verify=True,
         headers={"Accept": "*/*"},
     )
+
 
 @pytest.fixture(scope="function")
 def single_session_fixture():
@@ -83,13 +86,15 @@ def single_session_fixture():
       - Returns a Client instance configured with the base URL, authentication, and headers.
       - The instance can be reused by any test that doesn't depend on a specific collection name.
     """
+    if USERNAME == "example@roup-ib.com" or PASSWORD == "exampleAPI_TOKEN":
+        raise Exception("You must replace the basic credentials to run the tests")
     return Client(
         base_url=BASE_URL,
         auth=(USERNAME, PASSWORD),
         verify=True,
         headers={"Accept": "*/*"},
     )
-    
+
 
 def test_fetch_incidents(session_fixture):
     """

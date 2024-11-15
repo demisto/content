@@ -22,7 +22,7 @@ COMMON_MAPPING = {
             "event_url": "URL",
             "event_domain": "Domain",
             "events_ipv4_ip": "IP",
-            "service_url":"URL",
+            "service_url": "URL",
         },
         "add_fields_types": {
             "event_url": {
@@ -37,7 +37,7 @@ COMMON_MAPPING = {
                 "country_name": "geocountry",
                 "region": "geolocation",
             },
-            "service_url":{
+            "service_url": {
                 "id": "gibid",
             }
         },
@@ -49,7 +49,7 @@ COMMON_MAPPING = {
             "asn": "events.client.ipv4.asn",
             "country_name": "events.client.ipv4.countryName",
             "region": "events.client.ipv4.region",
-            "service_url":"service.url",
+            "service_url": "service.url",
         },
     },
     "compromised/bank_card_group": {
@@ -62,7 +62,7 @@ COMMON_MAPPING = {
             "cnc_url": {
                 "id": "gibid",
             },
-            "cnc_domain":{
+            "cnc_domain": {
                 "id": "gibid",
             },
             "cnc_ipv4_ip": {
@@ -844,6 +844,8 @@ COMMON_MAPPING = {
 }
 
 COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES = ["osi/git_repository", "osi/public_leak", "compromised/breached"]
+
+
 class Client(BaseClient):
     """
     Client will implement the service API, and should not contain any Demisto logic.
@@ -1230,7 +1232,7 @@ def fetch_indicators_command(
             hunting_rules = 1
         else:
             hunting_rules = None
-            
+
         generator = client.poller.create_update_generator(
             collection_name=collection_name,
             date_from=date_from,
@@ -1247,7 +1249,7 @@ def fetch_indicators_command(
                 common_fields=common_fields,
                 collection_mapping=mapping,
             ).get_indicators()
-            
+
             indicators.extend(builded_indicators)
             requests_sent += 1
             if requests_sent >= requests_count:

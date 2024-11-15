@@ -409,7 +409,6 @@ COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES = ["osi/git_repository", "osi/public
 COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED = ["compromised/breached"]
 
 
-
 MAPPING = {
     "compromised/account_group": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "login",
@@ -1600,6 +1599,8 @@ class CommonHelpers:
             ) + str(incident["emails"][0])
 
         return incident
+
+
 class IndicatorsHelper:
 
     @staticmethod
@@ -1892,8 +1893,6 @@ class IncidentBuilder:
                         self.incident[field] = clean_data
                     else:
                         self.incident[field] = None
-
-    
 
     def build_incident(self) -> dict:
         self.incident = CommonHelpers.custom_generate_portal_link(collection_name=self.collection_name, incident=self.incident)
@@ -2314,7 +2313,6 @@ def main():
                         f"Collection {collection} Does't support hunting rules"
                     )
 
-        
         info_comands = {
             "gibtia-get-compromised-account-info": "compromised/account_group",
             "gibtia-get-compromised-card-group-info": "compromised/bank_card_group",
