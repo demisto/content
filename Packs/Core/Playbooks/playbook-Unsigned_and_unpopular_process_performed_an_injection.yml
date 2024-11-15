@@ -227,6 +227,7 @@ tasks:
                     right:
                       value:
                         simple: alert.cid
+                      iscontext: true
                     ignorecase: true
                 accessor: action
             iscontext: true
@@ -528,7 +529,18 @@ tasks:
       endpoint_id:
         simple: ${alert.agentid}
       incident_id:
-        simple: ${parentIncidentFields.incident_id}
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -838,15 +850,17 @@ view: |-
       "12_13_Isolate": 0.42,
       "12_8_#default#": 0.44,
       "14_10_Yes": 0.37,
+      "14_20_#default#": 0.23,
       "18_19_#error#": 0.65,
       "21_12_#default#": 0.3,
       "21_8_Weak": 0.32,
       "4_12_Blocked": 0.1,
       "4_15_Reported": 0.66,
       "4_7_#default#": 0.81,
-      "5_14_#default#": 0.4,
+      "5_14_#default#": 0.38,
       "5_20_Signed": 0.12,
-      "7_10_Behavioral Alerts": 0.46,
+      "7_10_Behavioral Alerts": 0.39,
+      "7_14_MITRE Tactic": 0.64,
       "7_5_#default#": 0.64
     },
     "paper": {
