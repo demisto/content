@@ -180,10 +180,7 @@ def inject_cookies(func: Callable) -> Callable:
         func (Callable): The API request function to be executed.
 
     Raises:
-        DemistoException:
-            - If the API returns an HTTP FORBIDDEN status during the initial request
-                attempt and re-authentication also fails.
-            - If the API returns any other error during the request.
+        DemistoException: If the API request fails.
 
     Returns:
         Callable: The result from executing 'func' with the provided arguments and keyword arguments.
