@@ -94,7 +94,7 @@ tasks:
       script: Set
     nexttasks:
       '#none#':
-      - "5"
+      - "8"
     scriptarguments:
       key:
         simple: RemediationGuidance
@@ -255,7 +255,7 @@ tasks:
       asmattacksurfacerulepriority:
         simple: ${ASM.AttackSurfaceRule.priority}
       asmattacksurfaceruleremediationguidance:
-        simple: ${ASM.AttackSurfaceRule.remediation_guidance}
+        simple: ${ASM.AttackSurfaceRule.remediation_guidance}${RemediationGuidance}
     separatecontext: false
     continueonerrortype: ""
     view: |-
