@@ -326,6 +326,7 @@ COLLECTIONS_THAT_MAY_NOT_SUPPORT_ID_SEARCH_VIA_UPDATED = [
     "suspicious_ip/tor_node",
     "suspicious_ip/open_proxy",
     "suspicious_ip/socks_proxy",
+    "osi/public_leak",
 ]
 
 SET_WITH_ALL_DATE_FIELDS = {
@@ -1587,7 +1588,18 @@ class CommonHelpers:
                         item[key] = ", ".join(str(v) for v in value)
         return data
 
+    @staticmethod
+    def custom_generate_portal_link(collection_name: str, incident: dict):
+        if (
+            collection_name
+            in COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED
+        ):
+            # generating just for compromised/breached
+            incident["portalLink"] = PORTAL_LINKS.get(
+                "compromised/breached", ""
+            ) + str(incident["emails"][0])
 
+        return incident
 class IndicatorsHelper:
 
     @staticmethod
@@ -1881,18 +1893,10 @@ class IncidentBuilder:
                     else:
                         self.incident[field] = None
 
-    def custom_generate_portal_link(self):
-        if (
-            self.collection_name
-            in COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED
-        ):
-            # generating just for compromised/breached
-            self.incident["portalLink"] = PORTAL_LINKS.get(
-                "compromised/breached", ""
-            ) + str(self.incident["emails"][0])
+    
 
     def build_incident(self) -> dict:
-        self.custom_generate_portal_link()
+        self.incident = CommonHelpers.custom_generate_portal_link(collection_name=self.collection_name, incident=self.incident)
         incident_name = self.get_incident_name()
         system_severity = self.get_system_severity()
         self.incident.update(
@@ -1961,8 +1965,12 @@ class BuilderCommandResponses:
             self.collection_name
             in COLLECTIONS_THAT_MAY_NOT_SUPPORT_ID_SEARCH_VIA_UPDATED
         ):
+            if self.collection_name == "osi/public_leak":
+                query = f"id:{id_}"
+            else:
+                query = id_
             portions = self.client.poller.create_update_generator(
-                collection_name=self.collection_name, query=id_
+                collection_name=self.collection_name, query=query
             )
             for portion in portions:
                 parsed_portion = portion.parse_portion(
@@ -1972,7 +1980,6 @@ class BuilderCommandResponses:
 
         else:
             result = self.client.poller.search_feed_by_id(self.collection_name, id_)
-
             parsed_portion = result.parse_portion(
                 keys=MAPPING.get(self.collection_name, {})
             )
@@ -2013,6 +2020,7 @@ class BuilderCommandResponses:
 
     def build_feed(self):
         feed = self.get_feed()
+        feed = CommonHelpers.custom_generate_portal_link(collection_name=self.collection_name, incident=feed)
         indicators, feed = self.get_indicators(feed=feed)
         main_table_data, additional_tables = self.get_table_data(feed=feed)
         feed_id = feed.get("id")

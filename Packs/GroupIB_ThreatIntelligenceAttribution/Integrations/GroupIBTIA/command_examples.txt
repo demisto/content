@@ -12,9 +12,9 @@
 !gibtia-get-attacks-deface-info id=6009637a1135cd001ef46e21
 !gibtia-get-threat-info id=1b09d389d016121afbffe481a14b30ea995876e4 isAPT=true
 !gibtia-get-threat-actor-info id=0d4496592ac3a0f5511cd62ef2988 isAPT=true
-!gibtia-get-suspicious-ip-tor-node-info id=109.70.100.46
-!gibtia-get-suspicious-ip-open-proxy-info id=cc6a2856da2806b03839f81aa214f22dbcfd7369
-!gibtia-get-suspicious-ip-socks-proxy-info id=02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e
+!gibtia-get-suspicious-ip-tor-node-info id=100.100.100.100
+!gibtia-get-suspicious-ip-open-proxy-info id=100.100.100.100
+!gibtia-get-suspicious-ip-socks-proxy-info id=100.100.100.100
 !gibtia-get-suspicious-ip-vpn-info id=100.100.100.100
 !gibtia-get-suspicious-ip-scanner-info id=100.100.100.100
 !gibtia-get-malware-cnc-info id=aeed277396e27e375d030a91533aa232444d0089

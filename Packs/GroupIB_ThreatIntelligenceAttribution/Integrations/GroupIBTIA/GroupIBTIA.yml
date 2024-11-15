@@ -947,6 +947,20 @@ script:
       description: 'GIB event id.e.g.: 653654fb986b47a31c73d92f4a20a273acd2f779.'
     description: Command performs Group IB event lookup in malware/malware collection
       by provided ID.
+  - name: gibtia-get-compromised-card-group-info
+    arguments:
+    - name: id
+      required: true
+      description: GIB event id
+    description: Command performs Group IB event lookup in compromised/bank_card_group
+      collection by provided ID.
+  - name: gibtia-get-phishing-group-info
+    arguments:
+    - name: id
+      required: true
+      description: GIB event id
+    description: Command performs Group IB event lookup in attacks/phishing_group
+      collection by provided ID.
   dockerimage: demisto/vendors-sdk:1.0.0.106889
   feed: false
   isfetch: true

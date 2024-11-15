@@ -62,6 +62,9 @@ COMMON_MAPPING = {
             "cnc_url": {
                 "id": "gibid",
             },
+            "cnc_domain":{
+                "id": "gibid",
+            },
             "cnc_ipv4_ip": {
                 "id": "gibid",
                 "cnc_ipv4_asn": "asn",
@@ -1275,8 +1278,12 @@ def get_indicators_command(client: Client, args: dict[str, str]):
     indicators = []
 
     if not id_:
-        portions = client.poller.create_search_generator(
-            collection_name=collection_name, limit=limit
+        if collection_name in COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES:
+            apply_hunting_rules = 1
+        else:
+            apply_hunting_rules = None
+        portions = client.poller.create_update_generator(
+            collection_name=collection_name, limit=limit, apply_hunting_rules=apply_hunting_rules
         )
         for portion in portions:
             parsed_json = portion.parse_portion(keys=mapping.get("parser_mapping"))
