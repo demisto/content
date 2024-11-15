@@ -961,7 +961,7 @@ def create_incident_from_report_indicator(indicator: dict) -> dict:
 
     event = {
         "name": indicator["value"],
-        "create_time": indicator["rawJSON"].get("created"),  # todo
+        "create_time": indicator["rawJSON"].get("published"),
         "event_id": entry_id,
         "feedly_url": feedly_url,
         "tags": indicator["rawJSON"].get("labels", []),

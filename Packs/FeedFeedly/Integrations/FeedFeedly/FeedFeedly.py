@@ -337,7 +337,7 @@ class STIX2Parser:
         fields = {
             "stixid": report_obj.get("id"),
             "firstseenbysource": report_obj.get("created"),
-            "published": report_obj.get("created"),  # todo
+            "published": report_obj.get("published"),
             "description": report_obj.get("description", ""),
             "report_types": report_obj.get("report_types", []),
             "tags": list(set(report_obj.get("labels", []))),
