@@ -1,0 +1,4 @@
+!gti-iocstream-get-indicators
+!gti-iocstream-get-indicators limit=15
+!gti-iocstream-get-indicators limit=5 filter="source_type:hunting_ruleset"
+!gti-iocstream-get-indicators filter="entity_type:file"

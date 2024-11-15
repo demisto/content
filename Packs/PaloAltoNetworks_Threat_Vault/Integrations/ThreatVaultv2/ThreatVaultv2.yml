@@ -1244,7 +1244,7 @@ script:
     - contextPath: ThreatVault.ATP.PCAP.Name
       description: Threatvault ATP PCAP Name
       type: string
-  dockerimage: demisto/crypto:1.0.0.86361
+  dockerimage: demisto/crypto:1.0.0.111961
   isfetch: true
   script: ''
   subtype: python3

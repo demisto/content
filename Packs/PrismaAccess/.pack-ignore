@@ -13,3 +13,6 @@ sase
 [file:playbook-Prisma_SASE_-_Quarantine_Host_With_Active_Threat.yml]
 ignore=BA101
 
+[file:playbook-Prisma_Access_-_Connection_Health_Check.yml]
+ignore=GR107
+

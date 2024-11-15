@@ -1113,12 +1113,15 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
      'View all wineventlogs involving user="test"'),
     ({}, 'Test query name', {}, True, 'Test query name'),
     ({'user': 'test\crusher'}, 'index="test" | where user = $user|s$', {}, False,
-     'index="test" | where user = "test\\\\crusher"'),
+     'index="test" | where user="test\\\\crusher"'),
     ({'user': 'test\crusher'}, 'index="test" | where user = "$user|s$"', {}, False,
-     'index="test" | where user = "test\\\\crusher"'),
+     'index="test" | where user="test\\\\crusher"'),
     ({'countryNameA': '"test\country"', 'countryNameB': '""'},
      'search countryA="$countryNameA|s$" countryB=$countryNameB|s$', {}, False,
      'search countryA="test\country" countryB=""'),
+    ({'test': 'test_user'},
+     'search countryA=\$this is a test\$', {}, False,
+     'search countryA=\$this is a test\$'),
 ], ids=[
     "search query fields in notables data and raw data",
     "search query fields in notable data more than one value",
@@ -1128,7 +1131,8 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
     "query name without fields to replace",
     "search query with a user field that contains a backslash",
     "search query with a user field that is surrounded by quotation marks and contains a backslash",
-    "search query fields in notable data more than one value, with one empty value"
+    "search query fields in notable data more than one value, with one empty value",
+    "search query with $ as part of the search - no need to replace"
 
 ])
 def test_build_drilldown_search(notable_data, search, raw, is_query_name, expected_search, mocker):
@@ -1154,6 +1158,7 @@ def test_build_drilldown_search(notable_data, search, raw, is_query_name, expect
     - Return the expected result
     """
     mocker.patch.object(demisto, 'error')
+    mocker.patch.object(demisto, 'params', return_value={})
     parsed_query = splunk.build_drilldown_search(notable_data, search, raw, is_query_name)
     assert parsed_query == expected_search
 
@@ -1537,7 +1542,7 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
      [("View all login attempts by system 'test_src'",
        '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"'),
       ('View all test involving user="\'test_user\'"',
-       'search index="test"\n| where user = "\'test_user\'"')]),
+       'search index="test"\n| where user="\'test_user\'"')]),
     ({'event_id': 'test_id3', 'drilldown_searches':
         ["{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentication\\\".\\\"Authe"
          "ntication\\\" | search src=$src|s$\",\"earliest_offset\":1715040000,\"latest_offset\":1715126400}",
@@ -1547,7 +1552,7 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
      [("View all login attempts by system 'test_src'",
        '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"'),
       ('View all test involving user="\'test_user\'"',
-       'search index="test"\n| where user = "\'test_user\'"')]),
+       'search index="test"\n| where user="\'test_user\'"')]),
 ], ids=[
     "A notable data with one drilldown search enrichment",
     "A notable data with two drilldown searches which contained the earlies in 'earliest' key ",
@@ -2529,6 +2534,28 @@ def test_empty_string_as_app_param_value(mocker):
     assert connection_args.get('app') == '-'
 
 
+@pytest.mark.parametrize(argnames='host, expected_host', argvalues=[
+    ('8.8.8.8', '8.8.8.8'),
+    ('8.8.8.8/', '8.8.8.8'),
+    ('https://www.test.com', 'www.test.com'),
+    ('https://www.test.com/', 'www.test.com'),
+])
+def test_host_param(host, expected_host):
+    """
+    Given:
+        - Different host values
+    When:
+        - Run get_connection_args() function
+    Then:
+        - Ensure the host is as expected
+    """
+    params = {'host': host, 'port': '111'}
+
+    actuall_host = splunk.get_connection_args(params)['host']
+
+    assert actuall_host == expected_host
+
+
 OWNER_MAPPING = [{'xsoar_user': 'test_xsoar', 'splunk_user': 'test_splunk', 'wait': True},
                  {'xsoar_user': 'test_not_full', 'splunk_user': '', 'wait': True},
                  {'xsoar_user': '', 'splunk_user': 'test_not_full', 'wait': True}, ]
@@ -2785,13 +2812,28 @@ def test_get_drilldown_searches(drilldown_data, expected):
     assert splunk.get_drilldown_searches(drilldown_data) == expected
 
 
-def test_remove_double_quotes():
+@pytest.mark.parametrize('drilldown_search, expected_res',
+                         [('{"name":"test", "query":"|key="the value""}', 'key="the value"'),
+                          ('{"name":"test", "query":"|key in (line_1\nline_2)"}', 'key in (line_1,line_2)'),
+                          ('{"name":"test", "query":"search a=$a|s$ c=$c$ suffix"}', 'search a=$a|s$ c=$c$ suffix')])
+def test_escape_invalid_chars_in_drilldown_json(drilldown_search, expected_res):
     """
-        Given: string with double quotes
-        When: replacing a var in a query
-        Then: make sure no double double quotes are returned.
-    """
-    from SplunkPy import remove_double_quotes
+    Scenario: When extracting the drilldown search query which are a json string,
+    we should escape unescaped JSON special characters.
 
-    assert remove_double_quotes('this is a ""test""') == 'this is a "test"'
-    assert remove_double_quotes('no ""double quotes"" here, and here: ""') == 'no "double quotes" here, and here: ""'
+    Given:
+    - A raw search query with text like 'key="a value"'.
+    - A raw search query with text like where 'key in (a\nb)' which it should be 'key in (a,b)'.
+    - A raw search query with normal json string, should not be changed by this function.
+
+    When:
+    - escape_invalid_chars_in_drilldown_json is called
+
+    Then:
+    - Return the expected result
+    """
+    import json
+
+    res = splunk.escape_invalid_chars_in_drilldown_json(drilldown_search)
+
+    assert expected_res in json.loads(res)['query']

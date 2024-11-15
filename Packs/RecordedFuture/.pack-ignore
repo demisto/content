@@ -12,3 +12,9 @@ ignore=BA110
 ignore=GR103
 [file:classifier-Recorded_Future_PA_mapper.json]
 ignore=GR103
+
+[file:playbook-Recorded_Future_Vulnerability.yml]
+ignore=GR107
+
+[file:playbook-Recorded_Future_Domain_Abuse.yml]
+ignore=GR107
