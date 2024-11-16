@@ -2748,45 +2748,41 @@ def get_audit_agent_reports_command(client, args):
 def get_distribution_url_command(client, args):
     distribution_id = args.get('distribution_id')
     package_type = args.get('package_type')
+    download_package = argToBoolean(args.get('download_package', False))
 
     url = client.get_distribution_url(distribution_id, package_type)
 
-    return (
-        f'[Distribution URL]({url})',
-        {
-            f'{args.get("integration_context_brand", "CoreApiModule")}.Distribution(val.id == obj.id)': {
-                'id': distribution_id,
-                'url': url
-            }
-        },
-        url
-    )
-
-
-def download_distribution_command(client, args):
-    distribution_id = args.get('distribution_id')
-    package_type = args.get('package_type')
-
-    url = client.get_distribution_url(distribution_id, package_type)
-
-    dist_file_contents = client._http_request(
-        method='GET',
-        full_url=url,
-        resp_type="content"
-    )
-    if package_type in ["x64", "x86"]:
-        file_ext = "msi"
-    elif package_type == "upgrade":
-        file_ext = "zip"
+    if download_package:
+        dist_file_contents = client._http_request(
+            method='GET',
+            full_url=url,
+            resp_type="content"
+        )
+        if package_type in ["x64", "x86"]:
+            file_ext = "msi"
+        elif package_type == "upgrade":
+            file_ext = "zip"
+        else:
+            file_ext = package_type
+        dist_file = fileResult(
+            filename=f"xdr-agent-install-package.{file_ext}",
+            data=dist_file_contents
+        )
+        ro = "Successfully downloaded the installation package file"
     else:
-        file_ext = package_type
-    dist_file = fileResult(
-        filename=f"xdr-agent-install-package.{file_ext}",
-        data=dist_file_contents
+        ro = f'[Distribution URL]({url})'
+    res = CommandResults(
+        outputs={
+            'id': distribution_id,
+            'url': url
+        },
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.Distribution',
+        outputs_key_field='id',
+        readable_output=ro
     )
-    return [CommandResults(
-        readable_output="Successfully downloaded the installation package file"
-    ), dist_file]
+    if download_package:
+        res = [res, dist_file]
+    return res
 
 
 def get_distribution_status_command(client, args):

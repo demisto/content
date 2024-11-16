@@ -1222,6 +1222,13 @@ script:
       - x86
       - x64
       required: true
+    - name: download_package
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Whether to actually download the installation package file.
+      defaultValue: "false"
     description: Gets the distribution URL for downloading the installation package.
     name: xdr-get-distribution-url
     outputs:
@@ -3592,24 +3599,6 @@ script:
       Update one or more alerts with the provided arguments.
       Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
     name: xdr-update-alert
-  - arguments:
-    - description: The ID of the installation package. Copy the distribution ID from the "id" field on the Endpoints > Agent Installation page.
-      name: distribution_id
-      required: true
-    - auto: PREDEFINED
-      description: The installation package type. Validvalues are:• upgrade• sh - For Linux• rpm - For Linux• deb - For Linux• pkg - For Mac• x86 - For Windows• x64 - For Windows.
-      name: package_type
-      predefined:
-      - upgrade
-      - sh
-      - rpm
-      - deb
-      - pkg
-      - x86
-      - x64
-      required: true
-    description: Downloads an installation package file.
-    name: xdr-download-distribution
   dockerimage: demisto/python3:3.11.9.107902
   isfetch: true
   isfetch:xpanse: false

@@ -242,7 +242,7 @@ def main():  # pragma: no cover
                                                stop_polling=True))
 
         elif command == 'core-get-distribution-url':
-            return_outputs(*get_distribution_url_command(client, args))
+            return_results(get_distribution_url_command(client, args))
 
         elif command == 'core-get-create-distribution-status':
             return_outputs(*get_distribution_status_command(client, args))
@@ -252,9 +252,6 @@ def main():  # pragma: no cover
 
         elif command == 'core-create-distribution':
             return_outputs(*create_distribution_command(client, args))
-
-        elif command == 'core-download-distribution':
-            return_results(*download_distribution_command(client, args))
             
         elif command == 'core-get-audit-management-logs':
             return_outputs(*get_audit_management_logs_command(client, args))
