@@ -1051,6 +1051,7 @@ Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
 | --- | --- | --- |
 | distribution_id | The ID of the installation package.<br/>Copy the distribution_id from the "id" field on Endpoints &gt; Agent Installation page. | Required | 
 | package_type | The installation package type. Valid<br/>values are:<br/>• upgrade<br/>• sh - For Linux<br/>• rpm - For Linux<br/>• deb - For Linux<br/>• pkg - For Mac<br/>• x86 - For Windows<br/>• x64 - For Windows. Possible values are: upgrade, sh, rpm, deb, pkg, x86, x64. | Required | 
+| download_package | Whether to actually download the installation package file. | Optional | 
 
 
 #### Context Output
@@ -3876,23 +3877,3 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Alerts with IDs 35326 have been updated successfully.
-
-### xdr-download-distribution
-
-***
-Downloads an installation package file.
-
-#### Base Command
-
-`xdr-download-distribution`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| distribution_id | The ID of the installation package. Copy the distribution ID from the "id" field on the Endpoints &gt; Agent Installation page. | Required | 
-| package_type | The installation package type. Validvalues are:• upgrade• sh - For Linux• rpm - For Linux• deb - For Linux• pkg - For Mac• x86 - For Windows• x64 - For Windows. Possible values are: upgrade, sh, rpm, deb, pkg, x86, x64. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
