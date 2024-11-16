@@ -411,12 +411,12 @@ def test_download_distribution(requests_mock):
         - Verify filename
         - Verify readable output is as expected
     """
-    from CoreIRApiModule import download_distribution_command, CoreClient
+    from CoreIRApiModule import get_distribution_url_command, CoreClient
     
     get_distribution_url_response = load_test_data('./test_data/get_distribution_url.json')
     dummy_url = "https://xdrdummyurl.com/11111-distributions/11111/sh"
     requests_mock.post(
-        f'{Core_URL}/public_api/v1/distributions/get_dist_url/', 
+        f'{Core_URL}/public_api/v1/distributions/get_dist_url/',
         json=get_distribution_url_response
     )
     requests_mock.get(
@@ -430,9 +430,10 @@ def test_download_distribution(requests_mock):
     )
     args = {
         'distribution_id': '1111',
-        'package_type': 'x86'   
+        'package_type': 'x86',
+        'download_package': 'true'
     }
-    result, res_file = download_distribution_command(client, args)
+    result, res_file = get_distribution_url_command(client, args)
     assert res_file['File'] == installer_file_name
     assert result.readable_output == "Successfully downloaded the installation package file"
     
