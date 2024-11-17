@@ -606,7 +606,7 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
 
 
 @pytest.mark.parametrize('last_update',
-                         ['2020-11-18T13:16:52.005381+02:00',
+                         ['2020-11-18T13:16:52.005381+01:00',
                           '2024-03-21T17:02:02.000000645Z'])
 def test_get_modified_remote_data_command(requests_mock, last_update):
     """
