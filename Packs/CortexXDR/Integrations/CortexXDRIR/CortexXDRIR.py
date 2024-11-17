@@ -1456,9 +1456,6 @@ def main():  # pragma: no cover
         elif command == 'xdr-create-distribution':
             return_outputs(*create_distribution_command(client, args))
 
-        elif command == 'xdr-download-distribution':
-            return_results(download_distribution_command(client, args))
-
         elif command == 'xdr-get-audit-management-logs':
             return_outputs(*get_audit_management_logs_command(client, args))
 

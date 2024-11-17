@@ -2752,37 +2752,18 @@ def get_distribution_url_command(client, args):
 
     url = client.get_distribution_url(distribution_id, package_type)
 
-    if download_package:
-        dist_file_contents = client._http_request(
-            method='GET',
-            full_url=url,
-            resp_type="content"
-        )
-        if package_type in ["x64", "x86"]:
-            file_ext = "msi"
-        elif package_type == "upgrade":
-            file_ext = "zip"
-        else:
-            file_ext = package_type
-        dist_file = fileResult(
-            filename=f"xdr-agent-install-package.{file_ext}",
-            data=dist_file_contents
-        )
-        ro = "Successfully downloaded the installation package file"
-    else:
-        ro = f'[Distribution URL]({url})'
-    res = CommandResults(
+    if not download_package:
+        return CommandResults(
         outputs={
             'id': distribution_id,
             'url': url
         },
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.Distribution',
         outputs_key_field='id',
-        readable_output=ro
+        readable_output=f'[Distribution URL]({url})'
     )
-    if download_package:
-        res = [res, dist_file]
-    return res
+
+    return download_installation_package(client, url, package_type, distribution_id, args.get("integration_context_brand", "CoreApiModule"))
 
 
 def get_distribution_status_command(client, args):
@@ -2804,6 +2785,34 @@ def get_distribution_status_command(client, args):
         },
         distribution_list
     )
+
+
+def download_installation_package(client, url: str, package_type: str, distribution_id: str, brand: str):
+    dist_file_contents = client._http_request(
+        method='GET',
+        full_url=url,
+        resp_type="content"
+    )
+    if package_type in ["x64", "x86"]:
+        file_ext = "msi"
+    elif package_type == "upgrade":
+        file_ext = "zip"
+    else:
+        file_ext = package_type
+    dist_file = fileResult(
+        filename=f"xdr-agent-install-package.{file_ext}",
+        data=dist_file_contents
+    )
+    result = CommandResults(
+        outputs={
+            'id': distribution_id,
+            'url': url
+        },
+        outputs_prefix=f'{brand}.Distribution',
+        outputs_key_field='id',
+        readable_output="Successfully downloaded the installation package file"
+    )
+    return [result, dist_file]
 
 
 def get_process_context(alert, process_type):
