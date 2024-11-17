@@ -528,7 +528,6 @@ def update_incident_command(client, args):
     )
     is_closed = resolve_comment or (status and argToList(status, '_')[0] == 'RESOLVED')
     if resolve_alerts and is_closed:
-        demisto.debug(f"Update incident is also updating the alerts {args['status']=}")
         args['status'] = args['status'].lower()
         update_related_alerts(client, args)
 
