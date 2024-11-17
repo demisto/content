@@ -222,6 +222,27 @@ class Client:
                 headers = list(results[0].keys() or '')
         return results, headers
 
+    def create_api_metrics(self, status_type: str) -> None:
+        """Reports an API Execution metric to XSOAR server. Does not return anything.
+
+        Args:
+            status_type (str): The type of error/status. Can be 'general_error', 'connection_error' or 'success'.
+        """
+
+        execution_metrics = ExecutionMetrics()
+        if not execution_metrics.is_supported() or demisto.command() in ['test-module', 'fetch-incidents']:
+            return
+
+        if status_type == "general_error":
+            execution_metrics.general_error += 1
+        elif status_type == "connection_error":
+            execution_metrics.connection_error += 1
+        elif status_type == "success":
+            execution_metrics.success += 1
+        else:
+            return
+        return_results(execution_metrics.metrics)
+
 
 def generate_default_port_by_dialect(dialect: str) -> str | None:
     """
@@ -407,6 +428,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
             "InstanceName": f"{client.dialect}_{client.dbname}",
         }
         entry_context: dict = {'GenericSQL(val.Query && val.Query === obj.Query)': {'GenericSQL': context}}
+        client.create_api_metrics(status_type="success")
         return human_readable, entry_context, table
 
     except Exception as err:
@@ -415,6 +437,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
         if str(err) == "This result object does not return rows. It has been closed automatically.":
             human_readable = "Command executed"
             return human_readable, {}, []
+        client.create_api_metrics(status_type="general_error")
         raise err
 
 
@@ -658,6 +681,7 @@ def main():
         }
         if command in commands:
             return_outputs(*commands[command](client, demisto.args(), command))
+
         elif command == 'fetch-incidents':
             incidents, last_run = fetch_incidents(client, params)
             demisto.setLastRun(last_run)
@@ -666,6 +690,7 @@ def main():
             raise NotImplementedError(f'{command} is not an existing Generic SQL command')
     except Exception as err:
         if 'certificate verify failed' in str(err):
+            client.create_api_metrics(status_type="connection_error")
             return_error("Unexpected error: certificate verify failed, unable to get local issuer certificate. "
                          "Try selecting 'Trust any certificate' checkbox in the integration configuration.")
         else:
