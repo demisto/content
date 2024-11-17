@@ -167,6 +167,7 @@ def test_get_incident_events_command(requests_mock, authenticated_client: Client
 
     assert len(result.raw_response) == 10  # same as limit
     assert result.raw_response == mock_response
+    assert result.outputs == [event['data'] for event in mock_response]
 
 
 def test_create_incident_command(requests_mock, authenticated_client: Client) -> None:
