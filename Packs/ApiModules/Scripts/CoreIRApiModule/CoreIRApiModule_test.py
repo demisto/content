@@ -410,7 +410,7 @@ def test_download_distribution(requests_mock):
         - Verify readable output is as expected
     """
     from CoreIRApiModule import get_distribution_url_command, CoreClient
-    
+
     get_distribution_url_response = load_test_data('./test_data/get_distribution_url.json')
     dummy_url = "https://xdrdummyurl.com/11111-distributions/11111/sh"
     requests_mock.post(
@@ -434,8 +434,8 @@ def test_download_distribution(requests_mock):
     result, res_file = get_distribution_url_command(client, args)
     assert res_file['File'] == installer_file_name
     assert result.readable_output == "Successfully downloaded the installation package file"
-    
-    
+
+
 def test_get_audit_management_logs(requests_mock):
     from CoreIRApiModule import get_audit_management_logs_command, CoreClient
 

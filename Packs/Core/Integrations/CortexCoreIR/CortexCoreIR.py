@@ -252,7 +252,7 @@ def main():  # pragma: no cover
 
         elif command == 'core-create-distribution':
             return_outputs(*create_distribution_command(client, args))
-            
+
         elif command == 'core-get-audit-management-logs':
             return_outputs(*get_audit_management_logs_command(client, args))
 
