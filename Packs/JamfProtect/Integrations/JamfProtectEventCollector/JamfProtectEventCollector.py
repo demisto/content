@@ -406,7 +406,8 @@ def parse_response(response: dict) -> tuple:
     return page_info, items
 
 
-def get_events_for_specific_type(client: Client, start_date: str, max_fetch: int, last_run: dict, event_type: str) -> tuple:
+def get_events_for_specific_type(client: Client, start_date: str, end_date: str, max_fetch: int, last_run: dict,
+                                 event_type: str) -> tuple:
     """
     Fetches events for specific type from the Jamf Protect API within a specified date range.
 
@@ -417,6 +418,7 @@ def get_events_for_specific_type(client: Client, start_date: str, max_fetch: int
     Args:
         client (Client): An instance of the Client class for interacting with the API.
         start_date (str): The start date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format.
+        end_date (str): The end date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format.
         max_fetch (int): The maximum number of events to fetch.
         last_run (dict): A dictionary containing information about the last run.
         event_type (str): A specific type of event to fetch.
@@ -428,16 +430,18 @@ def get_events_for_specific_type(client: Client, start_date: str, max_fetch: int
              the end date of the fetched events and a continuance token if the fetched reached the max limit.
     """
 
-    mapping_event_type = {
-        "alert": ("alert", client.get_alerts),
-        "computer": ("computer", client.get_computer),
-        "audit": ("alert", client.get_audits)
+    mapping_event_type_to_func = {
+        "alert": client.get_alerts,
+        "computer": client.get_computer,
+        "audit": client.get_audits
     }
 
-    event_type = mapping_event_type[event_type]
-    created, current_date = calculate_fetch_dates(start_date, last_run=last_run, last_run_key=mapping_event_type[event_type][0])
+    created, current_date = calculate_fetch_dates(start_date=start_date,
+                                                  last_run=last_run,
+                                                  last_run_key="alert" if event_type == "audit" else event_type,
+                                                  end_date=end_date)
     command_args = {"created": created}
-    client_event_type_func = mapping_event_type[event_type][1]
+    client_event_type_func = mapping_event_type_to_func[event_type]
     next_page = last_run.get(event_type, {}).get("next_page", "")
 
     demisto.debug(f"Jamf Protect- Fetching {event_type}s from {created}")
@@ -554,7 +558,7 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
     if no_next_pages or alert_next_page:
         # Trigger the alert event type cycle unless only audit and computer next page tokens exist.
         alert_events, alert_next_run = get_events_for_specific_type(
-            client, start_date_arg, max_fetch_alerts, last_run, "alert"
+            client, start_date_arg, end_date_arg, max_fetch_alerts, last_run, "alert"
         )
 
     if no_next_pages or audit_next_page:
@@ -566,7 +570,7 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
     if no_next_pages or computer_next_page:
         # Trigger the computer event type cycle unless only alert and audit next page tokens exist.
         computer_events, computer_next_run = get_events_for_specific_type(
-            client, start_date_arg, max_fetch_computer, last_run, "computer"
+            client, start_date_arg, end_date_arg, max_fetch_computer, last_run, "computer"
         )
 
     next_run: dict[str, Any] = {"alert": alert_next_run, "audit": audit_next_run, 'computer': computer_next_run}
