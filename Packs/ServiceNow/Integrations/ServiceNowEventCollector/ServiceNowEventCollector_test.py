@@ -952,5 +952,3 @@ def test_handle_log_types_empty_list():
     """
     event_types_to_fetch = []
     assert handle_log_types(event_types_to_fetch) == []
-
-
