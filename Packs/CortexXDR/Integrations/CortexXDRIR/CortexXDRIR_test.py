@@ -770,6 +770,8 @@ def test_update_remote_system_command_should_not_close_xdr_incident(mocker, data
         assert 'resolve_comment' not in update_args
     else:
         assert 'status' in update_args
+        if data.get('resolve_comment'):
+            assert 'resolve_comment' in update_args
 
 
 @freeze_time("1997-10-05 15:00:00 GMT")
