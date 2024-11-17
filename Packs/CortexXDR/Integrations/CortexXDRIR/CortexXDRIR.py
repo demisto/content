@@ -1057,7 +1057,7 @@ def update_remote_system_command(client, args):
             if close_alerts_in_xdr and is_closed:
                 if popped_status:
                     update_args['status'] = popped_status
-                    demisto.debug(f'Inserted back the {popped_status=} for the alerts status.')
+                    demisto.debug(f'Restored {popped_status=} in order to update the alerts status.')
                 update_related_alerts(client, update_args)
 
         else:
