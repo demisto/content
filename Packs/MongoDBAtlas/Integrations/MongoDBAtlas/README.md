@@ -1,4 +1,4 @@
-MongoDBAtlas is integration that supports fetching and managing alerts and events within Cortex XSIAM.
+MongoDBAtlas is an integration that supports fetching and managing alerts and events within Cortex XSIAM.
 
 This integration was integrated and tested with version 2.0 of MongoDB Atlas.
 
@@ -22,7 +22,7 @@ This integration was integrated and tested with version 2.0 of MongoDB Atlas.
 
 
 ## Additional Information
-Groups and projects are synonymous terms. Your group id is the same as your project id. For existing groups, your group/project id remains the same. The resource and corresponding endpoints use the term groups.
+Groups and projects are synonymous terms. Your group ID is the same as your project ID. For existing groups, your group/project ID remains the same. The resource and corresponding endpoints use the term groups.
 
 ### Authentication and authorization:
 #### Grant Programmatic Access to a Project
@@ -32,7 +32,7 @@ To learn more, see [Manage Programmatic Access to a Project](https://www.mongodb
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### mongo-db-atlas-get-events
