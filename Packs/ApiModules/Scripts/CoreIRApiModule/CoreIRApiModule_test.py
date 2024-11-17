@@ -1958,6 +1958,35 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
     assert zipfile.ZipFile(file_name).namelist() == ['your_file.txt']
 
 
+def test_build_script_execute_commands(mocker):
+    """
+    Given:
+        - A raw command containing a comma character of type "powershell"
+
+    When:
+        - Calling the build_script_execute_commands function
+
+    Assert:
+        - Command is not passed to argToList.
+        - Command is properly escaped.
+    """
+    from CoreIRApiModule import build_script_execute_commands
+
+    # Set
+    commands_string = "echo 'hello, world!'"
+    is_raw_command = True
+    command_type = "powershell"
+    arg_to_list = mocker.patch('CoreIRApiModule.argToList')
+
+    # Arrange
+    commands = build_script_execute_commands(is_raw_command, commands_string, command_type)
+
+    # Assert
+    assert arg_to_list.call_count == 0
+    assert len(commands) == 1
+    assert commands[0] == 'powershell -Command \'echo \'"\'"\'hello, world!\'"\'"\'\''
+
+
 def test_run_script_execute_commands_command(requests_mock):
     """
     Given:

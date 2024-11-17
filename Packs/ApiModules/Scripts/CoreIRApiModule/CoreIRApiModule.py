@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import urllib3
 import copy
 import re
+import shlex
 from operator import itemgetter
 import json
 from typing import Tuple, Callable
@@ -2416,11 +2417,24 @@ def run_snippet_code_script_command(client: CoreClient, args: Dict) -> CommandRe
     )
 
 
+def build_script_execute_commands(is_raw_command: bool, commands_string: str, command_type: str | None) -> list[str]:
+    commands: list = [commands_string] if is_raw_command else argToList(commands_string)
+    if command_type == 'powershell':
+        # Concatenate with shell-escaped version of the command string
+        commands = [f'powershell -Command {shlex.quote(command)}' for command in commands]
+    return commands
+
+
 def run_script_execute_commands_command(client: CoreClient, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
-    commands: list = [args.get('commands')] if args.get('is_raw_command') else argToList(args.get('commands'))
+
+    commands = build_script_execute_commands(
+        is_raw_command=args.get('is_raw_command', False),
+        commands_string=args.get('commands', ''),
+        command_type=args.get('command_type'),
+    )
     parameters = {'commands_list': commands}
 
     response = client.run_script('a6f7683c8e217d85bd3c398f0d3fb6bf', endpoint_ids, parameters, timeout, incident_id)

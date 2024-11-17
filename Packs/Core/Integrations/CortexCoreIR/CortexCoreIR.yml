@@ -1669,10 +1669,17 @@ script:
     - description: Comma-separated list of shell commands to execute. Use is_raw_command=false to prevent splitting by commas.
       name: commands
       required: true
-    - defaultValue: false
-      description: Add description here!!!
+    - description: Determines if shell commands are passed in their raw form or split by commas.
       name: is_raw_command
-      type: boolean
+      type: Boolean
+      required: false
+    - description: 'Type of shell command. Possible values: "powershell", "null".' 
+      auto: PREDEFINED
+      name: command_type
+      predefined:
+      - 'powershell'
+      - 'null'
+      required: false
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
       name: timeout
