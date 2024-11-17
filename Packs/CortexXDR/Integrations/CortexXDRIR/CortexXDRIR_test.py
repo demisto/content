@@ -729,7 +729,9 @@ def test_update_remote_system_command(incident_changed, delta):
 @pytest.mark.parametrize("data", [
     {'close_reason': 'Resolved', 'status': 'Other'},
     {'CortexXDRIRstatus': 'resolved', 'close_reason': 'Resolved', 'status': 'False Positive'},
-    {'status': 'under_investigation'}
+    {'status': 'under_investigation'},
+    {'status': 'Resolved', 'resolve_comment': 'comment'},
+    {'status': 'False Positive', 'resolve_comment': 'comment'}
 ])
 def test_update_remote_system_command_should_not_close_xdr_incident(mocker, data):
     """
@@ -765,6 +767,7 @@ def test_update_remote_system_command_should_not_close_xdr_incident(mocker, data
     update_args = mock_update_incident_command.call_args[0][1]
     if data.get('status') in XSOAR_RESOLVED_STATUS_TO_XDR:
         assert 'status' not in update_args
+        assert 'resolve_comment' not in update_args
     else:
         assert 'status' in update_args
 
