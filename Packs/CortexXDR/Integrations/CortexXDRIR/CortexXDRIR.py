@@ -1040,7 +1040,7 @@ def update_remote_system_command(client, args):
             close_xdr_incident = argToBoolean(client._params.get("close_xdr_incident", True))
             close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
 
-            if not close_xdr_incident and not close_alerts_in_xdr and (update_args.get('status') in XSOAR_RESOLVED_STATUS_TO_XDR.values()):
+            if (not close_xdr_incident and not close_alerts_in_xdr and (update_args.get('status') in XSOAR_RESOLVED_STATUS_TO_XDR.values())):
                 status = update_args.pop('status')
                 resolve_comment = update_args.pop('resolve_comment', None)
 
@@ -1048,7 +1048,6 @@ def update_remote_system_command(client, args):
                               f" incident status won't be updated in XDR.")
 
             update_incident_command(client, update_args)
-
 
             # Check all relevant fields for an incident being closed in XSOAR UI
             demisto.debug(f"Defining whether to close related alerts by: {is_closed=} {close_alerts_in_xdr=}")
