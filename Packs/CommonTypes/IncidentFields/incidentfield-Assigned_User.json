@@ -1,6 +1,8 @@
 {
 	"associatedToAll": true,
-	"associatedTypes": [],
+	"associatedTypes": [
+        "Microsoft 365 Defender Incident"
+    ],
 	"breachScript": "",
 	"caseInsensitive": true,
 	"cliName": "assigneduser",
