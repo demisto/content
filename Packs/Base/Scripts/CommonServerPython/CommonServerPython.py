@@ -4934,7 +4934,7 @@ class Common(object):
                      department=None, country=None, state=None, city=None, street=None, is_enabled=None,
                      dbot_score=None, relationships=None, blocked=None, community_notes=None, creation_date=None,
                      description=None, stix_id=None, tags=None, traffic_light_protocol=None, user_id=None,
-                     manager_email=None, manager_display_name=None, risk_level=None):
+                     manager_email=None, manager_display_name=None, risk_level=None, **kwargs):
 
             self.id = id
             self.type = type
@@ -4964,6 +4964,7 @@ class Common(object):
             self.manager_email_address = manager_email
             self.manager_display_name = manager_display_name
             self.risk_level = risk_level
+            self.kwargs = kwargs
 
             if dbot_score and not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
@@ -4985,7 +4986,7 @@ class Common(object):
             if self.creation_date:
                 account_context['CreationDate'] = self.creation_date
 
-            irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'id', 'create_context_table']
+            irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'id', 'create_context_table', 'kwargs']
             details = [detail for detail in dir(self) if not detail.startswith('__') and detail not in irrelevent]
 
             for detail in details:
@@ -5018,6 +5019,11 @@ class Common(object):
 
             if self.community_notes:
                 account_context['CommunityNotes'] = self.create_context_table(self.community_notes)
+
+            if self.kwargs:
+                for key, value in self.kwargs.items():
+                    if key not in account_context:
+                        account_context[key] = value
 
             ret_value = {
                 Common.Account.CONTEXT_PATH: account_context
