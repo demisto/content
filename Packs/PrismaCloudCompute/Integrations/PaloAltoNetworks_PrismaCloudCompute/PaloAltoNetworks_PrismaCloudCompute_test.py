@@ -1854,3 +1854,34 @@ def test_runtime_host_audit_events_command(requests_mock):
     args = {}
 
     assert get_host_audit_list_command(client, args).raw_response == response
+
+
+@pytest.mark.parametrize('initial_ips, ips_arg, expected', [
+    (['1.1.1.1', '2.2.2.2', '3.3.3.3'], '2.2.2.2', ['1.1.1.1', '3.3.3.3']),
+    (['1.1.1.1', '2.2.2.2', '3.3.3.3'], '4.4.4.4, 2.2.2.2', ['1.1.1.1', '3.3.3.3']),
+    (['1.1.1.1', '2.2.2.2', '3.3.3.3'], '1.1.1.1, 2.2.2.2, 3.3.3.3', []),
+    (['1.1.1.1', '2.2.2.2', '3.3.3.3'], '4.4.4.4', None),
+    ([], '1.1.1.1, 2.2.2.2', None),
+])
+def test_remove_custom_ip_feeds(client, requests_mock, initial_ips, ips_arg, expected):
+    """
+    Given:
+        - An app client object.
+        - List of ips to remove.
+    When:
+        - Calling 'prisma-cloud-compute-custom-ip-feeds-remove' command.
+    Then:
+        - Ensure the call to update the feed has the expected ips removed.
+    """
+
+    from PaloAltoNetworks_PrismaCloudCompute import remove_custom_ip_feeds
+
+    requests_mock.get(url=f'{BASE_URL}/feeds/custom/ips', json={'feed': initial_ips})
+    custom_ip_put_mock = requests_mock.put(url=f'{BASE_URL}/feeds/custom/ips')
+
+    remove_custom_ip_feeds(client, args={'ip': ips_arg})
+
+    if expected is None:  # Nothing to remove, api should not be called
+        assert custom_ip_put_mock.called is False
+    else:
+        assert set(custom_ip_put_mock.last_request.json()['feed']) == set(expected)
