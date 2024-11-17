@@ -894,7 +894,7 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
         demisto.debug(f"using {remote_args.last_update=} for last_update")
 
     last_update_utc = dateparser.parse(last_update,
-                                       settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
+                                       settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})  # convert to utc format
 
     if last_update_utc:
         gte_modification_time_milliseconds = last_update_utc - timedelta(minutes=xdr_delay)
@@ -1041,7 +1041,9 @@ def update_remote_system_command(client, args):
 
             if not close_xdr_incident and (update_args.get('status') in XSOAR_RESOLVED_STATUS_TO_XDR.values()):
                 status = update_args.pop('status')
-                demisto.debug(f"Popped {status=} from update_args, incident status won't be updated in XDR.")
+                resolve_comment = update_args.pop('resolve_comment', None)
+
+                demisto.debug(f"Popped {status=} and {resolve_comment=} from update_args, incident status won't be updated in XDR.")
 
             update_incident_command(client, update_args)
 
