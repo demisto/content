@@ -516,7 +516,7 @@ Parses the raw part of the event.
 
 ### splunk-submit-event-hec
 ***
-Sends events to an HTTP event collector using the Splunk platform JSON event protocol. if `batch_event_data` or `entry_id` arguments are provided then all arguments related to a single event are ignored.
+Sends events Splunk. if `batch_event_data` or `entry_id` arguments are provided then all arguments related to a single event are ignored.
 
 ##### Base Command
 
