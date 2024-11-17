@@ -894,7 +894,7 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
         demisto.debug(f"using {remote_args.last_update=} for last_update")
 
     last_update_utc = dateparser.parse(last_update,
-                                       settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})  # convert to utc format
+                                       settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
 
     if last_update_utc:
         gte_modification_time_milliseconds = last_update_utc - timedelta(minutes=xdr_delay)
