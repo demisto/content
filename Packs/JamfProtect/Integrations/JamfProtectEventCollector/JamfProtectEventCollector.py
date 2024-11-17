@@ -455,9 +455,9 @@ def get_events_for_specific_type(client: Client, start_date: str, end_date: str,
         new_last_run_with_next_page = {"next_page": next_page, "last_fetch": created}
         return events, new_last_run_with_next_page
     # If there is no next page, the last fetch date will be the max end date of the fetched events.
-    new_last_fetch_date = max([dt for dt in (arg_to_datetime(event.get("created"), DATE_FORMAT)
-                                             for event in events) if dt is not None]).strftime(
-        DATE_FORMAT) if events else current_date
+    new_last_fetch_date = max([dt for dt in (arg_to_datetime(event.get("date" if event_type == "audit" else "created"),
+                                                             DATE_FORMAT) for event in events)
+                               if dt is not None]).strftime(DATE_FORMAT) if events else current_date
     new_last_run_without_next_page = {"last_fetch": new_last_fetch_date}
     demisto.debug(f"Jamf Protect- Fetched {len(events)} {event_type}s")
     return events, new_last_run_without_next_page
