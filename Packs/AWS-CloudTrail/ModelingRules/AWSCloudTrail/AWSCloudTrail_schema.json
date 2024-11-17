@@ -16,6 +16,10 @@
             "type": "string",
             "is_array": false
         },
+        "eventCategory": {
+            "type": "string",
+            "is_array": false
+        },
         "eventID": {
             "type": "string",
             "is_array": false
@@ -29,6 +33,10 @@
             "is_array": false
         },
         "eventType": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventVersion": {
             "type": "string",
             "is_array": false
         },
