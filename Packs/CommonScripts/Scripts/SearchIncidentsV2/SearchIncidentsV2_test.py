@@ -1,5 +1,6 @@
 from SearchIncidentsV2 import *
 import pytest
+import datetime as dt
 
 data_test_check_if_found_incident = [
     ([], 'failed to get incidents from xsoar.\nGot: []'),
@@ -206,6 +207,101 @@ def test_filter_events(mocker, args, filtered_args, expected_result):
     assert res == expected_result
     assert execute_mock.call_count == 1
     assert execute_mock.call_args[0][1] == filtered_args
+
+
+def get_incidents_mock_include_informational(_, args, extract_contents=True, fail_on_error=True):
+    incidents = [
+        {'id': '1', 'informational': False},
+        {'id': '2', 'informational': False},
+    ]
+
+    includeinformational = args.get('includeinformational', None)
+
+    if includeinformational:
+        incidents.extend([
+            {'id': '3', 'informational': True},
+            {'id': '4', 'informational': True},
+        ])
+
+    if not extract_contents:
+        return [{'Contents': {'data': incidents, 'total': len(incidents)}}]
+
+    return {'Contents': {'data': incidents}}
+
+
+INCLUDE_INFORMATIONAL_FIXED_TIME = dt.datetime(2024, 10, 1, 15, 0, 0)
+INCLUDE_INFORMATIONAL_NOW = INCLUDE_INFORMATIONAL_FIXED_TIME.isoformat()
+INCLUDE_INFORMATIONAL_5_HOURS_AGO = dt.datetime(2024, 10, 1, 10, 0, 0).isoformat()
+INCLUDE_INFORMATIONAL_3_HOURS_AGO = dt.datetime(2024, 10, 1, 12, 0, 0).isoformat()
+
+
+@pytest.mark.parametrize('args,expected_filtered_args,expected_result', [
+    ({'includeinformational': 'true', 'fromdate': '3 hours ago', 'todate': 'now'},
+     {'includeinformational': True,
+      'fromdate': INCLUDE_INFORMATIONAL_3_HOURS_AGO,
+      'todate': INCLUDE_INFORMATIONAL_NOW},
+     ['1', '2', '3', '4']),
+    ({'includeinformational': 'true', 'fromdate': '6 hours ago', 'todate': 'now'},
+     {'includeinformational': True,
+      'fromdate': INCLUDE_INFORMATIONAL_5_HOURS_AGO,
+      'todate': INCLUDE_INFORMATIONAL_NOW},
+     ['1', '2', '3', '4']),
+    ({'includeinformational': 'true'}, {}, ValueError),
+    ({'includeinformational': 'false'}, {}, ['1', '2']),
+    ({}, {}, ['1', '2']),
+    ({'includeinformational': 'true', 'todate': 'now'}, {}, ValueError),
+    ({'includeinformational': 'true', 'fromdate': '3 hours ago'}, {}, ValueError),
+])
+def test_includeinformational_logic(mocker, args, expected_filtered_args, expected_result):
+    """
+    Given:
+    - Case A: includeinformational=True, with relative fromdate and todate provided, both dates within 5 hours from
+    current time.
+    - Case B: includeinformational=true, fromdate is more than 5 hours ago, requiring an adjustment of fromdate.
+    - Case C: includeinformational=true, but fromdate and todate are missing, should raise a ValueError.
+    - Case D: includeinformational=false, meaning no informational incidents should be returned.
+    - Case E: includeinformational not present, should behave like false and no informational incidents should be returned.
+    - Case F: includeinformational=true,but fromdate is missing, should raise a ValueError.
+    - Case G: includeinformational=true, but todate is missing, should raise a ValueError.
+
+    When:
+       - Running the search_incidents function to process the input args.
+
+    Then:
+       - Case A: Ensure both regular and informational incidents are returned when includeinformational=true.
+       - Case B: Ensure fromdate is adjusted to 5 hours ago and incidents (regular + informational) are fetched correctly.
+       - Case C: Verify that a ValueError is raised due to missing fromdate and todate when includeinformational=true.
+       - Case D: Ensure only regular incidents are returned when includeinformational=false.
+       - Case E: Ensure only regular incidents are returned when includeinformational=None (default behavior).
+       - Case F: Ensure that a ValueError is raised when fromdate is missing but includeinformational=true.
+       - Case G: Ensure that a ValueError is raised when todate is missing but includeinformational=true.
+    """
+    import SearchIncidentsV2
+    mocker.patch.object(dt, 'datetime', autospec=True)
+    mocker.patch.object(SearchIncidentsV2, 'is_xsiam', return_value=True)
+    dt.datetime.utcnow.return_value = INCLUDE_INFORMATIONAL_FIXED_TIME
+
+    class MockDateTime:
+        def utcnow(self):
+            return INCLUDE_INFORMATIONAL_FIXED_TIME
+
+    mocker.patch('SearchIncidentsV2.datetime', MockDateTime())
+
+    # mock arg to datetime since internally uses utc which is not the same as the fixed datetime
+    mocker.patch.object(SearchIncidentsV2, 'arg_to_datetime', side_effect=lambda x: None if x is None
+                        else INCLUDE_INFORMATIONAL_FIXED_TIME - dt.timedelta(
+                            hours=int(x.split()[0])) if 'hours ago' in x else INCLUDE_INFORMATIONAL_FIXED_TIME)
+
+    execute_mock = mocker.patch.object(SearchIncidentsV2, 'execute_command', side_effect=get_incidents_mock_include_informational)
+
+    if expected_result == ValueError:
+        with pytest.raises(ValueError):
+            SearchIncidentsV2.search_incidents(args)
+    else:
+        _, res, _ = SearchIncidentsV2.search_incidents(args)
+        assert [incident['id'] for incident in res] == expected_result
+        assert execute_mock.call_count == 1
+        assert execute_mock.call_args[0][1] == expected_filtered_args
 
 
 @pytest.mark.parametrize('platform, version, link_type, expected_result', [
