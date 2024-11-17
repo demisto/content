@@ -162,8 +162,8 @@ class FileStatisticsAPIParser:
         Returns:
             str: Formatted in Space Case with replacements.
         """
-        replacements = [('globally_', 'global_'), ('org_', 'organization_')]
-        for old_value, new_value in replacements:
+        replacements = {'globally_': 'global_', 'org_': 'organization_'}
+        for old_value, new_value in replacements.items():
             field_name = field_name.replace(old_value, new_value)
         return pascalToSpace(camelize_string(field_name))
 
@@ -3482,14 +3482,14 @@ def get_file_statistics_command(client: MsClient, args: dict) -> CommandResults:
     """
     file_hash = args.get('file_hash', '')
     response = client.get_file_statistics(file_hash)
-    file_stats_parser = FileStatisticsAPIParser.from_raw_response(response)
+    file_stats = FileStatisticsAPIParser.from_raw_response(response)
 
     return CommandResults(
         outputs_prefix='MicrosoftATP.FileStatistics',
         outputs_key_field='Sha1',
-        indicator=file_stats_parser.to_file_indicator(file_hash),
-        readable_output=file_stats_parser.to_human_readable(file_hash),
-        outputs=file_stats_parser.to_context_output(),
+        indicator=file_stats.to_file_indicator(file_hash),
+        readable_output=file_stats.to_human_readable(file_hash),
+        outputs=file_stats.to_context_output(),
         raw_response=response,
     )
 
