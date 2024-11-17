@@ -398,7 +398,7 @@ def test_splunk_submit_event_hec_command_request_channel(mocker):
     splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"},
                                            args=args, service=Service)
     readable_output = moc.call_args[0][0]
-    assert readable_output == "The event/s was/were sent successfully to Splunk. AckID: 1"
+    assert readable_output == "The events were sent successfully to Splunk. AckID: 1"
 
 
 def test_splunk_submit_event_hec_command_without_request_channel(mocker):

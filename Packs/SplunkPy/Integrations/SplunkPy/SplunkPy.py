@@ -15,6 +15,7 @@ from splunklib.data import Record
 from splunklib.binding import AuthenticationError, HTTPError, namespace
 
 
+INTEGRATION_LOG = "Splunk- "
 OUTPUT_MODE_JSON = 'json'  # type of response from splunk-sdk query (json/csv/xml)
 # Define utf8 as default encoding
 params = demisto.params()
@@ -2642,9 +2643,19 @@ def get_events_from_file(entry_id):
 
 
 def parse_fields(fields):
-    """Parses the `fields` string into a dictionary. If `fields` is not valid JSON,
-    it returns the `fields` as a dictionary with a single key-value pair.
+    """
+    Parses the `fields` input into a dictionary.
 
+    - If `fields` is a valid JSON string, it is converted into the corresponding dictionary.
+    - If `fields` is not valid JSON, it is wrapped as a dictionary with a single key-value pair,
+    where the key is `"fields"` and the value is the original `fields` string.
+
+    Examples:
+    1. Input: '{"severity": "INFO", "category": "test2, test2"}'
+       Output: {"severity": "INFO", "category": "test2, test2"}
+    
+    2. Input: 'severity: INFO, category: test2, test2'
+       Output: {"fields": "severity: INFO, category: test2, test2"}
     """
     if fields:
         try:
@@ -2702,7 +2713,7 @@ def splunk_submit_event_hec(
         events = batch_event_data
 
     elif entry_id:
-        demisto.debug(f'Splunk {entry_id=}')
+        demisto.debug(f'{INTEGRATION_LOG} - loading events data from file with {entry_id=}')
         events = get_events_from_file(entry_id)
 
     else:
@@ -2737,7 +2748,7 @@ def splunk_submit_event_hec(
     else:
         data = json.dumps(events)
 
-    demisto.debug(f'Splunk sending {data=}')
+    demisto.debug(f'{INTEGRATION_LOG} sending {len(valid_json_events)}')
 
     return requests.post(
         f'{baseurl}/services/collector/event',
@@ -2777,9 +2788,9 @@ def splunk_submit_event_hec_command(params: dict, service, args: dict):
         response_dict = json.loads(response_info.text
                                    )
         if response_dict and 'ackId' in response_dict:
-            return_results(f"The event/s was/were sent successfully to Splunk. AckID: {response_dict['ackId']}")
+            return_results(f"The events were sent successfully to Splunk. AckID: {response_dict['ackId']}")
         else:
-            return_results('The event/s was/were sent successfully to Splunk.')
+            return_results('The events were sent successfully to Splunk.')
 
 
 def splunk_edit_notable_event_command(base_url: str, token: str, auth_token: str | None, args: dict) -> None:
