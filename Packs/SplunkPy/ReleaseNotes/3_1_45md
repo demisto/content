@@ -1,5 +1,0 @@
-#### Integrations
-
-##### SplunkPy
-
-- Added *batch_event_data* and *entry_id* arguments to **splunk-submit-event-hec** command.
