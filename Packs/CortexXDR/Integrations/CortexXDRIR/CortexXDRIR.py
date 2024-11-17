@@ -528,6 +528,7 @@ def update_incident_command(client, args):
     )
     is_closed = resolve_comment or (status and argToList(status, '_')[0] == 'RESOLVED')
     if resolve_alerts and is_closed:
+        demisto.debug(f"Update incident is also updating the alerts {args['status']=}")
         args['status'] = args['status'].lower()
         update_related_alerts(client, args)
 
@@ -894,7 +895,7 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
         demisto.debug(f"using {remote_args.last_update=} for last_update")
 
     last_update_utc = dateparser.parse(last_update,
-                                       settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
+                                       settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})  # convert to utc format
 
     if last_update_utc:
         gte_modification_time_milliseconds = last_update_utc - timedelta(minutes=xdr_delay)
@@ -1038,22 +1039,29 @@ def update_remote_system_command(client, args):
             demisto.debug(f"After checking status {update_args=}")
 
             close_xdr_incident = argToBoolean(client._params.get("close_xdr_incident", True))
-            close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
 
-            if (not close_xdr_incident and not close_alerts_in_xdr and (update_args.get('status') in XSOAR_RESOLVED_STATUS_TO_XDR.values())):
-                status = update_args.pop('status')
+            popped_status = ""
+            if not close_xdr_incident and (update_args.get('status') in XSOAR_RESOLVED_STATUS_TO_XDR.values()):
+                popped_status = update_args.pop('status')
                 resolve_comment = update_args.pop('resolve_comment', None)
 
-                demisto.debug(f"Popped {status=} and {resolve_comment=} from update_args,"
+                demisto.debug(f"Popped status {popped_status} and {resolve_comment=} from update_args,"
                               f" incident status won't be updated in XDR.")
 
             update_incident_command(client, update_args)
 
+            close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
+
             # Check all relevant fields for an incident being closed in XSOAR UI
             demisto.debug(f"Defining whether to close related alerts by: {is_closed=} {close_alerts_in_xdr=}")
             if is_closed and closed_without_status and remote_is_already_closed:
+                demisto.debug(f"This is the {current_remote_status=} for the alerts")
                 update_args['status'] = current_remote_status
             if close_alerts_in_xdr and is_closed:
+                demisto.debug(f"This is the {current_remote_status=} for the alerts")
+                if popped_status:
+                    update_args['status'] = popped_status
+                    demisto.debug(f'Inserted back the {popped_status=}')
                 update_related_alerts(client, update_args)
 
         else:
