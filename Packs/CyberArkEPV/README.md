@@ -21,14 +21,10 @@ the XML event records must be converted to suitable [CEF](https://www.microfocus
 2. Make a copy of the *Arcsight.sample.xsl* sample file, and rename it with a meaningful name, for example: *XSIAM.xsl*.
 3. To include the events' timestamps in the events that will be sent to Cortex XSIAM, open the copied XSL file for editing, and above the mapping section for *cn1Label* and *cn1* fields, add the following section, which maps the *IsoTimestamp* XML field into the CEF message *cs6* field and the constant string "IsoTimestamp" to the *cs6Label* field: 
       ```XML        
-            <!-- Start of IsoTimestamp mapping section -->
-            cs6Label=IsoTimestamp 
-            cs6=<xsl:call-template name="string-replace">
-                <xsl:with-param name="from" select="'='" />
-                <xsl:with-param name="to" select="'\='" />
-                <xsl:with-param name="string" select="IsoTimestamp" />
-            </xsl:call-template>
-            <!-- End of IsoTimestamp mapping section -->
+     </xsl:call-template> cs6Label=IsoTimestamp cs6=<xsl:call-template name="string-replace"> 
+            <xsl:with-param name="from" select="'='" /> 
+            <xsl:with-param name="to" select="'\='" /> 
+            <xsl:with-param name="string" select="IsoTimestamp" /> 
       ```
       See the following screenshot for an example of the updated XSL file: 
     ![xsl_with_timestamp_mapping](https://raw.githubusercontent.com/demisto/content/fcf4535d373df78bded4b1bedacdd505d25cc095/Packs/CyberArkEPV/doc_files/config_isotimestamp_mapping.png)
