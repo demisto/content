@@ -4,11 +4,11 @@ var base = 'https://my.incapsula.com';
 var proxy = params.proxy;
 
 var sendRequest = function(url, body, queryName) {
+    urlWithParams = (url).toString()+"?"+(body).toString()
     var res = http(
-            url,
+            urlWithParams,
             {
                 Method: 'POST',
-                Body: body,
                 Headers: {'content-type': ['application/json'], 'x-API-Id': [apiid], 'x-API-Key': [apikey]},
             },
             true,
