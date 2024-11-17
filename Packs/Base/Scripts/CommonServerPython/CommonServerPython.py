@@ -5025,7 +5025,10 @@ class Common(object):
                     if key not in account_context:
                         account_context[key] = value
                     else:
-                        demisto.debug(f'Skipping the addition of the "{key}" key to the account context as it already exists.')
+                        demisto.debug(
+                            'Skipping the addition of the "{key}" key to the account context as it already exists.'.format(
+                                key=key)
+                        )
 
             ret_value = {
                 Common.Account.CONTEXT_PATH: account_context
