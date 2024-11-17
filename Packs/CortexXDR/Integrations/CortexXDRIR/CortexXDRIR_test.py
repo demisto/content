@@ -773,6 +773,15 @@ def test_update_remote_system_command_should_not_close_xdr_incident(mocker, data
         if data.get('resolve_comment'):
             assert 'resolve_comment' in update_args
 
+    # checks when close_all_alerts is true -> should update only the alerts status
+    client._params['close_alerts_in_xdr'] = True
+    mock_update_related_alerts = mocker.patch('CortexXDRIR.update_related_alerts')
+    update_remote_system_command(client, args)
+
+    if mock_update_related_alerts.called:
+        update_args = mock_update_related_alerts.call_args[0][1]
+        assert 'status' in update_args
+
 
 @freeze_time("1997-10-05 15:00:00 GMT")
 def test_fetch_incidents_extra_data(requests_mock, mocker):
