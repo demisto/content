@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import json
-import requests
 import dateparser
 
 # Disable insecure warnings
@@ -27,16 +26,14 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, verify: bool, proxy: bool, auth: tuple):
-        headers = self.get_token_and_set_headers(base_url, auth, verify)
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self._headers = self.get_token_and_set_headers(auth)
 
-    @staticmethod
-    def get_token_and_set_headers(base_url: str, auth: tuple, verify: bool) -> dict:
+    def get_token_and_set_headers(self, auth: tuple) -> dict:
         """
         Get JWT token by authentication and set headers.
 
         Args:
-            base_url (str): url for authentication.
             auth (tuple): credentials for authentication.
 
         Returns:
@@ -48,16 +45,17 @@ class Client(BaseClient):
         try:
             data = {'username': auth[0], 'password': auth[1], 'token': True}
             headers = {'ContentType': 'application/x-www-form-urlencoded'}
-            url = urljoin(base_url, '/auth')
-            auth_response = requests.post(url=url, headers=headers, data=data, verify=verify)
+
+            auth_response = self._http_request(method='POST', url_suffix='/auth',
+                                               headers=headers, data=data, resp_type='response')
             auth_response.raise_for_status()
 
             token = auth_response.text
             return {'Authorization': f'Bearer {token}', 'content-type': 'application/json'}
 
-        except requests.exceptions.HTTPError:
+        except Exception as e:
             raise DemistoException('Authentication failed. Verify the Qualys API Platform URL, '
-                                   'access credentials, and other connection parameters.')
+                                   'access credentials, and other connection parameters.') from e
 
     def incidents_list_test(self):
         """
@@ -622,7 +620,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     return {'last_fetch': next_run_timestamp, 'last_fetched_id': last_incident_id}, incidents
 
 
-def test_module(client: Client):
+def test_module(client: Client) -> str:
     """
     Returning 'ok' indicates that the integration works like it is supposed to.
      Connection to the service is successful.
@@ -631,21 +629,22 @@ def test_module(client: Client):
         client: Qualys FIM client.
 
     Returns:
-        'ok' if test passed, anything else will fail the test.
+        'ok' if test passed.
+
+    Raises:
+        DemistoException: If test failed (e.g. due to failed authentication).
     """
     try:
         client.incidents_list_test()  # raises exception if non-okay response
         return 'ok'
-    except Exception as exception:
+    except Exception as e:
         error_msg = None
-        if 'Authorization' in str(exception):
+        if 'Authorization' in str(e):
             error_msg = "Authentication wasn't successful,\n" \
                         " Please check credentials,\n" \
                         " or specify correct Platform URL."
-        if error_msg:
-            return error_msg
-        else:
-            return DemistoException(str(exception))
+
+        raise DemistoException(error_msg or str(e)) from e
 
 
 def main():
