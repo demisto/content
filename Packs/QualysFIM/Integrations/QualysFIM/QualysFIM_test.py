@@ -70,7 +70,9 @@ def test_list_events_command(requests_mock, authenticated_client: Client) -> Non
     # Assert
     assert result.outputs_prefix == 'QualysFIM.Event'
     assert result.outputs_key_field == 'id'
+
     assert result.raw_response == mock_response
+    assert result.outputs == [incident['data'] for incident in mock_response]
 
 
 def test_get_event_command(requests_mock, authenticated_client: Client) -> None:
