@@ -29,7 +29,7 @@ configuration:
   section: Connect
 - display: Group ID
   name: group_id
-  additionalinfo: The Project ID from MongoDB Atlas account.
+  additionalinfo: The Project ID from the MongoDB Atlas account.
   required: true
   type: 0
   section: Connect
@@ -48,7 +48,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: 'MongoDBAtlas is integration that supports fetching and managing alerts and events within Cortex XSIAM.'
+description: 'MongoDBAtlas is an integration that supports fetching and managing alerts and events within Cortex XSIAM.'
 display: MongoDBAtlas
 name: MongoDBAtlasEventCollector
 script:
@@ -69,7 +69,7 @@ script:
       required: true
     outputs:
       - contextPath: MongoDBAtlas
-        description: The list of the events and the alerts.
+        description: The list of the events and alerts.
         type: List
   runonce: false
   script: '-'
