@@ -95,6 +95,9 @@ Create log settings to enable event logging for access system events or URL filt
    save /sys config
 ```
 
+**Pay Attention**: 
+Timestamp ingestion is only supported for the suggested ISO timestamp format to implement for F5 APM logs- ***YYYY-MM-DDThh:mm:ssTZ***.
+
 For more information, refer to F5 BIG-IP APM formal [docs](https://techdocs.f5.com/en-us/bigip-17-0-0/big-ip-access-policy-manager-third-party-integration/logging-and-reporting.html#GUID-3A9514E3-33CC-43AB-840F-17624F4CA180).
 
 Note:
