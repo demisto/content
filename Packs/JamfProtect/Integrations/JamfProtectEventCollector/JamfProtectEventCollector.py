@@ -234,172 +234,104 @@ class Client(BaseClient):
             variables["next"] = next_page
         return self.graphql(query, variables)
 
-    def get_computer(self, args: dict, next_page: str) -> dict:
+    def get_computers(self, args: dict, next_page: str) -> dict:
         """
-        Fetches computer from the Jamf Protect API, with date filter.
+        Fetches a list of computers from the Jamf Protect API, with an optional date filter.
 
         Args:
-            args (dict): The arguments to be used in the GraphQL query.
-             It should contain a key "created" with a value representing the creation date of the computer.
-            next_page (str): The next page token for pagination.
+            args (dict): A dictionary of arguments for the GraphQL query.
+                         If using a date filter, this should include:
+                         - "use_date_filter" (bool): If True, a creation date filter is applied.
+                         - "created" (str): A date in 'YYYY-MM-DDTHH:MM:SSZ' format, representing the
+                           minimum creation date for filtering the results.
+            next_page (str): The token for the next page of results, used for pagination.
 
         Returns:
-            dict: The response from the API.
+            dict: The API response containing a list of computers and pagination information.
         """
-        query = """
-        query listComputers($page_size: Int, $next: String $created:AWSDateTime) {
-            listComputers( input: {
-                filter: {
-                    created: {
-                        greaterThan: $created
-                        }
-                    }
-                    pageSize: $page_size  next: $next
-                }
-            ) {
-            items {
-                serial
-                uuid
-                provisioningUDID
-                updated
-                checkin
-                connectionStatus
-                lastConnection
-                lastConnectionIp
-                lastDisconnection
-                lastDisconnectionReason
-                insightsUpdated
-                insightsStatsFail
-                insightsStatsPass
-                insightsStatsUnknown
-                version
-                signaturesVersion
-                installType
-                plan {
-                    hash
-                    id
-                    name
-                    logLevel
-                    }
-                scorecard {
-                    uuid
-                    label
-                    section
-                    pass
-                    tags
-                    enabled
-                    }
-                osMajor
-                osMinor
-                osPatch
-                osString
-                arch
-                certid
-                configHash
-                created
-                hostName
-                kernelVersion
-                memorySize
-                modelName
-                label
-                webProtectionActive
-                fullDiskAccess
-                tags
-                }
-                pageInfo {
-                    next
-                    total
+        date_filter = "$created: AWSDateTime" if args.get('use_date_filter') else ""
+        filter_clause = """
+            filter: {
+                created: {
+                    greaterThan: $created
                 }
             }
-        }
-        """
-        variables = {
-            "created": args.get("created"),
-            "page_size": COMPUTER_PAGE_SIZE
-        }
-        if next_page:
-            variables["next"] = next_page
-        return self.graphql(query, variables)
+        """ if args.get('use_date_filter') else ""
 
-    def get_all_computers(self, args: dict, next_page: str) -> dict:
+        query = f"""
+            query listComputers($page_size: Int, $next: String {date_filter}) {{
+                listComputers( input: {{
+                    {filter_clause}
+                    pageSize: $page_size
+                    next: $next
+                }}) {{
+                    items {{
+                        serial
+                        uuid
+                        provisioningUDID
+                        updated
+                        checkin
+                        connectionStatus
+                        lastConnection
+                        lastConnectionIp
+                        lastDisconnection
+                        lastDisconnectionReason
+                        insightsUpdated
+                        insightsStatsFail
+                        insightsStatsPass
+                        insightsStatsUnknown
+                        version
+                        signaturesVersion
+                        installType
+                        plan {{
+                            hash
+                            id
+                            name
+                            logLevel
+                        }}
+                        scorecard {{
+                            uuid
+                            label
+                            section
+                            pass
+                            tags
+                            enabled
+                        }}
+                        osMajor
+                        osMinor
+                        osPatch
+                        osString
+                        arch
+                        certid
+                        configHash
+                        created
+                        hostName
+                        kernelVersion
+                        memorySize
+                        modelName
+                        label
+                        webProtectionActive
+                        fullDiskAccess
+                        tags
+                    }}
+                    pageInfo {{
+                        next
+                        total
+                    }}
+                }}
+            }}
         """
-        Fetches a complete list of computers from the Jamf Protect API, without a date filter.
 
-        Args:
-            args (dict): This argument is not used in this function, but is kept for compatibility
-                         with similar client functions.
-            next_page (str): The next page token for pagination.
-
-        Returns:
-            dict: The response from the API.
-        """
-        query = """
-        query listComputers($page_size: Int, $next: String ) {
-            listComputers( input: {
-                    pageSize: $page_size  next: $next
-                }
-            ) {
-            items {
-                serial
-                uuid
-                provisioningUDID
-                updated
-                checkin
-                connectionStatus
-                lastConnection
-                lastConnectionIp
-                lastDisconnection
-                lastDisconnectionReason
-                insightsUpdated
-                insightsStatsFail
-                insightsStatsPass
-                insightsStatsUnknown
-                version
-                signaturesVersion
-                installType
-                plan {
-                    hash
-                    id
-                    name
-                    logLevel
-                    }
-                scorecard {
-                    uuid
-                    label
-                    section
-                    pass
-                    tags
-                    enabled
-                    }
-                osMajor
-                osMinor
-                osPatch
-                osString
-                arch
-                certid
-                configHash
-                created
-                hostName
-                kernelVersion
-                memorySize
-                modelName
-                label
-                webProtectionActive
-                fullDiskAccess
-                tags
-                }
-                pageInfo {
-                    next
-                    total
-                }
-            }
-        }
-        """
         variables: dict[str, Any] = {
             "page_size": COMPUTER_PAGE_SIZE
         }
+
+        if args.get('use_date_filter'):
+            variables["created"] = args.get("created")
+
         if next_page:
             variables["next"] = next_page
+
         return self.graphql(query, variables)
 
     def get_audits(self, args: dict, next_page: str) -> dict:
@@ -555,15 +487,13 @@ def get_events_computer_type(
              the end date of the fetched events and a continuance token if the fetched reached the max limit.
     """
     created, current_date = calculate_fetch_dates(start_date, last_run=last_run, last_run_key="computer")
-    command_args = {"created": created}
+    command_args = {"created": created, 'use_date_filter': bool(last_run or not fetch_all_computers)}
     next_page = last_run.get("computer", {}).get("next_page", "")
-    if fetch_all_computers and not last_run:
-        client_event_type_func = client.get_all_computers
-        demisto.debug("Fetching all computers")
-    else:
-        client_event_type_func = client.get_computer
-        demisto.debug(f"Fetching computers since {created}")
 
+    debug_message = "Fetching all computers" if fetch_all_computers and not last_run else f"Fetching computers since {created}"
+    demisto.debug(debug_message)
+
+    client_event_type_func = client.get_computers
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     for event in events:
         event["source_log_type"] = "computers"
