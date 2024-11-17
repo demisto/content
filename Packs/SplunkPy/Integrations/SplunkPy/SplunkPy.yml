@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: SplunkPy dev
+  id: SplunkPy
   version: -1
 sectionOrder:
 - Connect
@@ -304,8 +304,8 @@ configuration:
   required: false
   additionalinfo: Add this tag to an entry to mirror it as a comment to Splunk.
 description: Runs queries on Splunk servers.
-display: SplunkPy dev
-name: SplunkPy dev
+display: SplunkPy
+name: SplunkPy
 script:
   commands:
   - arguments:
@@ -469,7 +469,7 @@ script:
       name: time
     - description: A channel identifier (ID) where to send the request, must be a Globally Unique Identifier (GUID). If the indexer acknowledgment is turned on, a channel is required.
       name: request_channel
-    - description: 'A  batch of events to send to Splunk. For example, `{"event": "something happened at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test2, test2"}, "index": "index0","sourcetype": "sourcetype0","source": "/example/something" } {"event": "something happened at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1","source": "/example/something", "fields":{ "fields" : "severity: INFO, category: test2, test2"}}`. If provided all arguments except of `request_channel` are ignored'
+    - description: 'A  batch of events to send to Splunk. For example, `{"event": "something happened at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test2, test2"}, "index": "index0","sourcetype": "sourcetype0","source": "/example/something" } {"event": "something happened at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1","source": "/example/something", "fields":{ "fields" : "severity: INFO, category: test2, test2"}}`. If provided all arguments except of `request_channel` are ignored.'
       name: batch_event_data
     - description: The entry ID in Cortex XSOAR of the file containing a batch of events. If provided, the arguments related to a single event are ignored.
       name: entry_id

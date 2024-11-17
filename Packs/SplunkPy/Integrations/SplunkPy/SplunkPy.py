@@ -2653,7 +2653,7 @@ def parse_fields(fields):
     Examples:
     1. Input: '{"severity": "INFO", "category": "test2, test2"}'
        Output: {"severity": "INFO", "category": "test2, test2"}
-    
+
     2. Input: 'severity: INFO, category: test2, test2'
        Output: {"fields": "severity: INFO, category: test2, test2"}
     """
