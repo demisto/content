@@ -1043,7 +1043,8 @@ def update_remote_system_command(client, args):
                 status = update_args.pop('status')
                 resolve_comment = update_args.pop('resolve_comment', None)
 
-                demisto.debug(f"Popped {status=} and {resolve_comment=} from update_args, incident status won't be updated in XDR.")
+                demisto.debug(f"Popped {status=} and {resolve_comment=} from update_args,"
+                              f" incident status won't be updated in XDR.")
 
             update_incident_command(client, update_args)
 
