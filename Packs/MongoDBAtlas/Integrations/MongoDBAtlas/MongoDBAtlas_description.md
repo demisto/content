@@ -25,4 +25,4 @@ If it is not already displayed, select the organization that contains your desir
 
 Customer needs to allow access from Cortex XSIAM to mongoDB via UI:
 https://cloud.mongodb.com/v2/<customer_organization_id>#/security/network/accessList 
-by adding an Cortex XSIAM IP address.
+by adding a Cortex XSIAM IP address.
