@@ -297,6 +297,26 @@ def test_teradata_connection(mocker, use_ldap: bool, expected_url: str):
     assert mock_create_engine.mock_calls[0][1][0] == expected_url
 
 
+@pytest.mark.parametrize('port, expected_url', [
+    ('', pytest.param("trino://username:password@host:8080/schema")),
+    ('1234', pytest.param("trino://username:password@host:1234/schema"))])
+def test_trino_connection(mocker, port: str, expected_url: str):
+    """
+    Given
+    - All required arguments for the client
+    When
+    - Creating a Generic SQL client with the Trino dialect
+    Then
+    - The client creation is successful
+    - The engine url is generated correctly per the Trino specification
+    """
+
+    mock_create_engine = mocker.patch.object(sqlalchemy, 'create_engine')
+    Client(dialect='Trino', host='host', username='username', password='password', port=port, connect_parameters='',
+           database='schema', ssl_connect=False, use_ldap=False)
+    assert mock_create_engine.called_once_with(expected_url)
+
+
 @pytest.mark.parametrize('dialect, expected_port', [
     ("Microsoft SQL Server", "1433"),
     ("ODBC Driver 18 for SQL Server", "1433"),
