@@ -104,7 +104,7 @@ configuration:
   name: incidentType
   type: 13
   required: false
-description: 'Use the Generic SQL integration to run SQL queries on the following databases: MySQL, PostgreSQL, Microsoft SQL Server, and Oracle.'
+description: 'Use the Generic SQL integration to run SQL queries on the following databases: MySQL, PostgreSQL, Microsoft SQL Server, Oracle, Teradata and Trino.'
 display: Generic SQL
 name: Generic SQL
 script:
