@@ -8,7 +8,7 @@ import json
 import pytest
 import dataclasses
 
-from CommonServerPython import DemistoException
+from CommonServerPython import snakify, DemistoException
 from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, get_machine_by_ip_command, \
     parse_ip_addresses, \
     print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action, \
@@ -3002,10 +3002,11 @@ def test_file_statistics_api_parser_from_raw_response(file_stats_parser: FileSta
 
     # Arrange
     file_stats_parser_dict = dataclasses.asdict(file_stats_parser)
+    snake_case_response = snakify(response)
 
     # Assert
     assert excluded_key not in file_stats_parser_dict
-    assert file_stats_parser_dict == {key: value for key, value in response.items() if key != excluded_key}
+    assert file_stats_parser_dict == {key: value for key, value in snake_case_response.items() if key != excluded_key}
 
 
 def test_file_statistics_api_parser_to_context(file_stats_parser: FileStatisticsAPIParser):

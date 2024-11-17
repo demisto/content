@@ -83,15 +83,15 @@ INTEGRATION_NAME = 'Microsoft Defender ATP'
 @dataclasses.dataclass
 class FileStatisticsAPIParser:
     sha1: str
-    orgPrevalence: str
-    organizationPrevalence: int
-    orgFirstSeen: str | None    # same as 'orgPrevalence', but as integer
-    orgLastSeen: str | None
-    globalPrevalence: str
-    globallyPrevalence: int    # same as 'globalPrevalence', but as integer
-    globalFirstObserved: str
-    globalLastObserved: str
-    topFileNames: list[str]
+    org_prevalence: str
+    organization_prevalence: int
+    org_first_seen: str | None    # same as 'org_prevalence', but as integer
+    org_last_seen: str | None
+    global_prevalence: str
+    globally_prevalence: int    # same as 'global_prevalence', but as integer
+    global_first_observed: str
+    global_last_observed: str
+    top_file_names: list[str]
 
     @classmethod
     def from_raw_response(cls, raw_response: dict):
@@ -104,7 +104,8 @@ class FileStatisticsAPIParser:
             FileStatisticsAPIParser
         """
         dataclass_field_names = {field.name for field in dataclasses.fields(cls)}
-        return cls(**{key: value for key, value in raw_response.items() if key in dataclass_field_names})
+        snake_case_response = snakify(raw_response)
+        return cls(**{key: value for key, value in snake_case_response.items() if key in dataclass_field_names})
 
     def to_context_output(self) -> dict:
         """Generates context output from an instance of FileStatisticsAPIParser.
@@ -115,15 +116,7 @@ class FileStatisticsAPIParser:
         return {
             'Sha1': self.sha1,
             'Statistics': assign_params(
-                OrgPrevalence=self.orgPrevalence,
-                OrganizationPrevalence=self.organizationPrevalence,
-                OrgFirstSeen=self.orgFirstSeen,
-                OrgLastSeen=self.orgLastSeen,
-                GlobalPrevalence=self.globalPrevalence,
-                GloballyPrevalence=self.globallyPrevalence,
-                GlobalFirstObserved=self.globalFirstObserved,
-                GlobalLastObserved=self.globalLastObserved,
-                TopFileNames=self.topFileNames,
+                **{camelize_string(key): value for key, value in dataclasses.asdict(self).items() if key != 'sha1'}
             )
         }
 
@@ -136,15 +129,7 @@ class FileStatisticsAPIParser:
         Returns:
             str: human readable markdown table
         """
-        table_data = {
-            'Global Prevalence': self.globallyPrevalence,
-            'Organization Prevalence': self.organizationPrevalence,
-            'Global First Observed': self.globalFirstObserved,
-            'Global Last Observed': self.globalLastObserved,
-            'Organization First Seen': self.orgFirstSeen,
-            'Organization Last Seen': self.orgLastSeen,
-            'Top File Names': self.topFileNames,
-        }
+        table_data = {self.format_for_table(key): value for key, value in dataclasses.asdict(self).items() if key != 'sha1'}
         return tableToMarkdown(f'Statistics on {file_hash} file:', table_data, removeNull=True)
 
     def to_file_indicator(self, file_hash: str) -> Common.File:
@@ -159,13 +144,28 @@ class FileStatisticsAPIParser:
         return Common.File(
             dbot_score=Common.DBotScore(file_hash, DBotScoreType.FILE, INTEGRATION_NAME, Common.DBotScore.NONE),
             sha1=self.sha1,
-            organization_prevalence=self.organizationPrevalence,
-            global_prevalence=self.globallyPrevalence,
-            organization_first_seen=self.orgFirstSeen,
-            organization_last_seen=self.orgLastSeen,
-            first_seen_by_source=self.globalFirstObserved,
-            last_seen_by_source=self.globalLastObserved,
+            organization_prevalence=self.organization_prevalence,
+            global_prevalence=self.globally_prevalence,
+            organization_first_seen=self.org_first_seen,
+            organization_last_seen=self.org_last_seen,
+            first_seen_by_source=self.global_first_observed,
+            last_seen_by_source=self.global_last_observed,
         )
+
+    @staticmethod
+    def format_for_table(field_name: str) -> str:
+        """Replaces certain words and formats fields from 'snake_case' to 'Space Case'.
+
+        Args:
+            field_name (str): Name of field in snake_case.
+
+        Returns:
+            str: Formatted in Space Case with replacements.
+        """
+        replacements = [('globally_', 'global_'), ('org_', 'organization_')]
+        for old_value, new_value in replacements:
+            field_name = field_name.replace(old_value, new_value)
+        return pascalToSpace(camelize_string(field_name))
 
 
 class HuntingQueryBuilder:

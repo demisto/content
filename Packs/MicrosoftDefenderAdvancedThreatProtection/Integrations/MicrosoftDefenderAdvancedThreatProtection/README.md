@@ -2583,8 +2583,6 @@ File.Read.All
 
 ##### File Indicator Example
 
-The indicator fields from the command are shown below:
-
 | Type | Value | Verdict | Related Incidents | Expiration | Global Prevalence | Organization Prevalence | First Seen By Source | Last Seen By Source | Organization First Seen | Organization Last Seen |
 |---|---|---|---|---|---|---|---|---|---|---|
 | File | 50ef7c645fd5cbb95d50fbaddf6213800f9296ec | Benign | 2 | Never | 195803 | 0 | April 03, 2019 4:10 AM | March 23, 2020 9:24 AM | N/A | N/A |
