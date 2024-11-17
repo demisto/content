@@ -1,0 +1,51 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: BloodHoundEnterprise
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: API Token Key
+  name: api_token_key
+  required: true
+  hiddenusername: true
+  type: 9
+  section: Connect
+- displaypassword: API Token ID
+  name: api_token_id
+  required: true
+  hiddenusername: true
+  type: 9
+  section: Connect
+- display: Fetch events
+  defaultvalue: false
+  name: isFetchEvents
+  required: false
+  type: 8
+  section: Collect
+- defaultvalue: 10000
+  section: Collect
+  advanced: true
+  display: The maximum number of audit events per fetch
+  name: max_events_per_fetch
+  required: false
+  type: 0
+description: This is the Hello World event collector integration for Cortex XSIAM.
+display: BloodHoundEnterprise
+name: BloodHoundEnterprise
+script:
+  dockerimage: demisto/python3:3.10.13.87159
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+fromversion: 8.4.0
