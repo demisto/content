@@ -2,10 +2,13 @@ import demistomock as demisto
 from CommonServerPython import *
 
 from typing import Any
-# print(f"{demisto.args()=}")
 
 
-DEFAULT_BRANDS = ['Okta v2', 'Microsoft Graph User']
+OKTA_BRAND = "Okta v2"
+MS_GRAPH_BRAND = "Microsoft Graph User"
+DEFAULT_BRANDS = [OKTA_BRAND, MS_GRAPH_BRAND]
+SYSTEM_USERS = {"administrator", "system"}
+SUCCESS_MESSAGE = "User session was cleared."
 
 
 class Command:
@@ -22,30 +25,26 @@ class Command:
         self.name = name
         self.args = args
 
+    def is_valid_args(self) -> bool:
+        """
+        Validate if the command has valid arguments.
 
-def is_valid_args(command: Command) -> bool:
-    """
-    Validate if the command has valid arguments.
+        Args:
+            command (Command): The command object to validate.
 
-    Args:
-        command (Command): The command object to validate.
+        Returns:
+            bool: True if the command has valid arguments, False otherwise.
 
-    Returns:
-        bool: True if the command has valid arguments, False otherwise.
-
-    Note:
-        If the command has no arguments, it is considered valid.
-    """
-    is_valid = any(command.args.values()) if command.args else True
-    if not is_valid:
-        demisto.debug(
-            f"Skipping command '{command.name}' since no required arguments were provided."
-        )
-
-    return is_valid
+        Note:
+            If the command has no arguments, it is considered valid.
+        """
+        is_valid = any(self.args.values()) if self.args else True
+        if not is_valid:
+            demisto.debug(f"Skipping command '{self.name}' since no required arguments were provided.")
+        return is_valid
 
 
-def prepare_human_readable(  # for debug
+def prepare_human_readable(
     command_name: str, args: dict[str, Any], human_readable: str, is_error: bool = False
 ) -> list[CommandResults]:
     """
@@ -124,51 +123,6 @@ def get_output_key(output_key: str, raw_context: dict[str, Any]) -> str:
     return full_output_key
 
 
-def get_outputs(output_key: str, raw_context: dict[str, Any]) -> dict[str, Any]:
-    """
-    Retrieves the output context for a given output key from the raw context.
-
-    This function uses the get_output_key function to find the full output key,
-    then extracts the corresponding context from the raw_context dictionary.
-    If the context is a list, it returns the first item.
-
-    Args:
-        output_key (str): The base output key to search for.
-        raw_context (dict[str, Any]): The raw context dictionary to search in.
-
-    Returns:
-        dict[str, Any]: The extracted context for the given output key,
-        or an empty dictionary if not found.
-
-    Example:
-        raw_context = {
-            "Account(val.Username == obj.Username)": [
-                {
-                    "Username": "john.doe",
-                    "Email": "john.doe@example.com",
-                    "DisplayName": "John Doe"
-                }
-            ]
-        }
-        output_key = "Account(val.Username == obj.Username)"
-        result = get_outputs(output_key, raw_context)
-        # result will be:
-        # {
-        #     "Username": "john.doe",
-        #     "Email": "john.doe@example.com",
-        #     "DisplayName": "John Doe"
-        # }
-
-    """
-    if raw_context and output_key:
-        context = raw_context.get(output_key, {})
-        if isinstance(context, list):
-            context = context[0]
-    else:
-        context = {}
-    return context
-
-
 def run_execute_command(
     command_name: str, args: dict[str, Any]
 ) -> tuple[list[dict], str, list[CommandResults]]:
@@ -190,7 +144,6 @@ def run_execute_command(
     """
     demisto.debug(f"Executing command: {command_name}")
     res = demisto.executeCommand(command_name, args)
-    # print(res)
     errors_command_results = []
     human_readable_list = []
     entry_context_list = []
@@ -210,16 +163,15 @@ def run_execute_command(
 
 
 def remove_system_user(users_names: list[str]) -> tuple[list, dict]:
-    system_users = {"administrator", "system"}
     data_user = {}
     filtered_users = []
     for user in users_names:
-        if user in system_users:
+        if user in SYSTEM_USERS:
             demisto.debug(f"Skipping user: '{user}' is a system user.")
             data_user[user] = {
                 "Result": "Failed",
-                "Message": "Unable to clear system user",
-                "Brands": ""
+                "Message": "Unable to clear system user.",
+                "Brands": "",
             }
         else:
             filtered_users.append(user)
@@ -227,9 +179,9 @@ def remove_system_user(users_names: list[str]) -> tuple[list, dict]:
     return filtered_users, data_user
 
 
-def extract_usernames_with_ids(data: dict, output_key: str) -> dict:
+def extract_usernames_with_ids(context: dict, output_key: str) -> dict:
     user_id_mapping = {}
-    users = data.get(output_key, [])
+    users = context.get(output_key, [])
     for user in users:
         username = user.get("Username")
         id_info = user.get("ID", [])
@@ -245,12 +197,13 @@ def get_user_data(command: Command) -> tuple[list[CommandResults], dict]:
     entry_context, human_readable, readable_errors = run_execute_command(
         command.name, command.args
     )
+
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(
         prepare_human_readable(command.name, command.args, human_readable)
     )
-    output_key = get_output_key("Account", entry_context[0])
-    id_info = extract_usernames_with_ids(entry_context[0], output_key)
+    output_key = get_output_key("Account", entry_context[-1])
+    id_info = extract_usernames_with_ids(entry_context[-1], output_key)
 
     return readable_outputs_list, id_info
 
@@ -279,17 +232,18 @@ def get_user_id(users_ids: dict, brand_name: str, user_name: str) -> str:
 
 def okta_clear_user_sessions(
     command: Command,
-) -> tuple[list[CommandResults], str]:
+) -> tuple[list[CommandResults], Optional[str]]:
     readable_outputs_list = []
 
-    entry_context, human_readable, readable_errors = run_execute_command(
+    _, human_readable, readable_errors = run_execute_command(
         command.name, command.args
     )
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(
         prepare_human_readable(command.name, command.args, human_readable)
     )
-    return readable_outputs_list, human_readable
+    error_message = readable_errors[0].readable_output if readable_errors else ""
+    return readable_outputs_list, error_message
 
 
 def msgraph_user_session_revoke(
@@ -297,14 +251,32 @@ def msgraph_user_session_revoke(
 ) -> tuple[list[CommandResults], str]:
     readable_outputs_list = []
 
-    entry_context, human_readable, readable_errors = run_execute_command(
-        command.name, command.args
-    )
+    _, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(
         prepare_human_readable(command.name, command.args, human_readable)
     )
     return readable_outputs_list, human_readable
+
+
+def create_readable_output(outputs):
+    data_users_list = [
+        {
+            "Entity": username,
+            "Result": details["Result"],
+            "Brands": details.get("Brands", ""),
+            "Message": details["Message"],
+        }
+        for username, details in outputs.items()
+    ]
+
+    readable_output = tableToMarkdown(
+        name="Users Session Status",
+        t=data_users_list,
+        headers=["Entity", "Result", "Brands", "Message"],
+        removeNull=True,
+    )
+    return readable_output
 
 
 """ MAIN FUNCTION """
@@ -313,23 +285,22 @@ def msgraph_user_session_revoke(
 def main():
     try:
         args = demisto.args()
-        users_names = argToList(args.get("user_name", []))
+        users_names = argToList(args.get("user_name", ""))
         verbose = argToBoolean(args.get("verbose", False))
-        brands = argToList(args.get("brands", [])) or DEFAULT_BRANDS
+        brands = argToList(args.get("brands", "")) or DEFAULT_BRANDS
 
-        command_results_list: list[CommandResults] = []
+        results_for_verbose: list[CommandResults] = []
 
         users_names, outputs = remove_system_user(users_names)
 
         if users_names:
             get_user_data_command = Command(
                 name="get-user-data",
-                args={"user_name": users_names, "brands": brands, 'verbose': verbose},
+                args={"user_name": users_names, "brands": brands},
             )
-            readable_outputs, users_ids = get_user_data(get_user_data_command)
-
-            if verbose:
-                command_results_list.extend(readable_outputs)
+            if get_user_data_command.is_valid_args():
+                readable_outputs, users_ids = get_user_data(get_user_data_command)
+                results_for_verbose.extend(readable_outputs)
 
             for user_name in users_names:
                 #################################
@@ -342,73 +313,85 @@ def main():
                     "Entity": user_name,
                     "Result": "",
                     "Brands": "",
-                    "Message": ""
+                    "Message": "",
                 }
-                readable_outputs_single_user = []
-
                 if user_name not in users_ids:
                     user_output["Result"] = "Failed"
-                    user_output["Message"] = "User name not found"
+                    user_output["Message"] = "Username not found or no integration connect."
                     outputs[user_name] = user_output
                     continue
 
+                success: bool = False
+                brands_succeeded: list = []
+                brands_failed: list = []
+
                 # Okta v2
-                if okta_v2_id := get_user_id(users_ids, 'Okta v2', user_name):
+                if okta_v2_id := get_user_id(users_ids, OKTA_BRAND, user_name):
                     okta_clear_user_sessions_command = Command(
                         name="okta-clear-user-sessions",
                         args={"userId": okta_v2_id},
-                        brand="Okta v2",
+                        brand=OKTA_BRAND,
                     )
-                    if is_valid_args(okta_clear_user_sessions_command):
-                        readable_outputs, human_readable = okta_clear_user_sessions(okta_clear_user_sessions_command)
 
-                        readable_outputs_single_user.extend(readable_outputs)
-                        user_output["Result"] = "Success" if "User session was cleared" in human_readable else "Failed"
-                        user_output["Message"] = human_readable
-                        user_output["Brands"] = "Okta v2"
+                    if okta_clear_user_sessions_command.is_valid_args():
+                        readable_outputs, error_message = okta_clear_user_sessions(
+                            okta_clear_user_sessions_command
+                        )
+
+                        results_for_verbose.extend(readable_outputs)
+                        if not error_message:
+                            success = True
+                            brands_succeeded.append(OKTA_BRAND)
+                        else:
+                            brands_failed.append(OKTA_BRAND)
 
                 # Microsoft Graph User
-                if microsoft_graph_id := get_user_id(users_ids, brand_name='Microsoft Graph User', user_name=user_name):
+                if microsoft_graph_id := get_user_id(users_ids, brand_name=MS_GRAPH_BRAND, user_name=user_name):
                     msgraph_user_session_revoke_command = Command(
                         name="msgraph-user-session-revoke",
                         args={"user": microsoft_graph_id},
-                        brand="Microsoft Graph User",
+                        brand=MS_GRAPH_BRAND,
                     )
-                    if is_valid_args(msgraph_user_session_revoke_command):
-                        readable_outputs, human_readable = msgraph_user_session_revoke(msgraph_user_session_revoke_command)
+                    if msgraph_user_session_revoke_command.is_valid_args():
+                        readable_outputs, human_readable = msgraph_user_session_revoke(
+                            msgraph_user_session_revoke_command
+                        )
 
-                        readable_outputs_single_user.extend(readable_outputs)
-                        user_output["Result"] = "Success" if "successfully" in human_readable else "Failed"
-                        user_output["Message"] = human_readable
-                        user_output["Brands"] = "Microsoft Graph User"
+                        results_for_verbose.extend(readable_outputs)
+                        if "successfully" in human_readable:
+                            success = True
+                            brands_succeeded.append(MS_GRAPH_BRAND)
+                        else:
+                            brands_failed.append(MS_GRAPH_BRAND)
+
+                if success:
+                    user_output["Result"] = "Success"
+                    user_output["Brands"] = ", ".join(brands_succeeded)
+                    user_output["Message"] = SUCCESS_MESSAGE
+                else:
+                    user_output["Result"] = "failed"
+                    user_output["Brands"] = ", ".join(brands_failed)
+                    user_output["Message"] = "User ID not found"
 
                 outputs[user_name] = user_output
-
-                if verbose:
-                    command_results_list.extend(readable_outputs_single_user)
 
         ##############################
         ### Complete for all users ###
         ##############################
-        data_users_list = [
-            {
-                "Entity": username,
-                "Result": details["Result"],
-                "Brands": details.get("Brands", ""),
-                "Message": details["Message"]
-            }
-            for username, details in outputs.items()
-        ]
 
-        readable_output = tableToMarkdown(
-            name="Users",
-            t=data_users_list,
-            headers=["Entity", "Result", "Brands", "Message"],
-            removeNull=True
+        readable_output = create_readable_output(outputs)
+
+        command_results_list: list[CommandResults] = []
+        if verbose:
+            command_results_list.extend(results_for_verbose)
+
+        command_results_list.append(
+            CommandResults(
+                readable_output=readable_output,
+                outputs=outputs,
+                outputs_prefix="UsersSessionStatus",
+            )
         )
-
-        command_results_list.append(CommandResults(readable_output=readable_output,
-                                    outputs=outputs, outputs_prefix='ClearUserSession'))
 
         return_results(command_results_list)
     except Exception as e:
