@@ -2754,14 +2754,14 @@ def get_distribution_url_command(client, args):
 
     if not download_package:
         return CommandResults(
-        outputs={
-            'id': distribution_id,
-            'url': url
-        },
-        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.Distribution',
-        outputs_key_field='id',
-        readable_output=f'[Distribution URL]({url})'
-    )
+            outputs={
+                'id': distribution_id,
+                'url': url
+            },
+            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.Distribution',
+            outputs_key_field='id',
+            readable_output=f'[Distribution URL]({url})'
+        )
 
     return download_installation_package(client,
                                          url,

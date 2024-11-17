@@ -1686,12 +1686,12 @@ def test_get_distribution_url_command_with_download(mocker):
         "integration_context_brand": "PaloAltoNetworksXDR"
     }
     mocker.patch('CortexXDRIR.fileResult', return_value={
-            'Contents': '',
-            'ContentsFormat': 'text',
-            'Type': 3,
-            'File': 'xdr-agent-install-package.msi',
-            'FileID': '11111'
-        })
+        'Contents': '',
+        'ContentsFormat': 'text',
+        'Type': 3,
+        'File': 'xdr-agent-install-package.msi',
+        'FileID': '11111'
+    })
     result = get_distribution_url_command(client, args)
     client.get_distribution_url.assert_called_once_with("12345", "x64")
     client._http_request.assert_called_once_with(
