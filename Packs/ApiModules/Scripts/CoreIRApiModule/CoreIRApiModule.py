@@ -2763,7 +2763,11 @@ def get_distribution_url_command(client, args):
         readable_output=f'[Distribution URL]({url})'
     )
 
-    return download_installation_package(client, url, package_type, distribution_id, args.get("integration_context_brand", "CoreApiModule"))
+    return download_installation_package(client,
+                                         url,
+                                         package_type,
+                                         distribution_id,
+                                         args.get("integration_context_brand", "CoreApiModule"))
 
 
 def get_distribution_status_command(client, args):
@@ -2799,7 +2803,7 @@ def download_installation_package(client, url: str, package_type: str, distribut
         file_ext = "zip"
     else:
         file_ext = package_type
-    dist_file = fileResult(
+    file_result = fileResult(
         filename=f"xdr-agent-install-package.{file_ext}",
         data=dist_file_contents
     )
@@ -2812,7 +2816,7 @@ def download_installation_package(client, url: str, package_type: str, distribut
         outputs_key_field='id',
         readable_output="Successfully downloaded the installation package file"
     )
-    return [result, dist_file]
+    return [result, file_result]
 
 
 def get_process_context(alert, process_type):

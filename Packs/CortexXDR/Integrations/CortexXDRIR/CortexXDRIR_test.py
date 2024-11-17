@@ -1,12 +1,12 @@
 import copy
 import json
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from freezegun import freeze_time
 
 import demistomock as demisto
-from CommonServerPython import urljoin, DemistoException
+from CommonServerPython import CommandResults, urljoin, DemistoException
 from CoreIRApiModule import XDR_RESOLVED_STATUS_TO_XSOAR, XSOAR_RESOLVED_STATUS_TO_XDR
 from CortexXDRIR import XSOAR_TO_XDR, XDR_TO_XSOAR, get_xsoar_close_reasons
 
@@ -1634,3 +1634,74 @@ def test_get_xsoar_close_reasons(mocker):
     }
     mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
     assert get_xsoar_close_reasons() == list(XSOAR_RESOLVED_STATUS_TO_XDR.keys()) + ['CustomReason1', 'CustomReason 2', 'Foo']
+
+
+def test_get_distribution_url_command_without_download():
+    """
+    Given:
+        - `download_package` argument set to False.
+    When:
+        - Calling `get_distribution_url_command` without downloading the package.
+    Then:
+        - Should return a CommandResults object with the distribution URL and no file download.
+    """
+    from CoreIRApiModule import get_distribution_url_command
+    client = MagicMock()
+    client.get_distribution_url = MagicMock(return_value="https://example.com/distribution")
+
+    args = {
+        "distribution_id": "12345",
+        "package_type": "x64",
+        "download_package": "false",
+        "integration_context_brand": "PaloAltoNetworksXDR"
+    }
+
+    result = get_distribution_url_command(client, args)
+    client.get_distribution_url.assert_called_once_with("12345", "x64")
+    assert isinstance(result, CommandResults)
+    assert result.outputs == {"id": "12345", "url": "https://example.com/distribution"}
+    assert result.outputs_prefix == "PaloAltoNetworksXDR.Distribution"
+    assert result.outputs_key_field == "id"
+    assert "[Distribution URL](https://example.com/distribution)" in result.readable_output
+
+
+def test_get_distribution_url_command_with_download(mocker):
+    """
+    Given:
+        - `download_package` set to True.
+    When:
+        - Calling `get_distribution_url_command` with downloading the package.
+    Then:
+        - Should return a list with CommandResults for the distribution URL and the downloaded file information.
+    """
+    from CoreIRApiModule import get_distribution_url_command
+    client = MagicMock()
+    client.get_distribution_url = MagicMock(return_value="https://example.com/distribution")
+    client._http_request = MagicMock(return_value=b"mock_binary_data")
+
+    args = {
+        "distribution_id": "12345",
+        "package_type": "x64",
+        "download_package": "true",
+        "integration_context_brand": "PaloAltoNetworksXDR"
+    }
+    mocker.patch('CortexXDRIR.fileResult', return_value={
+            'Contents': '',
+            'ContentsFormat': 'text',
+            'Type': 3,
+            'File': 'xdr-agent-install-package.msi',
+            'FileID': '11111'
+        })
+    result = get_distribution_url_command(client, args)
+    client.get_distribution_url.assert_called_once_with("12345", "x64")
+    client._http_request.assert_called_once_with(
+        method="GET", full_url="https://example.com/distribution", resp_type="content"
+    )
+    assert isinstance(result, list)
+    assert len(result) == 2
+    command_result = result[0]
+    assert isinstance(command_result, CommandResults)
+    assert command_result.outputs == {"id": "12345", "url": "https://example.com/distribution"}
+    assert command_result.outputs_prefix == "PaloAltoNetworksXDR.Distribution"
+    assert command_result.outputs_key_field == "id"
+    assert "Successfully downloaded the installation package file" in command_result.readable_output
