@@ -3305,7 +3305,7 @@ Resolve and update incidents using the specified settings.
 | username | Username of a user to assign the incident to. Mutually exclusive with the 'assigned_to_uuid' argument. Using this parameter instead of 'assigned_to_uuid' will result in an additional API call in order to fetch the UUID of the user. | Optional | 
 | add_tag | Add a new tag to the incidents. | Optional | 
 | remove_tag | Remove a tag from the incidents. | Optional | 
-| add_comment | Add a comment to the incident. | Optional | 
+| add_comment | Add a comment to the incident. Comment is limited to 1024 characters. | Optional | 
 
 #### Context Output
 
