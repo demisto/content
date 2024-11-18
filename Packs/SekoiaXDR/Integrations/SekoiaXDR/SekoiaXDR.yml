@@ -7,7 +7,7 @@ category: Analytics & SIEM
 sectionOrder:
 - Connect
 - Collect
-description: "Fetch alerts and events from SEKOIA.IO XDR.\nTo use this integration, please create an API Key with the appropriate permissions."
+description: Fetch alerts and events from SEKOIA.IO XDR.\nTo use this integration, please create an API Key with the appropriate permissions.
 configuration:
 - section: Connect
   display: API key
@@ -433,10 +433,10 @@ script:
     arguments:
     - name: earliest_time
       required: true
-      description: "Valid formats <sign + or -><number><time unit> or ISO 8601 e.g -3d, -2w, -7d, 2023-01-15T00:00:00Z."
+      description: Valid formats <sign + or -><number><time unit> or ISO 8601 e.g -3d, -2w, -7d, 2023-01-15T00:00:00Z.
     - name: lastest_time
       required: true
-      description: "Valid formats <sign + or -><number><time unit> or ISO 8601 e.g +3d, +2w, now, 2023-01-15T00:00:00Z."
+      description: Valid formats <sign + or -><number><time unit> or ISO 8601 e.g +3d, +2w, now, 2023-01-15T00:00:00Z.
     - name: query
       defaultValue: ""
       description: 'The query to use, i.e: "alert_short_ids:ALUnyZCYZ9Ga".'
@@ -595,10 +595,10 @@ script:
     arguments:
     - name: earliest_time
       required: true
-      description: "Valid formats <sign + or -><number><time unit> or ISO 8601 e.g -3d, -2w, -7d, 2023-01-15T00:00:00Z."
+      description: Valid formats <sign + or -><number><time unit> or ISO 8601 e.g -3d, -2w, -7d, 2023-01-15T00:00:00Z.
     - name: lastest_time
       required: true
-      description: "Valid formats <sign + or -><number><time unit> or ISO 8601 e.g +3d, +2w, now, 2023-01-15T00:00:00Z."
+      description: Valid formats <sign + or -><number><time unit> or ISO 8601 e.g +3d, +2w, now, 2023-01-15T00:00:00Z.
     - name: query
       description: 'The query to use, i.e: "alert_short_ids:ALUnyZCYZ9Ga".'
       defaultValue: ""
@@ -1115,7 +1115,7 @@ script:
     - name: value
       required: true
       description: The value of attributes.
-    description: "Command to add attributes to an asset in Sekoia XDR."
+    description: Command to add attributes to an asset in Sekoia XDR.
   - name: sekoia-xdr-add-keys-asset
     arguments:
     - name: asset_uuid
@@ -1123,7 +1123,7 @@ script:
       description: 'UUID of the asset to get, the UUID should appear with "sekoia-xdr-list-assets" if that alert have assets related, example: "d4cc3b05-a78d-4f29-b27c-c637d86fa03a".'
     - name: name
       required: true
-      description: "The name of the key to be added."
+      description: The name of the key to be added.
     - name: value
       required: true
       description: The value of the key to be added.
@@ -1173,7 +1173,7 @@ script:
       defaultValue: GET
     - name: url_sufix
       required: true
-      description: "The URL suffix after https://api.sekoia.io, i.e. /v1/sic/alerts/ or /v1/asset-management/assets/."
+      description: The URL suffix after https://api.sekoia.io, i.e. /v1/sic/alerts/ or /v1/asset-management/assets/.
     - name: parameters
       description: Query parameters, i.e. limit -> 10 , match['status_name'] -> Ongoing.
       type: keyValue
