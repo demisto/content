@@ -606,7 +606,7 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
 
 
 @pytest.mark.parametrize('last_update',
-                         ['2020-11-18T13:16:52.005381+01:00',
+                         ['2020-11-18T13:16:52.005381+02:00',
                           '2024-03-21T17:02:02.000000645Z'])
 def test_get_modified_remote_data_command(requests_mock, last_update):
     """
@@ -1634,3 +1634,38 @@ def test_get_xsoar_close_reasons(mocker):
     }
     mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
     assert get_xsoar_close_reasons() == list(XSOAR_RESOLVED_STATUS_TO_XDR.keys()) + ['CustomReason1', 'CustomReason 2', 'Foo']
+
+def test_get_modified_remote_data_xdr_delay(mocker):
+    """
+    Given:
+        - an XDR client
+        - arguments - lastUpdate time
+        - raw incidents (result of client.get_incidents)
+        - xdr_delay
+    When
+        - running get_modified_remote_data_command
+    Then
+        - the method is returning a list of incidents IDs that were modified after adding xdr_delay
+    """
+    from CortexXDRIR import get_modified_remote_data_command, Client
+    from CommonServerPython import BaseClient
+    
+    previous_last_update_time = "2020-11-18T13:16:52.005381+02:00"
+    
+    mocker.patch.object(demisto,'getIntegrationContext')
+    mocker.patch.object(BaseClient, "_http_request", return_value={
+        "reply": {"total_count": 0, "result_count": 0, "incidents": [], "restricted_incident_ids": []}
+    })
+    client = Client(base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
+    modified_incidents_empty, new_last_run_time_empty = get_modified_remote_data_command(
+        client, {'lastUpdate': previous_last_update_time,}, previous_last_update_time,
+    )
+    assert not modified_incidents_empty.modified_incident_ids
+    assert new_last_run_time_empty == "2020-11-18 11:16:52.006+02:00"
+
+    mocker.patch.object(BaseClient, "_http_request", return_value=load_test_data('./test_data/get_incidents_list.json'))
+    incidents_response, new_last_time_stamp = get_modified_remote_data_command(
+        client,{'lastUpdate': previous_last_update_time,},previous_last_update_time,xdr_delay=5
+    )
+    assert new_last_time_stamp == "2020-11-18 11:12:52.006+02:00" # based on the time of the last incident
+    assert incidents_response.modified_incident_ids == ['1', '2']
