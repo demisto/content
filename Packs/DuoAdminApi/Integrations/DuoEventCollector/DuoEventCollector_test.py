@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 import demistomock as demisto
 from unittest.mock import MagicMock, patch
 from DuoEventCollector import (Client, GetEvents, LogType, Params, parse_events, main,
-                               parse_mintime, validate_request_order_array, calculate_window)
+                               parse_mintime, validate_request_order_array, calculate_window, handle_request_types)
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
@@ -704,3 +704,17 @@ def test_check_window_before_call_5_sec_time_delta():
     # min time 13 sec less than the end time return true (more then 5 sec delta)
     mintime = datetime.strptime("2020-01-24 15:11:20", DATE_FORMAT)
     assert client.check_window_before_call(mintime=mintime.timestamp())
+    
+    
+def test_handle_request_types():
+    """
+    Given:
+        mintime - a timestamp represents the minimum time from which to get events.
+    When:
+        calling check_window_before_call.
+    Then:
+        True is returned, the API call should be performed, we are in the time window.
+    """
+    demisto_params = {'logs_type_array': 'AUTHENTICATION, ADMINISTRATION'}
+    last_run = {'request_order': ['ADMINISTRATION', 'AUTHENTICATION', 'TELEPHONY']}
+    assert handle_request_types(demisto_params, last_run) == ['ADMINISTRATION', 'AUTHENTICATION']

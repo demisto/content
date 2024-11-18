@@ -393,22 +393,33 @@ def calculate_window(params: dict):
     demisto.debug(f'{fetch_delay=} {end_window=}')
     params['end_window'] = end_window
 
+def handle_request_types(demisto_params, last_run):
+    """
+    In this collector each fetch iteration is calling one event type.
+    We rotate the event type as part of the rotate_request_order method.
+    Args:
+        demisto_params (dict): The demisto params.
+        last_run (dict): The dict containing the order of the events types.
 
+    Returns:
+        _type_: _description_
+    """
+    logs_type_array = (demisto_params.get('logs_type_array',
+                                             f'{LogType.AUTHENTICATION},{LogType.ADMINISTRATION},{LogType.TELEPHONY}'))
+    logs_type_array = argToList(logs_type_array)
+    request_order = last_run.get('request_order', logs_type_array)
+    request_order = [log_type.upper() for log_type in request_order if log_type in logs_type_array]
+    if invalid_log_type := validate_request_order_array(request_order) is not True:
+        DemistoException(f'We found invalid values for logs_type_array, the values are {invalid_log_type}')
+
+    demisto.debug(f'The request order is : {request_order}')
+    return request_order
+    
 def main():
     try:
         demisto_params = demisto.params() | demisto.args()
-
         last_run = demisto.getLastRun()
-
-        logs_type_array = demisto_params.get('logs_type_array',
-                                             f'{LogType.AUTHENTICATION},{LogType.ADMINISTRATION},{LogType.TELEPHONY}')
-
-        request_order = last_run.get('request_order', logs_type_array.split(','))
-        request_order = [log_type.upper() for log_type in request_order]
-        if unvalid_log_type := validate_request_order_array(request_order) is not True:
-            DemistoException(f'We found invalid values for logs_type_array, the values are {unvalid_log_type}')
-
-        demisto.debug(f'The request order is : {request_order}')
+        request_order = handle_request_types(demisto_params, last_run)
 
         if 'after' not in last_run:
             after = dateparser.parse(demisto_params['after'].strip())
