@@ -535,6 +535,30 @@
                     }
                 ]
             }
+        },
+        "organizationprevalence": {
+            "simple": "Domain.OrganizationPrevalence",
+            "complex": null
+        },
+        "globalprevalence": {
+            "simple": "Domain.GlobalPrevalence",
+            "complex": null
+        },
+        "organizationfirstseen": {
+            "simple": "Domain.OrganizationFirstSeen",
+            "complex": null
+        },
+        "organizationlastseen": {
+            "simple": "Domain.OrganizationLastSeen",
+            "complex": null
+        },
+        "firstseenbysource": {
+            "simple": "Domain.FirstSeenBySource",
+            "complex": null
+        },
+        "lastseenbysource": {
+            "simple": "Domain.LastSeenBySource",
+            "complex": null
         }
     },
   "manualMapping": null,
