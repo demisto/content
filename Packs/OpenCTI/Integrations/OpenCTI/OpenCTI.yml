@@ -9,24 +9,24 @@ configuration:
   type: 0
 - display: API Key (leave empty. Fill in the API key in the password field.)
   displaypassword: API Key
-  name: credentials
-  type: 9
   hiddenusername: true
+  name: credentials
   required: false
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
-- name: redirect_std_out
+  type: 8
+- additionalinfo: Used for troubleshooting purposes.
   display: Redirect stdout
-  type: 8
-  additionalinfo: Used for troubleshooting purposes.
+  name: redirect_std_out
   required: false
-description: Manages observables from OpenCTI. Compatible with OpenCTI 4.X API and OpenCTI 5.X API versions.
+  type: 8
+description: Manages OpenCTI platform. Compatible with OpenCTI 4.X API and OpenCTI 5.X API versions.
 display: OpenCTI
 name: OpenCTI
 script:
@@ -38,7 +38,7 @@ script:
       name: score_start
     - description: 'Score maximum value to filter by. Values range is 0-100. '
       name: score_end
-    - description: 'A specific score. Values range is 0-100 or Unknown.'
+    - description: A specific score. Values range is 0-100 or Unknown.
       name: score
     - auto: PREDEFINED
       defaultValue: ALL
@@ -150,9 +150,10 @@ script:
       name: score
     - description: Observable value.
       name: value
-    - description: Create indicator related with the observable created.
-      name: create_indicator
+    - auto: PREDEFINED
       defaultValue: "false"
+      description: Create indicator related with the observable created
+      name: create_indicator
       predefined:
       - "true"
       - "false"
@@ -179,7 +180,7 @@ script:
       - marking
       - label
       required: true
-    - description: "Value of the field to add. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI."
+    - description: Value of the field to add. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI.
       name: value
       required: true
     description: Add a field to the observable. Fields that can be added are marking definition and label.
@@ -195,13 +196,13 @@ script:
       - marking
       - label
       required: true
-    - description: "Value of the field to remove. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI or opencti-marking-definition-list to find all marking definition IDs in OpenCTI."
+    - description: Value of the field to remove. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI or opencti-marking-definition-list to find all marking definition IDs in OpenCTI.
       name: value
       required: true
     description: Remove observable field value. Fields which values can be removed are marking definition and label.
     name: opencti-observable-field-remove
   - arguments:
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: The maximum number of organizations to return per fetch. Default value is 50. Maximum value is 200.
       name: limit
     - description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.Organizations.organizationsLastRun context path.
@@ -241,7 +242,7 @@ script:
       description: New organization ID.
       type: String
   - arguments:
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: The maximum number of labels to return per fetch.
       name: limit
     - description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.Labels.labelsLastRun context path.
@@ -282,7 +283,7 @@ script:
       description: New external reference ID.
       type: String
   - arguments:
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: The maximum number of marking definitions to return per fetch.
       name: limit
     - description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.MarkingDefinitions.markingsLastRun context path.
@@ -358,6 +359,289 @@ script:
       description: Incident type name
     - contextPath: OpenCTI.IncidentTypes.IncidentTypesList.description
       description: Incident type description
+  - arguments:
+    - description: Name of the indicator.
+      name: name
+      required: true
+      type: string
+    - description: Value of the indicator.
+      name: indicator
+      required: true
+      type: string
+    - auto: PREDEFINED
+      description: Main observable type for the indicator.
+      name: main_observable_type
+      predefined:
+      - Account
+      - Domain
+      - Email
+      - File-MD5
+      - File-SHA1
+      - File-SHA256
+      - IP
+      - IPv6
+      - Registry Key
+      - URL
+      required: true
+      type: string
+    - description: The types of the indicator. Use opencti-indicator-types-list to find all indicator types in OpenCTI.
+      isArray: true
+      name: indicator_types
+      type: string
+    - description: The description of the indicator.
+      name: description
+      type: string
+    - defaultValue: "50"
+      description: Confidence level for the indicator, value between 0 and 100. Default is 50.
+      name: confidence
+    - defaultValue: "50"
+      description: The score of the indicator, value between 0 and 100. Default is 50.
+      name: score
+    - description: The valid-from date for the indicator in the format YYYY-MM-DDThh:mm:ss.sssZ.
+      name: valid_from
+      type: string
+    - description: The valid-until date for the indicator in the format YYYY-MM-DDThh:mm:ss.sssZ.
+      name: valid_until
+      type: string
+    - description: The ID of the entity that created the indicator (use opencti-organization-list to find or create).
+      name: created_by
+      type: string
+    - description: The label ID for the indicator (use opencti-label-list to find or create).
+      name: label_id
+      type: string
+    - description: The marking ID for the indicator (use opencti-marking-definition-list to find).
+      name: marking_id
+      type: string
+    - description: External references ID for the indicator (use opencti-external-reference-create to create).
+      name: external_references_id
+      type: string
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Create observable related with the indicator created
+      name: create_observables
+      predefined:
+      - "true"
+      - "false"
+    description: Create a new indicator in OpenCTI.
+    name: opencti-indicator-create
+    outputs:
+    - contextPath: OpenCTI.Indicator.id
+      description: New Indicator ID.
+      type: string
+    - contextPath: OpenCTI.Indicator.name
+      description: Name of the created indicator.
+      type: string
+    - contextPath: OpenCTI.Indicator.pattern
+      description: The pattern associated with the created indicator.
+      type: string
+    - contextPath: OpenCTI.Indicator.pattern_type
+      description: The pattern type associated with the created indicator.
+      type: string
+    - contextPath: OpenCTI.Indicator.valid_from
+      description: The valid-from date of the created indicator.
+      type: string
+    - contextPath: OpenCTI.Indicator.valid_until
+      description: The valid-until date of the created indicator.
+      type: string
+  - arguments:
+    - description: Indicator ID.
+      name: id
+      required: true
+    - auto: PREDEFINED
+      description: Indicator field to add.
+      name: field
+      predefined:
+      - marking
+      - label
+      required: true
+    - description: Value of the field to add. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI.
+      name: value
+      required: true
+    description: Add a field to the indicator. Fields that can be added are marking definition and label.
+    name: opencti-indicator-field-add
+  - arguments:
+    - description: Indicator ID.
+      name: id
+      required: true
+    - auto: PREDEFINED
+      description: Indicator field to update.
+      name: field
+      predefined:
+      - marking
+      - label
+      required: true
+    - description: Value of the field to remove. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI or opencti-marking-definition-list to find all marking definition IDs in OpenCTI.
+      name: value
+      required: true
+    description: Remove indicator field value. Fields which values can be removed are marking definition and label.
+    name: opencti-indicator-field-remove
+  - arguments:
+    - description: ID of the indicator.
+      name: id
+      required: true
+      type: string
+    - description: Name of the indicator.
+      name: name
+      type: string
+    - description: The types of the indicator. Use opencti-indicator-types-list to find all indicator types in OpenCTI.
+      isArray: true
+      name: indicator_types
+      type: string
+    - description: The description of the indicator.
+      name: description
+      type: string
+    - defaultValue: "50"
+      description: Confidence level for the indicator, value between 0 and 100. Default is 50.
+      name: confidence
+    - defaultValue: "50"
+      description: The score of the indicator, value between 0 and 100. Default is 50.
+      name: score
+    - description: The valid-from date for the indicator in the format YYYY-MM-DDThh:mm:ss.sssZ.
+      name: valid_from
+      type: string
+    - description: The valid-until date for the indicator in the format YYYY-MM-DDThh:mm:ss.sssZ.
+      name: valid_until
+      type: string
+    - description: The label ID for the indicator (use opencti-label-list to find or create).
+      name: label_id
+      type: string
+    - description: The marking ID for the indicator (use opencti-marking-definition-list to find).
+      name: marking_id
+      type: string
+    - description: External references ID for the indicator (use opencti-external-reference-create to create).
+      name: external_references_id
+      type: string
+    description: Update a indicator in OpenCTI.
+    name: opencti-indicator-update
+    outputs:
+    - contextPath: OpenCTI.Indicator.id
+      description: New Indicator ID.
+      type: string
+    - contextPath: OpenCTI.Indicator.name
+      description: Name of the updated indicator.
+      type: string
+    - contextPath: OpenCTI.Indicator.pattern
+      description: The pattern associated with the updated indicator.
+      type: string
+    - contextPath: OpenCTI.Indicator.valid_from
+      description: The valid-from date of the updated indicator.
+      type: string
+    - contextPath: OpenCTI.Indicator.valid_until
+      description: The valid-until date of the updated indicator.
+      type: string
+  - arguments:
+    - description: The indicator's value to filter by, can be partial value.
+      name: search
+    - description: The ID of the entity that created the indicator (use opencti-organization-list to find or create).
+      name: created_by
+    - description: The types of the indicator. Use opencti-indicator-types-list to find all indicator types in OpenCTI.
+      isArray: true
+      name: indicator_types
+      type: string
+    - description: The label ID for the indicator (use opencti-label-list to find or create).
+      name: label_id
+      type: string
+    - defaultValue: "50"
+      description: The maximum number of indicators to return. Default value is 50. Maximum value is 500.
+      name: limit
+    - description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.Indicators.LastRunID context path.
+      name: last_run_id
+    description: Get indicators in OpenCTI.
+    name: opencti-get-indicators
+    outputs:
+    - contextPath: OpenCTI.Indicators.IndicatorList.id
+      description: Unique ID of the indicator.
+      type: string
+    - contextPath: OpenCTI.Indicators.IndicatorList.name
+      description: Name of the indicator.
+      type: string
+    - contextPath: OpenCTI.Indicators.IndicatorList.description
+      description: Description of the indicator.
+      type: string
+    - contextPath: OpenCTI.Indicators.IndicatorList.pattern
+      description: The pattern associated with the indicator.
+      type: string
+    - contextPath: OpenCTI.Indicators.IndicatorList.validFrom
+      description: The valid-from date of the indicator.
+      type: string
+    - contextPath: OpenCTI.Indicators.IndicatorList.validUntil
+      description: The valid-until date of the indicator.
+      type: string
+    - contextPath: OpenCTI.Indicators.IndicatorList.score
+      description: Score of the indicator.
+      type: number
+    - contextPath: OpenCTI.Indicators.IndicatorList.createdBy
+      description: Name of the entity that created the indicator.
+      type: string
+    - contextPath: OpenCTI.Indicators.IndicatorList.labels
+      description: Labels associated with the indicator.
+      type: list
+    - contextPath: OpenCTI.Indicators.IndicatorList.indicatorTypes
+      description: Types of the indicator.
+      type: list
+    - contextPath: OpenCTI.Indicators.IndicatorList.created
+      description: Creation date of the indicator.
+      type: string
+    - contextPath: OpenCTI.Indicators.IndicatorList.updatedAt
+      description: Last update date of the indicator.
+      type: string
+    - contextPath: OpenCTI.Indicators.LastRunID
+      description: The last ID of the previous fetch for pagination.
+      type: string
+  - arguments:
+    - description: Source entity ID for the relationship.
+      name: from_id
+      required: true
+    - description: Target entity ID for the relationship.
+      name: to_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: related-to
+      description: Type of relationship to create.
+      name: relationship_type
+      predefined:
+      - uses
+      - targets
+      - indicates
+      - mitigates
+      - attributed-to
+      - located-at
+      - related-to
+      - derived-from
+      - member-of
+      - variant-of
+      - part-of
+      - communicates-with
+      - compromises
+      - delivers
+      - owns
+      - authored-by
+      - impersonates
+      - controls
+      - hosts
+      - investigates
+    - description: Description of the relationship.
+      name: description
+    - description: Confidence Number. Values range is 0 - 100.
+      name: confidence
+    description: Create new relationship
+    name: opencti-relationship-create
+    outputs:
+    - contextPath: OpenCTI.Relationship.id
+      description: New Relationship ID.
+    - contextPath: OpenCTI.Relationship.entity_type
+      description: New Relationship Entity Type.
+  - arguments: []
+    description: Get a list of all indicator types
+    name: opencti-indicator-types-list
+    outputs:
+    - contextPath: OpenCTI.IndicatorTypes.IndicatorTypesList.id
+      description: Indicator type ID
+    - contextPath: OpenCTI.IndicatorTypes.IndicatorTypesList.name
+      description: Indicator type name
+    - contextPath: OpenCTI.IndicatorTypes.ndicatorTypesList.description
+      description: Indicator type description
+  dockerimage: demisto/vendors-sdk:1.0.0.110574
   runonce: false
   script: '-'
   subtype: python3

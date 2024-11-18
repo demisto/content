@@ -5,6 +5,7 @@ from io import StringIO
 import sys
 import urllib3
 from pycti import OpenCTIApiClient, Identity
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -45,6 +46,17 @@ FILE_TYPES = {
     'file-md5': "file.hashes.md5",
     'file-sha1': "file.hashes.sha-1",
     'file-sha256': "file.hashes.sha-256"
+}
+OBSERVABLE_TYPE_TO_STIX_PATTERN_MAPPING = {
+    "IPv4-Addr": "[ipv4-addr:value = '{{indicator}}']",
+    "IPv6-Addr": "[ipv6-addr:value = '{{indicator}}']",
+    "Domain-Name": "[domain-name:value = '{{indicator}}']",
+    "Url": "[url:value = '{{indicator}}']",
+    "Email-Addr": "[email-addr:value = '{{indicator}}']",
+    "StixFile": "[file:hashes.'SHA-256' = '{{indicator}}']",
+    "Process": "[process:pid = '{{indicator}}']",
+    "User-Account": "[user-account:user_id = '{{indicator}}']",
+    "Windows-Registry-Key": "[windows-registry-key:key = '{{indicator}}']"
 }
 
 
@@ -117,7 +129,7 @@ def get_observables(
         'mode': 'and',
         'filters': [{
             'key': 'entity_type',
-            'values': indicator_type,
+            'values': observable_type,
             'operator': 'eq',
             'mode': 'or'
         }],
@@ -138,6 +150,89 @@ def get_observables(
         search=search
     )
     return observables
+
+
+def get_indicators(
+    client: OpenCTIApiClient,
+    label: str = None,
+    created_by: str = None,
+    indicator_type: str = None,
+    limit: int | None = 50,
+    last_run_id: str = None,
+    search: str = ""
+) -> dict:
+    """Retrieving indicators from the OpenCTI API with filters and pagination.
+
+    Args:
+        client: OpenCTI Client object.
+        label: The label to filter by.
+        created_by: The creator of the indicator.
+        indicator_type: The type of indicator to filter by.
+        limit: The maximum number of indicators to fetch (default 50).
+        last_run_id: The last ID from the previous call for pagination.
+        search: Search string for the indicator value.
+
+    Returns:
+        A dictionary containing indicators and pagination information.
+    """
+    filters: dict[str, Any] = {
+        'mode': 'and',
+        'filters': [],
+        'filterGroups': []
+    }
+
+    if label:
+        filters["filters"].append({
+            'key': 'objectLabel',
+            'values': [label],
+            'operator': 'eq',
+            'mode': 'or'
+        })
+    if created_by:
+        filters["filters"].append({
+            'key': 'createdBy',
+            'values': [created_by],
+            'operator': 'eq',
+            'mode': 'or'
+        })
+    if indicator_type:
+        filters["filters"].append({
+            'key': 'indicator_types',
+            'values': [indicator_type],
+            'operator': 'eq',
+            'mode': 'or'
+        })
+
+    try:
+        indicator_list = client.indicator.list(
+            after=last_run_id,
+            first=limit,
+            withPagination=True,
+            filters=filters,
+            search=search
+        )
+        return indicator_list
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(f"Failed to retrieve indicators. {e}")
+
+
+def build_stix_pattern(indicator, observable_type):
+    """
+    Build a STIX pattern for the given indicator and observable type.
+    """
+    if observable_type not in OBSERVABLE_TYPE_TO_STIX_PATTERN_MAPPING:
+        raise DemistoException(f"Invalid observable type: {observable_type}")
+
+    pattern_template = OBSERVABLE_TYPE_TO_STIX_PATTERN_MAPPING[observable_type]
+    if observable_type == "location":
+        latitude, longitude = [value.strip() for value in indicator.split(",", 1)]
+        pattern = pattern_template.replace("{{latitude}}", latitude).replace("{{longitude}}", longitude)
+    else:
+        pattern = pattern_template.replace("{{indicator}}", indicator)
+
+    return pattern
+
 
 def incident_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
     """ Create incident at opencti
@@ -267,6 +362,103 @@ def incident_types_list_command(client: OpenCTIApiClient, args: Dict[str, str]) 
     else:
         raise DemistoException("No incident types.")
 
+
+def indicator_types_list_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """ Get indicator types list from opencti
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            readable_output, raw_response
+    """
+    try:
+        query = """
+            query OpenVocabFieldQuery($category: VocabularyCategory!, $orderBy: VocabularyOrdering, $orderMode: OrderingMode) {
+            vocabularies(category: $category, orderBy: $orderBy, orderMode: $orderMode) {
+                edges {
+                node {
+                    id
+                    name
+                    description
+                }
+                }
+            }
+            }
+        """
+        query_variables = {
+            "category": "indicator_type_ov"
+        }
+        result = client.query(query=query, variables=query_variables)
+        indicator_types_list = result['data']['vocabularies']['edges']
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException("Can't list indicator types.")
+
+    if indicator_types_list:
+        indicator_types = [
+            indicator_type['node']
+            for indicator_type in indicator_types_list
+        ]
+        readable_output = tableToMarkdown('Indicator Types', indicator_types, headers=[
+                                          'id', 'name', 'description'], headerTransform=pascalToSpace)
+
+        outputs = {
+            'OpenCTI.IndicatorTypes.IndicatorTypesList(val.id === obj.id)': indicator_types
+        }
+        return CommandResults(
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=result
+        )
+    else:
+        raise DemistoException("No indicator types.")
+
+
+def relationship_create_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> CommandResults:
+    """ Create relationship at opencti
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            readable_output, raw_response
+    """
+    from_id = args.get("from_id")
+    to_id = args.get("to_id")
+    relationship_type = args.get("relationship_type")
+    description = args.get("description", None)
+    confidence = args.get("confidence", None)
+    if confidence:
+        confidence = int(confidence)
+
+    try:
+        result = client.stix_core_relationship.create(
+            fromId=from_id,
+            toId=to_id,
+            relationship_type=relationship_type,
+            description=description,
+            confidence=confidence
+        )
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException("Can't create relationship.")
+
+    if relationship_id := result.get('id'):
+        readable_output = f'Relationship "{relationship_type}" successfully created with ID: {relationship_id}.'
+        return CommandResults(
+            outputs_prefix='OpenCTI.Relationship',
+            outputs_key_field='id',
+            outputs={'id': relationship_id},
+            readable_output=readable_output,
+            raw_response=result
+        )
+    else:
+        raise DemistoException("Can't create the relationship.")
+
+
 def get_observables_command(client: OpenCTIApiClient, args: dict) -> CommandResults:
     """ Gets observable from opencti to readable output
 
@@ -277,7 +469,7 @@ def get_observables_command(client: OpenCTIApiClient, args: dict) -> CommandResu
     Returns:
         readable_output, raw_response
     """
-    observable_types = argToList(args.get("observable_types"))
+    observable_types = argToList(args.get("observable_types", "ALL"))
     last_run_id = args.get("last_run_id")
     limit = arg_to_number(args.get('limit', 50))
     start = arg_to_number(args.get('score_start', 0))
@@ -585,6 +777,349 @@ def observable_field_remove_command(client: OpenCTIApiClient, args: Dict[str, st
     return CommandResults(readable_output=readable_output)
 
 
+def indicator_add_marking(client: OpenCTIApiClient, id: str | None, value: str | None):
+    """ Add indicator marking to opencti
+        Args:
+            client: OpenCTI Client object
+            id(str): observable id to update
+            value(str): marking name to add
+
+        Returns:
+            true if added successfully, else false.
+        """
+    try:
+        result = client.stix_domain_object.add_marking_definition(id=id, marking_definition_id=value)
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException("Can't add marking to observable.")
+    return result
+
+
+def indicator_add_label(client: OpenCTIApiClient, id: str | None, value: str | None):
+    """ Add indicator label to opencti
+        Args:
+            client: OpenCTI Client object
+            id(str): observable id to update
+            value(str): label name to add
+
+        Returns:
+            true if added successfully, else false.
+        """
+    try:
+        result = client.stix_domain_object.add_label(id=id, label_id=value)
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException("Can't add label to observable.")
+    return result
+
+
+def indicator_field_add_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """ Add indicator marking or label to opencti
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            readable_output
+        """
+    indicator_id = args.get("id")
+    # works only with marking and label
+    key = args.get("field")
+    value = args.get("value")
+    result = {}
+
+    if key == 'marking':
+        result = indicator_add_marking(client=client, id=indicator_id, value=value)
+
+    elif key == 'label':
+        result = indicator_add_label(client=client, id=indicator_id, value=value)
+    if result:
+        return CommandResults(readable_output=f'Added {key} successfully.')
+    else:
+        return CommandResults(readable_output=f'Cant add {key} to indicator.')
+
+
+def indicator_remove_label(client: OpenCTIApiClient, id: str | None, value: str | None):
+    """ Remove indicator label from opencti
+        Args:
+            client: OpenCTI Client object
+            id(str): observable id to update
+            value(str): label name to remove
+
+        Returns:
+            true if removed successfully, else false.
+        """
+    try:
+        result = client.stix_domain_object.remove_label(id=id, label_id=value)
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException("Can't remove label from observable.")
+    return result
+
+
+def indicator_remove_marking(client: OpenCTIApiClient, id: str | None, value: str | None):
+    """ Remove indicator marking from opencti
+        Args:
+            client: OpenCTI Client object
+            id(str): observable id to update
+            value(str): marking name to remove
+
+        Returns:
+            true if removed successfully, else false.
+        """
+
+    try:
+        result = client.stix_domain_object.remove_marking_definition(id=id, marking_definition_id=value)
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException("Can't remove marking from observable.")
+    return result
+
+
+def indicator_field_remove_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """ Remove indicator marking or label from opencti
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            readable_output
+        """
+    observable_id = args.get("id")
+    # works only with marking and label
+    key = args.get("field")
+    value = args.get("value")
+    result = {}
+
+    if key == 'marking':
+        result = observable_remove_marking(client=client, id=observable_id, value=value)
+
+    elif key == 'label':
+        result = observable_remove_label(client=client, id=observable_id, value=value)
+
+    if result:
+        readable_output = f'{key}: {value} was removed successfully from observable: {observable_id}.'
+    else:
+        raise DemistoException(f"Can't remove {key}.")
+    return CommandResults(readable_output=readable_output)
+
+
+def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """ Create an indicator in OpenCTI.
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            CommandResults object with readable_output, raw_response
+    """
+    name = args.get("name")
+    indicator = args.get("indicator")
+    main_observable_type = args.get("main_observable_type")
+    pattern = build_stix_pattern(indicator, main_observable_type)
+
+    description = args.get("description", None)
+    indicator_types = args.get("indicator_types", None)
+    confidence = int(args.get("confidence", 50))
+    score = int(args.get("score", 50))
+    valid_from = args.get("valid_from", None)
+    valid_until = args.get("valid_until", None)
+    created_by = args.get("created_by", None)
+    label_id = args.get("label_id", None)
+    marking_id = args.get("marking_id", None)
+    external_references_id = args.get("external_references_id", None)
+    create_observables = argToBoolean(args.get("create_observables", 'false'))
+
+    try:
+        result = client.indicator.create(
+            name=name,
+            description=description,
+            pattern=pattern,
+            pattern_type="stix",
+            x_opencti_main_observable_type=main_observable_type,
+            indicator_types=indicator_types,
+            confidence=confidence,
+            x_opencti_score=score,
+            valid_from=valid_from,
+            valid_until=valid_until,
+            createdBy=created_by,
+            objectLabel=label_id,
+            objectMarking=marking_id,
+            externalReferences=external_references_id,
+            x_opencti_create_observables=create_observables
+        )
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(f"Can't create indicator. {e}")
+
+    if indicator_id := result.get('id'):
+        readable_output = f'Indicator "{name}" was created successfully with id: {indicator_id}.'
+        return CommandResults(
+            outputs_prefix='OpenCTI.Indicator',
+            outputs_key_field='id',
+            outputs={'id': result.get('id')},
+            readable_output=readable_output,
+            raw_response=result
+        )
+    else:
+        raise DemistoException("Can't create indicator.")
+
+
+def indicator_update_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> CommandResults:
+    """ Update an existing indicator in OpenCTI using a GraphQL mutation.
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            CommandResults object with readable_output, raw_response
+    """
+    indicator_id = args.get("id")
+
+    update_fields = []
+    if name := args.get("name"):
+        update_fields.append({"key": "name", "value": name})
+    if description := args.get("description"):
+        update_fields.append({"key": "description", "value": description})
+    if confidence := args.get("confidence"):
+        update_fields.append({"key": "confidence", "value": int(confidence)})
+    if score := args.get("score"):
+        update_fields.append({"key": "x_opencti_score", "value": int(score)})
+    if valid_from := args.get("valid_from"):
+        update_fields.append({"key": "valid_from", "value": valid_from})
+    if valid_until := args.get("valid_until"):
+        update_fields.append({"key": "valid_until", "value": valid_until})
+    if indicator_types := args.get("indicator_types"):
+        update_fields.append({"key": "indicator_types", "value": indicator_types.split(',')})
+    if created_by := args.get("created_by"):
+        update_fields.append({"key": "createdBy", "value": created_by})
+    if label_id := args.get("label_id"):
+        update_fields.append({"key": "objectLabel", "value": label_id.split(',')})
+    if marking_id := args.get("marking_id"):
+        update_fields.append({"key": "objectMarking", "value": marking_id.split(',')})
+    if external_references_id := args.get("external_references_id"):
+        update_fields.append({"key": "externalReferences", "value": external_references_id.split(',')})
+
+    mutation = """
+        mutation IndicatorEditionOverviewFieldPatchMutation(
+        $id: ID!
+        $input: [EditInput!]!
+        $commitMessage: String
+        $references: [String]
+        ) {
+        indicatorFieldPatch(id: $id, input: $input, commitMessage: $commitMessage, references: $references) {
+            id
+            name
+            confidence
+            description
+            valid_from
+            valid_until
+            x_opencti_score
+            indicator_types
+        }
+        }
+    """
+
+    variables = {
+        "id": indicator_id,
+        "input": update_fields,
+        "commitMessage": args.get("commit_message"),
+        "references": args.get("references")
+    }
+
+    try:
+        # Send the GraphQL mutation
+        result = client.query(mutation, variables)
+        updated_indicator = result.get("data", {}).get("indicatorFieldPatch")
+
+        if updated_indicator:
+            readable_output = f'Indicator with id "{indicator_id}" was updated successfully.'
+            return CommandResults(
+                outputs_prefix='OpenCTI.Indicator',
+                outputs_key_field='id',
+                outputs=updated_indicator,
+                readable_output=readable_output,
+                raw_response=result
+            )
+        else:
+            raise DemistoException("Indicator update failed: no valid response.")
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(f"Can't update indicator. {e}")
+
+
+def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> CommandResults:
+    """List indicators in OpenCTI with optional filters and pagination.
+
+    Args:
+        client: OpenCTI Client object.
+        args: demisto.args()
+
+    Returns:
+        CommandResults object with readable_output, raw_response, and pagination cursor.
+    """
+    limit = arg_to_number(args.get('limit', '50'))
+    last_run_id = args.get('last_run_id')
+    label = args.get('label')
+    created_by = args.get('created_by')
+    value = args.get('value', '')
+    indicator_type = args.get('indicator_type')
+
+    indicator_list = get_indicators(
+        client=client,
+        label=label,
+        created_by=created_by,
+        indicator_type=indicator_type,
+        limit=limit,
+        last_run_id=last_run_id,
+        search=value
+    )
+
+    if indicator_list:
+        new_last_run = indicator_list.get('pagination', {}).get('endCursor')
+        indicators = [
+            {
+                "ID": indicator.get("id"),
+                "Name": indicator.get("name"),
+                "Description": indicator.get("description"),
+                "Pattern": indicator.get("pattern"),
+                "Valid From": indicator.get("valid_from"),
+                "Valid Until": indicator.get("valid_until"),
+                "Score": indicator.get("x_opencti_score"),
+                "Created By": indicator.get("createdBy")["name"] if indicator.get("createdBy") else "",
+                "Labels": [label["value"] for label in indicator.get("objectLabel", [])],
+                "Indicator Types": indicator.get("indicator_types"),
+                "Created": indicator.get("created"),
+                "Updated At": indicator.get("updated_at"),
+            }
+            for indicator in indicator_list.get('entities', [])
+        ]
+
+        readable_output = tableToMarkdown(
+            "Indicators",
+            indicators,
+            headers=["ID", "Name", "Description", "Pattern", "Valid From", "Valid Until",
+                     "Score", "Created By", "Labels", "Indicator Types", "Created", "Updated At"],
+            headerTransform=pascalToSpace
+        )
+        outputs = {
+            'OpenCTI.Indicators(val.indicatorsLastRun)': {'indicatorsLastRun': new_last_run},
+            'OpenCTI.Indicators.IndicatorList(val.ID === obj.ID)': indicators
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=indicator_list
+        )
+    else:
+        return CommandResults(readable_output="No indicators found.")
+
+
 def organization_list_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
     """ Get organizations list from opencti
 
@@ -842,6 +1377,27 @@ def main():
 
         elif command == "opencti-incident-types-list":
             return_results(incident_types_list_command(client, args))
+
+        elif command == "opencti-relationship-create":
+            return_results(relationship_create_command(client, args))
+
+        elif command == "opencti-indicator-create":
+            return_results(indicator_create_command(client, args))
+
+        elif command == "opencti-indicator-update":
+            return_results(indicator_update_command(client, args))
+
+        elif command == "opencti-indicator-field-add":
+            return_results(indicator_field_add_command(client, args))
+
+        elif command == "opencti-indicator-field-remove":
+            return_results(indicator_field_remove_command(client, args))
+
+        elif command == "opencti-get-indicators":
+            return_results(get_indicators_command(client, args))
+
+        elif command == "opencti-indicator-types-list":
+            return_results(indicator_types_list_command(client, args))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
