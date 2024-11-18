@@ -9,9 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "F5",
+        "APM",
+        "BIG-IP",
+        "Access Policy Manager"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]
