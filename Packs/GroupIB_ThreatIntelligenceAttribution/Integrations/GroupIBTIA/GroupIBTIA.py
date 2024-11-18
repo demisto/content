@@ -1395,7 +1395,7 @@ class Client(BaseClient):
             product_name="CortexSOAR",
             product_version="unknown",
             integration_name="Group-IB Threat Intelligence",
-            integration_version="1.4.2",
+            integration_version="2.0.0",
         )
 
     @staticmethod
