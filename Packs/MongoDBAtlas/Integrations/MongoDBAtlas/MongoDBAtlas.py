@@ -110,6 +110,7 @@ class Client(BaseClient):
         return self.get_alerts_with_page_num(page_num=1, items_per_page=500)
 
     def get_events_first_five_pages(self, fetch_limit: int):
+        # TODO to delete and modify the unittest
         """
         Fetches events from up to 5 pages, ensuring that the total number of fetched events does not exceed the specified
         `fetch_limit`.
@@ -131,6 +132,36 @@ class Client(BaseClient):
                 return results[:fetch_limit]
 
             items_per_page = min(fetch_limit - len(results), 500)
+
+        return results
+
+    def get_events_first_time_events(self, fetch_limit: int):
+        """
+        Fetches events from multiple pages, ensuring that the total number of fetched events does not exceed the specified
+        `fetch_limit`.
+
+        Args:
+            fetch_limit (int): The maximum number of events to fetch.
+
+        Returns:
+            list: A list of events, truncated to the `fetch_limit` if necessary.
+        """
+        results = []
+        items_per_page = min(fetch_limit, 500)
+        page_num = 1
+
+        while len(results) < fetch_limit:
+            page_results = self.get_events_with_page_num(page_num=page_num, items_per_page=items_per_page).get('results')
+            if not page_results:
+                break
+
+            results.extend(page_results)
+
+            if len(results) >= fetch_limit:
+                return results[:fetch_limit]
+
+            items_per_page = min(fetch_limit - len(results), 500)
+            page_num += 1
 
         return results
 
@@ -180,22 +211,6 @@ def get_page_url(links: list, page_type: str):
         if link.get("rel") == page_type:
             return link.get("href")
     return ""
-
-
-# def get_self_url(links: list):
-#     """
-#     Retrieves the self-referential URL from a list of links.
-#
-#     Args:
-#         links (list): A list of dictionaries, each representing a link with "rel" and "href" keys.
-#
-#     Returns:
-#         str or empty string: The self URL if found, otherwise None.
-#     """
-#     for link in links:
-#         if link.get("rel") == "self":
-#             return link.get("href")
-#     return ""
 
 
 def add_time_field(event: dict):
@@ -279,7 +294,7 @@ def create_last_run_dict_for_alerts(links: list, last_page_alerts_ids: list) -> 
         dict: Updated last_run dictionary.
     """
     return {
-        'page_link': get_page_url(links, 'self'),
+        'page_link': get_page_url(links, page_type='self'),
         'last_page_alerts_ids': last_page_alerts_ids
     }
 
@@ -327,7 +342,7 @@ def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict):
                 demisto.debug(f'The limit is reached. Amount of fetched alerts is {len(output)}')
                 return output, last_run_new_dict
 
-        next_url = get_page_url(links, "next")
+        next_url = get_page_url(links, page_type="next")
         if next_url:
             response = client.get_response_from_page_link(next_url)
             events = response.get('results')
@@ -342,22 +357,6 @@ def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict):
 
 
 ################ EVENTS FUNCTIONS ################
-
-
-# def get_previous_page(links: list) -> str | None:
-#     """
-#     Finds and returns the URL of the previous page from a list of link dictionaries.
-#
-#     Args:
-#         links (list): A list of dictionaries representing links, where each dictionary contains "rel" and "href" keys.
-#
-#     Returns:
-#         str or None: The URL of the previous page if found, otherwise None.
-#     """
-#     for link in links:
-#         if link.get("rel") == "previous":
-#             return link.get("href")
-#     return None
 
 
 def get_latest_date(date1: str, date2: str) -> str:
@@ -394,13 +393,13 @@ def get_last_page_of_events(client: Client, results: dict) -> dict:
         dict: The final page of events retrieved from the API.
     """
     links = results.get('links', [])
-    next_url = get_page_url(links, "next")
+    next_url = get_page_url(links, page_type="next")
     last_response = results
 
     while next_url:
         last_response = client.get_response_from_page_link(next_url)
         links = last_response.get('links')
-        next_url = get_page_url(links, 'next')
+        next_url = get_page_url(links, page_type='next')
 
     return last_response
 
@@ -531,7 +530,7 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[
                 new_last_run_obj = create_last_run_dict_for_events(output, new_min_time)
                 return output, new_last_run_obj
 
-        previous_page = get_page_url(links, 'previous')
+        previous_page = get_page_url(links, page_type='previous')
         if previous_page:
             response = client.get_response_from_page_link(previous_page)
             events = response.get('results', [])
