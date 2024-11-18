@@ -34,4 +34,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Hoxhunt - Enrich Incident](../doc_files/Hox-Enrich-Incident.png)
+![Hoxhunt - Enrich Incident](../doc_files/Hoxhunt_-_Enrich_Incident.png)
