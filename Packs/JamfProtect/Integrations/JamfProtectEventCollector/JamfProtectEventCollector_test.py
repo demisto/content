@@ -183,3 +183,26 @@ def test_next_trigger(mocker):
     mocker.patch('JamfProtectEventCollector.get_events_for_specific_type', return_value=([], {}))
     mocker.patch('JamfProtectEventCollector.get_events_for_specific_type', return_value=([], {}))
     fetch_events(client, 1, 1, 1)
+
+
+@pytest.mark.parametrize("no_next_pages, alert_next_page, audit_next_page, computer_next_page, expected_result",
+                         [(True, False, False, False, ["alert", "audit", "computer"]),
+                          (False, False, False, False, []),
+                          (False, True, False, True, ["alert", "computer"])])
+def test_create_next_pages_list(no_next_pages: bool, alert_next_page: bool, audit_next_page: bool, computer_next_page: bool,
+                                expected_result: list):
+    """
+    Given:
+     For each event type, bool flags indicate whether the next page exists.
+
+    When:
+     Running create_next_pages_list function with different next pages flags.
+
+    Then:
+     Ensure that the list returned by the different flags is correct.
+
+    """
+
+    from Packs.JamfProtect.Integrations.JamfProtectEventCollector.JamfProtectEventCollector import create_next_pages_list
+
+    assert expected_result == create_next_pages_list(no_next_pages, alert_next_page, audit_next_page, computer_next_page)
