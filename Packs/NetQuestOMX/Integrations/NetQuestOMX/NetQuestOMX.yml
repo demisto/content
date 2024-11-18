@@ -1,0 +1,65 @@
+category: Utilities
+commonfields:
+  id: NetQuestOMX
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  section: Connect
+  type: 0
+  additionalinfo: The IP of the device in this format:https://XX.X.X.XXX
+- display: Username
+  name: credentials
+  type: 9
+  required: true
+  section: Connect
+- display: Slot number
+  name: slot
+  type: 0
+  required: true
+  section: Collect
+- display: Port number
+  name: port
+  type: 0
+  required: true
+  section: Collect
+- display: Fetch Events
+  name: isFetchEvents
+  type: 8
+  required: false
+  section: Collect
+  additionalinfo: XSIAM fetch events checkbox.
+- display: Statistic types to fetch
+  name: statistic_types_to_fetch
+  options:
+  - Metering Stats
+  - Export Stats
+  - Export Peaks FKS
+  - Optimization Stats
+  type: 16
+  section: Collect
+  required: true
+description: NetQuest’s products are high-capacity service nodes that help security teams access and analyze network traffic. Powerful packet & flow processing features assist security tools in detecting and mitigating security threats as cost effectively as possible.
+display: NetQuestOMX
+name: NetQuestOMX
+script:
+  commands:
+  - arguments:
+    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      name: dummy
+      required: true
+    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+    name: baseintegration-dummy
+    outputs:
+    - contextPath: BaseIntegration.Output
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.14.100715
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
