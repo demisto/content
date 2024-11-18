@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6bad2430-3999-4ce5-858a-a2034d1706ac
+    taskid: db29b3d5-bcdf-40bc-8fb8-902d43caba73
     type: start
     task:
-      id: 6bad2430-3999-4ce5-858a-a2034d1706ac
+      id: db29b3d5-bcdf-40bc-8fb8-902d43caba73
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 0e6c28b4-80c4-49e8-84ce-03017f108f29
+    taskid: 940b6990-2b71-448f-8f05-f46267433c55
     type: regular
     task:
-      id: 0e6c28b4-80c4-49e8-84ce-03017f108f29
+      id: 940b6990-2b71-448f-8f05-f46267433c55
       version: -1
       name: Download Image and Add to Context
       scriptName: http
@@ -78,10 +78,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 32474d8a-9fbf-4e09-8553-41e360e33651
+    taskid: 1494360f-0e1e-4495-8e11-3fc818bb98aa
     type: regular
     task:
-      id: 32474d8a-9fbf-4e09-8553-41e360e33651
+      id: 1494360f-0e1e-4495-8e11-3fc818bb98aa
       version: -1
       name: Upload Downloaded File to War Room
       description: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
@@ -114,7 +114,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 895
+          "y": 1245
         }
       }
     note: false
@@ -291,6 +291,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -315,8 +316,7 @@ tasks:
       id: d6dba1ba-4af6-41cc-8cd9-2aa3d8fe6c8c
       version: -1
       name: Upload Downloaded File to War Room with a Comment
-      description: Copies a file from this incident to the specified incident. The
-        file is recorded as an entry in the specified incident’s War Room.
+      description: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
       scriptName: UploadFile
       type: regular
       iscommand: false
