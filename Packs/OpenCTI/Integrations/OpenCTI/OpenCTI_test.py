@@ -3,11 +3,12 @@ import pytest
 from OpenCTI import *
 from test_data.data import RESPONSE_DATA, RESPONSE_DATA_WITHOUT_INDICATORS
 from CommonServerPython import CommandResults
-from pycti import StixCyberObservable, MarkingDefinition, Label, ExternalReference
+from pycti import StixCyberObservable, MarkingDefinition, Label, ExternalReference, Indicator
 
 
 class Client:
     temp = ''
+    indicator = Indicator
     stix_cyber_observable = StixCyberObservable
     identity = Identity
     label = Label
@@ -75,56 +76,56 @@ def test_get_observables_command(mocker):
     assert "Observables" in results.readable_output
 
 
-def test_get_indicators_command_no_parameters(mocker):
-    """Test get_indicators_command function where there is no parameters to filter by
+def test_get_observables_command_no_parameters(mocker):
+    """Test get_observables_command function where there is no parameters to filter by
     Given
         No parameters to filter by
     When
-        Calling the `get_indicators_command`
+        Calling the `get_observables_command`
     Then
-        Return all indicators
+        Return all observables
     """
     client = Client
     mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
-    all_indicators = get_indicators_command(client, args={'indicator_types': 'ALL'})
-    default_indicators = get_indicators_command(client, {})
-    assert len(all_indicators.raw_response) == len(default_indicators.raw_response)
+    all_observables = get_observables_command(client, args={'observable_types': 'ALL'})
+    default_observables = get_observables_command(client, {})
+    assert len(all_observables.raw_response) == len(default_observables.raw_response)
 
 
-def test_get_indicators_command_with_just_score_end(mocker):
-    """Test get_indicators_command function where there is just score_end parameter
+def test_get_observables_command_with_just_score_end(mocker):
+    """Test get_observables_command function where there is just score_end parameter
     Given
         Filter score_end = 50
     When
-        Calling the `get_indicators_command`
+        Calling the `get_observables_command`
     Then
-        Return all indicators with score = 0 until score = 50
+        Return all observables with score = 0 until score = 50
     """
     client = Client
     mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
-    indicators_with_end = get_indicators_command(client, args={'score_end': 50})
-    indicators_with_end_start = get_indicators_command(client, args={'score_end': 50, 'score_start': 0})
-    assert len(indicators_with_end.raw_response) == len(indicators_with_end_start.raw_response)
+    observables_with_end = get_observables_command(client, args={'score_end': 50})
+    observables_with_end_start = get_observables_command(client, args={'score_end': 50, 'score_start': 0})
+    assert len(observables_with_end.raw_response) == len(observables_with_end_start.raw_response)
 
 
-def test_get_indicators_command_with_just_score_start(mocker):
-    """Test get_indicators_command function where there is just score_end parameter
+def test_get_observables_command_with_just_score_start(mocker):
+    """Test get_observables_command function where there is just score_end parameter
     Given
         Filter score_start = 50
     When
-        Calling the `get_indicators_command`
+        Calling the `get_observables_command`
     Then
-        Return all indicators with score = 50 until score = 100
+        Return all observables with score = 50 until score = 100
     """
     client = Client
     mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
-    indicators_with_end = get_indicators_command(client, args={'score_start': 50})
-    indicators_with_end_start = get_indicators_command(client, args={'score_start': 50, 'score_end': 100})
-    assert len(indicators_with_end.raw_response) == len(indicators_with_end_start.raw_response)
+    observables_with_end = get_observables_command(client, args={'score_start': 50})
+    observables_with_end_start = get_observables_command(client, args={'score_start': 50, 'score_end': 100})
+    assert len(observables_with_end.raw_response) == len(observables_with_end_start.raw_response)
 
 
-def test_get_indicators_command_with_score(mocker):
-    """Tests get_indicators_command function with a specified score
+def test_get_observables_command_with_score(mocker):
+    """Tests get_observables_command function with a specified score
     Given
         The following observable types: 'registry key', 'account' that were chosen by the user and a specified 'score': 50
     When
