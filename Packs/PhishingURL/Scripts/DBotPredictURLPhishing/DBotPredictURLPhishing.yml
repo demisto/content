@@ -97,3 +97,4 @@ runas: DBotRole
 tests:
 - DBotPredictURLPhishing_test
 fromversion: 6.0.0
+autoUpdateDockerImage: false

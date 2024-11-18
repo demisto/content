@@ -100,3 +100,4 @@ dockerimage: demisto/mlclustering:1.0.0.105775
 tests:
 - DBotTrainClustering-test
 fromversion: 6.2.0
+autoUpdateDockerImage: false

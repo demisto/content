@@ -130,3 +130,4 @@ dockerimage: demisto/sklearn:1.0.0.108551
 tests:
 - Detect & Manage Phishing Campaigns - Test
 fromversion: 5.0.0
+autoUpdateDockerImage: false
