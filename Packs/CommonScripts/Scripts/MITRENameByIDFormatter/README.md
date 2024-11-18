@@ -1,4 +1,4 @@
-Get a MITRE ATT&CK object name by its ID. The script is using TIMs IOCs to find the correct name (MITRE ATT&CK IOCs must exist in the Threat Intel data).
+Get a MITRE ATT&CK object name by its ID. The script is using TIMs IOCs to find the correct name. (MITRE ATT&CK IOCs must exist in the Threat Intel data).
 
 ## Script Data
 
@@ -23,7 +23,7 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| input | The MITRE ATT&amp;CK object ID |
+| input | The MITRE ATT&CK object ID. |
 
 ## Outputs
 
