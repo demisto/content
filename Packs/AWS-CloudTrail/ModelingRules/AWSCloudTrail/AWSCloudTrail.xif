@@ -32,7 +32,7 @@ filter _log_type = "Cloud Audit Log"
     xdm.source.cloud.project_id = userIdentity -> accountId,
     xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AWS,
     xdm.source.host.device_id = vpcEndpointId,
-    xdm.source.host.ipv4_public_addresses = if(not incidr(source_ipv4, "10.0.0.0/8") and not incidr(source_ipv4, "172.16.0.0/12") and not incidr(source_ipv4, "192.168.0.0/16") and not incidr(source_ipv4, "127.0.0.0/8") and not incidr(source_ipv4, "169.254.0.0/16") and not incidr(source_ipv4, "100.64.0.0/10"), arraycreate(source_ipv4)),
+    xdm.source.host.ipv4_public_addresses = if(source_ipv4 != null and not incidr(source_ipv4, "10.0.0.0/8") and not incidr(source_ipv4, "172.16.0.0/12") and not incidr(source_ipv4, "192.168.0.0/16") and not incidr(source_ipv4, "127.0.0.0/8") and not incidr(source_ipv4, "169.254.0.0/16") and not incidr(source_ipv4, "100.64.0.0/10"), arraycreate(source_ipv4)),
     xdm.source.host.fqdn = if(source_ipv4 = null and source_ipv6 = null and sourceIPAddress !~= "AWS Internal", sourceIPAddress), //  For services in AWS, only the DNS name is displayed.
     xdm.source.ipv4 = source_ipv4,
     xdm.source.ipv6 = source_ipv6,
