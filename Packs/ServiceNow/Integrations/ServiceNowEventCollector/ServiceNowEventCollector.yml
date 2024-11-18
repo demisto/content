@@ -38,19 +38,19 @@ configuration:
   name: event_types_to_fetch
   type: 16
   required: false
-  additionalinfo: Event types to fetch. defaults to 'Audit' if no type is specified.
+  additionalinfo: Event types to fetch. Defaults to 'Audit' if no type is specified.
   defaultvalue: 'Audit'
   options:
   - Audit
   - Syslog Transactions
-- additionalinfo: Maximum number of audit events per fetch. Default is 10000. 
+- additionalinfo: Maximum number of audit events per fetch.
   defaultvalue: '10000'
   display: Maximum audit events to fetch
   name: max_fetch
   type: 0
   required: false
   section: Collect
-- additionalinfo: Maximum number of syslog transactions events per fetch. Default is 10000. 
+- additionalinfo: Maximum number of syslog transactions events per fetch.
   defaultvalue: '10000'
   display: Maximum syslog transactions events to fetch
   name: max_fetch_syslog_transactions

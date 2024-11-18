@@ -12,9 +12,9 @@ This integration was integrated and tested with Vancouver version of ServiceNow 
 | Client Secret |  | False |
 | ServiceNow API Version (e.g., 'v1') |  | False |
 | Use OAuth Login | Select this checkbox to use OAuth 2.0 authentication. | False |
-| Event Types To Fetch | Event types to fetch. defaults to 'Audit' if no type is specified. | False |
-| Maximum audit events to fetch | Maximum number of audit events per fetch. Recommended 10000. | False |
-| Maximum syslog transactions events to fetch | Maximum number of syslog transactions events per fetch. Recommended 10000. | False |
+| Event Types To Fetch | Event types to fetch. Defaults to 'Audit' if no type is specified. | False |
+| Maximum audit events to fetch | Maximum number of audit events per fetch. | False |
+| Maximum syslog transactions events to fetch | Maximum number of syslog transactions events per fetch. | False |
 | Events Fetch Interval |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
@@ -38,7 +38,7 @@ Returns events extracted from ServiceNow. This command is used for developing/de
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required | 
-| limit | Maximum audit events to fetch. Default is 1000. Default is 1000. | Optional | 
+| limit | Maximum audit events to fetch. Default is 1000. | Optional | 
 | from_date | The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM. | Optional | 
 | offset | Starting record index from which to begin retrieving records. | Optional | 
 
@@ -70,7 +70,7 @@ Returns syslog transactions events extracted from ServiceNow. This command is us
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required | 
-| max_fetch_syslog_transactions | Maximum syslog transactions events to fetch. Default is 1000. Default is 1000. | Optional | 
+| max_fetch_syslog_transactions | Maximum syslog transactions events to fetch. Default is 1000. | Optional | 
 | from_date | The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM. | Optional | 
 | offset | Starting record index from which to begin retrieving records. | Optional | 
 
