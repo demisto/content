@@ -63,7 +63,7 @@ configuration:
   required: false
   advanced: true
   section: Collect
-  additionalinfo: When set to true, retrieves all available computers during the initial fetch, ignoring the Events Fetch Interval and not limited to recent changes.
+  additionalinfo: When set to true, retrieves all available computers during the initial fetch.
 description: Use this integration to fetch audit logs, alerts and computer events from Jamf Protect as events in Cortex XSIAM.
 display: Jamf Protect Event Collector
 name: Jamf Protect Event Collector
