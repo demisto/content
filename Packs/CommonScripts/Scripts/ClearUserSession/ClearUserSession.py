@@ -180,6 +180,24 @@ def remove_system_user(users_names: list[str]) -> tuple[list, dict]:
 
 
 def extract_usernames_with_ids(context: dict, output_key: str) -> dict:
+    """
+    Extracts a mapping of usernames to their associated ID information from the given context.
+
+    This function retrieves a list of users from the context using the specified output key.
+    It then constructs a dictionary where each username is mapped to its corresponding list of ID information.
+
+    Args:
+        context (dict): The context dictionary containing user data.
+        output_key (str): The key to access the list of users in the context.
+
+    Returns:
+        dict: A dictionary mapping usernames (str) to their associated ID information (list[dict]).
+              For example:
+              {
+                  "user1@example.com": [{"Source": "Okta v2", "Value": "1234"}],
+                  "user2@example.com": [{"Source": "Microsoft Graph User", "Value": "5678"}]
+              }
+    """
     user_id_mapping = {}
     users = context.get(output_key, [])
     for user in users:
@@ -233,6 +251,20 @@ def get_user_id(users_ids: dict, brand_name: str, user_name: str) -> str:
 def okta_clear_user_sessions(
     command: Command,
 ) -> tuple[list[CommandResults], Optional[str]]:
+    """
+    Clears user sessions in Okta by executing the specified command and processes the results.
+
+    This function executes the given command to clear user sessions, aggregates any human-readable outputs
+    and errors, and returns the results.
+
+    Args:
+        command (Command): The command object containing the name and arguments to execute.
+
+    Returns:
+        tuple[list[CommandResults], Optional[str]]:
+            - A list of CommandResults objects representing the outputs and errors of the command execution.
+            - An error message string extracted from the first error result, or None if no errors occurred.
+    """
     readable_outputs_list = []
 
     _, human_readable, readable_errors = run_execute_command(
@@ -249,6 +281,21 @@ def okta_clear_user_sessions(
 def msgraph_user_session_revoke(
     command: Command,
 ) -> tuple[list[CommandResults], str]:
+    """
+    Revokes a user's session in Microsoft Graph and processes the results.
+
+    This function executes the specified command to revoke a user's session,
+    processes the results, and returns both the readable outputs and the human-readable response.
+
+    Args:
+        command (Command): The command object containing the command name and arguments
+            needed for the session revocation.
+
+    Returns:
+        tuple[list[CommandResults], str]:
+            - A list of CommandResults objects containing both errors and readable outputs.
+            - A string representing the human-readable response from the executed command.
+    """
     readable_outputs_list = []
 
     _, human_readable, readable_errors = run_execute_command(command.name, command.args)
@@ -260,6 +307,23 @@ def msgraph_user_session_revoke(
 
 
 def create_readable_output(outputs):
+    """
+    Generates a markdown table summarizing user session status.
+
+    This function processes a dictionary of user session results and creates a
+    markdown-formatted table to display the status, brand information, and any
+    associated messages for each user.
+
+    Args:
+        outputs (dict): A dictionary where each key is a username and the value is
+            another dictionary containing:
+            - "Result" (str): The session result (e.g., Success, Failure).
+            - "Brands" (str, optional): The brand(s) associated with the session.
+            - "Message" (str): A detailed message related to the session status.
+
+    Returns:
+        str: A markdown-formatted table summarizing user session statuses.
+    """
     data_users_list = [
         {
             "Entity": username,

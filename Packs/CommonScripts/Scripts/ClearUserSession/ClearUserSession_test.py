@@ -11,6 +11,8 @@ from ClearUserSession import (
     remove_system_user,
     extract_usernames_with_ids,
     get_user_data,
+    get_user_id,
+    okta_clear_user_sessions,
     main,
 )
 
@@ -545,3 +547,40 @@ def test_get_user_data(mocker: MockerFixture):
     _, id_info = get_user_data(command)
 
     assert id_info == expected_id_info
+
+
+def test_get_user_id():
+    users_ids = {
+        "user1@test.com": [{"Source": "Okta v2", "Value": "1234"}],
+        "user2@test.com": [
+            {"Source": "Microsoft Graph User", "Value": "5678"},
+            {"Source": "Okta v2", "Value": "91011"}
+        ],
+    }
+    brand_name = "Okta v2"
+    user_name = "user1@test.com"
+
+    expected_result = "1234"
+
+    result = get_user_id(users_ids, brand_name, user_name)
+
+    assert result == expected_result
+
+
+def test_okta_clear_user_sessions(mocker: MockerFixture):
+    command = Command(name="okta-clear-sessions", args={"user_id": "12345"})
+
+    expected_error_message = "Error: User session clearance failed."
+
+    # Mocking `run_execute_command` to return simulated results
+    mocker.patch(
+        "ClearUserSession.run_execute_command",
+        return_value=(
+            [],
+            "Session clearance completed successfully.",
+            [CommandResults(readable_output="Error: User session clearance failed.")],
+        ),
+    )
+
+    _, error_message = okta_clear_user_sessions(command)
+    assert error_message == expected_error_message
