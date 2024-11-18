@@ -704,8 +704,8 @@ def test_check_window_before_call_5_sec_time_delta():
     # min time 13 sec less than the end time return true (more then 5 sec delta)
     mintime = datetime.strptime("2020-01-24 15:11:20", DATE_FORMAT)
     assert client.check_window_before_call(mintime=mintime.timestamp())
-    
-    
+
+
 def test_handle_request_types():
     """
     Given:

@@ -393,6 +393,7 @@ def calculate_window(params: dict):
     demisto.debug(f'{fetch_delay=} {end_window=}')
     params['end_window'] = end_window
 
+
 def handle_request_types(demisto_params, last_run):
     """
     In this collector each fetch iteration is calling one event type.
@@ -406,7 +407,7 @@ def handle_request_types(demisto_params, last_run):
                             events types that do not exist in the logs_type_array parameter.
     """
     logs_type_array = (demisto_params.get('logs_type_array',
-                                             f'{LogType.AUTHENTICATION},{LogType.ADMINISTRATION},{LogType.TELEPHONY}'))
+                                          f'{LogType.AUTHENTICATION},{LogType.ADMINISTRATION},{LogType.TELEPHONY}'))
     logs_type_array = argToList(logs_type_array)
     request_order = last_run.get('request_order', logs_type_array)
     request_order = [log_type.upper() for log_type in request_order if log_type in logs_type_array]
@@ -415,7 +416,8 @@ def handle_request_types(demisto_params, last_run):
 
     demisto.debug(f'The request order is : {request_order}')
     return request_order
-    
+
+
 def main():
     try:
         demisto_params = demisto.params() | demisto.args()
