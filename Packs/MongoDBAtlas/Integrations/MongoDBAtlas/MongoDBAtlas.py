@@ -560,7 +560,7 @@ def test_module(client: Client, fetch_limit) -> str:
     message: str = ''
     check_fetch_limit(fetch_limit)
     try:
-        client.get_alerts_with_page_num(page_num=1, items_per_page=10)
+        client.get_alerts_with_page_num(page_num=1, items_per_page=1)
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
