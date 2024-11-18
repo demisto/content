@@ -709,11 +709,11 @@ def test_check_window_before_call_5_sec_time_delta():
 def test_handle_request_types():
     """
     Given:
-        mintime - a timestamp represents the minimum time from which to get events.
+        The log_type_array dict and the last run object.
     When:
-        calling check_window_before_call.
+        Some of the types in the last_run do not exist in the last_run object any more.
     Then:
-        True is returned, the API call should be performed, we are in the time window.
+        assert that only events that are specified in the log_type_array exists.
     """
     demisto_params = {'logs_type_array': 'AUTHENTICATION, ADMINISTRATION'}
     last_run = {'request_order': ['ADMINISTRATION', 'AUTHENTICATION', 'TELEPHONY']}
