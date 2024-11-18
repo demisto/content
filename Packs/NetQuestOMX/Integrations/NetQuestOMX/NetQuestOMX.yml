@@ -46,15 +46,38 @@ name: NetQuestOMX
 script:
   commands:
   - arguments:
-    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      name: dummy
+    - description: 'The entry ID of the file to upload.'
+      name: entry_id
       required: true
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
-    name: baseintegration-dummy
+    description: "Address List-Upload - uploads a .txt file with address list to the appliance. The appliance temporarily stores the file until it is saved to the Library and replaces any previously loaded list file."
+    name: netquest-address-list-upload
+
+  - description: "Optimize Updated Address List - If the traffic elements are IP addresses, the integration should optimize the list by compressing IP addresses into CIDR groups."
+    name: netquest-address-list-optimize
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
+      - contextPath: NetQuest.AddressList
+        description:
+        type:
+
+
+
+  - arguments:
+      - description: 'The entry ID of the file to upload.'
+        name: entry_id
+        required: true
+    description: "Address List-Upload - uploads a .txt file with address list to the appliance. The appliance temporarily stores the file until it is saved to the Library and replaces any previously loaded list file."
+    name: netquest-address-list-optimize
+
+
+  - arguments:
+      - description: 'The entry ID of the file to upload.'
+        name: entry_id
+        required: true
+    description: "Address List-Upload - uploads a .txt file with address list to the appliance. The appliance temporarily stores the file until it is saved to the Library and replaces any previously loaded list file."
+    name: netquest-address-list-optimize
+
+
+
   runonce: false
   script: '-'
   type: python
