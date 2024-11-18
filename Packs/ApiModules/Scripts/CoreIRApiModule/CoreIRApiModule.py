@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import urllib3
 import copy
 import re
-import shlex
 from operator import itemgetter
 import json
 from typing import Tuple, Callable
@@ -2417,12 +2416,36 @@ def run_snippet_code_script_command(client: CoreClient, args: Dict) -> CommandRe
     )
 
 
-def build_script_execute_commands(is_raw_command: bool, commands_string: str, command_type: str | None) -> list[str]:
-    commands: list = [commands_string] if is_raw_command else argToList(commands_string)
-    if command_type == 'powershell':
-        # Concatenate with shell-escaped version of the command string
-        commands = [f'powershell -Command {shlex.quote(command)}' for command in commands]
-    return commands
+def form_powershell_command(unescaped_string: str):
+    """
+    Builds a Powershell command using prefix and a shell-escaped string.
+
+    Args:
+        unescaped_string (str): An unescaped command string.
+
+    Returns:
+        str: Prefixed and escaped command.
+    """
+    escaped_string = ''
+    for i in range(len(unescaped_string)):
+        char = unescaped_string[i]
+
+        if char == "'":
+            escaped_string += "''"
+
+        elif char == '"':
+            backslash_count = 0
+            for j in range(i - 1, -1, -1):
+                if unescaped_string[j] != '\\':
+                    break
+                backslash_count += 1
+
+            escaped_string += ('\\' * backslash_count) + '\\"'
+
+        else:
+            escaped_string += char
+
+    return f"powershell -Command '{escaped_string}'"
 
 
 def run_script_execute_commands_command(client: CoreClient, args: Dict) -> CommandResults:
@@ -2430,11 +2453,10 @@ def run_script_execute_commands_command(client: CoreClient, args: Dict) -> Comma
     incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
 
-    commands = build_script_execute_commands(
-        is_raw_command=args.get('is_raw_command', False),
-        commands_string=args.get('commands', ''),
-        command_type=args.get('command_type'),
-    )
+    commands_string = args.get('commands', '')
+    commands: list = [commands_string] if args.get('is_raw_command') else argToList(commands_string)
+    if args.get('command_type') == 'powershell':
+        commands = [form_powershell_command(command) for command in commands]
     parameters = {'commands_list': commands}
 
     response = client.run_script('a6f7683c8e217d85bd3c398f0d3fb6bf', endpoint_ids, parameters, timeout, incident_id)

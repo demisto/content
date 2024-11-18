@@ -21,6 +21,19 @@ test_client = CoreClient(
 
 Core_URL = 'https://api.xdrurl.com'
 
+POWERSHELL_COMMAND_CASES = [
+    pytest.param(
+        "Write-Output 'Hello, world, it`s me!'",
+        "powershell -Command 'Write-Output ''Hello, world, it`s me!'''",
+        id='Quotes and backticks case'
+    ),
+    pytest.param(
+        r"New-Item -Path 'C:\Users\User\example.txt' -ItemType 'File'",
+        "powershell -Command 'New-Item -Path ''C:\\Users\\User\\example.txt'' -ItemType ''File'''",
+        id='Backslashes case'
+    ),
+]
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -1958,33 +1971,24 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
     assert zipfile.ZipFile(file_name).namelist() == ['your_file.txt']
 
 
-def test_build_script_execute_commands(mocker):
+@pytest.mark.parametrize('inputted_command, expected_command', POWERSHELL_COMMAND_CASES)
+def test_form_powershell_command(inputted_command, expected_command):
     """
     Given:
-        - A raw command containing a comma character of type "powershell"
+        - An unescaped command containing characters like ', `, ", \
 
     When:
-        - Calling the build_script_execute_commands function
+        - Calling the form_powershell_command function
 
     Assert:
-        - Command is not passed to argToList.
-        - Command is properly escaped.
+        - Command starts with 'powershell -Command' and is properly escaped.
     """
-    from CoreIRApiModule import build_script_execute_commands
+    from CoreIRApiModule import form_powershell_command
 
-    # Set
-    commands_string = "echo 'hello, world!'"
-    is_raw_command = True
-    command_type = "powershell"
-    arg_to_list = mocker.patch('CoreIRApiModule.argToList')
+    command = form_powershell_command(inputted_command)
 
-    # Arrange
-    commands = build_script_execute_commands(is_raw_command, commands_string, command_type)
-
-    # Assert
-    assert arg_to_list.call_count == 0
-    assert len(commands) == 1
-    assert commands[0] == 'powershell -Command \'echo \'"\'"\'hello, world!\'"\'"\'\''
+    assert command.startswith('powershell -Command ')
+    assert command == expected_command
 
 
 def test_run_script_execute_commands_command(requests_mock):
