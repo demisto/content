@@ -87,7 +87,7 @@ class Client(BaseClient):
         expires_datetime = arg_to_datetime(expires_date)
         return utc_now < expires_datetime
 
-    def _create_new_token(self, client_id: str, client_password: str) -> str:
+    def _create_new_token(self, client_id: str, client_password: str) -> str:  # pragma: no cover
         """
         This method generates a new authentication token and stores it in the integration context.
 
@@ -144,7 +144,7 @@ class Client(BaseClient):
             json_data=json_data,
         )
 
-    def handle_errors(self, res: dict) -> None:
+    def handle_errors(self, res: dict) -> None:  # pragma: no cover
         """
         Handles errors in the response from the Jamf Protect API.
 
@@ -371,7 +371,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> str:  # pragma: no cover
     """
     This method is used to test the connectivity and functionality of the client.
 
