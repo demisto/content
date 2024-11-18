@@ -5,6 +5,7 @@ from typing import Any
 from collections.abc import Callable
 from CommonServerPython import *
 import urllib3
+import dataclasses
 from dateutil.parser import parse
 from requests import Response
 from MicrosoftApiModule import *  # noqa: E402
@@ -77,6 +78,94 @@ DETECTION_SOURCE_TO_API_VALUE = {  # https://learn.microsoft.com/en-us/microsoft
 }
 
 INTEGRATION_NAME = 'Microsoft Defender ATP'
+
+
+@dataclasses.dataclass
+class FileStatisticsAPIParser:
+    sha1: str
+    org_prevalence: str
+    organization_prevalence: int
+    org_first_seen: str | None    # same as 'org_prevalence', but as integer
+    org_last_seen: str | None
+    global_prevalence: str
+    globally_prevalence: int    # same as 'global_prevalence', but as integer
+    global_first_observed: str
+    global_last_observed: str
+    top_file_names: list[str]
+
+    @classmethod
+    def from_raw_response(cls, raw_response: dict):
+        """Creates an instance from the file stats API raw response body (ignores extra fields, if any).
+
+        Args:
+            raw_response (dict): File stats API response
+
+        Returns:
+            FileStatisticsAPIParser
+        """
+        dataclass_field_names = {field.name for field in dataclasses.fields(cls)}
+        snake_case_response = snakify(raw_response)
+        return cls(**{key: value for key, value in snake_case_response.items() if key in dataclass_field_names})
+
+    def to_context_output(self) -> dict:
+        """Generates context output from an instance of FileStatisticsAPIParser.
+
+        Returns:
+            dict: context output
+        """
+        return {
+            'Sha1': self.sha1,
+            'Statistics': assign_params(
+                **{camelize_string(key): value for key, value in dataclasses.asdict(self).items() if key != 'sha1'}
+            )
+        }
+
+    def to_human_readable(self, file_hash: str) -> str:
+        """Generates a human readable table from an instance of FileStatisticsAPIParser.
+
+        Args:
+            file_hash (str): The hash of the file
+
+        Returns:
+            str: human readable markdown table
+        """
+        table_data = {self.format_for_table(key): value for key, value in dataclasses.asdict(self).items() if key != 'sha1'}
+        return tableToMarkdown(f'Statistics on {file_hash} file:', table_data, removeNull=True)
+
+    def to_file_indicator(self, file_hash: str) -> Common.File:
+        """Generates a File indicator object from an instance of FileStatisticsAPIParser.
+
+        Args:
+            file_hash (str): The hash of the file
+
+        Returns:
+            Common.File
+        """
+        return Common.File(
+            dbot_score=Common.DBotScore(file_hash, DBotScoreType.FILE, INTEGRATION_NAME, Common.DBotScore.NONE),
+            sha1=self.sha1,
+            organization_prevalence=self.organization_prevalence,
+            global_prevalence=self.globally_prevalence,
+            organization_first_seen=self.org_first_seen,
+            organization_last_seen=self.org_last_seen,
+            first_seen_by_source=self.global_first_observed,
+            last_seen_by_source=self.global_last_observed,
+        )
+
+    @staticmethod
+    def format_for_table(field_name: str) -> str:
+        """Replaces certain words and formats fields from 'snake_case' to 'Space Case'.
+
+        Args:
+            field_name (str): Name of field in snake_case.
+
+        Returns:
+            str: Formatted in Space Case with replacements.
+        """
+        replacements = {'globally_': 'global_', 'org_': 'organization_'}
+        for old_value, new_value in replacements.items():
+            field_name = field_name.replace(old_value, new_value)
+        return pascalToSpace(camelize_string(field_name))
 
 
 class HuntingQueryBuilder:
@@ -3385,42 +3474,24 @@ def get_machine_data(machine):
     return machine_data
 
 
-def get_file_statistics_command(client: MsClient, args: dict):
+def get_file_statistics_command(client: MsClient, args: dict) -> CommandResults:
     """Retrieves the statistics on the given file.
 
     Returns:
-        (str, dict, dict). Human readable, context, raw response
+        CommandResults.
     """
-    file_sha1 = args.get('file_hash')
-    response = client.get_file_statistics(file_sha1)
-    file_stat = get_file_statistics_context(response)
-    human_readable = tableToMarkdown(f'Statistics on {file_sha1} file:', file_stat, removeNull=True)
-    context_output = {
-        'Sha1': file_sha1,
-        'Statistics': file_stat
-    }
-    entry_context = {
-        'MicrosoftATP.FileStatistics(val.Sha1 === obj.Sha1)': context_output
-    }
-    return human_readable, entry_context, response
+    file_hash = args.get('file_hash', '')
+    response = client.get_file_statistics(file_hash)
+    file_stats = FileStatisticsAPIParser.from_raw_response(response)
 
-
-def get_file_statistics_context(file_stat_response):
-    """Gets the file statistics response and returns it in context format.
-
-    Returns:
-        (dict). File statistics context
-    """
-    file_stat = assign_params(
-        OrgPrevalence=file_stat_response.get('orgPrevalence'),
-        OrgFirstSeen=file_stat_response.get('orgFirstSeen'),
-        OrgLastSeen=file_stat_response.get('orgLastSeen'),
-        GlobalPrevalence=file_stat_response.get('globalPrevalence'),
-        GlobalFirstObserved=file_stat_response.get('globalFirstObserved'),
-        GlobalLastObserved=file_stat_response.get('globalLastObserved'),
-        TopFileNames=file_stat_response.get('topFileNames'),
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.FileStatistics',
+        outputs_key_field='Sha1',
+        indicator=file_stats.to_file_indicator(file_hash),
+        readable_output=file_stats.to_human_readable(file_hash),
+        outputs=file_stats.to_context_output(),
+        raw_response=response,
     )
-    return file_stat
 
 
 def get_file_alerts_command(client: MsClient, args: dict):
@@ -5699,7 +5770,7 @@ def main():  # pragma: no cover
             return_outputs(*get_domain_machine_command(client, args))
 
         elif command == 'microsoft-atp-get-file-statistics':
-            return_outputs(*get_file_statistics_command(client, args))
+            return_results(get_file_statistics_command(client, args))
 
         elif command == 'microsoft-atp-get-file-alerts':
             return_outputs(*get_file_alerts_command(client, args))
