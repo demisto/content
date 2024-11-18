@@ -85,7 +85,7 @@ Create log settings to enable event logging for access system events or URL filt
             tcp(\"10.10.10.1\" port(514) template(t_isostamp));
          };
 ```
-4. Exit the text editor by hitting Esc to leave Insert mode and then type the following key sequence:
+4. Exit the text editor by pressing Esc to leave Insert mode and then type the following key sequence:
 ```bash 
    :wq!
 ```
