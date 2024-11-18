@@ -544,6 +544,41 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: a5dc451c-b712-4214-824b-fac17502eb47
+    type: regular
+    task:
+      id: a5dc451c-b712-4214-824b-fac17502eb47
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
