@@ -1,5 +1,6 @@
 id: Onion address extraction test
-version: -1
+version: 3
+vcShouldKeepItemLegacyProdMachine: false
 name: Onion address extraction test
 description: Test onion addresses extraction.
 tags:
@@ -8,15 +9,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 83e4c3b6-3bea-4ec5-8102-3844e5a6ab23
+    taskid: baa9e878-0071-49b3-805a-07585a09c56e
     type: start
     task:
-      id: 83e4c3b6-3bea-4ec5-8102-3844e5a6ab23
+      id: baa9e878-0071-49b3-805a-07585a09c56e
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -38,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: a34e3850-dc7f-4a05-82a9-202a90cbc200
+    taskid: 0c1bde3c-c534-45f4-8710-591e8edb306b
     type: regular
     task:
-      id: a34e3850-dc7f-4a05-82a9-202a90cbc200
+      id: 0c1bde3c-c534-45f4-8710-591e8edb306b
       version: -1
       name: 'Set Valid Onion Addresses '
       description: Set a value in context under the key you entered.
@@ -51,7 +51,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "15"
     scriptarguments:
       append:
         simple: "true"
@@ -65,7 +65,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 515
+          "y": 425
         }
       }
     note: false
@@ -77,10 +77,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f85d4bf7-954c-4797-8549-5971593e6507
+    taskid: e7772565-2f32-4ae0-836d-3e406727ba33
     type: regular
     task:
-      id: f85d4bf7-954c-4797-8549-5971593e6507
+      id: e7772565-2f32-4ae0-836d-3e406727ba33
       version: -1
       name: DeleteContext
       description: |-
@@ -105,7 +105,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 340
+          "y": 290
         }
       }
     note: false
@@ -117,10 +117,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 7196a82f-6f8b-4f05-84f4-525eb3ea8ac6
+    taskid: 38874ab9-c22c-4dd2-8438-c19a67b16d8e
     type: regular
     task:
-      id: 7196a82f-6f8b-4f05-84f4-525eb3ea8ac6
+      id: 38874ab9-c22c-4dd2-8438-c19a67b16d8e
       version: -1
       name: Print Valid Addresses
       description: commands.local.cmd.extract.indicators
@@ -141,7 +141,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 690
+          "y": 710
         }
       }
     note: false
@@ -153,10 +153,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 0debf958-3096-431c-8931-60703d85e500
+    taskid: 3a33c219-5142-4eea-82ee-3e7ce86d4e9b
     type: condition
     task:
-      id: 0debf958-3096-431c-8931-60703d85e500
+      id: 3a33c219-5142-4eea-82ee-3e7ce86d4e9b
       version: -1
       name: Check extraction - 16 chars address
       type: condition
@@ -196,16 +196,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 8a6205d1-afba-4828-8be6-35c246c33142
+    taskid: 059148fa-ed98-4e50-8d0d-b12349412882
     type: title
     task:
-      id: 8a6205d1-afba-4828-8be6-35c246c33142
+      id: 059148fa-ed98-4e50-8d0d-b12349412882
       version: -1
       name: Check Valid Onion Adressess
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -215,7 +214,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 195
+          "y": 165
         }
       }
     note: false
@@ -227,10 +226,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 84fbab9c-1a14-44e4-8658-e34ad19ad684
+    taskid: e9f6ec24-da1d-4c5c-8205-c51f86b20fb2
     type: condition
     task:
-      id: 84fbab9c-1a14-44e4-8658-e34ad19ad684
+      id: e9f6ec24-da1d-4c5c-8205-c51f86b20fb2
       version: -1
       name: Check extraction - 56 chars address
       type: condition
@@ -270,16 +269,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: b1b0124f-ec32-43ab-86bb-a1cc296a1647
+    taskid: de6d55e8-9062-4f51-875f-250c1acb4e02
     type: title
     task:
-      id: b1b0124f-ec32-43ab-86bb-a1cc296a1647
+      id: de6d55e8-9062-4f51-875f-250c1acb4e02
       version: -1
       name: Check Non Extraction of invalid Addresses
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -301,10 +299,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 95571b5f-04bf-4067-8108-c4087f69a9ac
+    taskid: 790ffc5d-a12e-4f1f-8791-586cd37a297d
     type: regular
     task:
-      id: 95571b5f-04bf-4067-8108-c4087f69a9ac
+      id: 790ffc5d-a12e-4f1f-8791-586cd37a297d
       version: -1
       name: 'Set Invalid Onion Addresses '
       description: Set a value in context under the key you entered.
@@ -340,16 +338,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 1b04e80b-e866-489e-8436-15860a9e322b
+    taskid: b364f12a-537d-4fdd-8384-e8a8a85d8786
     type: title
     task:
-      id: 1b04e80b-e866-489e-8436-15860a9e322b
+      id: b364f12a-537d-4fdd-8384-e8a8a85d8786
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -368,10 +365,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 5e683643-e6cf-45ca-800f-7c79816fc682
+    taskid: 8f169d3f-9275-437e-8e46-c1bcb379bacc
     type: regular
     task:
-      id: 5e683643-e6cf-45ca-800f-7c79816fc682
+      id: 8f169d3f-9275-437e-8e46-c1bcb379bacc
       version: -1
       name: DeleteContext
       description: |-
@@ -408,10 +405,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: c8195437-2d3b-4fa5-8b13-21003fc13e30
+    taskid: 1660947f-7838-493f-85b6-347cd5572269
     type: condition
     task:
-      id: c8195437-2d3b-4fa5-8b13-21003fc13e30
+      id: 1660947f-7838-493f-85b6-347cd5572269
       version: -1
       name: Check that no invalid indicators were extracted
       type: condition
@@ -450,10 +447,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: d7c8632b-1f85-49d8-8865-e9bbf7f93d22
+    taskid: 771f1ea5-4128-4a58-8cbb-5a5b329c5130
     type: regular
     task:
-      id: d7c8632b-1f85-49d8-8865-e9bbf7f93d22
+      id: 771f1ea5-4128-4a58-8cbb-5a5b329c5130
       version: -1
       name: Failed to extract 16 char address
       description: Prints an error entry with a given message.
@@ -482,10 +479,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 40c667b0-b415-46d8-8333-7b2d57d50535
+    taskid: f6409e60-d6d8-4ea7-85eb-570a6e0a7cd8
     type: regular
     task:
-      id: 40c667b0-b415-46d8-8333-7b2d57d50535
+      id: f6409e60-d6d8-4ea7-85eb-570a6e0a7cd8
       version: -1
       name: Failed to extract 56 char address
       description: Prints an error entry with a given message.
@@ -514,10 +511,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 71334b02-f316-4ff7-8bf0-c42e221dfdc9
+    taskid: 89415b51-578a-4975-8042-4d4d77e60120
     type: regular
     task:
-      id: 71334b02-f316-4ff7-8bf0-c42e221dfdc9
+      id: 89415b51-578a-4975-8042-4d4d77e60120
       version: -1
       name: Extracted Invalid indicators as an onion addresses
       description: Prints an error entry with a given message.
@@ -546,30 +543,33 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: a5dc451c-b712-4214-824b-fac17502eb47
-    type: regular
+    taskid: f621d9a3-6c73-4b7c-8ddb-38c0c4982b4d
+    type: condition
     task:
-      id: a5dc451c-b712-4214-824b-fac17502eb47
+      id: f621d9a3-6c73-4b7c-8ddb-38c0c4982b4d
       version: -1
-      name: Sleep
-      description: Sleep for X seconds.
-      scriptName: Sleep
-      type: regular
+      name: check key was set
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      seconds:
-        simple: "10"
+      "yes":
+      - "3"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${valid_addresses}
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 450
+          "y": 560
         }
       }
     note: false
@@ -593,4 +593,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.10.0
+dirtyInputs: true
