@@ -1,6 +1,5 @@
 id: UploadFile Test
-version: 11
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: UploadFile Test
 description: Test file uploading to incident with and without comments.
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -84,8 +84,7 @@ tasks:
       id: 32474d8a-9fbf-4e09-8553-41e360e33651
       version: -1
       name: Upload Downloaded File to War Room
-      description: Copies a file from this incident to the specified incident. The
-        file is recorded as an entry in the specified incident’s War Room.
+      description: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
       scriptName: UploadFile
       type: regular
       iscommand: false
@@ -292,6 +291,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -316,8 +316,7 @@ tasks:
       id: 09e905e7-1cfc-43af-835f-83b5021780c1
       version: -1
       name: Upload Downloaded File to War Room with a Comment
-      description: Copies a file from this incident to the specified incident. The
-        file is recorded as an entry in the specified incident’s War Room.
+      description: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
       scriptName: UploadFile
       type: regular
       iscommand: false
@@ -525,4 +524,4 @@ view: |-
   }
 inputs: []
 outputs: []
-dirtyInputs: true
+fromversion: 6.0.0
