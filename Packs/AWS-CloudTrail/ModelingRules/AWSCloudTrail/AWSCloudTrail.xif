@@ -5,10 +5,10 @@
     https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-event-reference-record-contents.html
 */
 filter _log_type = "Cloud Audit Log"
-| alter 
+| alter // initializations
     resource_arn = arraystring(arraymap(resources -> [], "@element" -> ARN), ","),
     resource_account_id = arraystring(arraymap(resources -> [], "@element" -> accountId), ","),
-    resource_name = arraystring(arraymap(resources -> [], arrayindex(regextract("@element" -> ARN, "/([^\/]+)$"), -1)), ","),
+    resource_name = arraystring(arraymap(resources -> [], arrayindex(regextract("@element" -> ARN, "/([^\/]+)$"), -1)), ","), // extract last segment from ARN after last /
     resource_type = arraystring(arraymap(resources -> [], "@element" -> type), ","),
     user_identity_arn = userIdentity -> arn,
     user_identity_type = userIdentity -> type,
