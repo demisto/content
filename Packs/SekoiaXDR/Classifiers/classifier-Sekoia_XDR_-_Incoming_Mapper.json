@@ -43,7 +43,7 @@
 						"transformers": []
 					}
 				},
-                "SekoiaXDR mirrorOut": {
+                "SekoiaXDR MirrorOut": {
 					"simple": "mirrorOut"
 				},
 				"Source Create time": {
