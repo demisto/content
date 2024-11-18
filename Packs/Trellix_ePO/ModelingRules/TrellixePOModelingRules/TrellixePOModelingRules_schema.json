@@ -36,14 +36,6 @@
         "type": "string",
         "is_array": false
       },
-      "AgentGUID": {
-        "type": "string",
-        "is_array": false
-      },
-      "os": {
-        "type": "string",
-        "is_array": false
-      },
       "target_directory": {
         "type": "string",
         "is_array": false
@@ -65,10 +57,6 @@
         "is_array": false
       },
       "target_process_name": {
-        "type": "string",
-        "is_array": false
-      },
-      "ThreatSeverity": {
         "type": "string",
         "is_array": false
       },
