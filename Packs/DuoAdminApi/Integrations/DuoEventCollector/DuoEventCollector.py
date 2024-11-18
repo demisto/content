@@ -402,7 +402,8 @@ def handle_request_types(demisto_params, last_run):
         last_run (dict): The dict containing the order of the events types.
 
     Returns:
-        _type_: _description_
+        request_order (list): The valid list of the request order after filtering out
+                            events types that do not exist in the logs_type_array parameter.
     """
     logs_type_array = (demisto_params.get('logs_type_array',
                                              f'{LogType.AUTHENTICATION},{LogType.ADMINISTRATION},{LogType.TELEPHONY}'))
