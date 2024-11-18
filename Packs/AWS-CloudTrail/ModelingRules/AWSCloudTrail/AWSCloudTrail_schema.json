@@ -4,6 +4,10 @@
             "type": "string",
             "is_array": false
         },
+        "additionalEventData": {
+            "type": "string",
+            "is_array": false
+        },
         "awsRegion": {
             "type": "string",
             "is_array": false
@@ -40,6 +44,10 @@
             "type": "string",
             "is_array": false
         },
+        "recipientAccountId": {
+            "type": "string",
+            "is_array": false
+        },
         "requestID": {
             "type": "string",
             "is_array": false
@@ -48,7 +56,11 @@
             "type": "string",
             "is_array": false
         },
-        "recipientAccountId": {
+        "responseElements": {
+            "type": "string",
+            "is_array": false
+        },
+        "resources": {
             "type": "string",
             "is_array": false
         },
@@ -69,6 +81,10 @@
             "is_array": false
         },
         "userIdentity": {
+            "type": "string",
+            "is_array": false
+        },
+        "vpcEndpointAccountId": {
             "type": "string",
             "is_array": false
         },
