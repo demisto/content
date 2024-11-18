@@ -77,7 +77,7 @@ script:
   subtype: python3
   isfetchevents: true
   dockerimage: demisto/python3:3.11.10.116439
-fromversion: 5.5.0
+fromversion: 6.10.0
 marketplaces:
 - marketplacev2
 tests:
