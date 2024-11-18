@@ -1,6 +1,6 @@
 import json
 from datetime import datetime, timedelta
-
+import ServiceNowEventCollector
 import pytest
 from ServiceNowEventCollector import (
     Client, LOGS_DATE_FORMAT, get_events_command, fetch_events_command, process_and_filter_events, get_limit,
@@ -172,11 +172,11 @@ class TestFetchActivity:
             "search_events",
             return_value=mock_logs
         )
-
+        
         mocker.patch("ServiceNowEventCollector.add_time_field", return_value="")
         mock_initialize_from_date = mocker.patch(
             "ServiceNowEventCollector.initialize_from_date",
-            return_value="2023-01-01T00:00:00Z"
+            wraps=ServiceNowEventCollector.initialize_from_date
         )
 
         all_events, command_results = get_events_command(self.client, args, log_type, last_run)
