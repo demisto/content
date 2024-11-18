@@ -47,5 +47,5 @@ filter _log_type = "Cloud Audit Log"
     xdm.target.host.fqdn = coalesce(requestParameters -> Host, tlsDetails -> clientProvidedHostHeader),
     xdm.target.host.hostname = coalesce(requestParameters -> Host, tlsDetails -> clientProvidedHostHeader),
     xdm.target.resource.id = if(resource_arn != "", resource_arn),
-    xdm.target.resource.name = coalesce(resource_name, resource_arn),
+    xdm.target.resource.name = if(resource_name != null and resource_name != "", resource_name, resource_arn),
     xdm.target.resource.type = if(resource_type != "", resource_type);
