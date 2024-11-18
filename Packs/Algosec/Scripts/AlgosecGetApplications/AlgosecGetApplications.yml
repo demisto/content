@@ -7,7 +7,7 @@ type: python
 subtype: python3
 tags:
 - Algosec
-comment: Find applications containing network objects related to IP address using BusinessFlow.
+comment: Find applications containing network objects related to IP address using AppViz.
 system: true
 args:
 - name: address

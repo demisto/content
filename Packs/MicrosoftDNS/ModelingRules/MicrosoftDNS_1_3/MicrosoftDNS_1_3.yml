@@ -1,6 +1,6 @@
-fromversion: 8.3.0
-id: Microsoft_DNS
-name: Microsoft DNS
+fromversion: 8.4.0
+id: Microsoft_DNS_ModelingRule
+name: Microsoft DNS Modeling Rule
 rules: ''
 schema: ''
-tags: MicrosoftDNS
+tags: ''
