@@ -17,14 +17,14 @@ tasks:
       description: ''
     nexttasks:
       "#none#":
-      - "1"
+      - "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 440,
+          "y": -30
         }
       }
     note: false
@@ -64,8 +64,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 240
+          "x": 740,
+          "y": 350
         }
       }
     note: false
@@ -92,8 +92,45 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 450
+          "x": 440,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 6edb684b-f2f5-4077-860e-92f5f51ee55a
+    type: condition
+    task:
+      id: 6edb684b-f2f5-4077-860e-92f5f51ee55a
+      version: -1
+      name: Is Hoxhunt integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: Hoxhunt v2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 100
         }
       }
     note: false
@@ -105,13 +142,16 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "3_1_yes": 0.89,
+      "3_2_no": 0.4
+    },
     "paper": {
       "dimensions": {
-        "height": 465,
-        "width": 380,
-        "x": 450,
-        "y": 50
+        "height": 665,
+        "width": 680,
+        "x": 440,
+        "y": -30
       }
     }
   }
@@ -126,6 +166,7 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 quiet: true
+
+description: Enriches the incidents pulled from Hoxhunt with additional information.
 tests:
 - No tests (auto formatted)
-description: Enriches the incidents pulled from Hoxhunt with additional information.
