@@ -528,6 +528,27 @@ def calculate_fetch_dates(start_date: str, last_run_key: str, last_run: dict, en
     return start_date, end_date
 
 
+def create_next_pages_list(
+    no_next_pages: bool,
+    alert_next_page: bool,
+    audit_next_page: bool,
+    computer_next_page: bool
+) -> list:
+    """Creates a list of next pages to process based on input flags."""
+
+    if no_next_pages:
+        return ["alert", "audit", "computer"]
+
+    return [
+        page
+        for page, condition in zip(
+            ["alert", "audit", "computer"],
+            [alert_next_page, audit_next_page, computer_next_page]
+        )
+        if condition
+    ]
+
+
 def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, max_fetch_computer: int, start_date_arg: str = "",
                  end_date_arg: str = "") -> EventResult:
     """
@@ -535,7 +556,9 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
 
     Args:
         client (Client): An instance of the Client class.
-        max_fetch (int): The maximum number of events to fetch.
+        max_fetch_alerts (int): The maximum number of alert events to fetch.
+        max_fetch_audits (int): The maximum number of audit events to fetch.
+        max_fetch_computer (int): The maximum number of computer events to fetch.
         start_date_arg (str, optional): The start date for fetching events.
         end_date_arg (str, optional): The end date for fetching events.
 
@@ -544,40 +567,29 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
     """
     last_run = demisto.getLastRun()
 
-    alert_events, alert_next_run = [], {}
-    audit_events, audit_next_run = [], {}
-    computer_events, computer_next_run = [], {}
-
     alert_next_page = last_run.get("alert", {}).get("next_page", "")
     audit_next_page = last_run.get("audit", {}).get("next_page", "")
     computer_next_page = last_run.get("computer", {}).get("next_page", "")
 
     no_next_pages = not (any((alert_next_page, audit_next_page, computer_next_page)))
+    next_pages_list = create_next_pages_list(no_next_pages, alert_next_page, audit_next_page, computer_next_page)
+    final_next_run, final_events = {}, {}
+    max_fetch_mapping: dict[str, int] = {"alert": max_fetch_alerts, "audit": max_fetch_audits, "computer": max_fetch_computer}
 
-    # Handle events based on the availability of next page tokens.
-    if no_next_pages or alert_next_page:
-        # Trigger the alert event type cycle unless only audit and computer next page tokens exist.
-        alert_events, alert_next_run = get_events_for_specific_type(
-            client, start_date_arg, end_date_arg, max_fetch_alerts, last_run, "alert"
+    for specific_type in next_pages_list:
+        # Handle events based on the availability of next page tokens.
+
+        events, next_run = get_events_for_specific_type(
+            client, start_date_arg, end_date_arg, max_fetch_mapping[specific_type], last_run, specific_type
         )
+        if "next_page" in next_run:
+            # Will instantly re-trigger the fetch command.
+            final_next_run["nextTrigger"] = "0"
 
-    if no_next_pages or audit_next_page:
-        # Trigger the audit event type cycle unless only alert and computer next page tokens exist.
-        audit_events, audit_next_run = get_events_for_specific_type(
-            client, start_date_arg, end_date_arg, max_fetch_audits, last_run, "audit"
-        )
+        final_next_run[specific_type], final_events[specific_type] = next_run, events
 
-    if no_next_pages or computer_next_page:
-        # Trigger the computer event type cycle unless only alert and audit next page tokens exist.
-        computer_events, computer_next_run = get_events_for_specific_type(
-            client, start_date_arg, end_date_arg, max_fetch_computer, last_run, "computer"
-        )
-
-    next_run: dict[str, Any] = {"alert": alert_next_run, "audit": audit_next_run, 'computer': computer_next_run}
-    if "next_page" in (alert_next_run | audit_next_run | computer_next_run):
-        # Will instantly re-trigger the fetch command.
-        next_run["nextTrigger"] = "0"
-    return EventResult(alert_events, audit_events, computer_events, next_run)
+    return EventResult(final_events.get("alert") or [], final_events.get("audit") or [],
+                       final_events.get("computer") or [], final_next_run)
 
 
 def validate_start_and_end_dates(args):
