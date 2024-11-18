@@ -396,11 +396,11 @@ Retrieves information about a specific endpoint.
 | VisionOne.Endpoint_Info.os_description | string | Description of the Operating System of the endpoint queried. | 
 | VisionOne.Endpoint_Info.product_code | string | Product code of the Trend Micro product running on the endpoint. | 
 | VisionOne.Endpoint_Info.installed_product_codes | string | Product code of the Trend Micro product installed on the endpoint. | 
-| VisionOne.Endpoint_Info.componentUpdatePolicy | string | The update policy for the module/pattern of the agent installed on the endpoint. | 
-| VisionOne.Endpoint_Info.componentUpdateStatus | string | The status of the module/pattern updates of the agent installed on the endpoint. | 
-| VisionOne.Endpoint_Info.componentVersion | string | The agent component version. | 
-| VisionOne.Endpoint_Info.policyName | string | The name of a policy for an event. |
-| VisionOne.Endpoint_Info.protectionManager | string | The name of your protection manager. |
+| VisionOne.Endpoint_Info.component_update_policy | string | The update policy for the module/pattern of the agent installed on the endpoint. | 
+| VisionOne.Endpoint_Info.component_update_status | string | The status of the module/pattern updates of the agent installed on the endpoint. | 
+| VisionOne.Endpoint_Info.component_version | string | The agent component version. | 
+| VisionOne.Endpoint_Info.policy_name | string | The name of a policy for an event. |
+| VisionOne.Endpoint_Info.protection_manager | string | The name of your protection manager. |
 
 ### trendmicro-visionone-get-endpoint-activity-data
 
