@@ -80,7 +80,7 @@ class TestFetchActivity:
         """
 
         args = {"from_date": "2023-01-01T00:00:00Z", "offset": 0, "limit": 10}
-        last_run = {}  # Assuming no previous run data for this test case
+        last_run = {}
         log_type = AUDIT
         mock_logs = [{"event_id": 1, "timestamp": "2023-01-01 01:00:00"}]
 
@@ -116,7 +116,7 @@ class TestFetchActivity:
             - Validates that the function returns an empty list and an appropriate human-readable output.
         """
         args = {"from_date": "2023-01-01T00:00:00Z", "offset": 0, "limit": 10}
-        last_run = {}  # Assuming no previous run data for this test case
+        last_run = {}
         log_type = AUDIT
         http_responses = mocker.patch.object(Client, "search_events", return_value=[])
 
@@ -139,7 +139,7 @@ class TestFetchActivity:
             - Validates that the function handles large limits without errors.
         """
         args = {"from_date": "2023-01-01T00:00:00Z", "offset": 0, "limit": 1000}
-        last_run = {}  # Assuming no previous run data for this test case
+        last_run = {}
         log_type = AUDIT
         mock_logs = [{"event_id": i, "timestamp": "2023-01-01 01:00:00"} for i in range(1000)]
 
@@ -292,8 +292,6 @@ class TestFetchActivity:
 
         assert collected_events == []
         assert updated_last_run == last_run
-
-# process_and_filter_events
 
 
 def test_process_and_filter_events_standard_case():
@@ -695,13 +693,12 @@ def test_initialize_from_date_without_existing_timestamp():
     Then:
         - Returns a default timestamp set to one minute before the current UTC time.
     """
-    last_run = {}  # Empty last_run
+    last_run = {}
     log_type = "audit"
 
     result = initialize_from_date(last_run, log_type)
     expected_time = (datetime.utcnow() - timedelta(minutes=1)).strftime(LOGS_DATE_FORMAT)
 
-    # Check that the result is close to the expected time (within a few seconds tolerance)
     assert abs(datetime.strptime(result, LOGS_DATE_FORMAT)
                - datetime.strptime(expected_time, LOGS_DATE_FORMAT)) < timedelta(seconds=5)
 
@@ -720,7 +717,7 @@ def test_initialize_from_date_with_different_log_type():
     last_run = {
         "syslog transactions": {"last_fetch_time": "2023-01-02T00:00:00Z"}
     }
-    log_type = "audit"  # Different log type
+    log_type = "audit"
 
     result = initialize_from_date(last_run, log_type)
     expected_time = (datetime.utcnow() - timedelta(minutes=1)).strftime(LOGS_DATE_FORMAT)
