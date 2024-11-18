@@ -1381,7 +1381,7 @@ def fetch_incidents(
         if (events_start_time := last_run.get('events', {}).get('start_time')) and \
                 (parsed_start_time := dateparser.parse(events_start_time)):
             start_time = parsed_start_time.timestamp()
-        update_start_time(start_time)
+        start_time = update_start_time(start_time)
         demisto.debug(f"FireeyeNX IPS Events Start Time: {start_time}")
         incidents, fetch_count, next_run_events = get_incidents_for_event(
             kwargs['client'],
@@ -1400,7 +1400,7 @@ def fetch_incidents(
         if (alerts_start_time := last_run.get('alerts', {}).get('start_time')) and \
                 (parsed_start_time := dateparser.parse(alerts_start_time)):
             start_time = parsed_start_time.timestamp()
-        update_start_time(start_time)
+        start_time = update_start_time(start_time)
         demisto.debug(f"FireeyeNX Alerts Start Time: {start_time}")
         alert_incidents, next_run_alerts = get_incidents_for_alert(
             client=kwargs['client'],
