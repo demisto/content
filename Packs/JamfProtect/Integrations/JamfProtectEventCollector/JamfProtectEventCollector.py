@@ -573,7 +573,8 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
 
     no_next_pages = not (any((alert_next_page, audit_next_page, computer_next_page)))
     next_pages_list = create_next_pages_list(no_next_pages, alert_next_page, audit_next_page, computer_next_page)
-    final_next_run, final_events = {}, {}
+    final_next_run: dict[str, Any] = {}
+    final_events = {}
     max_fetch_mapping: dict[str, int] = {"alert": max_fetch_alerts, "audit": max_fetch_audits, "computer": max_fetch_computer}
 
     for specific_type in next_pages_list:
