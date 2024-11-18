@@ -91,9 +91,22 @@ class Client(BaseClient):
 
     def incident_list_alerts_request(self, page_size: str | None, page_number: str | None, id_: str | None) -> dict:
         params = assign_params(pageNumber=page_number, pageSize=page_size)
-        return self._http_request(
-            'GET', f'rest/api/incidents/{id_}/alerts', params=params
+        data = json.dumps({
+            'meta_name': 'incidentId',
+            'meta_value': id_,
+            'numberOfRecords': "0",
+            'includeFields': "null"
+        })
+
+        response = self._http_request(
+            'GET', f'rest/api/alert/fetch', data=data
         )
+
+        # Ensure the response is a list
+        if not isinstance(response, list):
+            raise ValueError("Expected the response to be a list")
+
+        return response
 
     def services_list_request(self, name: Any | None) -> dict:
         params = assign_params(name=name)
