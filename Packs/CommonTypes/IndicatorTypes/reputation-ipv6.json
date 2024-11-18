@@ -229,6 +229,30 @@
                     }
                 ]
             }
+        },
+        "organizationprevalence": {
+            "simple": "IPv6.OrganizationPrevalence",
+            "complex": null
+        },
+        "globalprevalence": {
+            "simple": "IPv6.GlobalPrevalence",
+            "complex": null
+        },
+        "organizationfirstseen": {
+            "simple": "IPv6.OrganizationFirstSeen",
+            "complex": null
+        },
+        "organizationlastseen": {
+            "simple": "IPv6.OrganizationLastSeen",
+            "complex": null
+        },
+        "firstseenbysource": {
+            "simple": "IPv6.FirstSeenBySource",
+            "complex": null
+        },
+        "lastseenbysource": {
+            "simple": "IPv6.LastSeenBySource",
+            "complex": null
         }
     },
     "manualMapping": null,
