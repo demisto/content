@@ -220,7 +220,7 @@ def inject_cookies(func: Callable) -> Callable:
             save_cookies_to_context(client)
             return response
         except DemistoException as error:
-            if error.message is not None and error.message == INTEGRATION_AUTHORIZATION_EXCEPTION_MESSAGE:
+            if error.message  and error.message == INTEGRATION_AUTHORIZATION_EXCEPTION_MESSAGE:
                 set_integration_context({})
             raise error
 
