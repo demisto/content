@@ -8,11 +8,10 @@
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Cloud Service Provider",
-        "Analytics & SIEM"
+        "Cloud Service Provider"
     ],
     "tags": [
-        "Data Source"
+        "marketplacev2:Data Source"
     ],
     "useCases": [],
     "keywords": [
