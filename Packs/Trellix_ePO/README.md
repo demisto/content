@@ -4,12 +4,15 @@
 - Timestamp parsing.
 - XML format field extraction.
 - Log normalization - XDM mapping for key event types.
+
+* This pack only support syslog log forwarding, if you are using db connection to fetch ePO log - please check the "ePO" content pack on the marketplace.
  
 ### Supported Event Types:
-- Main Mcafee/Trellix products event types - Threat Prevention, Virus Scan, DLP, ATP, Endpoint Security.
+- Key Mcafee/Trellix products event types - Threat Prevention, Virus Scan, DLP, ATP, Endpoint Security.
+- Solidifier logs are currently not support due to them having a different log format.
  
 ### Supported Timestamp Formats:
-Timestamp is extracted from the DetectedUTC field with the following format - yyyy-mm-ddTHH:MM:SS
+Timestamp is extracted from the GMTTime field with the following format - yyyy-mm-ddTHH:MM:SS
 ***
  
 ## Data Collection
@@ -24,7 +27,7 @@ To configure Trellix ePO to send logs to Cortex XSIAM, follow the below steps.
 6. Check the **Enable event forwarding** box.
 7. Press the **Test connection** button, if the test was successful - click the save button.
 
-* Take note that the test connection stage will only work after you finish the configuration on the broker-vm side and open the selected port on your Firewall.
+* Please note that the test connection stage will only work after you finish the configuration on the broker-vm side and open the selected port on your Firewall.
  
 For more information check this article <https://kcm.trellix.com/corporate/index?page=content&id=KB87927>.
  
@@ -45,7 +48,7 @@ Follow the below steps to configure the Broker VM to receive Trellix ePO logs.
     | `Port`                  | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from Trellix ePO.   |
     | `Vendor`                | Enter trellix.                                                                                                                |
     | `Product`               | Enter epo.                                                                                                                    |
-    | `Server Certificate`    | Select the .crt file you created, advise the attached Trellix documentation for help with using openssl.                              |
+    | `Server Certificate`    | Select the .crt file you created, advise the attached Trellix documentation for help with using openssl.                      |
     | `Private Key`           | Same as `Server Certificate`, select the .key file you created.                                                               |
     | `Minimal TLS Version`   | Select 1.2.                                                                                                                   |
     ----------------------------------------------------------------------------------------------------------------------------------------------------------- 

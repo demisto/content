@@ -1,5 +1,5 @@
 fromversion: 8.5.0
-id: trellix_epo_modeling_rule
+id: trellix_epo_ModelingRule
 name: Trellix ePO Modeling Rule
 rules: ''
 schema: ''
