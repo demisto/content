@@ -172,7 +172,7 @@ class TestFetchActivity:
             "search_events",
             return_value=mock_logs
         )
-        
+
         mocker.patch("ServiceNowEventCollector.add_time_field", return_value="")
         mock_initialize_from_date = mocker.patch(
             "ServiceNowEventCollector.initialize_from_date",
