@@ -299,7 +299,56 @@ script:
     - contextPath: OpenCTI.MarkingDefinitions.markingsLastRun
       description: The last ID of the previous fetch to use for pagination.
       type: String
-  dockerimage: demisto/vendors-sdk:1.0.0.115493
+  - arguments:
+    - description: Incident name
+      name: name
+      required: true
+    - description: Incident Type name. Use opencti-incident-types-list to find all incident types in OpenCTI.
+      name: incident_type
+    - description: Incident Confidence Number. Values range is 0 - 100. Default value is 50.
+      name: confidence
+    - auto: PREDEFINED
+      description: Incident severity
+      name: severity
+      predefined:
+      - low
+      - medium
+      - high
+      - critical
+    - description: Incident description.
+      name: description
+    - description: Incident Source
+      name: source
+    - description: Incident objective
+      name: objective
+    - description: Organization ID. Use opencti-organization-list to find all organization IDs in OpenCTI, or use opencti-organization-create to create a new organization ID.
+      name: created_by
+    - description: Incident First seen. YYYY-MM-DDThh:mm:ss.sssZ
+      name: first_seen
+    - description: Incident Last seen. YYYY-MM-DDThh:mm:ss.sssZ
+      name: last_seen
+    - description: Incident label ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label.
+      name: label_id
+    - description: Observable marking definition ID. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI.
+      name: marking_id
+    - description: External references URL. Use opencti-external-reference-create to create a new external reference.
+      name: external_references_id
+    description: Create new incident.
+    name: opencti-incident-create
+    outputs:
+    - contextPath: OpenCTI.Incident.id
+      description: New Incident ID.
+      type: String
+    - contextPath: OpenCTI.Incident.name
+      description: New Incident name.
+      type: String
+  - arguments:
+    - description: Incident ID
+      name: id
+      required: true
+    description: Delete incident.
+    name: opencti-incident-delete
+  - arguments: []
   runonce: false
   script: '-'
   subtype: python3

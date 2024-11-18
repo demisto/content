@@ -139,6 +139,82 @@ def get_observables(
     )
     return observables
 
+def incident_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """ Create incident at opencti
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            readable_output, raw_response
+    """
+    name = args.get("name")
+    incident_type = args.get("incident_type", None)
+    confidence = int(args.get("confidence", 50))
+    severity = args.get('severity', None)
+    description = args.get("description", None)
+    source = args.get("source", None)
+    objective = args.get("objective", None)
+    created_by = args.get("created_by")
+    first_seen = args.get("first_seen", None)
+    last_seen = args.get("last_seen", None)
+    label_id = args.get("label_id", None)
+    marking_id = args.get("marking_id", None)
+    external_references_id = args.get("external_references_id", None)
+
+    try:
+        result = client.incident.create(
+            name=name,
+            incident_type=incident_type,
+            confidence=confidence,
+            severity=severity,
+            description=description,
+            source=source,
+            objective=objective,
+            createdBy=created_by,
+            first_seen=first_seen,
+            last_seen=last_seen,
+            objectLabel=label_id,
+            objectMarking=marking_id,
+            externalReferences=external_references_id
+        )
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException("Can't create incident.")
+
+    if incident_id := result.get('id'):
+        readable_output = f'Incident {name} was created successfully with id: {incident_id}.'
+        return CommandResults(outputs_prefix='OpenCTI.Incident',
+                              outputs_key_field='id',
+                              outputs={'id': result.get('id')},
+                              readable_output=readable_output,
+                              raw_response=result)
+    else:
+        raise DemistoException("Can't create incident.")
+
+
+def incident_delete_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """ Delete incident at opencti
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            readable_output, raw_response
+    """
+    try:
+        client.stix_domain_object.delete(
+            id=args.get("id")
+        )
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(str(e))
+
+    return CommandResults(readable_output='Incident deleted.')
+
+
 
 def get_observables_command(client: OpenCTIApiClient, args: dict) -> CommandResults:
     """ Gets observable from opencti to readable output
@@ -706,6 +782,15 @@ def main():
 
         elif command == "opencti-marking-definition-list":
             return_results(marking_list_command(client, args))
+
+        elif command == "opencti-incident-create":
+            return_results(incident_create_command(client, args))
+
+        elif command == "opencti-incident-delete":
+            return_results(incident_delete_command(client, args))
+
+        elif command == "opencti-incident-types-list":
+            return_results(incident_types_list_command(client, args))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
