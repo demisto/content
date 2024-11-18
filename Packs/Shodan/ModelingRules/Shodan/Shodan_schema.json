@@ -4,6 +4,10 @@
             "type": "string",
             "is_array": false
         },
+        "expiration": {
+            "type": "string",
+            "is_array": false
+        },
         "id": {
             "type": "string",
             "is_array": false

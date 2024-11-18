@@ -14,7 +14,10 @@
         "Free Enricher"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Shodan",
+        "Banner"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
