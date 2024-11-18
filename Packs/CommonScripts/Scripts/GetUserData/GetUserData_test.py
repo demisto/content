@@ -9,6 +9,7 @@ from GetUserData import (
     is_valid_args,
     create_account,
     merge_accounts,
+    enrich_data_with_source,
     prepare_human_readable,
     get_output_key,
     get_outputs,
@@ -277,6 +278,28 @@ def test_is_valid_args_with_all_empty_values(mocker: MockerFixture):
     )
 
 
+def test_create_account_with_minimal_info():
+    """
+    Given:
+        Minimal account information (source and username).
+    When:
+        The create_account function is called.
+    Then:
+        It should return a dictionary with the provided information and source.
+    """
+    # Arrange
+    source = "TestSource"
+    username = "testuser"
+
+    # Act
+    result = create_account(source=source, username=username)
+
+    # Assert
+    assert result == {
+        "username": {"Value": "testuser", "Source": "TestSource"}
+    }
+
+
 def test_create_account_with_all_fields():
     """
     Given:
@@ -288,64 +311,47 @@ def test_create_account_with_all_fields():
     Then:
         It should return a dictionary with all the provided information.
     """
-    account = create_account(
-        id="123",
-        source_id="Okta v2",
-        username="johndoe",
-        display_name="John Doe",
-        email_address="john@example.com",
-        groups=["Group1", "Group2"],
-        type="AD",
-        job_title="Developer",
-        office="New York",
-        telephone_number="123-456-7890",
-        is_enabled=True,
-        manager_email="manager@example.com",
-        manager_display_name="Manager Name",
-        risk_level="LOW",
-    )
-
-    assert account == {
-        "id": {"Value": "123", "Source": "Okta v2"},
-        "username": "johndoe",
-        "display_name": "John Doe",
-        "email_address": "john@example.com",
-        "groups": ["Group1", "Group2"],
-        "type": "AD",
-        "job_title": "Developer",
-        "office": "New York",
+    account_info = {
+        "source": "FullTestSource",
+        "id": "123",
+        "username": "fulluser",
+        "display_name": "Full User",
+        "email_address": "full@test.com",
+        "groups": ["group1", "group2"],
+        "type": "employee",
+        "job_title": "Manager",
+        "office": "HQ",
         "telephone_number": "123-456-7890",
         "is_enabled": True,
-        "manager_email": "manager@example.com",
+        "manager_email": "manager@test.com",
         "manager_display_name": "Manager Name",
-        "risk_level": "LOW",
+        "risk_level": "Low"
     }
 
+    result = create_account(**account_info)
 
-def test_create_account_with_partial_fields():
+    expected = {k: {"Value": v, "Source": "FullTestSource"} for k, v in account_info.items() if k != "source"}
+    assert result == expected
+
+
+def test_create_account_with_additional_fields():
     """
     Given:
-        Only some fields are provided for an account.
-
+        Account information with additional fields.
     When:
-        create_account is called with these fields.
-
+        The create_account function is called with extra kwargs.
     Then:
-        It should return a dictionary with only the provided information.
+        It should include the additional fields in the result.
     """
-    account = create_account(
-        id="456",
-        source_id="Okta v2",
-        username="janedoe",
-        email_address="jane@example.com",
-        is_enabled=False,
-    )
+    source = "ExtraSource"
+    username = "extrauser"
+    extra_field = "extra_value"
 
-    assert account == {
-        "id": {"Value": "456", "Source": "Okta v2"},
-        "username": "janedoe",
-        "email_address": "jane@example.com",
-        "is_enabled": False,
+    result = create_account(source=source, username=username, extra_field=extra_field)
+
+    assert result == {
+        "username": {"Value": "extrauser", "Source": "ExtraSource"},
+        "extra_field": {"Value": "extra_value", "Source": "ExtraSource"}
     }
 
 
@@ -360,12 +366,15 @@ def test_create_account_with_single_item_list():
     Then:
         It should return a dictionary with the field value extracted from the list.
     """
-    account = create_account(id="789", username="bobsmith", groups=["SingleGroup"])
+    source = "SingleListSource"
+    username = "listuser"
+    groups = ["singlegroup"]
 
-    assert account == {
-        "id": {"Value": "789"},
-        "username": "bobsmith",
-        "groups": "SingleGroup",
+    result = create_account(source=source, username=username, groups=groups)
+
+    assert result == {
+        "username": {"Value": "listuser", "Source": "SingleListSource"},
+        "groups": {"Value": "singlegroup", "Source": "SingleListSource"}
     }
 
 
@@ -381,6 +390,7 @@ def test_create_account_with_empty_fields():
         It should return an empty dictionary.
     """
     account = create_account(
+        source="EmptyFieldsSource",
         id=None,
         username=None,
         display_name=None,
@@ -399,130 +409,168 @@ def test_create_account_with_empty_fields():
     assert account == {}
 
 
-def test_merge_accounts_with_no_conflicts(mocker: MockerFixture):
+def test_enrich_data_with_source_simple():
     """
     Given:
-        A list of account dictionaries with no conflicting values.
-
+        A simple dictionary with string values and a source string.
     When:
-        merge_accounts is called with these dictionaries.
-
+        The enrich_data_with_source function is called with this data.
     Then:
-        It should return a merged dictionary with all unique key-value pairs.
+        The function returns a dictionary with each value wrapped in a dictionary containing 'Value' and 'Source' keys.
     """
-    mock_account = mocker.Mock()
-    mock_account.to_context.return_value = {
-        "Account": {
-            "id": [{"Value": "123", "Source": "Okta v2"}],
-            "name": "John Doe",
-            "email": "john@example.com",
+    data = {"name": "John", "age": "30"}
+    source = "TestSource"
+
+    result = enrich_data_with_source(data, source)
+
+    expected = {
+        "name": {"Value": "John", "Source": "TestSource"},
+        "age": {"Value": "30", "Source": "TestSource"}
+    }
+    assert result == expected
+
+
+def test_enrich_data_with_source_nested(mocker):
+    """
+    Given:
+        A dictionary with nested structures and a source string.
+    When:
+        The enrich_data_with_source function is called with this data.
+    Then:
+        The function returns a dictionary with all values, including nested ones, enriched with source information.
+    """
+    data = {
+        "user": {
+            "name": "Alice",
+            "contacts": {
+                "email": "alice@example.com",
+                "phone": ["123-456-7890"]
+            }
         }
     }
-    mocker.patch.object(Common, "Account", return_value=mock_account)
-    mocker.patch.object(Common.Account, "CONTEXT_PATH", "Account")
+    source = "UserDB"
 
+    result = enrich_data_with_source(data, source)
+
+    expected = {
+        "user": {
+            "name": {"Value": "Alice", "Source": "UserDB"},
+            "contacts": {
+                "email": {"Value": "alice@example.com", "Source": "UserDB"},
+                "phone": {"Value": "123-456-7890", "Source": "UserDB"}
+            }
+        }
+    }
+    assert result == expected
+
+
+def test_enrich_data_with_source_empty_elements(mocker):
+    """
+    Given:
+        A dictionary with empty elements and a source string.
+    When:
+        The enrich_data_with_source function is called with this data.
+    Then:
+        The function returns a dictionary with empty elements removed and remaining elements enriched with source information.
+    """
+    mock_remove_empty = mocker.patch('GetUserData.remove_empty_elements', return_value={"name": "John"})
+
+    data = {"name": "John", "age": "", "email": None}
+    source = "CleanDB"
+
+    result = enrich_data_with_source(data, source)
+
+    mock_remove_empty.assert_called_once_with(data)
+    expected = {
+        "name": {"Value": "John", "Source": "CleanDB"}
+    }
+    assert result == expected
+
+
+def test_merge_accounts_with_multiple_accounts():
+    """
+    Given:
+        A list of multiple account dictionaries with various fields.
+    When:
+        The merge_accounts function is called with this list.
+    Then:
+        It should return a merged account dictionary with combined information from all input accounts.
+    """
     accounts = [
-        {"id": "123"},
-        {"username": "John Doe"},
-        {"email_address": "john@example.com"},
+        {
+            "username": {"Value": "user1", "Source": "Source1"},
+            "email_address": {"Value": "user1@example.com", "Source": "Source1"},
+        },
+        {
+            "username": {"Value": "user1", "Source": "Source2"},
+            "email_address": {"Value": "123-456-7890", "Source": "Source2"},
+            "telephone_number": [{"Value": "123-456-7890", "Source": "Source2"}],
+        },
     ]
 
     result = merge_accounts(accounts)
 
     assert result == {
-        "id": [{"Value": "123", "Source": "Okta v2"}],
-        "name": "John Doe",
-        "email": "john@example.com",
-    }
-
-
-def test_merge_accounts_with_conflicts(mocker: MockerFixture):
-    """
-    Given:
-        A list of account dictionaries with conflicting values.
-
-    When:
-        merge_accounts is called with these dictionaries.
-
-    Then:
-        It should return a merged dictionary with the first encountered value
-        for conflicting keys and log debug messages for conflicts.
-    """
-    mock_account = mocker.Mock()
-    mock_account.to_context.return_value = {
-        "Account": {
-            "id": [
-                {"Value": "123", "Source": "Okta v2"},
-                {"Value": "456", "Source": "AWS - IAM"},
-            ],
-            "name": "John Doe",
-            "email": "john@example.com",
-        }
-    }
-    mocker.patch.object(Common, "Account", return_value=mock_account)
-    mocker.patch.object(Common.Account, "CONTEXT_PATH", "Account")
-    mock_debug = mocker.patch.object(demisto, "debug")
-
-    accounts = [
-        {"id": {"Value": "123", "Source": "Okta v2"}, "name": "John Doe"},
-        {"id": {"Value": "456", "Source": "AWS - IAM"}, "email": "john@example.com"},
-        {"name": "Jane Doe"},
-    ]
-
-    result = merge_accounts(accounts)
-
-    assert result == {
-        "id": [
-            {"Value": "123", "Source": "Okta v2"},
-            {"Value": "456", "Source": "AWS - IAM"},
+        "Username": [
+            {"Value": "user1", "Source": "Source1"},
+            {"Value": "user1", "Source": "Source2"},
         ],
-        "name": "John Doe",
-        "email": "john@example.com",
+        "Email": {
+            "Address": [{'Value': 'user1@example.com', 'Source': 'Source1'}, {'Value': '123-456-7890', 'Source': 'Source2'}]
+        },
+        "TelephoneNumber": [{"Value": "123-456-7890", "Source": "Source2"}],
     }
-    mock_debug.assert_any_call(
-        "Conflicting values for key 'name': 'John Doe' vs 'Jane Doe'"
-    )
+
+
+def test_merge_accounts_with_nested_dictionaries():
+    """
+    Given:
+        A list of account dictionaries with nested structures.
+    When:
+        The merge_accounts function is called with this list.
+    Then:
+        It should return a merged account dictionary with properly combined nested structures.
+    """
+    accounts = [
+        {
+            "personal_info": {
+                "name": {"Value": "John Doe", "Source": "Source1"},
+                "age": {"Value": 30, "Source": "Source1"},
+            }
+        },
+        {
+            "personal_info": {
+                "name": {"Value": "John Doe", "Source": "Source2"},
+                "address": {"Value": "123 Main St", "Source": "Source2"},
+            }
+        },
+    ]
+
+    result = merge_accounts(accounts)
+
+    assert result == {
+        "personal_info": {
+            "name": [
+                {"Value": "John Doe", "Source": "Source1"},
+                {"Value": "John Doe", "Source": "Source2"},
+            ],
+            "age": [{"Value": 30, "Source": "Source1"}],
+            "address": [{"Value": "123 Main St", "Source": "Source2"}],
+        }}
 
 
 def test_merge_accounts_with_empty_list():
     """
     Given:
         An empty list of account dictionaries.
-
     When:
-        merge_accounts is called with this empty list.
-
+        The merge_accounts function is called with this empty list.
     Then:
         It should return an empty dictionary.
     """
     result = merge_accounts([])
 
     assert result == {}
-
-
-def test_merge_accounts_with_single_account(mocker: MockerFixture):
-    """
-    Given:
-        A list containing a single account dictionary.
-
-    When:
-        merge_accounts is called with this list.
-
-    Then:
-        It should return a dictionary with the same key-value pairs as the input account.
-    """
-    mock_account = mocker.Mock()
-    mock_account.to_context.return_value = {
-        "Account": {"id": [{"Value": "123", "Source": "Okta v2"}], "name": "John Doe"}
-    }
-    mocker.patch.object(Common, "Account", return_value=mock_account)
-    mocker.patch.object(Common.Account, "CONTEXT_PATH", "Account")
-
-    accounts = [{"id": "123", "name": "John Doe"}]
-
-    result = merge_accounts(accounts)
-
-    assert result == {"id": [{"Value": "123", "Source": "Okta v2"}], "name": "John Doe"}
 
 
 def test_prepare_human_readable_success():
@@ -934,16 +982,18 @@ class TestGetUserData:
         mock_outputs = {
             "id": "123",
             "userName": "test_user",
+            "displayName": "Test User",
             "name": {"formatted": "Test User"},
             "emails": {"value": "test@example.com"},
             "active": True,
         }
         expected_account = {
             "id": {"Value": "123", "Source": "SailPointIdentityIQ"},
-            "username": "test_user",
-            "display_name": "Test User",
-            "email_address": "test@example.com",
-            "is_enabled": True,
+            "username": {'Value': 'test_user', 'Source': 'SailPointIdentityIQ'},
+            "display_name": {'Value': "Test User", 'Source': 'SailPointIdentityIQ'},
+            "email_address": {'Value': 'test@example.com', 'Source': 'SailPointIdentityIQ'},
+            "is_enabled": {'Value': True, 'Source': 'SailPointIdentityIQ'},
+            "name": {"formatted": {'Value': 'Test User', 'Source': 'SailPointIdentityIQ'}},
         }
 
         mocker.patch(
@@ -1018,11 +1068,11 @@ class TestGetUserData:
             "manager": ["CN=Manager,OU=Users,DC=example,DC=com"],
         }
         expected_account = {
-            "username": "ad_user",
-            "display_name": "AD User",
-            "email_address": "ad_user@example.com",
-            "groups": "Group1",
-            "is_enabled": True,
+            'username': {'Value': 'ad_user', 'Source': 'Active Directory Query v2'},
+            'display_name': {'Value': 'AD User', 'Source': 'Active Directory Query v2'},
+            'email_address': {'Value': 'ad_user@example.com', 'Source': 'Active Directory Query v2'},
+            'groups': {'Value': 'Group1', 'Source': 'Active Directory Query v2'},
+            'is_enabled': {'Value': True, 'Source': 'Active Directory Query v2'},
         }
 
         mocker.patch(
@@ -1059,8 +1109,8 @@ class TestGetUserData:
         )
         mock_outputs = {"displayName": "Manager Name", "mail": "manager@example.com"}
         expected_account = {
-            "manager_display_name": "Manager Name",
-            "manager_email": "manager@example.com",
+            'manager_email': {'Value': 'manager@example.com', 'Source': 'Active Directory Query v2'},
+            'manager_display_name': {'Value': 'Manager Name', 'Source': 'Active Directory Query v2'},
         }
 
         mocker.patch(

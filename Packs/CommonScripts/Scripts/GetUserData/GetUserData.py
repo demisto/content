@@ -471,6 +471,7 @@ def ad_get_user(command: Command) -> tuple[list[CommandResults], dict[str, Any],
     outputs = get_outputs(output_key, entry_context[0])
     account_disable = outputs.get("userAccountControlFields", {}).pop("ACCOUNTDISABLE", None)
     is_enabled = (not account_disable) if isinstance(account_disable, bool) else None
+    manager_dn = (outputs.pop("manager") or [""])[0]
     account_output = create_account(
         source=command.brand,
         username=outputs.pop("sAMAccountName", None),
@@ -481,7 +482,6 @@ def ad_get_user(command: Command) -> tuple[list[CommandResults], dict[str, Any],
         **outputs,
     )
 
-    manager_dn = (outputs.get("manager") or [""])[0]
     return readable_outputs_list, account_output, manager_dn
 
 
