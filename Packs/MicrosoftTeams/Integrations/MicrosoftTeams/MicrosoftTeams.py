@@ -2779,6 +2779,34 @@ def long_running_loop():
             time.sleep(5)
 
 
+def token_permissions_list_command():
+    """_summary_
+    """
+    # Get the used token from the integration context:
+    integration_context: dict = get_integration_context()
+    access_token: str = integration_context.get('graph_access_token', '') # TODO: check if we need the graph access token or the bot access token or both
+    
+    # Decode the token and extract the roles:
+    decoded_token=jwt.decode(access_token, options={"verify_signature": False})
+    print(f'decoded_token type is: {type(decoded_token)}')
+    # json_data = json.dumps(decoded_token)
+    # print(f'json_data type is: {type(json_data)}')
+    # json_data_to_parse = json.loads(json_data)
+    # print(f'json_data_to_parse type is: {type(json_data_to_parse)}')
+    roles = decoded_token.get('roles', [])
+    if roles:
+        hr = tableToMarkdown('The permissions obtained for the used access token are:' , roles, headers=['Permission'])
+    else:
+        hr = 'No permissions obtained for the used access token.'
+        
+    result = CommandResults(
+        readable_output=hr
+    )
+    return_results(result)
+    #jsonpath_expression = parse('$.roles')
+    #match = jsonpath_expression.find(json_data_to_parse)
+    
+
 def validate_auth_code_flow_params(command: str = ''):
     """
     Validates that the necessary parameters for the Authorization Code flow have been received.
@@ -2875,7 +2903,8 @@ def main():   # pragma: no cover
         'microsoft-teams-channel-user-list': channel_user_list_command,
         'microsoft-teams-user-remove-from-channel': user_remove_from_channel_command,
         'microsoft-teams-generate-login-url': generate_login_url_command,
-        'microsoft-teams-auth-reset': reset_graph_auth
+        'microsoft-teams-auth-reset': reset_graph_auth,
+        'microsoft-teams-token-permissions-list': token_permissions_list_command
 
     }
 
