@@ -717,7 +717,7 @@ script:
   - description: Run this command if you need to rerun the authentication process.
     name: microsoft-teams-auth-reset
     arguments: []
-  - description: Retrieves the permissions obtained in the graph access token of the used token. 
+  - description: Retrieves the API permissions associated with the used graph access token. Use this command if you encounter insufficient permissions error when attempting to execute an integration command. Compare the permissions list obtained for the token with the permissions required for the desired command (can be found in the integration documentation), if there are missing API permissions, add them to your application.
     name: microsoft-teams-token-permissions-list
     arguments: []
   dockerimage: demisto/teams:1.0.0.112095

@@ -2471,3 +2471,42 @@ def test_add_data_to_actions_non_dict_data():
     data_value = "string_data"
     add_data_to_actions(card_json, data_value)
     assert card_json["data"] == data_value
+
+
+@pytest.mark.parametrize('integration_context, decoded_token, expected_hr', [
+    ({'graph_access_token': 'dummy_token'},
+     {'aud': 'url', 'exp': '1111', 'roles': ['AppCatalog.Read.All', 'Group.ReadWrite.All', 'User.Read.All']},
+     'The API permissions obtained for the used graph access token are'),
+    ({'graph_access_token': 'dummy_token'},
+     {'aud': 'url', 'exp': '1111', 'roles': []},
+     'No permissions obtained for the used graph access token.'),
+    ({'graph_access_token': ''},
+     {'roles': []},
+     'Graph access token is not set.')
+])
+def test_token_permissions_list_command(mocker, integration_context, decoded_token, expected_hr):
+    """
+    Tests the 'token_permissions_list_command' logic.
+
+    Given:
+        1. Integration context with a dummy token, mocked response of the jet.decode func with API permissions roles.
+        2. Integration context with a dummy token, mocked response of the jet.decode func without API permissions roles.
+        3. Integration context without a  token.
+    When:
+        - Running the token_permissions_list_command.
+    Then:
+        Verify that the human readable output is as expected:
+        1. API permissions list.
+        2. No permissions obtained for the used graph access token.
+        3. Graph access token is not set.
+
+    """
+    from MicrosoftTeams import token_permissions_list_command
+    import MicrosoftTeams
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=integration_context)
+    mocker.patch('jwt.decode', return_value=decoded_token)
+    results = mocker.patch.object(MicrosoftTeams, 'return_results')
+
+    token_permissions_list_command()
+
+    assert expected_hr in results.call_args[0][0].readable_output

@@ -2780,32 +2780,38 @@ def long_running_loop():
 
 
 def token_permissions_list_command():
-    """_summary_
+    """
+    Gets the Graph access token stored in the integration context and displays the token's API permissions in the war room.
+
+    Use-case:
+    This command is ideal for users encountering insufficient permissions errors when attempting to
+    execute an integration command.
+    By utilizing this command, the user can identify the current permissions associated with their token (app), compare them to
+    the required permissions for executing the desired command (detailed in the integration's docs), and determine any additional
+    permissions needed to be added to their application.
     """
     # Get the used token from the integration context:
     integration_context: dict = get_integration_context()
-    access_token: str = integration_context.get('graph_access_token', '') # TODO: check if we need the graph access token or the bot access token or both
-    
+    access_token: str = integration_context.get('graph_access_token', '')
+
     # Decode the token and extract the roles:
-    decoded_token=jwt.decode(access_token, options={"verify_signature": False})
-    print(f'decoded_token type is: {type(decoded_token)}')
-    # json_data = json.dumps(decoded_token)
-    # print(f'json_data type is: {type(json_data)}')
-    # json_data_to_parse = json.loads(json_data)
-    # print(f'json_data_to_parse type is: {type(json_data_to_parse)}')
-    roles = decoded_token.get('roles', [])
-    if roles:
-        hr = tableToMarkdown('The permissions obtained for the used access token are:' , roles, headers=['Permission'])
+    if access_token:
+        decoded_token = jwt.decode(access_token, options={"verify_signature": False})
+        roles = decoded_token.get('roles', [])
+        if roles:
+            hr = tableToMarkdown('The API permissions obtained for the used graph access token are:',
+                                 roles, headers=['Permission'])
+        else:
+            hr = 'No permissions obtained for the used graph access token.'
     else:
-        hr = 'No permissions obtained for the used access token.'
-        
+        hr = 'Graph access token is not set.'
+
     result = CommandResults(
         readable_output=hr
     )
+
     return_results(result)
-    #jsonpath_expression = parse('$.roles')
-    #match = jsonpath_expression.find(json_data_to_parse)
-    
+
 
 def validate_auth_code_flow_params(command: str = ''):
     """

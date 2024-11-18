@@ -1118,6 +1118,33 @@ There are no input arguments for this command.
 
 There is no context output for this command.
 
+### microsoft-teams-token-permissions-list
+***
+Retrieves the API permissions associated with the used graph access token. 
+
+Use this command if you encounter insufficient permissions error when attempting to execute an integration command. Compare the permissions list obtained for the token with the permissions required for the desired command (can be found in the integration documentation), if there are missing API permissions, add them to your application.
+
+##### Base Command
+
+`microsoft-teams-token-permissions-list`
+
+##### Input
+There are no input arguments for this command.
+
+##### Context Output
+There is no context output for this command.
+
+##### Command Example
+```!microsoft-teams-token-permissions-list```
+
+##### Human Readable Output
+>### The API permissions obtained for the used graph access token are:
+>| Permission          |
+>|---------------------|
+>| Group.ReadWrite.All |
+>| User.Read.All       |
+>| Channel.Create      |
+
 
 ## Running commands from Microsoft Teams
 You can run Cortex XSOAR/Cortex XSIAM commands, according to the user permissions, from Microsoft Teams in a mirrored investigation channel.
