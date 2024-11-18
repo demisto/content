@@ -27,6 +27,12 @@ configuration:
   defaultvalue:
   type: 0
   additionalinfo: Add or remove Chrome options used to rasterize. Use for advanced troubleshooting. See Help.
+- name: using_one_chrome_port
+  display: Use only one chrome port
+  required: false
+  defaultvalue: false
+  type: 0
+  additionalinfo: "In case of "Could not use rasterize command, please use this option."
 - name: max_chromes_count
   display: Number of maximum Chrome instances to keep running simultaneously.
   required: false
