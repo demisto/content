@@ -294,6 +294,7 @@ def main():
         users_names, outputs = remove_system_user(users_names)
 
         if users_names:
+            # get ID for users
             get_user_data_command = Command(
                 name="get-user-data",
                 args={"user_name": users_names, "brands": brands},
@@ -332,7 +333,6 @@ def main():
                         args={"userId": okta_v2_id},
                         brand=OKTA_BRAND,
                     )
-
                     if okta_clear_user_sessions_command.is_valid_args():
                         readable_outputs, error_message = okta_clear_user_sessions(
                             okta_clear_user_sessions_command
@@ -343,6 +343,8 @@ def main():
                             success = True
                             brands_succeeded.append(OKTA_BRAND)
                         else:
+                            demisto.debug(f"Failed to clear sessions for Okta user with ID {okta_v2_id}. "
+                                          f"Error message: {error_message}. Response details: {readable_outputs}.")
                             brands_failed.append(OKTA_BRAND)
 
                 # Microsoft Graph User
@@ -363,13 +365,15 @@ def main():
                             brands_succeeded.append(MS_GRAPH_BRAND)
                         else:
                             brands_failed.append(MS_GRAPH_BRAND)
+                            demisto.debug(f"Failed to clear sessions for Microsoft Graph user with ID {microsoft_graph_id}. "
+                                          f"Response details: {readable_outputs}")
 
                 if success:
                     user_output["Result"] = "Success"
                     user_output["Brands"] = ", ".join(brands_succeeded)
                     user_output["Message"] = SUCCESS_MESSAGE
                 else:
-                    user_output["Result"] = "failed"
+                    user_output["Result"] = "Failed"
                     user_output["Brands"] = ", ".join(brands_failed)
                     user_output["Message"] = "User ID not found"
 
@@ -379,17 +383,15 @@ def main():
         ### Complete for all users ###
         ##############################
 
-        readable_output = create_readable_output(outputs)
-
         command_results_list: list[CommandResults] = []
         if verbose:
             command_results_list.extend(results_for_verbose)
 
         command_results_list.append(
             CommandResults(
-                readable_output=readable_output,
+                readable_output=create_readable_output(outputs),
                 outputs=outputs,
-                outputs_prefix="UsersSessionStatus",
+                outputs_prefix="SessionClearingResults",
             )
         )
 
