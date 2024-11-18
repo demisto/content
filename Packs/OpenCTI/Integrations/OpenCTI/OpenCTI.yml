@@ -349,6 +349,15 @@ script:
     description: Delete incident.
     name: opencti-incident-delete
   - arguments: []
+    description: Get a list of all incident types
+    name: opencti-incident-types-list
+    outputs:
+    - contextPath: OpenCTI.IncidentTypes.IncidentTypesList.id
+      description: Incident type ID
+    - contextPath: OpenCTI.IncidentTypes.IncidentTypesList.name
+      description: Incident type name
+    - contextPath: OpenCTI.IncidentTypes.IncidentTypesList.description
+      description: Incident type description
   runonce: false
   script: '-'
   subtype: python3

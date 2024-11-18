@@ -215,6 +215,57 @@ def incident_delete_command(client: OpenCTIApiClient, args: Dict[str, str]) -> C
     return CommandResults(readable_output='Incident deleted.')
 
 
+def incident_types_list_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """ Get incident types list from opencti
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            readable_output, raw_response
+    """
+    try:
+        query = """
+            query OpenVocabFieldQuery($category: VocabularyCategory!, $orderBy: VocabularyOrdering, $orderMode: OrderingMode) {
+            vocabularies(category: $category, orderBy: $orderBy, orderMode: $orderMode) {
+                edges {
+                node {
+                    id
+                    name
+                    description
+                }
+                }
+            }
+            }
+        """
+        query_variables = {
+            "category": "incident_type_ov"
+        }
+        result = client.query(query=query, variables=query_variables)
+        incident_types_list = result['data']['vocabularies']['edges']
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException("Can't list incident types.")
+
+    if incident_types_list:
+        incident_types = [
+            incident_type['node']
+            for incident_type in incident_types_list
+        ]
+        readable_output = tableToMarkdown('Incident Types', incident_types, headers=[
+                                          'id', 'name', 'description'], headerTransform=pascalToSpace)
+
+        outputs = {
+            'OpenCTI.IncidentTypes.IncidentTypesList(val.id === obj.id)': incident_types
+        }
+        return CommandResults(
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=result
+        )
+    else:
+        raise DemistoException("No incident types.")
 
 def get_observables_command(client: OpenCTIApiClient, args: dict) -> CommandResults:
     """ Gets observable from opencti to readable output
