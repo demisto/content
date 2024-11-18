@@ -19,6 +19,12 @@ configuration:
 - display:  Use SASL PLAIN for connection (using SSL)
   name: use_sasl
   type: 8
+- display: Stop consuming upon timeout
+  additionalinfo: TODO
+  name: stop_consuming_upon_timeout
+  type: 8
+  advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

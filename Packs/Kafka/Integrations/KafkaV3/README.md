@@ -22,6 +22,7 @@ This integration is fully compatible with the Kafka v2 integration.
     | Client certificate key password (if required) |  | False |
     | Password |  | False |
     | Use SASL PLAIN for connection |  | False |
+    | Stop consuming upon timeout | TODO | False |
     | SASL PLAIN Username |  | False |
     | SASL PLAIN Password |  | False |
     | Topic to fetch incidents from (Required for fetch incidents) |  | False |
