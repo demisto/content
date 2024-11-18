@@ -155,17 +155,18 @@ def test_get_incident_events_command(requests_mock, authenticated_client: Client
     from QualysFIM import list_incident_events_command
 
     # Set
+    limit = 10
     mock_response = util_load_json('test_data/get_incident_events.json')
     requests_mock.post(f'{BASE_URL}fim/v2/incidents/None/events/search', json=mock_response)
 
     # Arrange
-    result = list_incident_events_command(authenticated_client, {'limit': '10'})
+    result = list_incident_events_command(authenticated_client, {'limit': str(limit)})
 
     # Assert
     assert result.outputs_prefix == 'QualysFIM.Event'
     assert result.outputs_key_field == 'id'
 
-    assert len(result.raw_response) == 10  # same as limit
+    assert len(result.raw_response) == limit
     assert result.raw_response == mock_response
     assert result.outputs == [event['data'] for event in mock_response]
 
@@ -189,7 +190,7 @@ def test_create_incident_command(requests_mock, authenticated_client: Client) ->
     requests_mock.post(f'{BASE_URL}fim/v3/incidents/create', json=create_incident_mock_response)
     search_incidents_mock_response = util_load_json('test_data/list_incidents.json')
     requests_mock.post(f'{BASE_URL}fim/v3/incidents/search', json=search_incidents_mock_response)
-    first_search_result = search_incidents_mock_response[0].get('data')
+    first_search_result = search_incidents_mock_response[0]['data']
 
     # Arrange
     result = create_incident_command(authenticated_client, {'name': 'test'})
@@ -277,10 +278,10 @@ def test_fetch_incidents_command(requests_mock, authenticated_client: Client) ->
 
     _, incidents = fetch_incidents(client=authenticated_client, last_run={}, fetch_filter='',
                                    first_fetch_time='3 days', max_fetch='2')
-    raw_json = json.loads(incidents[0].get('rawJSON'))
+    raw_json = json.loads(incidents[0]['rawJSON'])
 
-    assert raw_json.get('id') == '75539bfc-c0e7-4bcb-b55a-48065ef89ebe'
-    assert raw_json.get('createdBy').get('date') == 1613378492427
+    assert raw_json['id'] == '75539bfc-c0e7-4bcb-b55a-48065ef89ebe'
+    assert raw_json['createdBy']['date'] == 1613378492427
 
 
 def test_create_event_or_incident_output() -> None:
@@ -311,4 +312,4 @@ def test_create_event_or_incident_output() -> None:
         'fullPath': raw_event['fullPath'],
     }
     # function calls remove_empty_elements
-    assert all(value != {} or value != [] for value in event_output.values()), 'One or more event values are empty'
+    assert all(value not in ({}, []) for value in event_output.values()), 'One or more event values are empty'

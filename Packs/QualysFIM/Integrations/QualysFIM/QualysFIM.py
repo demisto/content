@@ -638,13 +638,12 @@ def test_module(client: Client) -> str:
         client.incidents_list_test()  # raises exception if non-okay response
         return 'ok'
     except Exception as e:
-        error_msg = None
         if 'Authorization' in str(e):
-            error_msg = "Authentication wasn't successful,\n" \
-                        " Please check credentials,\n" \
-                        " or specify correct Platform URL."
+            DemistoException("Authentication wasn't successful,\n"
+                             " Please check credentials,\n"
+                             " or specify correct Platform URL.")
 
-        raise DemistoException(error_msg or str(e)) from e
+        raise
 
 
 def main():
