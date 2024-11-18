@@ -133,7 +133,7 @@ class Client(BaseClient):
         self, method: str, url_suffix: str, data: dict = None, json_body: Any = None, headers: dict = HEADERS,
             return_json: bool = True, custom_response: bool = False,
             retries: int = 0, backoff_factor: int = 5) -> Any:
-        demisto.info(f'running request with url={SERVER + url_suffix}')
+        demisto.info(f'running request with url={SERVER + url_suffix}. API Query: {json_body}')
 
         try:
             res = self._http_request(
@@ -1673,6 +1673,7 @@ def validate_jsession(client: Client):
     integration_context = get_integration_context()
     token = integration_context.get('jsession_id')
     valid_until = integration_context.get('valid_until')
+    demisto.debug(f"token: {token} and valid until: {valid_until}")
     if token and valid_until:
         if creation_time < valid_until:
             demisto.debug(f"Token is still valid - did not expire. token: {token}")
