@@ -11,58 +11,63 @@ if sys.version_info[0] >= 3:
             All methods of this class can be executed in both scripts and integrations
             (E.g., self.results). """
 
-        class DemistoScript(DemistoWrapper):
+            def initialize(self):
+                self.script_name = self.callingContext["context"].get("ScriptName") or ""
+                self.command_name = self.callingContext["command"] or ""
+                self.exec_type = "command" if self.command_name else "script"
+                self._name = self.script_name or self.command_name
+                self.root_caller = self._get_root_caller()
+                self._log_execution_details()
+
+            def in_execute_command_call(self):
+                return self.callingContext["context"]["CommandsExecuted"]["CurrLevel"] > 0
+
+            def _get_root_caller(self):
+                executed_commands = self.callingContext["context"].get("ExecutedCommands") or []
+                return executed_commands[0]["name"] if executed_commands else None
+
+            def _log_execution_details(self):
+                msg = self.exec_type.title() + " being called is [{}]".format(self._name)
+                if self.in_execute_command_call() and self.root_caller:
+                    msg += " (root caller: {})".format(self.root_caller)
+                super(DemistoWrapper, self).debug(msg)
+
             def info(self, msg):
-                if "script being called is" not in msg.lower():
-                    script = demisto.callingContext['context']['ScriptName']
-                    msg = "[{}] {}".format(script, msg)
-                    super(DemistoScript, self).info(msg)
+                if not msg.lower().startswith(self.exec_type + " being called is"):
+                    super(DemistoWrapper, self).info(msg)
 
             def debug(self, msg):
-                if "script being called is" not in msg.lower():
-                    script = demisto.callingContext['context']['ScriptName']
-                    msg = "[{}] {}".format(script, msg)
-                    super(DemistoScript, self).debug(msg)
+                if not msg.lower().startswith(self.exec_type + " being called is"):
+                    super(DemistoWrapper, self).debug(msg)
 
+        class DemistoScript(DemistoWrapper):
             def getFilePath(self, id):
                 res = super(DemistoScript, self).getFilePath(id)
                 self.debug("File path of entry with ID [{}] is [{}]".format(id, json.dumps(res)))
                 return res
 
+            def _drop_debug_log_entry(self, entries):
+                entries = [entries] if isinstance(entries, dict) else entries
+                if isinstance(entries, list):
+                    for idx, entry in enumerate(entries):
+                        if entry["Type"] == 16:
+                            entry["File"] = self.script_name + "_" + entry["File"]
+                            self.results(entry)
+                            return entries[:idx] + entries[idx + 1:]
+                return entries
+
             def executeCommand(self, command, args):
                 if self.is_debug:
-                    self.debug("Going to execute [{}] with args: [{}]".format(command, json.dumps(args)))
+                    self.debug("Going to execute {}".format(command))
                     start_time = datetime.now()
                     res = super(DemistoScript, self).executeCommand(command, args)
                     duration = (datetime.now() - start_time).total_seconds()
-                    if isinstance(res, list):
-                        is_error = any(entry['Type'] == 4 for entry in res)
-                    elif isinstance(res, dict):
-                        is_error = res['Type'] == 4
-                    else:
-                        is_error = False
-                    self.debug(
-                        "Finished execution of [{}] after {} seconds, success: {}".format(duration, not is_error)
-                    )
-                    return res
+                    entries = self._drop_debug_log_entry(res)
+                    self.debug("{} Took {} seconds".format(command, duration))
+                    return entries[0] if len(entries) == 1 else entries
                 return super(DemistoScript, self).executeCommand(command, args)
 
         class DemistoIntegration(DemistoWrapper):
-            def info(self, msg):
-                if "command being called is" not in msg.lower():
-                    integration = demisto.callingContext['context']['IntegrationBrand']
-                    instance = demisto.callingContext['context']['IntegrationInstance']
-                    command = self.command()
-                    msg = "[{} - {}] [{}] {}".format(integration, instance, command, msg)
-                    super(DemistoIntegration, self).info(msg)
-
-            def debug(self, msg):
-                if "command being called is" not in msg.lower():
-                    integration = demisto.callingContext['context']['IntegrationBrand']
-                    instance = demisto.callingContext['context']['IntegrationInstance']
-                    msg = "[{} - {}] {}".format(integration, instance, msg)
-                    super(DemistoIntegration, self).debug(msg)
-
             def getLastRun(self):
                 res = super(DemistoIntegration, self).getLastRun()
                 self.debug("LastRun is: {}".format(json.dumps(res, indent=4)))
@@ -92,20 +97,11 @@ if sys.version_info[0] >= 3:
                 if self.is_debug:
                     self.debug("createIndicators took {} seconds {}".format(duration))
 
-        args_str = json.dumps(demisto.args())
         if demisto.callingContext.get('context', {}).get('IntegrationBrand'):
-            integration = demisto.callingContext['context']['IntegrationBrand']
-            instance = demisto.callingContext['context']['IntegrationInstance']
-            demisto.debug(
-                "Command being called is [{}] ({} - {}), args: [{}]".format(
-                    demisto.command(), integration, instance, args_str
-                )
-            )
             demisto.__class__ = DemistoIntegration
         elif demisto.callingContext.get('context', {}).get('ScriptName'):
-            script = demisto.callingContext['context']['ScriptName']
-            demisto.debug("Script being called is [{}], args: [{}]".format(script, args_str))
             demisto.__class__ = DemistoScript
+        demisto.initialize()
 
     except NameError:
         # NameError will be raised only in tests, where a Demisto class isn't defined.
