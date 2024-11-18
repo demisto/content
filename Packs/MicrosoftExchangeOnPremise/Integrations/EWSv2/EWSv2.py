@@ -4,7 +4,7 @@ import uuid
 from email.policy import SMTP, SMTPUTF8
 from io import StringIO
 from multiprocessing import Process
-
+from email import _header_value_parser as parser
 import dateparser  # type: ignore
 import exchangelib
 from exchangelib import (
@@ -1096,6 +1096,88 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
     return raw_dict
 
 
+def handle_attached_email_with_incorrect_message_id(attached_email: Message):
+    """This function handles a malformed Message-ID value which can be returned in the header of certain email objects.
+    This issue happens due to a current bug in "email" library and further explained in XSUP-32074.
+    Public issue link: https://github.com/python/cpython/issues/105802
+
+    The function will run on every attached email if exists, check its Message-ID header value and fix it if possible.
+    Args:
+        attached_email (Message): attached email object.
+
+    Returns:
+        Message: attached email object.
+    """
+    message_id_value = ""
+    for i in range(len(attached_email._headers)):
+        if attached_email._headers[i][0].lower() == "message-id":
+            message_id = attached_email._headers[i][1]
+            message_header = attached_email._headers[i][0]
+            demisto.debug(f'Handling Message-ID header, {message_id=}.')
+            try:
+                message_id_value = handle_incorrect_message_id(message_id)
+                if message_id_value != message_id:
+                    # If the Message-ID header was fixed in the context of this function
+                    # the header will be replaced in _headers list
+                    attached_email._headers.pop(i)
+                    attached_email._headers.append((message_header, message_id_value))
+
+            except Exception as e:
+                # The function is designed to handle a specific format error for the Message-ID header
+                # as explained in the docstring.
+                # That being said, we do expect the header to be in a known format.
+                # If this function encounters a header format which is not in the known format and can't be fixed,
+                # the header will be ignored completely to prevent crashing the fetch command.
+                demisto.debug(f"Invalid {message_id=}, Error: {e}")
+                break
+            break
+    return attached_email
+
+
+def handle_attached_email_with_incorrect_from_header(attached_email: Message):
+    """This function handles a malformed From value which can be returned in the header of certain email objects.
+    This issue happens due to a current bug in "email" library.
+    Public issue link: https://github.com/python/cpython/issues/114906
+
+    The function will run on every attached email if exists, check its From header value and fix it if possible.
+    Args:
+        attached_email (Message): attached email object.
+
+    Returns:
+        Message: attached email object.
+    """
+    for i, (header_name, header_value) in enumerate(attached_email._headers):
+        if header_name.lower() == "from":
+            demisto.debug(f'Handling From header, value={header_value}.')
+            try:
+                new_value = parser.get_address_list(header_value)[0].value
+                new_value = new_value.replace("\n", " ").replace("\r", " ").strip()
+                if header_value != new_value:
+                    # Update the 'From' header with the corrected value
+                    attached_email._headers[i] = (header_name, new_value)
+                    demisto.debug(f'From header fixed, new value: {new_value}')
+
+            except Exception as e:
+                demisto.debug(f"Error processing From header: {e}")
+            break
+    return attached_email
+
+
+def handle_incorrect_message_id(message_id: str) -> str:
+    """
+    Use regex to identify and correct one of the following invalid message_id formats:
+    1. '<[message_id]>' --> '<message_id>'
+    2. '\r\n\t<[message_id]>' --> '\r\n\t<message_id>'
+    If no necessary changes identified the original 'message_id' argument value is returned.
+    """
+    if re.search("\<\[.*\]\>", message_id):
+        # find and replace "<[" with "<" and "]>" with ">"
+        fixed_message_id = re.sub(r'<\[(.*?)\]>', r'<\1>', message_id)
+        demisto.debug('Fixed message id {message_id} to {fixed_message_id}')
+        return fixed_message_id
+    return message_id
+
+
 def cast_mime_item_to_message(item):
     mime_content = item.mime_content
     email_policy = SMTP if mime_content.isascii() else SMTPUTF8
@@ -1195,6 +1277,8 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                             attached_email = cast_mime_item_to_message(attachment.item)
                             if attachment.item.headers:
                                 attached_email_headers = []
+                                attached_email = handle_attached_email_with_incorrect_message_id(attached_email)
+                                attached_email = handle_attached_email_with_incorrect_from_header(attached_email)
                                 for h, v in list(attached_email.items()):
                                     if not isinstance(v, str):
                                         try:
@@ -1205,7 +1289,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
 
                                     v = ' '.join(map(str.strip, v.split('\r\n')))
                                     attached_email_headers.append((h.lower(), v))
-
+                                demisto.debug(f'{attached_email_headers=}')
                                 for header in attachment.item.headers:
                                     if (header.name.lower(), header.value) not in attached_email_headers \
                                             and header.name.lower() != 'content-type':

@@ -10,7 +10,8 @@ import logging
 import dateparser
 import pytest
 from exchangelib import Message, Mailbox, Contact, HTMLBody, Body
-from EWSv2 import fetch_last_emails, get_message_for_body_type, parse_item_as_dict, parse_physical_address, get_attachment_name
+from EWSv2 import (fetch_last_emails, get_message_for_body_type, parse_item_as_dict, parse_physical_address, get_attachment_name,
+                   handle_attached_email_with_incorrect_message_id, handle_attached_email_with_incorrect_from_header, SMTP, email)
 from exchangelib.errors import UnauthorizedError, ErrorNameResolutionNoResults
 from exchangelib import EWSDateTime, EWSTimeZone, EWSDate
 from exchangelib.errors import ErrorInvalidIdMalformed, ErrorItemNotFound
@@ -1077,3 +1078,45 @@ def test_get_item_as_eml(mocker):
 
     get_item_as_eml("Inbox", "test@gmail.com")
     mock_file_result.assert_called_once_with("demisto_untitled_eml.eml", expected_data)
+
+
+@pytest.mark.parametrize("headers, expected_formatted_headers", [
+    pytest.param([("Message-ID", '<valid_header>')], [("Message-ID", '<valid_header>')], id="valid header"),
+    pytest.param([("Message-ID", '<[valid_header]>')], [("Message-ID", '<valid_header>')], id="invalid header"),
+    pytest.param([("Message-ID", 'Other type of header format')], [("Message-ID", 'Other type of header format')],
+                 id="untouched header format"),
+])
+def test_handle_attached_email_with_incorrect_id(mocker, headers, expected_formatted_headers):
+    """
+    Given:
+        - case 1: valid Message-ID header value in attached email object
+        - case 1: invalid Message-ID header value in attached email object
+        - case 3: a Message-ID header value format which is not tested in the context of handle_attached_email_with_incorrect_id
+    When:
+        - fetching email which have an attached email with Message-ID header
+    Then:
+        - case 1: verify the header in the correct format
+        - case 2: correct the invalid Message-ID header value
+        - case 3: return the header value without without further handling
+    """
+    mime_content = b'\xc400'
+    email_policy = SMTP
+    attached_email = email.message_from_bytes(mime_content, policy=email_policy)
+    attached_email._headers = headers
+    assert handle_attached_email_with_incorrect_message_id(attached_email)._headers == expected_formatted_headers
+
+
+def test_handle_attached_email_with_incorrect_from_header_fixes_malformed_header():
+    """
+    Given:
+        An email message with a malformed From header.
+    When:
+        The handle_attached_email_with_incorrect_from_header function is called.
+    Then:
+        The From header is corrected and the email message object is updated.
+    """
+    message = email.message_from_bytes(b"From: =?UTF-8?Q?Task_One=0DTest?= <info@test.com>", policy=SMTP)
+
+    result = handle_attached_email_with_incorrect_from_header(message)
+
+    assert result['From'] == 'Task One Test <info@test.com>'
