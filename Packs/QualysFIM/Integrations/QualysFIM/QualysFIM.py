@@ -46,11 +46,14 @@ class Client(BaseClient):
             data = {'username': auth[0], 'password': auth[1], 'token': True}
             headers = {'ContentType': 'application/x-www-form-urlencoded'}
 
-            auth_response = self._http_request(method='POST', url_suffix='/auth',
-                                               headers=headers, data=data, resp_type='response')
-            auth_response.raise_for_status()
-
-            token = auth_response.text
+            token = self._http_request(
+                method='POST',
+                url_suffix='/auth',
+                headers=headers,
+                data=data,
+                resp_type='text',
+                raise_on_status=True,
+            )
             return {'Authorization': f'Bearer {token}', 'content-type': 'application/json'}
 
         except Exception as e:
