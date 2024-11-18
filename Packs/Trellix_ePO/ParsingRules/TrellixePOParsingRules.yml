@@ -1,6 +1,0 @@
-fromversion: 8.5.0
-id: trellix_epo_parsing_rule
-name: Trellix ePO Parsing Rule
-rules: ''
-schema: ''
-tags: TrellixEpoParsingRules
