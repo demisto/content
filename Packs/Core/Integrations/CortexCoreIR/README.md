@@ -1428,7 +1428,8 @@ Initiate a new endpoint script execution of shell commands.
 | action_id | For polling use. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
-
+| is_raw_command | Determines if shell commands are passed in their raw form or split by commas. | Optional |
+| command_type | Type of shell command. Possible values: "powershell", "null". | Optional |
 
 #### Context Output
 
