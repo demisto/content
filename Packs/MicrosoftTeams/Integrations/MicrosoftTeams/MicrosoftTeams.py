@@ -2791,20 +2791,29 @@ def token_permissions_list_command():
     permissions needed to be added to their application.
     """
     # Get the used token from the integration context:
-    integration_context: dict = get_integration_context()
-    access_token: str = integration_context.get('graph_access_token', '')
+    access_token: str = get_graph_access_token()
 
     # Decode the token and extract the roles:
     if access_token:
         decoded_token = jwt.decode(access_token, options={"verify_signature": False})
-        roles = decoded_token.get('roles', [])
+        if AUTH_TYPE == CLIENT_CREDENTIALS:
+            roles = decoded_token.get('roles', [])
+
+        else:  # Authorization code flow
+            roles = decoded_token.get('scp', '')
+            roles = [role for role in roles.split() if '.' in role]
+
         if roles:
-            hr = tableToMarkdown('The API permissions obtained for the used graph access token are:',
+            roles = sorted(roles)
+            hr = tableToMarkdown(f'The API permissions obtained for the used graph access token are: ({len(roles)})',
                                  roles, headers=['Permission'])
         else:
             hr = 'No permissions obtained for the used graph access token.'
+
     else:
         hr = 'Graph access token is not set.'
+
+    demisto.debug(f"'microsoft-teams-token-permissions-list' command result is: {hr}")
 
     result = CommandResults(
         readable_output=hr

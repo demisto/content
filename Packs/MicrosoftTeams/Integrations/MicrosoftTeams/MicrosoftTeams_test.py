@@ -2473,25 +2473,26 @@ def test_add_data_to_actions_non_dict_data():
     assert card_json["data"] == data_value
 
 
-@pytest.mark.parametrize('integration_context, decoded_token, expected_hr', [
-    ({'graph_access_token': 'dummy_token'},
+@pytest.mark.parametrize('token, decoded_token, expected_hr', [
+    ('dummy_token',
      {'aud': 'url', 'exp': '1111', 'roles': ['AppCatalog.Read.All', 'Group.ReadWrite.All', 'User.Read.All']},
      'The API permissions obtained for the used graph access token are'),
-    ({'graph_access_token': 'dummy_token'},
+    ('dummy_token',
      {'aud': 'url', 'exp': '1111', 'roles': []},
      'No permissions obtained for the used graph access token.'),
-    ({'graph_access_token': ''},
+    ('',
      {'roles': []},
      'Graph access token is not set.')
 ])
-def test_token_permissions_list_command(mocker, integration_context, decoded_token, expected_hr):
+def test_token_permissions_list_command(mocker, token, decoded_token, expected_hr):
     """
     Tests the 'token_permissions_list_command' logic.
+    # TODO: edit the test to refer to the auth type changes
 
     Given:
-        1. Integration context with a dummy token, mocked response of the jet.decode func with API permissions roles.
-        2. Integration context with a dummy token, mocked response of the jet.decode func without API permissions roles.
-        3. Integration context without a  token.
+        1. A dummy token, mocked response of the jet.decode func with API permissions roles.
+        2. A dummy token, mocked response of the jet.decode func without API permissions roles.
+        3. Missing token.
     When:
         - Running the token_permissions_list_command.
     Then:
@@ -2503,7 +2504,8 @@ def test_token_permissions_list_command(mocker, integration_context, decoded_tok
     """
     from MicrosoftTeams import token_permissions_list_command
     import MicrosoftTeams
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value=integration_context)
+    # mocker.patch.object(demisto, 'getIntegrationContext', return_value=integration_context)
+    mocker.patch('MicrosoftTeams.get_graph_access_token', return_value=token)
     mocker.patch('jwt.decode', return_value=decoded_token)
     results = mocker.patch.object(MicrosoftTeams, 'return_results')
 
