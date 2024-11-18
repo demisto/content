@@ -9,6 +9,7 @@ This API key is used in the *API Key* field in the integration configuration.
 - Prisma Cloud Compute
 - Prisma Access
 - XSOAR TIM
+- WildFire WF-500 Appliance
 
 Notice: Submitting indicators using the following commands of this integration might make the indicator data publicly available.
 - ***wildfire-upload-url***

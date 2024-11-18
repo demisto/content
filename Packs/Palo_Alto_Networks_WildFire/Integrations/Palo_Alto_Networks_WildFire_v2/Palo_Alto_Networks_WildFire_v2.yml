@@ -18,7 +18,7 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
-- additionalinfo: Source of WildFire API Key - other = NGFW, WildFire API - pcc = Prisma Cloud Compute - prismaaccessapi = Prisma Access - xsoartim = XSOAR TIM API Key
+- additionalinfo: Source of WildFire API Key - other = NGFW, WildFire API - pcc = Prisma Cloud Compute - prismaaccessapi = Prisma Access - xsoartim = XSOAR TIM API Key - wf500 = Wildfire WF-500 Appliance
   defaultvalue: other
   display: API Key Type
   name: credentials_source
@@ -28,6 +28,7 @@ configuration:
   - xsoartim
   - xdr
   - other
+  - wf500
   type: 15
   section: Connect
   advanced: true

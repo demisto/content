@@ -1530,7 +1530,7 @@ def get_agent(api_key_source: str, platform: str, token: str) -> str:
     # within XSOAR (both on-prem and cloud).
     if len(token) == 32:
         return ''
-    if api_key_source in ['pcc', 'prismaaccessapi', 'xsoartim', 'xdr']:
+    if api_key_source in ['pcc', 'prismaaccessapi', 'xsoartim', 'xdr', 'wf500']:
         return api_key_source
     if (platform == 'x2' or is_demisto_version_ge('8')) and not api_key_source:
         return 'xdr'
@@ -1566,6 +1566,7 @@ def main():  # pragma: no cover
         # get the source of the credentials to ensure the correct agent is set for all API calls
         # other = ngfw or wf api based keys that are 32 chars long and require no agent
         # pcc and prismaaccessapi are 64 char long and require the correct agent= value in the api call
+        # wf500 appliance is 64 char long and requires no agent= value
         if not token:
             # Added support for all platforms from version 2.1.42.
             with contextlib.suppress(Exception):
@@ -1596,6 +1597,7 @@ def main():  # pragma: no cover
         if len(token) > 32 and not agent_value:
             # the token is longer than 32 so one of pcc, prismaaccessapi, xsoartim, xdr needs to be set or a
             # license from XSIAM/XSOAR NG.
+            # WF500 Appliances need 64 char key but do not require agent field, WF500 API calls ignore the added agent=wf500
             raise DemistoException(
                 "API Key is longer than 32 characters. Select an 'API Key Type' in the integration's instance configuration.")
         set_http_params(token, agent_value)
