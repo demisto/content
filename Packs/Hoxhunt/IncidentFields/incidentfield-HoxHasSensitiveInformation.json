@@ -4,7 +4,7 @@
     "modified": "2024-10-10T06:46:14.066921311Z",
     "itemVersion": "1.0.0",
     "fromVersion": "6.10.0",
-    "name": "Hox HasSensitiveInformation",
+    "name": "Hox Has Sensitive Information",
     "ownerOnly": false,
     "description": "Has the incident been marked to contain sensitive information?",
     "cliName": "hoxhassensitiveinformation",

@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-10-15T05:53:40.57998366Z",
     "fromVersion": "6.10.0",
-    "name": "Hox FT-MessageId",
+    "name": "Hox FT Message Id",
     "ownerOnly": false,
     "description": "Message Id of the first threat in the incident",
     "cliName": "hoxftmessageid",

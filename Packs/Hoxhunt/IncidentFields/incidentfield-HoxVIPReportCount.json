@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-10-09T05:47:12.010396475Z",
     "fromVersion": "6.10.0",
-    "name": "Hox VIPReportCount",
+    "name": "Hox VIP Report Count",
     "ownerOnly": false,
     "description": "How many reports came from VIP users?",
     "cliName": "hoxvipreportcount",

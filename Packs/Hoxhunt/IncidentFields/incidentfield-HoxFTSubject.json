@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-10-15T05:54:18.27879513Z",
     "fromVersion": "6.10.0",
-    "name": "Hox FT-Subject",
+    "name": "Hox FT Subject",
     "ownerOnly": false,
     "description": "Subject of the first threat in the incident",
     "cliName": "hoxftsubject",

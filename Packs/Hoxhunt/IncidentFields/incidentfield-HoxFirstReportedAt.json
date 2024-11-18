@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-10-09T05:40:25.555595345Z",
     "fromVersion": "6.10.0",
-    "name": "Hox FirstReportedAt",
+    "name": "Hox First Reported At",
     "ownerOnly": false,
     "description": "What was the first report date for the incident",
     "cliName": "hoxfirstreportedat",

@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-10-23T06:44:19.787558746Z",
     "fromVersion": "6.10.0",
-    "name": "Hox ReportedAtLimit",
+    "name": "Hox Reported At Limit",
     "ownerOnly": false,
     "description": "Date in the past for specifying which users to send feedback to based on when an incident-related threat was last reported. For example, if set to 7 days, only users who have reported emails related to the threat in the last 7 days are provided with feedback",
     "cliName": "hoxreportedatlimit",

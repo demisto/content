@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-10-15T05:53:07.842958283Z",
     "fromVersion": "6.10.0",
-    "name": "Hox FT-BodyLink",
+    "name": "Hox FT BodyLink",
     "ownerOnly": false,
     "description": "URL to fetch the first threat body",
     "cliName": "hoxftbodylink",

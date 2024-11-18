@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-10-09T05:43:51.501836216Z",
     "fromVersion": "6.10.0",
-    "name": "Hox ExternalClassification",
+    "name": "Hox External Classification",
     "ownerOnly": false,
     "description": "Classification given for the incident by external SOC",
     "cliName": "hoxexternalclassification",

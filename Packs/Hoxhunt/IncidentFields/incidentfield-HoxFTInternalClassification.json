@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-10-15T05:39:04.334515554Z",
     "fromVersion": "6.10.0",
-    "name": "Hox FT-InternalClassification",
+    "name": "Hox FT Internal Classification",
     "ownerOnly": false,
     "description": "Classification given for the first threat in incident by Hoxhunt",
     "cliName": "hoxftinternalclassification",

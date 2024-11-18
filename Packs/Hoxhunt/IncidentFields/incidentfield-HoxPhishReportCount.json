@@ -4,7 +4,7 @@
     "modified": "2024-10-10T06:41:17.386538728Z",
     "itemVersion": "1.0.0",
     "fromVersion": "6.10.0",
-    "name": "Hox PhishReportCount",
+    "name": "Hox Phish Report Count",
     "ownerOnly": false,
     "description": "How many reports were marked as phishing?",
     "cliName": "hoxphishreportcount",

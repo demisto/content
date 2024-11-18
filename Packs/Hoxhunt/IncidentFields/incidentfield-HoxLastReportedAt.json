@@ -4,7 +4,7 @@
     "modified": "2024-10-09T09:26:16.279214823Z",
     "itemVersion": "1.0.0",
     "fromVersion": "6.10.0",
-    "name": "Hox LastReportedAt",
+    "name": "Hox Last Reported At",
     "ownerOnly": false,
     "description": "What was the latest report date for the incident",
     "cliName": "hoxlastreportedat",

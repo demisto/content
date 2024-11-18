@@ -4,7 +4,7 @@
     "modified": "2024-10-10T07:18:18.112272092Z",
     "itemVersion": "1.0.0",
     "fromVersion": "6.10.0",
-    "name": "Hox LikelyTargetEntity",
+    "name": "Hox Likely Target Entity",
     "ownerOnly": false,
     "description": "Who does the incident target (organisation, individual or inconclusive).",
     "cliName": "hoxlikelytargetentity",

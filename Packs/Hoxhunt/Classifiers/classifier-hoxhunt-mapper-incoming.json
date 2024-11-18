@@ -6,7 +6,7 @@
         "Hoxhunt Campaign": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Hox IncidentRuleActions": {
+                "Hox Incident Rule Actions": {
                     "complex": {
                         "filters": [],
                         "root": "ruleMatches",
@@ -83,7 +83,7 @@
                         ]
                     }
                 },
-                "Hox FT-Attachments": {
+                "Hox FT Attachments": {
                     "complex": {
                         "accessor": "attachments",
                         "filters": [],
@@ -112,7 +112,7 @@
                         ]
                     }
                 },
-                "Hox FT-Links": {
+                "Hox FT Links": {
                     "complex": {
                         "accessor": "links",
                         "filters": [],
@@ -172,19 +172,19 @@
                         ]
                     }
                 },
-                "Hox FT-BodyLink": {
+                "Hox FT BodyLink": {
                     "simple": "firstThreat.[0].email.sanitizedBody.signedUrl"
                 },
-                "Hox FT-EmailFrom": {
+                "Hox FT EmailFrom": {
                     "simple": "firstThreat.[0].email.from.[0].address"
                 },
-                "Hox FT-EmailTo": {
+                "Hox FT EmailTo": {
                     "simple": "firstThreat.[0].email.to.[0].address"
                 },
-                "Hox FT-ID": {
+                "Hox FT ID": {
                     "simple": "firstThreat.[0]._id"
                 },
-                "Hox FT-InternalClassification": {
+                "Hox FT Internal Classification": {
                     "complex": {
                         "filters": [],
                         "root": "firstThreat.[0].hoxhuntClassification",
@@ -217,7 +217,7 @@
                         ]
                     }
                 },
-                "Hox FT-MaliciousnessProbability": {
+                "Hox FT Maliciousness Probability": {
                     "complex": {
                         "accessor": "mlopsIocEmailMaliciousnessProbability",
                         "filters": [],
@@ -259,16 +259,16 @@
                         ]
                     }
                 },
-                "Hox FT-MessageId": {
+                "Hox FT Message Id": {
                     "simple": "firstThreat.[0].email.messageId"
                 },
-                "Hox FT-Subject": {
+                "Hox FT Subject": {
                     "simple": "firstThreat.[0].email.subject"
                 },
-                "Hox ExternalClassification": {
+                "Hox External Classification": {
                     "simple": "externalClassification"
                 },
-                "Hox FirstReportedAt": {
+                "Hox First Reported At": {
                     "complex": {
                         "filters": [],
                         "root": "firstReportedAt",
@@ -284,19 +284,19 @@
                         ]
                     }
                 },
-                "Hox GlobalReportCount": {
+                "Hox Global Report Count": {
                     "simple": "globalThreatCount"
                 },
-                "Hox HasSensitiveInformation": {
+                "Hox Has Sensitive Information": {
                     "simple": "hasSensitiveInformation"
                 },
                 "Hox ID": {
                     "simple": "_id"
                 },
-                "Hox InboxReportCount": {
+                "Hox Inbox Report Count": {
                     "simple": "threatMetadata.reportCountFromInbox"
                 },
-                "Hox ThreatIndicators": {
+                "Hox Threat Indicators": {
                     "complex": {
                         "accessor": "threatIndicators",
                         "filters": [],
@@ -322,7 +322,7 @@
                         ]
                     }
                 },
-                "Hox UserActions": {
+                "Hox User Actions": {
                     "complex": {
                         "accessor": "userActions",
                         "filters": [],
@@ -330,7 +330,7 @@
                         "transformers": []
                     }
                 },
-                "Hox InternalClassification": {
+                "Hox Internal Classification": {
                     "complex": {
                         "filters": [],
                         "root": "hoxhuntClassification",
@@ -363,10 +363,10 @@
                         ]
                     }
                 },
-                "Hox ReportCount": {
+                "Hox Report Count": {
                     "simple": "threatMetadata.threatCount"
                 },
-                "Hox LastReportedAt": {
+                "Hox Last Reported At": {
                     "complex": {
                         "filters": [],
                         "root": "lastReportedAt",
@@ -382,7 +382,7 @@
                         ]
                     }
                 },
-                "Hox LikelyTargetEntity": {
+                "Hox Likely Target Entity": {
                     "complex": {
                         "accessor": "likelyTargetEntity",
                         "filters": [],
@@ -405,7 +405,7 @@
                         ]
                     }
                 },
-                "Hox PhishReportCount": {
+                "Hox Phish Report Count": {
                     "simple": "threatMetadata.phishReportCount"
                 },
                 "Hox State": {
@@ -422,7 +422,7 @@
                 "Hox URL": {
                     "simple": "responseUrl"
                 },
-                "Hox VIPReportCount": {
+                "Hox VIP Report Count": {
                     "simple": "threatMetadata.vipReportCount"
                 },
                 "dbotMirrorDirection": {
@@ -453,7 +453,7 @@
         "Hoxhunt BEC": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Hox IncidentRuleActions": {
+                "Hox Incident Rule Actions": {
                     "complex": {
                         "filters": [],
                         "root": "ruleMatches",
@@ -530,7 +530,7 @@
                         ]
                     }
                 },
-                "Hox ThreatIndicators": {
+                "Hox Threat Indicators": {
                     "complex": {
                         "accessor": "threatIndicators",
                         "filters": [],
@@ -556,7 +556,7 @@
                         ]
                     }
                 },
-                "Hox UserActions": {
+                "Hox User Actions": {
                     "complex": {
                         "accessor": "userActions",
                         "filters": [],
@@ -564,7 +564,7 @@
                         "transformers": []
                     }
                 },
-                "Hox FT-Attachments": {
+                "Hox FT Attachments": {
                     "complex": {
                         "accessor": "attachments",
                         "filters": [],
@@ -593,7 +593,7 @@
                         ]
                     }
                 },
-                "Hox FT-Links": {
+                "Hox FT Links": {
                     "complex": {
                         "accessor": "links",
                         "filters": [],
@@ -653,19 +653,19 @@
                         ]
                     }
                 },
-                "Hox FT-BodyLink": {
+                "Hox FT BodyLink": {
                     "simple": "firstThreat.[0].email.sanitizedBody.signedUrl"
                 },
-                "Hox FT-EmailFrom": {
+                "Hox FT EmailFrom": {
                     "simple": "firstThreat.[0].email.from.[0].address"
                 },
-                "Hox FT-EmailTo": {
+                "Hox FT EmailTo": {
                     "simple": "firstThreat.[0].email.to.[0].address"
                 },
-                "Hox FT-ID": {
+                "Hox FT ID": {
                     "simple": "firstThreat.[0]._id"
                 },
-                "Hox FT-InternalClassification": {
+                "Hox FT Internal Classification": {
                     "complex": {
                         "filters": [],
                         "root": "firstThreat.[0].hoxhuntClassification",
@@ -698,7 +698,7 @@
                         ]
                     }
                 },
-                "Hox FT-MaliciousnessProbability": {
+                "Hox FT Maliciousness Probability": {
                     "complex": {
                         "accessor": "mlopsIocEmailMaliciousnessProbability",
                         "filters": [],
@@ -740,16 +740,16 @@
                         ]
                     }
                 },
-                "Hox FT-MessageId": {
+                "Hox FT Message Id": {
                     "simple": "firstThreat.[0].email.messageId"
                 },
-                "Hox FT-Subject": {
+                "Hox FT Subject": {
                     "simple": "firstThreat.[0].email.subject"
                 },
-                "Hox ExternalClassification": {
+                "Hox External Classification": {
                     "simple": "externalClassification"
                 },
-                "Hox FirstReportedAt": {
+                "Hox First Reported At": {
                     "complex": {
                         "filters": [],
                         "root": "firstReportedAt",
@@ -765,19 +765,19 @@
                         ]
                     }
                 },
-                "Hox GlobalReportCount": {
+                "Hox Global Report Count": {
                     "simple": "globalThreatCount"
                 },
-                "Hox HasSensitiveInformation": {
+                "Hox Has Sensitive Information": {
                     "simple": "hasSensitiveInformation"
                 },
                 "Hox ID": {
                     "simple": "_id"
                 },
-                "Hox InboxReportCount": {
+                "Hox Inbox Report Count": {
                     "simple": "threatMetadata.reportCountFromInbox"
                 },
-                "Hox InternalClassification": {
+                "Hox Internal Classification": {
                     "complex": {
                         "filters": [],
                         "root": "hoxhuntClassification",
@@ -810,10 +810,10 @@
                         ]
                     }
                 },
-                "Hox ReportCount": {
+                "Hox Report Count": {
                     "simple": "threatMetadata.threatCount"
                 },
-                "Hox LastReportedAt": {
+                "Hox Last Reported At": {
                     "complex": {
                         "filters": [],
                         "root": "lastReportedAt",
@@ -829,7 +829,7 @@
                         ]
                     }
                 },
-                "Hox LikelyTargetEntity": {
+                "Hox Likely Target Entity": {
                     "complex": {
                         "accessor": "likelyTargetEntity",
                         "filters": [],
@@ -852,7 +852,7 @@
                         ]
                     }
                 },
-                "Hox PhishReportCount": {
+                "Hox Phish Report Count": {
                     "simple": "threatMetadata.phishReportCount"
                 },
                 "Hox State": {
@@ -869,7 +869,7 @@
                 "Hox URL": {
                     "simple": "responseUrl"
                 },
-                "Hox VIPReportCount": {
+                "Hox VIP Report Count": {
                     "simple": "threatMetadata.vipReportCount"
                 },
                 "dbotMirrorDirection": {
@@ -900,7 +900,7 @@
         "Hoxhunt User Acted": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Hox IncidentRuleActions": {
+                "Hox Incident Rule Actions": {
                     "complex": {
                         "filters": [],
                         "root": "ruleMatches",
@@ -977,7 +977,7 @@
                         ]
                     }
                 },
-                "Hox ThreatIndicators": {
+                "Hox Threat Indicators": {
                     "complex": {
                         "accessor": "threatIndicators",
                         "filters": [],
@@ -1003,7 +1003,7 @@
                         ]
                     }
                 },
-                "Hox UserActions": {
+                "Hox User Actions": {
                     "complex": {
                         "accessor": "userActions",
                         "filters": [],
@@ -1011,7 +1011,7 @@
                         "transformers": []
                     }
                 },
-                "Hox FT-Attachments": {
+                "Hox FT Attachments": {
                     "complex": {
                         "accessor": "attachments",
                         "filters": [],
@@ -1040,7 +1040,7 @@
                         ]
                     }
                 },
-                "Hox FT-Links": {
+                "Hox FT Links": {
                     "complex": {
                         "accessor": "links",
                         "filters": [],
@@ -1100,19 +1100,19 @@
                         ]
                     }
                 },
-                "Hox FT-BodyLink": {
+                "Hox FT BodyLink": {
                     "simple": "firstThreat.[0].email.sanitizedBody.signedUrl"
                 },
-                "Hox FT-EmailFrom": {
+                "Hox FT EmailFrom": {
                     "simple": "firstThreat.[0].email.from.[0].address"
                 },
-                "Hox FT-EmailTo": {
+                "Hox FT EmailTo": {
                     "simple": "firstThreat.[0].email.to.[0].address"
                 },
-                "Hox FT-ID": {
+                "Hox FT ID": {
                     "simple": "firstThreat.[0]._id"
                 },
-                "Hox FT-InternalClassification": {
+                "Hox FT Internal Classification": {
                     "complex": {
                         "filters": [],
                         "root": "firstThreat.[0].hoxhuntClassification",
@@ -1145,7 +1145,7 @@
                         ]
                     }
                 },
-                "Hox FT-MaliciousnessProbability": {
+                "Hox FT Maliciousness Probability": {
                     "complex": {
                         "accessor": "mlopsIocEmailMaliciousnessProbability",
                         "filters": [],
@@ -1187,16 +1187,16 @@
                         ]
                     }
                 },
-                "Hox FT-MessageId": {
+                "Hox FT Message Id": {
                     "simple": "firstThreat.[0].email.messageId"
                 },
-                "Hox FT-Subject": {
+                "Hox FT Subject": {
                     "simple": "firstThreat.[0].email.subject"
                 },
-                "Hox ExternalClassification": {
+                "Hox External Classification": {
                     "simple": "externalClassification"
                 },
-                "Hox FirstReportedAt": {
+                "Hox First Reported At": {
                     "complex": {
                         "filters": [],
                         "root": "firstReportedAt",
@@ -1212,19 +1212,19 @@
                         ]
                     }
                 },
-                "Hox GlobalReportCount": {
+                "Hox Global Report Count": {
                     "simple": "globalThreatCount"
                 },
-                "Hox HasSensitiveInformation": {
+                "Hox Has Sensitive Information": {
                     "simple": "hasSensitiveInformation"
                 },
                 "Hox ID": {
                     "simple": "_id"
                 },
-                "Hox InboxReportCount": {
+                "Hox Inbox Report Count": {
                     "simple": "threatMetadata.reportCountFromInbox"
                 },
-                "Hox InternalClassification": {
+                "Hox Internal Classification": {
                     "complex": {
                         "filters": [],
                         "root": "hoxhuntClassification",
@@ -1257,10 +1257,10 @@
                         ]
                     }
                 },
-                "Hox ReportCount": {
+                "Hox Report Count": {
                     "simple": "threatMetadata.threatCount"
                 },
-                "Hox LastReportedAt": {
+                "Hox Last Reported At": {
                     "complex": {
                         "filters": [],
                         "root": "lastReportedAt",
@@ -1276,7 +1276,7 @@
                         ]
                     }
                 },
-                "Hox LikelyTargetEntity": {
+                "Hox Likely Target Entity": {
                     "complex": {
                         "accessor": "likelyTargetEntity",
                         "filters": [],
@@ -1299,7 +1299,7 @@
                         ]
                     }
                 },
-                "Hox PhishReportCount": {
+                "Hox Phish Report Count": {
                     "simple": "threatMetadata.phishReportCount"
                 },
                 "Hox State": {
@@ -1316,7 +1316,7 @@
                 "Hox URL": {
                     "simple": "responseUrl"
                 },
-                "Hox VIPReportCount": {
+                "Hox VIP Report Count": {
                     "simple": "threatMetadata.vipReportCount"
                 },
                 "dbotMirrorDirection": {

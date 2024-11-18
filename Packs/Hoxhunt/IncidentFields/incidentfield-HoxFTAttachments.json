@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-10-15T07:11:19.445973653Z",
     "fromVersion": "6.10.0",
-    "name": "Hox FT-Attachments",
+    "name": "Hox FT Attachments",
     "ownerOnly": false,
     "description": "Attachments for the first threat in the incident",
     "cliName": "hoxftattachments",

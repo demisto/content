@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-10-10T10:33:54.768595008Z",
     "fromVersion": "6.10.0",
-    "name": "Hox MessageToUsers",
+    "name": "Hox Message To Users",
     "ownerOnly": false,
     "description": "An optional message to send to employees when closing an incident",
     "cliName": "hoxmessagetousers",

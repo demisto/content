@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-10-22T05:41:22.868164535Z",
     "fromVersion": "6.10.0",
-    "name": "Hox FT-MaliciousnessProbability",
+    "name": "Hox FT Maliciousness Probability",
     "ownerOnly": false,
     "description": "Maliciousness probability for first threat in incident given by Hoxhunt ML model",
     "cliName": "hoxftmaliciousnessprobability",

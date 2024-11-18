@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-10-09T06:11:07.12866381Z",
     "fromVersion": "6.10.0",
-    "name": "Hox InboxReportCount",
+    "name": "Hox Inbox Report Count",
     "ownerOnly": false,
     "description": "How many people reported the threat from their inbox?",
     "cliName": "hoxinboxreportcount",

@@ -4,7 +4,7 @@
     "modified": "2024-10-10T07:20:31.167745368Z",
     "itemVersion": "1.0.0",
     "fromVersion": "6.10.0",
-    "name": "Hox ReportCount",
+    "name": "Hox Report Count",
     "ownerOnly": false,
     "description": "How many threat reports does the incident contain?",
     "cliName": "hoxreportcount",

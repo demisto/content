@@ -4,7 +4,7 @@
     "modified": "2024-10-10T07:13:51.424565004Z",
     "itemVersion": "1.0.0",
     "fromVersion": "6.10.0",
-    "name": "Hox GlobalReportCount",
+    "name": "Hox Global Report Count",
     "ownerOnly": false,
     "description": "How many times the threat has been reported accross organisations",
     "cliName": "hoxglobalreportcount",

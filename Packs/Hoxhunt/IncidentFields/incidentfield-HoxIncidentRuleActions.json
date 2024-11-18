@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-10-24T05:24:40.848254388Z",
     "fromVersion": "6.10.0",
-    "name": "Hox IncidentRuleActions",
+    "name": "Hox Incident Rule Actions",
     "ownerOnly": false,
     "description": "What incident rule actions have been taken for the incident?",
     "cliName": "hoxincidentruleactions",

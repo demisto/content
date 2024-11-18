@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-10-16T11:20:30.55695994Z",
     "fromVersion": "6.10.0",
-    "name": "Hox ThreatIndicators",
+    "name": "Hox Threat Indicators",
     "ownerOnly": false,
     "description": "Combined threat indicators from all of incident's threats",
     "cliName": "hoxthreatindicators",

@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-10-15T07:06:28.844672407Z",
     "fromVersion": "6.10.0",
-    "name": "Hox FT-Links",
+    "name": "Hox FT Links",
     "ownerOnly": false,
     "description": "Links for the first threat in the incident",
     "cliName": "hoxftlinks",
