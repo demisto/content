@@ -89,6 +89,11 @@
             "cliName": "phisheremailfrom",
             "type": "shortText",
             "name": "PhishER Email From"
+        },
+        {
+            "cliName": "symantecescemailsender",
+            "type": "shortText",
+            "name": "Symantec ESC Email Sender"
         }
     ]
 }
