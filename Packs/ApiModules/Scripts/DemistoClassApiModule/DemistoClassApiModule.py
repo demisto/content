@@ -54,7 +54,7 @@ if sys.version_info[0] >= 3:
                             entry["File"] = self.script_name + "_" + entry["File"]
                             self.results(entry)
                             return entries[:idx] + entries[idx + 1:]
-                return entries
+                return entries[0] if len(entries) == 1 else entries
 
             def executeCommand(self, command, args):
                 if self.is_debug:
@@ -62,9 +62,8 @@ if sys.version_info[0] >= 3:
                     start_time = datetime.now()
                     res = super(DemistoScript, self).executeCommand(command, args)
                     duration = (datetime.now() - start_time).total_seconds()
-                    entries = self._drop_debug_log_entry(res)
                     self.debug("{} Took {} seconds".format(command, duration))
-                    return entries[0] if len(entries) == 1 else entries
+                    return self._drop_debug_log_entry(res)
                 return super(DemistoScript, self).executeCommand(command, args)
 
         class DemistoIntegration(DemistoWrapper):
