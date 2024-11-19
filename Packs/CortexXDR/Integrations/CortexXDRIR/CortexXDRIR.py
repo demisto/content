@@ -1039,12 +1039,14 @@ def update_remote_system_command(client, args):
 
             close_xdr_incident = argToBoolean(client._params.get("close_xdr_incident", True))
 
-            popped_status = ""
+            status = ""
+            # If the client does not want to close the incident in XDR, temporarily remove the status from the arguments
+            # to update the incident, and add it back later to close the alerts.
             if not close_xdr_incident and (update_args.get('status') in XSOAR_RESOLVED_STATUS_TO_XDR.values()):
-                popped_status = update_args.pop('status')
+                status = update_args.pop('status')
                 resolve_comment = update_args.pop('resolve_comment', None)
 
-                demisto.debug(f"Popped status {popped_status} and {resolve_comment=} from update_args,"
+                demisto.debug(f"Popped status {status} and {resolve_comment=} from update_args,"
                               f" incident status won't be updated in XDR.")
 
             update_incident_command(client, update_args)
@@ -1055,9 +1057,9 @@ def update_remote_system_command(client, args):
             if is_closed and closed_without_status and remote_is_already_closed:
                 update_args['status'] = current_remote_status
             if close_alerts_in_xdr and is_closed:
-                if popped_status:
-                    update_args['status'] = popped_status
-                    demisto.debug(f'Restored {popped_status=} in order to update the alerts status.')
+                if status:
+                    update_args['status'] = status
+                    demisto.debug(f'Restored {status=} in order to update the alerts status.')
                 update_related_alerts(client, update_args)
 
         else:
