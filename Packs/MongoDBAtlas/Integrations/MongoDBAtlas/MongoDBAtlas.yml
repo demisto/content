@@ -20,20 +20,6 @@ configuration:
   required: true
   type: 9
   section: Connect
-#- displaypassword: Public Key
-#  additionalinfo: The Public Key to use for connection.
-#  name: public_key
-#  required: true
-#  hiddenusername: true
-#  type: 9
-#  section: Connect
-#- displaypassword: Private Key
-#  additionalinfo: The Private Key to use for connection.
-#  name: private_key
-#  required: true
-#  hiddenusername: true
-#  type: 9
-#  section: Connect
 - display: Group ID
   name: group_id
   additionalinfo: The Project ID from the MongoDB Atlas account.
@@ -56,7 +42,7 @@ configuration:
   type: 8
   required: false
 description: 'MongoDBAtlas is an integration that supports fetching and managing alerts and events within Cortex XSIAM.'
-display: MongoDBAtlas
+display: MongoDB Atlas
 name: MongoDBAtlasEventCollector
 script:
   commands:
