@@ -2453,7 +2453,7 @@ def run_script_execute_commands_command(client: CoreClient, args: Dict) -> Comma
     incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
 
-    commands_string = args.get('commands', '')
+    commands_string = args.get('commands')
     commands: list = [commands_string] if args.get('is_raw_command') else argToList(commands_string)
     if args.get('command_type') == 'powershell':
         commands = [form_powershell_command(command) for command in commands]
