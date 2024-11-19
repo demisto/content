@@ -18,6 +18,7 @@ If you are using the integration to rasterize un-trusted URLs or HTML content, s
 | is_https | Use secure requests protocol \(HTTPS\). | False |
 | proxy | Use system proxy settings. | False |
 | rasterize_mode | Rasterize Mode. (See `Configuration Notes`.) | False |
+| using_one_chrome_port option | **In case of the "Could not use rasterize command"** error, please use the using_one_chrome_port option. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
