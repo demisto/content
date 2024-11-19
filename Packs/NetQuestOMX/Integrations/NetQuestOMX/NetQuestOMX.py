@@ -18,29 +18,79 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
 
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
+    def __init__(self, url: str, credentials: dict, verify: bool, proxy: bool):
+        super().__init__(base_url=url, verify=verify, proxy=proxy)
+        self.user_name = credentials["identifier"]
+        self.password = credentials["password"]
+        self.login()
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
-
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
+    def login(self):
         """
+        In this method, the validity of the Access Token is checked, since the Access Token has a 30 minutes validity period.
+        Refreshes the token as needed.
+        """
+        now = datetime.utcnow()
 
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+        if (cache := get_integration_context()) and (token := cache.get("Token")):
+            expiration_time = datetime.strptime(
+                cache["expiration_time"], DATE_FORMAT_FOR_TOKEN
+            )
+
+            # check if token is still valid, and use the old one. otherwise regenerate a new one
+            if (seconds_left := (expiration_time - now).total_seconds()) > 0:
+                demisto.debug(f"No need to regenerate the token, it is still valid for {seconds_left} more seconds")
+                self._set_headers(token)
+                return
+
+        demisto.debug("IntegrationContext token cache is empty or token has expired, regenerating a new token")
+        raw_token, expires_in_seconds = self._refresh_access_token()
+        self._set_headers(raw_token)
+
+        set_integration_context(
+            {
+                "Token": raw_token,
+                "expiration_time": (
+                    now + timedelta(seconds=(expires_in_seconds - 60))  # decreasing 60s from token expiry for safety
+                ).strftime(DATE_FORMAT_FOR_TOKEN),
+            }
+        )
+
+
+    def _refresh_access_token(self) -> tuple[str, int]:
+        """
+        Since the validity of the Access Token is 120 minutes, this method refreshes it and returns the new token json.
+        returns:
+            - the token
+            - the expiration in seconds
+        """
+        credentials = base64.b64encode(self.credentials.encode()).decode("utf-8")
+
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Authorization": f"Basic {credentials}",
+        }
+        data = {"grant_type": "client_credentials", "scope": "read"}
+
+        try:
+            response_json = self._http_request(
+                method="POST", url_suffix="/token", headers=headers, data=data
+            )
+        except Exception as e:
+            # 400 - "invalid_grant" - reason: invalid Server URL, Client ID or Secret Key.
+            if "invalid_grant" in str(e):
+                raise DemistoException(
+                    "Error in test-module: Make sure Server URL, Client ID and Secret Key are correctly entered."
+                ) from e
+            raise
+        return response_json["access_token"], response_json["expires_in"]
+
+
+    def _set_headers(self, token: str):
+        """
+        This method is called during the client's building or when a new token is generated since the old one has expired.
+        """
+        self._headers = {"X-Auth-Token": token}
 
 
 ''' HELPER FUNCTIONS '''
@@ -100,39 +150,28 @@ def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> Comma
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
+    """
+    main function, parses params and runs command functions
     """
 
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
+    params = demisto.params()
+    args = demisto.args()
+    command = demisto.command()
+    proxy = params.get("proxy", False)
+    verify_certificate = not params.get("insecure", False)
 
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
+    demisto.debug(f"Command being called is {command}")
 
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
-
-    demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {}
-
         client = Client(
-            base_url=base_url,
+            base_url=params["url"],
+            client_id=params["credentials"]["identifier"],
+            secret_key=params["credentials"]["password"],
+            max_fetch=max_fetch,
             verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+            proxy=proxy,
+        )
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
