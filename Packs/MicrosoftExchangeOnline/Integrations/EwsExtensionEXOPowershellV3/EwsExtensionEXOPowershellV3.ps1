@@ -1417,6 +1417,93 @@ class ExchangeOnlinePowershellV3Client
         #>
     }
 
+    [PSObject]DisableRule(
+    [string]$mailbox,
+    [string]$identity
+    )
+    {
+        $response = ""
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            $cmd_params = @{ }
+            if ($mailbox) {
+                $cmd_params.Mailbox = $mailbox
+            }
+
+            if ($identity) {
+                $cmd_params.Identity = $identity
+            }
+            $response = Disable-InboxRule @cmd_params -WarningAction:SilentlyContinue
+        } finally {
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+        .DESCRIPTION
+        Disable an existing inbox rule in a given mailbox.
+
+        .PARAMETER mailbox
+        The mailbox that contains the Inbox rule.
+
+        .PARAMETER identity
+        Specifies the Inbox rule that you want to disable.
+
+        .EXAMPLE
+        Disable-InboxRule -Identity "MoveAnnouncements" -Mailbox "Joe@Contoso.com"
+
+        .OUTPUTS
+        PSObject - Raw response
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/disable-inboxrule?view=exchange-ps
+        #>
+    }
+
+    [PSObject]EnableRule(
+    [string]$mailbox,
+    [string]$identity
+    )
+    {
+        $response = ""
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            $cmd_params = @{ }
+            if ($mailbox) {
+                $cmd_params.Mailbox = $mailbox
+            }
+
+            if ($identity) {
+                $cmd_params.Identity = $identity
+            }
+            $response = Enable-InboxRule @cmd_params -WarningAction:SilentlyContinue
+        } finally {
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+        .DESCRIPTION
+        Enable an existing inbox rule in a given mailbox.
+
+        .PARAMETER mailbox
+        The mailbox that contains the Inbox rule.
+
+        .PARAMETER identity
+        Specifies the Inbox rule that you want to enable.
+
+        .EXAMPLE
+        Enable-InboxRule "Move To Junk Mail" -Mailbox "User 1"
+
+        .OUTPUTS
+        PSObject - Raw response
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/enable-inboxrule?view=exchange-ps
+        #>
+    }
 }
 
 function Remove-EmptyItems {
@@ -1994,6 +2081,34 @@ function RemoveRuleCommand {
     $entry_context = @{}
     Write-Output $human_readable, $entry_context, $raw_response
 }
+function DisableRuleCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [hashtable]$kwargs
+    )
+    $mailbox = $kwargs.mailbox
+    $identity = $kwargs.identity
+    $result = $client.DisableRule($mailbox, $identity)
+    $raw_response = @{}
+    $human_readable = "Rule $identity has been disabled successfully"
+    $entry_context = @{}
+    Write-Output $human_readable, $entry_context, $raw_response
+}
+function EnableRuleCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [hashtable]$kwargs
+    )
+    $mailbox = $kwargs.mailbox
+    $identity = $kwargs.identity
+    $result = $client.EnableRule($mailbox, $identity)
+    $raw_response = @{}
+    $human_readable = "Rule $identity has been enabled successfully"
+    $entry_context = @{}
+    Write-Output $human_readable, $entry_context, $raw_response
+}
 function TestModuleCommand($client)
 {
     try
@@ -2111,6 +2226,12 @@ function Main
             }
             "$script:COMMAND_PREFIX-remove-rule" {
                 ($human_readable, $entry_context, $raw_response) = RemoveRuleCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-rule-disable" {
+                ($human_readable, $entry_context, $raw_response) = DisableRuleCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-rule-enable" {
+                ($human_readable, $entry_context, $raw_response) = EnableRuleCommand $exo_client $command_arguments
             }
             default {
                 ReturnError "Could not recognize $command"
