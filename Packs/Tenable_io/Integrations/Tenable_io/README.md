@@ -1,22 +1,26 @@
 A comprehensive asset-centric solution to accurately track resources while accommodating dynamic assets such as cloud, mobile devices, containers, and web applications.
 This integration was integrated and tested with January 2023 release of Tenable.io.
 
-## Configure Tenable Vulnerability Management in Cortex
+## Configure Tenable Vulnerability Management on Cortex XSOAR
 
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Tenable Vulnerability Management.
+ Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| URL | Tenable URL. | True |
-| Access Key | Tenable API access key. | True |
-| Secret Key | Tenable API secret key. | True |
-| Events Fetch Interval | Fetch interval in minutes for events. | False |
-| Assets Fetch Interval | Fetch interval in minutes for assets and vulnerabilities. | False |
-| Severity | The severity of the vulnerabilities to include in the export. | False |
-| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-| Max Fetch | The maximum number of audit logs to retrieve for each event type. For more information about event types see the help section. | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | URL | Tenable URL. | True |
+    | Access Key | Tenable API access key. | True |
+    | Secret Key | Tenable API secret key. | True |
+    | Events Fetch Interval | Fetch interval in minutes for events. | False |
+    | Assets Fetch Interval | Fetch interval in minutes for assets and vulnerabilities. | False |
+    | Severity | The severity of the vulnerabilities to include in the export. | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+    | Max Fetch | The maximum number of audit logs to retrieve for each event type. For more information about event types see the help section. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
+4. Click **Test** to validate the URLs, token, and connection.
 
 ## Permissions
 
@@ -52,7 +56,7 @@ This integration was integrated and tested with January 2023 release of Tenable.
 
 ## Commands
 
-You can execute these commands from the CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### tenable-io-list-scans

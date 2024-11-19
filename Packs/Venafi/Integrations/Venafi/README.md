@@ -2,18 +2,22 @@ Deprecated. use Venafi TLS Protect instead.
 
 This integration was integrated and tested with version 20.3.2.5263 of Venafi.
 
-## Configure Venafi in Cortex
+## Configure Venafi on Cortex XSOAR
 
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Venafi.
+3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Required** |
-| --- | --- |
-| Server URL (e.g., https://192.168.0.1) | True |
-| Credentials | True |
-| Trust any certificate (not secure) | False |
-| Use system proxy settings | False |
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Server URL (e.g., https://192.168.0.1) | True |
+    | Credentials | True |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
 
+4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### venafi-get-certificates
 ***
@@ -202,3 +206,4 @@ Uses a certificate GUID to extract more details from the cert store.
 >Approver|CertificateDetails|Contact|CreatedOn|DN|Guid|ID|Name|ParentDN|ParentDn|ProcessingDetails|RenewalDetails|SchemaClass|ValidationDetails
 >---|---|---|---|---|---|---|---|---|---|---|---|---|---
 >local:{cd2e9fd1-8c0a-4a00-b6b3-e1de501e5b6e} | {"CN":"hoho","EnhancedKeyUsage":"Server Authentication (1.3.6.1.5.5.7.3.1) Smart Card Logon (1.3.6.1.4.1.311.20.2.2)","Issuer":"CN=hoho","KeyAlgorithm":"RSA","KeySize":2048,"PublicKeyHash":"4D93BA33FA4DBC2E6FCB0F1BCC57DFA795659EB4","Serial":"01","SignatureAlgorithm":"sha1RSA","SignatureAlgorithmOID":"1.2.840.113549.1.1.5","StoreAdded":"2017-12-13T17:51:54.4437541Z","Subject":"CN=hoho","Thumbprint":"95CD28BB7DB2067A8DCB0938DEFE0792F9E9BD32","ValidFrom":"2017-11-23T14:25:00.0000000Z","ValidTo":"2018-11-23T14:25:00.0000000Z"} | local:{cd2e9fd1-8c0a-4a00-b6b3-e1de501e5b6e} | 2017-12-13T17:49:28.8028346Z | \VED\Policy\Reputation\digicert_test | {941e5574-e467-46c4-a735-e5daaa65832b} | 941e5574-e467-46c4-a735-e5daaa65832b | digicert_test | \VED\Policy\Reputation | \VED\Policy\Reputation | {"InError":true,"Stage":500,"Status":"Access denied due to access_denied_invalid_key."} | {"Subject":"hoho"} | X509 Server Certificate | {"LastValidationStateUpdate":"2017-12-15T23:05:37.0000000Z","ValidationState":"Failure"}
+
