@@ -1381,7 +1381,7 @@ def main() -> None:
             fetch_mode = params.get("fetch_mode")
             fetch_with_assets = params.get("fetch_with_assets")
             fetch_with_kill_chain = params.get("fetch_with_kill_chain")
-            mirror_direction = params.get("mirror_direction")
+            mirror_direction = params.get("mirror_direction", "None")
 
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
             max_results = arg_to_number(params["max_fetch"])
@@ -1454,7 +1454,7 @@ def main() -> None:
                     client,
                     args,
                     close_incident=demisto.params().get("close_incident"),  # type: ignore
-                    close_note=demisto.params().get("close_note"),  # type: ignore
+                    close_note=demisto.params().get("close_notes", "Closed by Sekoia."),  # type: ignore
                     mirror_events=demisto.params().get("mirror_events"),  # type: ignore
                     mirror_kill_chain=demisto.params().get("mirror_kill_chain"),  # type: ignore
                     reopen_incident=demisto.params().get("reopen_incident"),  # type: ignore
