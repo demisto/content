@@ -1,2 +1,2 @@
 [INGEST:vendor = "MSFT", product = "Azure", target_dataset = "msft_azure_waf_raw", no_hit = keep]
-filter time ~= "\d{2}\:"
+filter time ~= "\d{2....."
