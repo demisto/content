@@ -492,6 +492,29 @@ script:
       description: "Malop status: To Review,Unread,Remediated,Not Relevant."
       type: string
   - arguments:
+    - description: Malop GUID to update its investigation status.
+      name: malopGuid
+      required: true
+    - auto: PREDEFINED
+      description: Investigation status to update.
+      name: investigationStatus
+      predefined:
+      - Pending
+      - ReOpened
+      - UnderInvestigation
+      - OnHold
+      - Closed
+      required: true
+    description: Updates malop investigation status.
+    name: cybereason-update-malop-investigation-status
+    outputs:
+    - contextPath: Cybereason.Malops.GUID
+      description: Malop GUID.
+      type: string
+    - contextPath: Cybereason.Malops.InvestigationStatus
+      description: "Malop investigation status: Pending, ReOpened, UnderInvestigation, OnHold, Closed."
+      type: string
+  - arguments:
     - default: true
       description: Malop process file MD5 to prevent.
       name: md5
@@ -573,10 +596,10 @@ script:
       description: File evidences.
       type: string
   - arguments:
-    - default: true
-      description: Domain to query.
+    - description: Domain to query.
       name: domain
       required: true
+      default: true
     description: Query domains as part of investigation.
     name: cybereason-query-domain
     outputs:
@@ -651,10 +674,10 @@ script:
       description: Unique batch id.
       type: Unknown
   - arguments:
-    - default: true
-      description: The batch id for the file download operation.
+    - description: The batch id for the file download operation.
       name: batchID
       required: true
+      default: true
     description: Downloads the actual file to the machine.
     name: cybereason-download-file
   - arguments:

@@ -1690,3 +1690,47 @@ Get the results related to machines.
 }
 ```
 
+
+### cybereason-update-malop-investigation-status
+
+***
+Updates malop investigation status.
+
+#### Base Command
+
+`cybereason-update-malop-investigation-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuid | Malop GUID to update its investigation status. | Required | 
+| investigationStatus | Investigation status to update. Possible values are: Pending, ReOpened, UnderInvestigation, OnHold, Closed. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Malops.GUID | string | Malop GUID. | 
+| Cybereason.Malops.InvestigationStatus | string | Malop investigation status: Pending, ReOpened, UnderInvestigation, OnHold, Closed. | 
+
+#### Command example
+
+```!cybereason-update-malop-investigation-status malopGuid=<malop_guid> investigationStatus="UnderInvestigation"```
+
+#### Context Example
+
+```json
+{
+    "Cybereason": {
+        "Malops": {
+            "GUID": "<malop_guid>",
+            "InvestigationStatus": "UnderInvestigation"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+> Successfully updated malop <malop_guid> to investigation status UnderInvestigation
