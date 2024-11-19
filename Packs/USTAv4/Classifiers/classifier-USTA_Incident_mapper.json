@@ -1,0 +1,116 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "USTA Incident Mapper",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 1,
+	"mapping": {
+		"USTA Account Takeover Prevention": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"USTA Account Takeover Prevention Created": {
+					"simple": "created"
+				},
+				"USTA Account Takeover Prevention ID": {
+					"simple": "ticket_id"
+				},
+				"USTA Account Takeover Prevention Is Corporate": {
+					"simple": "is_corporate"
+				},
+				"USTA Account Takeover Prevention Password": {
+					"simple": "password"
+				},
+				"USTA Account Takeover Prevention Source": {
+					"simple": "source"
+				},
+				"USTA Account Takeover Prevention URL": {
+					"simple": "url"
+				},
+				"USTA Account Takeover Prevention Username": {
+					"simple": "username"
+				},
+				"USTA Account Takeover Prevention Victim Details": {
+					"complex": {
+						"filters": [],
+						"root": "victim_detail",
+						"transformers": []
+					}
+				},
+				"USTA Account Takeover Prevention Victim Details CPU": {
+					"simple": "victim_detail.cpu"
+				},
+				"USTA Account Takeover Prevention Victim Details Computer Name": {
+					"simple": "victim_detail.computer_name"
+				},
+				"USTA Account Takeover Prevention Victim Details Country": {
+					"simple": "victim_detail.country"
+				},
+				"USTA Account Takeover Prevention Victim Details GPU": {
+					"simple": "victim_detail.gpu"
+				},
+				"USTA Account Takeover Prevention Victim Details IP Adress": {
+					"simple": "victim_detail.ip"
+				},
+				"USTA Account Takeover Prevention Victim Details Infection Date": {
+					"simple": "victim_detail.infection_date"
+				},
+				"USTA Account Takeover Prevention Victim Details Language": {
+					"simple": "victim_detail.language"
+				},
+				"USTA Account Takeover Prevention Victim Details Malware": {
+					"simple": "victim_detail.malware"
+				},
+				"USTA Account Takeover Prevention Victim Details Memory": {
+					"simple": "victim_detail.memory"
+				},
+				"USTA Account Takeover Prevention Victim Details Phone Number": {
+					"simple": "victim_detail.phone_number"
+				},
+				"USTA Account Takeover Prevention Victim Details Victim OS": {
+					"simple": "victim_detail.victim_os"
+				}
+			}
+		},
+        "USTA Stolen Credit Card": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "ustastolencreditcardscreated": {
+                    "simple": "created"
+                },
+                "ustastolencreditcardsexpiredate": {
+                    "simple": "expire"
+                },
+                "ustastolencreditcardscardnumber": {
+                    "simple": "card_number"
+                },
+                "ustastolencreditcardsid": {
+                    "simple": "ticket_id"
+                }
+            }
+        }
+	},
+	"name": "USTA Incident Mapping (incoming)",
+	"nameRaw": "USTA Incident Mapping (incoming)",
+	"packID": "",
+	"packName": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}
