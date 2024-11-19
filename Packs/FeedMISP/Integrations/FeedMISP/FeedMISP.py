@@ -512,35 +512,27 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     )
 
 
-def set_last_run_pagination(last_run: dict, last_run_timestamp: str, last_run_value: str, next_page: int,
-                            latest_indicator_timestamp: str, latest_indicator_value: str):
+def update_candidate(last_run: dict, last_run_timestamp: str, last_run_value: str,
+                     latest_indicator_timestamp: str, latest_indicator_value: str):
     """
-    Update the last run timestamp and value based on the latest indicator's timestamp and value.
-    The biggest timestamp is stored in the `candidate_timestamp` variable,
-    and the corresponding indicator value is stored in the `candidate_indicator_value`
-    variable until we finish with the pagination in order to keep the original search timestamp command.
+    Update the candidate timestamp and value based on the latest and last run values.
 
     Args:
         last_run: a dictionary containing the last run information, including the timestamp, page, and indicator value.
         last_run_timestamp: the timestamp of the last run.
         last_run_value: the indicator value of the last run.
-        next_page: the next page to fetch.
         latest_indicator_timestamp: the timestamp of the latest indicator.
         latest_indicator_value: the value of the latest indicator.
     """
-    if not last_run_timestamp:
-        # For the first run with pagination.
-        last_run_timestamp = latest_indicator_timestamp
-        last_run_value = latest_indicator_value
     candidate_timestamp = last_run.get('candidate_timestamp') or last_run_timestamp
-    candidate_indicator_value = last_run.get('candidate_indicator_value') or last_run_value
+    candidate_indicator_value = last_run.get('candidate_value') or last_run_value
     if latest_indicator_timestamp > candidate_timestamp:
         candidate_timestamp = latest_indicator_timestamp
         candidate_indicator_value = latest_indicator_value
-
-    demisto.setLastRun(
-        {'timestamp': last_run_timestamp, 'candidate_timestamp': candidate_timestamp, 'last_indicator_value': last_run_value,
-         'candidate_indicator_value': candidate_indicator_value, 'page': next_page})
+    last_run['last_indicator_timestamp'] = last_run_timestamp
+    last_run['last_indicator_value'] = last_run_value
+    last_run['candidate_timestamp'] = candidate_timestamp
+    last_run['candidate_value'] = candidate_indicator_value
 
 
 def get_new_last_run_values(last_run: dict, latest_indicator_timestamp: str, latest_indicator_value: str,
@@ -583,7 +575,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     last_run = demisto.getLastRun()
     total_fetched_indicators = 0
     query = params.get('query', None)
-    last_run_timestamp = last_run.get('timestamp') or ""
+    last_run_timestamp = last_run.get('last_indicator_timestamp') or ""
     last_run_page = last_run.get('page') or 1
     last_run_value = last_run.get('last_indicator_value') or ""
     params_dict = parsing_user_query(query, LIMIT, from_timestamp=last_run_timestamp) if query else \
@@ -613,25 +605,22 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
         for iter_ in batch(indicators, batch_size=2000):
             demisto.createIndicators(iter_)
         params_dict['page'] += 1
+        update_candidate(last_run, last_run_timestamp, last_run_value,
+                         latest_indicator_timestamp, latest_indicator_value)
         # Note: The limit is applied after indicators are created,
         # so the total number of indicators may slightly exceed the limit due to page size constraints.
         if fetch_limit and fetch_limit <= total_fetched_indicators:
+            demisto.setLastRun(last_run | {"page": params_dict["page"]})
             demisto.debug(
                 f"Reached the limit of indicators to fetch."
                 f" The number of indicators fetched is: {total_fetched_indicators}")
-            set_last_run_pagination(last_run, last_run_timestamp, last_run_value, params_dict['page'], latest_indicator_timestamp,
-                                    latest_indicator_value)
             return
-        candidate_timestamp, candidate_value = get_new_last_run_values(last_run, latest_indicator_timestamp,
-                                                                       latest_indicator_value, last_run_timestamp)
-        if candidate_timestamp and candidate_value:
-            last_run_timestamp = candidate_timestamp
-            last_run_value = candidate_value
 
         search_query_per_page = client.search_query(params_dict)
     if error_message := search_query_per_page.get('Error'):
         raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {error_message}")
-    demisto.setLastRun({'timestamp': last_run_timestamp, 'last_indicator_value': last_run_value})
+    demisto.setLastRun({'last_indicator_timestamp': last_run.get("candidate_timestamp"),
+                        'last_indicator_value': last_run.get("candidate_value")})
 
 
 def main():  # pragma: no cover
