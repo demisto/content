@@ -94,7 +94,7 @@ if sys.version_info[0] >= 3:
                 super(DemistoIntegration, self).createIndicators(indicators_batch, noUpdate)
                 duration = (datetime.now() - start_time).total_seconds()
                 if self.is_debug:
-                    self.debug("createIndicators took {} seconds {}".format(duration))
+                    self.debug("createIndicators took {} seconds".format(duration))
 
         if demisto.callingContext.get('context', {}).get('IntegrationBrand'):
             demisto.__class__ = DemistoIntegration
