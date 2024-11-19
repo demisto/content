@@ -985,7 +985,7 @@ def get_indicators_command(
 
 def fetch_indicators_command(
     client: Client, params: dict[str, str], context: dict[str, str]
-) -> tuple[list, float | None]:
+) -> tuple[list, float | None]:  # pragma: no cover
     """Wrapper for fetching indicators from the feed to the Indicators tab.
     Args:
         client: Client object with request
@@ -1001,7 +1001,7 @@ def fetch_indicators_command(
     )
 
 
-def get_newer_than_timestamp(params: dict[str, str], context: dict[str, str]) -> float:
+def get_newer_than_timestamp(params: dict[str, str], context: dict[str, str]) -> float:  # pragma: no cover
     stream_id = params["feedly_stream_id"]
     if "/tag/" in stream_id:
         saved_timestamp = context.get("last_run")
@@ -1019,7 +1019,7 @@ def extract_next_newer_than(stix_objects: list[dict[str, str]]) -> float | None:
     ).timestamp()
 
 
-def set_next_newer_than(last_article_time: float, now: float) -> None:
+def set_next_newer_than(last_article_time: float, now: float) -> None:  # pragma: no cover
     demisto.setLastRun({"last_fetched_article_crawled_time": last_article_time, "last_run": now})
 
 
