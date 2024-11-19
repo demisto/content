@@ -166,6 +166,36 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Microsoft 365 Defender to Cortex XSOAR), Outgoing (from Cortex XSOAR to  Microsoft 365 Defender), or Incoming and Outgoing (from/to Cortex XSOAR and  Microsoft 365 Defender).'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  type: 15
+  hidden:
+  - marketplacev2
+  required: false
+- additionalinfo: When selected, closing the Microsoft 365 Defender incident is mirrored in Cortex XSOAR. #todo: add info about closing reason?
+  defaultvalue: 'false'
+  display: Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)
+  name: close_incident
+  type: 8
+  section: Collect
+  advanced: true
+  hidden:
+  - marketplacev2
+  required: false
+- defaultvalue: 'false'
+  display: Close Mirrored Microsoft 365 Defender Incidents (Outgoing Mirroring)
+  name: close_out
+  type: 8
+  additionalinfo: When selected, closing the XSOAR incident is mirrored in Microsoft 365 Defender.
+  hidden: true
+  required: false
 description: Microsoft 365 Defender is a unified pre- and post-breach enterprise defense suite that natively coordinates detection, prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated protection against sophisticated attacks.
 display: Microsoft 365 Defender
 name: Microsoft 365 Defender
