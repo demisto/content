@@ -257,28 +257,22 @@ script:
       description: The specification for the incident.
       name: classification
       predefined:
-      - Unknown
-      - FalsePositive
-      - TruePositive
-      - InformationalExpectedActivity
+      - TruePositive - MultiStagedAttack
+      - TruePositive - MaliciousUserActivity
+      - TruePositive - Malware
+      - TruePositive - Phishing
+      - TruePositive - CompromisedAccount
+      - TruePositive - UnwantedSoftware
+      - TruePositive - Other
+      - InformationalExpectedActivity - SecurityTesting
+      - InformationalExpectedActivity - LineOfBusinessApplication
+      - InformationalExpectedActivity - ConfirmedActivity
+      - InformationalExpectedActivity - Other
+      - FalsePositive - Clean
+      - FalsePositive - NoEnoughDataToValidate
+      - FalsePositive - Other
     - description: Comment to be added to the incident.
       name: comment
-    - auto: PREDEFINED
-      description: Determination of the incident.
-      name: determination
-      predefined:
-      - NotAvailable
-      - Malware
-      - SecurityTesting
-      - UnwantedSoftware
-      - MultiStagedAttack
-      - MaliciousUserActivity
-      - CompromisedAccount
-      - Phishing
-      - LineOfBusinessApplication
-      - ConfirmedActivity
-      - NotMalicious
-      - Other
     - description: 'A comma-separated list of custom tags associated with an incident. For example: tag1,tag2,tag3.'
       isArray: true
       name: tags

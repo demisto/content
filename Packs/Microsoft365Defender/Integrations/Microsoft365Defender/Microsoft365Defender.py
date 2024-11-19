@@ -390,10 +390,11 @@ def microsoft_365_defender_incident_update_command(client: Client, args: dict) -
     status = args.get('status')
     assigned_to = args.get('assigned_to')
     classification = args.get('classification')
-    determination = args.get('determination')
     incident_id = arg_to_number(args.get('id'))
     timeout = arg_to_number(args.get('timeout', TIMEOUT))
     comment = args.get('comment')
+
+    classification, determination = classification.split(' - ') if classification else (None, None)
 
     updated_incident = client.update_incident(incident_id=incident_id, status=status, assigned_to=assigned_to,
                                               classification=classification, determination=determination, tags=tags,
