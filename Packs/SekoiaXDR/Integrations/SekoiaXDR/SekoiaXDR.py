@@ -1375,8 +1375,8 @@ def main() -> None:
 
         elif command == "fetch-incidents":
             # Set and define the fetch incidents command to run after activated via integration settings.
-            alerts_status = ",".join(params.get("alerts_status", None))
-            alerts_type = ",".join(params.get("alerts_type", None))
+            alerts_status = ",".join(params.get("alerts_status", ""))
+            alerts_type = ",".join(params.get("alerts_type", ""))
             alerts_urgency = params.get("alerts_urgency", None)
             fetch_mode = params.get("fetch_mode")
             fetch_with_assets = params.get("fetch_with_assets")
