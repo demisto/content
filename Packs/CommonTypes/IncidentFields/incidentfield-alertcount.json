@@ -1,10 +1,8 @@
 {
-	"incidentFields": [
-		{
 			"id": "incident_alertcount",
-			"version": 1,
+			"version": 2,
 			"cacheVersn": 0,
-			"modified": "2024-11-17T09:47:30.571538834Z",
+			"modified": "2024-11-19T11:18:38.925486666Z",
 			"sizeInBytes": 0,
 			"packID": "",
 			"packName": "",
@@ -24,7 +22,7 @@
 			"description": "",
 			"cliName": "alertcount",
 			"type": "number",
-			"orgType": "",
+			"orgType": "number",
 			"closeForm": false,
 			"editForm": true,
 			"required": false,
@@ -46,8 +44,8 @@
 			"hidden": false,
 			"openEnded": false,
 			"associatedTypes": [
-                "Microsoft 365 Defender Incident"
-            ],
+				"Microsoft 365 Defender Incident"
+			],
 			"systemAssociatedTypes": null,
 			"associatedToAll": false,
 			"unmapped": false,
@@ -64,7 +62,7 @@
 			"XDRBuiltInField": false,
 			"selectValuesMap": null,
 			"ipVersion": "",
-			"pretty_name": "",
+			"pretty_name": "Alert Count",
 			"XsiamIncidentFieldExtraData": {
 				"incidentsFilter": null,
 				"slaGoals": null,
@@ -72,5 +70,3 @@
 				"timerConditions": null
 			}
 		}
-	]
-}
