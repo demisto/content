@@ -15,7 +15,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.11.0"
       - name: Setup Poetry
         uses: Gr1N/setup-poetry@v9
       - name: Install Python Dependencies
