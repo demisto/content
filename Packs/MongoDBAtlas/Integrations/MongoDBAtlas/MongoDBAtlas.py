@@ -146,7 +146,7 @@ class Client(BaseClient):
         Returns:
             list: A list of events, truncated to the `fetch_limit` if necessary.
         """
-        results = []
+        results: List[str] = []
         items_per_page = min(fetch_limit, 500)
         page_num = 1
 
