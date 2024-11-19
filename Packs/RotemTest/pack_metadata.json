@@ -1,0 +1,21 @@
+{
+    "name": "RotemTest",
+    "description": "Test - pack description field.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Rotem",
+    "url": "",
+    "email": "",
+    "created": "2024-11-19T14:33:50Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "RotemAmit"
+    ]
+}
