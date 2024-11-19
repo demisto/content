@@ -500,9 +500,9 @@ script:
       name: investigationStatus
       predefined:
       - Pending
-      - ReOpened
-      - UnderInvestigation
-      - OnHold
+      - Reopened
+      - Under Investigation
+      - On Hold
       - Closed
       required: true
     description: Updates malop investigation status.
@@ -512,7 +512,7 @@ script:
       description: Malop GUID.
       type: string
     - contextPath: Cybereason.Malops.InvestigationStatus
-      description: "Malop investigation status: Pending, ReOpened, UnderInvestigation, OnHold, Closed."
+      description: "Malop investigation status: Pending, Reopened, Under Investigation, On Hold, Closed."
       type: string
   - arguments:
     - default: true

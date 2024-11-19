@@ -365,14 +365,14 @@ def test_update_malop_investigation_status_command(mocker):
         verify=False,
         headers=HEADERS,
         proxy=True)
-    args = {"malopGuid": "11.-7780537507363356527", "investigationStatus": "UnderInvestigation"}
+    args = {"malopGuid": "11.-7780537507363356527", "investigationStatus": "Under Investigation"}
     raw_response = {
         'status': "SUCCESS"
     }
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
     command_output = update_malop_investigation_status_command(client, args)
     assert command_output.outputs['GUID'] == "11.-7780537507363356527"
-    assert command_output.outputs['InvestigationStatus'] == "UnderInvestigation"
+    assert command_output.outputs['InvestigationStatus'] == "Under Investigation"
 
     raw_response = {
         'status': "SUCESS"
