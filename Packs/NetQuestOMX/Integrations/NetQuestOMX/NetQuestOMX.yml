@@ -52,13 +52,28 @@ script:
     description: "Address List-Upload - uploads a .txt file with address list to the appliance. The appliance temporarily stores the file until it is saved to the Library and replaces any previously loaded list file."
     name: netquest-address-list-upload
 
+
   - description: "Optimize Updated Address List - If the traffic elements are IP addresses, the integration should optimize the list by compressing IP addresses into CIDR groups."
     name: netquest-address-list-optimize
     outputs:
-      - contextPath: NetQuest.AddressList
+      - contextPath: NetQuest.AddressList.OverlappingAddresses
         description:
-        type:
-
+        type: list
+      - contextPath: NetQuest.AddressList.OverlapsPresent
+        description:
+        type: boolean
+      - contextPath: NetQuest.AddressList.MergedAddresses
+        description:
+        type: list
+      - contextPath: NetQuest.AddressList.MergesPresent
+        description:
+        type: boolean
+      - contextPath: NetQuest.AddressList.CountsBefore
+        description:
+        type: Dictionary
+      - contextPath: NetQuest.AddressList.CountsAfter
+        description:
+        type: Dictionary
 
 
   - arguments:
