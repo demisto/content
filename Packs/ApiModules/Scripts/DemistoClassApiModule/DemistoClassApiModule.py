@@ -73,7 +73,7 @@ if sys.version_info[0] >= 3:
                 if last_run_size > 1 * 1024 * 1024:  # 1MB
                     self.debug(
                         "[WARNING] last run is too large: {} MB".format(
-                            round(len(last_run_size) / (1 * 1024 * 1024), 1),
+                            round(last_run_size / (1 * 1024 * 1024), 1),
                         )
                     )
                 if len(last_run_str) > truncate_size:
