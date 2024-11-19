@@ -29,7 +29,7 @@ configuration:
   required: false
   type: 8
   section: Collect
-- defaultvalue: 100
+- defaultvalue: 1000
   section: Collect
   advanced: true
   display: The maximum number of audit events per fetch
@@ -67,7 +67,7 @@ script:
     - description: The number of events to return. Default is 500.
       name: limit
       required: false
-    description: Gets events from BloodHound.
+    description: Gets events from BloodHound Enterprise.
     name: bloodHound-get-events
   dockerimage: demisto/python3:3.10.13.87159
   isfetchevents: true

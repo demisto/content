@@ -14,6 +14,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "BloodHound"
 PRODUCT = "Enterprise"
+FETCH_LIMIT = 1000
 BASE_URL = "https://{server_url}.bloodhoundenterprise.io"
 
 
@@ -40,7 +41,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self._credentials = credentials
 
-    def _request(self, method: str, uri: str, query_params: dict = {}) -> dict:
+    def _request(self, method: str = "GET", uri: str = "/api/v2/audit", query_params: dict = {}) -> dict:
 
         if query_params:
             encoded_params = urllib.parse.urlencode(query_params)
@@ -68,9 +69,10 @@ class Client(BaseClient):
 
     def search_events(
         self,
-        prev_id: int,
         limit: int,
         from_date: str | None = None,
+        until_date: str | None = None,
+        
     ) -> List[Dict]:  # noqa: E501
         """
         Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
@@ -84,11 +86,14 @@ class Client(BaseClient):
         Returns:
             List[Dict]: the next events
         """
-        method = "GET"
-        uri = "/api/v2/audit"
-        query_params = {"limit": limit, "sort_by": "created_at", "after": from_date}
+        query_params = {
+            "limit": limit,
+            "sort_by": "created_at",
+            "after": from_date,
+            "before": until_date,
+        }
         remove_nulls_from_dictionary(query_params)
-        response = self._request(method, uri, query_params)
+        response = self._request(query_params=query_params)
         return response.get("data", {}).get("logs", [])
 
 
@@ -108,10 +113,7 @@ def test_module(client: Client) -> str:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
     try:
-        method = "GET"
-        uri = "/api/v2/audit"
-        query_params = {"limit": "1"}
-        client._request(method, uri, query_params)
+        client._request(query_params={"limit": "1", "sort_by": "created_at"})
 
     except Exception as e:
         if "Unauthorized" in str(e):
@@ -124,28 +126,20 @@ def test_module(client: Client) -> str:
 
 def get_events_command(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
     limit = args.get("limit", 50)
-    from_date = args.get("from_date")
+    from_date = args.get("start")
+    until_date = args.get("end")
     events = client.search_events(
-        prev_id=0,
         limit=limit,
         from_date=from_date,
+        until_date=until_date,
     )
     hr = tableToMarkdown(name="Test Event", t=events)
     return events, CommandResults(readable_output=hr)
 
 
-def aaa(client: Client):
-    method = "GET"
-    uri = "/api/v2/audit"
-    query_params = {"limit": "3000"}
-    client._request(method, uri, query_params)
-
-
 def fetch_events(
     client: Client,
-    last_run: dict[str, int],
-    first_fetch_time,
-    max_events_per_fetch: int,
+    args: dict[str, str],
 ) -> tuple[Dict, List[Dict]]:
     """
     Args:
@@ -159,23 +153,29 @@ def fetch_events(
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be created in XSIAM.
     """
-    prev_id = last_run.get("prev_id", None)
-    if not prev_id:
-        prev_id = 0
+    first_fetch_time = (datetime.now().astimezone() - timedelta(minutes=1)).isoformat('T')
+    last_run = demisto.getLastRun()
+    from_date = last_run.get('last_event_created_at', first_fetch_time)
+    from_event = int(last_run.get("last_event_id", 0))
+    limit = arg_to_number(args.get("max_events_per_fetch")) or FETCH_LIMIT
 
-    # events = client.search_events(
-    #     prev_id=prev_id,
-    #     limit=max_events_per_fetch,
-    #     from_date=first_fetch_time,
-    # )
-    method = "GET"
-    uri = "/api/v2/audit"
+    prev_fetch_id = int(last_run.get("prev_fetch_id", 0))
+    fetch_id = prev_fetch_id + 1
 
-    events = client._request(method, uri)
-    demisto.debug(f"Fetched event with id: {prev_id + 1}.")
+    events = client.search_events(
+        limit=limit,
+        from_date=from_date,
+    )
+    demisto.debug(f"Fetched event with id: {fetch_id}.")
+    if from_event:
+        events = events[next((i for i, item in enumerate(events) if item.get("id") == from_event+1), len(events)):]
+    demisto.debug(f"Fetched {len(events)} events in fetch No: {fetch_id}")
 
-    # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {"prev_id": prev_id + 1}
+    next_run = {
+        "last_event_created_at": events[-1].get("created_at") if events else from_date,
+        "last_event_id": events[-1].get("id") if events else from_event,
+        "prev_fetch_id": fetch_id,
+    }
     demisto.debug(f"Setting next run {next_run}.")
     return next_run, events
 
@@ -214,10 +214,6 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
-    # How much time before the first fetch to retrieve events
-    first_fetch_time = datetime.now().isoformat()
-    max_events_per_fetch = params.get("max_events_per_fetch", 1000)
-
     try:
         client = Client(
             base_url=base_url,
@@ -239,12 +235,9 @@ def main() -> None:  # pragma: no cover
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         elif command == "fetch-events":
-            last_run = demisto.getLastRun()
             next_run, events = fetch_events(
                 client=client,
-                last_run=last_run,
-                first_fetch_time=first_fetch_time,
-                max_events_per_fetch=max_events_per_fetch,
+                args=args,
             )
 
             add_time_to_events(events)
