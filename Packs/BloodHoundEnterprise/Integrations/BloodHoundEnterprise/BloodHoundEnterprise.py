@@ -1,19 +1,29 @@
-import uuid
+import hashlib
+import hmac
+import urllib.parse
+
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
-from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-VENDOR = 'BloodHound'
-PRODUCT = 'Enterprise'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+VENDOR = "BloodHound"
+PRODUCT = "Enterprise"
+BASE_URL = "https://{server_url}.bloodhoundenterprise.io"
 
-''' CLIENT CLASS '''
+
+class Credentials(object):
+    def __init__(self, token_id: str, token_key: str) -> None:
+        self.token_id = token_id
+        self.token_key = token_key
+
+
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -26,39 +36,63 @@ class Client(BaseClient):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def search_events(self, prev_id: int, alert_status: None | str, limit: int, from_date: str | None = None, default_Protocol: str = 'UDP') -> List[Dict]:  # noqa: E501
+    def __init__(self, base_url, credentials: Credentials, verify, proxy):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self._credentials = credentials
+
+    def _request(self, method: str, uri: str, query_params: dict = {}) -> dict:
+
+        if query_params:
+            encoded_params = urllib.parse.urlencode(query_params)
+            uri_with_params = f"{uri}?{encoded_params}"
+        else:
+            uri_with_params = uri
+
+        digester = hmac.new(self._credentials.token_key.encode(), None, hashlib.sha256)
+        digester.update(f"{method}{uri_with_params}".encode())
+        digester = hmac.new(digester.digest(), None, hashlib.sha256)
+        datetime_formatted = datetime.now().astimezone().isoformat("T")
+        digester.update(datetime_formatted[:13].encode())
+        digester = hmac.new(digester.digest(), None, hashlib.sha256)
+
+        headers = {
+            "Authorization": f"bhesignature {self._credentials.token_id}",
+            "RequestDate": datetime_formatted,
+            "Signature": base64.b64encode(digester.digest()),
+            "Content-Type": "application/json",
+        }
+
+        return self._http_request(
+            method=method, url_suffix=uri_with_params, headers=headers
+        )
+
+    def search_events(
+        self,
+        prev_id: int,
+        limit: int,
+        from_date: str | None = None,
+    ) -> List[Dict]:  # noqa: E501
         """
         Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
         All the parameters are passed directly to the API as HTTP POST parameters in the request
 
         Args:
             prev_id: previous id that was fetched.
-            alert_status:
             limit: limit.
             from_date: get events from from_date.
 
         Returns:
-            List[Dict]: the next event
+            List[Dict]: the next events
         """
-        # use limit & from date arguments to query the API
-        return [{
-            'id': prev_id + 1,
-            'created_time': datetime.now().isoformat(),
-            'description': f'This is test description {prev_id + 1}',
-            'alert_status': alert_status,
-            'protocol': default_Protocol,
-            't_port': prev_id + 1,
-            'custom_details': {
-                'triggered_by_name': f'Name for id: {prev_id + 1}',
-                'triggered_by_uuid': str(uuid.uuid4()),
-                'type': 'customType',
-                'requested_limit': limit,
-                'requested_From_date': from_date
-            }
-        }]
+        method = "GET"
+        uri = "/api/v2/audit"
+        query_params = {"limit": limit, "sort_by": "created_at", "after": from_date}
+        remove_nulls_from_dictionary(query_params)
+        response = self._request(method, uri, query_params)
+        return response.get("data", {}).get("logs", [])
 
 
-def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -> str:
+def test_module(client: Client) -> str:
     """
     Tests API connectivity and authentication
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -73,43 +107,46 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-
     try:
-        alert_status = params.get('alert_status', None)
-
-        fetch_events(
-            client=client,
-            last_run={},
-            first_fetch_time=first_fetch_time,
-            alert_status=alert_status,
-            max_events_per_fetch=1,
-        )
+        method = "GET"
+        uri = "/api/v2/audit"
+        query_params = {"limit": "1"}
+        client._request(method, uri, query_params)
 
     except Exception as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+        if "Unauthorized" in str(e):
+            return "Authorization Error: make sure API token Key and API token id is correctly set"
         else:
             raise e
 
-    return 'ok'
+    return "ok"
 
 
-def get_events(client: Client, alert_status: str, args: dict) -> tuple[List[Dict], CommandResults]:
-    limit = args.get('limit', 50)
-    from_date = args.get('from_date')
+def get_events_command(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
+    limit = args.get("limit", 50)
+    from_date = args.get("from_date")
     events = client.search_events(
         prev_id=0,
-        alert_status=alert_status,
         limit=limit,
         from_date=from_date,
     )
-    hr = tableToMarkdown(name='Test Event', t=events)
+    hr = tableToMarkdown(name="Test Event", t=events)
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events(client: Client, last_run: dict[str, int],
-                 first_fetch_time, alert_status: str | None, max_events_per_fetch: int
-                 ) -> tuple[Dict, List[Dict]]:
+def aaa(client: Client):
+    method = "GET"
+    uri = "/api/v2/audit"
+    query_params = {"limit": "3000"}
+    client._request(method, uri, query_params)
+
+
+def fetch_events(
+    client: Client,
+    last_run: dict[str, int],
+    first_fetch_time,
+    max_events_per_fetch: int,
+) -> tuple[Dict, List[Dict]]:
     """
     Args:
         client (Client): HelloWorld client to use.
@@ -122,25 +159,28 @@ def fetch_events(client: Client, last_run: dict[str, int],
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be created in XSIAM.
     """
-    prev_id = last_run.get('prev_id', None)
+    prev_id = last_run.get("prev_id", None)
     if not prev_id:
         prev_id = 0
 
-    events = client.search_events(
-        prev_id=prev_id,
-        alert_status=alert_status,
-        limit=max_events_per_fetch,
-        from_date=first_fetch_time,
-    )
-    demisto.debug(f'Fetched event with id: {prev_id + 1}.')
+    # events = client.search_events(
+    #     prev_id=prev_id,
+    #     limit=max_events_per_fetch,
+    #     from_date=first_fetch_time,
+    # )
+    method = "GET"
+    uri = "/api/v2/audit"
+
+    events = client._request(method, uri)
+    demisto.debug(f"Fetched event with id: {prev_id + 1}.")
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'prev_id': prev_id + 1}
-    demisto.debug(f'Setting next run {next_run}.')
+    next_run = {"prev_id": prev_id + 1}
+    demisto.debug(f"Setting next run {next_run}.")
     return next_run, events
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def add_time_to_events(events: List[Dict] | None):
@@ -153,8 +193,8 @@ def add_time_to_events(events: List[Dict] | None):
     """
     if events:
         for event in events:
-            create_time = arg_to_datetime(arg=event.get('created_time'))
-            event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
+            create_time = arg_to_datetime(arg=event.get("created_at"))
+            event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
 def main() -> None:  # pragma: no cover
@@ -165,68 +205,58 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    api_key = params.get('apikey', {}).get('password')
-    base_url = urljoin(params.get('url'), '/api/v1')
-    verify_certificate = not params.get('insecure', False)
+    credentials = Credentials(
+        token_id=params.get("api_token_id", ""),
+        token_key=params.get("api_token_key", ""),
+    )
+    server_url = params.get("server_url")
+    base_url = BASE_URL.format(server_url=server_url)
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
     # How much time before the first fetch to retrieve events
     first_fetch_time = datetime.now().isoformat()
-    proxy = params.get('proxy', False)
-    alert_status = params.get('alert_status', None)
-    max_events_per_fetch = params.get('max_events_per_fetch', 1000)
+    max_events_per_fetch = params.get("max_events_per_fetch", 1000)
 
-    demisto.debug(f'Command being called is {command}')
     try:
-        headers = {
-            'Authorization': f'Bearer {api_key}'
-        }
         client = Client(
             base_url=base_url,
+            credentials=credentials,
             verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+            proxy=proxy,
+        )
 
-        if command == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client, params, first_fetch_time)
+        if command == "test-module":
+            result = test_module(client)
             return_results(result)
 
-        elif command == 'hello-world-get-events':
-            should_push_events = argToBoolean(args.pop('should_push_events'))
-            events, results = get_events(client, alert_status, demisto.args())
+        elif command == "bloodHound-get-events":
+            should_push_events = argToBoolean(args.pop("should_push_events"))
+            events, results = get_events_command(client, args)
             return_results(results)
             if should_push_events:
                 add_time_to_events(events)
-                send_events_to_xsiam(
-                    events,
-                    vendor=VENDOR,
-                    product=PRODUCT
-                )
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
-        elif command == 'fetch-events':
+        elif command == "fetch-events":
             last_run = demisto.getLastRun()
             next_run, events = fetch_events(
                 client=client,
                 last_run=last_run,
                 first_fetch_time=first_fetch_time,
-                alert_status=alert_status,
                 max_events_per_fetch=max_events_per_fetch,
             )
 
             add_time_to_events(events)
-            send_events_to_xsiam(
-                events,
-                vendor=VENDOR,
-                product=PRODUCT
-            )
+            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

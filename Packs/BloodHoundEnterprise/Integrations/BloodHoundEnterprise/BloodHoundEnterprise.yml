@@ -7,7 +7,7 @@ commonfields:
   version: -1
 configuration:
 - display: Server URL
-  name: url
+  name: server_url
   required: true
   type: 0
   section: Connect
@@ -29,17 +29,46 @@ configuration:
   required: false
   type: 8
   section: Collect
-- defaultvalue: 10000
+- defaultvalue: 100
   section: Collect
   advanced: true
   display: The maximum number of audit events per fetch
   name: max_events_per_fetch
   required: false
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
 description: This is the Hello World event collector integration for Cortex XSIAM.
 display: BloodHoundEnterprise
 name: BloodHoundEnterprise
 script:
+  commands:
+  - arguments:
+    - description: The start date from which to filter events. (e.g., 2024-07-10T08:08:46.76).
+      name: start
+      required: false
+    - description: The end date from which to filter events. (e.g., 2024-07-11T08:09:47.08).
+      name: end
+      required: false
+    - description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+    - description: The number of events to return. Default is 500.
+      name: limit
+      required: false
+    description: Gets events from BloodHound.
+    name: bloodHound-get-events
   dockerimage: demisto/python3:3.10.13.87159
   isfetchevents: true
   runonce: false
