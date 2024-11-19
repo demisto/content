@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "ciac-11298/core_packs_override_pipeline"
+  CURRENT_BRANCH_NAME: "master"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "ciac-11298/core_packs_override_pipeline"
+    ref: "master"
     project: "${CI_PROJECT_NAMESPACE}/infra"
