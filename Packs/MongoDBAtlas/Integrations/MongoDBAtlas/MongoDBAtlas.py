@@ -32,7 +32,7 @@ class Client(BaseClient):
         }
         super().__init__(base_url=base_url, verify=verify, headers=headers, auth=auth)
 
-    def get_alerts_with_page_num(self, page_num, items_per_page):
+    def get_alerts_request(self, page_num: int = None, items_per_page: int = 500):
         """
         Fetch a paginated list of alerts from the service API.
 
@@ -43,26 +43,38 @@ class Client(BaseClient):
         Returns:
             dict: A dictionary containing the paginated list of alerts and metadata such as total count.
         """
+        params = {
+            'pageNum': page_num,
+            'itemsPerPage': items_per_page
+        }
         results = self._http_request(
             method="GET",
-            url_suffix=f"/api/atlas/v2/groups/{self.group_id}/alerts?pageNum={page_num}&itemsPerPage={items_per_page}",
+            url_suffix=f"/api/atlas/v2/groups/{self.group_id}/alerts",
+            params=params
         )
         return results
 
-    def get_events_with_page_num(self, page_num, items_per_page):
+    def get_events_request(self, page_num: int = None, items_per_page: int = 500, min_date: str = None):
         """
         Fetch a paginated list of events from the service API.
 
         Args:
             page_num (int): The page number to retrieve.
             items_per_page (int): The number of events to retrieve per page.
+            min_date (str): The minimum date to retrieve.
 
         Returns:
             dict: A dictionary containing the paginated list of events and metadata such as total count.
         """
+        params = {
+            'pageNum': page_num,
+            'itemsPerPage': items_per_page,
+            'minDate': min_date,
+        }
         results = self._http_request(
             method="GET",
-            url_suffix=f"/api/atlas/v2/groups/{self.group_id}/events?pageNum={page_num}&itemsPerPage={items_per_page}",
+            url_suffix=f"/api/atlas/v2/groups/{self.group_id}/events",
+            params=params
         )
         return results
 
@@ -82,59 +94,6 @@ class Client(BaseClient):
         )
         return results
 
-    def get_events_with_min_time(self, min_time: str):
-        """
-        Sends an HTTP GET request to fetch events from the server that occurred after
-        the provided `min_time`, using it as a filter.
-
-        Args:
-            min_time (str): The minimum time, specifying the earliest event time to include.
-
-        Returns:
-            The API response containing the events that match the specified time filter.
-        """
-        results = self._http_request(
-            method="GET",
-            url_suffix=f"/api/atlas/v2/groups/{self.group_id}/events?minDate={min_time}",
-        )
-        return results
-
-    def first_time_fetch_alerts(self):
-        """
-        Initiates the first-time retrieval of alerts by fetching a single page of alerts,
-        with a maximum of 500 alerts in that page.
-
-        Returns:
-            A response object containing the first page of alerts.
-        """
-        return self.get_alerts_with_page_num(page_num=1, items_per_page=500)
-
-    # def get_events_first_five_pages(self, fetch_limit: int):
-    #     # TODO to delete and modify the unittest
-    #     """
-    #     Fetches events from up to 5 pages, ensuring that the total number of fetched events does not exceed the specified
-    #     `fetch_limit`.
-    #
-    #     Args:
-    #         fetch_limit (int): The maximum number of events to fetch.
-    #
-    #     Returns:
-    #         list: A list of events, truncated to the `fetch_limit` if necessary.
-    #     """
-    #     results = []
-    #     items_per_page = min(fetch_limit, 500)
-    #
-    #     for page_num in range(1, MAX_NUMBER_OF_PAGES + 1):
-    #         page_results = self.get_events_with_page_num(page_num=page_num, items_per_page=items_per_page).get('results')
-    #         results.extend(page_results)
-    #
-    #         if len(results) >= fetch_limit:
-    #             return results[:fetch_limit]
-    #
-    #         items_per_page = min(fetch_limit - len(results), 500)
-    #
-    #     return results
-
     def get_events_first_time_events(self, fetch_limit: int) -> list:
         """
         Fetches events from multiple pages, ensuring that the total number of fetched events does not exceed the specified
@@ -151,7 +110,7 @@ class Client(BaseClient):
         page_num = 1
 
         while len(results) < fetch_limit:
-            page_results = self.get_events_with_page_num(page_num=page_num, items_per_page=items_per_page).get('results')
+            page_results = self.get_events_request(page_num=page_num, items_per_page=items_per_page).get('results')
             if not page_results:
                 break
 
@@ -167,12 +126,6 @@ class Client(BaseClient):
 
 
 ''' HELPER FUNCTIONS '''
-
-
-def check_fetch_limit(fetch_limit):
-    if int(fetch_limit) < 1:
-        message = 'Invalid maximum number of events per fetch, should be between 1 and 2500.'
-        raise Exception(message)
 
 
 ################ ALERTS AND EVENTS FUNCTIONS ################
@@ -278,7 +231,7 @@ def get_page_from_last_run_for_alerts(client: Client, page_link: str):
         response = client.get_response_from_page_link(page_link)
     else:
         demisto.debug('Initialize the first page')
-        response = client.first_time_fetch_alerts()
+        response = client.get_alerts_request(page_num=1, items_per_page=500)
     return response
 
 
@@ -422,25 +375,6 @@ def save_events_ids_with_specific_created_date(events: list, created_date: str) 
     return results
 
 
-# def get_page_with_min_time_for_events(client: Client, min_time, fetch_limit) -> dict:
-#     """
-#     If `min_time` is provided, fetches events from that timestamp onward.
-#     If None, fetches events from the beginning.
-#
-#     Args:
-#         client (Client): The API client for fetching events.
-#         min_time: The timestamp to fetch from, or None to start from the beginning.
-#         fetch_limit:
-#     Returns:
-#         dict: A dictionary of events from the specified time.
-#     """
-#     if min_time:
-#         results = client.get_events_with_min_time(min_time)
-#     else:
-#         results = client.get_events_first_time_events(fetch_limit)
-#     return results
-
-
 def create_last_run_dict_for_events(output: list, new_min_time: str) -> dict:
     """
     Creates a dictionary to store the last run information for events.
@@ -492,13 +426,12 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[
         - The list containing all fetched events.
         - The object to save for the next run.
     """
-    min_time = last_run.get('min_time')
+    min_date = last_run.get('min_time')
     events_with_created_min_time = last_run.get('events_with_created_min_time') or []
 
-    demisto.debug(f'Start to fetch events with {min_time}')
-
-    if min_time:
-        results = client.get_events_with_min_time(min_time)
+    demisto.debug(f'Start to fetch events with {min_date}')
+    if min_date:
+        results = client.get_events_request(min_date=min_date)
     else:  # first time fetching events
         results, new_min_time = first_time_fetching_events(client, fetch_limit)
         new_last_run_obj = create_last_run_dict_for_events(results, new_min_time)
@@ -510,7 +443,7 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[
 
     current_fetched_events_amount = 0
     output = []
-    new_min_time = min_time
+    new_min_date = min_date
 
     while current_fetched_events_amount < fetch_limit:
         for event in reversed(events):  # ignore
@@ -521,13 +454,13 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[
             enrich_event(event, 'events')
             output.append(event)
             current_fetched_events_amount += 1
-            new_min_time = get_latest_date(new_min_time, event.get('created'))
+            new_min_date = get_latest_date(new_min_date, event.get('created'))
 
             demisto.debug(f'Fetched event ID {event_id} from type "events"')
 
             if current_fetched_events_amount == fetch_limit:
                 demisto.debug(f'Fetch limit reached. Total events fetched: {len(output)}')
-                new_last_run_obj = create_last_run_dict_for_events(output, new_min_time)
+                new_last_run_obj = create_last_run_dict_for_events(output, new_min_date)
                 return output, new_last_run_obj
 
         previous_page = get_page_url(links, page_type='previous')
@@ -539,14 +472,14 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[
             break
 
     demisto.debug(f'No more events left to fetch. Total events fetched: {len(output)}')
-    new_last_run_obj = create_last_run_dict_for_events(output, new_min_time)
+    new_last_run_obj = create_last_run_dict_for_events(output, new_min_date)
     return output, new_last_run_obj
 
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, fetch_limit) -> str:
+def test_module(client: Client) -> str:
     """
     Returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
 
@@ -556,17 +489,8 @@ def test_module(client: Client, fetch_limit) -> str:
     Returns:
         'ok' if test passed, anything else will fail the test
     """
-    message: str = ''
-    check_fetch_limit(fetch_limit)
-    try:
-        client.get_alerts_with_page_num(page_num=1, items_per_page=1)
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure private key and public key are correctly set'
-        else:
-            raise e
-    return message
+    client.get_alerts_request(page_num=1, items_per_page=1)
+    return 'ok'
 
 
 def fetch_events(client: Client, fetch_limit: int):
@@ -581,7 +505,6 @@ def fetch_events(client: Client, fetch_limit: int):
 
 def get_events(client: Client, args):
     fetch_limit = int(args.get('limit'))
-    check_fetch_limit(fetch_limit)
 
     last_run = demisto.getLastRun()
 
@@ -619,8 +542,10 @@ def main() -> None:  # pragma: no cover
 
     demisto.debug(f'MongoDB Command being called is {demisto.command()}')
     try:
-        public_key = params.get('public_key', {}).get('password')
-        private_key = params.get('private_key', {}).get('password')
+        credentials = params.get('credentials', {})
+        # private_key = params.get('credentials', {}).get('password')
+        public_key = credentials.get('identifier')
+        private_key = credentials.get('password')
         group_id = params.get('group_id')
 
         base_url = params.get('url')
@@ -636,7 +561,7 @@ def main() -> None:  # pragma: no cover
         )
 
         if command == 'test-module':
-            result = test_module(client, fetch_limit)
+            result = test_module(client)
             return_results(result)
         elif command == 'mongo-db-atlas-get-events':
             events, command_results = get_events(client, args)
