@@ -19,8 +19,8 @@ def main():
     domains = argToList(demisto.args()['left'])
 
     try:
-
-        no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None, cache_dir=None)  # type: ignore[arg-type]
+        #  The suffix_list_urls will use a file saved in the docker instead of making http requests
+        no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=["file://" + "/var/public_list.dat"], cache_dir=None)  # type: ignore[arg-type]
 
         for domain in domains:
             ext = no_fetch_extract(domain)
