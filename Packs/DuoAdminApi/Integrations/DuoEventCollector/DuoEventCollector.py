@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from collections import deque
 from enum import Enum
 
+
 import duo_client
 from pydantic import BaseModel, Field  # pylint: disable=E0611
 
@@ -320,6 +321,7 @@ class GetEvents:
         self.rotate_request_order()
         return {
             'after': self.client.params.mintime,
+            # Here we change the request order for the next call.
             'request_order': self.request_order,
         }
 
@@ -410,7 +412,13 @@ def handle_request_types(demisto_params, last_run):
                                           f'{LogType.AUTHENTICATION},{LogType.ADMINISTRATION},{LogType.TELEPHONY}'))
     logs_type_array = argToList(logs_type_array)
     request_order = last_run.get('request_order', logs_type_array)
+    # keep only event types that were included in the requested event types.
     request_order = [log_type.upper() for log_type in request_order if log_type in logs_type_array]
+    # Add new event type if a configuration was changed in the instance.
+    for event_type in logs_type_array:
+        if event_type not in request_order:
+            request_order.append(event_type)
+
     if invalid_log_type := validate_request_order_array(request_order) is not True:
         DemistoException(f'We found invalid values for logs_type_array, the values are {invalid_log_type}')
 
