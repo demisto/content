@@ -1382,7 +1382,7 @@ def test_get_alert_details(mocker):
 def add_note_mock_response(*args, **kwargs):
     return Result(
         result_code=ResultCode.SUCCESS,
-        response=AddAlertNoteResp(**{"noteId": "1"}),
+        response=AddAlertNoteResp(note_id="1"),
     )
 
 
@@ -1566,13 +1566,9 @@ def test_delete_custom_script(mocker):
 
 # Mock function to add custom script
 def add_custom_script_mock_response(*args, **kwargs):
-    with open("./test_data/add_custom_script.json") as f:
-        json.load(f)
     return Result(
         result_code=ResultCode.SUCCESS,
-        response=AddCustomScriptResp(
-            **{"scriptId": "44c99cb0-8c5f-4182-af55-62135dbe32f1"}
-        ),
+        response=AddCustomScriptResp(script_id="44c99cb0-8c5f-4182-af55-62135dbe32f1"),
     )
 
 
