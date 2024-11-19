@@ -2796,7 +2796,8 @@ def token_permissions_list_command():
     # Decode the token and extract the roles:
     if access_token:
         decoded_token = jwt.decode(access_token, options={"verify_signature": False})
-        if AUTH_TYPE == CLIENT_CREDENTIALS:
+
+        if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
             roles = decoded_token.get('roles', [])
 
         else:  # Authorization code flow

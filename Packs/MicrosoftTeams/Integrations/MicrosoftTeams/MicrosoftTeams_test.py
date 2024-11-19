@@ -2473,39 +2473,59 @@ def test_add_data_to_actions_non_dict_data():
     assert card_json["data"] == data_value
 
 
-@pytest.mark.parametrize('token, decoded_token, expected_hr', [
+@pytest.mark.parametrize('token, decoded_token, auth_type, expected_hr', [
     ('dummy_token',
      {'aud': 'url', 'exp': '1111', 'roles': ['AppCatalog.Read.All', 'Group.ReadWrite.All', 'User.Read.All']},
+     'Client Credentials',
      'The API permissions obtained for the used graph access token are'),
     ('dummy_token',
      {'aud': 'url', 'exp': '1111', 'roles': []},
+     'Client Credentials',
+     'No permissions obtained for the used graph access token.'),
+    ('dummy_token',
+     {'aud': 'url', 'exp': '1111', 'scp': 'AppCatalog.Read.All Group.ReadWrite.All User.Read.All'},
+     'Authorization Code',
+     'The API permissions obtained for the used graph access token are'),
+    ('dummy_token',
+     {'aud': 'url', 'exp': '1111', 'scp': ''},
+     'Authorization Code',
      'No permissions obtained for the used graph access token.'),
     ('',
      {'roles': []},
+     'Client Credentials',
      'Graph access token is not set.')
 ])
-def test_token_permissions_list_command(mocker, token, decoded_token, expected_hr):
+def test_token_permissions_list_command(mocker, token, decoded_token, auth_type, expected_hr):
     """
-    Tests the 'token_permissions_list_command' logic.
-    # TODO: edit the test to refer to the auth type changes
+    Tests the 'token_permissions_list_command' logic:
+    For client credentials auth flow, the api permissions are found under the 'roles' key in the decoded token data,
+    while for the auth code flow they are found under the 'scp' key.
+    This test checks that we extract the api permissions from the graph access token successfully for both auth types.
 
     Given:
-        1. A dummy token, mocked response of the jet.decode func with API permissions roles.
-        2. A dummy token, mocked response of the jet.decode func without API permissions roles.
-        3. Missing token.
+        1. A dummy token, mocked response of the jet.decode func with API permissions roles under the 'roles' key -
+           (auth type is client credentials).
+        2. A dummy token, mocked response of the jet.decode func without API permissions roles under the 'roles' key -
+           (auth type is client credentials).
+        3. A dummy token, mocked response of the jet.decode func with API permissions roles under the 'scp' key -
+           (auth type is Authorization Code).
+        4. A dummy token, mocked response of the jet.decode func without API permissions roles under the 'scp' key -
+           (auth type is Authorization Code).
+        5. Missing token.
     When:
         - Running the token_permissions_list_command.
     Then:
         Verify that the human readable output is as expected:
         1. API permissions list.
         2. No permissions obtained for the used graph access token.
-        3. Graph access token is not set.
-
+        3. API permissions list.
+        4. No permissions obtained for the used graph access token.
+        5. Graph access token is not set.
     """
     from MicrosoftTeams import token_permissions_list_command
     import MicrosoftTeams
-    # mocker.patch.object(demisto, 'getIntegrationContext', return_value=integration_context)
     mocker.patch('MicrosoftTeams.get_graph_access_token', return_value=token)
+    mocker.patch('MicrosoftTeams.AUTH_TYPE', new=auth_type)
     mocker.patch('jwt.decode', return_value=decoded_token)
     results = mocker.patch.object(MicrosoftTeams, 'return_results')
 
