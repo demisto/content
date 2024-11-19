@@ -1220,6 +1220,7 @@ class MsClient:
         client_args = assign_params(
             self_deployed=self_deployed,
             auth_id=auth_id,
+            endpoint=endpoint_type,
             token_retrieval_url=token_retrieval_url,
             grant_type=grant_type,
             base_url=base_url,
