@@ -726,7 +726,12 @@ def test_update_remote_system_command(incident_changed, delta):
     assert actual_remote_id == expected_remote_id
 
 
-def test_update_remote_system_command_should_not_close_xdr_incident(mocker):
+@pytest.mark.parametrize("data", [
+    {'close_reason': 'Resolved', 'status': 'Other'},
+    {'CortexXDRIRstatus': 'resolved', 'close_reason': 'Resolved', 'status': 'False Positive'},
+    {'status': 'under_investigation'}
+])
+def test_update_remote_system_command_should_not_close_xdr_incident(mocker, data):
     """
     Given:
         - an XDR client with 'close_xdr_incident' set to False.
@@ -744,25 +749,24 @@ def test_update_remote_system_command_should_not_close_xdr_incident(mocker):
         params={'close_xdr_incident': False}
     )
 
-    data = {'CortexXDRIRstatus': 'resolved', 'close_reason': 'Resolved', 'status': 'test'}
-    delta = {'CortexXDRIRstatus': 'resolved'}
+    delta = copy.deepcopy(data)
     expected_remote_id = 'remote_id'
 
     args = {
         'remoteId': expected_remote_id,
         'data': data,
-        'entries': [],
         'incidentChanged': True,
         'delta': delta,
         'status': 2,
     }
 
     mock_update_incident_command = mocker.patch("CortexXDRIR.update_incident_command")
-
     update_remote_system_command(client, args)
     update_args = mock_update_incident_command.call_args[0][1]
-
-    assert 'status' not in update_args or update_args['status'] != XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
+    if data.get('status') in XSOAR_RESOLVED_STATUS_TO_XDR:
+        assert 'status' not in update_args
+    else:
+        assert 'status' in update_args
 
 
 @freeze_time("1997-10-05 15:00:00 GMT")
