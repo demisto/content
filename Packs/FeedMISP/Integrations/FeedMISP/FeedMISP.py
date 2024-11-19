@@ -512,49 +512,20 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     )
 
 
-def update_candidate(last_run: dict, last_run_timestamp: str, last_run_value: str,
-                     latest_indicator_timestamp: str, latest_indicator_value: str):
+def update_candidate(last_run: dict, last_run_timestamp: str, latest_indicator_timestamp: str, latest_indicator_value: str):
     """
     Update the candidate timestamp and value based on the latest and last run values.
 
     Args:
         last_run: a dictionary containing the last run information, including the timestamp, page, and indicator value.
         last_run_timestamp: the timestamp of the last run.
-        last_run_value: the indicator value of the last run.
         latest_indicator_timestamp: the timestamp of the latest indicator.
         latest_indicator_value: the value of the latest indicator.
     """
     candidate_timestamp = last_run.get('candidate_timestamp') or last_run_timestamp
-    candidate_indicator_value = last_run.get('candidate_value') or last_run_value
     if latest_indicator_timestamp > candidate_timestamp:
-        candidate_timestamp = latest_indicator_timestamp
-        candidate_indicator_value = latest_indicator_value
-    last_run['last_indicator_timestamp'] = last_run_timestamp
-    last_run['last_indicator_value'] = last_run_value
-    last_run['candidate_timestamp'] = candidate_timestamp
-    last_run['candidate_value'] = candidate_indicator_value
-
-
-def get_new_last_run_values(last_run: dict, latest_indicator_timestamp: str, latest_indicator_value: str,
-                            last_run_timestamp: str) -> tuple:
-    """
-    Determine the new last run values based on the latest indicator's timestamp and value.
-    Args:
-        last_run: A dictionary containing the last run information, including the timestamp, page, and indicator value.
-        latest_indicator_timestamp: The timestamp of the latest indicator.
-        latest_indicator_value: The value of the latest indicator.
-        last_run_timestamp: The timestamp of the last run.
-    Return: A tuple containing the new last run timestamp and indicator value.
-    """
-    if candidate_timestamp := last_run.get("candidate_timestamp"):
-        # Update the last run with the candidate timestamp and indicator value when finishing pagination
-        return candidate_timestamp, last_run.get("candidate_indicator_value")
-    elif not last_run_timestamp or latest_indicator_timestamp > last_run_timestamp:
-        # If the indicators created successfully and the new indicator timestamp is bigger than last run timestamp,
-        # update the last run timestamp and last indicator value
-        return latest_indicator_timestamp, latest_indicator_value
-
-    return None, None
+        last_run['candidate_timestamp'] = latest_indicator_timestamp
+        last_run['candidate_value'] = latest_indicator_value
 
 
 def fetch_attributes_command(client: Client, params: Dict[str, str]):
@@ -605,7 +576,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
         for iter_ in batch(indicators, batch_size=2000):
             demisto.createIndicators(iter_)
         params_dict['page'] += 1
-        update_candidate(last_run, last_run_timestamp, last_run_value,
+        update_candidate(last_run, last_run_timestamp,
                          latest_indicator_timestamp, latest_indicator_value)
         # Note: The limit is applied after indicators are created,
         # so the total number of indicators may slightly exceed the limit due to page size constraints.

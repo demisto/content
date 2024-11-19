@@ -494,7 +494,7 @@ def test_set_last_run_pagination(mocker):
     latest_indicator_value = indicators[-1]["value"]
 
     # Call the function
-    update_candidate(last_run, last_run_timestamp, last_run_value,
+    update_candidate(last_run, last_run_timestamp,
                      latest_indicator_timestamp, latest_indicator_value)
 
     # Assert that setLastRun was called with the correct arguments
