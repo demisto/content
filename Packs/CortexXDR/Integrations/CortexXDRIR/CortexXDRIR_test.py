@@ -839,6 +839,35 @@ def test_update_remote_system_command_closing_alerts_and_including_resolve_comme
     assert incident_id == expected_remote_id
 
 
+def test_get_update_args_close_incident_without_status_handler(mocker):
+    """
+    Given:
+        - Arguments indicating that the incident was changed in XSOAR but closed without providing a reason.
+    When:
+        - Running the 'get_update_args.handle_outgoing_issue_closure' function with the provided arguments.
+    Then:
+        - The 'get_update_args.handle_outgoing_issue_closure' function should append the 'status' field in the delta
+  with the value 'resolved_other'.
+    """
+    from CoreIRApiModule import get_update_args
+    from CommonServerPython import UpdateRemoteSystemArgs
+
+    args = {
+        'remoteId': 'remote_id',
+        'data': {'closeNotes': 'ancd', 'status': 'test'},
+        'entries': [],
+        'incidentChanged': True,
+        'delta': {'runStatus': '1', 'incident_id': 'remote_id'},
+        'status': 2,
+    }
+
+    parsed_args = UpdateRemoteSystemArgs(args)
+    mocker.patch("CoreIRApiModule.handle_outgoing_incident_owner_sync")
+    mocker.patch("CoreIRApiModule.handle_user_unassignment")
+    parsed_args_delta = get_update_args(parsed_args)
+    assert parsed_args_delta.get('status') == 'resolved_other'
+
+
 @freeze_time("1997-10-05 15:00:00 GMT")
 def test_fetch_incidents_extra_data(requests_mock, mocker):
     """
