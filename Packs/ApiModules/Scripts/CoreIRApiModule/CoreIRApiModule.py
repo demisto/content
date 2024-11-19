@@ -2416,7 +2416,7 @@ def run_snippet_code_script_command(client: CoreClient, args: Dict) -> CommandRe
     )
 
 
-def form_powershell_command(unescaped_string: str):
+def form_powershell_command(unescaped_string: str) -> str:
     """
     Builds a Powershell command using prefix and a shell-escaped string.
 

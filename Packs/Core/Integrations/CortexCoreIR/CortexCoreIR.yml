@@ -1666,19 +1666,19 @@ script:
     - description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
       name: endpoint_ids
       required: true
-    - description: Comma-separated list of shell commands to execute. Use is_raw_command=false to prevent splitting by commas.
+    - description: Comma-separated list of shell commands to execute. Set the `is_raw_command` argument to `true` to prevent splitting by commas. (Useful when using `||`, `&&`, `;` separators for controlling the flow of multiple commands).
       name: commands
       required: true
-    - description: Determines if shell commands are passed in their raw form or split by commas.
+    - description: Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands, that are run independently.
       name: is_raw_command
       type: Boolean
       required: false
-    - description: 'Type of shell command. Possible values: "powershell", "null".' 
+    - description: 'Type of shell command. Possible values: "powershell", "native".' 
       auto: PREDEFINED
       name: command_type
       predefined:
       - 'powershell'
-      - 'null'
+      - 'native'
       required: false
     - defaultValue: '600'
       description: The timeout in seconds for this execution.

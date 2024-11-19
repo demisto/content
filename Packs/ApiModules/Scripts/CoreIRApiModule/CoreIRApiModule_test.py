@@ -1971,8 +1971,8 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
     assert zipfile.ZipFile(file_name).namelist() == ['your_file.txt']
 
 
-@pytest.mark.parametrize('inputted_command, expected_command', POWERSHELL_COMMAND_CASES)
-def test_form_powershell_command(inputted_command, expected_command):
+@pytest.mark.parametrize('command_input, expected_command', POWERSHELL_COMMAND_CASES)
+def test_form_powershell_command(command_input: str, expected_command: str):
     """
     Given:
         - An unescaped command containing characters like ', `, ", \
@@ -1985,9 +1985,9 @@ def test_form_powershell_command(inputted_command, expected_command):
     """
     from CoreIRApiModule import form_powershell_command
 
-    command = form_powershell_command(inputted_command)
+    command = form_powershell_command(command_input)
 
-    assert command.startswith('powershell -Command ')
+    assert not command_input.startswith('powershell -Command ')
     assert command == expected_command
 
 

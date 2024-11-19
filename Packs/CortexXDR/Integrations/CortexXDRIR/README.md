@@ -2089,12 +2089,12 @@ Initiates a new endpoint script execution of shell commands.
 | --- | --- | --- |
 | incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
 | endpoint_ids | A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
-| commands | A comma-separated list of shell commands to execute. | Required | 
+| commands | A comma-separated list of shell commands to execute. Set the `is_raw_command` argument to `true` to prevent splitting by commas. (Useful when using `\|\|`, `&&`, `;` separators for controlling the flow of multiple commands). | Required |
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
-| action_id | For polling use. | Optional | 
-
+| is_raw_command | Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands, that are run independently. | Optional |
+| command_type | Type of shell command. Possible values: "powershell", "null". | Optional |
 
 #### Context Output
 
