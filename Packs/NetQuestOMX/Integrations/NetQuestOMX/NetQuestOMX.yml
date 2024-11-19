@@ -52,7 +52,6 @@ script:
     description: "Address List-Upload - uploads a .txt file with address list to the appliance. The appliance temporarily stores the file until it is saved to the Library and replaces any previously loaded list file."
     name: netquest-address-list-upload
 
-
   - description: "Optimize Updated Address List - If the traffic elements are IP addresses, the integration should optimize the list by compressing IP addresses into CIDR groups."
     name: netquest-address-list-optimize
     outputs:
@@ -75,22 +74,29 @@ script:
         description:
         type: Dictionary
 
+  - arguments:
+      - description: 'The name of the address list to create'
+        name: name
+        required: true
+    description: "This replaces the old list entity and overrides it."
+    name: netquest-address-list-create
 
   - arguments:
-      - description: 'The entry ID of the file to upload.'
-        name: entry_id
+      - description: 'The new name for an existing address list'
+        name: new_name
         required: true
-    description: "Address List-Upload - uploads a .txt file with address list to the appliance. The appliance temporarily stores the file until it is saved to the Library and replaces any previously loaded list file."
-    name: netquest-address-list-optimize
-
+      - description: 'The existing list name of the address list that we want to modify'
+        name: existing_name
+        required: true
+    description: "This is only meant to change the name of the list. Nothing else. If we try to give as a new_name, an existing list name, it will fail and we’ll get an error."
+    name: netquest-address-list-update
 
   - arguments:
-      - description: 'The entry ID of the file to upload.'
-        name: entry_id
+      - description: 'The name of the address list to delete'
+        name: name
         required: true
-    description: "Address List-Upload - uploads a .txt file with address list to the appliance. The appliance temporarily stores the file until it is saved to the Library and replaces any previously loaded list file."
-    name: netquest-address-list-optimize
-
+    description: "This command deletes the list by the given address."
+    name: netquest-address-list-delete
 
 
   runonce: false
