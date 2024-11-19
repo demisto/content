@@ -1083,18 +1083,18 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
         new_last_run = indicator_list.get('pagination', {}).get('endCursor')
         indicators = [
             {
-                "ID": indicator.get("id"),
-                "Name": indicator.get("name"),
-                "Description": indicator.get("description"),
-                "Pattern": indicator.get("pattern"),
-                "Valid From": indicator.get("valid_from"),
-                "Valid Until": indicator.get("valid_until"),
-                "Score": indicator.get("x_opencti_score"),
-                "Created By": indicator.get("createdBy")["name"] if indicator.get("createdBy") else "",
-                "Labels": [label["value"] for label in indicator.get("objectLabel", [])],
-                "Indicator Types": indicator.get("indicator_types"),
-                "Created": indicator.get("created"),
-                "Updated At": indicator.get("updated_at"),
+                "id": indicator.get("id"),
+                "name": indicator.get("name"),
+                "description": indicator.get("description"),
+                "pattern": indicator.get("pattern"),
+                "validFrom": indicator.get("valid_from"),
+                "validUntil": indicator.get("valid_until"),
+                "score": indicator.get("x_opencti_score"),
+                "createdBy": indicator.get("createdBy")["name"] if indicator.get("createdBy") else "",
+                "labels": [label["value"] for label in indicator.get("objectLabel", [])],
+                "indicatorTypes": indicator.get("indicator_types"),
+                "created": indicator.get("created"),
+                "updatedAt": indicator.get("updated_at")
             }
             for indicator in indicator_list.get('entities', [])
         ]
@@ -1102,8 +1102,8 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
         readable_output = tableToMarkdown(
             "Indicators",
             indicators,
-            headers=["ID", "Name", "Description", "Pattern", "Valid From", "Valid Until",
-                     "Score", "Created By", "Labels", "Indicator Types", "Created", "Updated At"],
+            headers=["id", "name", "description", "pattern", "validFrom", "validUntil",
+                     "score", "createdBy", "labels", "indicatorTypes", "created", "updatedAt"],
             headerTransform=pascalToSpace
         )
         outputs = {

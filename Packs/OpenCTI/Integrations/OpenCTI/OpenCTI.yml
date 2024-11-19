@@ -531,7 +531,7 @@ script:
       type: string
   - arguments:
     - description: The indicator's value to filter by, can be partial value.
-      name: search
+      name: value
     - description: The ID of the entity that created the indicator (use opencti-organization-list to find or create).
       name: created_by
     - description: The types of the indicator. Use opencti-indicator-types-list to find all indicator types in OpenCTI.
