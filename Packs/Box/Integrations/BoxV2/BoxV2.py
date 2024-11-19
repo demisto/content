@@ -11,7 +11,7 @@ import secrets
 import jwt
 import re
 from distutils.util import strtobool
-from datetime import timezone, UTC
+from datetime import UTC
 from typing import Any, Dict, Tuple, List, Optional, BinaryIO
 from requests.models import Response
 from hashlib import sha1

@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import dateparser
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 import json
 import time
 from typing import Any

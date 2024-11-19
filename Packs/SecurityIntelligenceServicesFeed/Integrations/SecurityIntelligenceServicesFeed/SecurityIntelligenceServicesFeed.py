@@ -3,7 +3,7 @@ from CommonServerPython import *
 '''IMPORTS'''
 
 from typing import Dict, Any, List, Union, Optional, Generator
-from datetime import timezone, UTC
+from datetime import UTC
 import csv
 import gzip
 import boto3 as s3

@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 import urllib3
 from typing import Any
-from datetime import datetime, timezone, timedelta, UTC
+from datetime import datetime, timedelta, UTC
 from dateutil import relativedelta
 from ZoomApiModule import *
 

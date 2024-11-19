@@ -3,7 +3,7 @@
 """
 import io
 import json
-from datetime import timezone, timedelta, UTC
+from datetime import timedelta, UTC
 from typing import *
 from unittest.mock import Mock
 

@@ -1,7 +1,7 @@
 import pytest
 from CommonServerPython import DemistoException
 import demistomock as demisto  # noqa: F401
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 import json
 from freezegun import freeze_time
 

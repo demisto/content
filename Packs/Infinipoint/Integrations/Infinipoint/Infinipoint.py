@@ -6,7 +6,7 @@ from typing import Any, cast
 import jwt
 import math
 import dateparser
-from datetime import timezone, UTC
+from datetime import UTC
 
 # disable insecure warnings
 import urllib3

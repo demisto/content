@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from typing import Any
 from dateparser import parse
 

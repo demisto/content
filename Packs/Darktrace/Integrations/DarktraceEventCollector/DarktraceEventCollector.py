@@ -1,7 +1,7 @@
 import hashlib
 import hmac
 import json
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from typing import Any
 from collections.abc import Mapping
 

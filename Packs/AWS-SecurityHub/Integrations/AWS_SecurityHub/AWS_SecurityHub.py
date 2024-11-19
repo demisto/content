@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import boto3
 
 import urllib3.util
-from datetime import timezone, UTC
+from datetime import UTC
 from dateparser import parse
 
 # Disable insecure warnings
