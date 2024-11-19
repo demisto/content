@@ -135,7 +135,7 @@ class Client(BaseClient):
     #
     #     return results
 
-    def get_events_first_time_events(self, fetch_limit: int):
+    def get_events_first_time_events(self, fetch_limit: int) -> list:
         """
         Fetches events from multiple pages, ensuring that the total number of fetched events does not exceed the specified
         `fetch_limit`.
