@@ -9355,3 +9355,85 @@ Edit an exception to a Vulnerability Protection profile or Anti Spyware profile.
 #### Context Output
 
 There is no context output for this command.
+
+## pan-os-create-master-key
+
+Creates a default master key that encrypts all the private keys and passwords in the configuration to secure them.
+
+#### Base Command
+
+`pan-os-create-master-key`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| master_key | The encryption master key. Must be exactly 16 characters. | Required |
+| lifetime_in_hours | The lifetime of the key in hours. | Required |
+| reminder_in_hours | The time to be notified of the key's expiration in hours. | Required |
+
+
+#### Command example
+```!pan-os-create-master-key master_key="Ah3zLmSv9Z7XuDV5" lifetime_in_hours=2160 reminder_in_hours=1992```
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+>Add sentence here
+
+## pan-os-update-master-key
+
+Updates the default master key that encrypts all the private keys and passwords in the configuration to secure them.
+
+#### Base Command
+
+`pan-os-update-master-key`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| current_master_key | The current encryption master key. | Required |
+| new_master_key | The new encryption master key. Must be exactly 16 characters. | Required |
+| lifetime_in_hours | The lifetime of the key in hours. | Required |
+| reminder_in_hours | The time to be notified of the key's expiration in hours. | Required |
+
+
+#### Command example
+```!pan-os-update-master-key current_master_key="Ah3zLmSv9Z7XuDV5" new_master_key="QXPa4WCS3TDYHquA" lifetime_in_hours=2160 reminder_in_hours=1992```
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+>Add sentence here
+
+## pan-os-get-master-key
+
+Fetches the default master key that encrypts all the private keys and passwords in the configuration to secure them.
+
+#### Base Command
+
+`pan-os-get-master-key`
+
+#### Input
+
+There is no arguments for this command.
+
+#### Command example
+```!pan-os-get-master-key```
+
+#### Context Output
+
+None
+
+#### Human Readable Output
+
+>| **Master Key** |
+>| --- |
+>| QXPa4WCS3TDYHquA |

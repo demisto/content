@@ -14511,6 +14511,18 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
     )
 
 
+def pan_os_create_master_key_command(args: dict) -> CommandResults:
+    return CommandResults(readable_output=str(args))
+
+
+def pan_os_update_master_key_command(args: dict) -> CommandResults:
+    return CommandResults(readable_output=str(args))
+
+
+def pan_os_get_master_key_command(args: dict) -> CommandResults:
+    return CommandResults(readable_output=str(args))
+
+
 """ Fetch Incidents """
 
 
@@ -15695,6 +15707,12 @@ def main():  # pragma: no cover
             return_results(pan_os_delete_profile_exception_command(args))
         elif command == 'pan-os-list-profile-exception':
             return_results(pan_os_list_profile_exception_command(args))
+        elif command == 'pan-os-create-master-key':
+            return_results(pan_os_create_master_key_command(args))
+        elif command == 'pan-os-update-master-key':
+            return_results(pan_os_update_master_key_command(args))
+        elif command == 'pan-os-get-master-key':
+            return_results(pan_os_get_master_key_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
