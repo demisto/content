@@ -67,7 +67,7 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 INCOMING_MIRRORED_FIELDS = ['ID', 'Etag', 'Title', 'Description', 'Severity', 'Status', 'owner', 'tags', 'FirstActivityTimeUTC',
                                   'LastActivityTimeUTC', 'LastModifiedTimeUTC', 'CreatedTimeUTC', 'IncidentNumber', 'AlertsCount',
-                                  'AlertProductNames', 'Tactics', 'relatedAnalyticRuleIds', 'IncidentUrl', 'classification',
+                                  'AlertProductNames', 'Tactics', 'relatedAnalyticRuleIds', 'IncidentUrl', 'ProviderIncidentUrl', 'classification',
                                   'classificationComment', 'alerts', 'entities', 'comments', 'relations']
 OUTGOING_MIRRORED_FIELDS = {'etag', 'title', 'description', 'severity', 'status', 'tags', 'firstActivityTimeUtc',
                             'lastActivityTimeUtc', 'classification', 'classificationComment', 'classificationReason'}
@@ -248,6 +248,7 @@ def incident_data_to_xsoar_format(inc_data, is_fetch_incidents=False):
         'BookmarksCount': properties.get('additionalData', {}).get('bookmarksCount'),
         'CommentsCount': properties.get('additionalData', {}).get('commentsCount'),
         'AlertProductNames': properties.get('additionalData', {}).get('alertProductNames'),
+        'ProviderIncidentUrl': properties.get('additionalData', {}).get('providerIncidentUrl'),
         'Tactics': properties.get('additionalData', {}).get('tactics'),
         'Techniques': properties.get('additionalData', {}).get('techniques'),
         'FirstActivityTimeGenerated': format_date(properties.get('firstActivityTimeGenerated')),
