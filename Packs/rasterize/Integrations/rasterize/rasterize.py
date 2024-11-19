@@ -49,7 +49,7 @@ CHROME_OPTIONS = ["--headless",
                   f'--user-agent="{USER_AGENT}"',
                   ]
 
-USE_ONLY_ONE_CHROME_PORT = demisto.params().get('using_one_chrome_port', True)
+USE_ONLY_ONE_CHROME_PORT = demisto.params().get('using_one_chrome_port', False)
 WITH_ERRORS = demisto.params().get('with_error', True)
 IS_HTTPS = argToBoolean(demisto.params().get('is_https', False))
 
