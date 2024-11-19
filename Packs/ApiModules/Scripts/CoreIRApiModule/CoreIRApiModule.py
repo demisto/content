@@ -2453,11 +2453,13 @@ def run_script_execute_commands_command(client: CoreClient, args: Dict) -> Comma
     incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
 
-    commands_string = args.get('commands')
-    commands: list = [commands_string] if args.get('is_raw_command') else argToList(commands_string)
+    commands = args.get('commands')
+    is_raw_command = argToBoolean(args.get('is_raw_command', False))
+    commands_list = remove_empty_elements([commands]) if is_raw_command else argToList(commands)
+
     if args.get('command_type') == 'powershell':
-        commands = [form_powershell_command(command) for command in commands]
-    parameters = {'commands_list': commands}
+        commands_list = [form_powershell_command(command) for command in commands_list]
+    parameters = {'commands_list': commands_list}
 
     response = client.run_script('a6f7683c8e217d85bd3c398f0d3fb6bf', endpoint_ids, parameters, timeout, incident_id)
     reply = response.get('reply')
