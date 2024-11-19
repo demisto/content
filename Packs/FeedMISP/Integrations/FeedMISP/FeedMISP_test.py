@@ -409,7 +409,7 @@ def test_ignore_last_fetched_indicator(mocker):
         'type': 'attribute',
         'filters': {'category': ['Payload delivery']},
     }
-    mocked_last_run = {"timestamp": "1607517728", "last_indicator_value": "test"}
+    mocked_last_run = {"last_indicator_timestamp": "1607517728", "last_indicator_value": "test"}
     mocker.patch.object(demisto, 'getLastRun', return_value=mocked_last_run)
     mocker.patch.object(demisto, 'setLastRun')
     mocker.patch.object(demisto, 'createIndicators')
@@ -457,7 +457,7 @@ def test_fetch_new_indicator_after_last_indicator_been_ignored(mocker):
         'type': 'attribute',
         'filters': {'category': ['Payload delivery']},
     }
-    mocked_last_run = {"timestamp": "1607517728", "last_indicator_value": "test1"}
+    mocked_last_run = {"last_indicator_timestamp": "1607517728", "last_indicator_value": "test1"}
     mocker.patch.object(demisto, 'getLastRun', return_value=mocked_last_run)
     setLastRun_mocked = mocker.patch.object(demisto, 'setLastRun')
     mocker.patch.object(demisto, 'createIndicators')
@@ -478,10 +478,7 @@ def test_set_last_run_pagination(mocker):
     Then:
         - Ensure the last run is set correctly with the appropriate values
     """
-    from FeedMISP import set_last_run_pagination
-
-    # Mock the demisto.setLastRun function
-    mock_set_last_run = mocker.patch('FeedMISP.demisto.setLastRun')
+    from FeedMISP import update_candidate
 
     # Sample indicators
     indicators = [
@@ -490,20 +487,18 @@ def test_set_last_run_pagination(mocker):
     ]
 
     # Test parameters
-    next_page = 2
-    last_run = {"timestamp": "1607517727", "last_indicator_value": "test0"}
-    last_run_timestamp = last_run["timestamp"]
+    last_run = {"last_indicator_timestamp": "1607517727", "last_indicator_value": "test0"}
+    last_run_timestamp = last_run["last_indicator_timestamp"]
     last_run_value = last_run["last_indicator_value"]
     latest_indicator_timestamp = indicators[-1]["timestamp"]
     latest_indicator_value = indicators[-1]["value"]
 
     # Call the function
-    set_last_run_pagination(last_run, last_run_timestamp, last_run_value, next_page,
-                            latest_indicator_timestamp, latest_indicator_value)
+    update_candidate(last_run, last_run_timestamp, last_run_value,
+                     latest_indicator_timestamp, latest_indicator_value)
 
     # Assert that setLastRun was called with the correct arguments
-    expected_last_run = {'timestamp': last_run_timestamp, 'candidate_timestamp': latest_indicator_timestamp,
+    expected_last_run = {'last_indicator_timestamp': last_run_timestamp, 'candidate_timestamp': latest_indicator_timestamp,
                          'last_indicator_value': last_run_value,
-                         'candidate_indicator_value': latest_indicator_value, 'page': next_page}
-
-    mock_set_last_run.assert_called_once_with(expected_last_run)
+                         'candidate_value': latest_indicator_value}
+    assert last_run == expected_last_run
