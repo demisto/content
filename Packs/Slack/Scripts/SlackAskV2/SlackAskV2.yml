@@ -14,7 +14,7 @@ args:
 - description: The second reply option. The default is "No" with a red button. To change the button color, add the pound sign (#) followed by the name of the new color (green, red, or black). The default color is "red". For example, "No#red".
   name: option2
   defaultValue: No#red
-- description: The task to close with the reply. If empty, then no playbook tasks will be closed.
+- description: The task number or the task tag to close with the reply. If empty, then no playbook tasks will be closed.
   name: task
 - description: Tag to add to email reply entries.
   name: replyEntriesTag

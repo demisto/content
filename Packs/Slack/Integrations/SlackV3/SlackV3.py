@@ -933,9 +933,9 @@ def answer_question(text: str, question: dict, email: str = ''):
     entitlement = question.get('entitlement', '')
     content, guid, incident_id, task_id = extract_entitlement(entitlement, text)
     try:
-        demisto.debug(f'SV3: Answering question for {entitlement=} for {incident_id=} and {task_id=} with {content=}')
+        demisto.debug(f'SV3: Starting handling entitlement {entitlement} for {incident_id=} and {task_id=} with {content=}')
         demisto.handleEntitlementForUser(incident_id, guid, email, content, task_id)
-        demisto.debug(f'SV3: Finished handling entitlement and answering question {entitlement}')
+        demisto.debug(f'SV3: Finished handling entitlement {entitlement}')
     except Exception as e:
         demisto.debug(f'SV3: Failed handling entitlement {entitlement}: {str(e)}')
     question['remove'] = True
@@ -957,7 +957,7 @@ def check_for_unanswered_questions():
                 # and remove it
                 expiry = datetime.strptime(question['expiry'], DATE_FORMAT)
                 if expiry < now:
-                    _ = answer_question(question.get('default_response') + "debug_session", question, email='')
+                    _ = answer_question(question.get('default_response'), question, email='')
                     updated_questions.append(question)
                     continue
             # Check if it has been enough time(determined by the POLL_INTERVAL_MINUTES parameter)
@@ -1387,10 +1387,10 @@ def search_text_for_entitlement(text: str, user: AsyncSlackResponse) -> str:
     entitlement_match = re.search(ENTITLEMENT_REGEX, text)
     if entitlement_match:
         content, guid, incident_id, task_id = extract_entitlement(entitlement_match.group(), text)
-        demisto.debug(f'SV3: Answering question for entitlement {entitlement_match} for {incident_id=} and {task_id=}')
+        demisto.debug(f'SV3: Starting handling entitlement {entitlement_match} for {incident_id=} and {task_id=}')
         demisto.handleEntitlementForUser(
             incident_id, guid, user.get('profile', {}).get('email'), content, task_id)  # type: ignore
-        demisto.debug(f'SV3: Finish handling entitlement and answer question {entitlement_match} for {incident_id=} and {task_id=}')
+        demisto.debug(f'SV3: Finish handling entitlement {entitlement_match} for {incident_id=} and {task_id=}')
         return 'Thank you for your response.'
     else:
         return ''
@@ -1414,7 +1414,6 @@ async def process_entitlement_reply(
     :param message_ts: str: The timestamp of the message. Acts as a unique ID.
     :return: None
     """
-    demisto.debug('SV3: process_entitlement_reply')
     if '{user}' in entitlement_reply:
         entitlement_reply = entitlement_reply.replace('{user}', f'<@{user_id}>')
     if '{response}' in entitlement_reply and action_text:
@@ -1429,6 +1428,7 @@ async def process_entitlement_reply(
                                            'text': entitlement_reply,
                                            'blocks': []
                                        })
+    demisto.debug(f'SV3: Updated the original poll post with {entitlement_reply} in channel {channel}')
 
 
 def is_dm(channel: str) -> bool:
@@ -1601,19 +1601,18 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                 if entitlement_json is None:
                     return
                 if actions[0].get('action_id') == 'xsoar-button-submit':
-                    demisto.debug("SV3: Handling a SlackBlockBuilder response.")
                     if state:
                         state.update({"xsoar-button-submit": "Successful"})
                         action_text = json.dumps(state)
                 else:
-                    demisto.debug("SV3: Not handling a SlackBlockBuilder response.")
                     action_text = actions[0].get('text').get('text')
                 demisto.debug(f'SV3: Will now answer the question with {entitlement_string=}')
                 _ = answer_question(action_text, entitlement_string,
                                     user.get('profile', {}).get('email'))  # type: ignore
-                entitlement_reply = entitlement_string.get("reply", "Thank you for your reply.") + "debug_session"
+                entitlement_reply = entitlement_string.get("reply", "Thank you for your reply.")
             if entitlement_reply:
-                demisto.debug(f'SV3: Processing entitlement reply with {entitlement_reply} for {user_id=} and {action_text=} and {entitlement_string=}')
+                demisto.debug(f'SV3: Processing entitlement reply with {entitlement_reply} for {user_id=} and ' \
+                              f'{action_text=} and {entitlement_string=}')
                 await process_entitlement_reply(entitlement_reply, user_id, action_text, response_url=response_url)
                 demisto.debug(f'SV3: Finished processing entitlement reply {entitlement_reply} and {entitlement_string=}')
                 reset_listener_health()
@@ -1644,11 +1643,10 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         # If a thread_id is found in the payload, we will check if it is a reply to a SlackAsk task. Currently threads
         # are not mirrored
         if thread:
-            demisto.debug("SV3: Got a thread reply, checking if related to SlackAsk task")
             user = await get_user_details(user_id=user_id)
             entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
             if entitlement_reply:
-                entitlement_reply = entitlement_reply + "debug_session"
+                entitlement_reply = entitlement_reply
                 demisto.debug(f'SV3: Processing entitlement reply with {entitlement_reply} for {user_id=} and {action_text=}')
                 await process_entitlement_reply(entitlement_reply, user_id, action_text, channel=channel,
                                                 message_ts=message_ts)
@@ -1712,7 +1710,6 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
     Returns:
         If the message contains entitlement, return a reply.
     """
-    demisto.debug("SV3: Handling an entitlement reply.")
     integration_context = fetch_context()
     questions = integration_context.get('questions', [])
     if questions and thread_id:
@@ -1721,13 +1718,12 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
         if question_filter:
             question = question_filter[0]
             entitlement = question.get('entitlement')
-            demisto.debug(f"SV3: Found a question {question}")
             reply = question.get('reply', 'Thank you for your response.')
             content, guid, incident_id, task_id = extract_entitlement(entitlement, text)
-            demisto.debug(f'SV3: Answering question for entitlement {entitlement} for {incident_id=} and {task_id=}')
+            demisto.debug(f'SV3: Starting handling entitlement {entitlement} for {incident_id=} and {task_id=}')
             demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'), content,
                                              task_id)
-            demisto.debug(f'SV3: Finish handling entitlement and answering question {entitlement} for {incident_id=} and {task_id=}')
+            demisto.debug(f'SV3: Finish handling entitlement {entitlement} for {incident_id=} and {task_id=}')
             question['remove'] = True
             set_to_integration_context_with_retries({'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
@@ -1902,7 +1898,6 @@ def slack_send():
     """
 
     args = demisto.args()
-    demisto.debug(f'SV3: Starting to send notification with {args=}')
     message = args.get('message', '')
     to = args.get('to')
     original_channel = args.get('channel')
@@ -1985,7 +1980,6 @@ def slack_send():
                 reply = parsed_message.get('reply')
                 expiry = parsed_message.get('expiry')
                 default_response = parsed_message.get('default_response')
-                demisto.debug(f'SV3: Found parsed message with entitlement: {parsed_message}')
             except Exception:
                 demisto.info('Slack - could not parse JSON from entitlement blocks.')
     elif message:
@@ -1998,17 +1992,13 @@ def slack_send():
                 reply = parsed_message.get('reply')
                 expiry = parsed_message.get('expiry')
                 default_response = parsed_message.get('default_response')
-                demisto.debug(f'SV3: Found parsed message with entitlement: {parsed_message}')
             except Exception:
                 demisto.info('Slack - could not parse JSON from entitlement message.')
 
-    demisto.debug(f'SV3: Sending slack message request with params: {to=}, {channel=}, {entry=}, {ignore_add_url=}, '
-                  f'{thread_id=}, {message=}, {blocks=}, {channel_id=}')
     response = slack_send_request(to, channel, group, entry, ignore_add_url, thread_id, message=message, blocks=blocks,
                                   channel_id=channel_id)
 
     if response:
-        demisto.debug(f'SV3: Got response: {response}')
         thread = response.get('ts')
         if entitlement:
             demisto.debug(f'SV3: Saving entitlement {entitlement} in context with thread id {thread} with {default_response=}')

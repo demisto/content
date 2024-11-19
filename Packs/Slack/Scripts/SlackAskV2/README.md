@@ -33,7 +33,7 @@ This script uses the following commands and scripts.
 | message | The message to send to the user or channel. |
 | option1 | The first reply option. The default is "Yes" with a green button. To change the color of the button, add the pound sign \(\#\) followed by the name of the new color \(green, red, or black\). The default color is "green". For example, "Yes\#green". |
 | option2 | The second reply option. The default is "No" with a red button. To change the button color, add the pound sign \(\#\) followed by the name of the new color \(green, red, or black\). The default color is "red". For example, "No\#red". |
-| task | The task to close with the reply. If empty, then no playbook tasks will be closed. |
+| task | The task number or the task tag to close with the reply. If empty, then no playbook tasks will be closed. |
 | replyEntriesTag | Tag to add to email reply entries. |
 | persistent | Indicates whether to use one-time entitlement or persistent entitlement. |
 | responseType | How the user should respond to the question. |
