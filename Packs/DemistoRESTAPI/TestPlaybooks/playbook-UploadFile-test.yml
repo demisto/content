@@ -481,7 +481,7 @@ tasks:
     task:
       id: 359b53c1-e074-41a8-87cc-7b1aeaa63a21
       version: -1
-      name: Activate the incident investigation
+      name: Activate the incident investigation (allow failure)
       script: investigate
       type: regular
       iscommand: false
