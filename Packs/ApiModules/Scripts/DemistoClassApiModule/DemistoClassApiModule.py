@@ -67,13 +67,26 @@ if sys.version_info[0] >= 3:
                 return super(DemistoScript, self).executeCommand(command, args)
 
         class DemistoIntegration(DemistoWrapper):
+            def _stringify_last_run(self, last_run, truncate_size=1024):
+                last_run_str = json.dumps(last_run, indent=4)
+                last_run_size = len(last_run_str.encode('utf-8'))
+                if last_run_size > 1 * 1024 * 1024:  # 1MB
+                    self.debug(
+                        "[WARNING] last run is too large: {} MB".format(
+                            round(len(last_run_size) / (1 * 1024 * 1024), 1),
+                        )
+                    )
+                if len(last_run_str) > truncate_size:
+                    return last_run_str[:truncate_size] + "...[truncated]"
+                return last_run_str
+
             def getLastRun(self):
-                res = super(DemistoIntegration, self).getLastRun()
-                self.debug("LastRun is: {}".format(json.dumps(res, indent=4)))
-                return res
+                last_run = super(DemistoIntegration, self).getLastRun()
+                self.debug("LastRun is: {}".format(self._stringify_last_run(last_run)))
+                return last_run
 
             def setLastRun(self, obj):
-                self.debug("Setting last run to: {}".format(json.dumps(obj, indent=4)))
+                self.debug("Setting last run to: {}".format(self._stringify_last_run(obj)))
                 super(DemistoIntegration, self).setLastRun(obj)
 
             def incidents(self, incidents):
