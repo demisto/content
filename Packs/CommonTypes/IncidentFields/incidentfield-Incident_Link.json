@@ -25,6 +25,6 @@
     "threshold": 72,
     "fromVersion": "5.0.0",
     "associatedTypes": [
-    "Microsoft 365 Defender Incident"
-  ]
+        "Microsoft 365 Defender Incident"
+    ]
 }

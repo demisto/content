@@ -21,15 +21,15 @@
     "system": false,
     "threshold": 72,
     "type": "singleSelect",
-    "selectValues": [
-    "Active",
-    "In Progress",
-    "Resolved",
-    "Redirected"
-    ],
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.5.0"
+    "fromVersion": "5.5.0",
+    "selectValues": [
+        "Active",
+        "In Progress",
+        "Resolved",
+        "Redirected"
+    ]
 }

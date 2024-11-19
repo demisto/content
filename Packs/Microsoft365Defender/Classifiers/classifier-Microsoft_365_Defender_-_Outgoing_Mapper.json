@@ -1,140 +1,118 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
-	"defaultIncidentType": "",
-	"definitionId": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "9fdcdb44-9931-4946-813b-0cb09c7e9f29",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 0,
-	"mapping": {
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"assignedTo": {
-					"complex": {
-						"filters": [],
-						"root": "assigneduser",
-						"transformers": []
-					}
-				},
-				"classification": {
-					"complex": {
-						"filters": [],
-						"root": "microsoft365defenderclassification",
-						"transformers": [
-							{
-								"args": {
-									"action_dt": {
-										"isContext": false
-									},
-									"ignore_case": {
-										"isContext": false
-									},
-									"multi_line": {
-										"isContext": false
-									},
-									"output_format": {
-										"isContext": false,
-										"value": {
-											"simple": "\\1"
-										}
-									},
-									"period_matches_newline": {
-										"isContext": false
-									},
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "([a-zA-Z0-9_ ]+) - ([a-zA-Z0-9_ ]+)"
-										}
-									}
-								},
-								"operator": "RegexReplace"
-							}
-						]
-					}
-				},
-				"comments": {
-					"complex": {
-						"filters": [],
-						"root": "microsoft365comments",
-						"transformers": []
-					}
-				},
-				"determination": {
-					"complex": {
-						"filters": [],
-						"root": "microsoft365defenderclassification",
-						"transformers": [
-							{
-								"args": {
-									"action_dt": {
-										"isContext": false
-									},
-									"ignore_case": {
-										"isContext": false
-									},
-									"multi_line": {
-										"isContext": false
-									},
-									"output_format": {
-										"isContext": false,
-										"value": {
-											"simple": "\\2"
-										}
-									},
-									"period_matches_newline": {
-										"isContext": false
-									},
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "([a-zA-Z0-9_ ]+) - ([a-zA-Z0-9_ ]+)"
-										}
-									}
-								},
-								"operator": "RegexReplace"
-							}
-						]
-					}
-				},
-				"status": {
-					"complex": {
-						"filters": [],
-						"root": "microsoft365defenderstatus",
-						"transformers": []
-					}
-				},
-				"tags": {
-					"complex": {
-						"filters": [],
-						"root": "microsoft365defendertags",
-						"transformers": []
-					}
-				}
-			}
-		}
-	},
-	"name": "Microsoft 365 Defender - Outgoing Mapper",
-	"nameRaw": "Microsoft 365 Defender - Outgoing Mapper",
-	"packID": "",
-	"packName": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
-	"type": "mapping-outgoing",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "Microsoft 365 Defender - Outgoing Mapper",
+    "mapping": {
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "assignedTo": {
+                    "complex": {
+                        "filters": [],
+                        "root": "assigneduser",
+                        "transformers": []
+                    }
+                },
+                "classification": {
+                    "complex": {
+                        "filters": [],
+                        "root": "microsoft365defenderclassification",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "action_dt": {
+                                        "isContext": false
+                                    },
+                                    "ignore_case": {
+                                        "isContext": false
+                                    },
+                                    "multi_line": {
+                                        "isContext": false
+                                    },
+                                    "output_format": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "\\1"
+                                        }
+                                    },
+                                    "period_matches_newline": {
+                                        "isContext": false
+                                    },
+                                    "regex": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "([a-zA-Z0-9_ ]+) - ([a-zA-Z0-9_ ]+)"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexReplace"
+                            }
+                        ]
+                    }
+                },
+                "comments": {
+                    "complex": {
+                        "filters": [],
+                        "root": "microsoft365comments",
+                        "transformers": []
+                    }
+                },
+                "determination": {
+                    "complex": {
+                        "filters": [],
+                        "root": "microsoft365defenderclassification",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "action_dt": {
+                                        "isContext": false
+                                    },
+                                    "ignore_case": {
+                                        "isContext": false
+                                    },
+                                    "multi_line": {
+                                        "isContext": false
+                                    },
+                                    "output_format": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "\\2"
+                                        }
+                                    },
+                                    "period_matches_newline": {
+                                        "isContext": false
+                                    },
+                                    "regex": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "([a-zA-Z0-9_ ]+) - ([a-zA-Z0-9_ ]+)"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexReplace"
+                            }
+                        ]
+                    }
+                },
+                "status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "microsoft365defenderstatus",
+                        "transformers": []
+                    }
+                },
+                "tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "microsoft365defendertags",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "name": "Microsoft 365 Defender - Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.10.0"
 }
