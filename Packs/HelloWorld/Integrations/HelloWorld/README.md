@@ -1,26 +1,30 @@
 This is the Hello World integration for getting started.
 
-## Configure HelloWorld in Cortex
+## Configure HelloWorld on Cortex XSOAR
 
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for HelloWorld.
+3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| Source Reliability | Reliability of the source providing the intelligence data. | False |
-| Server URL (e.g., https://api.xsoar-example.com) |  | True |
-| Fetch alerts |  | False |
-| Alert type |  | False |
-| Maximum number of alerts per fetch |  | False |
-| API Key |  | True |
-| Score threshold for IP reputation command | Set this to determine the HelloWorld score that will determine if an IP is malicious \(0-100\) | False |
-| Severity of alerts to fetch |  | True |
-| First fetch time |  | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Source Reliability | Reliability of the source providing the intelligence data. | False |
+    | Server URL (e.g., https://api.xsoar-example.com) |  | True |
+    | Fetch alerts |  | False |
+    | Alert type |  | False |
+    | Maximum number of alerts per fetch |  | False |
+    | API Key |  | True |
+    | Score threshold for IP reputation command | Set this to determine the HelloWorld score that will determine if an IP is malicious \(0-100\) | False |
+    | Severity of alerts to fetch |  | True |
+    | First fetch time |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
+4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### helloworld-say-hello
@@ -682,3 +686,4 @@ Return IP information and reputation.
 >|as_owner|asn|continent|country|jarm|last_analysis_stats|last_modification_date|network|regional_internet_registry|reputation|tags|total_votes|whois_date|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| EMERALD-ONION |  | NA | US | :jarm: | ***harmless***: 72<br/>***malicious***: 5<br/>***suspicious***: 2<br/>***timeout***: 0<br/>***undetected***: 8 |  | :cidr: | ARIN |  | ***values***:  | ***harmless***: 0<br/>***malicious***: 1 |  |
+
