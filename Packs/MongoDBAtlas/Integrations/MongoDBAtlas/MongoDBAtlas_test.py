@@ -370,6 +370,7 @@ def test_fetch_event_type_using_previous_page(mocker, fetch_limit, expected_even
             {"results": [{"id": i} for i in range(50, 100)]},
             {"results": [{"id": i} for i in range(100, 150)]}
         ], 120, 119),
+        # Case 3: Last page contains fewer items than requested
         (300, [
             {"results": [{"id": i} for i in range(50)]},
             {"results": [{"id": i} for i in range(50, 100)]},
@@ -377,7 +378,13 @@ def test_fetch_event_type_using_previous_page(mocker, fetch_limit, expected_even
             {"results": [{"id": i} for i in range(150, 200)]},
             {"results": [{"id": i} for i in range(200, 250)]},
             {"results": []},
-        ], 250, 249)
+        ], 250, 249),
+        (125, [
+            {"results": [{"id": i} for i in range(50)]},
+            {"results": [{"id": i} for i in range(50, 100)]},
+            {"results": [{"id": i} for i in range(100, 110)]},
+            {"results": []}
+        ], 110, 109)
     ]
 )
 def test_get_events_first_time_events(mocker, fetch_limit, mock_side_effect, expected_length, expected_last_id):

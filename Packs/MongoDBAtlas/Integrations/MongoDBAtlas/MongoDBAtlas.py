@@ -109,31 +109,31 @@ class Client(BaseClient):
         """
         return self.get_alerts_with_page_num(page_num=1, items_per_page=500)
 
-    def get_events_first_five_pages(self, fetch_limit: int):
-        # TODO to delete and modify the unittest
-        """
-        Fetches events from up to 5 pages, ensuring that the total number of fetched events does not exceed the specified
-        `fetch_limit`.
-
-        Args:
-            fetch_limit (int): The maximum number of events to fetch.
-
-        Returns:
-            list: A list of events, truncated to the `fetch_limit` if necessary.
-        """
-        results = []
-        items_per_page = min(fetch_limit, 500)
-
-        for page_num in range(1, MAX_NUMBER_OF_PAGES + 1):
-            page_results = self.get_events_with_page_num(page_num=page_num, items_per_page=items_per_page).get('results')
-            results.extend(page_results)
-
-            if len(results) >= fetch_limit:
-                return results[:fetch_limit]
-
-            items_per_page = min(fetch_limit - len(results), 500)
-
-        return results
+    # def get_events_first_five_pages(self, fetch_limit: int):
+    #     # TODO to delete and modify the unittest
+    #     """
+    #     Fetches events from up to 5 pages, ensuring that the total number of fetched events does not exceed the specified
+    #     `fetch_limit`.
+    #
+    #     Args:
+    #         fetch_limit (int): The maximum number of events to fetch.
+    #
+    #     Returns:
+    #         list: A list of events, truncated to the `fetch_limit` if necessary.
+    #     """
+    #     results = []
+    #     items_per_page = min(fetch_limit, 500)
+    #
+    #     for page_num in range(1, MAX_NUMBER_OF_PAGES + 1):
+    #         page_results = self.get_events_with_page_num(page_num=page_num, items_per_page=items_per_page).get('results')
+    #         results.extend(page_results)
+    #
+    #         if len(results) >= fetch_limit:
+    #             return results[:fetch_limit]
+    #
+    #         items_per_page = min(fetch_limit - len(results), 500)
+    #
+    #     return results
 
     def get_events_first_time_events(self, fetch_limit: int):
         """
@@ -170,7 +170,7 @@ class Client(BaseClient):
 
 
 def check_fetch_limit(fetch_limit):
-    if int(fetch_limit) < 1 or int(fetch_limit) > 2500:
+    if int(fetch_limit) < 1:
         message = 'Invalid maximum number of events per fetch, should be between 1 and 2500.'
         raise Exception(message)
 
@@ -422,23 +422,23 @@ def save_events_ids_with_specific_created_date(events: list, created_date: str) 
     return results
 
 
-def get_page_with_min_time_for_events(client: Client, min_time, fetch_limit) -> dict:
-    """
-    If `min_time` is provided, fetches events from that timestamp onward.
-    If None, fetches events from the beginning.
-
-    Args:
-        client (Client): The API client for fetching events.
-        min_time: The timestamp to fetch from, or None to start from the beginning.
-        fetch_limit:
-    Returns:
-        dict: A dictionary of events from the specified time.
-    """
-    if min_time:
-        results = client.get_events_with_min_time(min_time)
-    else:
-        results = client.get_events_first_five_pages(fetch_limit)
-    return results
+# def get_page_with_min_time_for_events(client: Client, min_time, fetch_limit) -> dict:
+#     """
+#     If `min_time` is provided, fetches events from that timestamp onward.
+#     If None, fetches events from the beginning.
+#
+#     Args:
+#         client (Client): The API client for fetching events.
+#         min_time: The timestamp to fetch from, or None to start from the beginning.
+#         fetch_limit:
+#     Returns:
+#         dict: A dictionary of events from the specified time.
+#     """
+#     if min_time:
+#         results = client.get_events_with_min_time(min_time)
+#     else:
+#         results = client.get_events_first_time_events(fetch_limit)
+#     return results
 
 
 def create_last_run_dict_for_events(output: list, new_min_time: str) -> dict:
@@ -471,7 +471,7 @@ def first_time_fetching_events(client: Client, fetch_limit: int):
             - results (list): A list of event dictionaries.
             - new_min_time (str): The creation time of the latest fetched event.
     """
-    results = client.get_events_first_five_pages(fetch_limit)
+    results = client.get_events_first_time_events(fetch_limit)
     for event in results:
         enrich_event(event, event_type='events')
     last_fetched_event = results[0] if results else None
