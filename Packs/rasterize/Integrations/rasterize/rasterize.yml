@@ -32,7 +32,7 @@ configuration:
   required: false
   defaultvalue: false
   type: 0
-  additionalinfo: "In case of "Could not use rasterize command, please use this option."
+  additionalinfo: 'In case of "Could not use rasterize command", please use this option.'
 - name: max_chromes_count
   display: Number of maximum Chrome instances to keep running simultaneously.
   required: false
