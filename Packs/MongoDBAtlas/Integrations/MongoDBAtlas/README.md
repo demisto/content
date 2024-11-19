@@ -1,11 +1,11 @@
-MongoDBAtlas is an integration that supports fetching and managing alerts and events within Cortex XSIAM.
+MongoDB Atlas is an integration that supports fetching and managing alerts and events within Cortex XSIAM.
 
 This integration was integrated and tested with version 2.0 of MongoDB Atlas.
 
-## Configure MongoDBAtlas on Cortex XSIAM
+## Configure MongoDB Atlas on Cortex XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Automation & Feed Integrations**.
-2. Search for MongoDBAtlas.
+2. Search for MongoDB Atlas.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
