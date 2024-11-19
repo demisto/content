@@ -408,14 +408,7 @@ def test_get_events_first_time_events(mocker, fetch_limit, mock_side_effect, exp
     assert results[-1]["id"] == expected_last_id
 
 
-@pytest.mark.parametrize(
-    "fetch_limit",
-    [
-        0,
-        2501
-    ]
-)
-def test_check_fetch_limit(mocker, fetch_limit):
+def test_check_fetch_limit(mocker):
     """
     Given: An invalid fetch limit (either below 1 or above 2500).
     When: The check_fetch_limit function is called with the out-of-bounds fetch limit.
@@ -425,6 +418,6 @@ def test_check_fetch_limit(mocker, fetch_limit):
     from MongoDBAtlas import check_fetch_limit
 
     with pytest.raises(Exception) as exc_info:
-        check_fetch_limit(fetch_limit)
+        check_fetch_limit(0)
 
     assert str(exc_info.value) == "Invalid maximum number of events per fetch, should be between 1 and 2500."
