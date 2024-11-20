@@ -701,7 +701,7 @@ def get_port(params: dict = demisto.params()) -> int:
     """
     Gets port from the integration parameters.
     """
-    port_mapping: str = params.get('longRunningPort', '')
+    port_mapping: str = params.get('longRunningPort', '1111')
     port: int
     if port_mapping:
         if ':' in port_mapping:
