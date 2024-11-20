@@ -38,17 +38,73 @@ filter category = "AZFWNetworkRule" // Azure Firewall Network Rule
 	destination_ipv4 = arrayindex(regextract(properties -> DestinationIp, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
 	destination_ipv6 = arrayindex(regextract(properties -> DestinationIp, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
 	ip_protocol = uppercase(properties -> Protocol),
-	fw_action = if(properties -> Action != "", properties -> Action),
-	fw_policy = if(properties -> Policy != "", properties -> Policy),
-	fw_rule = if(properties -> Rule != "", properties -> Rule),
+	action = if(properties -> Action != "", properties -> Action),
+	policy = if(properties -> Policy != "", properties -> Policy),
+	rule = if(properties -> Rule != "", properties -> Rule),
 	source_ipv4 = arrayindex(regextract(properties -> SourceIp, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
 	source_ipv6 = arrayindex(regextract(properties -> SourceIp, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0)
 | alter 
-	xdm.event.outcome = if(fw_action = "Allow", XDM_CONST.OUTCOME_SUCCESS, fw_action = "Deny" or fw_action = "Drop", XDM_CONST.OUTCOME_FAILED),
+	xdm.event.outcome = if(action = "Allow", XDM_CONST.OUTCOME_SUCCESS, action = "Deny" or action = "Drop", XDM_CONST.OUTCOME_FAILED),
 	xdm.event.outcome_reason = if(properties -> ActionReason != "", properties -> ActionReason),
 	xdm.network.ip_protocol = if(ip_protocol = "UDP", XDM_CONST.IP_PROTOCOL_UDP, ip_protocol = "TCP", XDM_CONST.IP_PROTOCOL_TCP, ip_protocol),
-	xdm.network.rule = coalesce(concat(fw_policy, ":", fw_rule), fw_rule, fw_policy),
-	xdm.observer.action = fw_action,
+	xdm.network.rule = coalesce(concat(policy, ":", rule), rule, policy),
+	xdm.observer.action = action,
+	xdm.source.ipv4 = source_ipv4,
+	xdm.source.ipv6 = source_ipv6,
+	xdm.source.port = to_integer(properties -> SourcePort),
+    xdm.source.host.ipv4_public_addresses = if(source_ipv4 != null and not incidr(source_ipv4, "10.0.0.0/8") and not incidr(source_ipv4, "172.16.0.0/12") and not incidr(source_ipv4, "192.168.0.0/16") and not incidr(source_ipv4, "127.0.0.0/8") and not incidr(source_ipv4, "169.254.0.0/16") and not incidr(source_ipv4, "100.64.0.0/10"), arraycreate(source_ipv4)),
+	xdm.target.ipv4 = destination_ipv4,
+	xdm.target.ipv6 = destination_ipv6,
+    xdm.target.host.ipv4_public_addresses = if(destination_ipv4 != null and not incidr(destination_ipv4, "10.0.0.0/8") and not incidr(destination_ipv4, "172.16.0.0/12") and not incidr(destination_ipv4, "192.168.0.0/16") and not incidr(destination_ipv4, "127.0.0.0/8") and not incidr(destination_ipv4, "169.254.0.0/16") and not incidr(destination_ipv4, "100.64.0.0/10"), arraycreate(destination_ipv4)),
+	xdm.target.port = to_integer(properties -> DestinationPort);
+
+
+// https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwapplicationrule
+filter category = "AZFWApplicationRule" // Azure Firewall Application Rule
+| alter 
+	action = if(properties -> Action != "", properties -> Action),
+	ip_protocol = uppercase(properties -> Protocol),
+	is_explicit_proxy_request = to_boolean(properties -> IsExplicitProxyRequest),
+	policy = if(properties -> Policy != "", properties -> Policy),
+	rule = if(properties -> Rule != "", properties -> Rule),
+	source_ip = properties -> SourceIp,
+	target_fqdn = properties -> Fqdn,
+	target_url = if(properties -> TargetUrl != "", properties -> TargetUrl)
+| alter 
+	source_ipv4 = if(incidr(source_ip, "0.0.0.0/0"), source_ip),
+	source_ipv6 = if(source_ip ~= "^(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}$", source_ip),
+	target_ipv4 = if(incidr(target_fqdn, "0.0.0.0/0"), target_fqdn),
+	target_ipv6 = if(target_fqdn ~= "^(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}$", target_fqdn)
+| alter 
+	xdm.event.outcome = if(action = "Allow", XDM_CONST.OUTCOME_SUCCESS, action = "Deny" or action = "Drop", XDM_CONST.OUTCOME_FAILED),
+	xdm.event.outcome_reason = if(properties -> ActionReason != "", properties -> ActionReason),
+	xdm.intermediate.is_proxy = if(is_explicit_proxy_request, to_boolean("TRUE")),
+	xdm.network.application_protocol = ip_protocol,
+	xdm.network.http.url = target_url,
+	xdm.network.http.url_category = if(properties -> WebCategory != "", properties -> WebCategory),
+	xdm.network.rule = coalesce(concat(policy, ":", rule), rule, policy),
+	xdm.observer.action = action,
+	xdm.source.host.ipv4_public_addresses = if(source_ipv4 != null and not incidr(source_ipv4, "10.0.0.0/8") and not incidr(source_ipv4, "172.16.0.0/12") and not incidr(source_ipv4, "192.168.0.0/16") and not incidr(source_ipv4, "127.0.0.0/8") and not incidr(source_ipv4, "169.254.0.0/16") and not incidr(source_ipv4, "100.64.0.0/10"), arraycreate(source_ipv4)),
+	xdm.source.ipv4 = source_ipv4,
+	xdm.source.ipv6 = source_ipv6,
+	xdm.source.port = to_integer(properties -> SourcePort),
+	xdm.target.host.fqdn = if(target_ipv4 = null and target_ipv6 = null, target_fqdn), // assert the given FQDN is not an IPv4/6 address
+	xdm.target.host.ipv4_public_addresses = if(target_ipv4 != null and not incidr(target_ipv4, "10.0.0.0/8") and not incidr(target_ipv4, "172.16.0.0/12") and not incidr(target_ipv4, "192.168.0.0/16") and not incidr(target_ipv4, "127.0.0.0/8") and not incidr(target_ipv4, "169.254.0.0/16") and not incidr(target_ipv4, "100.64.0.0/10"), arraycreate(target_ipv4)),
+	xdm.target.ipv4 = target_ipv4,
+	xdm.target.ipv6 = target_ipv6,
+	xdm.target.port = to_integer(properties -> DestinationPort),
+	xdm.target.url = target_url;
+
+// https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwfatflow
+filter category = "AZFWFatFlow" // Azure Firewall Fat Flow Log
+| alter 
+	destination_ipv4 = arrayindex(regextract(properties -> DestinationIp, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
+	destination_ipv6 = arrayindex(regextract(properties -> DestinationIp, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
+	ip_protocol = uppercase(properties -> Protocol),
+	source_ipv4 = arrayindex(regextract(properties -> SourceIp, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
+	source_ipv6 = arrayindex(regextract(properties -> SourceIp, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0)
+| alter 
+	xdm.network.ip_protocol = if(ip_protocol = "UDP", XDM_CONST.IP_PROTOCOL_UDP, ip_protocol = "TCP", XDM_CONST.IP_PROTOCOL_TCP, ip_protocol),
 	xdm.source.ipv4 = source_ipv4,
 	xdm.source.ipv6 = source_ipv6,
 	xdm.source.port = to_integer(properties -> SourcePort),
