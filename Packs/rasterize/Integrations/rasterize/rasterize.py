@@ -590,7 +590,7 @@ def chrome_manager_one_port() -> tuple[Any | None, str | None]:
         value[CHROME_INSTANCE_OPTIONS]: {
             'chrome_port': key
         }
-        for key, value in chrome_instances_contents.items()
+        for port, options in chrome_instances_contents.items()
     }
     chrome_port = chrome_options_dict.get(chrome_options, {}).get('chrome_port', '')
     demisto.debug(f'[test] chrome_manager {chrome_options_dict=} \n {chrome_instances_contents=}')
