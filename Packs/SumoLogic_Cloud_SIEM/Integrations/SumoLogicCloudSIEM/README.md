@@ -86,7 +86,7 @@ The table below shows differences between this integration and the legacy JASK i
 | jask-get-insight-comments | sumologic-sec-insight-get-comments | |
 | jask-get-signal-details | sumologic-sec-signal-get-details | |
 | jask-get-entity-details | sumologic-sec-entity-get-details | |
-| ~~jask-get-related-entities~~ | | Depreacted |
+| ~~jask-get-related-entities~~ | | Deprecated |
 | ~~jask-get-whitelisted-entities~~ | | Deprecated - use command `sumologic-sec-entity-search` with filter `whitelisted:"true"` |
 | jask-search-insights | sumologic-sec-insight-search | |
 | jask-search-entities | sumologic-sec-entity-search | |
@@ -509,6 +509,7 @@ Change status of Insight
 | insight_id | The insight to change status for. | Required | 
 | status | The desired Insight status. Possible values are: new, inprogress, closed. Default is in-progress. | Optional | 
 | resolution | Resolution for closing Insight. Valid values are: "Resolved", "False Positive", "No Action", "Duplicate". Possible values are: Resolved, False Positive, No Action, Duplicate. Default is Resolved. | Optional | 
+| sub_resolution | Custom sub resolution for closing Insight. If populated, it will override the resolution field. Please make sure the resolution matches exactly your Sumo Resolutions | Optional | 
 
 
 #### Context Output
