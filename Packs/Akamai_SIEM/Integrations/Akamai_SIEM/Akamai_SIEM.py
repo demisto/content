@@ -36,6 +36,8 @@ INTEGRATION_CONTEXT_NAME = 'Akamai'
 VENDOR = "Akamai"
 PRODUCT = "WAF"
 FETCH_EVENTS_PAGE_SIZE = 50000
+DOCKER_MIN_TIME_TO_RUN = 30
+EXECUTION_START_TIME = datetime.now()
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -404,7 +406,24 @@ def dedup_events(hashed_events_mapping: dict[str, dict], hashed_events_from_prev
                                   event in hashed_events_mapping.items() if hashed_event in filtered_hashed_events]
     return deduped_events, hashed_events_from_current_run
 
+def should_break_before_timeout(min_allowed_delta: int) -> bool:
+    """
+    Checking whether there's enough time for another fetch request to the Akamai API before docker code loop.
+    The function tests that the remaining running time is less or equal min_allowed_delta.
+    The remaining running time is docker timeout limit in seconds - the run time so far (now time - docker execution start time).
 
+    Args:
+        min_allowed_delta (int): The minimum allowed delta that should remain before going on another fetch interval.
+
+    Returns:
+        bool: Return True if there's not enough time. Otherwise, return False.
+    """
+    timeout_time_nano_seconds = demisto.callingContext.get('context', {}).get('TimeoutDuration')
+    timeout_time_seconds = timeout_time_nano_seconds / 1000000000
+    now = datetime.now()
+    demisto.info(f"Checking wether execution should break before docker timeout with {EXECUTION_START_TIME=}")
+    return timeout_time_seconds - (now - EXECUTION_START_TIME).total_seconds() <= min_allowed_delta
+    
 @logger
 def fetch_events_command(
     client: Client,
@@ -432,6 +451,10 @@ def fetch_events_command(
     offset = ctx.get("offset")
     hashed_events_from_previous_run = set(ctx.get("hashed_events_from_previous_run", set()))
     while total_events_count < int(fetch_limit):
+        if should_break_before_timeout(DOCKER_MIN_TIME_TO_RUN):
+            demisto.info(f"Docker got less than {DOCKER_MIN_TIME_TO_RUN} seconds before timeout, breaking.")
+            break
+        demisto.info(f"[test] {demisto.callingContext.get('context', {})}")
         demisto.info(f"Preparing to get events with {offset=}, {page_size=}, and {fetch_limit=}")
         events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
         if not events:
@@ -488,16 +511,17 @@ def decode_url(headers: str) -> dict:
 
 def main():  # pragma: no cover
     params = demisto.params()
-    client = Client(
-        base_url=urljoin(params.get('host'), '/siem/v1/configs'),
-        verify=not params.get('insecure', False),
-        proxy=params.get('proxy'),
-        auth=EdgeGridAuth(
-            client_token=params.get('clienttoken_creds', {}).get('password') or params.get('clientToken'),
-            access_token=params.get('accesstoken_creds', {}).get('password') or params.get('accessToken'),
-            client_secret=params.get('clientsecret_creds', {}).get('password') or params.get('clientSecret'),
-        )
-    )
+    # client = Client(
+    #     base_url=urljoin(params.get('host'), '/siem/v1/configs'),
+    #     verify=not params.get('insecure', False),
+    #     proxy=params.get('proxy'),
+    #     auth=EdgeGridAuth(
+    #         client_token=params.get('clienttoken_creds', {}).get('password') or params.get('clientToken'),
+    #         access_token=params.get('accesstoken_creds', {}).get('password') or params.get('accessToken'),
+    #         client_secret=params.get('clientsecret_creds', {}).get('password') or params.get('clientSecret'),
+    #     )
+    # )
+    client = ""
     commands = {
         "test-module": test_module_command,
         f"{INTEGRATION_COMMAND_NAME}-get-events": get_events_command,
@@ -548,7 +572,11 @@ def main():  # pragma: no cover
             return_outputs(human_readable, entry_context, raw_response)
 
     except Exception as e:
-        err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
+        if "Requested Range Not Satisfiable" in str(e):
+            err_msg = f'Index out of range error in {INTEGRATION_NAME} Integration.' \
+                'For more information, please refer to the Troubleshooting section in the integration documentation [{e}]'
+        else:
+            err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg, error=e)
 
 

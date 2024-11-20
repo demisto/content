@@ -390,3 +390,13 @@ def test_dedup_events(hashed_events_mapping, hashed_events_from_previous_run, ex
                                                                               hashed_events_from_previous_run)
     assert hashed_events_from_current_run == set(hashed_events_mapping.keys())
     assert deduped_events == expected_deduped_list
+
+
+def test_index_out_of_range_error():
+    pass
+
+def test_run_duration_valid():
+    pass
+
+def test_run_duration_should_break():
+    pass
