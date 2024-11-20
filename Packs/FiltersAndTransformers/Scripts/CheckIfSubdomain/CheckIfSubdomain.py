@@ -8,7 +8,7 @@ SUFFIX_LIST_URLS = ["file:///var/public_list.dat"]
 def check_if_subdomain(internal_domains: list,
                        domains: list,
                        use_tldextract_default_list: bool = False):
-    #  The suffix_list_urls will use a file saved in the docker instead of making http requests
+    #  The suffix_list_urls will use a local file, instead of making http requests
     suffix_list_urls = None if use_tldextract_default_list else SUFFIX_LIST_URLS
     no_fetch_extract = tldextract.TLDExtract(
         suffix_list_urls=suffix_list_urls, cache_dir=None)  # type: ignore[arg-type]
