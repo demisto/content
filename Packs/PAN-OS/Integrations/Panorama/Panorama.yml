@@ -9776,7 +9776,7 @@ script:
     - contextPath: Panorama.Spyware.Exception.packet-capture
       description: The exception packet capture.
       type: String
-  dockerimage: demisto/pan-os-python:1.0.0.116699
+  dockerimage: demisto/pan-os-python:1.0.0.117206
   isfetch: true
   runonce: false
   script: ''
