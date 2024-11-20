@@ -21,21 +21,24 @@ MIRROR_DIRECTION_MAPPING = {
     "Outgoing": "Out",
     "Incoming And Outgoing": "Both",
 }
-MIRRORING_FIELDS_1 = [
+
+MIRRORING_FIELDS_XSOAR = [
     "cyberintstatus",
     "cyberintclosurereason",
     "cyberintclosurereasondescription",
 ]
+
+MIRRORING_FIELDS_ARGOS = [
+    "status",
+    "closure_reason",
+    "closure_reason_description",
+]
+
 MIRRORING_FIELDS_MAPPER = {
     "cyberintstatus": "status",
     "cyberintclosurereason": "closure_reason",
     "cyberintclosurereasondescription": "closure_reason_description",
 }
-MIRRORING_FIELDS = [
-    "status",
-    "closure_reason",
-    "closure_reason_description",
-]
 
 
 class Client(BaseClient):
@@ -624,7 +627,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 
     incident_type_scheme = SchemeTypeMapping(type_name="Cyberint Incident")
 
-    for field in MIRRORING_FIELDS:
+    for field in MIRRORING_FIELDS_ARGOS:
         incident_type_scheme.add_field(field)
 
     mapping_response.add_scheme_type(incident_type_scheme)

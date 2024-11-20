@@ -59,12 +59,12 @@ class Client(BaseClient):
         has_more = True
 
         while has_more:
-            demisto.info(f'Fetching feed offset {offset}')
+            demisto.debug(f'Fetching feed offset {offset}')
 
             # if the execution exceeded the timeout we will break
             if not test:
                 if is_execution_time_exceeded(start_time=execution_start_time):
-                    print(f'Execution time exceeded: {EXECUTION_TIMEOUT_SECONDS} seconds from: {execution_start_time}')
+                    demisto.debug(f'Execution time exceeded: {EXECUTION_TIMEOUT_SECONDS} seconds from: {execution_start_time}')
                     return result
 
             start_time = time.time()
@@ -79,7 +79,7 @@ class Client(BaseClient):
                 continue
 
             if not ioc_feeds:  # if no data is returned, end the loop
-                demisto.info('No more indicators found')
+                demisto.debug('No more indicators found')
                 has_more = False
             else:
                 for indicator in ioc_feeds:
@@ -95,14 +95,14 @@ class Client(BaseClient):
                         )
 
                 end_time = time.time()
-                demisto.info(f'Duration of offset processing {offset}: {end_time - start_time} seconds')
+                demisto.debug(f'Duration of offset processing {offset}: {end_time - start_time} seconds')
                 # Update the offset for the next request
                 offset += limit
                 has_more = True
                 demisto.debug(f'has_more = {has_more}')
 
             if test:  # if test module, end the loop
-                demisto.info('Test execution')
+                demisto.debug('Test execution')
                 has_more = False
                 continue
 
@@ -137,7 +137,7 @@ def test_module(client: Client) -> str:
     try:
         client.request_daily_feed(limit=10, test=True)
     except DemistoException as exc:
-        if exc.res is not None:
+        if exc.res:
             if exc.res.status_code == http.HTTPStatus.UNAUTHORIZED or exc.res.status_code == http.HTTPStatus.FORBIDDEN:
                 return "Authorization Error: invalid `API Token`"
 
@@ -196,8 +196,8 @@ def fetch_indicators(
                 "rawJSON": raw_data,
                 "fields": {
                     "reportedby": "Cyberint",
-                    "Description": raw_data.get("description"),
-                    "FirstSeenBySource": raw_data.get("observation_date"),
+                    "description": raw_data.get("description"),
+                    "firstseenbysource": raw_data.get("observation_date"),
                 },
             }
 
@@ -210,7 +210,7 @@ def fetch_indicators(
             indicators.append(indicator_obj)
 
         if limit > 0 and len(indicators) >= limit:
-            demisto.info(f'Indicators limit reached (total): {len(indicators)}')
+            demisto.debug(f'Indicators limit reached (total): {len(indicators)}')
             break
 
     return indicators
@@ -386,11 +386,11 @@ def main():
 
         elif command == "fetch-indicators":
             indicators = fetch_indicators_command(client, params)
-            demisto.info(f'Total {len(indicators)} indicators')
+            demisto.debug(f'Total {len(indicators)} indicators')
             for iter_ in batch(indicators, batch_size=5000):
-                demisto.info(f'About to push {len(iter_)} indicators to XSOAR')
+                demisto.debug(f'About to push {len(iter_)} indicators to XSOAR')
                 demisto.createIndicators(iter_)
-            demisto.info(f'{command} operation completed')
+            demisto.debug(f'{command} operation completed')
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
@@ -412,7 +412,7 @@ def is_execution_time_exceeded(start_time: datetime) -> bool:
     """
     end_time = datetime.utcnow()
     secs_from_beginning = (end_time - start_time).seconds
-    demisto.info(f'Execution duration is {secs_from_beginning} secs so far')
+    demisto.debug(f'Execution duration is {secs_from_beginning} secs so far')
 
     return secs_from_beginning > EXECUTION_TIMEOUT_SECONDS
 
