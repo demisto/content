@@ -971,11 +971,6 @@ def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> 
             outputs_key_field='id',
             outputs={
                 'id': result.get('id'),
-                'name': result.get('name'),
-                'pattern': result.get('pattern'),
-                'patternType': result.get('pattern_type'),
-                'validFrom': result.get('valid_from'),
-                'validUntil': result.get('valid_until')
             },
             readable_output=readable_output,
             raw_response=result
@@ -1060,8 +1055,6 @@ def indicator_update_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> 
                 outputs={
                     "id": updated_indicator.get("id"),
                     "name": updated_indicator.get("name"),
-                    "pattern": updated_indicator.get("pattern"),
-                    "patternType": updated_indicator.get("pattern_type"),
                     "validFrom": updated_indicator.get("valid_from"),
                     "validUntil": updated_indicator.get("valid_until")
                 },

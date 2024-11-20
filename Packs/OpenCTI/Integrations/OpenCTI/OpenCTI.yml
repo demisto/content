@@ -428,21 +428,6 @@ script:
     - contextPath: OpenCTI.Indicator.id
       description: New Indicator ID.
       type: string
-    - contextPath: OpenCTI.Indicator.name
-      description: Name of the created indicator.
-      type: string
-    - contextPath: OpenCTI.Indicator.pattern
-      description: The pattern associated with the created indicator.
-      type: string
-    - contextPath: OpenCTI.Indicator.patternType
-      description: The pattern type associated with the created indicator.
-      type: string
-    - contextPath: OpenCTI.Indicator.validFrom
-      description: The valid-from date of the created indicator.
-      type: string
-    - contextPath: OpenCTI.Indicator.validUntil
-      description: The valid-until date of the created indicator.
-      type: string
   - arguments:
     - description: Indicator ID.
       name: id
@@ -519,12 +504,6 @@ script:
       type: string
     - contextPath: OpenCTI.Indicator.name
       description: Name of the updated indicator.
-      type: string
-    - contextPath: OpenCTI.Indicator.pattern
-      description: The pattern associated with the updated indicator.
-      type: string
-    - contextPath: OpenCTI.Indicator.patternType
-      description: The pattern type associated with the created indicator.
       type: string
     - contextPath: OpenCTI.Indicator.validFrom
       description: The valid-from date of the updated indicator.
