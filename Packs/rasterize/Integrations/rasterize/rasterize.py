@@ -563,16 +563,17 @@ def chrome_manager() -> tuple[Any | None, str | None]:
 def chrome_manager_one_port() -> tuple[Any | None, str | None]:
     """
     Manages Chrome instances based on user-specified chrome options and integration instance ID.
+    ONLY uses one chrome instance per chrome option, until https://issues.chromium.org/issues/379034728 is fixed.
+    
 
     This function performs the following steps:
-    1. Retrieves the instance ID of the integration and the Chrome options set by the user.
-    2. Checks if the instance ID has been used previously.
-        - If the instance ID is new, generates a new Chrome instance with the specified Chrome options.
-        - If the instance ID has been used:
-            - If the current Chrome options differ from the saved options for this instance ID,
-              it terminates the existing Chrome instance and generates a new one with the new options.
-            - If the current Chrome options match the saved options for this instance ID,
-              it reuses the existing Chrome instance.
+    1. Retrieves the Chrome options set by the user.
+    2. Checks if the  Chrome options has been used previously.
+        - If the Chrome options wasn't used and the file is empty, generates a new Chrome instance with
+        the specified Chrome options.
+        - If the  Chrome options exists in the dictionary- it reuses the existing Chrome instance.
+        -  If the Chrome options wasn't used and the file isn't empty- it terminates all the use port and
+        generates a new one with the new options.
 
     Returns:
         tuple[Any | None, int | None]: A tuple containing:
@@ -585,20 +586,19 @@ def chrome_manager_one_port() -> tuple[Any | None, str | None]:
     instance_id = demisto.callingContext.get('context', {}).get('IntegrationInstanceID', 'None') or 'None'
     chrome_options = demisto.params().get('chrome_options', 'None')
     chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
-    demisto.debug(f'[test] chrome_manager {chrome_instances_contents=} {chrome_options=} {instance_id=}')
+    demisto.debug(f' chrome_manager {chrome_instances_contents=} {chrome_options=} {instance_id=}')
     chrome_options_dict = {
-        value[CHROME_INSTANCE_OPTIONS]: {
-            'chrome_port': key
+        options[CHROME_INSTANCE_OPTIONS]: {
+            'chrome_port': port
         }
         for port, options in chrome_instances_contents.items()
     }
     chrome_port = chrome_options_dict.get(chrome_options, {}).get('chrome_port', '')
-    demisto.debug(f'[test] chrome_manager {chrome_options_dict=} \n {chrome_instances_contents=}')
-    if not chrome_instances_contents:
-        demisto.debug('[test] chrome_manager: first condition- chrome_instances_contents empty')
+    if not chrome_instances_contents:  # or instance_id not in chrome_options_dict.keys():
+        demisto.debug('chrome_manager: condition chrome_instances_contents is empty')
         return generate_new_chrome_instance(instance_id, chrome_options)
     if chrome_options in chrome_options_dict:
-        demisto.debug('[test] chrome_manager: second condition chrome_options in chrome_options_dict='
+        demisto.debug('chrome_manager: condition chrome_options in chrome_options_dict is true'
                       f'{chrome_options in chrome_options_dict}')
         browser = get_chrome_browser(chrome_port)
         return browser, chrome_port
@@ -628,7 +628,7 @@ def generate_chrome_port() -> str | None:
 
         if len_running_chromes == 0:
             # There's no Chrome listening on that port, Start a new Chrome there
-            demisto.debug(f"No Chrome found on port {chrome_port}, using it.")
+            demisto.debug(f"No Chrome found on port {chrome_port}, using the port.")
             return str(chrome_port)
 
         # There's already a Chrome listening on that port, Don't use it
