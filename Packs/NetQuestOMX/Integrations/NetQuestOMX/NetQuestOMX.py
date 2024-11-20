@@ -67,7 +67,7 @@ class Client(BaseClient):
 
         try:
             response_json = self._http_request(
-                method="POST", url_suffix="/api/SessionService/Sessions", headers=self.headers, data=self.credentials
+                method="POST", url_suffix="/api/SessionService/Sessions", data=self.credentials
             )
         except Exception as e:
             raise DemistoException(
@@ -88,7 +88,6 @@ class Client(BaseClient):
                 result = self._http_request(
                     method="POST",
                     url_suffix="/api/v1/UpdateService/ImportList/Config",
-                    headers=self.headers,
                     data={"UpdateFile": file},
                 )
         finally:
@@ -99,7 +98,7 @@ class Client(BaseClient):
     def address_list_optimize_request(self) -> requests.Response:
         try:
             response = self._http_request(
-                method="GET", url_suffix="/api/Systems/Filters/Address/Status/Optimization", headers=self.headers,
+                method="GET", url_suffix="/api/Systems/Filters/Address/Status/Optimization"
             )
         except Exception as e:
             raise DemistoException(
@@ -110,8 +109,7 @@ class Client(BaseClient):
     def address_list_create_request(self, name: str) -> requests.Response:
         try:
             response = self._http_request(
-                method="POST", url_suffix="/api/Systems/Filters/ListImport/Config/Install", headers=self.headers,
-                data={"Name": name}
+                method="POST", url_suffix="/api/Systems/Filters/ListImport/Config/Install", data={"Name": name}
             )
         except Exception as e:
             raise DemistoException(
@@ -123,7 +121,6 @@ class Client(BaseClient):
         try:
             response = self._http_request(
                 method="PUT", url_suffix=f"/api/Systems/Filters/ListImport/ListName/{existing_name}/Config/Install",
-                headers=self.headers,
                 data={"Name": new_name}
             )
         except Exception as e:
@@ -137,7 +134,6 @@ class Client(BaseClient):
             response = self._http_request(
                 method="DELETE",
                 url_suffix=f"/api/Systems/Filters/Address/ListName/{list_name_to_delete}/Config/List",
-                headers=self.headers,
             )
         except Exception as e:
             raise DemistoException(
