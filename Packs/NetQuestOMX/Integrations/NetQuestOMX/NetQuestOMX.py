@@ -26,7 +26,7 @@ PRODUCT = "OMX"
 class Client(BaseClient):
 
     def __init__(self, base_url: str, credentials: dict, verify: bool, proxy: bool):
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy,  headers={"Accept": "application/json"})
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers={"Accept": "application/json"})
         self.credentials = {"UserName": credentials["identifier"], "Password": credentials["password"]}
         self.login()
 
@@ -90,6 +90,7 @@ class Client(BaseClient):
                     method="POST",
                     url_suffix="/api/v1/UpdateService/ImportList/Config",
                     data={"UpdateFile": file},
+                    ok_codes=(200,)
                 )
         finally:
             Path(file_name).unlink()
@@ -107,40 +108,40 @@ class Client(BaseClient):
             ) from e
         return response
 
-    def address_list_create_request(self, name: str) -> requests.Response:
+    def address_list_create_request(self, name: str):
         try:
-            response = self._http_request(
-                method="POST", url_suffix="/api/Systems/Filters/ListImport/Config/Install", data={"Name": name}
+            self._http_request(
+                method="POST", url_suffix="/api/Systems/Filters/ListImport/Config/Install", data={"Name": name},
+                ok_codes=(200,)
             )
         except Exception as e:
             raise DemistoException(
                 "An error was occurred when creating the IP's list."
             ) from e
-        return response
 
-    def address_list_rename_request(self, new_name: str, existing_name: str) -> requests.Response:
+    def address_list_rename_request(self, new_name: str, existing_name: str):
         try:
-            response = self._http_request(
+            self._http_request(
                 method="PUT", url_suffix=f"/api/Systems/Filters/ListImport/ListName/{existing_name}/Config/Install",
-                data={"Name": new_name}
+                data={"Name": new_name},
+                ok_codes=(200,)
             )
         except Exception as e:
             raise DemistoException(
                 f"An error was occurred when renaming the {existing_name} IP's list to {new_name}."
             ) from e
-        return response
 
-    def address_list_delete_request(self, list_name_to_delete: str) -> requests.Response:
+    def address_list_delete_request(self, list_name_to_delete: str):
         try:
-            response = self._http_request(
+            self._http_request(
                 method="DELETE",
                 url_suffix=f"/api/Systems/Filters/Address/ListName/{list_name_to_delete}/Config/List",
+                ok_codes=(200,)
             )
         except Exception as e:
             raise DemistoException(
                 f"An error was occurred when deleting the {list_name_to_delete} IP's list."
             ) from e
-        return response
 
 
 ''' COMMAND FUNCTIONS '''
@@ -165,13 +166,14 @@ def address_list_upload_command(client: Client, args: dict):
         demisto.error(f'Failed to prepare file for upload. Error: {exc}')
         raise DemistoException('Failed to prepare file for upload.') from exc
 
-    result = client.address_list_upload_request(file_name)
+    try:
+        client.address_list_upload_request(file_name)
+    except Exception as e:
+        raise DemistoException(
+            f"An error was occurred when uploading the given file. Please check the file, {file_name=} and {file_path=}."
+        ) from e
 
-    if result.status_code == '200':
-        return CommandResults(readable_output="Address list was successfully uploaded")
-    raise DemistoException(
-        f"An error was occurred when uploading the given file. Please check the file, {file_name=} and {file_path=}."
-    )
+    return CommandResults(readable_output="Address list was successfully uploaded")
 
 
 def address_list_optimize_command(client: Client):
@@ -184,6 +186,7 @@ def address_list_optimize_command(client: Client):
     """
 
     result = client.address_list_optimize_request()
+
     return CommandResults(outputs_prefix="NetQuest.AddressList",
                           outputs=result.json())
 
@@ -196,13 +199,14 @@ def address_list_create_command(client: Client, args: dict):
         A CommandResults containing a success indication or a DemistoException.
     """
     name = args["name"]  # a required argument - The name of the address list to create
-    result = client.address_list_create_request(name)
+    try:
+        client.address_list_create_request(name)
+    except Exception as e:
+        raise DemistoException(
+            f"An error was occurred when creating an IP's list with {name=}. Maybe a list with the name {name} already exists."
+        ) from e
 
-    if result.status_code == '200':
-        return CommandResults(readable_output=f"Successfully created a new instance of {name}")
-    raise DemistoException(
-        f"An error was occurred when creating an IP's list with {name=}. Maybe a list with the name {name} already exists."
-    )
+    return CommandResults(readable_output=f"Successfully created a new instance of {name}")
 
 
 def address_list_rename_command(client: Client, args: dict):
@@ -215,14 +219,16 @@ def address_list_rename_command(client: Client, args: dict):
     """
     new_name = args["new_name"]  # a required argument - The new name for an existing address list
     existing_name = args["existing_name"]  # a required argument - Name of the existing address list that we want to modify
-    result = client.address_list_rename_request(new_name, existing_name)
 
-    if result.status_code == '200':
-        return CommandResults(readable_output=f"Successfully renamed {existing_name} to {new_name}")
-    raise DemistoException(
-        f"An error was occurred when renaming {existing_name} IP's list to {new_name}."
-        f" Maybe the {existing_name} list's name does not exist."
-    )
+    try:
+        client.address_list_rename_request(new_name, existing_name)
+    except Exception as e:
+        raise DemistoException(
+            f"An error was occurred when renaming {existing_name} IP's list to {new_name}."
+            f" Maybe the {existing_name} list's name does not exist."
+        ) from e
+
+    return CommandResults(readable_output=f"Successfully renamed {existing_name} to {new_name}")
 
 
 def address_list_delete_command(client: Client, args: dict):
@@ -233,14 +239,16 @@ def address_list_delete_command(client: Client, args: dict):
         A CommandResults containing a success indication or a DemistoException.
     """
     list_name_to_delete = args["name"]  # a required argument - The name of the address list to delete
-    result = client.address_list_delete_request(list_name_to_delete)
 
-    if result.status_code == '200':
-        return CommandResults(readable_output=f"Successfully deleted {list_name_to_delete} list")
-    raise DemistoException(
-        f"An error was occurred when deleting the {list_name_to_delete} IP's list."
-        f" Maybe the {list_name_to_delete} list's name does not exist."
-    )
+    try:
+        client.address_list_delete_request(list_name_to_delete)
+    except Exception as e:
+        raise DemistoException(
+            f"An error was occurred when deleting the {list_name_to_delete} IP's list."
+            f" Maybe the {list_name_to_delete} list's name does not exist."
+        ) from e
+
+    return CommandResults(readable_output=f"Successfully deleted {list_name_to_delete} list")
 
 
 def test_module(client: Client) -> str:
