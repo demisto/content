@@ -36,7 +36,7 @@ INTEGRATION_CONTEXT_NAME = 'Akamai'
 VENDOR = "Akamai"
 PRODUCT = "WAF"
 FETCH_EVENTS_PAGE_SIZE = 50000
-DOCKER_MIN_TIME_TO_RUN = 30
+DOCKER_MIN_TIME_TO_RUN = 300
 EXECUTION_START_TIME = datetime.now()
 
 # Disable insecure warnings
@@ -511,17 +511,16 @@ def decode_url(headers: str) -> dict:
 
 def main():  # pragma: no cover
     params = demisto.params()
-    # client = Client(
-    #     base_url=urljoin(params.get('host'), '/siem/v1/configs'),
-    #     verify=not params.get('insecure', False),
-    #     proxy=params.get('proxy'),
-    #     auth=EdgeGridAuth(
-    #         client_token=params.get('clienttoken_creds', {}).get('password') or params.get('clientToken'),
-    #         access_token=params.get('accesstoken_creds', {}).get('password') or params.get('accessToken'),
-    #         client_secret=params.get('clientsecret_creds', {}).get('password') or params.get('clientSecret'),
-    #     )
-    # )
-    client = ""
+    client = Client(
+        base_url=urljoin(params.get('host'), '/siem/v1/configs'),
+        verify=not params.get('insecure', False),
+        proxy=params.get('proxy'),
+        auth=EdgeGridAuth(
+            client_token=params.get('clienttoken_creds', {}).get('password') or params.get('clientToken'),
+            access_token=params.get('accesstoken_creds', {}).get('password') or params.get('accessToken'),
+            client_secret=params.get('clientsecret_creds', {}).get('password') or params.get('clientSecret'),
+        )
+    )
     commands = {
         "test-module": test_module_command,
         f"{INTEGRATION_COMMAND_NAME}-get-events": get_events_command,
