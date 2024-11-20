@@ -946,7 +946,7 @@ def rasterize_email_command():  # pragma: no cover
     temp_email_file = tempfile.NamedTemporaryFile(mode='w', suffix='html', delete=False, encoding='utf-8-sig')
     temp_email_file.write(f'<html style="background:white";>{html_body}</html>')
 
-    path = f'file://{os.path.realpath(f.name)}'
+    path = f'file://{os.path.realpath(temp_email_file.name)}'
 
     rasterize_output = perform_rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
                                          offline_mode=offline, navigation_timeout=navigation_timeout, full_screen=full_screen)
