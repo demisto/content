@@ -43,7 +43,7 @@ class Client(BaseClient):
         Returns:
             dict: A dictionary containing the paginated list of alerts and metadata such as total count.
         """
-        params = assign_params(page_num=page_num, items_per_page=items_per_page)
+        params = assign_params(pageNum=page_num, itemsPerPage=items_per_page)
         results = self._http_request(
             method="GET",
             url_suffix=f"/api/atlas/v2/groups/{self.group_id}/alerts",
@@ -63,7 +63,7 @@ class Client(BaseClient):
         Returns:
             dict: A dictionary containing the paginated list of events and metadata such as total count.
         """
-        params = assign_params(page_num=page_num, items_per_page=items_per_page, min_date=min_date)
+        params = assign_params(pageNum=page_num, itemsPerPage=items_per_page, minDate=min_date)
         results = self._http_request(
             method="GET",
             url_suffix=f"/api/atlas/v2/groups/{self.group_id}/events",
@@ -98,7 +98,7 @@ class Client(BaseClient):
         Returns:
             list: A list of events, truncated to the `fetch_limit` if necessary.
         """
-        results: List[str] = []
+        results: List[dict] = []
         items_per_page = min(fetch_limit, 500)
         page_num = 1
 
@@ -420,12 +420,12 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[
     min_date = last_run.get('min_time')
     events_with_created_min_time = last_run.get('events_with_created_min_time') or []
 
-    demisto.debug(f'Start to fetch events with {min_date}')
-
     if not min_date:  # first time fetching events
         output, new_min_time = first_time_fetching_events(client, fetch_limit)
         new_last_run_obj = create_last_run_dict_for_events(output, new_min_time)
         return output, new_last_run_obj
+
+    demisto.debug(f'Start to fetch events with {min_date}')
 
     results: dict = client.get_events_request(min_date=min_date)
     response = get_last_page_of_events(client, results)
