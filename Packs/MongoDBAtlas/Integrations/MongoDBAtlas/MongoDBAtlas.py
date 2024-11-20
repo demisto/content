@@ -14,7 +14,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 VENDOR = 'MongoDB'
 PRODUCT = 'Atlas'
-MAX_NUMBER_OF_PAGES = 5
+DEFAULT_FETCH_LIMIT = 2500
 
 ''' CLIENT CLASS '''
 
@@ -43,10 +43,7 @@ class Client(BaseClient):
         Returns:
             dict: A dictionary containing the paginated list of alerts and metadata such as total count.
         """
-        params = {
-            'pageNum': page_num,
-            'itemsPerPage': items_per_page
-        }
+        params = assign_params(page_num=page_num, items_per_page=items_per_page)
         results = self._http_request(
             method="GET",
             url_suffix=f"/api/atlas/v2/groups/{self.group_id}/alerts",
@@ -66,11 +63,7 @@ class Client(BaseClient):
         Returns:
             dict: A dictionary containing the paginated list of events and metadata such as total count.
         """
-        params = {
-            'pageNum': page_num,
-            'itemsPerPage': items_per_page,
-            'minDate': min_date,
-        }
+        params = assign_params(page_num=page_num, items_per_page=items_per_page, min_date=min_date)
         results = self._http_request(
             method="GET",
             url_suffix=f"/api/atlas/v2/groups/{self.group_id}/events",
@@ -276,21 +269,19 @@ def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict):
 
     last_page_alerts_ids = last_run.get('last_page_alerts_ids', [])
 
-    events = remove_alerts_by_ids(results, last_page_alerts_ids)
+    alerts = remove_alerts_by_ids(results, last_page_alerts_ids)
     demisto.debug(f'Those are the events ids from the last run {last_page_alerts_ids}')
-    current_fetched_events_amount = 0
+    current_fetched_alerts_amount = 0
     output = []
 
-    while current_fetched_events_amount < fetch_limit:
-        for event in events:
-            enrich_event(event, 'alerts')
-            output.append(event)
-            last_page_alerts_ids.append(event.get('id'))
-            current_fetched_events_amount += 1
+    while current_fetched_alerts_amount < fetch_limit:
+        for alert in alerts:
+            enrich_event(alert, 'alerts')
+            output.append(alert)
+            last_page_alerts_ids.append(alert.get('id'))
+            current_fetched_alerts_amount += 1
 
-            demisto.debug(f'Fetched alerts ID {event.get("id")} from type alerts')
-
-            if current_fetched_events_amount == fetch_limit:
+            if current_fetched_alerts_amount == fetch_limit:
                 last_run_new_dict = create_last_run_dict_for_alerts(links, last_page_alerts_ids)
                 demisto.debug(f'The limit is reached. Amount of fetched alerts is {len(output)}')
                 return output, last_run_new_dict
@@ -298,7 +289,7 @@ def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict):
         next_url = get_page_url(links, page_type="next")
         if next_url:
             response = client.get_response_from_page_link(next_url)
-            events = response.get('results')
+            alerts = response.get('results')
             links = response.get('links')
             last_page_alerts_ids.clear()
         else:
@@ -446,7 +437,7 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[
     new_min_date = min_date
 
     while current_fetched_events_amount < fetch_limit:
-        for event in reversed(events):  # ignore
+        for event in reversed(events):
             event_id = event.get('id')
             if event_id in events_with_created_min_time:
                 continue
@@ -455,8 +446,6 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[
             output.append(event)
             current_fetched_events_amount += 1
             new_min_date = get_latest_date(new_min_date, event.get('created'))
-
-            demisto.debug(f'Fetched event ID {event_id} from type "events"')
 
             if current_fetched_events_amount == fetch_limit:
                 demisto.debug(f'Fetch limit reached. Total events fetched: {len(output)}')
@@ -506,12 +495,7 @@ def fetch_events(client: Client, fetch_limit: int):
 def get_events(client: Client, args):
     fetch_limit = int(args.get('limit'))
 
-    last_run = demisto.getLastRun()
-
-    alerts_output, _ = fetch_alert_type(client, fetch_limit, last_run)
-    events_output, _ = fetch_event_type(client, fetch_limit, last_run)
-
-    output = alerts_output + events_output
+    output, _ = fetch_events(client, fetch_limit)
 
     filtered_events = []
     for event in output:
@@ -543,14 +527,13 @@ def main() -> None:  # pragma: no cover
     demisto.debug(f'MongoDB Command being called is {demisto.command()}')
     try:
         credentials = params.get('credentials', {})
-        # private_key = params.get('credentials', {}).get('password')
         public_key = credentials.get('identifier')
         private_key = credentials.get('password')
         group_id = params.get('group_id')
 
         base_url = params.get('url')
         verify = not params.get('insecure', False)
-        fetch_limit = params.get('max_events_per_fetch', 2500)
+        fetch_limit = arg_to_number(params.get('max_events_per_fetch', DEFAULT_FETCH_LIMIT))
 
         client = Client(
             base_url=base_url,
@@ -569,7 +552,7 @@ def main() -> None:  # pragma: no cover
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             return_results(command_results)
         elif command == 'fetch-events':
-            events, last_run_new_obj = fetch_events(client, int(fetch_limit))
+            events, last_run_new_obj = fetch_events(client, fetch_limit)
             if events:
                 demisto.debug(f'Sending {len(events)} events to Cortex XSIAM')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)

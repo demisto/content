@@ -13,7 +13,7 @@ configuration:
   required: true
   type: 0
   section: Connect
-- additionalinfo: example
+- additionalinfo: The credentials used to connect to MongoDB Atlas, including the username (Public Key) and password (Private Key).
   display: Public Key
   displaypassword: Private Key
   name: credentials
@@ -41,7 +41,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: 'MongoDBAtlas is an integration that supports fetching and managing alerts and events within Cortex XSIAM.'
+description: 'MongoDB Atlas is an integration that supports fetching and managing alerts and events within Cortex XSIAM.'
 display: MongoDB Atlas
 name: MongoDBAtlasEventCollector
 script:

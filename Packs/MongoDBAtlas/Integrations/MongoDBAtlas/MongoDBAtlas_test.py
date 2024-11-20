@@ -261,7 +261,7 @@ def test_fetch_event_type(mocker, fetch_limit, expected_event_count):
     from MongoDBAtlas import fetch_event_type
 
     mocked_events_page_1 = util_load_json('test_data/raw_events_page_1.json')
-    mocker.patch('MongoDBAtlas.Client.get_events_with_min_time', return_value=mocked_events_page_1)
+    mocker.patch('MongoDBAtlas.Client.get_events_request', return_value=mocked_events_page_1)
     mocker.patch('MongoDBAtlas.get_page_url', return_value=None)
 
     client = create_client()
@@ -287,7 +287,7 @@ def test_fetch_event_type_min_time_repeat(mocker):
 
     from MongoDBAtlas import fetch_event_type
     raw_events_page_duplicated_dates = util_load_json('test_data/raw_events_page_duplicated_dates.json')
-    mocker.patch('MongoDBAtlas.Client.get_events_with_min_time', return_value=raw_events_page_duplicated_dates)
+    mocker.patch('MongoDBAtlas.Client.get_events_request', return_value=raw_events_page_duplicated_dates)
     mocker.patch('MongoDBAtlas.get_page_url', return_value=None)
 
     client = create_client()
@@ -336,7 +336,7 @@ def test_fetch_event_type_using_previous_page(mocker, fetch_limit, expected_even
     raw_events_page_1 = util_load_json('test_data/raw_events_page_1.json')
     raw_events_page_2 = util_load_json('test_data/raw_events_page_2.json')
 
-    mocker.patch('MongoDBAtlas.Client.get_events_with_min_time', return_value=raw_events_page_2)
+    mocker.patch('MongoDBAtlas.Client.get_events_request', return_value=raw_events_page_2)
     mocker.patch('MongoDBAtlas.get_page_url', side_effect=[None, True, False])
     mocker.patch('MongoDBAtlas.Client.get_response_from_page_link', return_value=raw_events_page_1)
 
@@ -399,7 +399,7 @@ def test_get_events_first_time_events(mocker, fetch_limit, mock_side_effect, exp
     """
     from MongoDBAtlas import Client
 
-    mocker.patch.object(Client, 'get_events_with_page_num', side_effect=mock_side_effect)
+    mocker.patch.object(Client, 'get_events_request', side_effect=mock_side_effect)
 
     client = create_client()
     results = client.get_events_first_time_events(fetch_limit)
