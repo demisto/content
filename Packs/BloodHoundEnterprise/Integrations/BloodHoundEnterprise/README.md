@@ -1,18 +1,19 @@
-This is the Hello World event collector integration for XSIAM.
+This is the BloodHound Enterprise collector integration for Cortex XSIAM.
+This integration was integrated and tested with version 1.0.0 of BloodHoundEnterprise.
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+## Configure BloodHoundEnterprise on Cortex XSIAM
 
-## Configure HelloWorld Event Collector on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for HelloWorld Event Collector.
+1. Navigate to **Settings** > **Configurations** > **Automation & Feed Integrations**.
+2. Search for BloodHoundEnterprise.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Server URL | False |
-    | Fetch alerts with status (ACTIVE, CLOSED) | False |
-    | Max number of events per fetch | False |
+    | Server URL | True |
+    | API Token Key | True |
+    | API Token ID | True |
+    | Fetch events | False |
+    | Maximum number of events per fetch | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
 
@@ -20,26 +21,26 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### hello-world-get-events
+### bloodhound-get-events
 
 ***
-Gets events from Hello World.
+Gets events from BloodHound Enterprise.
 
 #### Base Command
 
-`hello-world-get-events`
+`bloodhound-get-events`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| status | Filter by alert status. Possible values are: ACTIVE, CLOSED. | Optional | 
-| limit | Maximum number of results to return. | Required | 
-| from_date | Date from which to get events. | Optional | 
+| start | The start date from which to filter events. (e.g., 2024-07-10T08:08:46.76). | Optional | 
+| end | The end date from which to filter events. (e.g., 2024-07-11T08:09:47.08). | Optional | 
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. | Optional | 
+| limit | The number of events to return. Default is 500. | Optional | 
 
 #### Context Output
 

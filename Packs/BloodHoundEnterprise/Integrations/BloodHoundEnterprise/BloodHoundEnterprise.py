@@ -15,10 +15,10 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "BloodHound"
 PRODUCT = "Enterprise"
 FETCH_LIMIT = 1000
-BASE_URL = "https://{server_url}.bloodhoundenterprise.io"
+BASE_URL = "https://{server_url}"
 
 
-class Credentials(object):
+class Credentials():
     def __init__(self, token_id: str, token_key: str) -> None:
         self.token_id = token_id
         self.token_key = token_key
@@ -41,7 +41,9 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self._credentials = credentials
 
-    def _request(self, method: str = "GET", uri: str = "/api/v2/audit", query_params: dict = {}) -> dict:
+    def _request(
+        self, method: str = "GET", uri: str = "/api/v2/audit", query_params: dict = {}
+    ) -> dict:
 
         if query_params:
             encoded_params = urllib.parse.urlencode(query_params)
@@ -62,6 +64,7 @@ class Client(BaseClient):
             "Signature": base64.b64encode(digester.digest()),
             "Content-Type": "application/json",
         }
+        demisto.debug(f"exeuting API call with encrypt url: {uri_with_params}, headers: {headers}")
 
         return self._http_request(
             method=method, url_suffix=uri_with_params, headers=headers
@@ -72,7 +75,6 @@ class Client(BaseClient):
         limit: int,
         from_date: str | None = None,
         until_date: str | None = None,
-        
     ) -> List[Dict]:  # noqa: E501
         """
         Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
@@ -139,7 +141,7 @@ def get_events_command(client: Client, args: dict) -> tuple[List[Dict], CommandR
 
 def fetch_events(
     client: Client,
-    args: dict[str, str],
+    params: dict[str, str],
 ) -> tuple[Dict, List[Dict]]:
     """
     Args:
@@ -155,9 +157,9 @@ def fetch_events(
     """
     first_fetch_time = (datetime.now().astimezone() - timedelta(minutes=1)).isoformat('T')
     last_run = demisto.getLastRun()
-    from_date = last_run.get('last_event_created_at', first_fetch_time)
+    from_date = last_run.get("last_event_created_at", first_fetch_time)
     from_event = int(last_run.get("last_event_id", 0))
-    limit = arg_to_number(args.get("max_events_per_fetch")) or FETCH_LIMIT
+    limit = arg_to_number(params.get("max_events_per_fetch")) or FETCH_LIMIT
 
     prev_fetch_id = int(last_run.get("prev_fetch_id", 0))
     fetch_id = prev_fetch_id + 1
@@ -168,7 +170,16 @@ def fetch_events(
     )
     demisto.debug(f"Fetched event with id: {fetch_id}.")
     if from_event:
-        events = events[next((i for i, item in enumerate(events) if item.get("id") == from_event+1), len(events)):]
+        events = events[
+            next(
+                (
+                    i
+                    for i, item in enumerate(events)
+                    if item.get("id") == from_event + 1
+                ),
+                len(events),
+            ) :
+        ]
     demisto.debug(f"Fetched {len(events)} events in fetch No: {fetch_id}")
 
     next_run = {
@@ -206,8 +217,8 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
     credentials = Credentials(
-        token_id=params.get("api_token_id", ""),
-        token_key=params.get("api_token_key", ""),
+        token_id= (params.get("api_token_id") or {}).get("password", ""),
+        token_key=(params.get("api_token_key") or {}).get("password", "")
     )
     server_url = params.get("server_url")
     base_url = BASE_URL.format(server_url=server_url)
@@ -226,7 +237,7 @@ def main() -> None:  # pragma: no cover
             result = test_module(client)
             return_results(result)
 
-        elif command == "bloodHound-get-events":
+        elif command == "bloodhound-get-events":
             should_push_events = argToBoolean(args.pop("should_push_events"))
             events, results = get_events_command(client, args)
             return_results(results)
@@ -237,7 +248,7 @@ def main() -> None:  # pragma: no cover
         elif command == "fetch-events":
             next_run, events = fetch_events(
                 client=client,
-                args=args,
+                params=params,
             )
 
             add_time_to_events(events)

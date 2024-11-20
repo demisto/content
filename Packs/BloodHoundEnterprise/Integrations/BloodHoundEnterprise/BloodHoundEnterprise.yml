@@ -24,7 +24,6 @@ configuration:
   type: 9
   section: Connect
 - display: Fetch events
-  defaultvalue: false
   name: isFetchEvents
   required: false
   type: 8
@@ -32,7 +31,7 @@ configuration:
 - defaultvalue: 1000
   section: Collect
   advanced: true
-  display: The maximum number of audit events per fetch
+  display: Maximum number of events per fetch
   name: max_events_per_fetch
   required: false
   type: 0
@@ -68,8 +67,8 @@ script:
       name: limit
       required: false
     description: Gets events from BloodHound Enterprise.
-    name: bloodHound-get-events
-  dockerimage: demisto/python3:3.10.13.87159
+    name: bloodhound-get-events
+  dockerimage: demisto/python3:3.11.10.116949
   isfetchevents: true
   runonce: false
   script: '-'
