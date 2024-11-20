@@ -74,10 +74,10 @@ class Client(BaseClient):
                 "An error was occurred when creating a new token. Please verify your credentials."
             ) from e
 
-    def address_list_upload_request(self, file_name: str) -> requests.Response:
+    def address_list_upload_request(self, file_name: str):
         try:
             with open(file_name) as file:
-                result = self._http_request(
+                self._http_request(
                     method="POST",
                     url_suffix="/api/v1/UpdateService/ImportList/Config",
                     data={"UpdateFile": file},
@@ -85,8 +85,6 @@ class Client(BaseClient):
                 )
         finally:
             Path(file_name).unlink()
-
-        return result
 
     def address_list_optimize_request(self) -> dict:
         try:
@@ -170,7 +168,7 @@ def address_list_optimize_command(client: Client):
     the integration should optimize the list by compressing IP addresses into CIDR groups.
 
     Returns:
-        A CommandResults containing full API response .
+        A CommandResults containing full API response.
     """
 
     response_json = client.address_list_optimize_request()
