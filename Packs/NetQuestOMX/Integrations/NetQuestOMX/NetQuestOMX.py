@@ -322,7 +322,9 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(str(e))
+        demisto.error(traceback.format_exc())  # prints the traceback
+        return_error(f'Failed to execute {command} command.'
+                     f'\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
