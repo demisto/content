@@ -594,7 +594,7 @@ def chrome_manager_one_port() -> tuple[Any | None, str | None]:
     }
     chrome_port = chrome_options_dict.get(chrome_options, {}).get('chrome_port', '')
     demisto.debug(f'[test] chrome_manager {chrome_options_dict=} \n {chrome_instances_contents=}')
-    if not chrome_instances_contents:  # or instance_id not in chrome_options_dict.keys():
+    if not chrome_instances_contents:
         demisto.debug('[test] chrome_manager: first condition- chrome_instances_contents empty')
         return generate_new_chrome_instance(instance_id, chrome_options)
     if chrome_options in chrome_options_dict:

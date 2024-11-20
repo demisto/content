@@ -853,7 +853,7 @@ def test_chrome_manager_one_port_open_new_port(mocker):
     When:
         - Executing the chrome_manager_one_port function
     Then:
-        - The function terminate all the ports that are open ib chrome_manager, and open a new chrome port to use.
+        - The function terminate all the ports that are open in chrome_manager, and opens a new chrome port to use.
     """
     from rasterize import chrome_manager_one_port, read_json_file
 
