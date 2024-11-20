@@ -1,11 +1,14 @@
+from pycti import OpenCTIApiClient, Identity
+import urllib3
+import sys
+from io import StringIO
+import copy
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import copy
-from io import StringIO
-import sys
-import urllib3
-from pycti import OpenCTIApiClient, Identity
-from typing import Any
+
+
+demisto.debug('pack name = ITX - OpenCTI, pack version = 1.0.0')
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -918,7 +921,7 @@ def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> 
     """
     name = args.get("name")
     indicator = args.get("indicator")
-    main_observable_type = args.get("main_observable_type")
+    main_observable_type = XSOAR_TYPES_TO_OPENCTI.get(args.get("main_observable_type").lower(), args.get("main_observable_type"))
     pattern = build_stix_pattern(indicator, main_observable_type)
 
     description = args.get("description", None)
