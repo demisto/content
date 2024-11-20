@@ -1,0 +1,3183 @@
+category: Authentication & Identity Management
+commonfields:
+  id: Okta v2
+  version: -1
+configuration:
+- display: Okta URL (https://<domain>.okta.com)
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- display: ""
+  displaypassword: API Token
+  hiddenusername: true
+  name: credentials
+  required: false
+  section: Connect
+  type: 9
+- display: API Token
+  hidden: true
+  name: apitoken
+  required: false
+  section: Connect
+  type: 4
+- additionalinfo: See detailed instructions on the 'Help' tab.
+  display: Use OAuth 2.0 Authentication
+  name: use_oauth
+  required: false
+  section: Connect
+  type: 8
+- additionalinfo: Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.
+  display: Client ID
+  name: client_id
+  required: false
+  section: Connect
+  type: 0
+- additionalinfo: In PEM format. Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.
+  display: Private Key
+  name: private_key
+  required: false
+  section: Connect
+  type: 14
+- additionalinfo: Algorithm to sign generated JWT tokens with. Doesn't affect integration's functionality. Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.
+  defaultvalue: RS256
+  display: JWT Signing Algorithm
+  name: jwt_algorithm
+  options:
+  - RS256
+  - RS384
+  - RS512
+  - ES256
+  - ES384
+  - ES512
+  required: false
+  section: Connect
+  type: 15
+- advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  section: Connect
+  type: 8
+- advanced: true
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+description: Integration with Okta's cloud-based identity management service.
+detaileddescription: "## Authentication using API Token\nOkta API tokens are used to authenticate requests to Okta APIs. \n\n### Prerequisites\n1. Sign in to your Okta organization as a user **with administrator privileges**.\n2. In the Admin Console, select **Security** > **API** from the menu, and then select the **Tokens** tab.\n3. Click **Create Token**.\n4. Name your token and click **Create Token**.\n\n#### Notes\n- API tokens have the same permissions as the user who creates them, and if the permissions of a user change, so do the permissions of the API token.\n\nFor more information, see the '[Create an API token](https://developer.okta.com/docs/guides/create-an-api-token/main/)' official documentation article.\n\n## Authentication using OAuth 2.0 Authentication\nAs an alternative to Okta API tokens, you can interact with Okta APIs using scoped OAuth 2.0 access tokens for a number of Okta endpoints.  \nEach access token enables the bearer to perform specific actions on specific Okta endpoints, with that ability controlled by which scopes the access token contains.\n\n### Required Scopes\nThe following scopes are required for the Okta v2 integration to work properly:\n- okta.apps.manage \n- okta.apps.read \n- okta.groups.manage \n- okta.groups.read \n- okta.logs.read \n- okta.networkZones.manage \n- okta.networkZones.read \n- okta.sessions.manage \n- okta.sessions.read \n- okta.users.manage \n- okta.users.read \n\n\n### Prerequisites\n1. Sign in to Okta Admin Console.\n2. In the Admin Console, go to **Applications** > **Applications**.\n3. Click **Create App Integration**.\n4. Select **API Services** as the sign-in method, and click **Next**.\n5. Enter the desired name for the created app (e.g., \"Cortex XSOAR\"), and click **Save**.\n6. In the app configuration page, under the **General** tab and the **Client Credentials** section, select **Public key / Private key** for the **Client authentication** option.\n7. Under the newly added **PUBLIC KEYS** section, click **Add Key**.\n8. In the **Add Public Key** dialog box, click **Generate new key**. Make sure to copy the generated private key (in PEM format) to somewhere safe, and click **Save**.\n9. Under the **General Settings** section:\n   1. Next to the **Proof of possession** label, uncheck the **Require Demonstrating Proof of Possession (DPoP) header in token requests** option if it's selected.\n   2. Next to the **Grant type** label, make sure the **Client Credentials** option is selected, and that the **Token Exchange** option is not selected.\n   3. Click **Save**.\n10. Under the **Okta API Scopes** tab, grant the required scopes mentioned above for the app.\n11. Under the **Admin roles** tab:\n    1. Click **Edit assignments**.\n    2. In the dropdown list under \"Role\", select **Super Administrator**.\n    3. Click **Save changes** at the top.\n\nFor more information, see the '[Implement OAuth for Okta](https://developer.okta.com/docs/guides/implement-oauth-for-okta/main/)' official documentation article.\n\n\n---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/okta-v2)"
+display: Okta v2
+image: 
+  data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAoCAYAAAA16j4lAAASU0lEQVR42u1cB1gU19oesCuaxJJo1DQ1RqMxGu/Vm+jv1RgNlqioUROTWG8SNXZFYelFehOUsnQRAaVJFYTtfdleWHqxoIAglvhb5p4zC4rLDMwu+P957nWe5zxZzcx3vvO953z9iCB/kce7UGs9ylN4a4Qzo+kNZ2YjHBZOjOZJPoLKBGHtj69qXkVd0/T5wSLhYGdWS8e8I5wYTUNceHeOZWhP02Xlw5DXT+8eplA6Zl6YQoHYsFDEjgYGvX2A3yeY6PIwCeNVze10WWqNOAhRhNJpXvjbgYu+7y24t9Qze+5rhHoLsEg6ZkGoFADMRs2AgDsP5CQT/T5WevlVze2WLT2KOPBRMwDqi3n1AE/15TWvDcz//DVCvXw4JfJRC8OkciKAN8VKM1/V3KdyZIeJAP7El99oFZT/2WuEXgP8+nkN8GuA/4oAN60LzJ/1GqH/VIB9eM2rfHNfO1n/cQC3h0nTfPm3vw++8t+nossbWvtf1TW+la1pHMOpbhl+79ETs78KwPLqRjPhtfsWvJrWlwa75u7wquY/B5E7wWBeexY6xJGOrgvj/MasvDNIUHd3mCFNFqB5ve3RgN7KU3nz3tA8beOofDDk9S2DiN6raHo4iF3VOrxjfm5tm4Wq4cHQoHS6Wa9BZelufLo9QbJvb2pp5LpYRaFlpIy7LEIqXBklY21NVGdtS1L5WWfpfriqa3rn/wvg8Bze5F8uqFNWxig5q6JkjM5jZbSctTpWyUiT1KwgAzCmpil0dKKXoG1FlJyzOkpGN6S5IkbF+SFBmaWuuz3FmPXKr7cNPsOu/XZBsNBxTYw8dW2MnL48QspfTpXx1sQoinelaM6vixKfvCSuWXAiTYFtIFply5LV4L0VkTLWcx4iwUis4B6Ipx0yCdTzLPUAvysKS8twYe67XsJ7w135KHIcLPx48YtxDIyjRShiU4yOdmU9fc+T23AgQxd0PFM37f8S4AyW5J0V0XI2YsMFPBW9zCM2CgGfHHR3sioqjas06xng9vkpzBfrPI4zTvDQM0Wa30ltQE71WB9azbFZ/nztaDfO/w51YunpHjOQJ/jvYGcuOs5T+OgLfx43kVe2fvsFVTxy2GDuo2BNdiJ0nBur6RPn3BFGgZtEl8zYfVGbgjgLniL2AFhb/Y5GcITwXBjwHThOMlAAdJNbQZWTa75u5KsGmClRv/VdrLIAcRABHou78gb+DrFlo6O9Sm5fUdYvIXeCyQ3EXoCeLlDs746/HHmd+UXZzc1fBIlKkROd5NQdXUr7e8AXQOzZzwbaFT3pui7w/11F6AeutLpPHbIsSIN7MPqK1cyz6lqEIgDEGZiAjF64LQMDx5IqLbCKFr/3qgDWlFdZfH9OdRmCiwsSFIItCx3mKXmULCj/jqwNJr1OOz4aUqjcR8RfUKHaYl+qJgShsIGWo6Pmxs7RzheGAy7AYnSSW3HNLMfL5ADeHpz508SQsj/hztQDa9rCzTqS9nZMdFaAQLmeKvyorwFuaGgYvO2CKgWqKcQWbxPSMBU7zFP6GJyy7eTDJOMAPlOo3ItHO4pROmxznCwFA9fWdDl2B75RAHtfyFs1/rSuDYKLLzBTmIBCYKFfBApKztBKx/UlwHsvaamIgxhTZ/jg0tEhntIntmmSQ8bFwUYI2F6IBl6RH8SjvTNJGYlQONhG73NwjQVYodVNmBGqqUecSlBzm6vEO9amGNuNUNWYQ7XhwMZsrl7INOKTDEqBwMGJffDnIzPjAGagm+JkXQC2ydL5YOB2UmOGNmzgKQm6M17obHyiQz/MMVPDwkIm/XpfHtg8wDREs8p2GNKN4Nbux8qfRCe3ozxpo+e1nwMD7W/fYdpoBJu2FwBvDGefR9zVYMKrxA4U8KBB8N/0eaCgyDJSGrIlQeGzMJgf87fTQtkoD/59CBDGGIHAIfOZyoYNRgFsA8qFMZLUzu97FZU7II5iTP3ihjfwO0chujCAGWRaJqudDljzNH9hjVWsPHjzOZUvGH4b4xV+6+OUAevj5AFr4rXBR9LVJ4Tq8rc606SX3pg+0YN3A25OQmDAWge48J/MDxGXrY0qSbaKkfuC8NPvqxBR5pxAYQ3wsJ9Bh8y8LwAOSy9aPja47B4mMAJwx7iyH+xLKw3NUN6eaZ9f+dIpZJTeGHS2SLVyS4KqAHGREJwquCvZ6NxAgfLen48tjAF46RkByyVXhc25yCPbeoCHDFP7eBpD3zDAR3enqM+niasHmAowAjSTuT0NTeWXLjM2vDyaoQ1EThLwB0wf4iRGF4TJKg4miX9V1t4cZfi9tL713W/CSw5N8xPUQpB7DfC/LsipiJ2QgCEaOtmbd+fn84rNPS0sU6i12BrJCUJOybs5yWw0SVS3mjTAgIaFM/spWHDGghARdaQ7/wkGLh5tO2g+uKhVvDK39f7D4b1NVU724TXtptKMKjbobrZMeMOF/QCq9S7yhOGasxid4skooqSJ3+2JVgSnZvaXZ8RaQpDJAFxRd33SVF9uLeIk6hIO6dtXmM+2JSp+IbtA93PZ/VeeZZ1HnCQEXicLXR9V8lKHBrsbgJ+rd6Bd+jmyUCJw+2Fqj4P+M1zGr7/dPKrXxQZ7DvqxD691mW/eHKNy23nqvYgTjsqH4ALNMj9MrjqUQB9Llt5FSf3n49y5zbjalQzAOdLqVYgdD1NJhjsO2syVkcYn+sMzGTM+D1XVQg+yC03gVMzwF1ZU3mp5k8wJJh2OgUTGvLNSuaC0/v0+qSYBgCf7cFtXBOQbBfCGGGkWNCt4mgtxFqHnmJpNxsoziFlzAPcUkwHYLVdDQSg8fJUHiAprWxeYkubcSmWdwZrZcFT+Rz6ClpBi7XO6XEkvAQYCnR4grkkXlM7ss3KhCQBXNTQPnxssUiMnGDjRABu1jFay66orhxrLo/pm2/gpXtxrXTxrMgDvSquIRk5cxREaHf3MT1DOqroz3hSAKbE5348O0Dw2ZAr+eewp3pOd8aItLwBWmAwwPL2D3UWo++WSHX1aDzYB4HRxxdTPAkR1UHZdTB04vVtCaadN4TFLedP890vaOBjFGA0wcPtTDRnCmLKmoWtBZeNUQdUIU5i6cIU9b3yAss3QdkCAR7lx0XXhvN0d7/J6CfBQAPCJS+JfTeHTPVt2hNgGc1tW+OfPJkuLStfMmeYvaoCmzXDNI3yV6JbArMOmVvPs8yq9kaPFhAB/6pBJBLAqFSYv8AGW005dNQ3ghHzWvImBKkKArfoI4I6KzxQQUrikC2eZBrAAt6Njsje3ZWNwAWmAI+nadoBpXdY81FuB/hySc9R0gCsIAf7Itbh2gWcePsC/ppVTcVU0YPIzf0GNXW75RFMYckss/HG4n+opnooe58F7vCdRvKkvVPSL5AYX/Qr0VgfliKcbw+fZIvUuWC3rWiXSJ20yJNVfk6V1WVI5ZVagqBZXRQMPet95UagpsjwnqO2/K1lzAR66LgAD1f+hO/1a670H+AB75atOwMlxnSzAaKri5jemMLUnRUHFnDdcJ0vYTGWWzSfrZCHtRQPo6SN2DPyUKBaG8NCFYTJZSB55kOm6m4ugk9alWoOlEgWoa67KkSyt6813h/49WKTENXlgbUujVUIQMbxprCwdcnQTP/DgNOI6Wc4C9G0XektDc+sY3I8LFXWWMDmAOHJww6RvwyVXjWUokyGa+2GArAE3TALpu1kBwvIbzXctSCU6MHXJROedFjIXnRFlDHETEKQoO6pXPPR/wmVyaqHkYzK8sstuvDfWjXEHceR2TXaAeHbiKc5Nu4Si0WTXvjZSnKrPstG7tAD185Cim4LythsrT6BF7fCTHTRs0w9y4T+V6Sqn4n5cwBa8PydQoINFhi6JDop++NCqj5BlpraqarBVnDIbFgJw05XAeVlDFSWTzmSBkGNFhJjDr2rsD9/9LqjAA9ozWIbEzby1g7woQi6JKZL22EoTWiAZ9NN5RQZC4XZNV7ZnnrbFCWMuFovMyazft1C7w9yF37WCBGk58tCZpyVVkZnFM8jKk1/bsnC4C+u+oePWOfVp5qNFI7NZWwiJHEkvPYPYCvAFBtTNIEfmQ8+i6oM9MRN1RTh6V7IqCYJrjtGi4dq2dNn1pS8BLOm+mvRDvPR5sWHr6SzzNaFs78EQZKIKVru6XhwhFyfQpJN74tsjX/07TJTgFdWxIou7BD2cIvGzuSQY1GN3SlnD2+Pc2S36VKUBXzAPDapPX1Nlkj9iaT224xZoGxeBNHEdnso3TH9uoPLziO1QiWrhG36qZlgaMxSYeUdJy57xdOt5VYofo/of/0rRWICiA7ajI9mV/f9IkoyKZet+mA0KCYijSL97KYZ0aFhC4p+hIk5t490hva0HW55l+w3xknWT8wYLBz7AEgByCkvxQXeCTGEpx80NlshgeQ9XDcISHnBmLCPEBSH0ssV/JMuGFZfeIuxkPJymcoPFBnOCEwe99gk+oganLMXJTZGCCV5XtNjGyS9tMrPJKRsSL77+sW1Ouc9AJ9bDbsHtTBOAvD+5JA5EJ5OBvN48klM1Qlpxrd9zpg6lyMKRUxrw8lXidCA4TQMc6I+WRUgEv18qjTuYURa+LVF1cbY/rxx6sVAFIQTtPRCIwc7sZyBoX9FXBf8lwZzTQzxlhCf5OchUBT+N0z3ITpmy/TDkIKrfYubKgQP9gcffhpdwD2fowhzyKr2O5FSH+tMqrBvvtDyvXCULKibNDBRVQt4JZQm9dOC9T/Zg39oUJ8/Zn66L/CNdF2UVJy8c5cxqw3q3SDcKtJdIQZVqtCv74ZfBQvWSCJk4jF3zotMkj8YeM81foEVcpUCVdFPwx4ROa+8GLMLSmc+dCko3BX8KC9zzFYb0ZUeHZRCt35dB3LOIq4QQGHM7fZL/60g5P5uv6jZPvTJClI2FTEQ9aJh9Z+hPdEc36THojAkf0eTlL2W8gmhlvwDH7RmR7excfMEaJjq6K8kW+3FA1neYtNMDHZdLo1SFLy2QV3Z9/lu+ymaYQzazLeqj1hLYKEBHLaMUzJrGu8P7uumu7f5Ds32p2kiso5LI7kMVRuGDBSuEeUINYeo1IF82fs5psQax5ZBu4cEyad6Kp2G5vDWG9HYkKnww207puxYd/W8Gifw8HbWKBc6j4ZNdUmk5xld5D+uY6AOQEWsGuihMwlfVN7/7qtpmnzx+ZL4jSZ3YcVMfHwj9SQYgc4olGkJeFNfuzJoeIKqGIJNRkVguHDh8x88V7TGk9fTZMzPry2VnYQjWa5AxLxzQgXzZFJMFOB3/FoO2fsEXZ6QaxFmC6o08zcjUIb1ddTPRnxPVKfL6O6NfdeP7vXttw8ANi1TYuEDcwag/ycujFGymrJQQZHA15+NvIiQsrGHOpmeABwA/YGNwvgseLWFNS/9loULbt915T4yzqwaePKjXT/TgNjpkyd2n+vIru+30aAd4fawijVBgB+Lo7+y5IIuc4C+9D08htKE9t5C233oANmBOoOj6tkTlHjKxHgP8Gx2ghUWB58VCgK2ipblk6Nxuahq2MQH0SNt1hHwEcTIAeVWMgnOBrXmbMLlwWWlxOE3tO8lH2IocoxMDjXV/8EFznyCm+1sNVcvBFRg+sJFPYE6ZTBut/lYFAx3pVYIuDhUWMNW1WDk0R9u86kMvXitms4k0FuAXXG/J61FoYTT1V3vTSiP+FiyugkkHbEAno6M7H3ZZwp0JJhvqyHyyKkou/jVF63i1tHEC2WBerFCPnBcqkyHWTL2T0XmABa6mSgrI0qq70WABbjlcgd0d2PeQv5dGERauDTwlQqc45a7uMQ8sqpsDSnWhfw8WV2PhonX7uim0F7cPbPnod1TRlR7rxY33h7sVVuwEmiZ/rBu7DQMa47HTbQfbdhkDmX7ix28GGjDNOlW6Po4uH9iZViCz5itwL6wAyPzxc+esgwa2MZjoj4nqZHKF7BuN/bbHCt4LZtasdb9a6fxzojIB3FjIB2qsaE20POu3i9qISP61I7uSNAtD2LUjEROeaGbpll2pFXE7k7Uxu5K10XDA37+llUXwqpvmG0NLWVk39kROhe+GBE0qaARMNhzrE9Tp3rRqirTiOqnbAKU3Ws2Bw/SeS0HVeqeCSu91cfKM2QECCUho1M8I4CvXxmsuF6nqFpPlL0d9a+ixrLLZSdKG3YcydUEbQMl2GVVSuJwqLdwcr0ihZOt8fGiVP30bypvK1NYPJKIDchKDD6SXLfaj1zr9mKBKAt8XfB0uKV4bI810ytW6nxdfm/RvRyRXcSJUnBoAAAAASUVORK5CYII=
+name: Okta v2
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: Username to unlock.
+      name: username
+      required: true
+    description: Unlocks a single user.
+    execution: true
+    name: okta-unlock-user
+  - arguments:
+    - description: Username to deactivate.
+      name: username
+      required: true
+    description: Deactivates a single user.
+    name: okta-deactivate-user
+  - arguments:
+    - default: true
+      description: Username to activate.
+      name: username
+      required: true
+    description: Activates a single user.
+    name: okta-activate-user
+  - arguments:
+    - default: true
+      description: Username to suspend.
+      name: username
+      required: true
+    description: Suspends a single user. This operation can only be performed on users with an ACTIVE status. After the porcess is completed, the user's status is SUSPENDED.
+    name: okta-suspend-user
+  - arguments:
+    - default: true
+      description: Username to change the status to ACTIVE.
+      name: username
+      required: true
+    description: Returns a single user to ACTIVE status. This operation can only be performed on users that have a SUSPENDED status.
+    name: okta-unsuspend-user
+  - arguments:
+    - description: Username for which to return all enrolled factors.
+      name: username
+    - description: User ID of the user for which to get all enrolled factors.
+      name: userId
+    description: Returns all the enrolled factors for the specified user.
+    name: okta-get-user-factors
+    outputs:
+    - contextPath: Account.ID
+      description: Okta account ID.
+      type: String
+    - contextPath: Account.Factor.ID
+      description: Okta account factor ID.
+      type: String
+    - contextPath: Account.Factor.Provider
+      description: Okta account factor provider.
+      type: String
+    - contextPath: Account.Factor.Profile
+      description: Okta account factor profile.
+      type: String
+    - contextPath: Account.Factor.FactorType
+      description: Okta account factor type.
+      type: String
+    - contextPath: Account.Factor.Status
+      description: Okta account factor status.
+      type: Unknown
+  - arguments:
+    - description: The user ID.
+      name: userId
+    - description: Username for which to un-enroll an existing factor.
+      name: username
+    - description: The ID of the factor to reset.
+      name: factorId
+      required: true
+    description: Un-enrolls an existing factor for the specified user. This enables the user to enroll a new factor.
+    name: okta-reset-factor
+  - arguments:
+    - default: true
+      description: Okta username for which to set the password.
+      name: username
+      required: true
+    - description: The new password to set for the user.
+      name: password
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: When true, you'll need to change the password in the next login.
+      name: temporary_password
+      predefined:
+      - "true"
+      - "false"
+    description: Sets passwords without validating existing user credentials.
+    execution: true
+    name: okta-set-password
+  - arguments:
+    - description: ID of the user to add to the group.
+      name: userId
+    - description: Name of the user to add to the group.
+      name: username
+    - description: ID of the group to add the user to.
+      name: groupId
+    - description: Name of the group to add the user to.
+      name: groupName
+    description: Adds a user to a group with OKTA_GROUP type.
+    name: okta-add-to-group
+  - arguments:
+    - description: ID of the user to remove from the group.
+      name: userId
+    - description: Name of the user to remove from the group.
+      name: username
+    - description: ID of the group to remove the user from.
+      name: groupId
+    - description: Name of the group to remove the user from.
+      name: groupName
+    description: Removes a user from a group with OKTA_GROUP type.
+    name: okta-remove-from-group
+  - arguments:
+    - default: true
+      description: Username in Okta for which to get the associated groups.
+      name: username
+      required: true
+    description: Returns all user groups associated with a specified user.
+    name: okta-get-groups
+    outputs:
+    - contextPath: Account.Group
+      description: Okta groups with which the account is associated.
+      type: Unknown
+    - contextPath: Account.ID
+      description: Okta account ID.
+      type: String
+    - contextPath: Account.Type
+      description: Okta account type.
+      type: String
+    - contextPath: Account.Group.ID
+      description: Unique key for the group.
+      type: String
+    - contextPath: Account.Group.Created
+      description: Timestamp when the group was created.
+      type: Date
+    - contextPath: Account.Group.ObjectClass
+      description: The object class, which determines the group's profile.
+      type: String
+    - contextPath: Account.Group.LastUpdated
+      description: Timestamp when the group's profile was last updated.
+      type: Date
+    - contextPath: Account.Group.LastMembershipUpdated
+      description: Timestamp when the group's memberships were last updated.
+      type: Date
+    - contextPath: Account.Group.Type
+      description: Group type, which determines how a group's profile and memberships are managed.
+      type: String
+    - contextPath: Account.Group.Description
+      description: Description of the group.
+      type: String
+    - contextPath: Account.Group.Name
+      description: Name of the group.
+      type: String
+  - arguments:
+    - description: The ID of the user to enroll and verify.
+      name: userId
+      required: true
+    - description: The push factor ID.
+      name: factorId
+      required: true
+    description: Enrolls and verifies a push factor for the specified user.
+    name: okta-verify-push-factor
+    outputs:
+    - contextPath: Account.ID
+      description: Okta user ID.
+      type: String
+    - contextPath: Account.VerifyPushResult
+      description: Okta user push factor result.
+      type: String
+  - arguments:
+    - default: true
+      description: Term by which to search. Can be a first name, last name, or email address. The argument `term` or `advanced_search` is required.
+      name: term
+    - description: Searches for users with a supported filtering expression for most properties, including custom-defined properties. The argument `term` or `advanced_search` is required.
+      name: advanced_search
+    - description: The maximum number of results to return. The default and maximum is 200.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to return details of users that match the found term. Can be "true" or "false". The default is "false".
+      name: verbose
+      predefined:
+      - "true"
+      - "false"
+    description: Searches for Okta users.
+    name: okta-search
+    outputs:
+    - contextPath: Account.ID
+      description: Okta account IDs returned by the search.
+      type: String
+    - contextPath: Account.Username
+      description: Okta account usernames returned by the search.
+      type: String
+    - contextPath: Account.Email
+      description: Okta account emails returned by the search.
+      type: String
+    - contextPath: Account.DisplayName
+      description: Okta account display names returned by the search.
+      type: String
+    - contextPath: Account.Type
+      description: Okta account type returned by the search.
+      type: String
+    - contextPath: Account.Status
+      description: Okta account current status.
+      type: String
+    - contextPath: Account.Created
+      description: Timestamp for when the user was created.
+      type: Date
+    - contextPath: Account.Activated
+      description: Timestamp for when the user was activated.
+      type: Date
+    - contextPath: Account.StatusChanged
+      description: Timestamp for when the user's status was last changed.
+      type: Date
+    - contextPath: Account.PasswordChanged
+      description: Timestamp for when the user's password was last changed.
+      type: Date
+  - arguments:
+    - description: Okta username for which to get information.
+      name: username
+    - description: User ID of the user for which to get information.
+      name: userId
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to return extended user information. Can be "true" or "false". The default is "false".
+      name: verbose
+      predefined:
+      - "true"
+      - "false"
+    description: Fetches information for a single user. You must enter one or more parameters for the command to run.
+    name: okta-get-user
+    outputs:
+    - contextPath: Account.ID
+      description: Okta account ID.
+      type: String
+    - contextPath: Account.Email
+      description: Okta account email.
+      type: String
+    - contextPath: Account.Username
+      description: Okta account username.
+      type: String
+    - contextPath: Account.DisplayName
+      description: Okta account display name.
+      type: String
+    - contextPath: Account.Status
+      description: Okta account status.
+      type: String
+    - contextPath: Account.Created
+      description: Timestamp for when the user was created.
+      type: Date
+    - contextPath: Account.Activated
+      description: Timestamp for when the user was activated.
+      type: Date
+    - contextPath: Account.StatusChanged
+      description: Timestamp for when the user's status was last changed.
+      type: Date
+    - contextPath: Account.PasswordChanged
+      description: Timestamp for when the user's password was last changed.
+      type: Date
+    - contextPath: Account.Manager
+      description: The manager.
+      type: String
+    - contextPath: Account.ManagerEmail
+      description: The manager email.
+      type: String
+  - arguments:
+    - description: The cursor in which to retrive the results from and on. if the query didn't reach the end of results, the tag can be obtained from the bottom of the grid in the readable output, or in the context path Okta.User.tag.
+      name: after
+    - default: true
+      defaultValue: "200"
+      description: The maximum number of results to return.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to return extended user information.
+      name: verbose
+      predefined:
+      - "true"
+      - "false"
+    - description: Searches the name property of groups for matching values.
+      name: query
+    - description: "Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. \nThe following expressions are supported(among others) for groups with the filter query parameter: \n type eq \"OKTA_GROUP\" - Groups that have a type of OKTA_GROUP; lastUpdated lt \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with memberships last updated at a specific timestamp; id eq \"00g1emaKYZTWRYYRRTSK\" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
+      name: filter
+    description: Lists users in your organization.
+    name: okta-list-users
+    outputs:
+    - contextPath: Account.ID
+      description: Okta account ID.
+      type: String
+    - contextPath: Account.Email
+      description: Okta account email.
+      type: String
+    - contextPath: Account.Username
+      description: Okta account username.
+      type: String
+    - contextPath: Account.DisplayName
+      description: Okta account display name.
+      type: String
+    - contextPath: Account.Status
+      description: Okta account status.
+      type: String
+    - contextPath: Account.Created
+      description: Timestamp for when the user was created.
+      type: Date
+    - contextPath: Account.Activated
+      description: Timestamp for when the user was activated.
+      type: Date
+    - contextPath: Account.StatusChanged
+      description: Timestamp for when the user's status was last changed.
+      type: Date
+    - contextPath: Account.PasswordChanged
+      description: Timestamp for when the user's password was last changed.
+      type: Date
+    - contextPath: Okta.User.tag
+      description: The location of the next item, used with after param.
+      type: String
+  - arguments:
+    - description: First name of the user (givenName).
+      name: firstName
+      required: true
+    - description: Family name of the user (familyName).
+      name: lastName
+      required: true
+    - description: Primary email address of the user.
+      name: email
+      required: true
+    - description: Unique identifier for the user (username).
+      name: login
+      required: true
+    - description: Secondary email address of user. Usually used for account recovery.
+      name: secondEmail
+    - description: Middle name(s) of the user.
+      name: middleName
+    - description: A comma-separated list of honorific prefix(es) of the user, or title in most Western languages.
+      name: honorificPrefix
+    - description: A comma-separated list of honorific suffix(es) of the user.
+      name: honorificSuffix
+    - description: User's title. for example, Vice President.
+      name: title
+    - description: Display name of the user.
+      name: displayName
+    - description: Casual way to address the user (nick name).
+      name: nickName
+    - description: URL of the user online profile. For example, a web page.
+      name: profileUrl
+    - description: Primary phone number of the user.
+      name: primaryPhone
+    - description: Mobile phone number of the user.
+      name: mobilePhone
+    - description: Full street address component of the user's address.
+      name: streetAddress
+    - description: City or locality component of the user's address (locality).
+      name: city
+    - description: State or region component of the user's address (region).
+      name: state
+    - description: Zip code or postal code component of the user's address (postalCode).
+      name: zipCode
+    - description: Country name component of the user's address (country).
+      name: countryCode
+    - description: Mailing address component of the user's address.
+      name: postalAddress
+    - description: User's preferred written or spoken languages.
+      name: preferredLanguage
+    - description: User's default location, for purposes of localizing items such as currency, date-time format, numerical representations, etc.
+      name: locale
+    - description: User's time zone.
+      name: timezone
+    - description: The user type, which is used to identify the organization-to-user relationship such as "Employee" or "Contractor".
+      name: userType
+    - description: Organization or company assigned unique identifier for the user.
+      name: employeeNumber
+    - description: Name of a cost center the user is assigned to.
+      name: costCenter
+    - description: Name of the user's organization.
+      name: organization
+    - description: Name of the user's division.
+      name: division
+    - description: Name of the user's department.
+      name: department
+    - description: ID of the user's manager.
+      name: managerId
+    - description: Display name of the user's manager.
+      name: manager
+    - description: Password for the new user.
+      name: password
+    - description: Password question for the new user.
+      name: passwordQuestion
+    - description: Password answer for question.
+      name: passwordAnswer
+    - auto: PREDEFINED
+      description: The provider type. Can be "OKTA", "ACTIVE_DIRECTORY", "LDAP", "FEDERATION", or "SOCIAL".
+      name: providerType
+      predefined:
+      - OKTA
+      - ACTIVE_DIRECTORY
+      - LDAP
+      - FEDERATION
+      - SOCIAL
+    - description: Name of the provider.
+      name: providerName
+    - description: IDs of groups that the user will be immediately added to at time of creation (does Not include default group).
+      name: groupIds
+    - auto: PREDEFINED
+      description: Whether to activate the lifecycle operation when creating the user. Can be "true" or "false".
+      name: activate
+      predefined:
+      - "true"
+      - "false"
+    description: Creates a new user with an option of setting a password, recovery question, and answer. The new user will immediately be able to log in after activation with the assigned password. This flow is common when developing a custom user registration experience.
+    execution: true
+    name: okta-create-user
+    outputs:
+    - contextPath: Account.ID
+      description: Created Okta account ID.
+      type: String
+    - contextPath: Account.Email
+      description: Created Okta account email address.
+      type: String
+    - contextPath: Account.Username
+      description: Created okta account username.
+      type: String
+    - contextPath: Account.DisplayName
+      description: Created Okta account display name.
+      type: String
+    - contextPath: Account.Type
+      description: Type of created account - Okta.
+      type: String
+    - contextPath: Account.Status
+      description: Okta account current status.
+      type: String
+    - contextPath: Account.Created
+      description: Timestamp for when the user was created.
+      type: Date
+    - contextPath: Account.Activated
+      description: Timestamp for when the user was activated.
+      type: Date
+    - contextPath: Account.StatusChanged
+      description: Timestamp for when the user's status was last changed.
+      type: Date
+    - contextPath: Account.PasswordChanged
+      description: Timestamp for when the user's password was last changed.
+      type: Date
+  - arguments:
+    - description: First name of the user (given name).
+      name: firstName
+    - description: Family name of the user.
+      name: lastName
+    - description: Primary email address of the user.
+      name: email
+    - description: Unique identifier for the user (login).
+      name: username
+      required: true
+    - description: Secondary email address of the user (typically used for account recovery.
+      name: secondEmail
+    - description: Middle name(s) of the user.
+      name: middleName
+    - description: Honorific prefix(es) of the user, or title in most Western languages.
+      name: honorificPrefix
+    - description: Honorific suffix(es) of the user.
+      name: honorificSuffix
+    - description: User's title. For example, Vice President.
+      name: title
+    - description: Display name of the user.
+      name: displayName
+    - description: Casual way to address the user in real life (nick name).
+      name: nickName
+    - description: URL of the user's online profile. For example, a web page.
+      name: profileUrl
+    - description: Primary phone number of the user.
+      name: primaryPhone
+    - description: Mobile phone number of the user.
+      name: mobilePhone
+    - description: Full street address component of the user's address.
+      name: streetAddress
+    - description: City or locality component of the user's address (locality).
+      name: city
+    - description: State or region component of the user's address (region).
+      name: state
+    - description: Zip code or postal code component of the user's address (postalCode).
+      name: zipCode
+    - description: Country name component of the user's address (country).
+      name: countryCode
+    - description: Mailing address component of the user's address.
+      name: postalAddress
+    - description: User's preferred written or spoken languages.
+      name: preferredLanguage
+    - description: User's default location for purposes of localizing items such as currency, date-time format, numerical representations, etc.
+      name: locale
+    - description: User time zone.
+      name: timezone
+    - description: The user type, which is used to identify the organization-to-user relationship such as "Employee" or "Contractor".
+      name: userType
+    - description: Organization or company assigned unique identifier for the user.
+      name: employeeNumber
+    - description: Name of a cost center the user is assigned to.
+      name: costCenter
+    - description: Name of the user's organization.
+      name: organization
+    - description: Name of the user's division.
+      name: division
+    - description: Name of the user's department.
+      name: department
+    - description: ID of the user's manager.
+      name: managerId
+    - description: Display name of the user's manager.
+      name: manager
+    - description: New password for the specified user.
+      name: password
+    - description: Password question for the specified user.
+      name: passwordQuestion
+    - description: Password answer for the question.
+      name: passwordAnswer
+    - auto: PREDEFINED
+      description: The provider type. Can be "OKTA", "ACTIVE_DIRECTORY", "LDAP", "FEDERATION", or "SOCIAL".
+      name: providerType
+      predefined:
+      - OKTA
+      - ACTIVE_DIRECTORY
+      - FEDERATION
+      - SOCIAL
+    - description: Name of the provider.
+      name: providerName
+    description: Updates a user with a given login. All fields are optional. Fields which are not set, will not be overwritten.
+    execution: true
+    name: okta-update-user
+  - arguments:
+    - description: ID of the group.
+      name: groupId
+    - description: The maximum number of results to return.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to print extended user details. Can be "true" or "false". The default is "false".
+      name: verbose
+      predefined:
+      - "true"
+      - "false"
+    - description: Name of the group.
+      name: groupName
+    description: Enumerates all users that are members of a group.
+    name: okta-get-group-members
+    outputs:
+    - contextPath: Account.ID
+      description: Okta account ID.
+      type: String
+    - contextPath: Account.Email
+      description: Okta account email address.
+      type: String
+    - contextPath: Account.Username
+      description: Okta account username.
+      type: String
+    - contextPath: Account.DisplayName
+      description: Okta account display name.
+      type: String
+    - contextPath: Account.Type
+      description: Account type - Okta.
+      type: String
+    - contextPath: Account.Status
+      description: Okta account current status.
+      type: String
+    - contextPath: Account.Created
+      description: Timestamp for when the user was created.
+      type: Date
+    - contextPath: Account.Activated
+      description: Timestamp for when the user was activated.
+      type: Date
+    - contextPath: Account.StatusChanged
+      description: Timestamp for when the user's status was last changed.
+      type: Date
+    - contextPath: Account.PasswordChanged
+      description: Timestamp for when the user's password was last changed.
+      type: Date
+  - arguments:
+    - description: Searches the name property of groups for matching values.
+      name: query
+    - description: "Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. \nThe following expressions are supported(among others) for groups with the filter query parameter: \n type eq \"OKTA_GROUP\" - Groups that have a type of OKTA_GROUP; lastUpdated lt \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with memberships last updated at a specific timestamp; id eq \"00g1emaKYZTWRYYRRTSK\" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
+      name: filter
+    - defaultValue: "200"
+      description: The maximum number of results to return. The default is 200.
+      name: limit
+    description: Lists groups in your organization. A subset of groups can be returned that match a supported filter expression or query.
+    name: okta-list-groups
+    outputs:
+    - contextPath: Okta.Group.ID
+      description: Unique key for the group.
+      type: String
+    - contextPath: Okta.Group.Created
+      description: Timestamp for when the group was created.
+      type: Date
+    - contextPath: Okta.Group.ObjectClass
+      description: The group's profile.
+      type: Unknown
+    - contextPath: Okta.Group.LastUpdated
+      description: Timestamp for when the group's profile was last updated.
+      type: Date
+    - contextPath: Okta.Group.LastMembershipUpdated
+      description: Timestamp for when the group's membership was last updated.
+      type: Date
+    - contextPath: Okta.Group.Type
+      description: The group type, which determines how a group's profile and membership are managed. Can be "OKTA_GROUP", "APP_GROUP", or "BUILT_IN".
+      type: String
+    - contextPath: Okta.Group.Name
+      description: Name of the group.
+      type: String
+    - contextPath: Okta.Group.Description
+      description: Description of the group.
+      type: String
+  - arguments:
+    - description: 'Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z.'
+      name: since
+    - description: 'Filters the upper time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z.'
+      name: until
+    - auto: PREDEFINED
+      defaultValue: ASCENDING
+      description: The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING".
+      name: sortOrder
+      predefined:
+      - ASCENDING
+      - DESCENDING
+    - description: The maximum number of results to return. The default is 100.
+      name: limit
+    description: Returns failed login events.
+    name: okta-get-failed-logins
+    outputs:
+    - contextPath: Okta.Logs.Events.actor.alternateId
+      description: Alternative ID of the actor.
+      type: String
+    - contextPath: Okta.Logs.Events.actor.displayName
+      description: Display name of the actor.
+      type: String
+    - contextPath: Okta.Logs.Events.actor.id
+      description: ID of the actor.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
+      description: A raw string representation of the user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.os
+      description: The operating system on which the client runs. For example, Microsoft Windows 10.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
+      description: Identifies the browser type, if relevant. For example, Chrome.
+      type: String
+    - contextPath: Okta.Logs.Events.client.device
+      description: Type of device that client operated from. For example, Computer.
+      type: String
+    - contextPath: Okta.Logs.Events.client.id
+      description: For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request.
+      type: String
+    - contextPath: Okta.Logs.Events.client.ipAddress
+      description: IP address from which the client made its request.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
+      description: The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.state
+      description: Full name of the state or province encompassing the area containing the geo-location coordinates. For example Montana, Incheon.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda.
+      type: String
+    - contextPath: Okta.Logs.Events.displayMessage
+      description: The display message for an event.
+      type: String
+    - contextPath: Okta.Logs.Events.eventType
+      description: Type of event that was published.
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.result
+      description: Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", "UNKNOWN".
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.reason
+      description: Reason for the result. For example, INVALID_CREDENTIALS.
+      type: String
+    - contextPath: Okta.Logs.Events.published
+      description: Timestamp when the event was published.
+      type: String
+    - contextPath: Okta.Logs.Events.severity
+      description: The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR".
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
+      description: Autonomous system number associated with the autonomous system that the event request was sourced to.
+      type: Number
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
+      description: Organization associated with the autonomous system that the event request was sourced to.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.isp
+      description: Internet service provider used to send the event's request.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.domain
+      description: The domain name associated with the IP address of the inbound event request.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
+      description: Specifies whether an event's request is from a known proxy.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
+      description: IP address.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
+      description: The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
+      description: Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.source
+      description: Details regarding the source.
+      type: String
+    - contextPath: Okta.Logs.Events.target.id
+      description: ID of a target.
+      type: String
+    - contextPath: Okta.Logs.Events.target.type
+      description: Type of a target.
+      type: String
+    - contextPath: Okta.Logs.Events.target.alternateId
+      description: Alternative ID of a target.
+      type: String
+    - contextPath: Okta.Logs.Events.target.displayName
+      description: Display name of a target.
+      type: String
+  - arguments:
+    - description: "Useful for performing structured queries where constraints on LogEvent attribute values can be explicitly targeted.  \nThe following expressions are supported for events with the filter query parameter: eventType eq \" :eventType\" \n-Events that have a specific action; eventType target.id eq \":id\" \n- Events published with a specific target id; actor.id eq \":id\"\n- Events published with a specific actor ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
+      name: filter
+    - description: "The query parameter can be used to perform keyword matching against a LogEvents object’s attribute values. To satisfy the constraint, all supplied keywords must be matched exactly. Note that matching is case-insensitive.  The following are some examples of common keyword filtering: \nEvents that mention a specific city: query=San Francisco; \nEvents that mention a specific url: query=interestingURI.com; \nEvents that mention a specific person: query=firstName lastName."
+      name: query
+    - description: 'Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z.'
+      name: since
+    - description: 'Filters the upper  time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z.'
+      name: until
+    - auto: PREDEFINED
+      defaultValue: ASCENDING
+      description: The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING".
+      name: sortOrder
+      predefined:
+      - ASCENDING
+      - DESCENDING
+    - defaultValue: "100"
+      description: The maximum number of results to return. The default is 100.
+      name: limit
+    description: Gets logs by providing optional filters.
+    name: okta-get-logs
+    outputs:
+    - contextPath: Okta.Logs.Events.actor.alternateId
+      description: Alternative ID of the actor.
+      type: String
+    - contextPath: Okta.Logs.Events.actor.displayName
+      description: Display name of the actor.
+      type: String
+    - contextPath: Okta.Logs.Events.actor.id
+      description: ID of the actor.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
+      description: A raw string representation of user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.os
+      description: The operating system on which the client runs. For example, Microsoft Windows 10.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
+      description: Identifies the type of web browser, if relevant. For example, Chrome.
+      type: String
+    - contextPath: Okta.Logs.Events.client.device
+      description: Type of device from which the client operated. For example, Computer.
+      type: String
+    - contextPath: Okta.Logs.Events.client.id
+      description: For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request.
+      type: String
+    - contextPath: Okta.Logs.Events.client.ipAddress
+      description: IP address from which the client made its request.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
+      description: The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.state
+      description: Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda.
+      type: String
+    - contextPath: Okta.Logs.Events.displayMessage
+      description: The display message for an event.
+      type: String
+    - contextPath: Okta.Logs.Events.eventType
+      description: Type of event that was published.
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.result
+      description: Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", or "UNKNOWN".
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.reason
+      description: Reason for the result. For example, INVALID_CREDENTIALS.
+      type: String
+    - contextPath: Okta.Logs.Events.published
+      description: Timestamp when the event was published.
+      type: String
+    - contextPath: Okta.Logs.Events.severity
+      description: The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR".
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
+      description: Autonomous system number associated with the autonomous system that the event request was sourced to.
+      type: Number
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
+      description: Organization associated with the autonomous system that the event request was sourced to.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.isp
+      description: Internet service provider used to send the event's request.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.domain
+      description: The domain name associated with the IP address of the inbound event request.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
+      description: Specifies whether an event's request is from a known proxy.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
+      description: IP address.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
+      description: The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
+      description: Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.source
+      description: Details regarding the source.
+      type: String
+    - contextPath: Okta.Logs.Events.target.id
+      description: ID of a target.
+      type: String
+    - contextPath: Okta.Logs.Events.target.type
+      description: Type of a target.
+      type: String
+    - contextPath: Okta.Logs.Events.target.alternateId
+      description: Alternative ID of a target.
+      type: String
+    - contextPath: Okta.Logs.Events.target.displayName
+      description: Display name of a target.
+      type: String
+  - arguments:
+    - description: Filters the lower time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
+      name: since
+    - description: Filters the upper time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
+      name: until
+    - auto: PREDEFINED
+      defaultValue: ASCENDING
+      description: The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING".
+      name: sortOrder
+      predefined:
+      - ASCENDING
+      - DESCENDING
+    - defaultValue: "100"
+      description: The maximum number of results to return. The default is 100.
+      name: limit
+    description: Gets events for when a user was added to a group.
+    name: okta-get-group-assignments
+    outputs:
+    - contextPath: Okta.Logs.Events.actor.alternateId
+      description: Alternative ID of the actor.
+      type: String
+    - contextPath: Okta.Logs.Events.actor.displayName
+      description: Display name of the actor.
+      type: String
+    - contextPath: Okta.Logs.Event.actor.id
+      description: ID of the actor.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
+      description: A raw string representation of user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.os
+      description: The operating system on which the client runs. For example, Microsoft Windows 10.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
+      description: Identifies the type of web browser, if relevant. For example, Chrome.
+      type: String
+    - contextPath: Okta.Logs.Events.client.device
+      description: Type of device from which the client operated. For example, Computer.
+      type: String
+    - contextPath: Okta.Logs.Events.client.id
+      description: For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request.
+      type: String
+    - contextPath: Okta.Logs.Events.client.ipAddress
+      description: IP address from which the client made its request.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
+      description: The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.state
+      description: Full name of the state or province encompassing in the area containing the geo-location coordinates. For example, Montana, Incheon.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda.
+      type: String
+    - contextPath: Okta.Logs.Events.displayMessage
+      description: The display message for an event.
+      type: String
+    - contextPath: Okta.Logs.Events.eventType
+      description: Type of event that was published.
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.result
+      description: Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", or "UNKNOWN".
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.reason
+      description: Reason for the result. For example INVALID_CREDENTIALS.
+      type: Unknown
+    - contextPath: Okta.Logs.Events.published
+      description: Timestamp when the event was published.
+      type: String
+    - contextPath: Okta.Logs.Events.severity
+      description: The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR".
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
+      description: Autonomous system number associated with the autonomous system that the event request was sourced to.
+      type: Number
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
+      description: Organization associated with the autonomous system that the event request was sourced to.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.isp
+      description: Internet service provider used to send the event's request.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.domain
+      description: The domain name associated with the IP address of the inbound event request.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
+      description: Specifies whether an event's request is from a known proxy.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
+      description: IP address.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
+      description: The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
+      description: Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.source
+      description: Details regarding the source.
+      type: String
+    - contextPath: Okta.Logs.Events.target.id
+      description: ID of a target.
+      type: String
+    - contextPath: Okta.Logs.Events.target.type
+      description: Target type.
+      type: String
+    - contextPath: Okta.Logs.Events.target.alternateId
+      description: Alternative ID of a target.
+      type: String
+    - contextPath: Okta.Logs.Events.target.displayName
+      description: Display name of a target.
+      type: String
+  - arguments:
+    - description: Filters the lower time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
+      name: since
+    - description: Filters the upper time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
+      name: until
+    - auto: PREDEFINED
+      defaultValue: ASCENDING
+      description: The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING".
+      name: sortOrder
+      predefined:
+      - ASCENDING
+      - DESCENDING
+    - defaultValue: "100"
+      description: The maximum number of results to return. The default is 100.
+      name: limit
+    description: Returns events for when a user was assigned to an application.
+    name: okta-get-application-assignments
+    outputs:
+    - contextPath: Okta.Logs.Events.actor.alternateId
+      description: Alternative ID of the actor.
+      type: String
+    - contextPath: Okta.Logs.Events.actor.displayName
+      description: Display name of the actor.
+      type: String
+    - contextPath: Okta.Logs.Event.actor.id
+      description: ID of the actor.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
+      description: A raw string representation of the user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.os
+      description: The OS on which the client runs. For example, Microsoft Windows 10.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
+      description: Identifies the type of web browser, if relevant. For example, Chrome.
+      type: String
+    - contextPath: Okta.Logs.Events.client.device
+      description: Type of device from which the client operated. For example, Computer.
+      type: String
+    - contextPath: Okta.Logs.Events.client.id
+      description: For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request.
+      type: String
+    - contextPath: Okta.Logs.Events.client.ipAddress
+      description: IP address from which the client made its request.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
+      description: The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.state
+      description: Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda.
+      type: String
+    - contextPath: Okta.Logs.Events.displayMessage
+      description: The display message for an event.
+      type: String
+    - contextPath: Okta.Logs.Events.eventType
+      description: Type of event that was published.
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.result
+      description: Result of the action. For example, "SUCCESS", "FAILURE", "SKIPPED", or "UNKNOWN".
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.reason
+      description: Reason for the result. For example INVALID_CREDENTIALS.
+      type: String
+    - contextPath: Okta.Logs.Events.published
+      description: Timestamp when the event was published.
+      type: String
+    - contextPath: Okta.Logs.Events.severity
+      description: The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR".
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
+      description: Autonomous system number associated with the autonomous system that the event request was sourced to.
+      type: Number
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
+      description: Organization associated with the autonomous system that the event request was sourced to.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.isp
+      description: Internet service provider used to send the event's request.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.domain
+      description: The domain name associated with the IP address of the inbound event request.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
+      description: Specifies whether an event's request is from a known proxy.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
+      description: IP address.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
+      description: The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
+      description: Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.source
+      description: Details regarding the source.
+      type: String
+    - contextPath: Okta.Logs.Events.target.id
+      description: ID of a target.
+      type: String
+    - contextPath: Okta.Logs.Events.target.type
+      description: Type of a target.
+      type: String
+    - contextPath: Okta.Logs.Events.target.alternateId
+      description: Alternative ID of a target.
+      type: String
+    - contextPath: Okta.Logs.Events.target.displayName
+      description: Display name of a target.
+      type: String
+  - arguments:
+    - description: Filters the lower time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
+      name: since
+    - description: Filters the upper time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
+      name: until
+    - auto: PREDEFINED
+      defaultValue: ASCENDING
+      description: The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING".
+      name: sortOrder
+      predefined:
+      - ASCENDING
+      - DESCENDING
+    - defaultValue: "100"
+      description: The maximum number of results to return. The default is 100.
+      name: limit
+    description: Returns logs using specified filters.
+    name: okta-get-application-authentication
+    outputs:
+    - contextPath: Okta.Logs.Events.actor.alternateId
+      description: Alternative ID of the actor.
+      type: String
+    - contextPath: Okta.Logs.Events.actor.displayName
+      description: Display name of the actor.
+      type: String
+    - contextPath: Okta.Logs.Events.actor.id
+      description: ID of the actor.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
+      description: A raw string representation of user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.os
+      description: The operating system on which the client runs. For example, Microsoft Windows 10.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
+      description: Identifies the type of web browser, if relevant. For example, Chrome.
+      type: String
+    - contextPath: Okta.Logs.Events.client.device
+      description: Type of device from which the client operated. For example, Computer.
+      type: String
+    - contextPath: Okta.Logs.Events.client.id
+      description: For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request.
+      type: String
+    - contextPath: Okta.Logs.Events.client.ipAddress
+      description: IP address from which the client made its request.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
+      description: The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.state
+      description: Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda.
+      type: String
+    - contextPath: Okta.Logs.Events.displayMessage
+      description: The display message for an event.
+      type: String
+    - contextPath: Okta.Logs.Events.eventType
+      description: Type of event that was published.
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.result
+      description: Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", or "UNKNOWN".
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.reason
+      description: Reason for the result. For example INVALID_CREDENTIALS.
+      type: String
+    - contextPath: Okta.Logs.Events.published
+      description: Timestamp when the event was published.
+      type: String
+    - contextPath: Okta.Logs.Events.severity
+      description: The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR".
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
+      description: Autonomous system number associated with the autonomous system that the event request was sourced to.
+      type: Number
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
+      description: Organization associated with the autonomous system that the event request was sourced to.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.isp
+      description: Internet service provider used to send the event's request.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.domain
+      description: The domain name associated with the IP address of the inbound event request.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
+      description: Specifies whether an event's request is from a known proxy.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
+      description: IP address.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
+      description: The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
+      description: Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.source
+      description: Details regarding the source.
+      type: String
+    - contextPath: Okta.Logs.Events.target.id
+      description: ID of a target.
+      type: String
+    - contextPath: Okta.Logs.Events.target.type
+      description: Type of a target.
+      type: String
+    - contextPath: Okta.Logs.Events.target.alternateId
+      description: Alternative ID of a target.
+      type: String
+    - contextPath: Okta.Logs.Events.target.displayName
+      description: Display name of a target.
+      type: String
+  - arguments:
+    - description: Okta User ID.
+      name: userId
+    - description: Username of the user.
+      name: username
+    description: Deletes the specified user.
+    execution: true
+    name: okta-delete-user
+  - arguments:
+    - description: Okta User ID.
+      name: userId
+      required: true
+    description: |-
+      Removes all active identity provider sessions. This forces the user to authenticate upon the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
+      For more information and examples:
+      https://developer.okta.com/docs/reference/api/users/#user-sessions
+    name: okta-clear-user-sessions
+  - arguments:
+    - description: The maximum number of results to return.
+      name: limit
+    description: Get an Okta Zone object.
+    name: okta-list-zones
+    outputs:
+    - contextPath: Okta.Zone.created
+      description: Zone creation timestamp, in the format 2020-04-06T22:23:12.000Z.
+      type: Date
+    - contextPath: Okta.Zone.gateways.type
+      description: Gateways IP entry type, e.g., CIDR.
+      type: String
+    - contextPath: Okta.Zone.gateways.value
+      description: Gateways IP entry value, e.g., 34.103.1.108/32.
+      type: String
+    - contextPath: Okta.Zone.id
+      description: Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7.
+      type: String
+    - contextPath: Okta.Zone.lastUpdated
+      description: Zone last update timestamp, e.g., 2020-04-06T22:23:12.000Z.
+      type: Date
+    - contextPath: Okta.Zone.name
+      description: Zone name.
+      type: String
+    - contextPath: Okta.Zone.proxies.type
+      description: Proxies IP entry type e.g. CIDR.
+      type: String
+    - contextPath: Okta.Zone.proxies.value
+      description: Proxies IP entry value, e.g., 34.103.1.108/32.
+      type: Unknown
+    - contextPath: Okta.Zone.status
+      description: Zone status, e.g., ACTIVE.
+      type: String
+    - contextPath: Okta.Zone.system
+      description: True if this is a system zone, false if user-created.
+      type: Number
+    - contextPath: Okta.Zone.type
+      description: Zone type, e.g., IP.
+      type: String
+  - arguments:
+    - description: Zone ID to update, e.g., nzoqsmcx1qWYJ6wYF0h7.
+      name: zoneID
+      required: true
+    - description: Updates the zone name.
+      name: zoneName
+    - description: 'Updates Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
+      isArray: true
+      name: gatewayIPs
+    - description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
+      isArray: true
+      name: proxyIPs
+    description: Update an Okta Zone.
+    name: okta-update-zone
+    outputs:
+    - contextPath: Okta.Zone.created
+      description: Zone creation timestamp, e.g., 2020-04-06T22:23:12.000Z.
+      type: Date
+    - contextPath: Okta.Zone.gateways.type
+      description: Gateways IP entry type, e.g., CIDR.
+      type: String
+    - contextPath: Okta.Zone.gateways.value
+      description: Gateways IP entry value, e.g., 34.103.1.108/32.
+      type: String
+    - contextPath: Okta.Zone.id
+      description: Okta Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7.
+      type: String
+    - contextPath: Okta.Zone.lastUpdated
+      description: Zone last update timestamp, in the format 2020-04-06T22:23:12.000Z.
+      type: Date
+    - contextPath: Okta.Zone.name
+      description: Zone name.
+      type: String
+    - contextPath: Okta.Zone.proxies.type
+      description: Proxies IP entry type, e.g., CIDR.
+      type: String
+    - contextPath: Okta.Zone.proxies.value
+      description: Proxies IP entry value, e.g., 34.103.1.108/32.
+      type: Unknown
+    - contextPath: Okta.Zone.status
+      description: Zone status, e.g., ACTIVE.
+      type: String
+    - contextPath: Okta.Zone.system
+      description: True if this is a system zone, false if user-created.
+      type: Number
+    - contextPath: Okta.Zone.type
+      description: Zone type, e.g., IP.
+      type: String
+  - arguments:
+    - description: Zone ID to get, e.g., nzoqsmcx1qWYJ6wYF0h.7.
+      name: zoneID
+      required: true
+    description: Get a Zone by its ID.
+    name: okta-get-zone
+    outputs:
+    - contextPath: Okta.Zone.created
+      description: Zone creation timestamp, in the format 2020-04-06T22:23:12.000Z.
+      type: Date
+    - contextPath: Okta.Zone.gateways.type
+      description: Gateways IP entry type, e.g., CIDR.
+      type: String
+    - contextPath: Okta.Zone.gateways.value
+      description: Gateways IP entry value, e.g., 34.103.1.108/32.
+      type: String
+    - contextPath: Okta.Zone.id
+      description: Okta Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7.
+      type: String
+    - contextPath: Okta.Zone.lastUpdated
+      description: Zone last update timestamp, in the format 2020-04-06T22:23:12.000Z.
+      type: Date
+    - contextPath: Okta.Zone.name
+      description: Zone name.
+      type: String
+    - contextPath: Okta.Zone.proxies.type
+      description: Proxies IP entry type, e.g., CIDR.
+      type: String
+    - contextPath: Okta.Zone.proxies.value
+      description: Proxies IP entry value, e.g., 34.103.1.108/32.
+      type: Unknown
+    - contextPath: Okta.Zone.status
+      description: Zone status, e.g,. ACTIVE.
+      type: String
+    - contextPath: Okta.Zone.system
+      description: True if this is a system zone, false if user-created.
+      type: Number
+    - contextPath: Okta.Zone.type
+      description: Zone type, e.g., IP.
+      type: String
+  - arguments:
+    - description: Zone name.
+      name: name
+      required: true
+    - description: 'Update Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
+      name: gateway_ips
+    - description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
+      name: proxies
+    description: Creates a Zone with the specified name.
+    name: okta-create-zone
+  - arguments:
+    - description: Name of the group to add.
+      name: name
+      required: true
+    - description: Description of the group to add.
+      name: description
+    description: Create a new group in Okta tenant.
+    execution: true
+    name: okta-create-group
+    outputs:
+    - contextPath: OktaGroup.ID
+      description: Group ID in Okta.
+      type: Unknown
+    - contextPath: OktaGroup.Name
+      description: Group name in Okta.
+      type: Unknown
+    - contextPath: OktaGroup.Description
+      description: Group description in Okta.
+      type: Unknown
+    - contextPath: OktaGroup.Type
+      description: Group type in Okta.
+      type: Unknown
+  - arguments:
+    - description: Name of the group to assign to the app.
+      name: groupName
+    - description: ID of the group to assign to the app.
+      name: groupId
+    - description: Friendly name of the app that the group will be assigned to.
+      name: appName
+    description: Assign a group to an application.
+    name: okta-assign-group-to-app
+  - arguments:
+    - default: true
+      description: Okta username for which to expire the password.
+      name: username
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: When true, you'll need to change the password in the next login.
+      name: temporary_password
+      predefined:
+      - "true"
+      - "false"
+    description: Expires a password for an existing Okta user.
+    execution: true
+    name: okta-expire-password
+    outputs:
+    - contextPath: Account.Activated
+      description: Timestamp for when the user was activated.
+      type: Date
+    - contextPath: Account.Created
+      description: Timestamp for when the user was created.
+      type: Date
+    - contextPath: Account.DisplayName
+      description: Okta account display name.
+      type: String
+    - contextPath: Account.Email
+      description: Okta account email.
+      type: String
+    - contextPath: Account.ID
+      description: Created Okta account ID.
+      type: String
+    - contextPath: Account.PasswordChanged
+      description: Timestamp for when the user's password was last changed.
+      type: Date
+    - contextPath: Account.Status
+      description: Okta account current status.
+      type: String
+    - contextPath: Account.StatusChanged
+      description: Timestamp for when the user's status was last changed.
+      type: Date
+    - contextPath: Account.Type
+      description: Okta account type.
+      type: String
+    - contextPath: Account.Username
+      description: Okta account usernames returned by the search.
+      type: String
+  - arguments: []
+    description: Reset OAuth authentication data (authentication process will start from the beginning, and a new token will be generated).
+    name: okta-auth-reset
+  dockerimage: demisto/crypto:1.0.0.117163
+  runonce: false
+  script: |
+    register_module_line('Okta v2', 'start', __line__())
+    ### pack version: 3.2.15
+
+
+    from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
+
+
+    ### GENERATED CODE ###: from OktaApiModule import *  # noqa: E402
+    # This code was inserted in place of an API module.
+    register_module_line('OktaApiModule', 'start', __line__(), wrapper=-3)
+
+
+    import uuid
+    from datetime import datetime, timedelta
+    from enum import Enum
+
+    import jwt
+
+
+    TOKEN_EXPIRATION_TIME = 60  # In minutes. This value must be a maximum of only an hour (according to Okta's documentation).
+    TOKEN_RENEWAL_TIME_LIMIT = 60  # In seconds. The minimum time before the token expires to renew it.
+
+
+    class JWTAlgorithm(Enum):
+        RS256 = 'RS256'
+        RS384 = 'RS384'
+        RS512 = 'RS512'
+        ES256 = 'ES256'
+        ES384 = 'ES384'
+        ES512 = 'ES512'
+
+
+    class AuthType(Enum):
+        API_TOKEN = 1
+        OAUTH = 2
+        NO_AUTH = 3
+
+
+    class OktaClient(BaseClient):
+        def __init__(self, auth_type: AuthType = AuthType.API_TOKEN, api_token: str | None = None,
+                     client_id: str | None = None, scopes: list[str] | None = None, private_key: str | None = None,
+                     jwt_algorithm: JWTAlgorithm | None = None, *args, **kwargs):
+            """
+            Args:
+                auth_type (AuthType, optional): The type of authentication to use.
+                api_token (str | None, optional): API token for authentication (required if 'auth_type' is AuthType.API_TOKEN).
+                client_id (str | None, optional): Client ID for OAuth authentication (required if 'auth_type' is AuthType.OAUTH).
+                scopes (list[str] | None, optional): A list of scopes to request for the token
+                    (required if 'auth_type' is AuthType.OAUTH).
+                private_key (str | None, optional): Private key for OAuth authentication (required if 'auth_type' is AuthType.OAUTH).
+                jwt_algorithm (str | None, optional): The algorithm to use for JWT signing
+                    (required if 'auth_type' is AuthType.OAUTH).
+            """
+            super().__init__(*args, **kwargs)
+            self.auth_type = auth_type
+
+            self.api_token = api_token
+
+            self.client_id = client_id
+            self.scopes = scopes
+            self.jwt_algorithm = jwt_algorithm
+            self.private_key = private_key
+
+            missing_required_params = []
+
+            if self.auth_type == AuthType.API_TOKEN and not api_token:
+                raise ValueError('API token is missing')
+
+            if self.auth_type == AuthType.OAUTH:
+                if not self.client_id:
+                    missing_required_params.append('Client ID')
+
+                if not self.scopes:
+                    missing_required_params.append('Scopes')
+
+                if not self.jwt_algorithm:
+                    missing_required_params.append('JWT algorithm')
+
+                if not self.private_key:
+                    missing_required_params.append('Private key')
+
+                if missing_required_params:
+                    raise ValueError(f'Required OAuth parameters are missing: {", ".join(missing_required_params)}')
+
+        def assign_app_role(self, client_id: str, role: str, auth_type: AuthType) -> dict:
+            """
+            Assign a role to a client application.
+
+            Args:
+                client_id (str): The ID of the client application.
+                role (str): The role to assign to the client application.
+                auth_type (AuthType, optional): Authentication type to use for the request. Defaults to AuthType.API_TOKEN.
+
+            Returns:
+                dict: The response from the API.
+            """
+            return self.http_request(
+                auth_type=auth_type,
+                url_suffix=f'/oauth2/v1/clients/{client_id}/roles',
+                method='POST',
+                json_data={
+                    'type': role,
+                },
+            )
+
+        def generate_jwt_token(self, url: str) -> str:
+            """
+            Generate a JWT token to use for OAuth authentication.
+
+            Args:
+                url (str): The URL to use for the JWT token (for the 'aud' claim).
+
+            Returns:
+                str: The JWT token.
+            """
+            current_time = datetime.utcnow()
+            expiration_time = current_time + timedelta(minutes=TOKEN_EXPIRATION_TIME)
+
+            return jwt.encode(
+                payload={
+                    'aud': url,
+                    'iat': int((current_time - datetime(1970, 1, 1)).total_seconds()),
+                    'exp': int((expiration_time - datetime(1970, 1, 1)).total_seconds()),
+                    'iss': self.client_id,
+                    'sub': self.client_id,
+                    'jti': str(uuid.uuid4()),
+                },
+                key=self.private_key,  # type: ignore[arg-type]
+                algorithm=self.jwt_algorithm.value,  # type: ignore[union-attr]
+            )
+
+        def generate_oauth_token(self, scopes: list[str]) -> dict:
+            """
+            Generate an OAuth token to use for authentication.
+
+            Args:
+                scopes (list[str]): A list of scopes to request for the token.
+
+            Returns:
+                dict: The response from the API.
+            """
+            auth_url = self._base_url + '/oauth2/v1/token'
+            jwt_token = self.generate_jwt_token(url=auth_url)
+
+            return self.http_request(
+                auth_type=AuthType.NO_AUTH,
+                full_url=auth_url,
+                method='POST',
+                headers={
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                data={
+                    'grant_type': 'client_credentials',
+                    'scope': ' '.join(scopes),
+                    'client_assertion_type': 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
+                    'client_assertion': jwt_token,
+                },
+            )
+
+        def get_token(self):
+            """
+            Get an OAuth token for authentication.
+            If there isn't an existing one, or the existing one is expired, a new one will be generated.
+            """
+            expiration_time_format = '%Y-%m-%dT%H:%M:%S'
+
+            integration_context = get_integration_context()
+            token = integration_context.get('token')
+
+            if token:
+                if 'token_expiration' not in integration_context:
+                    raise ValueError('Token expiration data must be assigned along with the token.')
+
+                token_expiration = datetime.strptime(integration_context['token_expiration'], expiration_time_format)
+
+                if datetime.utcnow() + timedelta(seconds=TOKEN_RENEWAL_TIME_LIMIT) < token_expiration:
+                    return token
+
+                demisto.debug('An existing token was found, but expired. A new token will be generated.')
+
+            else:
+                demisto.debug('No existing token was found. A new token will be generated.')
+
+            token_generation_response = self.generate_oauth_token(scopes=self.scopes)  # type: ignore[arg-type]
+            token: str = token_generation_response['access_token']
+            expires_in: int = token_generation_response['expires_in']
+            token_expiration = datetime.utcnow() + timedelta(seconds=expires_in)
+
+            integration_context['token'] = token
+            integration_context['token_expiration'] = token_expiration.strftime(expiration_time_format)
+            set_integration_context(integration_context)
+            demisto.debug(f'New token generated. Expiration time: {token_expiration}')
+
+            return token
+
+        def http_request(self, auth_type: AuthType | None = None, **kwargs):
+            """
+            Override BaseClient._http_request() to automatically add authentication headers.
+
+            Args:
+                auth_type (AuthType | None): Type of authentication to use for the request.
+                    If not provided, 'self.auth_type' will be used.
+            """
+            auth_type = auth_type if auth_type is not None else self.auth_type
+            auth_headers = {}
+
+            if auth_type == AuthType.OAUTH:
+                auth_headers['Authorization'] = f'Bearer {self.get_token()}'
+
+            elif auth_type == AuthType.API_TOKEN:
+                auth_headers['Authorization'] = f'SSWS {self.api_token}'
+
+            original_headers = kwargs.get('headers') or self._headers or {}
+            kwargs['headers'] = {**auth_headers, **original_headers}
+            return self._http_request(**kwargs)
+
+
+    def reset_integration_context():
+        """
+        Reset the integration context.
+        """
+        integration_context = get_integration_context()
+        integration_context["token"] = "XXX"
+
+        set_integration_context({})
+        demisto.debug('Integration context reset successfully.\n'
+                      f'Integration context before reset: {integration_context=}')
+
+    register_module_line('OktaApiModule', 'end', __line__(), wrapper=1)
+    ### END GENERATED CODE ###
+
+    # CONSTANTS
+    DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+    SEARCH_LIMIT = 200
+    OAUTH_TOKEN_SCOPES = [  # Scopes to request when generating an OAuth token
+        'okta.apps.manage',
+        'okta.apps.read',
+        'okta.groups.manage',
+        'okta.groups.read',
+        'okta.logs.read',
+        'okta.networkZones.manage',
+        'okta.networkZones.read',
+        'okta.sessions.manage',
+        'okta.sessions.read',
+        'okta.users.manage',
+        'okta.users.read'
+    ]
+    PROFILE_ARGS = [
+        'firstName',
+        'lastName',
+        'email',
+        'login',
+        'secondEmail',
+        'middleName',
+        'honorificPrefix',
+        'honorificSuffix',
+        'title',
+        'displayName',
+        'nickName',
+        'profileUrl',
+        'primaryPhone',
+        'mobilePhone',
+        'streetAddress',
+        'city',
+        'state',
+        'zipCode',
+        'countryCode',
+        'postalAddress',
+        'preferredLanguage',
+        'locale',
+        'timezone',
+        'userType',
+        'employeeNumber',
+        'costCenter',
+        'organization',
+        'division',
+        'department',
+        'managerId',
+        'manager'
+    ]
+    GROUP_PROFILE_ARGS = [
+        'name',
+        'description'
+    ]
+
+    MAX_LOGS_LIMIT = 1000
+
+
+    class Client(OktaClient):
+        # Getting Group Id with a given group name
+        def get_group_id(self, group_name):
+            uri = '/api/v1/groups'
+            query_params = {
+                'q': encode_string_results(group_name)
+            }
+            res = self.http_request(
+                method="GET",
+                url_suffix=uri,
+                params=query_params
+            )
+            if res and len(res) == 1:
+                return res[0].get('id')
+            return None
+
+        def get_app_id(self, app_name):
+            uri = '/api/v1/apps'
+            query_params = {
+                'q': encode_string_results(app_name)
+            }
+            res = self.http_request(
+                method="GET",
+                url_suffix=uri,
+                params=query_params
+            )
+            if res and len(res) == 1:
+                return res[0].get('id')
+            return None
+
+        # Getting User Id with a given username
+        def get_user_id(self, username):
+            uri = '/api/v1/users'
+            query_params = {
+                'filter': encode_string_results(f'profile.login eq "{username}"')
+            }
+            res = self.http_request(
+                method='GET',
+                url_suffix=uri,
+                params=query_params
+
+            )
+            if res and len(res) == 1:
+                return res[0].get('id')
+            raise Exception(f'Failed to find userID for: {username} username.')
+
+        def unlock_user(self, user_id):
+            """
+            sending a POST request to unlock a specific user
+            """
+            uri = f'/api/v1/users/{user_id}/lifecycle/unlock'
+            return self.http_request(
+                method='POST',
+                url_suffix=uri
+            )
+
+        def deactivate_user(self, user_id):
+            uri = f'/api/v1/users/{user_id}/lifecycle/deactivate'
+            return self.http_request(
+                method="POST",
+                url_suffix=uri
+            )
+
+        def activate_user(self, user_id):
+            uri = f'/api/v1/users/{user_id}/lifecycle/activate'
+            return self.http_request(
+                method="POST",
+                url_suffix=uri
+            )
+
+        def suspend_user(self, user_id):
+            uri = f'/api/v1/users/{user_id}/lifecycle/suspend'
+            return self.http_request(
+                method="POST",
+                url_suffix=uri
+            )
+
+        def unsuspend_user(self, user_id):
+            uri = f'/api/v1/users/{user_id}/lifecycle/unsuspend'
+            return self.http_request(
+                method="POST",
+                url_suffix=uri
+            )
+
+        def get_user_factors(self, user_id):
+            uri = f'/api/v1/users/{user_id}/factors'
+            return self.http_request(
+                method="GET",
+                url_suffix=uri
+            )
+
+        def reset_factor(self, user_id, factor_id):
+            uri = f'/api/v1/users/{user_id}/factors/{factor_id}'
+            return self.http_request(
+                method="DELETE",
+                url_suffix=uri,
+                resp_type='text'
+            )
+
+        def set_password(self, user_id, password):
+            uri = f'/api/v1/users/{user_id}'
+            body = {
+                "credentials": {
+                    "password": {"value": password}
+                }
+            }
+
+            return self.http_request(
+                method="POST",
+                url_suffix=uri,
+                json_data=body
+            )
+
+        def set_temp_password(self, user_id):
+            uri = f'/api/v1/users/{user_id}/lifecycle/expire_password?tempPassword=true'
+
+            return self.http_request(
+                method="POST",
+                url_suffix=uri,
+            )
+
+        def expire_password(self, user_id):
+            uri = f'/api/v1/users/{user_id}/lifecycle/expire_password'
+            return self.http_request(
+                method="POST",
+                url_suffix=uri
+            )
+
+        def add_user_to_group(self, user_id, group_id):
+            uri = f'/api/v1/groups/{group_id}/users/{user_id}'
+            return self.http_request(
+                method="PUT",
+                url_suffix=uri,
+                resp_type='text'
+            )
+
+        def remove_user_from_group(self, user_id, group_id):
+            uri = f'/api/v1/groups/{group_id}/users/{user_id}'
+            return self.http_request(
+                method="DELETE",
+                url_suffix=uri,
+                resp_type='text'
+            )
+
+        def get_groups_for_user(self, user_id):
+            uri = f'/api/v1/users/{user_id}/groups'
+            return self.http_request(
+                method="GET",
+                url_suffix=uri
+            )
+
+        @staticmethod
+        def get_readable_groups(raw_groups):
+            groups = []
+            raw_groups = raw_groups if isinstance(raw_groups, list) else [raw_groups]
+            for group in raw_groups:
+                group = {
+                    'ID': group.get('id'),
+                    'Created': group.get('created'),
+                    'ObjectClass': group.get('objectClass'),
+                    'LastUpdated': group.get('lastUpdated'),
+                    'LastMembershipUpdated': group.get('lastMembershipUpdated'),
+                    'Type': group.get('type'),
+                    'Name': group.get('profile', {}).get('name'),
+                    'Description': group.get('profile', {}).get('description')
+                }
+                groups.append(group)
+            return groups
+
+        @staticmethod
+        def get_readable_logs(raw_logs):
+            logs = []
+            browser = ""
+            device = ""
+            os = ""
+            raw_logs = raw_logs if isinstance(raw_logs, list) else [raw_logs]
+            for log in raw_logs:
+                if log.get('client', {}).get('userAgent'):
+                    browser = log.get('client', {}).get('userAgent').get('browser')
+                    if (not browser) or browser.lower() == 'unknown':
+                        browser = 'Unknown browser'
+                    os = log.get('client', {}).get('userAgent').get('os')
+                    if (not os) or os.lower() == 'unknown':
+                        os = 'Unknown OS'
+                    device = log.get('client', {}).get('device')
+                    if (not device) or device.lower() == 'unknown':
+                        device = 'Unknown device'
+                targets = ''
+                if log.get('target'):
+                    for target in log.get('target'):
+                        targets += f"{target.get('displayName')} ({target.get('type')})\n"
+                time_published = datetime.strptime(log.get('published'), '%Y-%m-%dT%H:%M:%S.%f%z').strftime("%m/%d/%Y, "
+                                                                                                            "%H:%M:%S")
+                log = {
+                    'Actor': f"{log.get('actor', {}).get('displayName')} ({log.get('actor', {}).get('type')})",
+                    'ActorAlternaneId': log.get('actor', {}).get('alternateId'),
+                    'EventInfo': log.get('displayMessage'),
+                    'EventOutcome': log.get('outcome', {}).get('result') + (
+                        f": {log.get('outcome', {}).get('reason')}" if log.get('outcome', {}).get('reason') else ''),
+                    'EventSeverity': log.get('severity'),
+                    'Client': f"{browser} on {os} {device}" if browser else "Unknown client",
+                    'RequestIP': log.get('client', {}).get('ipAddress'),
+                    'ChainIP': [ip_chain.get('ip') for ip_chain in log.get('request', {}).get('ipChain', [])],
+                    'Targets': targets or '-',
+                    'Time': time_published
+                }
+                logs.append(log)
+            return logs
+
+        @staticmethod
+        def get_readable_factors(raw_factors):
+            factors = []
+            for factor in raw_factors:
+                factor = {
+                    'ID': factor.get('id'),
+                    'FactorType': factor.get('factorType'),
+                    'Provider': factor.get('provider'),
+                    'Status': factor.get('status'),
+                    'Profile': factor.get('profile')
+                }
+                factors.append(factor)
+            return factors
+
+        def verify_push_factor(self, user_id, factor_id):
+            """
+            Creates a new transaction and sends an asynchronous push notification to the device for the user to approve or reject.
+            You must poll the transaction to determine when it completes or expires.
+            """
+            uri = f'/api/v1/users/{user_id}/factors/{factor_id}/verify'
+            return self.http_request(
+                method="POST",
+                url_suffix=uri
+            )
+
+        def poll_verify_push(self, url):
+            """
+            Keep polling authentication transactions with WAITING result until the challenge completes or expires.
+            time limit defined by us = one minute
+            """
+            counter = 0
+            while counter < 10:
+                response = self.http_request(
+                    method='GET',
+                    full_url=url,
+                    url_suffix=''
+                )
+                if response.get('factorResult') != 'WAITING':
+                    return response
+                counter += 1
+                time.sleep(5)
+            response['factorResult'] = "TIMEOUT"
+            return response
+
+        def search(self, term, limit, advanced_search):
+            uri = "/api/v1/users"
+            query_params = assign_params(
+                limit=limit,
+                q=encode_string_results(term),
+                search=encode_string_results(advanced_search)
+            )
+            return self.http_request(
+                method='GET',
+                url_suffix=uri,
+                params=query_params
+            )
+
+        @staticmethod
+        def get_users_context(raw_users):
+            users = []
+            raw_users = raw_users if isinstance(raw_users, list) else [raw_users]
+            for user in raw_users:
+                user = {
+                    'ID': user.get('id'),
+                    'Username': user.get('profile', {}).get('login'),
+                    'DisplayName':
+                        f"{user.get('profile', {}).get('firstName', '')} {user.get('profile', {}).get('lastName', '')}",
+                    'Email': user.get('profile', {}).get('email'),
+                    'Status': user.get('status'),
+                    'Type': 'Okta',
+                    'Created': user.get('created'),
+                    'Activated': user.get('activated'),
+                    'StatusChanged': user.get('statusChanged'),
+                    'PasswordChanged': user.get('passwordChanged'),
+                    'Manager': user.get('profile', {}).get('manager'),
+                    'ManagerEmail': user.get('profile', {}).get('managerEmail')
+                }
+                if user.get('group'):
+                    user['Group'] = user.get('group')
+                users.append(user)
+            return users
+
+        @staticmethod
+        def get_apps_context(raw_apps):
+            apps = []
+            raw_apps = raw_apps if isinstance(raw_apps, list) else [raw_apps]
+            for app in raw_apps:
+                app = {
+                    'ID': app.get('id'),
+                }
+                apps.append(app)
+            return apps
+
+        @staticmethod
+        def get_groups_context(raw_groups):
+            groups = []
+            raw_groups = raw_groups if isinstance(raw_groups, list) else [raw_groups]
+            for group in raw_groups:
+                group = {
+                    'ID': group.get('id'),
+                    'Name': group.get('profile', {}).get('name'),
+                    'Description': group.get('profile', {}).get('description'),
+                    'Type': group.get('type')
+                }
+                groups.append(group)
+            return groups
+
+        @staticmethod
+        def get_readable_users(raw_users, verbose='false'):
+            raw_users = raw_users if isinstance(raw_users, list) else [raw_users]
+            if verbose == 'true':
+                users_verbose = ''
+                for user in raw_users:
+                    profile = {
+                        'First Name': user.get('profile', {}).get('firstName'),
+                        'Last Name': user.get('profile', {}).get('lastName'),
+                        'Mobile Phone': user.get('profile', {}).get('mobilePhone'),
+                        'Login': user.get('profile', {}).get('login'),
+                        'Email': user.get('profile', {}).get('email'),
+                        'Second Email': user.get('profile', {}).get('secondEmail'),
+                        'Manager': user.get('profile', {}).get('manager'),
+                        'Manager Email': user.get('profile', {}).get('managerEmail')
+                    }
+                    additionalData = {
+                        'ID': user.get('id'),
+                        'Status': user.get('status'),
+                        'Created': user.get('created'),
+                        'Activated': user.get('activated'),
+                        'Status Changed': user.get('userChanged'),
+                        'Last Login': user.get('lastLogin'),
+                        'Last Updated': user.get('lastUpdated'),
+                        'Password Changed': user.get('passwordChanged'),
+                        'Type': user.get('type'),
+                        'Credentials': user.get('credentials'),
+                        '_links': user.get('_links')
+                    }
+                    if user.get('group'):
+                        additionalData['Group'] = user.get('group')
+                    users_verbose += f"### User:{profile.get('Login')}\n" \
+                                     f"{tableToMarkdown('Profile', profile)}\n {tableToMarkdown('Additional Data', additionalData)}"
+                return users_verbose
+
+            else:
+                users = []
+                for user in raw_users:
+                    user = {
+                        'ID': user.get('id'),
+                        'Login': user.get('profile').get('login'),
+                        'First Name': user.get('profile').get('firstName'),
+                        'Last Name': user.get('profile').get('lastName'),
+                        'Mobile Phone': user.get('profile').get('mobilePhone'),
+                        'Last Login': user.get('lastLogin'),
+                        'Status': user.get('status'),
+                        'Manager': user.get('profile', {}).get('manager'),
+                        'Manager Email': user.get('profile', {}).get('managerEmail')
+                    }
+                    users.append(user)
+                return users
+
+        def get_user(self, user_term):
+            uri = f'/api/v1/users/{encode_string_results(user_term)}'
+            return self.http_request(
+                method='GET',
+                url_suffix=uri
+            )
+
+        def create_user(self, cred, profile, group_ids, activate):
+            body = {
+                'profile': profile,
+                'groupIds': group_ids or [],
+                'credentials': cred
+            }
+            uri = '/api/v1/users'
+            query_params = {
+                'activate': activate,
+                'provider': 'true' if cred.get('provider') else None
+            }
+            return self.http_request(
+                method='POST',
+                url_suffix=uri,
+                json_data=body,
+                params=query_params
+            )
+
+        def create_group(self, profile):
+            body = {
+                'profile': profile,
+            }
+            uri = '/api/v1/groups'
+            return self.http_request(
+                method='POST',
+                url_suffix=uri,
+                json_data=body
+            )
+
+        # Build profile dict with pre-defined keys (for user)
+        @staticmethod
+        def build_profile(args):
+            profile = {}
+            keys = args.keys()
+            for key in PROFILE_ARGS:
+                if key in keys:
+                    profile[key] = args[key]
+            return profile
+
+        # Build profile dict with pre-defined keys (for group)
+        @staticmethod
+        def build_group_profile(args):
+            profile = {}
+            keys = args.keys()
+            for key in GROUP_PROFILE_ARGS:
+                if key in keys:
+                    profile[key] = args[key]
+            return profile
+
+        # Build credentials dict with predefined keys (for user)
+        @staticmethod
+        def build_credentials(args):
+            cred = {}
+            if args.get('password'):
+                cred['password'] = {"value": args.get('password')}
+            if args.get('passwordQuestion') and args.get('passwordAnswer'):
+                cred['recovery_question'] = {
+                    "question": args.get('passwordQuestion'),
+                    "answer": args.get('passwordAnswer')
+                }
+            if args.get('providerName') and args.get('providerType'):
+                cred['provider'] = {
+                    'name': args.get('providerName'),
+                    'type': args.get('providerType')
+                }
+            return cred
+
+        def update_user(self, user_id, profile, cred):
+            body = {
+                "profile": profile,
+                "credentials": cred
+            }
+            uri = f"/api/v1/users/{user_id}"
+            return self.http_request(
+                method='POST',
+                url_suffix=uri,
+                json_data=body
+            )
+
+        def get_paged_results(self, uri, query_param=None, max_limit=None):
+            response = self.http_request(
+                method="GET",
+                url_suffix=uri,
+                resp_type='response',
+                params=query_param
+            )
+            paged_results = response.json()
+            while "next" in response.links and len(response.json()) > 0:
+                next_page = response.links.get("next").get("url")
+                response = self.http_request(
+                    method="GET",
+                    full_url=next_page,
+                    url_suffix='',
+                    resp_type='response',
+                    params=query_param
+
+                )
+                paged_results += response.json()
+                if max_limit and len(paged_results) >= max_limit:
+                    return paged_results[:max_limit]
+            return paged_results
+
+        def get_group_members(self, group_id, limit):
+            uri = f'/api/v1/groups/{group_id}/users'
+            if limit:
+                query_params = {
+                    'limit': limit
+                }
+                return self.http_request(
+                    method="GET",
+                    url_suffix=uri,
+                    params=query_params
+                )
+            return self.get_paged_results(uri)
+
+        def list_users(self, args):
+            # Base url - if none of the above specified - returns all the users (default 200 items)
+            uri = "/api/v1/users"
+            query_params = {}
+            for key, value in args.items():
+                if key == 'query':
+                    key = 'q'
+                query_params[key] = encode_string_results(value)
+            limit = int(args.get('limit'))
+            response = self.http_request(
+                method="GET",
+                url_suffix=uri,
+                resp_type='response',
+                params=query_params
+            )
+            paged_results = response.json()
+            if limit > 200:
+                query_params = {}
+                limit -= 200
+                while limit > 0 and "next" in response.links and len(response.json()) > 0:
+                    query_params['limit'] = encode_string_results(str(limit))
+                    next_page = delete_limit_param(response.links.get("next").get("url"))
+                    response = self.http_request(
+                        method="GET",
+                        full_url=next_page,
+                        url_suffix='',
+                        resp_type='response',
+                        params=query_params
+                    )
+                    paged_results += response.json()
+                    limit -= 200
+            after = None
+            if "next" in response.links and len(response.json()) > 0:
+                after = get_after_tag(response.links.get("next").get("url"))
+            return (paged_results, after)
+
+        def list_groups(self, args):
+            # Base url - if none of the the above specified - returns all the groups (default 200 items)
+            uri = "/api/v1/groups"
+            query_params = {}
+            for key, value in args.items():
+                if key == 'query':
+                    key = 'q'
+                query_params[key] = encode_string_results(value)
+            if args.get('limit'):
+                return self.http_request(
+                    method='GET',
+                    url_suffix=uri,
+                    params=query_params
+                )
+            return self.get_paged_results(uri, query_params)
+
+        def get_logs(self, args):
+            uri = '/api/v1/logs'
+            query_params = {}
+            for key, value in args.items():
+                if key == 'query':
+                    key = 'q'
+                query_params[key] = encode_string_results(value)
+            limit = args.get('limit')
+            limit = int(limit) if limit else None
+            if limit and limit <= MAX_LOGS_LIMIT:
+                return self.http_request(
+                    method='GET',
+                    url_suffix=uri,
+                    params=query_params
+                )
+            if limit and limit > MAX_LOGS_LIMIT:
+                query_params['limit'] = MAX_LOGS_LIMIT
+            return self.get_paged_results(uri, query_params, max_limit=limit)
+
+        def delete_user(self, user_term):
+            uri = f"/api/v1/users/{encode_string_results(user_term)}"
+            return self.http_request(
+                method="DELETE",
+                url_suffix=uri,
+                resp_type='text'
+            )
+
+        def clear_user_sessions(self, user_id):
+            uri = f'/api/v1/users/{user_id}/sessions'
+            return self.http_request(
+                method='DELETE',
+                url_suffix=uri,
+                resp_type='text'
+            )
+
+        def get_zone(self, zoneID):
+            uri = f'/api/v1/zones/{zoneID}'
+            return self.http_request(
+                method='GET',
+                url_suffix=uri
+            )
+
+        def list_zones(self, limit):
+            uri = '/api/v1/zones'
+            if limit:
+                query_params = {'limit': encode_string_results(limit)}
+                return self.http_request(
+                    method='GET',
+                    url_suffix=uri,
+                    params=query_params
+                )
+            return self.get_paged_results(uri)
+
+        def create_zone(self, zoneObject):
+            uri = '/api/v1/zones'
+            return self.http_request(
+                method='POST',
+                url_suffix=uri,
+                json_data=zoneObject
+            )
+
+        def update_zone(self, zoneObject):
+            zoneID = zoneObject['id']
+            uri = f'/api/v1/zones/{zoneID}'
+
+            return self.http_request(
+                method='PUT',
+                url_suffix=uri,
+                data=json.dumps(zoneObject)
+            )
+
+        def assign_group_to_app(self, group_id, app_id):
+            uri = f'/api/v1/apps/{app_id}/groups/{group_id}'
+            return self.http_request(
+                method="PUT",
+                url_suffix=uri,
+                resp_type='text'
+            )
+
+
+    def module_test(client, args):
+        if client.auth_type == AuthType.OAUTH:
+            # For OAuth 2.0, there's no user the token belongs to, but an app. So the '/users/me' endpoint won't work.
+            uri = '/api/v1/users'
+
+        else:
+            uri = '/api/v1/users/me'
+
+        client.http_request(method='GET', url_suffix=uri)
+        return 'ok', None, None
+
+
+    def unlock_user_command(client, args):
+        user_id = client.get_user_id(args.get('username'))
+        raw_response = client.unlock_user(user_id)
+
+        readable_output = f"### {args.get('username')} unlocked"
+
+        return (
+            readable_output,
+            {},
+            raw_response  # raw response - the original response
+        )
+
+
+    def activate_user_command(client, args):
+        user_id = client.get_user_id(args.get('username'))
+        raw_response = client.activate_user(user_id)
+
+        readable_output = f"### {args.get('username')} is active now"
+        return (
+            readable_output,
+            {},
+            raw_response
+        )
+
+
+    def deactivate_user_command(client, args):
+        user_id = client.get_user_id(args.get('username'))
+        raw_response = client.deactivate_user(user_id)
+
+        readable_output = f"### User {args.get('username')} deactivated"
+
+        return (
+            readable_output,
+            {},
+            raw_response  # raw response - the original response
+        )
+
+
+    def suspend_user_command(client, args):
+        user_id = client.get_user_id(args.get('username'))
+        raw_response = client.suspend_user(user_id)
+
+        readable_output = f"### {args.get('username')} status is Suspended"
+        return (
+            readable_output,
+            {},
+            raw_response
+        )
+
+
+    def unsuspend_user_command(client, args):
+        user_id = client.get_user_id(args.get('username'))
+        raw_response = client.unsuspend_user(user_id)
+
+        readable_output = f"### {args.get('username')} is no longer SUSPENDED"
+        return (
+            readable_output,
+            {},
+            raw_response
+        )
+
+
+    def get_user_factors_command(client, args):
+        user_id = args.get('userId')
+
+        if not (args.get('username') or user_id):
+            raise Exception("You must supply either 'Username' or 'userId")
+
+        if not user_id:
+            user_id = client.get_user_id(args.get('username'))
+
+        raw_response = client.get_user_factors(user_id)
+        if not raw_response or len(raw_response) == 0:
+            raise Exception('No Factors found')
+
+        factors = client.get_readable_factors(raw_response)
+        context = createContext(factors, removeNull=True)
+        outputs = {
+            'Account(val.ID && val.ID === obj.ID)': {
+                'Factor': context,
+                'ID': user_id
+            }
+        }
+        readable_output = f"Factors for user: {user_id}\n {tableToMarkdown('Factors', factors)}"
+        return (
+            readable_output,
+            outputs,
+            raw_response
+        )
+
+
+    def reset_factor_command(client, args):
+        factor_id = args.get('factorId')
+        user_id = args.get('userId')
+
+        if not (args.get('username') or user_id):
+            raise Exception("You must supply either 'Username' or 'userId")
+
+        if not user_id:
+            user_id = client.get_user_id(args.get('username'))
+
+        raw_response = client.reset_factor(user_id, factor_id)
+
+        readable_output = f"Factor: {factor_id} deleted"
+        return (
+            readable_output,
+            {},
+            raw_response
+        )
+
+
+    def set_password_command(client, args):
+        user_id = client.get_user_id(args.get('username'))
+        password = args.get('password')
+
+        raw_response = client.set_password(user_id, password)
+        readable_output = f"{args.get('username')} password was last changed on {raw_response.get('passwordChanged')}"
+
+        if argToBoolean(args.get('temporary_password', False)):
+            client.set_temp_password(user_id)
+
+        return (
+            readable_output,
+            {},
+            raw_response
+        )
+
+
+    def expire_password_command(client, args):
+        user_id = client.get_user_id(args.get('username'))
+
+        if not (args.get('username') or user_id):
+            raise Exception("You must supply either 'Username' or 'userId")
+
+        raw_response = client.expire_password(user_id)
+        user_context = client.get_users_context(raw_response)
+
+        if argToBoolean(args.get('temporary_password', True)):
+            client.set_temp_password(user_id)
+
+        readable_output = tableToMarkdown('Okta Expired Password', raw_response, removeNull=True)
+        outputs = {
+            'Account(val.ID && val.ID === obj.ID)': createContext(user_context, removeNull=True)
+        }
+
+        return (
+            readable_output,
+            outputs,
+            raw_response
+        )
+
+
+    def add_user_to_group_command(client, args):
+        group_id = args.get('groupId')
+        user_id = args.get('userId')
+
+        if (not (args.get('username') or user_id)) or (not (args.get('groupName') or group_id)):
+            raise Exception("You must supply either 'Username' or 'userId")
+        if not user_id:
+            user_id = client.get_user_id(args.get('username'))
+        if not group_id:
+            group_id = client.get_group_id(args.get('groupName'))
+        raw_response = client.add_user_to_group(user_id, group_id)
+        readable_output = f"User: {user_id} added to group: {args.get('groupName')} successfully"
+        return (
+            readable_output,
+            {},
+            raw_response
+        )
+
+
+    def remove_from_group_command(client, args):
+        group_id = args.get('groupId')
+        user_id = args.get('userId')
+
+        if (not (args.get('username') or user_id)) or (not (args.get('groupName') or group_id)):
+            raise Exception("You must supply either 'Username' or 'userId' and either 'groupName' or 'groupId'")
+        if not user_id:
+            user_id = client.get_user_id(args.get('username'))
+        if not group_id:
+            group_id = client.get_group_id(args.get('groupName'))
+        raw_response = client.remove_user_from_group(user_id, group_id)
+        readable_output = f"User: {user_id} was removed from group: {args.get('groupName')} successfully"
+        return (
+            readable_output,
+            {},
+            raw_response)
+
+
+    def get_groups_for_user_command(client, args):
+        user_id = client.get_user_id(args.get('username'))
+        raw_response = client.get_groups_for_user(user_id)
+        groups = client.get_readable_groups(raw_response)
+
+        context = createContext(groups, removeNull=True)
+        outputs = {
+            'Account(val.ID && val.ID === obj.ID)': {
+                'Group': context,
+                'ID': user_id,
+                'Type': 'Okta'
+            }
+        }
+        readable_output = f"Okta groups for user: {args.get('username')}\n {tableToMarkdown('Groups', groups)}"
+
+        return (
+            readable_output,
+            outputs,
+            raw_response
+        )
+
+
+    def verify_push_factor_command(client, args):
+        user_id = args.get('userId')
+        factor_id = args.get('factorId')
+
+        raw_response = client.verify_push_factor(user_id, factor_id)
+        poll_link = raw_response.get('_links').get('poll')
+        if not poll_link:
+            raise Exception('No poll link for the push factor challenge')
+        poll_response = client.poll_verify_push(poll_link.get('href'))
+
+        outputs = {
+            'Account(val.ID && val.ID === obj.ID)': {
+                'ID': user_id,
+                "VerifyPushResult": poll_response.get('factorResult')
+            }
+        }
+        readable_output = f"Verify push factor result for user {user_id}: {poll_response.get('factorResult')}"
+        return (
+            readable_output,
+            outputs,
+            raw_response
+        )
+
+
+    def search_command(client, args):
+        term = args.get('term')
+        limit = args.get('limit') or SEARCH_LIMIT
+        verbose = args.get('verbose')
+        advanced_search = args.get('advanced_search', '')
+        if not term and not advanced_search:
+            raise DemistoException('Please provide either the term or advanced_search argument')
+        raw_response = client.search(term, limit, advanced_search)
+
+        if raw_response and len(raw_response) > 0:
+            users_context = client.get_users_context(raw_response)
+            users_readable = client.get_readable_users(raw_response, verbose)
+            context = createContext(users_context, removeNull=True)
+            outputs = {
+                'Account(val.ID && val.ID === obj.ID)': context
+            }
+            if verbose == 'true':
+                readable_output = f"### Okta users found:\n {users_readable}"
+            else:
+                readable_output = f"### Okta users found:\n {tableToMarkdown('Users:', users_readable)} "
+            return (
+                readable_output,
+                outputs,
+                raw_response
+            )
+        return 'No users found in Okta', {}, raw_response
+
+
+    def get_user_command(client, args):
+        if not (args.get('username') or args.get('userId')):
+            raise Exception("You must supply either 'Username' or 'userId")
+        user_term = args.get('userId') if args.get('userId') else args.get('username')
+
+        try:
+            raw_response = client.get_user(user_term)
+        except Exception as e:
+            if '404' in str(e):
+                return (f'User {args.get("username")} was not found.', {}, {})
+            raise e
+
+        verbose = args.get('verbose')
+
+        user_context = client.get_users_context(raw_response)
+        user_readable = client.get_readable_users(raw_response, verbose)
+        outputs = {
+            'Account(val.ID && val.ID === obj.ID)': createContext(user_context)
+        }
+        readable_output = user_readable if verbose == 'true' else f"{tableToMarkdown(f'User:{user_term}', user_readable)} "
+        return (
+            readable_output,
+            outputs,
+            raw_response
+        )
+
+
+    def create_user_command(client, args):
+        group_ids = args.get('groupIds')
+        cred = client.build_credentials(args)
+        profile = client.build_profile(args)
+        if group_ids:
+            group_ids = args.get('groupIds').split(',')
+        activate = 'true' if args.get('activate') == 'true' else 'false'
+        raw_response = client.create_user(cred, profile, group_ids, activate)
+        user_context = client.get_users_context(raw_response)
+        outputs = {
+            'Account(val.ID && val.ID === obj.ID)': createContext(user_context)
+        }
+        readable_output = tableToMarkdown(f"Okta User Created: {args.get('login')}:",
+                                          client.get_readable_users(raw_response))
+        return (
+            readable_output,
+            outputs,
+            raw_response
+        )
+
+
+    def update_user_command(client, args):
+        user_id = client.get_user_id(args.get('username'))
+        cred = client.build_credentials(args)
+        profile = client.build_profile(args)
+        profile['login'] = args.get('username')
+        raw_response = client.update_user(user_id, profile, cred)
+        readable_output = tableToMarkdown(f"Okta user: {args.get('username')} Updated:", raw_response.get('profile'))
+        return (
+            readable_output,
+            {},
+            raw_response
+        )
+
+
+    def get_group_members_command(client, args):
+        if not (args.get('groupId') or args.get('groupName')):
+            raise Exception("You must supply either 'groupName' or 'groupId")
+        limit = args.get('limit')
+        group_id = args.get('groupId') or client.get_group_id(args.get('groupName'))
+        raw_members = client.get_group_members(group_id, limit)
+        users_context = client.get_users_context(raw_members)
+        users_readable = client.get_readable_users(raw_members, args.get('verbose'))
+        context = createContext(users_context, removeNull=True)
+        outputs = {
+            'Account(val.ID && val.ID === obj.ID)': context
+        }
+        if args.get('verbose') == 'true':
+            return (
+                f"### Users for group: {args.get('groupName') or group_id}:\n {users_readable}",
+                outputs,
+                raw_members
+            )
+        return (
+            tableToMarkdown(f"Users for group: {args.get('groupName') or group_id}", users_readable),
+            outputs,
+            raw_members
+        )
+
+
+    def list_users_command(client, args):
+        raw_response, after_tag = client.list_users(args)
+        verbose = args.get('verbose')
+        users = client.get_readable_users(raw_response, verbose)
+        user_context = client.get_users_context(raw_response)
+        context = createContext(user_context, removeNull=True)
+        if verbose == 'true':
+            readable_output = f"### Okta users found:\n {users}"
+        else:
+            readable_output = f"### Okta users found:\n {tableToMarkdown('Users', users)} "
+        if after_tag:
+            readable_output += f"\n### tag: {after_tag}"
+        outputs = {
+            'Account(val.ID && val.ID == obj.ID)': context,
+            'Okta.User(val.tag)': {'tag': after_tag}
+        }
+        return (
+            readable_output,
+            outputs,
+            raw_response
+        )
+
+
+    def list_groups_command(client, args):
+        raw_response = client.list_groups(args)
+        groups = client.get_readable_groups(raw_response)
+        context = createContext(groups, removeNull=True)
+        outputs = {
+            'Okta.Group(val.ID && val.ID === obj.ID)': context
+        }
+        readable_output = tableToMarkdown('Groups', groups)
+
+        return (
+            readable_output,
+            outputs,
+            raw_response
+        )
+
+
+    def get_logs_command(client, args):
+        raw_response = client.get_logs(args)
+        if not raw_response:
+            return 'No logs found', {}, raw_response
+
+        logs = client.get_readable_logs(raw_response)
+        readable_output = tableToMarkdown('Okta Events', logs)
+        outputs = {
+            'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': createContext(raw_response)
+        }
+        return (
+            readable_output,
+            outputs,
+            raw_response
+        )
+
+
+    def get_failed_login_command(client, args):
+        args['filter'] = 'eventType eq "user.session.start" and outcome.result eq "FAILURE"'
+        raw_response = client.get_logs(args)
+        if not raw_response:
+            return 'No logs found', {}, raw_response
+        logs = client.get_readable_logs(raw_response)
+        readable_output = tableToMarkdown('Failed Login Events', logs)
+        outputs = {
+            'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': createContext(raw_response)
+        }
+        return (
+            readable_output,
+            outputs,
+            raw_response
+        )
+
+
+    def get_group_assignments_command(client, args):
+        args['filter'] = 'eventType eq "group.user_membership.add"'
+        raw_response = client.get_logs(args)
+        if not raw_response:
+            return 'No logs found', {}, raw_response
+        logs = client.get_readable_logs(raw_response)
+        readable_output = tableToMarkdown('Group Assignment Events', logs)
+        outputs = {
+            'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': createContext(raw_response)
+        }
+        return (
+            readable_output,
+            outputs,
+            raw_response
+        )
+
+
+    def get_application_assignments_command(client, args):
+        args['filter'] = 'eventType eq "application.user_membership.add"'
+        raw_response = client.get_logs(args)
+        if not raw_response:
+            return 'No logs found', {}, raw_response
+        logs = client.get_readable_logs(raw_response)
+        readable_output = tableToMarkdown('Application Assignment Events', logs)
+        outputs = {
+            'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': createContext(raw_response)
+        }
+        return (
+            readable_output,
+            outputs,
+            raw_response
+        )
+
+
+    def get_application_authentication_command(client, args):
+        args['filter'] = 'eventType eq "user.authentication.sso"'
+        raw_response = client.get_logs(args)
+        if not raw_response:
+            return 'No logs found', {}, raw_response
+        logs = client.get_readable_logs(raw_response)
+        readable_output = tableToMarkdown('Application Authentication Events', logs)
+        outputs = {
+            'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': createContext(raw_response)
+        }
+        return (
+            readable_output,
+            outputs,
+            raw_response
+        )
+
+
+    def delete_user_command(client, args):
+        if not (args.get('username') or args.get('userId')):
+            raise Exception("You must supply either 'Username' or 'userId")
+        user_term = args.get('userId') or args.get('username')
+        # Deletes a user permanently. This operation can only be performed on users that have a DEPROVISIONED status.
+        # This action cannot be recovered!This operation on a user that hasn't been deactivated
+        # causes that user to be deactivated. A second delete operation is required to delete the user.
+        user = client.get_user(user_term)
+        if user.get('status') != 'DEPROVISIONED':
+            client.deactivate_user(args.get('userId') or client.get_user_id(args.get('username')))
+        raw_response = client.delete_user(user_term)
+        readable_output = f"User: {user_term} was Deleted successfully"
+        return (
+            readable_output,
+            {},
+            raw_response)
+
+
+    def clear_user_sessions_command(client, args):
+        user_id = args.get('userId')
+        raw_response = client.clear_user_sessions(user_id)
+        readable_output = f"### User session was cleared for: {user_id}"
+
+        return readable_output, {}, raw_response
+
+
+    def get_zone_command(client, args):
+        raw_response = client.get_zone(args.get('zoneID', ''))
+        if not raw_response:
+            return 'No zones found.', {}, raw_response
+        readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
+                                          'name', 'id', 'gateways', 'status', 'system', 'lastUpdated', 'created'])
+        outputs = {
+            'Okta.Zone(val.id && val.id === obj.id)': createContext(raw_response)
+        }
+        return (
+            readable_output,
+            outputs,
+            raw_response
+        )
+
+
+    def list_zones_command(client, args):
+        raw_response = client.list_zones(args.get('limit'))
+        if not raw_response:
+            return 'No zones found.', {}, raw_response
+        readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
+                                          'name', 'id', 'gateways', 'status', 'system', 'lastUpdated', 'created'])
+        outputs = {
+            'Okta.Zone(val.id && val.id === obj.id)': createContext(raw_response)
+        }
+        return (
+            readable_output,
+            outputs,
+            raw_response
+        )
+
+
+    def apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs):
+        # If user provided a new zone name - set it
+        if zoneName:
+            zoneObject["name"] = zoneName
+
+        # Set IPs in CIDR mode. Single IPs will be added as /32.
+        if gatewayIPs:
+            CIDRs = [f"{ip}/32" if '/' not in ip else f'{ip}' for ip in gatewayIPs]
+            zoneObject["gateways"] = [{"type": "CIDR", "value": cidr} for cidr in CIDRs]
+
+        if proxyIPs:
+            CIDRs = [f"{ip}/32" if '/' not in ip else f'{ip}' for ip in proxyIPs]
+            zoneObject["proxies"] = [{"type": "CIDR", "value": cidr} for cidr in CIDRs]
+
+        return zoneObject
+
+
+    def create_zone_command(client, args):
+        zone_name = args.get('name')
+        gateway_ips = argToList(args.get('gateway_ips'))
+        proxies = argToList(args.get('proxies'))
+        if not (gateway_ips or proxies):
+            raise Exception("You must supply either 'gateway_ips' or 'proxies'.")
+
+        zoneObject = {
+            "name": '',
+            "type": "IP",
+            "status": "ACTIVE",
+            "gateways": [],
+            "proxies": []
+        }
+        zoneObject = apply_zone_updates(zoneObject, zone_name, gateway_ips, proxies)
+
+        raw_response = client.create_zone(zoneObject)
+        if not raw_response:
+            return 'Zone not created.', {}, raw_response
+        readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
+            'name', 'id', 'gateways', 'status', 'system', 'lastUpdated', 'created'])
+        outputs = {
+            'Okta.Zone(val.id && val.id === obj.id)': createContext(raw_response)
+        }
+        return (
+            readable_output,
+            outputs,
+            raw_response
+        )
+
+
+    def update_zone_command(client, args):
+
+        if not args.get('zoneName', '') and not args.get('gatewayIPs', '') and not args.get('proxyIPs', ''):
+            return (
+                'Nothing to update',
+                {},
+                'Nothing to update'
+            )
+        zoneID = args.get('zoneID', '')
+        zoneObject = client.get_zone(zoneID)
+        if zoneID == zoneObject.get('id'):
+            zoneName = args.get('zoneName', '')
+            gatewayIPs = argToList(args.get('gatewayIPs', ''))
+            proxyIPs = argToList(args.get('proxyIPs', ''))
+            zoneObject = apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs)
+
+            raw_response = client.update_zone(zoneObject)
+            if not raw_response:
+                return 'Got empty response.', {}, raw_response
+
+            readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
+                                              'name', 'id', 'gateways', 'status', 'system', 'lastUpdated', 'created'])
+            outputs = {
+                'Okta.Zone(val.id && val.id === obj.id)': createContext(raw_response)
+            }
+            return (
+                readable_output,
+                outputs,
+                raw_response
+            )
+        else:
+            return 'No zone found in Okta with this ID.', {}, {}
+
+
+    def assign_group_to_app_command(client, args):
+
+        group_id = args.get('groupId')
+        if not group_id:
+            group_id = client.get_group_id(args.get('groupName'))
+            if group_id is None:
+                raise ValueError('Either group name not found or multiple groups include this name.')
+        app_id = client.get_app_id(args.get('appName'))
+        raw_response = client.assign_group_to_app(group_id, app_id)
+        readable_output = f"Group: {args.get('groupName')} added to PA App successfully"
+        return (
+            readable_output,
+            {},
+            raw_response
+        )
+
+
+    def create_group_command(client, args):
+
+        profile = client.build_group_profile(args)
+        raw_response = client.create_group(profile)
+        group_context = client.get_groups_context(raw_response)
+        outputs = {
+            'OktaGroup(val.ID && val.ID === obj.ID)': createContext(group_context)
+        }
+        readable_output = f"Group Created: [GroupID:{raw_response['id']}, GroupName: {raw_response['profile']['name']}]"
+        return (
+            readable_output,
+            outputs,
+            raw_response
+        )
+
+
+    def reset_auth_command(client, args):
+        reset_integration_context()
+        return CommandResults(readable_output='Authentication data cleared successfully.')
+
+
+    def get_after_tag(url):
+        """retrieve the after param from the url
+
+        Args:
+            url: some url
+
+        Returns:
+            String: the value of the 'after' query param.
+        """
+        parsed_url = urlparse(url)
+        captured_value = parse_qs(parsed_url.query)['after'][0]
+        return captured_value
+
+
+    def delete_limit_param(url):
+        """Delete the limit param from the url
+
+        Args:
+            url: some url
+
+        Returns:
+            String: the url with the limit query param.
+        """
+        parsed_url = urlparse(url)
+        query_dict = parse_qs(parsed_url.query)
+        query_dict.pop('limit')
+        return urlunparse(parsed_url._replace(query=urlencode(query_dict, True)))
+
+
+    def main():
+        try:
+            params = demisto.params()
+
+            demisto.debug(f'Command being called is {demisto.command()}')
+            commands = {
+                'test-module': module_test,
+                'okta-unlock-user': unlock_user_command,
+                'okta-deactivate-user': deactivate_user_command,
+                'okta-activate-user': activate_user_command,
+                'okta-suspend-user': suspend_user_command,
+                'okta-unsuspend-user': unsuspend_user_command,
+                'okta-reset-factor': reset_factor_command,
+                'okta-set-password': set_password_command,
+                'okta-expire-password': expire_password_command,
+                'okta-add-to-group': add_user_to_group_command,
+                'okta-remove-from-group': remove_from_group_command,
+                'okta-get-groups': get_groups_for_user_command,
+                'okta-get-user-factors': get_user_factors_command,
+                'okta-verify-push-factor': verify_push_factor_command,
+                'okta-search': search_command,
+                'okta-get-user': get_user_command,
+                'okta-create-user': create_user_command,
+                'okta-update-user': update_user_command,
+                'okta-get-group-members': get_group_members_command,
+                'okta-list-users': list_users_command,
+                'okta-list-groups': list_groups_command,
+                'okta-get-logs': get_logs_command,
+                'okta-get-failed-logins': get_failed_login_command,
+                'okta-get-application-assignments': get_application_assignments_command,
+                'okta-get-group-assignments': get_group_assignments_command,
+                'okta-get-application-authentication': get_application_authentication_command,
+                'okta-delete-user': delete_user_command,
+                'okta-clear-user-sessions': clear_user_sessions_command,
+                'okta-list-zones': list_zones_command,
+                'okta-get-zone': get_zone_command,
+                'okta-update-zone': update_zone_command,
+                'okta-create-zone': create_zone_command,
+                'okta-create-group': create_group_command,
+                'okta-assign-group-to-app': assign_group_to_app_command,
+                'okta-auth-reset': reset_auth_command,
+            }
+
+            command = demisto.command()
+
+            client = Client(
+                base_url=params['url'].rstrip('/'),
+                verify=(not params.get('insecure', False)),
+                headers={
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                proxy=params.get('proxy', False),
+                ok_codes=(200, 201, 204),
+                api_token=params.get("credentials", {}).get("password") or params.get('apitoken'),
+                auth_type=AuthType.OAUTH if argToBoolean(params.get('use_oauth', False)) else AuthType.API_TOKEN,
+                client_id=params.get('client_id'),
+                scopes=OAUTH_TOKEN_SCOPES,
+                private_key=params.get('private_key'),
+                jwt_algorithm=JWTAlgorithm(params['jwt_algorithm']) if params.get('jwt_algorithm') else None,
+            )
+
+            if command in commands:
+                result = commands[command](client, demisto.args())
+
+                if isinstance(result, CommandResults | str | dict):
+                    return_results(result)
+
+                else:
+                    human_readable, outputs, raw_response = result
+                    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+            else:
+                raise NotImplementedError(f'Command {command} is not implemented.')
+
+        except Exception as e:
+            return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+
+
+    if __name__ in ('__main__', '__builtin__', 'builtins'):
+        main()
+
+    register_module_line('Okta v2', 'end', __line__())
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

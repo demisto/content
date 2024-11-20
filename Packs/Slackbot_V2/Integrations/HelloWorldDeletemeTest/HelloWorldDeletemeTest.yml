@@ -1,0 +1,309 @@
+category: Utilities
+commonfields:
+  id: HelloWorld_deleteme_test
+  version: -1
+configuration:
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  section: Collect
+  type: 15
+- defaultvalue: https://api.xsoar-example.com
+  display: Server URL (e.g., https://api.xsoar-example.com)
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  section: Collect
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  section: Connect
+  type: 13
+- defaultvalue: '10'
+  display: Maximum number of alerts per fetch
+  name: max_fetch
+  required: false
+  section: Collect
+  type: 0
+- display: ''
+  displaypassword: API Key
+  hiddenusername: true
+  name: credentials
+  required: true
+  section: Connect
+  type: 9
+- additionalinfo: Set this to determine the HelloWorld score that will determine if an IP is malicious (0-100)
+  advanced: true
+  defaultvalue: '65'
+  display: Score threshold for IP reputation command
+  name: threshold_ip
+  required: false
+  section: Collect
+  type: 0
+- defaultvalue: low
+  display: Severity of alerts to fetch
+  name: severity
+  options:
+  - low
+  - medium
+  - high
+  - critical
+  required: true
+  section: Collect
+  type: 15
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  section: Collect
+  type: 0
+- advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  section: Connect
+  type: 8
+- advanced: true
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- defaultvalue: 'true'
+  display: fetches credentials
+  name: isFetchCredentials
+  required: false
+  type: 8
+description: This is the Hello World integration for getting started.
+display: HelloWorld_deleteme_test
+name: HelloWorld_deleteme_test
+script:
+  commands:
+  - arguments:
+    - description: The name of whom you want to say hello to.
+      name: name
+    description: Hello command - prints hello to anyone.
+    name: helloworld-say-hello
+    outputs:
+    - contextPath: hello
+      description: Should be Hello **something** here.
+      type: String
+  - arguments:
+    - description: Filter by alert item ID. If not provided, all IDs will be retrieved.
+      name: alert_id
+    - description: How many alerts to fetch. Default is 10.
+      name: limit
+    - description: The severity by which to filter the alerts.
+      name: severity
+    description: Lists the example alerts as it would be fetched from the API.
+    name: helloworld-alert-list
+    outputs:
+    - contextPath: HelloWorld.alert.id
+      description: The ID of the alert.
+      type: Number
+    - contextPath: HelloWorld.alert.name
+      description: The name of the alert.
+      type: String
+    - contextPath: HelloWorld.alert.severity
+      description: The severity of the alert.
+      type: String
+    - contextPath: HelloWorld.alert.date
+      description: The date of the alert occurrence.
+      type: Date
+    - contextPath: HelloWorld.alert.status
+      description: The status of the alert.
+      type: String
+  - arguments:
+    - description: The alert's ID to add the note to.
+      name: alert_id
+      required: true
+    - description: The comment to add to the note.
+      name: note_text
+      required: true
+    description: Example of creating a new item in the API.
+    name: helloworld-alert-note-create
+    outputs:
+    - contextPath: HelloWorld.alert.id
+      description: The ID of the alert.
+      type: Number
+    - contextPath: HelloWorld.alert.name
+      description: The name of the alert.
+      type: String
+    - contextPath: HelloWorld.alert.severity
+      description: The severity of the alert.
+      type: String
+    - contextPath: HelloWorld.alert.date
+      description: The date of the alert occurrence.
+      type: Date
+    - contextPath: HelloWorld.alert.status
+      description: The status of the alert.
+      type: String
+  - arguments:
+    - default: true
+      description: A comma-separated list of IPs.
+      isArray: true
+      name: ip
+    - defaultValue: '65'
+      description: If the IP has a reputation above the threshold, then the IP is defined as malicious. If a threshold not set, then threshold from the instance configuration is used.
+      name: threshold
+    description: Return IP information and reputation.
+    name: ip
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: HelloWorld.IP.asn
+      description: The autonomous system name for the IP address.
+      type: String
+    - contextPath: HelloWorld.IP.asn_cidr
+      description: The ASN CIDR.
+      type: String
+    - contextPath: HelloWorld.IP.asn_country_code
+      description: The ASN country code.
+      type: String
+    - contextPath: HelloWorld.IP.asn_date
+      description: The date on which the ASN was assigned.
+      type: Date
+    - contextPath: HelloWorld.IP.asn_description
+      description: The ASN description.
+      type: String
+    - contextPath: HelloWorld.IP.asn_registry
+      description: The registry the ASN belongs to.
+      type: String
+    - contextPath: HelloWorld.IP.entities
+      description: Entities associated to the IP.
+      type: String
+    - contextPath: HelloWorld.IP.ip
+      description: The actual IP address.
+      type: String
+    - contextPath: HelloWorld.IP.network.cidr
+      description: Network CIDR for the IP address.
+      type: String
+    - contextPath: HelloWorld.IP.network.country
+      description: The country of the IP address.
+      type: Unknown
+    - contextPath: HelloWorld.IP.network.end_address
+      description: The last IP address of the CIDR.
+      type: String
+    - contextPath: HelloWorld.IP.network.events.action
+      description: The action that happened on the event.
+      type: String
+    - contextPath: HelloWorld.IP.network.events.actor
+      description: The actor that performed the action on the event.
+      type: Unknown
+    - contextPath: HelloWorld.IP.network.events.timestamp
+      description: The timestamp when the event occurred.
+      type: String
+    - contextPath: HelloWorld.IP.network.handle
+      description: The handle of the network.
+      type: String
+    - contextPath: HelloWorld.IP.network.ip_version
+      description: The IP address version.
+      type: String
+    - contextPath: HelloWorld.IP.network.links
+      description: Links associated to the IP address.
+      type: String
+    - contextPath: HelloWorld.IP.network.name
+      description: The name of the network.
+      type: String
+    - contextPath: HelloWorld.IP.network.notices.description
+      description: The description of the notice.
+      type: String
+    - contextPath: HelloWorld.IP.network.notices.links
+      description: Links associated with the notice.
+      type: Unknown
+    - contextPath: HelloWorld.IP.network.notices.title
+      description: Title of the notice.
+      type: String
+    - contextPath: HelloWorld.IP.network.parent_handle
+      description: Handle of the parent network.
+      type: String
+    - contextPath: HelloWorld.IP.network.raw
+      description: Additional raw data for the network.
+      type: Unknown
+    - contextPath: HelloWorld.IP.network.remarks
+      description: Additional remarks for the network.
+      type: Unknown
+    - contextPath: HelloWorld.IP.network.start_address
+      description: The first IP address of the CIDR.
+      type: String
+    - contextPath: HelloWorld.IP.network.status
+      description: Status of the network.
+      type: String
+    - contextPath: HelloWorld.IP.network.type
+      description: The type of the network.
+      type: String
+    - contextPath: HelloWorld.IP.query
+      description: IP address that was queried.
+      type: String
+    - contextPath: HelloWorld.IP.raw
+      description: Additional raw data for the IP address.
+      type: Unknown
+    - contextPath: HelloWorld.IP.score
+      description: Reputation score from HelloWorld for this IP (0 to 100, where higher is worse).
+      type: Number
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
+    - contextPath: IP.ASN
+      description: The autonomous system name for the IP address.
+      type: String
+    - contextPath: IP.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: IP.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+  dockerimage: demisto/python3:3.11.10.116949
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

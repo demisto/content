@@ -1,0 +1,1820 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "SlackBot - Incoming Mapper",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 17,
+	"mapping": {
+		"SlackBot - Create Support Case": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Case Description": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"description-input-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Case Email": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"email-input-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Case Severity": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"severity-select-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "selected_option"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Case Subject": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"subject-input-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Execution Message": {
+					"simple": "execution_message"
+				},
+				"Execution Successful": {
+					"simple": "execution_successful"
+				},
+				"Slack Callback ID": {
+					"simple": "view.callback_id"
+				},
+				"Slack Display Name": {
+					"simple": "user.name"
+				},
+				"Slack Domain": {
+					"simple": "team.domain"
+				},
+				"Slack Form Title": {
+					"simple": "view.title.text"
+				},
+				"Slack Team ID": {
+					"simple": "team.id"
+				},
+				"Slack User": {
+					"simple": "user.username"
+				},
+				"Slack User ID": {
+					"simple": "user.id"
+				}
+			}
+		},
+		"SlackBot - Create Ticket": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Case Description": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"description-input-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Case Email": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"email-input-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Case Severity": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"severity-select-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "selected_option"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Case Subject": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"subject-input-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Event Type": {
+					"simple": "type"
+				},
+				"Execution Message": {
+					"simple": "execution_message"
+				},
+				"Execution Successful": {
+					"simple": "execution_successful"
+				},
+				"Kudos Note": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"kudos-note-input-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"PANW Employee": {
+					"simple": "panw_employee"
+				},
+				"PANW Employee Slack ID": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"panw-employee-select-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "selected_user"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"ServiceNow Short Description": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"servicenow-short-description\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"ServiceNow Ticket Type": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"servicenow-ticket-selection\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "selected_option"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Slack Callback ID": {
+					"simple": "view.callback_id"
+				},
+				"Slack Display Name": {
+					"simple": "user.name"
+				},
+				"Slack Domain": {
+					"simple": "team.domain"
+				},
+				"Slack Form Title": {
+					"simple": "view.title.text"
+				},
+				"Slack Indicator": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"indicator-value\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Slack Indicator Action": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"indicator-select-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "selected_option"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Slack Indicator EDL": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"indicator-edl-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Slack Indicator Tag": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"indicator-tag-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Slack Team ID": {
+					"simple": "team.id"
+				},
+				"Slack Ticket Category": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"ticket-category\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Slack Ticket Description": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"ticket-description\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Slack Ticket Priority": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"ticket-priority\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "selected_option"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Slack Ticket Severity": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"ticket-severity\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "selected_option"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Slack Ticket Subject": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"ticket-subject\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Slack Ticket Type": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"ticket-type\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "selected_option"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Slack Ticket Vendor": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"vendor-ticket-selection\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "selected_option"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Slack User": {
+					"simple": "user.username"
+				},
+				"Slack User ID": {
+					"simple": "user.id"
+				},
+				"Update On Demand Only": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.update-on-demand-only-action"
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Update on Demand Only": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"update-on-demand-only-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "selected_option"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				}
+			}
+		},
+		"SlackBot - Indicator Actions": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Case Description": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"description-input-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Case Email": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"email-input-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Case Severity": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"severity-select-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "selected_option"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Case Subject": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"subject-input-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Event Type": {
+					"simple": "type"
+				},
+				"Execution Message": {
+					"simple": "execution_message"
+				},
+				"Execution Successful": {
+					"simple": "execution_successful"
+				},
+				"Kudos Note": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"kudos-note-input-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"PANW Employee": {
+					"simple": "panw_employee"
+				},
+				"PANW Employee Slack ID": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"panw-employee-select-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "selected_user"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Slack Callback ID": {
+					"simple": "view.callback_id"
+				},
+				"Slack Display Name": {
+					"simple": "user.name"
+				},
+				"Slack Domain": {
+					"simple": "team.domain"
+				},
+				"Slack Form Title": {
+					"simple": "view.title.text"
+				},
+				"Slack Indicator": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"indicator-value\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Slack Indicator Action": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"indicator-select-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "selected_option"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Slack Indicator EDL": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"indicator-edl-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Slack Indicator Tag": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"indicator-tag-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Slack Team ID": {
+					"simple": "team.id"
+				},
+				"Slack User": {
+					"simple": "user.username"
+				},
+				"Slack User ID": {
+					"simple": "user.id"
+				},
+				"Update On Demand Only": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.update-on-demand-only-action"
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Update on Demand Only": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"update-on-demand-only-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "selected_option"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				}
+			}
+		},
+		"SlackBot - Received Customer Kudos": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Case Description": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"description-input-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Case Email": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"email-input-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Case Severity": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"severity-select-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "selected_option"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "text"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Case Subject": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"subject-input-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Event Type": {
+					"simple": "type"
+				},
+				"Execution Message": {
+					"simple": "execution_message"
+				},
+				"Execution Successful": {
+					"simple": "execution_successful"
+				},
+				"Kudos Note": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"kudos-note-input-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "value"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"PANW Employee": {
+					"simple": "panw_employee"
+				},
+				"PANW Employee Slack ID": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "view",
+						"transformers": [
+							{
+								"args": {
+									"expression": {
+										"isContext": false,
+										"value": {
+											"simple": "values.*.\"panw-employee-select-action\""
+										}
+									}
+								},
+								"operator": "jmespath"
+							},
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "selected_user"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Slack Callback ID": {
+					"simple": "view.callback_id"
+				},
+				"Slack Display Name": {
+					"simple": "user.name"
+				},
+				"Slack Domain": {
+					"simple": "team.domain"
+				},
+				"Slack Form Title": {
+					"simple": "view.title.text"
+				},
+				"Slack Team ID": {
+					"simple": "team.id"
+				},
+				"Slack User": {
+					"simple": "user.username"
+				},
+				"Slack User ID": {
+					"simple": "user.id"
+				}
+			}
+		}
+	},
+	"name": "SlackBot - Incoming Mapper",
+	"nameRaw": "SlackBot - Incoming Mapper",
+	"packID": "dfa47260-fa41-4dc4-80a9-54d34feb3ed0",
+	"packName": "slack-bot_v2",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "008c29d7-bb54-4a59-8a5e-a3807358fa16",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}

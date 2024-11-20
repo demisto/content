@@ -1,0 +1,997 @@
+category: Messaging
+commonfields:
+  id: SlackBot
+  version: -1
+configuration:
+- display: Long running instance
+  name: longRunning
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: ""
+  displaypassword: Bot Token
+  hiddenusername: true
+  name: bot_token
+  required: true
+  type: 9
+- display: ""
+  displaypassword: App Token
+  hiddenusername: true
+  name: app_token
+  required: true
+  type: 9
+- additionalinfo: Base XSOAR URL path
+  display: XSOAR Base URL
+  name: base_url
+  required: true
+  type: 0
+- display: ""
+  displaypassword: XSOAR API Key
+  hiddenusername: true
+  name: api_key
+  required: true
+  type: 9
+- display: XSOAR API Key ID
+  name: api_key_id
+  required: false
+  type: 0
+- additionalinfo: Dedicated Slack channel to receive notifications
+  display: Dedicated Slack Notification Channel
+  name: dedicated_slack_channel_name
+  required: false
+  type: 0
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- additionalinfo: Comma separated roles that are allowed to execute the slash commands
+  defaultvalue: Instance Administrator,Account Admin
+  display: Allowed roles
+  name: roles
+  required: false
+  type: 0
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: dfa47260-fa41-4dc4-80a9-54d34feb3ed0
+    packName: slack-bot_v2
+    prevname: ""
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Integrate your organization's Slack app; using XSOAR as the backend
+display: SlackBot
+image: data:image/png;base64,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
+name: SlackBot
+script:
+  dockerimage: akoppadpalo/slack_bolt:v2
+  isFetchSamples: true
+  isfetch: true
+  longRunning: true
+  runonce: false
+  script: |
+    from multiprocessing import Process
+    from slack_bolt import App
+    from slack_bolt.adapter.socket_mode import SocketModeHandler
+    from slack_sdk import WebClient
+    import json
+    import logging
+    import os
+    import random
+    import requests
+    import subprocess
+    import sys
+    import demisto_client
+    import ast
+    from demisto_client.demisto_api.rest import ApiException
+
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    # Set default logging
+    logging.basicConfig(level=logging.INFO)
+
+    # Set integration parameters
+    SLACK_BOT_TOKEN = demisto.params().get("bot_token", {}).get("password", "")
+    SLACK_APP_TOKEN = demisto.params().get("app_token", {}).get("password", "")
+    DEDICATED_CHANNEL = demisto.params().get("dedicated_slack_channel_name")
+    DEMISTO_API_KEY = demisto.params().get("api_key", {}).get("password", "")
+    DEMISTO_BASE_URL = demisto.params().get("base_url")
+    XSIAM_AUTH_ID = demisto.params().get("api_key_id")
+    Allowed_roles = demisto.params().get("roles").split(",")
+    # TRUST = argToBoolean(demisto.params().get("insecure", False))
+
+    # Instantiate the App Class
+    try:
+        app = App(token=SLACK_BOT_TOKEN)
+    except Exception as e:
+        return_error("Invalid Bot Token.")
+
+    # Instantiate the Demisto Client
+    api_instance = demisto_client.configure(base_url=DEMISTO_BASE_URL, api_key=DEMISTO_API_KEY, auth_id=XSIAM_AUTH_ID)
+
+
+    ########################
+    ### MODULE FUNCTIONS ###
+    ########################
+
+
+    """
+        Sends a test message to the dedicated slack channel (if configured).
+        Runs a test command in the API user's playground to test the Demisto SDK functionality
+    """
+    def test_module():
+        if not SLACK_BOT_TOKEN.startswith("xoxb"):
+            return_error("Invalid Bot Token.")
+        if not SLACK_APP_TOKEN.startswith("xapp"):
+            return_error("Invalid App Token.")
+        if DEDICATED_CHANNEL:
+            message = "Hello from the XSOAR SlackBot! Please use the `/xsoar-help` slash command to get started."
+            try:
+                # Call the conversations.list method using the WebClient
+                result = app.client.chat_postMessage(
+                    channel=DEDICATED_CHANNEL,
+                    text=message
+                )
+
+            except Exception as e:
+                return_error(f"Error while sending message to dedicated Slack channel. {e}")
+        # Test the demisto_client
+        api_response = demisto_client.generic_request_func(self=api_instance, path="/xsoar/lists", method="GET")
+        if api_response[1] != 200:
+            return_error("Please ensure the API Key, Base URL and API key ID are set appropriately for the demisto_client to function.")
+
+        demisto.results('ok')
+
+
+    ########################
+    ### HELPER FUNCTIONS ###
+    ########################
+
+
+    """
+        Helper function used to convert the numerical value of an XSOAR incident status to the associated str representation.
+
+        Args:
+          status_code: str -> status code returned from the demisto.createIncidents() command in int format.
+    """
+    def map_status_code(status_code):
+        try:
+            status_codes = {
+                0: "Pending",
+                1: "Active",
+                2: "Closed"
+            }
+
+            return status_codes.get("status_code", "Pending")
+
+        except Exception as e:
+            logging.error(e)
+
+
+    """
+        Helper function used to convert the str value of the submitted playbook timeout value to the associated int representation.
+
+        Args:
+          timeout: str -> Slack modal view submission input represented in str format. Defaults to '90 seconds'.
+    """
+    def convert_playbook_timeout(timeout="90 seconds"):
+        try:
+            if timeout == "10 seconds":
+                conversion = 10
+            elif timeout == "30 seconds":
+                conversion = 30
+            elif timeout == "1 minute":
+                conversion = 60
+            elif timeout == "90 seconds":
+                conversion = 90
+            elif timeout == "2 minutes":
+                conversion = 120
+            elif timeout == "5 minutes":
+                conversion = 300
+            elif timeout == "10 minutes":
+                conversion = 600
+            else:
+                conversion = 90
+
+            return conversion
+
+        except Exception as e:
+            logging.error(e)
+
+    """Helper function is """
+    def find_list_by_listname(list_output, list_name):
+        # Step 1: Attempt to safely evaluate the input string to a Python data structure
+        try:
+            data_list = ast.literal_eval(list_output)
+        except (ValueError, SyntaxError) as e:
+            logging.error(f"Error evaluating data: {e}")
+            return None  # Return None if there's an issue with parsing
+
+        # Step 2: Search for the item with the matching id
+        for item in data_list:
+            if item.get('id') == list_name:
+                return item.get('data')  # Return the 'data' field if the id matches
+
+        return None  # Return None if the ID is not found
+
+
+    """
+        Helper function used to import XSOAR lists via demisto_client, and convert JSON to a Slack modal view.
+
+        Args:
+          list_name: str -> Provide an XSOAR list name in str format.
+          include_list: bool -> Used primarily when loading XSOAR lists that contain a list of dictionaries (i.e., success/failure response blocks). Defaults to False.
+    """
+
+    def get_xsoar_list(list_name):
+        try:
+            api_response = demisto_client.generic_request_func(self=api_instance, path="/xsoar/lists", method="GET")
+            return(find_list_by_listname(api_response[0], list_name))
+        except ApiException as e:
+            logging.error("Exception when calling generic api: %s\n" % e)
+
+    """
+    Helper function to get channel id for uploading of files.
+    """
+
+    def get_channel_id(channel_name,client):
+        try:
+            # Call the conversations.list method using the WebClient
+            response = client.conversations_list()
+            demisto.debug(f"Result from conv:{response}")
+
+            # Check the channels in the response
+            for channel in response["channels"]:
+                if channel["name"] == channel_name:
+                    return channel["id"]
+
+            logging.info("Channel not found")
+            demisto.debug("Channel not found")
+            return None
+
+        except Exception as e:
+            demisto.debug(f"Error fetching channels: {e}")
+            logging.error(f"Error fetching channels: {e}")
+            return None
+
+
+    """
+        Helper function used to load the success message XSOAR JSON list template and replace dynamic values to send back a custom Slack message to user/channel.
+
+        Args:
+          created_incident: list -> List object returned from running the demisto.createIncidents() command.
+    """
+    def craft_incident_trigger_success_message(created_incident):
+        try:
+            # Define incident variables from created incident
+            incident_name = created_incident[0].get("name")
+            incident_id = created_incident[0].get("id")
+            if not created_incident[0].get("type"):
+                incident_type = "Unclassified"
+            else:
+                incident_type = created_incident[0].get("type")
+            submitted_by = json.loads(created_incident[0].get("rawJSON")).get("user").get("username")
+            created_at = created_incident[0].get("created")
+            incident_status = map_status_code(created_incident[0].get("status"))
+
+
+
+            # Load the success message XSOAR list template
+            success_message = get_xsoar_list(list_name="SlackIncidentTriggerSuccess")
+
+            # Parse through template and replace dynamic variables
+            success_message = json.loads(success_message)
+            success_message[2]["fields"][0]["text"] = f"*Incident Name:*\n{incident_name}"
+            success_message[2]["fields"][1]["text"] = f"*Incident ID:*\n{incident_id}"
+            success_message[3]["fields"][0]["text"] = f"*Incident Type:*\n{incident_type}"
+            success_message[3]["fields"][1]["text"] = f"*Submitted By:*\n@{submitted_by}"
+            success_message[4]["fields"][0]["text"] = f"*Created At:*\n{created_at}"
+            success_message[4]["fields"][1]["text"] = f"*Incident Status:*\n{incident_status}"
+
+            return success_message
+
+        except Exception as e:
+            logging.error(e)
+
+
+    #############
+    ### VIEWS ###
+    #############
+
+
+    def load_new_template():
+        try:
+            # Can add to this list or create your own loading screen messages/quips
+            loading_screen_texts = [
+                ":magic_wand: _Managing all the mischief..._ :zap:",
+                ":shark: _Dun dun... Dun dun..._ :boat:\n\t\t\t - Insider Threat",
+                ":new_moon: _Waiting... we are..._ :star:",
+                ":anchor: _By the beard of Zeus!_ :man:",
+                ":handball: _If you can dodge a wrench, *you can dodge a ransomware attack*_ :wrench:",
+                ":email: _'You've been promoted to CEO, congratulations!_'\n\t\t\t\t\t\t - CEO\n\n *You sit on a throne of lies* :hook:",
+                ":robot_face: _Come with me, if you want to quarantine some endpoints_:skull:"
+            ]
+
+            # Load the template as a Slack block and randomize the texts above
+            loading_template = {
+                "type": "modal",
+                "title": {
+                    "type": "plain_text",
+                    "text": "Loading Slack Modal"
+                },
+                "close": {
+                    "type": "plain_text",
+                    "text": "Cancel"
+                },
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": random.choice(loading_screen_texts)
+                        }
+                    }
+                ]
+            }
+
+            return loading_template
+
+        except Exception as e:
+            logging.error(e)
+
+
+    ################
+    ### APP HOME ###
+    ################
+
+
+    # Default interface shown when opening the XSOAR Self Service App home page in Slack
+    @app.event("app_home_opened")
+    def update_home_tab(client, event):
+        try:
+            # # Acknowledge the request -- DO NOT REMOVE
+            # ack()
+
+            app_home_template = get_xsoar_list(list_name="SlackAppHome")
+
+            res = client.views_publish(
+                user_id = event.get("user"),
+                view = app_home_template
+            )
+
+        except Exception as e:
+            logging.error(e)
+
+
+    @app.action("xsoar-help-app-home-button-click")
+    def xsoar_help_app_home_button_click(ack, body, client):
+        try:
+            # Acknowledge the request -- DO NOT REMOVE
+            ack()
+
+            load = client.views_open(
+                trigger_id = body.get("trigger_id"),
+                view = load_new_template()
+            )
+
+            help_view_template = get_xsoar_list(list_name="SlackHelp")
+
+            res = client.views_update(
+                view_id = load.get("view").get("id"),
+                hash = load.get("view").get("hash"),
+                view = help_view_template
+            )
+
+        except Exception as e:
+            logging.error(e)
+
+    @app.action("xsoar-create-ticket-app-home-button-click")
+    def xsoar_create_ticket_app_home(ack, body, client):
+        try:
+            # Acknowledge the request -- DO NOT REMOVE
+            ack()
+
+            load = client.views_open(
+                trigger_id = body.get("trigger_id"),
+                view = load_new_template()
+            )
+
+            ticket_template = get_xsoar_list(list_name="SlackTicket")
+
+            res = client.views_update(
+                view_id = load.get("view").get("id"),
+                hash = load.get("view").get("hash"),
+                view = get_xsoar_list(list_name="SlackTicket")
+            )
+
+        except Exception as e:
+            logging.error(e)
+
+
+    @app.action("xsoar-indicator-actions-app-home-button-click")
+    def xsoar_indicator_actions_app_home(ack, body, client):
+        try:
+            # Acknowledge the request -- DO NOT REMOVE
+            ack()
+
+            load = client.views_open(
+                trigger_id = body.get("trigger_id"),
+                view = load_new_template()
+            )
+
+            indicator_actions_view_template = get_xsoar_list("SlackIndicatorActions")
+
+            res = client.views_update(
+                view_id = load.get("view").get("id"),
+                hash = load.get("view").get("hash"),
+                view = indicator_actions_view_template
+            )
+
+        except Exception as e:
+            logging.error(e)
+
+
+    ######################
+    ### MESSAGE EVENTS ###
+    ######################
+
+
+    @app.message(":wave:")
+    def say_wave(ack, message, say, body):
+        try:
+            # Acknowledge the request -- DO NOT REMOVE
+            ack()
+
+            user = message["user"]
+            say(text=f"Hi there, <@{user}>! Right back at ya! :wave:")
+
+        except Exception as e:
+            logging.error(e)
+
+
+    @app.message("hello|hi|hey")
+    def say_hello(ack, message, say, body):
+        try:
+            # Acknowledge the request -- DO NOT REMOVE
+            ack()
+
+            user = message["user"]
+            say(text=f"Hi there, <@{user}>! Thanks for the greeting!")
+
+        except Exception as e:
+            logging.error(e)
+
+
+    @app.message("help|need help|I need help")
+    def say_help(ack, message, say, body):
+        try:
+            # Acknowledge the request -- DO NOT REMOVE
+            ack()
+
+            user = message["user"]
+            help_blocks = [
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": f"Hi there, <@{user}>! Please use the `/help` command to open the Help modal."
+                    }
+                }
+            ]
+
+            say(blocks=help_blocks)
+
+        except Exception as e:
+            logging.error(e)
+
+
+    ######################
+    ### MENTION EVENTS ###
+    ######################
+
+
+    # Responds to the user when the app is mentioned in a channel
+    @app.event("app_mention")
+    def say_mention(event, body, say):
+        try:
+            say(f"Hi there, thanks for thinking of me! :)")
+
+        except Exception as e:
+            logging.error(e)
+
+
+    ##############################################################################
+                            ######################
+                            ### SLASH COMMANDS ###
+                            ######################
+    ##############################################################################
+
+    ###################
+    ### /XSOAR-HELP ###
+    ###################
+
+
+    # The /help command will open the help modal to aid in application usage
+    @app.command("/xsoar-help")
+    def xsoar_help(ack, body, client):
+        try:
+            # Acknowledge the request -- DO NOT REMOVE
+            ack()
+
+            load = client.views_open(
+                trigger_id = body.get("trigger_id"),
+                view = load_new_template()
+            )
+
+            help_view_template = get_xsoar_list(list_name="SlackHelp")
+
+            res = client.views_update(
+                view_id = load.get("view").get("id"),
+                hash = load.get("view").get("hash"),
+                view = help_view_template
+            )
+
+        except Exception as e:
+            logging.error(e)
+
+
+    @app.action("xsoar-integration-docs-button-click")
+    def xsoar_integration_docs_button_click(ack, body):
+        try:
+            # Acknowledge the request -- DO NOT REMOVE
+            ack()
+
+        except Exception as e:
+            logging.error(e)
+
+
+    @app.action("slack-bolt-docs-button-click")
+    def slack_bolt_docs_button_click(ack, body):
+        try:
+            # Acknowledge the request -- DO NOT REMOVE
+            ack()
+
+        except Exception as e:
+            logging.error(e)
+
+
+    @app.action("block-kit-builder-button-click")
+    def block_kit_builder_button_click(ack, body):
+        try:
+            # Acknowledge the request -- DO NOT REMOVE
+            ack()
+
+        except Exception as e:
+            logging.error(e)
+
+
+    @app.action("xsoar-aha-button-click")
+    def xsoar_aha_button_click(ack, body):
+        try:
+            # Acknowledge the request -- DO NOT REMOVE
+            ack()
+
+        except Exception as e:
+            logging.error(e)
+
+
+    @app.action("xsoar-indicator-actions-help-button-click")
+    def xsoar_indication_actions_button_click(ack, body, client):
+        try:
+            # Acknowledge the request -- DO NOT REMOVE
+            ack()
+
+            load = client.views_update(
+                view_id = body.get("view").get("id"),
+                hash = body.get("view").get("hash"),
+                view = load_new_template()
+            )
+
+            indicator_actions_view_template = get_xsoar_list("SlackIndicatorActions")
+
+            res = client.views_update(
+                view_id = load.get("view").get("id"),
+                hash = load.get("view").get("hash"),
+                view = indicator_actions_view_template
+            )
+
+        except Exception as e:
+            logging.error(e)
+
+
+    @app.action("xsoar-create-ticket-help-button-click")
+    def xsoar_create_ticket_button_click(ack, body, client):
+        try:
+            # Acknowledge the request -- DO NOT REMOVE
+            ack()
+
+            load = client.views_update(
+                view_id = body.get("view").get("id"),
+                hash = body.get("view").get("hash"),
+                view = load_new_template()
+            )
+
+            ticket_template = get_xsoar_list(list_name="SlackTicket")
+
+            res = client.views_update(
+                view_id = load.get("view").get("id"),
+                hash = load.get("view").get("hash"),
+                view = get_xsoar_list(list_name="SlackTicket")
+            )
+
+        except Exception as e:
+            logging.error(e)
+
+    ##############################################################################
+
+    ############################
+    ### /XSOAR-CREATE-TICKET ###
+    ############################
+
+
+    # The /xsoar-create-ticket command will open the help modal to aid in application usage
+    @app.command("/xsoar-create-ticket")
+    def xsoar_create_ticket(ack, body, client):
+        try:
+            # Acknowledge the request -- DO NOT REMOVE
+            ack()
+
+            load = client.views_open(
+                trigger_id = body.get("trigger_id"),
+                view = load_new_template()
+            )
+            global TRIGGERED_SLACK_CHANNEL
+            TRIGGERED_SLACK_CHANNEL = body.get("channel_id")
+            demisto.debug(f'Triggered channel:{TRIGGERED_SLACK_CHANNEL}')
+
+            ticket_template = get_xsoar_list(list_name="SlackTicket")
+
+            res = client.views_update(
+                view_id = load.get("view").get("id"),
+                hash = load.get("view").get("hash"),
+                view = ticket_template
+            )
+
+        except Exception as e:
+            logging.error(e)
+
+
+    @app.action("vendor-ticket-selection")
+    def vendor_ticket_selection(ack, body, client):
+        try:
+            # Acknowledge the request -- DO NOT REMOVE
+            ack()
+
+            # Store the Slack form input parameters in a list
+            action_keys = list(body["view"]["state"]["values"].keys())
+
+            ticket_selection_field = action_keys[0]
+
+            ticket_type_selected = body["view"]["state"]["values"][ticket_selection_field]["vendor-ticket-selection"]["selected_option"]["text"]["text"]
+
+            if ticket_type_selected == "ServiceNow":
+                selected_view = get_xsoar_list(list_name="SlackServiceNowTicket")
+            elif ticket_type_selected == "Jira":
+                selected_view = get_xsoar_list(list_name="SlackJiraTicket")
+            elif ticket_type_selected == "Zendesk":
+                selected_view = get_xsoar_list(list_name="SlackZendeskTicket")
+            else:
+                selected_view = get_xsoar_list(list_name="SlackTicket")
+
+            if selected_view:
+                res = client.views_update(
+                    view_id = body["view"]["id"],
+                    hash = body["view"]["hash"],
+                    trigger_id = body["trigger_id"],
+                    view = selected_view
+                )
+
+        except Exception as e:
+            logging.error(e)
+
+
+    @app.view("xsoar-create-ticket")
+    def view_xsoar_create_tickets_submission(ack, body, client, say):
+        try:
+            # Acknowledge the request -- DO NOT REMOVE
+            ack()
+
+            # Set any necessary variable(s)
+            user_id = body["user"]["id"]
+            global TRIGGERED_SLACK_CHANNEL
+            user_email = app.client.users_profile_get(user=user_id)["profile"]["email"]
+            # demisto.debug(f"user email:{user_email}")
+            user_roles = demisto.findUser("",user_email).get("allRoles") or "['']"
+
+            if any(element in user_roles for element in Allowed_roles):
+                # Store the Slack form input parameters in a list
+                action_keys = list(body["view"]["state"]["values"].keys())
+
+                """
+                Each index below is relative to each form input within the Slack modal
+
+                The first key (index 0) will always be the ticket type selected by the end user
+                The third key (index 2) will always be the ticket subject (Short Description for ServiceNow and Summary for Jira)
+                """
+
+                ticket_selection_field = action_keys[0]
+                ticket_subject = action_keys[2]
+
+                ticket_type_selected = body["view"]["state"]["values"][ticket_selection_field]["vendor-ticket-selection"]["selected_option"]["text"]["text"]
+
+                if ticket_type_selected == "ServiceNow" or ticket_type_selected == "Zendesk":
+                    """
+                    Selects the appropriate index to identify the Download JSON Mapper option
+
+                    This will be relative to each ticket type, as the Jira ticket has one additional input which extends the index by one
+                    """
+                    download_json_mapper_file_value = action_keys[5] # Can specify -1 for index if it will always be the last element
+                elif ticket_type_selected == "Jira":
+                    download_json_mapper_file_value = action_keys[6]
+                else:
+                    download_json_mapper_file_value = action_keys[5]
+
+                subject = body["view"]["state"]["values"][ticket_subject]["ticket-subject"]["value"]
+                download_json_mapper_file = body["view"]["state"]["values"][download_json_mapper_file_value]["download-json-mapper-file"]["selected_option"]["text"]["text"]
+
+
+                incidents = []
+                create_ticket_incident = {
+                    "name": f"SlackBot Create {ticket_type_selected} Ticket - {subject}",
+                    "rawJSON": json.dumps(body)
+                }
+                incidents.append(create_ticket_incident)
+
+                # Create the new incident
+                new_incident = demisto.createIncidents(incidents=incidents)
+                # demisto.debug(f"XSOAR raw incident:{new_incident}")
+                # Craft the success message and send to channel or user
+                success_response_blocks = craft_incident_trigger_success_message(created_incident=new_incident)
+
+                # Grab the integration parameter for a dedicated slack channel
+                # If statement exists to check if the dedicated slack channel param is set
+                if DEDICATED_CHANNEL:
+                    say(channel=DEDICATED_CHANNEL, blocks=success_response_blocks)
+
+                elif TRIGGERED_SLACK_CHANNEL:
+                    say(channel=TRIGGERED_SLACK_CHANNEL, blocks=success_response_blocks)
+
+                # Else, send it to the originating user
+                # else:
+                #     say(channel=user_id, blocks=success_response_blocks)
+
+
+                # Create the JSON mapper file if the user selected this option
+                if download_json_mapper_file == "Yes":
+                    demisto.debug("File created")
+                    try:
+                        if DEDICATED_CHANNEL:
+                            channel = get_channel_id(DEDICATED_CHANNEL,client)
+                        else:
+                            channel=TRIGGERED_SLACK_CHANNEL
+                            TRIGGERED_SLACK_CHANNEL = ''
+                        filename = f"SlackBot_Create_{ticket_type_selected}_Ticket_Mapper.json"
+                        result = client.files_upload_v2(
+                        channel=channel,
+                        initial_comment="Here's the json file :smile:",
+                        title=filename,
+                        filename=filename,
+                        content=json.dumps(body),
+                        )
+                        demisto.debug(result)
+                        # logger.info(result)
+
+                    except Exception as e:
+                        demisto.debug(f"Upload Error:{e}")
+                        logger.error("Error uploading file: {}".format(e))
+
+            else:
+                failure_response_blocks = get_xsoar_list(list_name="SlackPermissionsFailure")
+                say(channel=user_id, blocks=failure_response_blocks)
+
+
+        except Exception as e:
+            # Craft the failure message and send to user
+            failure_response_blocks = get_xsoar_list(list_name="SlackIncidentTriggerFailure")
+            say(channel=user_id, blocks=failure_response_blocks)
+            demisto.debug(f"Error: {e}")
+            logging.error(f"Error: {e}")
+
+
+    ##############################################################################
+    # The /indicator-actions command will allow users to perform actions on indicators in XSOAR
+
+    ################################
+    ### /XSOAR-INDICATOR-ACTIONS ###
+    ################################
+
+
+    @app.command('/xsoar-indicator-actions')
+    def indicator_actions_command(ack, body, client, logger):
+        try:
+            # Acknowledge the request -- DO NOT REMOVE
+            ack()
+
+            load = client.views_open(
+                trigger_id = body.get("trigger_id"),
+                view = load_new_template()
+            )
+            global TRIGGERED_SLACK_CHANNEL
+            TRIGGERED_SLACK_CHANNEL = body.get("channel_id")
+
+            indicator_actions_view_template = get_xsoar_list("SlackIndicatorActions")
+
+            res = client.views_update(
+                view_id = load.get("view").get("id"),
+                hash = load.get("view").get("hash"),
+                view = indicator_actions_view_template
+            )
+
+        except Exception as e:
+            logging.error(e)
+
+
+    @app.action("indicator-select-action")
+    def indicator_action_selection(ack, body, logger):
+        try:
+            ack()
+
+        except Exception as e:
+            logging.error(e)
+
+
+    @app.action("update-on-demand-only-action")
+    def update_on_demand_selection(ack, body, logger):
+        try:
+            ack()
+
+        except Exception as e:
+            logging.error(e)
+
+
+    @app.view("xsoar-indicator-actions")
+    def view_xsoar_indicator_actions_submission(ack, body, client, say):
+        try:
+            # Acknowledge the request -- DO NOT REMOVE
+            ack()
+
+            # Set any necessary variable(s)
+            user_id = body["user"]["id"]
+            global TRIGGERED_SLACK_CHANNEL
+
+            user_email = app.client.users_profile_get(user=user_id)["profile"]["email"]
+            # demisto.debug(f"user email:{user_email}")
+            user_roles = demisto.findUser("",user_email).get("allRoles") or "['']"
+
+            if any(element in user_roles for element in Allowed_roles):
+                # Store the Slack form input parameters in a list
+                action_keys = list(body["view"]["state"]["values"].keys())
+
+                """
+                Each index below is relative to each form input within the Slack modal
+
+                The first key (index 0) will always be the indicator value entered by the end user (first input of modal)
+                The second key (index 1) will always be the indicator action selected by the end user (second input of modal)
+                The third key (index 2) will always be the indicator tag name entered by the end user (third input of modal)
+                The fourth key (index 4) will always be the Update on Demand Only action selected by the end user (fourth input of modal)
+                The fifth key (index 5) will always be the JSON mapper option selected by the end user (fifth input of modal)
+                """
+                indicator_value = action_keys[0]
+                indicator_action = action_keys[1]
+                indicator_tag_name = action_keys[2]
+                indicator_update_on_demand_only = action_keys[3]
+                download_json_mapper_file_value = action_keys[4] # Can specify -1 for index if it will always be the last element
+
+                # Set human readable variables for the Slack form inputs
+                indicator = body["view"]["state"]["values"][indicator_value]["indicator-value"]["value"]
+                action = body["view"]["state"]["values"][indicator_action]["indicator-select-action"]["selected_option"]["text"]["text"]
+                tag_name = body["view"]["state"]["values"][indicator_tag_name]["indicator-tag-action"]["value"]
+                update_on_demand_only = body["view"]["state"]["values"][indicator_update_on_demand_only]["update-on-demand-only-action"]["selected_option"]["text"]["text"]
+                download_json_mapper_file = body["view"]["state"]["values"][download_json_mapper_file_value]["download-json-mapper-file"]["selected_option"]["text"]["text"]
+
+                incidents = []
+                indicator_actions_incident = {
+                    "name": f"SlackBot Indicator Actions - {action} {indicator}",
+                    "rawJSON": json.dumps(body)
+                }
+                incidents.append(indicator_actions_incident)
+
+                # Create the new incident
+                new_incident = demisto.createIncidents(incidents=incidents)
+
+                # Craft the success message and send to channel or user
+                success_response_blocks = craft_incident_trigger_success_message(created_incident=new_incident)
+
+                # Grab the integration parameter for a dedicated slack channel
+                # If statement exists to check if the dedicated slack channel param is set
+                if DEDICATED_CHANNEL:
+                    say(channel=DEDICATED_CHANNEL, blocks=success_response_blocks)
+
+                elif TRIGGERED_SLACK_CHANNEL:
+                    say(channel=TRIGGERED_SLACK_CHANNEL, blocks=success_response_blocks)
+
+                # Else, send it to the originating user
+                # else:
+                #     say(channel=user_id, blocks=success_response_blocks)
+
+                # Create the JSON mapper file if the user selected this option
+                if download_json_mapper_file == "Yes":
+                    demisto.debug("File created")
+                    try:
+                        if DEDICATED_CHANNEL:
+                            channel = get_channel_id(DEDICATED_CHANNEL,client)
+                        else:
+                            channel=TRIGGERED_SLACK_CHANNEL
+                            TRIGGERED_SLACK_CHANNEL = ''
+                        filename = f"SlackBot_Create_{ticket_type_selected}_Ticket_Mapper.json"
+                        result = client.files_upload_v2(
+                        channel=channel,
+                        initial_comment="Here's the json file :smile:",
+                        title=filename,
+                        filename=filename,
+                        content=json.dumps(body),
+                        )
+                        demisto.debug(result)
+                        # logger.info(result)
+                    except Exception as e:
+                        demisto.debug(f"Upload Error:{e}")
+                        logger.error("Error uploading file: {}".format(e))
+
+            else:
+                failure_response_blocks = get_xsoar_list(list_name="SlackPermissionsFailure")
+                say(channel=user_id, blocks=failure_response_blocks)
+
+        except Exception as e:
+            # Craft the failure message and send to user
+            failure_response_blocks = get_xsoar_list(list_name="SlackIncidentTriggerFailure")
+            say(channel=user_id, blocks=failure_response_blocks)
+            logging.error(f"Error: {e}")
+
+
+    ###############################################################################################################################################################################################################
+
+                                                                                            ##################################
+                                                                                            ### START NEW DEVELOPMENT HERE ###
+                                                                                            ##################################
+
+    ###############################################################################################################################################################################################################
+
+
+    #####################
+    ### MAIN FUNCTION ###
+    #####################
+
+
+    # Main function that handles the Slack Bot application handler
+    def main():
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration Test button.
+            result = test_module()
+            return_results(result)
+        else:
+            handler = SocketModeHandler(app, SLACK_APP_TOKEN)
+            Process(target=handler)
+            handler.start()
+
+
+    # Run the Slack Bot application
+    main()
+  subtype: python3
+  type: python

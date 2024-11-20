@@ -1,0 +1,28 @@
+{
+    "defaultIncidentType": "Unclassified",
+    "description": "",
+    "feed": false,
+    "id": "SlackBot - Classifier",
+    "keyTypeMap": {
+        "Create Jira Issue": "SlackBot - Create Ticket",
+        "Create ServiceNow Ticket": "SlackBot - Create Ticket",
+        "Create Zendesk Ticket": "SlackBot - Create Ticket",
+        "XSOAR Indicator Actions": "SlackBot - Indicator Actions",
+        "XSOAR Kudos": "SlackBot - Received Customer Kudos",
+        "XSOAR Support Case": "SlackBot - Create Support Case",
+        "create-kudos": "SlackBot - Received Customer Kudos",
+        "create-support-case": "SlackBot - Create Support Case",
+        "xsoar-create-ticket": "SlackBot - Create Ticket",
+        "xsoar-indicator-actions": "SlackBot - Indicator Actions"
+    },
+    "name": "SlackBot - Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "view.callback_id"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

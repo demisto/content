@@ -1,0 +1,206 @@
+beta: true
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Palo Alto Networks PAN-DB
+  version: -1
+configuration:
+- defaultvalue: https://api.urlcloud.paloaltonetworks.com/service/publicapi/v1/
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: API KEY
+  name: api_key
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  display: Return PAN-DB History in results
+  name: get_history
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Return PAN-DB Evidence in results
+  name: get_evidence
+  required: false
+  type: 8
+- additionalinfo: If selected, when running the !url command, the command will execute using PAN-DB INtegration. The URL filtering categories determine DBot score (malicious, suspicious, benign).
+  defaultvalue: 'false'
+  display: Use URL Filtering for auto enrichment
+  name: use_url_filtering
+  required: false
+  type: 8
+- defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
+- display: URL Filtering Additional malicious categories. CSV list of categories that will be considered malicious.
+  name: additional_malicious
+  required: false
+  type: 0
+- display: URL Filtering Additional suspicious categories. CSV list of categories that will be considered suspicious.
+  name: additional_suspicious
+  required: false
+  type: 0
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- defaultvalue: high-risk,medium-risk,hacking,proxy-avoidance-and-anonymizers
+  display: Predefined Suspicious Categories
+  name: predefined_suspicious
+  options:
+  - high-risk
+  - medium-risk
+  - hacking
+  - proxy-avoidance-and-anonymizers
+  required: false
+  type: 16
+- defaultvalue: phishing,command-and-control,malware,ransomware
+  display: Predefined Malicious Categories
+  name: predefined_malicious
+  options:
+  - phishing
+  - command-and-control
+  - malware
+  - ransomware
+  required: false
+  type: 16
+description: "v2.5-Queries the Palo Alto Networks URL Filtering DB (PAN-DB API)."
+display: Palo Alto Networks PAN-DB (Beta)
+name: Palo Alto Networks PAN-DB
+script:
+  commands:
+  - arguments:
+    - description: URL to query verdict information for, max 200 urls entered.
+      name: url
+      required: true
+    description: Query URL for PANDB verdict.
+    name: pan-url-category-get
+    outputs:
+    - contextPath: PANDB.URL.url
+      description: URL queried.
+      type: String
+    - contextPath: PANDB.URL.categories
+      description: URL categories.
+      type: string
+    - contextPath: PANDB.URL.evidences
+      description: URL category evidence.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+  - arguments:
+    - description: URL to query, up to 200 urls.
+      name: url
+      required: true
+      default: true
+    description: Query URL for PANDB Verdict.
+    name: url
+    outputs:
+    - contextPath: PANDB.URL.url
+      description: URL queried.
+      type: string
+    - contextPath: PANDB.URL.categories
+      description: URL categories.
+      type: string
+    - contextPath: PANDB.URL.evidences
+      description: URL category evidence.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: PANDB.URL.Tags
+      description: tags for URL.
+      type: string
+  - arguments:
+    - description: Query PAN-DB for a Domain, up to 200 in one query.
+      name: domain
+      required: true
+    description: Query Domain for PANDB Verdict (as a domain).
+    name: domain
+    outputs:
+    - contextPath: PANDB.URL.url
+      description: URL queried.
+      type: string
+    - contextPath: PANDB.URL.categories
+      description: URL categories.
+      type: string
+    - contextPath: PANDB.URL.evidences
+      description: URL category evidence.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: PANDB.URL.histories
+      description: URL category history.
+      type: string
+    - contextPath: PANDB.URL.histories.categories
+      description: URL category history category.
+      type: string
+    - contextPath: PANDB.URL.histories.update_time
+      description: URL category history update time.
+      type: date
+  - arguments:
+    - description: Query PAN-DB for IP, up to 200 in one query.
+      name: ip
+      required: true
+    description: Query IP for PANDB Verdict (as IP).
+    name: ip
+    outputs:
+    - contextPath: PANDB.URL.url
+      type: string
+    - contextPath: PANDB.URL.categories
+      type: string
+    - contextPath: PANDB.URL.evidences
+      type: string
+    - contextPath: DBotScore.Type
+      type: string
+    - contextPath: DBotScore.Vendor
+      type: string
+    - contextPath: DBotScore.Score
+      type: number
+  dockerimage: demisto/python3:3.11.10.116949
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
