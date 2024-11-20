@@ -2727,7 +2727,7 @@ def splunk_submit_event_hec(
             source=source,
             time=time_
         )
-    valid_json_events = convert_to_json_for_validation(events)
+    valid_json_events = convert_to_json_for_validation(events)  # only used for extracting indices
 
     indexes = [d.get('index') for d in valid_json_events if d.get('index')]
 
