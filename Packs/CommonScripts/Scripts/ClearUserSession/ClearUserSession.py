@@ -220,6 +220,7 @@ def get_user_data(command: Command) -> tuple[list[CommandResults], dict]:
     readable_outputs_list.extend(
         prepare_human_readable(command.name, command.args, human_readable)
     )
+
     output_key = get_output_key("Account", entry_context[-1])
     id_info = extract_usernames_with_ids(entry_context[-1], output_key)
 
@@ -389,6 +390,7 @@ def main():
                 success: bool = False
                 brands_succeeded: list = []
                 brands_failed: list = []
+                failed_message = ""
 
                 # Okta v2
                 if okta_v2_id := get_user_id(users_ids, OKTA_BRAND, user_name):
@@ -407,6 +409,7 @@ def main():
                             success = True
                             brands_succeeded.append(OKTA_BRAND)
                         else:
+                            failed_message += f"Okta v2: {error_message.lstrip('#').strip()}"
                             demisto.debug(f"Failed to clear sessions for Okta user with ID {okta_v2_id}. "
                                           f"Error message: {error_message}. Response details: {readable_outputs}.")
                             brands_failed.append(OKTA_BRAND)
@@ -429,6 +432,7 @@ def main():
                             brands_succeeded.append(MS_GRAPH_BRAND)
                         else:
                             brands_failed.append(MS_GRAPH_BRAND)
+                            failed_message += f"\nMG User: {human_readable.lstrip('#').strip()}"
                             demisto.debug(f"Failed to clear sessions for Microsoft Graph user with ID {microsoft_graph_id}. "
                                           f"Response details: {readable_outputs}")
 
@@ -439,7 +443,7 @@ def main():
                 else:
                     user_output["Result"] = "Failed"
                     user_output["Brands"] = ", ".join(brands_failed)
-                    user_output["Message"] = "User ID not found"
+                    user_output["Message"] = failed_message
 
                 outputs[user_name] = user_output
 

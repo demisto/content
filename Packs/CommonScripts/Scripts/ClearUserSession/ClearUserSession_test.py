@@ -390,19 +390,52 @@ def test_run_execute_command_multiple_entries(mocker: MockerFixture):
 def test_main_successful_execution(mocker: MockerFixture):
     """
     Given:
-        Valid arguments for user_id, user_name, and user_email.
+        Valid arguments for user_name and brands.
+        Mocked responses for get_user_data, okta_clear_user_sessions, and msgraph_user_session_revoke.
     When:
         The main function is called.
     Then:
-        The function should execute successfully and return results for the user.
+        - The get_user_data function should retrieve user IDs successfully.
+        - The okta_clear_user_sessions function should process sessions for Okta users.
+        - The msgraph_user_session_revoke function should revoke sessions for Microsoft Graph users.
+        - The return_results function should be called with the correct results.
     """
     # Mock demisto.args()
     mocker.patch.object(
         demisto,
         "args",
         return_value={
-            "user_name": "user1, user2"
+            "user_name": "user1, user2",
+            "verbose": "false",
+            "brands": "Okta v2,Microsoft Graph User"
         },
+    )
+
+    # Mock get_user_data
+    mock_get_user_data = mocker.patch(
+        "ClearUserSession.get_user_data",
+        return_value=(
+            [
+                CommandResults(readable_output="#### Result for !get-user-data user_name..."),
+                CommandResults(readable_output="#### Result for !get-user-data user_name..."),
+            ],
+            {
+                "user1": [{"Source": "Okta v2", "Value": "123"}],
+                "user2": [{"Source": "Microsoft Graph User", "Value": "456"}],
+            },
+        ),
+    )
+
+    # Mock okta_clear_user_sessions
+    mock_okta_clear_user_sessions = mocker.patch(
+        "ClearUserSession.okta_clear_user_sessions",
+        return_value=([CommandResults()], "")
+    )
+
+    # Mock msgraph_user_session_revoke
+    mock_msgraph_user_session_revoke = mocker.patch(
+        "ClearUserSession.msgraph_user_session_revoke",
+        return_value=([CommandResults()], "successfully"),
     )
 
     # Mock return_results
@@ -412,6 +445,9 @@ def test_main_successful_execution(mocker: MockerFixture):
     main()
 
     # Assert that return_results was called
+    assert mock_get_user_data.called
+    assert mock_okta_clear_user_sessions.called
+    assert mock_msgraph_user_session_revoke.called
     assert mock_return_results.called
 
 
