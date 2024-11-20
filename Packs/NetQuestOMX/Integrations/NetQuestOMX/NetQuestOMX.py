@@ -138,7 +138,7 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                f"An error was occurred when deleting the {list_name_to_delete} IP's list."
+                f"An error was occurred when deleting the {list_name_to_delete} IP list."
             ) from e
         return response
 
