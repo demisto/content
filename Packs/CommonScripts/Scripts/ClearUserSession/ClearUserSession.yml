@@ -5,7 +5,7 @@ args:
   required: true
 - description: |-
     Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
-    For multi-select provide a comma-separated list. For example: "SailPointIdentityNow,Active Directory Query v2,PingOne".
+    For multi-select provide a comma-separated list. For example: "Okta v2,Microsoft Graph User".
   name: brands
   auto: PREDEFINED
   predefined:
@@ -17,11 +17,11 @@ args:
   predefined:
   - 'true'
   - 'false'
-comment: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+comment: This script clears user sessions across multiple integrations for a list of usernames.
 commonfields:
-  id: clear-user-session-dev
+  id: clear-user-session
   version: -1
-name: clear-user-session-dev
+name: clear-user-session
 outputs:
 
 
