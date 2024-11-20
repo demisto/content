@@ -57,7 +57,7 @@ def get_client():
 def parse_incident(i):
     return {
         'name': f"{i['name']}_{i['id']}",
-        'occurred': datetime.fromtimestamp(i['time'] / 1000, timezone.utc).isoformat(),
+        'occurred': datetime.fromtimestamp(i['record_created_at'] / 1000, timezone.utc).isoformat(),
         'severity': parse_severity(i),
         'rawJSON': json.dumps(clean_null_terms(i))
     }
@@ -89,14 +89,14 @@ def ids_from_incidents(incidents_array):
 def better_than_time_filter(st):
     t = ''
     if st:
-        t = f' | where time > {st}'
+        t = f' | where record_created_at > {st}'
     return t
 
 
 def equal_than_time_filter(st):
     t = ''
     if st:
-        t = f' | where time == {st}'
+        t = f' | where record_created_at == {st}'
     return t
 
 
@@ -123,14 +123,14 @@ def has_last_run(lr):
 
 def incidents_better_than_time(st, head, risk, also_n2os_incidents, client):
     return client.http_get_request(
-        f'{QUERY_ALERTS_PATH} | sort time asc | sort id asc{better_than_time_filter(st)}'
+        f'{QUERY_ALERTS_PATH} | sort record_created_at asc | sort id asc{better_than_time_filter(st)}'
         f'{risk_filter(risk)}{also_n2os_incidents_filter(also_n2os_incidents)} | head {head}'
     )['result']
 
 
 def incidents_equal_than_time(st, risk, also_n2os_incidents, client):
     return client.http_get_request(
-        f'{QUERY_ALERTS_PATH} | sort time asc | sort id asc{equal_than_time_filter(st)}'
+        f'{QUERY_ALERTS_PATH} | sort record_created_at asc | sort id asc{equal_than_time_filter(st)}'
         f'{risk_filter(risk)}{also_n2os_incidents_filter(also_n2os_incidents)}'
     )['result']
 
@@ -180,7 +180,7 @@ def incidents(st, last_id, last_run, risk, also_n2os_incidents, client, head=DEF
 
 
 def last_fetched_time(inc, last_run):
-    return inc[-1]['time'] if len(inc) > 0 else last_run.get("last_fetch", 0)
+    return inc[-1]['record_created_at'] if len(inc) > 0 else last_run.get("last_fetch", 0)
 
 
 def last_fetched_id(inc, last_run):
