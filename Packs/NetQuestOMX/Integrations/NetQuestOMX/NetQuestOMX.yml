@@ -30,6 +30,8 @@ configuration:
   required: false
   section: Collect
   additionalinfo: XSIAM fetch events checkbox.
+  hidden:
+    - xsoar
 - display: Statistic types to fetch
   name: statistic_types_to_fetch
   options:
@@ -40,6 +42,16 @@ configuration:
   type: 16
   section: Collect
   required: true
+  hidden:
+    - xsoar
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  required: false
 description: NetQuest’s products are high-capacity service nodes that help security teams access and analyze network traffic. Powerful packet & flow processing features assist security tools in detecting and mitigating security threats as cost effectively as possible.
 display: NetQuestOMX
 name: NetQuestOMX
@@ -51,7 +63,6 @@ script:
       required: true
     description: "Address List-Upload - uploads a .txt file with address list to the appliance. The appliance temporarily stores the file until it is saved to the Library and replaces any previously loaded list file."
     name: netquest-address-list-upload
-
   - description: "Optimize Updated Address List - If the traffic elements are IP addresses, the integration should optimize the list by compressing IP addresses into CIDR groups."
     name: netquest-address-list-optimize
     outputs:
@@ -73,14 +84,12 @@ script:
       - contextPath: NetQuest.AddressList.CountsAfter
         description:
         type: Dictionary
-
   - arguments:
       - description: 'The name of the address list to create'
         name: name
         required: true
     description: "This replaces the old list entity and overrides it."
     name: netquest-address-list-create
-
   - arguments:
       - description: 'The new name for an existing address list'
         name: new_name
@@ -89,16 +98,13 @@ script:
         name: existing_name
         required: true
     description: "This is only meant to change the name of the list. Nothing else. If we try to give as a new_name, an existing list name, it will fail and we’ll get an error."
-    name: netquest-address-list-update
-
+    name: netquest-address-list-rename
   - arguments:
       - description: 'The name of the address list to delete'
         name: name
         required: true
     description: "This command deletes the list by the given address."
     name: netquest-address-list-delete
-
-
   runonce: false
   script: '-'
   type: python
