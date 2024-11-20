@@ -564,7 +564,7 @@ def chrome_manager_one_port() -> tuple[Any | None, str | None]:
     """
     Manages Chrome instances based on user-specified chrome options and integration instance ID.
     ONLY uses one chrome instance per chrome option, until https://issues.chromium.org/issues/379034728 is fixed.
-    
+
 
     This function performs the following steps:
     1. Retrieves the Chrome options set by the user.
