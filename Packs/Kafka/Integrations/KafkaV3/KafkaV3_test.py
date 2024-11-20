@@ -727,7 +727,6 @@ def test_produce_error_message(mocker):
             {'last_fetched_offsets': {'0': 1}, 'last_topic': 'some-topic'},
             [MessageMock(message='polled_msg', partition=0, offset=1,
                          timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))], [(0, 2), (0, 2), (0, 2)], id="first run, offset is 0")])
-
 def test_fetch_incidents(mocker, demisto_params, last_run, cluster_tree, topic_partitions,
                          incidents, next_run, polled_msgs, offsets):
     """
