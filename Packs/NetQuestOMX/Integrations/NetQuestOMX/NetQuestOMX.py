@@ -25,9 +25,8 @@ PRODUCT = "OMX"
 class Client(BaseClient):
 
     def __init__(self, base_url: str, credentials: dict, verify: bool, proxy: bool):
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy,  headers={"Accept": "application/json"})
         self.credentials = {"UserName": credentials["identifier"], "Password": credentials["password"]}
-        self.headers = {"Accept": "application/json"}
         self.login()
 
     def login(self):
