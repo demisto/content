@@ -24,7 +24,7 @@ class Client(BaseClient):
     Client class to interact with the service API
     """
 
-    def __init__(self, base_url, verify: bool, group_id: str, private_key: str = "", public_key: str = ""):
+    def __init__(self, base_url, verify: bool, group_id: str, private_key: str = "", public_key: str = "") -> None:
         self.group_id = group_id
         auth = HTTPDigestAuth(public_key, private_key)
         headers = {
@@ -32,7 +32,7 @@ class Client(BaseClient):
         }
         super().__init__(base_url=base_url, verify=verify, headers=headers, auth=auth)
 
-    def get_alerts_request(self, page_num: int = None, items_per_page: int = 500):
+    def get_alerts_request(self, page_num: int = None, items_per_page: int = 500) -> dict:
         """
         Fetch a paginated list of alerts from the service API.
 
@@ -51,7 +51,7 @@ class Client(BaseClient):
         )
         return results
 
-    def get_events_request(self, page_num: int = None, items_per_page: int = 500, min_date: str = None):
+    def get_events_request(self, page_num: int = None, items_per_page: int = 500, min_date: str = None) -> dict:
         """
         Fetch a paginated list of events from the service API.
 
@@ -71,7 +71,7 @@ class Client(BaseClient):
         )
         return results
 
-    def get_response_from_page_link(self, page_link: str):
+    def get_response_from_page_link(self, page_link: str) -> dict:
         """
         Sends an HTTP GET request to fetch data using `page_link`.
 
@@ -124,7 +124,7 @@ class Client(BaseClient):
 ################ ALERTS AND EVENTS FUNCTIONS ################
 
 
-def add_entry_status_field(event: dict):
+def add_entry_status_field(event: dict) -> None:
     """
     Adds a _ENTRY_STATUS field to an event by checking the event status.
 
@@ -143,7 +143,7 @@ def add_entry_status_field(event: dict):
         event['_ENTRY_STATUS'] = 'updated'
 
 
-def get_page_url(links: list, page_type: str):
+def get_page_url(links: list, page_type: str) -> str:
     """
     Retrieves the URL for the next or previous page from a list of links.
 
@@ -159,7 +159,7 @@ def get_page_url(links: list, page_type: str):
     return ""
 
 
-def add_time_field(event: dict):
+def add_time_field(event: dict) -> None:
     """
     Adds a `_time` field to an event based on its updated or created time.
 
@@ -173,7 +173,7 @@ def add_time_field(event: dict):
         event['_time'] = event.get('created')
 
 
-def enrich_event(event: dict, event_type: str):
+def enrich_event(event: dict, event_type: str) -> None:
     """
     Enriches each event with additional information based on its type.
 
@@ -190,7 +190,7 @@ def enrich_event(event: dict, event_type: str):
 ################ ALERTS FUNCTIONS ################
 
 
-def remove_alerts_by_ids(alerts: list, ids: list):
+def remove_alerts_by_ids(alerts: list, ids: list) -> list:
     """
     Removes alerts from a list based on specified IDs.
 
@@ -208,7 +208,7 @@ def remove_alerts_by_ids(alerts: list, ids: list):
     return results
 
 
-def get_page_from_last_run_for_alerts(client: Client, page_link: str):
+def get_page_from_last_run_for_alerts(client: Client, page_link: str) -> dict:
     """
     Retrieves alerts based on the last fetched page link or performs an initial fetch.
 
@@ -245,7 +245,7 @@ def create_last_run_dict_for_alerts(links: list, last_page_alerts_ids: list) -> 
     }
 
 
-def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict):
+def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[list, dict]:
     """
     Fetches alerts until fetch_limit is reached, or no more alerts are available.
 
@@ -264,8 +264,8 @@ def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict):
 
     response = get_page_from_last_run_for_alerts(client, page_link)  # get the last page or the first page
 
-    links = response.get('links')
-    results = response.get('results')
+    links = response.get('links', [])
+    results = response.get('results', [])
 
     last_page_alerts_ids = last_run.get('last_page_alerts_ids', [])
 
@@ -383,7 +383,7 @@ def create_last_run_dict_for_events(output: list, new_min_time: str) -> dict:
             }
 
 
-def first_time_fetching_events(client: Client, fetch_limit: int):
+def first_time_fetching_events(client: Client, fetch_limit: int) -> tuple[list, dict]:
     """
     Fetches and enriches the first batch of events, returning them with the minimum creation time.
 
@@ -482,7 +482,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def fetch_events(client: Client, fetch_limit: int):
+def fetch_events(client: Client, fetch_limit: int) -> tuple[list, dict]:
     last_run = demisto.getLastRun()
 
     alerts_output, last_run_alerts = fetch_alert_type(client, fetch_limit, last_run)
@@ -492,7 +492,7 @@ def fetch_events(client: Client, fetch_limit: int):
     return (alerts_output + events_output), last_run_new_obj
 
 
-def get_events(client: Client, args):
+def get_events(client: Client, args) -> tuple[list, CommandResults]:
     fetch_limit = int(args.get('limit'))
 
     output, _ = fetch_events(client, fetch_limit)
