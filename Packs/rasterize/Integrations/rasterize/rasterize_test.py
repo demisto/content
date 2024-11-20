@@ -666,18 +666,18 @@ def test_increase_counter_chrome_instances_file(mocker):
     Then:
         - The function writes to the correct file and increase the "rasteriztion_count" by 1
     """
-    from rasterize import increase_counter_chrome_instances_file, RASTERIZETION_COUNT
+    from rasterize import increase_counter_chrome_instances_file, rasterization_COUNT
     from unittest.mock import mock_open
     mocker.patch("os.path.exists", return_value=True)
     mock_file_content = util_load_json("test_data/chrome_instances.json")
-    expected_rasterizetion_count = mock_file_content['2222'][RASTERIZETION_COUNT] + 1
+    expected_rasterization_count = mock_file_content['2222'][rasterization_COUNT] + 1
     mock_file = mock_open()
     mocker.patch("builtins.open", mock_file)
     mocker.patch.object(json, 'load', return_value=mock_file_content)
     mocker_json = mocker.patch("json.dump")
     increase_counter_chrome_instances_file(chrome_port="2222")
     assert mocker_json.called
-    assert expected_rasterizetion_count == mocker_json.call_args[0][0]['2222'][RASTERIZETION_COUNT]
+    assert expected_rasterization_count == mocker_json.call_args[0][0]['2222'][rasterization_COUNT]
 
 
 def test_add_new_chrome_instance(mocker):

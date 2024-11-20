@@ -49,7 +49,6 @@ CHROME_OPTIONS = ["--headless",
                   f'--user-agent="{USER_AGENT}"',
                   ]
 
-USE_ONLY_ONE_CHROME_PORT = demisto.params().get('using_one_chrome_port', False)
 WITH_ERRORS = demisto.params().get('with_error', True)
 IS_HTTPS = argToBoolean(demisto.params().get('is_https', False))
 
@@ -66,7 +65,7 @@ PAGES_LIMITATION = 20
 # chrome instance data keys
 INSTANCE_ID = "instance_id"
 CHROME_INSTANCE_OPTIONS = "chrome_options"
-RASTERIZETION_COUNT = "rasteriztion_count"
+RASTERIZATION_COUNT = "rasterization_count"
 
 BLOCKED_URLS = argToList(demisto.params().get('blocked_urls', '').lower())
 
@@ -339,7 +338,7 @@ def increase_counter_chrome_instances_file(chrome_port: str = ''):
     existing_data = read_json_file()
 
     if chrome_port in existing_data:
-        existing_data[chrome_port][RASTERIZETION_COUNT] = existing_data[chrome_port].get(RASTERIZETION_COUNT, 0) + 1
+        existing_data[chrome_port][RASTERIZATION_COUNT] = existing_data[chrome_port].get(RASTERIZATION_COUNT, 0) + 1
         write_chrome_instances_file(existing_data)
     else:
         demisto.info(f"Chrome port '{chrome_port}' not found.")
@@ -447,7 +446,7 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
                     chrome_port: {
                         INSTANCE_ID: instance_id,
                         CHROME_INSTANCE_OPTIONS: chrome_options,
-                        RASTERIZETION_COUNT: 0
+                        RASTERIZATION_COUNT: 0
                     }
                 }
                 add_new_chrome_instance(new_chrome_instance_content=new_chrome_instance)
@@ -894,7 +893,9 @@ def perform_rasterize(path: str | list[str],
         return None
 
     demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
-    browser, chrome_port = chrome_manager() if not USE_ONLY_ONE_CHROME_PORT else chrome_manager_one_port()
+
+    # until https://issues.chromium.org/issues/379034728 is fixed, we can only use one chrome port
+    browser, chrome_port = chrome_manager_one_port()
 
     if browser:
         support_multithreading()
@@ -923,15 +924,16 @@ def perform_rasterize(path: str | list[str],
                 f"active tabs len: {len(browser.list_tab())}")
 
             chrome_instances_file_content: dict = read_json_file()  # CR fix name
-            rasterizations_count = chrome_instances_file_content.get(chrome_port, {}).get(RASTERIZETION_COUNT, 0) + len(
+            
+            rasterization_count = chrome_instances_file_content.get(chrome_port, {}).get(RASTERIZATION_COUNT, 0) + len(
                 rasterization_threads)
 
             demisto.debug(f"perform_rasterize checking if the chrome in port:{chrome_port} should be deleted:"
-                          f"{rasterizations_count=}, {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}")
+                          f"{rasterization_count=}, {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}")
             if not chrome_port:
                 demisto.debug("perform_rasterize: the chrome port was not found")
-            elif rasterizations_count >= MAX_RASTERIZATIONS_COUNT:
-                demisto.info(f"perform_rasterize: terminating Chrome after {rasterizations_count=} rasterizations")
+            elif rasterization_count >= MAX_RASTERIZATIONS_COUNT:
+                demisto.info(f"perform_rasterize: terminating Chrome after {rasterization_count=} rasterization")
                 terminate_chrome(chrome_port=chrome_port)
             else:
                 increase_counter_chrome_instances_file(chrome_port=chrome_port)
