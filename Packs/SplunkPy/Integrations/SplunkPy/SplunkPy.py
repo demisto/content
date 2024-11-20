@@ -2667,15 +2667,14 @@ def parse_fields(fields):
     return None
 
 
-def ensure_valid_json_format(events: str | dict):
-    """Converts a batch of events to a valid JSON format for processing.
-
+def convert_to_json_for_validation(events: str | dict):
+    """Converts a batch of events to a valid JSON format for two validation purposes:
+        - Ensure the batch of events is in the the correct format expected by the Splunk API (not a Json format).
+        - To enable extraction of the indexes from the string to validate their existence in the Splunk instance.
     Args:
         events (str): The batch of events to be formatted as JSON.
-
     Raises:
-        DemistoException: If the input cannot be converted to a valid JSON format, an exception is raised.
-
+        DemistoException: Raised if the input does not match the format expected by the Splunk API.
     Returns:
         list: A list of JSON objects derived from the input events.
     """
@@ -2728,7 +2727,7 @@ def splunk_submit_event_hec(
             source=source,
             time=time_
         )
-    valid_json_events = ensure_valid_json_format(events)
+    valid_json_events = convert_to_json_for_validation(events)
 
     indexes = [d.get('index') for d in valid_json_events if d.get('index')]
 
