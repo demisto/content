@@ -285,7 +285,10 @@ def incident_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> C
         readable_output = f'Incident {name} was created successfully with id: {incident_id}.'
         return CommandResults(outputs_prefix='OpenCTI.Incident',
                               outputs_key_field='id',
-                              outputs={'id': result.get('id')},
+                              outputs={
+                                  'id': result.get('id'),
+                                  'name': result.get('name')
+                              },
                               readable_output=readable_output,
                               raw_response=result)
     else:
@@ -454,7 +457,10 @@ def relationship_create_command(client: OpenCTIApiClient, args: Dict[str, Any]) 
         return CommandResults(
             outputs_prefix='OpenCTI.Relationship',
             outputs_key_field='id',
-            outputs={'id': relationship_id},
+            outputs={
+                'id': relationship_id,
+                'entityType': result.get('entity_type'),
+            },
             readable_output=readable_output,
             raw_response=result
         )
@@ -963,7 +969,14 @@ def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> 
         return CommandResults(
             outputs_prefix='OpenCTI.Indicator',
             outputs_key_field='id',
-            outputs={'id': result.get('id')},
+            outputs={
+                'id': result.get('id'),
+                'name': result.get('name'),
+                'pattern': result.get('pattern'),
+                'patternType': result.get('pattern_type'),
+                'validFrom': result.get('valid_from'),
+                'validUntil': result.get('valid_until')
+            },
             readable_output=readable_output,
             raw_response=result
         )
@@ -1044,7 +1057,14 @@ def indicator_update_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> 
             return CommandResults(
                 outputs_prefix='OpenCTI.Indicator',
                 outputs_key_field='id',
-                outputs=updated_indicator,
+                outputs={
+                    "id": updated_indicator.get("id"),
+                    "name": updated_indicator.get("name"),
+                    "pattern": updated_indicator.get("pattern"),
+                    "patternType": updated_indicator.get("pattern_type"),
+                    "validFrom": updated_indicator.get("valid_from"),
+                    "validUntil": updated_indicator.get("valid_until")
+                },
                 readable_output=readable_output,
                 raw_response=result
             )

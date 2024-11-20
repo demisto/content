@@ -434,13 +434,13 @@ script:
     - contextPath: OpenCTI.Indicator.pattern
       description: The pattern associated with the created indicator.
       type: string
-    - contextPath: OpenCTI.Indicator.pattern_type
+    - contextPath: OpenCTI.Indicator.patternType
       description: The pattern type associated with the created indicator.
       type: string
-    - contextPath: OpenCTI.Indicator.valid_from
+    - contextPath: OpenCTI.Indicator.validFrom
       description: The valid-from date of the created indicator.
       type: string
-    - contextPath: OpenCTI.Indicator.valid_until
+    - contextPath: OpenCTI.Indicator.validUntil
       description: The valid-until date of the created indicator.
       type: string
   - arguments:
@@ -523,10 +523,13 @@ script:
     - contextPath: OpenCTI.Indicator.pattern
       description: The pattern associated with the updated indicator.
       type: string
-    - contextPath: OpenCTI.Indicator.valid_from
+    - contextPath: OpenCTI.Indicator.patternType
+      description: The pattern type associated with the created indicator.
+      type: string
+    - contextPath: OpenCTI.Indicator.validFrom
       description: The valid-from date of the updated indicator.
       type: string
-    - contextPath: OpenCTI.Indicator.valid_until
+    - contextPath: OpenCTI.Indicator.validUntil
       description: The valid-until date of the updated indicator.
       type: string
   - arguments:
@@ -629,7 +632,7 @@ script:
     outputs:
     - contextPath: OpenCTI.Relationship.id
       description: New Relationship ID.
-    - contextPath: OpenCTI.Relationship.entity_type
+    - contextPath: OpenCTI.Relationship.entityType
       description: New Relationship Entity Type.
   - arguments: []
     description: Get a list of all indicator types
