@@ -4,12 +4,9 @@
 - Timestamp parsing.
 - XML format field extraction.
 - Log normalization - XDM mapping for key event types.
-
-* This pack only support syslog log forwarding, if you are using db connection to fetch ePO log - please check the "ePO" content pack on the marketplace.
  
 ### Supported Event Types:
 - Key Mcafee/Trellix products event types - Threat Prevention, Virus Scan, DLP, ATP, Endpoint Security.
-- Solidifier logs are currently not support due to them having a different log format.
  
 ### Supported Timestamp Formats:
 Timestamp is extracted from the GMTTime field with the following format - yyyy-mm-ddTHH:MM:SS
