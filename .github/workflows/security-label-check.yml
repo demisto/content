@@ -1,0 +1,25 @@
+name: Security Label Check
+on:
+  pull_request:
+    types: [opened, edited, labeled, synchronize]
+jobs:
+  security-check:
+    runs-on: ubuntu-latest
+    if: 'startsWith(github.head_ref, ''contrib'') || (github.event.pull_request.head.repo.fork == true && contains(github.event.pull_request.base.ref, ''contrib''))'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Check if PR base branch starts with "contrib" and labels are correct
+      id: security_check
+      run: |
+        BASE_BRANCH=$(jq --raw-output .pull_request.base.ref "$GITHUB_EVENT_PATH")
+        LABELS=$(jq --raw-output '.pull_request.labels | map(.name) | join(",")' "$GITHUB_EVENT_PATH")
+          if [[ "$LABELS" == *"Security Review"* ]]; then
+            echo "Security Review label present. Checking if Security Approved label is added..."
+            if [[ "$LABELS" != *"Security Approved"* ]]; then
+              echo "Security Approved label is missing. The PR still requires a review from the security team."
+              exit 1
+            fi
+          else
+            echo "Security Review label is not added. Security review is not required."
+          fi
