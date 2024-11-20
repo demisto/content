@@ -1633,6 +1633,74 @@ class ExchangeOnlinePowershellV3Client
         https://learn.microsoft.com/en-us/powershell/module/exchange/disable-transportrule?view=exchange-ps
         #>
     }
+
+    [PSObject]EnableMailFlowRule([string]$identity)
+    {
+        $response = ""
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            $cmd_params = @{ }
+            if ($identity) {
+                $cmd_params.Identity = $identity
+            }
+            $response = Enable-TransportRule @cmd_params -WarningAction:SilentlyContinue
+        } finally {
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+        .DESCRIPTION
+        Enable a mail flow rule (transport rule) in the organization.
+
+        .PARAMETER identity
+        Specifies the rule that you want to enable.
+
+        .EXAMPLE
+        Enable-TransportRule -Identity "Disclaimer-Finance"
+
+        .OUTPUTS
+        PSObject - Raw response
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/enable-transportrule?view=exchange-ps
+        #>
+    }
+
+    [PSObject]DisableMailForwarding([string]$identity)
+    {
+        $response = ""
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            $cmd_params = @{ }
+            if ($identity) {
+                $cmd_params.Identity = $identity
+            }
+            $response = Set-Mailbox @cmd_params -WarningAction:SilentlyContinue
+        } finally {
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+        .DESCRIPTION
+        Disable mail forwarding for a given user.
+
+        .PARAMETER identity
+        Specifies the mailbox that you want to modify.
+
+        .EXAMPLE
+        Set-Mailbox -Identity "John Woods" -DeliverToMailboxAndForward $true -ForwardingSMTPAddress manuel@contoso.com
+
+        .OUTPUTS
+        PSObject - Raw response
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/set-mailbox?view=exchange-ps
+        #>
+    }
 }
 
 function Remove-EmptyItems {
@@ -2308,6 +2376,40 @@ function DisableMailFlowRuleCommand {
         Write-Output $human_readable, $entry_context, $raw_response
     }
 }
+function EnableMailFlowRuleCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client
+        [hashtable]$kwargs
+    )
+    $identity = $kwargs.identity
+    $raw_response = $client.EnableMailFlowRule($identity)
+    if($raw_response -eq $null){
+        Write-Output "No Mail Flow Rule were found."
+    }
+    else{
+        $human_readable = "Mail flow rule $identity has been enabled successfully"
+        $entry_context = @{}
+        Write-Output $human_readable, $entry_context, $raw_response
+    }
+}
+function DisableMailForwardingCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client
+        [hashtable]$kwargs
+    )
+    $identity = $kwargs.identity
+    $raw_response = $client.DisableMailForwarding($identity)
+    if($raw_response -eq $null){
+        Write-Output "No mail with corresponding identity were found."
+    }
+    else{
+        $human_readable = "Mail forwarding for user $identity has been disabled successfully"
+        $entry_context = @{}
+        Write-Output $human_readable, $entry_context, $raw_response
+    }
+}
 function TestModuleCommand($client)
 {
     try
@@ -2443,6 +2545,12 @@ function Main
             }
             "$script:COMMAND_PREFIX-mail-flow-rule-disable" {
                 ($human_readable, $entry_context, $raw_response) = DisableMailFlowRuleCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-mail-flow-rule-enable" {
+                ($human_readable, $entry_context, $raw_response) = EnableMailFlowRuleCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-mail-forwarding-disable" {
+                ($human_readable, $entry_context, $raw_response) = DisableMailForwardingCommand $exo_client $command_arguments
             }
             default {
                 ReturnError "Could not recognize $command"
