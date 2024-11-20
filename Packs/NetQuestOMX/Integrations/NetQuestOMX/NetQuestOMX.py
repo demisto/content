@@ -1,5 +1,5 @@
 import shutil
-from typing import Callable
+from collections.abc import Callable
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -85,7 +85,7 @@ class Client(BaseClient):
 
     def address_list_upload_request(self, file_name: str) -> requests.Response:
         try:
-            with open(file_name, 'r') as file:
+            with open(file_name) as file:
                 result = self._http_request(
                     method="POST",
                     url_suffix="/api/v1/UpdateService/ImportList/Config",
