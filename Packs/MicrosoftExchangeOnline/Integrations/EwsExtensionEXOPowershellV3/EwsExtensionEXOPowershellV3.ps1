@@ -1504,6 +1504,40 @@ class ExchangeOnlinePowershellV3Client
         https://learn.microsoft.com/en-us/powershell/module/exchange/enable-inboxrule?view=exchange-ps
         #>
     }
+
+    [PSObject]ListMailFlowRules()
+    {
+        $response = ""
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            $cmd_params = @{ }
+            if ($mailbox) {
+                $cmd_params.Mailbox = $mailbox
+            }
+
+            if ($limit -gt 0){
+                $cmd_params.ResultSize = $limit
+            }
+            $response = Get-InboxRule @cmd_params -WarningAction:SilentlyContinue
+        } finally {
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+        .DESCRIPTION
+        List all mail flow rules (transport rules) in the organization.
+
+        .EXAMPLE
+        Get-TransportRule
+        .OUTPUTS
+        PSObject - Raw response
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/get-transportrule?view=exchange-ps
+        #>
+    }
 }
 
 function Remove-EmptyItems {
@@ -2109,6 +2143,43 @@ function EnableRuleCommand {
     $entry_context = @{}
     Write-Output $human_readable, $entry_context, $raw_response
 }
+function ListMailFlowRulesCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client
+        # [hashtable]$kwargs TODO: Check if not need kwargs
+    )
+    $raw_response = $client.ListMailFlowRules()
+    if($raw_response -eq $null){
+        Write-Output "No Mail Flow Rules were found."
+    }
+    else{
+        $parsed_raw_response = ParseRawResponse $raw_response
+        $md_columns = $raw_response | Name, State, Priority, Comment, WhenChanged, CreatedBy
+        $human_readable = TableToMarkdown $md_columns "Results of $command"
+        $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRules(obj.Name === val.Name)" = $parsed_raw_response }
+        Write-Output $human_readable, $entry_context, $parsed_raw_response
+    }
+}
+function GetMailFlowRuleCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client
+        [hashtable]$kwargs
+    )
+    $identity = $kwargs.identity
+    $raw_response = $client.GetMailFlowRule($identity)
+    if($raw_response -eq $null){
+        Write-Output "No Mail Flow Rule were found."
+    }
+    else{
+        $parsed_raw_response = ParseRawResponse $raw_response
+        $md_columns = $raw_response | Name, State, Priority, Comment, WhenChanged, CreatedBy
+        $human_readable = TableToMarkdown $md_columns "Results of $command"
+        $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRule(obj.Name === val.Name)" = $parsed_raw_response }
+        Write-Output $human_readable, $entry_context, $parsed_raw_response
+    }
+}
 function TestModuleCommand($client)
 {
     try
@@ -2232,6 +2303,12 @@ function Main
             }
             "$script:COMMAND_PREFIX-rule-enable" {
                 ($human_readable, $entry_context, $raw_response) = EnableRuleCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-mail-flow-rules-list" {
+                ($human_readable, $entry_context, $raw_response) = ListMailFlowRulesCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-mail-flow-rule-get" {
+                ($human_readable, $entry_context, $raw_response) = GetMailFlowRuleCommand $exo_client $command_arguments
             }
             default {
                 ReturnError "Could not recognize $command"
