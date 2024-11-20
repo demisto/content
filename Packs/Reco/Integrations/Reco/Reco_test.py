@@ -812,7 +812,7 @@ def test_get_private_email_list_with_access(requests_mock, reco_client: RecoClie
     actual_result = get_private_email_list_with_access(
         reco_client=reco_client
     )
-    assert 0 == len(actual_result.outputs)
+    assert len(actual_result.outputs) == 0
 
 
 def test_get_assets_shared_externally_command(requests_mock, reco_client: RecoClient) -> None:

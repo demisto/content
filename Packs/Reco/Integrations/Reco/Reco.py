@@ -36,6 +36,10 @@ STEP_FETCH = "fetch"
 STEP_INIT = "init"
 
 
+def create_filter(field, value):
+    return {"field": field, "stringContains": {"value": value}}
+
+
 def extract_response(response: Any) -> list[dict[str, Any]]:
     if response.get("getTableResponse") is None:
         demisto.error(f"got bad response, {response}")
@@ -320,7 +324,7 @@ class RecoClient(BaseClient):
         """Get risky users. Returns a list of risky users with analysis."""
         return self.get_identities(email_address=None, label=RISKY_USER)
 
-    def get_identities(self, email_address: Optional[str] = None, label: Optional[str] = None) -> Dict[str, Any]:
+    def get_identities(self, email_address: Optional[str] = None, label: Optional[str] = None) -> list[dict[str, Any]]:
         """
         Get identities from Reco with specified filters.
 
@@ -328,7 +332,7 @@ class RecoClient(BaseClient):
         :param label: Optional label value to filter identities.
         :return: A dictionary representing the getTableRequest payload.
         """
-        params = {
+        params: Dict[str, Any] = {
             "getTableRequest": {
                 "tableName": "RISK_MANAGEMENT_VIEW_IDENTITIES",
                 "pageSize": 50,
@@ -368,17 +372,17 @@ class RecoClient(BaseClient):
             params["getTableRequest"]["fieldFilters"]["fieldFilterGroups"]["fieldFilters"].append(label_filter)
 
         # Add email address filter if provided
-   if email_address:
-           email_filter = {
-               "relationship": "FILTER_RELATIONSHIP_OR",
-               "filters": {
-                   "filters": [
-                       create_filter("full_name", email_address),
-                       create_filter("primary_email_address", email_address)
-                   ]
-               }
-           }
-           params["getTableRequest"]["fieldFilters"]["fieldFilterGroups"]["fieldFilters"].append(email_filter)
+        if email_address:
+            email_filter = {
+                "relationship": "FILTER_RELATIONSHIP_OR",
+                "filters": {
+                    "filters": [
+                        create_filter("full_name", email_address),
+                        create_filter("primary_email_address", email_address)
+                    ]
+                }
+            }
+            params["getTableRequest"]["fieldFilters"]["fieldFilterGroups"]["fieldFilters"].append(email_filter)
 
         try:
             response = self._http_request(
@@ -394,7 +398,7 @@ class RecoClient(BaseClient):
 
     def get_exposed_publicly_files_at_risk(self) -> list[dict[str, Any]]:
         """Get exposed publicly files at risk. Returns a list of exposed publicly files at risk with analysis."""
-        params = {
+        params: Dict[str, Any] = {
             "getTableRequest": {
                 "tableName": "DATA_RISK_MANAGEMENT_VIEW_BREAKDOWN_EXPOSED_PUBLICLY",
                 "pageSize": PAGE_SIZE,
@@ -787,10 +791,10 @@ class RecoClient(BaseClient):
             if identity_id:
                 identity_ids.append(identity_id)
 
-        params = {
+        params: Dict[str, Any] = {
             "getTableRequest": {
                 "tableName": "RISK_MANAGEMENT_VIEW_IDENTITIES",
-                "pageSize": 1 ,
+                "pageSize": 1,
                 "fieldSorts": {
                     "sorts": []
                 },
