@@ -295,9 +295,7 @@ def test_create_account_with_minimal_info():
     result = create_account(source=source, username=username)
 
     # Assert
-    assert result == {
-        "username": {"Value": "testuser", "Source": "TestSource"}
-    }
+    assert result == {"username": {"Value": "testuser", "Source": "TestSource"}}
 
 
 def test_create_account_with_all_fields():
@@ -325,12 +323,16 @@ def test_create_account_with_all_fields():
         "is_enabled": True,
         "manager_email": "manager@test.com",
         "manager_display_name": "Manager Name",
-        "risk_level": "Low"
+        "risk_level": "Low",
     }
 
     result = create_account(**account_info)
 
-    expected = {k: {"Value": v, "Source": "FullTestSource"} for k, v in account_info.items() if k != "source"}
+    expected = {
+        k: {"Value": v, "Source": "FullTestSource"}
+        for k, v in account_info.items()
+        if k != "source"
+    }
     assert result == expected
 
 
@@ -351,7 +353,7 @@ def test_create_account_with_additional_fields():
 
     assert result == {
         "username": {"Value": "extrauser", "Source": "ExtraSource"},
-        "extra_field": {"Value": "extra_value", "Source": "ExtraSource"}
+        "extra_field": {"Value": "extra_value", "Source": "ExtraSource"},
     }
 
 
@@ -374,7 +376,7 @@ def test_create_account_with_single_item_list():
 
     assert result == {
         "username": {"Value": "listuser", "Source": "SingleListSource"},
-        "groups": {"Value": "singlegroup", "Source": "SingleListSource"}
+        "groups": {"Value": "singlegroup", "Source": "SingleListSource"},
     }
 
 
@@ -425,7 +427,7 @@ def test_enrich_data_with_source_simple():
 
     expected = {
         "name": {"Value": "John", "Source": "TestSource"},
-        "age": {"Value": "30", "Source": "TestSource"}
+        "age": {"Value": "30", "Source": "TestSource"},
     }
     assert result == expected
 
@@ -442,10 +444,7 @@ def test_enrich_data_with_source_nested(mocker):
     data = {
         "user": {
             "name": "Alice",
-            "contacts": {
-                "email": "alice@example.com",
-                "phone": ["123-456-7890"]
-            }
+            "contacts": {"email": "alice@example.com", "phone": ["123-456-7890"]},
         }
     }
     source = "UserDB"
@@ -457,8 +456,8 @@ def test_enrich_data_with_source_nested(mocker):
             "name": {"Value": "Alice", "Source": "UserDB"},
             "contacts": {
                 "email": {"Value": "alice@example.com", "Source": "UserDB"},
-                "phone": {"Value": "123-456-7890", "Source": "UserDB"}
-            }
+                "phone": {"Value": "123-456-7890", "Source": "UserDB"},
+            },
         }
     }
     assert result == expected
@@ -473,7 +472,9 @@ def test_enrich_data_with_source_empty_elements(mocker):
     Then:
         The function returns a dictionary with empty elements removed and remaining elements enriched with source information.
     """
-    mock_remove_empty = mocker.patch('GetUserData.remove_empty_elements', return_value={"name": "John"})
+    mock_remove_empty = mocker.patch(
+        "GetUserData.remove_empty_elements", return_value={"name": "John"}
+    )
 
     data = {"name": "John", "age": "", "email": None}
     source = "CleanDB"
@@ -481,9 +482,7 @@ def test_enrich_data_with_source_empty_elements(mocker):
     result = enrich_data_with_source(data, source)
 
     mock_remove_empty.assert_called_once_with(data)
-    expected = {
-        "name": {"Value": "John", "Source": "CleanDB"}
-    }
+    expected = {"name": {"Value": "John", "Source": "CleanDB"}}
     assert result == expected
 
 
@@ -516,7 +515,10 @@ def test_merge_accounts_with_multiple_accounts():
             {"Value": "user1", "Source": "Source2"},
         ],
         "Email": {
-            "Address": [{'Value': 'user1@example.com', 'Source': 'Source1'}, {'Value': '123-456-7890', 'Source': 'Source2'}]
+            "Address": [
+                {"Value": "user1@example.com", "Source": "Source1"},
+                {"Value": "123-456-7890", "Source": "Source2"},
+            ]
         },
         "TelephoneNumber": [{"Value": "123-456-7890", "Source": "Source2"}],
     }
@@ -556,7 +558,8 @@ def test_merge_accounts_with_nested_dictionaries():
             ],
             "age": [{"Value": 30, "Source": "Source1"}],
             "address": [{"Value": "123 Main St", "Source": "Source2"}],
-        }}
+        }
+    }
 
 
 def test_merge_accounts_with_empty_list():
@@ -989,11 +992,16 @@ class TestGetUserData:
         }
         expected_account = {
             "id": {"Value": "123", "Source": "SailPointIdentityIQ"},
-            "username": {'Value': 'test_user', 'Source': 'SailPointIdentityIQ'},
-            "display_name": {'Value': "Test User", 'Source': 'SailPointIdentityIQ'},
-            "email_address": {'Value': 'test@example.com', 'Source': 'SailPointIdentityIQ'},
-            "is_enabled": {'Value': True, 'Source': 'SailPointIdentityIQ'},
-            "name": {"formatted": {'Value': 'Test User', 'Source': 'SailPointIdentityIQ'}},
+            "username": {"Value": "test_user", "Source": "SailPointIdentityIQ"},
+            "display_name": {"Value": "Test User", "Source": "SailPointIdentityIQ"},
+            "email_address": {
+                "Value": "test@example.com",
+                "Source": "SailPointIdentityIQ",
+            },
+            "is_enabled": {"Value": True, "Source": "SailPointIdentityIQ"},
+            "name": {
+                "formatted": {"Value": "Test User", "Source": "SailPointIdentityIQ"}
+            },
         }
 
         mocker.patch(
@@ -1027,8 +1035,8 @@ class TestGetUserData:
         mock_outputs = {"id": "456", "name": "test_account", "disabled": False}
         expected_account = {
             "id": {"Value": "456", "Source": "SailPointIdentityNow"},
-            "username": "test_account",
-            "is_enabled": True,
+            "username": {"Value": "test_account", "Source": "SailPointIdentityNow"},
+            "is_enabled": {"Value": True, "Source": "SailPointIdentityNow"},
         }
 
         mocker.patch(
@@ -1068,11 +1076,14 @@ class TestGetUserData:
             "manager": ["CN=Manager,OU=Users,DC=example,DC=com"],
         }
         expected_account = {
-            'username': {'Value': 'ad_user', 'Source': 'Active Directory Query v2'},
-            'display_name': {'Value': 'AD User', 'Source': 'Active Directory Query v2'},
-            'email_address': {'Value': 'ad_user@example.com', 'Source': 'Active Directory Query v2'},
-            'groups': {'Value': 'Group1', 'Source': 'Active Directory Query v2'},
-            'is_enabled': {'Value': True, 'Source': 'Active Directory Query v2'},
+            "username": {"Value": "ad_user", "Source": "Active Directory Query v2"},
+            "display_name": {"Value": "AD User", "Source": "Active Directory Query v2"},
+            "email_address": {
+                "Value": "ad_user@example.com",
+                "Source": "Active Directory Query v2",
+            },
+            "groups": {"Value": "Group1", "Source": "Active Directory Query v2"},
+            "is_enabled": {"Value": True, "Source": "Active Directory Query v2"},
         }
 
         mocker.patch(
@@ -1109,8 +1120,14 @@ class TestGetUserData:
         )
         mock_outputs = {"displayName": "Manager Name", "mail": "manager@example.com"}
         expected_account = {
-            'manager_email': {'Value': 'manager@example.com', 'Source': 'Active Directory Query v2'},
-            'manager_display_name': {'Value': 'Manager Name', 'Source': 'Active Directory Query v2'},
+            "manager_email": {
+                "Value": "manager@example.com",
+                "Source": "Active Directory Query v2",
+            },
+            "manager_display_name": {
+                "Value": "Manager Name",
+                "Source": "Active Directory Query v2",
+            },
         }
 
         mocker.patch(
@@ -1148,10 +1165,10 @@ class TestGetUserData:
         }
         expected_account = {
             "id": {"Value": "789", "Source": "PingOne"},
-            "username": "pingone_user",
-            "display_name": "PingOne User",
-            "email_address": "pingone@example.com",
-            "is_enabled": True,
+            "username": {"Value": "pingone_user", "Source": "PingOne"},
+            "display_name": {"Value": "PingOne User", "Source": "PingOne"},
+            "email_address": {"Value": "pingone@example.com", "Source": "PingOne"},
+            "is_enabled": {"Value": True, "Source": "PingOne"},
         }
 
         mocker.patch(
@@ -1190,11 +1207,11 @@ class TestGetUserData:
         }
         expected_account = {
             "id": {"Value": "101112", "Source": "Okta v2"},
-            "username": "okta_user",
-            "display_name": "Okta User",
-            "email_address": "okta@example.com",
-            "is_enabled": True,
-            "manager_display_name": "Okta Manager",
+            "username": {"Value": "okta_user", "Source": "Okta v2"},
+            "display_name": {"Value": "Okta User", "Source": "Okta v2"},
+            "email_address": {"Value": "okta@example.com", "Source": "Okta v2"},
+            "is_enabled": {"Value": True, "Source": "Okta v2"},
+            "manager_display_name": {"Value": "Okta Manager", "Source": "Okta v2"},
         }
 
         mocker.patch(
@@ -1226,7 +1243,7 @@ class TestGetUserData:
         mock_outputs = {"UserId": "AIDAXXXXXXXXXXXXXXXX", "UserName": "aws_user"}
         expected_account = {
             "id": {"Value": "AIDAXXXXXXXXXXXXXXXX", "Source": "AWS - IAM"},
-            "username": "aws_user",
+            "username": {"Value": "aws_user", "Source": "AWS - IAM"},
         }
 
         mocker.patch(
@@ -1269,13 +1286,19 @@ class TestGetUserData:
         }
         expected_account = {
             "id": {"Value": "131415", "Source": "Microsoft Graph User"},
-            "username": "graph_user",
-            "display_name": "Graph User",
-            "email_address": "graph@example.com",
-            "job_title": "Developer",
-            "office": "HQ",
-            "telephone_number": "123-456-7890",
-            "type": "Member",
+            "username": {"Value": "graph_user", "Source": "Microsoft Graph User"},
+            "display_name": {"Value": "Graph User", "Source": "Microsoft Graph User"},
+            "email_address": {
+                "Value": "graph@example.com",
+                "Source": "Microsoft Graph User",
+            },
+            "job_title": {"Value": "Developer", "Source": "Microsoft Graph User"},
+            "office": {"Value": "HQ", "Source": "Microsoft Graph User"},
+            "telephone_number": {
+                "Value": "123-456-7890",
+                "Source": "Microsoft Graph User",
+            },
+            "type": {"Value": "Member", "Source": "Microsoft Graph User"},
         }
 
         mocker.patch(
@@ -1310,8 +1333,14 @@ class TestGetUserData:
             "Manager": {"DisplayName": "Graph Manager", "Mail": "manager@example.com"}
         }
         expected_account = {
-            "manager_display_name": "Graph Manager",
-            "manager_email": "manager@example.com",
+            "manager_display_name": {
+                "Value": "Graph Manager",
+                "Source": "Microsoft Graph User",
+            },
+            "manager_email": {
+                "Value": "manager@example.com",
+                "Source": "Microsoft Graph User",
+            },
         }
 
         mocker.patch(
@@ -1346,8 +1375,8 @@ class TestGetUserData:
         mock_outputs = {"id": "xdr_user", "risk_level": "HIGH"}
         expected_account = {
             "id": {"Value": "xdr_user", "Source": "Cortex XDR - IR"},
-            "risk_level": "HIGH",
-            "username": user_name,
+            "risk_level": {"Value": "HIGH", "Source": "Cortex XDR - IR"},
+            "username": {"Value": "xdr_user", "Source": "Cortex XDR - IR"},
         }
 
         mocker.patch(
@@ -1394,9 +1423,10 @@ class TestGetUserData:
         expected_accounts = [
             {
                 "id": {"Value": "789", "Source": "TestBrand"},
-                "username": "test_user",
-                "email_address": "test@example.com",
-                "is_enabled": True,
+                "username": {"Value": "test_user", "Source": "TestBrand"},
+                "email_address": {"Value": "test@example.com", "Source": "TestBrand"},
+                "is_enabled": {"Value": True, "Source": "TestBrand"},
+                "success": {"Value": True, "Source": "TestBrand"},
             }
         ]
 

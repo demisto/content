@@ -577,7 +577,7 @@ def aws_iam_get_user(command: Command) -> tuple[list[CommandResults], dict[str, 
     account_output = create_account(
         source=command.brand,
         id=outputs.pop("UserId", None),
-        username=outputs.get("UserName", None),
+        username=outputs.pop("UserName", None),
         **outputs,
     )
 
@@ -651,11 +651,12 @@ def xdr_list_risky_users(
     output_key = get_output_key("PaloAltoNetworksXDR.RiskyUser", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
 
+    username = user_name if outputs else None
     account_output = create_account(
         source=command.brand,
         id=outputs.pop("id", None),
         risk_level=outputs.pop("risk_level", None),
-        username=user_name if outputs else None,
+        username=username,
         **outputs,
     )
 
