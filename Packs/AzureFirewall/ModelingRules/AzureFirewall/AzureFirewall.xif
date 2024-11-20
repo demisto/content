@@ -1,6 +1,36 @@
 [MODEL: dataset=msft_azure_firewall_raw]
 call map_msft_azure_resource_logs_common_fields;
 
+// https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwdnsquery
+filter category = "AZFWDnsQuery" 
+| alter 
+	dns_query_type = properties -> QueryType,
+	dns_query_class = properties -> QueryClass, 
+	dns_response_code = properties -> ResponseCode,
+	dns_response_flags = split(uppercase(properties -> ResponseFlags), ","),
+	error_msg = properties -> ErrorMessage, // Description of the error returned to the client. Empty if request is successful. 
+	ip_protocol = uppercase(properties -> Protocol),
+	source_ipv4 = arrayindex(regextract(properties -> SourceIp, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
+	source_ipv6 = arrayindex(regextract(properties -> SourceIp, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0)
+| alter 
+	xdm.event.duration = to_integer(multiply(to_number(properties -> RequestDurationSecs), 1000)), // convert seconds to milliseconds
+	xdm.event.id = to_string(properties -> QueryId),
+	xdm.event.outcome = if(dns_response_code = "NOERROR", XDM_CONST.OUTCOME_SUCCESS, dns_response_code != "0" or (error_msg != null and error_msg != ""), XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN),
+	xdm.event.outcome_reason = if(error_msg != null and error_msg != "", error_msg, dns_response_code),
+	xdm.network.dns.authoritative = array_any(dns_response_flags, "@element" = "AA"), // see https://datatracker.ietf.org/doc/html/rfc1035#section-4.1.1
+	xdm.network.dns.dns_question.class = if(dns_query_class = "IN", 1, dns_query_class = "CS", 2, dns_query_class = "CH", 3, dns_query_class = "HS", 4), // see https://datatracker.ietf.org/doc/html/rfc1035#section-3.2.4
+	xdm.network.dns.dns_question.name = properties -> QueryName,
+	xdm.network.dns.dns_question.type = if(dns_query_type = "A", XDM_CONST.DNS_RECORD_TYPE_A, dns_query_type = "AAAA", XDM_CONST.DNS_RECORD_TYPE_AAAA, dns_query_type = "AFSDB", XDM_CONST.DNS_RECORD_TYPE_AFSDB, dns_query_type = "APL", XDM_CONST.DNS_RECORD_TYPE_APL, dns_query_type = "CAA", XDM_CONST.DNS_RECORD_TYPE_CAA, dns_query_type = "CDNSKEY", XDM_CONST.DNS_RECORD_TYPE_CDNSKEY, dns_query_type = "CDS", XDM_CONST.DNS_RECORD_TYPE_CDS, dns_query_type = "CERT", XDM_CONST.DNS_RECORD_TYPE_CERT, dns_query_type = "CNAME", XDM_CONST.DNS_RECORD_TYPE_CNAME, dns_query_type = "CSYNC", XDM_CONST.DNS_RECORD_TYPE_CSYNC, dns_query_type = "DHCID", XDM_CONST.DNS_RECORD_TYPE_DHCID, dns_query_type = "DLV", XDM_CONST.DNS_RECORD_TYPE_DLV, dns_query_type = "DNAME", XDM_CONST.DNS_RECORD_TYPE_DNAME, dns_query_type = "DNSKEY", XDM_CONST.DNS_RECORD_TYPE_DNSKEY, dns_query_type = "DS", XDM_CONST.DNS_RECORD_TYPE_DS, dns_query_type = "EUI48", XDM_CONST.DNS_RECORD_TYPE_EUI48, dns_query_type = "EUI64", XDM_CONST.DNS_RECORD_TYPE_EUI64, dns_query_type = "HINFO", XDM_CONST.DNS_RECORD_TYPE_HINFO, dns_query_type = "HIP", XDM_CONST.DNS_RECORD_TYPE_HIP, dns_query_type = "HTTPS", XDM_CONST.DNS_RECORD_TYPE_HTTPS, dns_query_type = "IPSECKEY", XDM_CONST.DNS_RECORD_TYPE_IPSECKEY, dns_query_type = "KEY", XDM_CONST.DNS_RECORD_TYPE_KEY, dns_query_type = "KX", XDM_CONST.DNS_RECORD_TYPE_KX, dns_query_type = "LOC", XDM_CONST.DNS_RECORD_TYPE_LOC, dns_query_type = "MX", XDM_CONST.DNS_RECORD_TYPE_MX, dns_query_type = "NAPTR", XDM_CONST.DNS_RECORD_TYPE_NAPTR, dns_query_type = "NS", XDM_CONST.DNS_RECORD_TYPE_NS, dns_query_type = "NSEC", XDM_CONST.DNS_RECORD_TYPE_NSEC, dns_query_type = "NSEC3", XDM_CONST.DNS_RECORD_TYPE_NSEC3, dns_query_type = "NSEC3PARAM", XDM_CONST.DNS_RECORD_TYPE_NSEC3PARAM, dns_query_type = "OPENPGPKEY", XDM_CONST.DNS_RECORD_TYPE_OPENPGPKEY, dns_query_type = "PTR", XDM_CONST.DNS_RECORD_TYPE_PTR, dns_query_type = "RRSIG", XDM_CONST.DNS_RECORD_TYPE_RRSIG, dns_query_type = "RP", XDM_CONST.DNS_RECORD_TYPE_RP, dns_query_type = "SIG", XDM_CONST.DNS_RECORD_TYPE_SIG, dns_query_type = "SMIMEA", XDM_CONST.DNS_RECORD_TYPE_SMIMEA, dns_query_type = "SOA", XDM_CONST.DNS_RECORD_TYPE_SOA, dns_query_type = "SRV", XDM_CONST.DNS_RECORD_TYPE_SRV, dns_query_type = "SSHFP", XDM_CONST.DNS_RECORD_TYPE_SSHFP, dns_query_type = "SVCB", XDM_CONST.DNS_RECORD_TYPE_SVCB, dns_query_type = "TA", XDM_CONST.DNS_RECORD_TYPE_TA, dns_query_type = "TKEY", XDM_CONST.DNS_RECORD_TYPE_TKEY, dns_query_type = "TLSA", XDM_CONST.DNS_RECORD_TYPE_TLSA, dns_query_type = "TSIG", XDM_CONST.DNS_RECORD_TYPE_TSIG, dns_query_type = "TXT", XDM_CONST.DNS_RECORD_TYPE_TXT, dns_query_type = "URI", XDM_CONST.DNS_RECORD_TYPE_URI, dns_query_type = "ZONEMD", XDM_CONST.DNS_RECORD_TYPE_ZONEMD, dns_query_type),
+	xdm.network.dns.is_truncated = array_any(dns_response_flags, "@element" = "TC"), // see https://datatracker.ietf.org/doc/html/rfc1035#section-4.1.1
+	xdm.network.dns.response_code = if(dns_response_code = "NOERROR", XDM_CONST.DNS_RESPONSE_CODE_NO_ERROR, dns_response_code = "FORMERR", XDM_CONST.DNS_RESPONSE_CODE_FORMAT_ERROR, dns_response_code = "SERVFAIL", XDM_CONST.DNS_RESPONSE_CODE_SERVER_FAILURE, dns_response_code = "NXDOMAIN", XDM_CONST.DNS_RESPONSE_CODE_NON_EXISTENT_DOMAIN, dns_response_code = "NOTIMP", XDM_CONST.DNS_RESPONSE_CODE_NOT_IMPLEMENTED, dns_response_code = "REFUSED", XDM_CONST.DNS_RESPONSE_CODE_QUERY_REFUSED, dns_response_code = "YXDOMAIN", XDM_CONST.DNS_RESPONSE_CODE_NAME_EXISTS_WHEN_IT_SHOULD_NOT, dns_response_code = "YXRRSET", XDM_CONST.DNS_RESPONSE_CODE_RR_SET_EXISTS_WHEN_IT_SHOULD_NOT, dns_response_code = "NXRRSET", XDM_CONST.DNS_RESPONSE_CODE_RR_SET_THAT_SHOULD_EXIST_DOES_NOT, dns_response_code = "NOTAUTH", XDM_CONST.DNS_RESPONSE_CODE_SERVER_NOT_AUTHORITATIVE_FOR_ZONE, dns_response_code = "NOTZONE", XDM_CONST.DNS_RESPONSE_CODE_NAME_NOT_CONTAINED_IN_ZONE, dns_response_code = "BADVERS", XDM_CONST.DNS_RESPONSE_CODE_BAD_OPT_VERSION, dns_response_code = "BADSIG", XDM_CONST.DNS_RESPONSE_CODE_TSIG_SIGNATURE_FAILURE, dns_response_code = "BADKEY", XDM_CONST.DNS_RESPONSE_CODE_KEY_NOT_RECOGNIZED, dns_response_code = "BADTIME", XDM_CONST.DNS_RESPONSE_CODE_SIGNATURE_OUT_OF_TIME_WINDOW, dns_response_code = "BADMODE", XDM_CONST.DNS_RESPONSE_CODE_BAD_TKEY_MODE, dns_response_code = "BADNAME", XDM_CONST.DNS_RESPONSE_CODE_DUPLICATE_KEY_NAME, dns_response_code = "BADALG", XDM_CONST.DNS_RESPONSE_CODE_ALGORITHM_NOT_SUPPORTED, dns_response_code = "BADTRUNC", XDM_CONST.DNS_RESPONSE_CODE_BAD_TRUNCATION, dns_response_code),
+	xdm.network.ip_protocol = if(ip_protocol = "UDP", XDM_CONST.IP_PROTOCOL_UDP, ip_protocol = "TCP", XDM_CONST.IP_PROTOCOL_TCP, ip_protocol),
+	xdm.source.ipv4 = source_ipv4,
+	xdm.source.ipv6 = source_ipv6,
+	xdm.source.port = to_integer(properties -> SourcePort),
+	xdm.source.sent_bytes = to_integer(properties -> RequestSize),
+	xdm.target.sent_bytes = to_integer(properties -> ResponseSize);
+
+
 [RULE: map_msft_azure_resource_logs_common_fields] 
 /*  This rule normalizes the top-level schema that is common to all resource logs that are sent to an event hub.  
 	Schema: https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/resource-logs-schema#top-level-common-schema */
