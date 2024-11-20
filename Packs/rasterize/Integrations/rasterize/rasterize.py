@@ -924,7 +924,7 @@ def perform_rasterize(path: str | list[str],
                 f"active tabs len: {len(browser.list_tab())}")
 
             chrome_instances_file_content: dict = read_json_file()  # CR fix name
-            
+
             rasterization_count = chrome_instances_file_content.get(chrome_port, {}).get(RASTERIZATION_COUNT, 0) + len(
                 rasterization_threads)
 

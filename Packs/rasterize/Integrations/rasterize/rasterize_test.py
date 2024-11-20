@@ -820,7 +820,7 @@ def test_chrome_manager_one_port_use_same_port(mocker):
     """
     from rasterize import chrome_manager_one_port, read_json_file
 
-    instance_id = "22222222-2222-2222-2222-222222222221"  #not exist
+    instance_id = "22222222-2222-2222-2222-222222222221"  # not exist
     chrome_options = "chrome_options2"
 
     mock_context = {
@@ -840,7 +840,7 @@ def test_chrome_manager_one_port_use_same_port(mocker):
     mocker.patch.object(rasterize, 'read_json_file', return_value=mock_file_content)
 
     mocker.patch.object(rasterize, 'get_chrome_browser', return_value="browser_object")
-    
+
     browser, chrome_port = chrome_manager_one_port()
     assert browser == "browser_object"
     assert chrome_port == "2222"
@@ -857,7 +857,7 @@ def test_chrome_manager_one_port_open_new_port(mocker):
     """
     from rasterize import chrome_manager_one_port, read_json_file
 
-    instance_id = "22222222-2222-2222-2222-222222222221"  #not exist
+    instance_id = "22222222-2222-2222-2222-222222222221"  # not exist
     chrome_options = "new_chrome_options"
 
     mock_context = {
@@ -880,7 +880,7 @@ def test_chrome_manager_one_port_open_new_port(mocker):
     terminate_chrome_mocker = mocker.patch.object(rasterize, 'terminate_chrome', return_value=None)
     generate_new_chrome_instance_mocker = mocker.patch.object(rasterize, 'generate_new_chrome_instance',
                                                               return_value=["browser_object", "chrome_port"])
-    
+
     browser, chrome_port = chrome_manager_one_port()
     assert terminate_chrome_mocker.call_count == 3
     assert generate_new_chrome_instance_mocker.call_count == 1
