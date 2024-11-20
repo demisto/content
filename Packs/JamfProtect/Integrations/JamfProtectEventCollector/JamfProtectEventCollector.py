@@ -9,7 +9,7 @@ from CommonServerUserPython import *
 VENDOR = 'Jamf'
 PRODUCT = 'Protect'
 ALERT_PAGE_SIZE = 200
-COMPUTER_PAGE_SIZE = 200
+COMPUTER_PAGE_SIZE = 1
 AUDIT_PAGE_SIZE = 5000
 DEFAULT_MAX_FETCH_ALERT = 1000
 DEFAULT_MAX_FETCH_AUDIT = 20000
@@ -497,19 +497,23 @@ def get_events_computer_type(
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     for event in events:
         event["source_log_type"] = "computers"
-    if next_page:
-        demisto.debug(
-            f"Fetched the maximal number of computers ({len(events)} events). "
-            f"Fetching will continue using {next_page=} and last_fetch={created}, in the next iteration")
-        new_last_run_with_next_page = {"next_page": next_page, "last_fetch": created}
-        return events, new_last_run_with_next_page
 
-    new_last_fetch_date = max(filter(None, (arg_to_datetime(event.get("created"), DATE_FORMAT)
-                                            for event in events))).strftime(DATE_FORMAT) if events else current_date
-    # If there is no next page, the last fetch date will be the max end date of the fetched events.
-    new_last_run_without_next_page = {"last_fetch": new_last_fetch_date}
+    latest_event = max(filter(None, (arg_to_datetime(event.get("created"), DATE_FORMAT)
+                                     for event in events))).strftime(DATE_FORMAT) if events else current_date
+
+    new_last_fetch_date = max(created, latest_event)
+    new_last_run = {"last_fetch": new_last_fetch_date}
+
     demisto.debug(f"Fetched {len(events)} computers")
-    return events, new_last_run_without_next_page
+    demisto.debug(f"{new_last_fetch_date=}")
+
+    if next_page:
+        new_last_run["next_page"] = next_page
+        demisto.debug(
+            f"Fetched the maximal number of computers. "
+            f"Fetching will continue using {next_page=} in the next iteration")
+
+    return events, new_last_run
 
 
 def get_events_audit_type(client: Client, start_date: str, end_date: str, max_fetch: int, last_run: dict) -> tuple:
