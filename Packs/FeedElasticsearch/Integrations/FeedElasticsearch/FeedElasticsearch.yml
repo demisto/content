@@ -21,6 +21,7 @@ configuration:
   options:
   - ElasticSearch
   - OpenSearch
+  - Elasticsearch_v8
   type: 15
   required: false
   section: Connect
@@ -63,6 +64,7 @@ configuration:
   required: false
   section: Collect
 - defaultvalue: '10000'
+  additionalinfo: The maximal number of indicators that could be fetched in a fetch cycle.
   display: Fetch Limit
   name: fetch_limit
   type: 0
@@ -144,21 +146,21 @@ configuration:
   required: false
   section: Collect
   advanced: true
-- additionalinfo: Source field that contains the indicator value in the index
+- additionalinfo: Source field that contains the indicator value in the index.  Relevant for generic feed type only. 
   display: Indicator Value Field
   name: src_val
   type: 0
   required: false
   section: Collect
   advanced: true
-- additionalinfo: Source field that contains the indicator type in the index
+- additionalinfo: Source field that contains the indicator type in the index.  Relevant for generic feed type only. 
   display: Indicator Type Field
   name: src_type
   type: 0
   required: false
   section: Collect
   advanced: true
-- additionalinfo: Default indicator type used in case no "Indicator Type Field" was provided
+- additionalinfo: Default indicator type used in case no "Indicator Type Field" was provided.  Relevant for generic feed type only. 
   display: Indicator Type
   name: default_type
   type: 0
@@ -183,7 +185,7 @@ configuration:
   - Timestamp-Milliseconds
   section: Collect
   advanced: true
-- additionalinfo: Used for sorting and limiting data. If empty, results are not sorted.
+- additionalinfo: Used for sorting and limiting data. If empty, results are not sorted. Relevant for generic feed type only. 
   display: Index Time Field
   name: time_field
   type: 0
@@ -223,12 +225,12 @@ script:
   commands:
   - arguments:
     - defaultValue: '50'
-      description: The maximum number of indicators to fetch. The default is 50.
+      description: The maximum number of indicators to fetch.
       name: limit
       required: true
     description: Gets indicators available in the configured Elasticsearch database.
     name: es-get-indicators
-  dockerimage: demisto/elasticsearch:1.0.0.87483
+  dockerimage: demisto/elasticsearch:1.0.0.115427
   feed: true
   runonce: false
   script: '-'
@@ -236,7 +238,8 @@ script:
   type: python
 fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
+- Elasticsearch_Fetch_Custom_Indicators_Test
+- Elasticsearch_Fetch_Demisto_Indicators_Test
 sectionOrder:
 - Connect
 - Collect

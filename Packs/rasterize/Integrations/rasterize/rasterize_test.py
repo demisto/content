@@ -4,6 +4,7 @@ import demistomock as demisto
 from CommonServerPython import entryTypes
 from tempfile import NamedTemporaryFile
 from pytest_mock import MockerFixture
+from unittest.mock import MagicMock
 import os
 import logging
 import http.server
@@ -761,3 +762,48 @@ def test_read_json_file(mocker):
     mock_file_content = util_load_json("test_data/chrome_instances.json")
     file_result = read_json_file("test_data/chrome_instances.json")
     assert file_result == mock_file_content
+
+
+def test_rasterize_mailto(capfd, mocker):
+    """
+        Given:
+            - mailto argument as path.
+        When:
+            - Running the 'rasterize' function.
+        Then:
+            - Verify that perform_rasterize exit with the expected error message.
+    """
+    mocker_output = mocker.patch('rasterize.return_results')
+
+    with pytest.raises(SystemExit) as excinfo, capfd.disabled():
+        perform_rasterize(path='mailto:some.person@gmail.com', width=250, height=250, rasterize_type=RasterizeType.PNG)
+
+    assert mocker_output.call_args.args[0].readable_output == 'URLs that start with "mailto:" cannot be rasterized.' \
+                                                              '\nURL: [\'mailto:some.person@gmail.com\']'
+    assert excinfo.type == SystemExit
+    assert excinfo.value.code == 0
+
+
+def test_handle_request_paused(mocker):
+    """
+        Given:
+            - cloudflare.com as BLOCKED_URLS parameter.
+        When:
+            - Running the 'handle_request_paused' function.
+        Then:
+            - Verify that tab.Fetch.failRequest executed with the correct requestId and errorReason Aborted
+    """
+
+    mocker.patch('rasterize.BLOCKED_URLS', ['cloudflare.com'])
+    kwargs = {'requestId': '1', 'request': {'url': 'cloudflare.com'}}
+    mock_tab = MagicMock(spec=pychrome.Tab)
+    mock_fetch = mocker.MagicMock()
+    mock_fetch.disable = MagicMock()
+    mock_fail_request = mocker.patch.object(mock_fetch, 'failRequest', new_callable=MagicMock)
+    mock_tab.Fetch = mock_fetch
+    tab_event_handler = PychromeEventHandler(None, mock_tab, None)
+
+    tab_event_handler.handle_request_paused(**kwargs)
+
+    assert mock_fail_request.call_args[1]['requestId'] == '1'
+    assert mock_fail_request.call_args[1]['errorReason'] == 'Aborted'

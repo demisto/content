@@ -7,6 +7,9 @@ HTML_TAGS = ['p', 'table', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
 INTEGRATION_NAME = 'RSS Feed'
 
+USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0" \
+             " Safari/537.36"
+
 
 class Client(BaseClient):
     """Client for RSS Feed - gets Reports from the website
@@ -18,7 +21,7 @@ class Client(BaseClient):
 
     def __init__(self, server_url, use_ssl, proxy, reliability, feed_tags, tlp_color, content_max_size=45,
                  read_timeout=20, enrichment_excluded=False):
-        super().__init__(base_url=server_url, proxy=proxy, verify=use_ssl)
+        super().__init__(base_url=server_url, proxy=proxy, verify=use_ssl, headers={'User-Agent': USER_AGENT})
         self.feed_tags = feed_tags
         self.tlp_color = tlp_color
         self.content_max_size = content_max_size * 1000
@@ -27,6 +30,7 @@ class Client(BaseClient):
         self.reliability = reliability
         self.read_timeout = read_timeout
         self.enrichment_excluded = enrichment_excluded
+        self.channel_link = None
 
     def request_feed_url(self):
         return self._http_request(method='GET', resp_type='response', timeout=self.read_timeout,
@@ -40,11 +44,23 @@ class Client(BaseClient):
             raise DemistoException(f"Failed to parse feed.\nError:\n{str(err)}")
 
     def create_indicators_from_response(self):
+        if hasattr(self.feed_data, 'channel') and hasattr(self.feed_data.channel, 'link'):  # type: ignore
+            self.channel_link = self.feed_data.channel.link  # type: ignore
+            if not self.channel_link.startswith(('http://', 'https://')):
+                self.channel_link = 'https://' + self.channel_link
+                demisto.debug(f'feed channel link is: {self.channel_link}')
+
         parsed_indicators: list = []
         if not self.feed_data:
             raise DemistoException(f"Could not parse feed data {self._base_url}")
 
         for indicator in reversed(self.feed_data.entries):
+
+            link = indicator.get('link')
+            if link and not link.startswith(('http://', 'https://')):
+                link = urljoin(self.channel_link, link)
+                demisto.debug(f'indicator link is: {link}')
+
             publications = []
             if indicator:
                 published = dateparser.parse(indicator.published)
@@ -53,11 +69,11 @@ class Client(BaseClient):
                 published_iso = published.strftime('%Y-%m-%dT%H:%M:%S')
                 publications.append({
                     'timestamp': published_iso,
-                    'link': indicator.get('link'),
+                    'link': link,
                     'source': self._base_url,
                     'title': indicator.get('title')
                 })
-                text = self.get_url_content(indicator.get('link'))
+                text = self.get_url_content(link)
                 if not text:
                     continue
                 indicator_obj = {
