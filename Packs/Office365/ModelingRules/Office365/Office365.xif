@@ -47,7 +47,7 @@ call o365_common_fields
 	xdm.target.resource.name = coalesce(formname, objectid_clean),
 	xdm.source.host.device_id = EntityId,
 	xdm.email.sender = p2sender,
-	xdm.email.recipients = coalesce(arraycreate(targetuserid), arraycreate(ReleaseTo), arraycreate(recipients)),
+	xdm.email.recipients = if(arraystring(arraycreate(targetuserid), ", ") != "", arraycreate(targetuserid),  arraystring(arraycreate(ReleaseTo), ", ") != "", arraycreate(ReleaseTo), arraycreate(recipients)),
 	xdm.source.user.username = coalesce(username, members_displayname),
 	xdm.source.user.upn = coalesce(members_upn, actoruserid, UserId),
 	xdm.source.user.user_type = if(user_type_string ~= "0|1|2|3", XDM_CONST.USER_TYPE_REGULAR, user_type_string ~= "4|5|6|7|8", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT),
