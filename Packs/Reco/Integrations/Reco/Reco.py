@@ -368,23 +368,17 @@ class RecoClient(BaseClient):
             params["getTableRequest"]["fieldFilters"]["fieldFilterGroups"]["fieldFilters"].append(label_filter)
 
         # Add email address filter if provided
-        if email_address is not None:
-            email_filter = {
-                "relationship": "FILTER_RELATIONSHIP_OR",
-                "filters": {
-                    "filters": [
-                        {
-                            "field": "full_name",
-                            "stringContains": {"value": email_address}
-                        },
-                        {
-                            "field": "primary_email_address",
-                            "stringContains": {"value": email_address}
-                        }
-                    ]
-                }
-            }
-            params["getTableRequest"]["fieldFilters"]["fieldFilterGroups"]["fieldFilters"].append(email_filter)
+   if email_address:
+           email_filter = {
+               "relationship": "FILTER_RELATIONSHIP_OR",
+               "filters": {
+                   "filters": [
+                       create_filter("full_name", email_address),
+                       create_filter("primary_email_address", email_address)
+                   ]
+               }
+           }
+           params["getTableRequest"]["fieldFilters"]["fieldFilterGroups"]["fieldFilters"].append(email_filter)
 
         try:
             response = self._http_request(
