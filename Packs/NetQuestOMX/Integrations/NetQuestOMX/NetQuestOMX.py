@@ -103,7 +103,7 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                "An error was occurred when optimizing the IP's list."
+                "An error was occurred when optimizing the list of IPs."
             ) from e
         return response
 
