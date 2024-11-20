@@ -11408,8 +11408,6 @@ auth-fips.us-west-2.amazoncognito.com
 // Amazon EC2
 // Submitted by Luke Wells <psl-maintainers@amazon.com>
 // Reference: 4c38fa71-58ac-4768-99e5-689c1767e537
-*.compute.amazonaws.com.cn
-*.compute.amazonaws.com
 *.compute-1.amazonaws.com
 us-east-1.amazonaws.com
 
