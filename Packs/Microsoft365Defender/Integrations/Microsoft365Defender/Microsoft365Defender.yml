@@ -269,6 +269,12 @@ script:
     - contextPath: Microsoft365Defender.Incident.alerts
       description: List of alerts relevant for the incidents.
       type: Unknown
+    - contextPath: Microsoft365Defender.Incident.tags
+      description: List of custom tags associated with an incident, for example to flag a group of incidents with a common characteristic.
+      isArray: true
+    - contextPath: Microsoft365Defender.Incident.comments
+      description: List of comments created by secops when managing the incident, for example additional information about the classification selection.
+      isArray: true
   - arguments:
     - auto: PREDEFINED
       description: Categorize incidents (as Active, Resolved, or Redirected).
@@ -345,6 +351,12 @@ script:
     - contextPath: Microsoft365Defender.Incident.alerts
       description: List of alerts relevant for the incidents.
       type: Unknown
+    - contextPath: Microsoft365Defender.Incident.tags
+      description: List of custom tags associated with an incident, for example to flag a group of incidents with a common characteristic.
+      isArray: true
+    - contextPath: Microsoft365Defender.Incident.comments
+      description: List of comments created by secops when managing the incident, for example additional information about the classification selection.
+      isArray: true
   - arguments:
     - description: Advanced hunting query.
       name: query
@@ -386,6 +398,9 @@ script:
     - contextPath: Microsoft365Defender.Incident.createdTime
       description: The date and time (in UTC) the incident was created.
       type: date
+    - contextPath: Microsoft365Defender.Incident.tags
+      description: List of custom tags associated with an incident, for example to flag a group of incidents with a common characteristic.
+      isArray: true
     - contextPath: Microsoft365Defender.Incident.lastUpdateTime
       description: The date and time (in UTC) the incident was last updated.
       type: date
@@ -406,6 +421,12 @@ script:
       type: string
     - contextPath: Microsoft365Defender.Incident.alerts
       description: List of alerts relevant for the incidents.
+    - contextPath: Microsoft365Defender.Incident.tags
+      description: List of custom tags associated with an incident, for example to flag a group of incidents with a common characteristic.
+      isArray: true
+    - contextPath: Microsoft365Defender.Incident.comments
+      description: List of comments created by secops when managing the incident, for example additional information about the classification selection.
+      isArray: true
   dockerimage: demisto/crypto:1.0.0.114611
   isfetch: true
   script: ''
