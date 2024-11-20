@@ -144,7 +144,7 @@ tasks:
       name:
         simple: DemistoUploadFile - test incident
       type:
-        simple: Hello World Alert
+        simple: Xpanse Alert
     separatecontext: false
     continueonerrortype: ""
     view: |-
