@@ -48,8 +48,8 @@ class Client(BaseClient):
                 return
 
         demisto.debug("IntegrationContext token cache is empty or token has expired, regenerating a new token")
-        raw_response = self._refresh_access_token()
-        self._set_headers(raw_response)
+
+        self._refresh_access_token()
 
         set_integration_context(
             {
@@ -60,28 +60,19 @@ class Client(BaseClient):
             }
         )
 
-    def _refresh_access_token(self) -> dict:
+    def _refresh_access_token(self):
         """
-        Since the validity of the Access Token is 120 minutes, this method refreshes it and returns the new token json.
-
+        Since the validity of the Access Token is 120 minutes, this method refreshes the token.
         """
 
         try:
-            response_json = self._http_request(
+            self._http_request(
                 method="POST", url_suffix="/api/SessionService/Sessions", data=self.credentials
             )
         except Exception as e:
             raise DemistoException(
                 "An error was occurred when creating a new token. Please verify your credentials."
             ) from e
-        return response_json
-
-    def _set_headers(self, raw_response: dict):
-        """
-        This method is called during the client's building or when a new token is generated since the old one has expired.
-        """
-        # TODO - Ensure the access
-        self._headers["X-Auth-Token"] = raw_response["Headers"]["X-Auth-Token"]
 
     def address_list_upload_request(self, file_name: str) -> requests.Response:
         try:
@@ -97,16 +88,17 @@ class Client(BaseClient):
 
         return result
 
-    def address_list_optimize_request(self) -> requests.Response:
+    def address_list_optimize_request(self) -> dict:
         try:
-            response = self._http_request(
+            response_json = self._http_request(
                 method="GET", url_suffix="/api/Systems/Filters/Address/Status/Optimization"
             )
         except Exception as e:
             raise DemistoException(
                 "An error was occurred when optimizing the list of IPs."
             ) from e
-        return response
+
+        return response_json
 
     def address_list_create_request(self, name: str):
         try:
@@ -160,17 +152,13 @@ def address_list_upload_command(client: Client, args: dict):
     file_path = file_info['path']
     file_name = file_info['name']
 
-    try:
-        shutil.copy(file_path, file_name)
-    except Exception as exc:
-        demisto.error(f'Failed to prepare file for upload. Error: {exc}')
-        raise DemistoException('Failed to prepare file for upload.') from exc
+    shutil.copy(file_path, file_name)
 
     try:
         client.address_list_upload_request(file_name)
     except Exception as e:
         raise DemistoException(
-            f"An error was occurred when uploading the given file. Please check the file, {file_name=} and {file_path=}."
+            f"An error was occurred when uploading the given file. Please check the file, {file_name=}."
         ) from e
 
     return CommandResults(readable_output="Address list was successfully uploaded")
@@ -185,10 +173,10 @@ def address_list_optimize_command(client: Client):
         A CommandResults containing full API response .
     """
 
-    result = client.address_list_optimize_request()
+    response_json = client.address_list_optimize_request()
 
     return CommandResults(outputs_prefix="NetQuest.AddressList",
-                          outputs=result.json())
+                          outputs=response_json)
 
 
 def address_list_create_command(client: Client, args: dict):
