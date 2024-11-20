@@ -1,5 +1,6 @@
 import shutil
 from collections.abc import Callable
+from pathlib import Path
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -91,7 +92,7 @@ class Client(BaseClient):
                     data={"UpdateFile": file},
                 )
         finally:
-            shutil.rmtree(file_name, ignore_errors=True)
+            Path(file_name).unlink()
 
         return result
 
