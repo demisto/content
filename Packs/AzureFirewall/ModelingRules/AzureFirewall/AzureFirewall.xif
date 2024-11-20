@@ -1,8 +1,8 @@
 [MODEL: dataset=msft_azure_firewall_raw]
 call map_msft_azure_resource_logs_common_fields;
 
-// https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwdnsquery
-filter category = "AZFWDnsQuery" // Azure Firewall DNS query
+
+filter category = "AZFWDnsQuery" // Azure Firewall DNS query (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwdnsquery)
 | alter 
 	dns_query_type = properties -> QueryType,
 	dns_query_class = properties -> QueryClass, 
@@ -32,8 +32,7 @@ filter category = "AZFWDnsQuery" // Azure Firewall DNS query
 	xdm.target.sent_bytes = to_integer(properties -> ResponseSize);
 
 
-// https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwnetworkrule
-filter category = "AZFWNetworkRule" // Azure Firewall Network Rule
+filter category = "AZFWNetworkRule" // Azure Firewall Network Rule (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwnetworkrule)
 | alter 
 	destination_ipv4 = arrayindex(regextract(properties -> DestinationIp, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
 	destination_ipv6 = arrayindex(regextract(properties -> DestinationIp, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
@@ -59,8 +58,9 @@ filter category = "AZFWNetworkRule" // Azure Firewall Network Rule
 	xdm.target.port = to_integer(properties -> DestinationPort);
 
 
-// https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwapplicationrule
-filter category = "AZFWApplicationRule" // Azure Firewall Application Rule
+filter category in(
+	"AZFWApplicationRule", // Azure Firewall Application Rule (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwapplicationrule)
+	"AZFWApplicationRuleAggregation") //  & Azure Firewall Network Rule Aggregation (Policy Analytics) (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwapplicationruleaggregation)
 | alter 
 	action = if(properties -> Action != "", properties -> Action),
 	ip_protocol = uppercase(properties -> Protocol),
@@ -104,6 +104,30 @@ filter category = "AZFWFatFlow" // Azure Firewall Fat Flow Log
 	source_ipv4 = arrayindex(regextract(properties -> SourceIp, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
 	source_ipv6 = arrayindex(regextract(properties -> SourceIp, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0)
 | alter 
+	xdm.network.ip_protocol = if(ip_protocol = "UDP", XDM_CONST.IP_PROTOCOL_UDP, ip_protocol = "TCP", XDM_CONST.IP_PROTOCOL_TCP, ip_protocol),
+	xdm.source.ipv4 = source_ipv4,
+	xdm.source.ipv6 = source_ipv6,
+	xdm.source.port = to_integer(properties -> SourcePort),
+    xdm.source.host.ipv4_public_addresses = if(source_ipv4 != null and not incidr(source_ipv4, "10.0.0.0/8") and not incidr(source_ipv4, "172.16.0.0/12") and not incidr(source_ipv4, "192.168.0.0/16") and not incidr(source_ipv4, "127.0.0.0/8") and not incidr(source_ipv4, "169.254.0.0/16") and not incidr(source_ipv4, "100.64.0.0/10"), arraycreate(source_ipv4)),
+	xdm.target.ipv4 = destination_ipv4,
+	xdm.target.ipv6 = destination_ipv6,
+    xdm.target.host.ipv4_public_addresses = if(destination_ipv4 != null and not incidr(destination_ipv4, "10.0.0.0/8") and not incidr(destination_ipv4, "172.16.0.0/12") and not incidr(destination_ipv4, "192.168.0.0/16") and not incidr(destination_ipv4, "127.0.0.0/8") and not incidr(destination_ipv4, "169.254.0.0/16") and not incidr(destination_ipv4, "100.64.0.0/10"), arraycreate(destination_ipv4)),
+	xdm.target.port = to_integer(properties -> DestinationPort);
+
+
+// https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwflowtrace 
+filter category = "AZFWFlowTrace" // Azure Firewall Flow Trace Log
+| alter 
+	action = if(properties -> Action != "", properties -> Action),
+	destination_ipv4 = arrayindex(regextract(properties -> DestinationIp, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
+	destination_ipv6 = arrayindex(regextract(properties -> DestinationIp, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
+	ip_protocol = uppercase(properties -> Protocol),
+	flag = properties -> Flag,
+	source_ipv4 = arrayindex(regextract(properties -> SourceIp, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
+	source_ipv6 = arrayindex(regextract(properties -> SourceIp, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0)
+| alter 
+	xdm.event.outcome = if(flag ~= "\-ACK", XDM_CONST.OUTCOME_SUCCESS, flag = "INVALID", XDM_CONST.OUTCOME_FAILED),
+	xdm.event.outcome_reason = if(properties -> ActionReason != "", properties -> ActionReason),
 	xdm.network.ip_protocol = if(ip_protocol = "UDP", XDM_CONST.IP_PROTOCOL_UDP, ip_protocol = "TCP", XDM_CONST.IP_PROTOCOL_TCP, ip_protocol),
 	xdm.source.ipv4 = source_ipv4,
 	xdm.source.ipv6 = source_ipv6,
