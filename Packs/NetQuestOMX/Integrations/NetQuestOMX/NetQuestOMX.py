@@ -114,7 +114,7 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                "An error was occurred when creating the IP's list."
+                "An error was occurred when creating the list of IPs."
             ) from e
         return response
 
