@@ -126,7 +126,7 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                f"An error was occurred when renaming the {existing_name} IP's list to {new_name}."
+                f"An error occurred when renaming the {existing_name} IP list to {new_name}."
             ) from e
         return response
 
