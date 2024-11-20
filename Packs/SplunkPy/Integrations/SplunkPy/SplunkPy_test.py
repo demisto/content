@@ -2990,7 +2990,7 @@ def test_splunk_submit_event_hec(
     elif batch_event_data:
         # Batch event data
         mock_convert_to_json_for_validation.return_value = [{'event': 'some event', 'index': 'some index'},
-                                                      {'event': 'some event', 'index': 'some index'}]
+                                                            {'event': 'some event', 'index': 'some index'}]
     elif entry_id:
         # Entry ID
         mock_get_events_from_file.return_value =\
