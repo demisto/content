@@ -274,14 +274,14 @@ def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[
     current_fetched_alerts_amount = 0
     output = []
 
-    while current_fetched_alerts_amount < fetch_limit:
+    while True:
         for alert in alerts:
-            enrich_event(alert, 'alerts')
+            enrich_event(alert, event_type='alerts')
             output.append(alert)
             last_page_alerts_ids.append(alert.get('id'))
             current_fetched_alerts_amount += 1
 
-            if current_fetched_alerts_amount == fetch_limit:
+            if current_fetched_alerts_amount >= fetch_limit:
                 last_run_new_dict = create_last_run_dict_for_alerts(links, last_page_alerts_ids)
                 demisto.debug(f'The limit is reached. Amount of fetched alerts is {len(output)}')
                 return output, last_run_new_dict
@@ -289,8 +289,8 @@ def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[
         next_url = get_page_url(links, page_type="next")
         if next_url:
             response = client.get_response_from_page_link(next_url)
-            alerts = response.get('results')
-            links = response.get('links')
+            alerts = response.get('results', [])
+            links = response.get('links', [])
             last_page_alerts_ids.clear()
         else:
             break
@@ -383,7 +383,7 @@ def create_last_run_dict_for_events(output: list, new_min_time: str) -> dict:
             }
 
 
-def first_time_fetching_events(client: Client, fetch_limit: int) -> tuple[list, dict]:
+def first_time_fetching_events(client: Client, fetch_limit: int) -> tuple[list, str]:
     """
     Fetches and enriches the first batch of events, returning them with the minimum creation time.
 
@@ -421,13 +421,13 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[
     events_with_created_min_time = last_run.get('events_with_created_min_time') or []
 
     demisto.debug(f'Start to fetch events with {min_date}')
-    if min_date:
-        results = client.get_events_request(min_date=min_date)
-    else:  # first time fetching events
-        results, new_min_time = first_time_fetching_events(client, fetch_limit)
-        new_last_run_obj = create_last_run_dict_for_events(results, new_min_time)
-        return results, new_last_run_obj
 
+    if not min_date:  # first time fetching events
+        output, new_min_time = first_time_fetching_events(client, fetch_limit)
+        new_last_run_obj = create_last_run_dict_for_events(output, new_min_time)
+        return output, new_last_run_obj
+
+    results: dict = client.get_events_request(min_date=min_date)
     response = get_last_page_of_events(client, results)
     links = response.get('links', [])
     events = response.get('results', [])
@@ -436,7 +436,7 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[
     output = []
     new_min_date = min_date
 
-    while current_fetched_events_amount < fetch_limit:
+    while True:
         for event in reversed(events):
             event_id = event.get('id')
             if event_id in events_with_created_min_time:
@@ -447,7 +447,7 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[
             current_fetched_events_amount += 1
             new_min_date = get_latest_date(new_min_date, event.get('created'))
 
-            if current_fetched_events_amount == fetch_limit:
+            if current_fetched_events_amount >= fetch_limit:
                 demisto.debug(f'Fetch limit reached. Total events fetched: {len(output)}')
                 new_last_run_obj = create_last_run_dict_for_events(output, new_min_date)
                 return output, new_last_run_obj
@@ -533,7 +533,7 @@ def main() -> None:  # pragma: no cover
 
         base_url = params.get('url')
         verify = not params.get('insecure', False)
-        fetch_limit = arg_to_number(params.get('max_events_per_fetch', DEFAULT_FETCH_LIMIT))
+        fetch_limit = arg_to_number(params.get('max_events_per_fetch')) or DEFAULT_FETCH_LIMIT
 
         client = Client(
             base_url=base_url,
