@@ -11,7 +11,8 @@
         "Messaging and Conferencing",
         "Utilities",
         "Case Management",
-        "Email"
+        "Email",
+        "CI/CD"
     ],
 
     "tags": [],
