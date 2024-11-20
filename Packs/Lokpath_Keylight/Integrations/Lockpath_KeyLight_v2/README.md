@@ -1,10 +1,7 @@
 Use the LockPath KeyLight integration to manage GRC tickets in the Keylight platform.
 This integration was integrated and tested with version 5.5.018.10 of Lockpath KeyLight.
-## Configure Lockpath KeyLight v2 on Cortex XSOAR
+## Configure Lockpath KeyLight v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Lockpath KeyLight v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -18,9 +15,8 @@ This integration was integrated and tested with version 5.5.018.10 of Lockpath K
 | proxy | Use system proxy settings | False |
 | isFetch | Fetch incidents | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### kl-get-component
 ***
@@ -967,4 +963,3 @@ Get user details by his ID.
 |APIAccess|AccountType|Active|Deleted|EmailAddress|Fax|FirstName|FullName|FunctionalRoles|Groups|HomePhone|Id|IsLDAP|IsSAML|Language|LastName|Locked|MiddleName|MobilePhone|SecurityConfiguration|SecurityRoles|Title|Username|WorkPhone|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | true | 1 | true | false | demisto@demisto.com |  | Demisto | Development, Demisto |  | {'Id': 42, 'Name': 'Demisto Development'} |  | 268 | false | false | 1033 | Development | false |  |  | Id: 7<br></br>DisplayName: Standard User Configuration | {'Id': 28, 'Name': 'Demisto Developer'} | Demisto Users | demisto@demisto.com |  |
-

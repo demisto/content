@@ -1,22 +1,18 @@
 Octox Labs Cyber Security Asset Management platform
 This integration was integrated and tested with version 3.3.0 of OctoxLabs
 
-## Configure OctoxLabs on Cortex XSOAR
+## Configure OctoxLabs in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for OctoxLabs.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | IP | Your Octox Labs Platform IP | True |
-    | API Key | Your Octox Labs API Key. \(https://github.com/octoxlabs/py-octoxlabs\#getting-started\) | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| IP | Your Octox Labs Platform IP | True |
+| API Key | Your Octox Labs API Key. \(https://github.com/octoxlabs/py-octoxlabs\#getting-started\) | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### octoxlabs-get-adapters
@@ -558,4 +554,3 @@ Fetch your User by id
 | OctoxLabs.User.results.is_active | Boolean | User is active | 
 | OctoxLabs.User.results.is_ldap | Boolean | User is ldap | 
 | OctoxLabs.User.results.groups | Unknown | List&lt;Dict&gt; User groups | 
-

@@ -1,8 +1,5 @@
-## Configure Linkshadow on Cortex XSOAR
+## Configure Linkshadow in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Linkshadow
-3. Click **Add instance** to create and configure a new integration instance.
 
 To configure the connection to your Linkshadow instance, you will provide:
 
@@ -18,11 +15,10 @@ API Token, API Username from Linkshadow  ( Generate tokens from following url : 
 | plugin_id | xsoar_integration_1604211382 | True |
 | Incidents Fetch Interval | 01 Minutes | Default |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### Linkshadow-fetch-entity-anomalies
 ***
 Linkshadow returns the full incident details referenced by timeframe (default = 60min) in an API response. Use of this command will return the JSON structure of the API response. 

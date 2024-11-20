@@ -69,12 +69,9 @@ Command, argument, and output desctiptions were taken from the Google documentat
 
          <img src="../../doc_files/service-account-create-4.png" alt="create-3"  />
 
-## Configure GoogleKubernetesEngine on Cortex XSOAR
+## Configure GoogleKubernetesEngine in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for GoogleKubernetesEngine.
-3. Generate `credentials.json` file by instruction in  [Google documentation](https://developers.google.com/identity/protocols/oauth2/web-server#creatingcred).
-4. Click **Add instance** to create and configure a new integration instance.
+ Generate `credentials.json` file by instruction in  [Google documentation](https://developers.google.com/identity/protocols/oauth2/web-server#creatingcred).
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -82,11 +79,10 @@ Command, argument, and output desctiptions were taken from the Google documentat
 | default_project | Default project id - Can be overwriten in commands execution. | True |
 | default_zone | Default zone - Can be overwriten in commands execution. | True |
 
-4. Click **Test** to validate the URLs, `credentials.json`, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### gcloud-clusters-list
@@ -1424,4 +1420,3 @@ There is no context output for this command.
 ## Known limitations
 
 * After apply new configuration an operation in Google cloud will start, In order to apply another operation the operation must finish running, In order to handle this limitation you can use `Google Kubernetes Engine Operations Generic Polling` playbook.
-

@@ -1,10 +1,7 @@
 Use the Talos Feed integration to get indicators from the feed.
 
-## Configure Talos Feed on Cortex XSOAR
+## Configure Talos Feed in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Talos Feed.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -23,9 +20,8 @@ Use the Talos Feed integration to get indicators from the feed.
 | feed | Fetch indicators | False |
 | feed | Fetch indicators | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### talos-get-indicators
 ***

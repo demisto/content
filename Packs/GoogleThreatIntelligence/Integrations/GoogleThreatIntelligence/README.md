@@ -2,37 +2,33 @@
 
 This integration analyzes suspicious hashes, URLs, domains, and IP addresses.
 
-## Configure Google Threat Intelligence on Cortex XSOAR
+## Configure Google Threat Intelligence in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-1. Search for Google Threat Intelligence.
-1. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API Key | See [Acquiring your API key](#acquiring-your-api-key) | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Source Reliability | Reliability of the source providing the intelligence data |  |
-    | GTI Malicious Verdict. Check Google Threat Intelligence verdict to consider the file malicious. |  | False |
-    | GTI Suspicious Verdict. Check Google Threat Intelligence verdict to consider the file suspicious. |  | False |
-    | File Malicious Threshold. Minimum number of positive results from GoogleThreatIntelligence scanners to consider the file malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
-    | File Suspicious Threshold. Minimum number of positive and suspicious results from GoogleThreatIntelligence scanners to consider the file suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
-    | IP Malicious Threshold. Minimum number of positive results from GoogleThreatIntelligence scanners to consider the IP malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
-    | IP Suspicious Threshold. Minimum number of positive and suspicious results from GoogleThreatIntelligence scanners to consider the IP suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
-    | Disable reputation lookups for private IP addresses | To reduce the number of lookups made to the GoogleThreatIntelligence API, this option can be selected to gracefully skip enrichment of any IP addresses allocated for private networks. | False |
-    | URL Malicious Threshold. Minimum number of positive results from GoogleThreatIntelligence scanners to consider the URL malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
-    | URL Suspicious Threshold. Minimum number of positive and suspicious results from GoogleThreatIntelligence scanners to consider the URL suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
-    | Domain Malicious Threshold. Minimum number of positive results from GoogleThreatIntelligence scanners to consider the domain malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
-    | Domain Suspicious Threshold. Minimum number of positive and suspicious results from GoogleThreatIntelligence scanners to consider the domain suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
-    | Preferred Vendors List. CSV list of vendors who are considered more trustworthy. | See [Indicator Thresholds](#indicator-thresholds).  | False |
-    | Preferred Vendor Threshold. The minimum number of highly trusted vendors required to consider a domain, IP address, URL, or file as malicious.  | See [Indicator Thresholds](#indicator-thresholds). | False |
-    | Enable score analyzing by Crowdsourced Yara Rules, Sigma, and IDS | See [Rules Threshold](#rules-threshold). | False |
-    | Crowdsourced Yara Rules Threshold | See [Rules Threshold](#rules-threshold). | False |
-    | Sigma and Intrusion Detection Rules Threshold |  See [Rules Threshold](#rules-threshold). | False |
-    | Domain Popularity Ranking Threshold | See [Rules Threshold](#rules-threshold). | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API Key | See [Acquiring your API key](#acquiring-your-api-key) | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Source Reliability | Reliability of the source providing the intelligence data |  |
+| GTI Malicious Verdict. Check Google Threat Intelligence verdict to consider the file malicious. |  | False |
+| GTI Suspicious Verdict. Check Google Threat Intelligence verdict to consider the file suspicious. |  | False |
+| File Malicious Threshold. Minimum number of positive results from GoogleThreatIntelligence scanners to consider the file malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+| File Suspicious Threshold. Minimum number of positive and suspicious results from GoogleThreatIntelligence scanners to consider the file suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+| IP Malicious Threshold. Minimum number of positive results from GoogleThreatIntelligence scanners to consider the IP malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+| IP Suspicious Threshold. Minimum number of positive and suspicious results from GoogleThreatIntelligence scanners to consider the IP suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+| Disable reputation lookups for private IP addresses | To reduce the number of lookups made to the GoogleThreatIntelligence API, this option can be selected to gracefully skip enrichment of any IP addresses allocated for private networks. | False |
+| URL Malicious Threshold. Minimum number of positive results from GoogleThreatIntelligence scanners to consider the URL malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+| URL Suspicious Threshold. Minimum number of positive and suspicious results from GoogleThreatIntelligence scanners to consider the URL suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+| Domain Malicious Threshold. Minimum number of positive results from GoogleThreatIntelligence scanners to consider the domain malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+| Domain Suspicious Threshold. Minimum number of positive and suspicious results from GoogleThreatIntelligence scanners to consider the domain suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+| Preferred Vendors List. CSV list of vendors who are considered more trustworthy. | See [Indicator Thresholds](#indicator-thresholds).  | False |
+| Preferred Vendor Threshold. The minimum number of highly trusted vendors required to consider a domain, IP address, URL, or file as malicious.  | See [Indicator Thresholds](#indicator-thresholds). | False |
+| Enable score analyzing by Crowdsourced Yara Rules, Sigma, and IDS | See [Rules Threshold](#rules-threshold). | False |
+| Crowdsourced Yara Rules Threshold | See [Rules Threshold](#rules-threshold). | False |
+| Sigma and Intrusion Detection Rules Threshold |  See [Rules Threshold](#rules-threshold). | False |
+| Domain Popularity Ranking Threshold | See [Rules Threshold](#rules-threshold). | False |
 
-1. Click **Test** to validate the URLs, token, and connection.
 
 ### Acquiring your API key
 
@@ -377,7 +373,7 @@ Checks the file reputation of the specified hash.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### ip

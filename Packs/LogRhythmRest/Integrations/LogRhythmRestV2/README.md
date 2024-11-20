@@ -6,35 +6,31 @@ This integration was integrated and tested with version 7.7 of LogRhythm Rest AP
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-logrhythmrest-v2).
 
-## Configure LogRhythmRest v2 on Cortex XSOAR
+## Configure LogRhythmRest v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for LogRhythmRest v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | API Token | True |
-    | Fetch incidents | False |
-    | Incidents Fetch Interval | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
-    | Incident type | False |
-    | Alarms max fetch | False |
-    | Cases max fetch | False |
-    | Fetch incidents from type | True |
-    | Alarm status filter | False |
-    | Alarm rule name filter | False |
-    | Case tags filter | False |
-    | Case status filter | False |
-    | Case priority filter | False |
-    | Fetch case evidences | False |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL | True |
+| API Token | True |
+| Fetch incidents | False |
+| Incidents Fetch Interval | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
+| Incident type | False |
+| Alarms max fetch | False |
+| Cases max fetch | False |
+| Fetch incidents from type | True |
+| Alarm status filter | False |
+| Alarm rule name filter | False |
+| Case tags filter | False |
+| Case status filter | False |
+| Case priority filter | False |
+| Fetch case evidences | False |
+| Use system proxy settings | False |
+| Trust any certificate (not secure) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### lr-alarms-list
 ***

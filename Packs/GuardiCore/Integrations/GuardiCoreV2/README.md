@@ -1,32 +1,28 @@
 GuardiCoreV2 Integration allows to get information about incidents and endpoints (aseets) via the guardicore api.
 This integration was integrated and tested with version 3.0.0 of the GuardiCore API.
 
-## Configure GuardiCore v2 on Cortex XSOAR
+## Configure GuardiCore v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for GuardiCore v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API Server URL | For example: `https://example.com/api/v3.0/` | True |
-    | Username for API |  | True |
-    | Password for API |  | True |
-    | Source | Fetch incidents - Guardicore Source Incident Value | False |
-    | Desctination | Fetch incidents - Guardicore Desctination Incident Value | False |
-    | Tag |  | False |
-    | Incident Type | Fetch incidents - Guardicore Incident Type Value | False |
-    | Incident Severity | Fetch incidents - Guardicore Incident Severity Value | False |
-    | Maximum alerts to fetch | Fetch incidents - limit on incidents to fetch | False |
-    | First fetch time | Fetch incidents - First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API Server URL | For example: `https://example.com/api/v3.0/` | True |
+| Username for API |  | True |
+| Password for API |  | True |
+| Source | Fetch incidents - Guardicore Source Incident Value | False |
+| Desctination | Fetch incidents - Guardicore Desctination Incident Value | False |
+| Tag |  | False |
+| Incident Type | Fetch incidents - Guardicore Incident Type Value | False |
+| Incident Severity | Fetch incidents - Guardicore Incident Severity Value | False |
+| Maximum alerts to fetch | Fetch incidents - limit on incidents to fetch | False |
+| First fetch time | Fetch incidents - First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### guardicore-search-asset
 ***
@@ -1313,4 +1309,3 @@ Endpoint command (uses `guardicore-search-asset` internally).
 This is a new version, old version of the API is deprecated (by GuardiCore).
 
 ## Additional Considerations for this version
-

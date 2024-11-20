@@ -1,26 +1,22 @@
 LogRhythm security intelligence.
 This integration was integrated and tested with version 7.4.6 of LogRhythmRest
-## Configure LogRhythmRest on Cortex XSOAR
+## Configure LogRhythmRest in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for LogRhythmRest.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Hostname, IP address, or server URL | True |
-    | API Token | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Search API cluster ID | False |
-    | Entity ID | False |
-    | Fetch incidents | False |
-    | Incidents Fetch Interval | False |
-    | Incident type | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Hostname, IP address, or server URL | True |
+| API Token | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Search API cluster ID | False |
+| Entity ID | False |
+| Fetch incidents | False |
+| Incidents Fetch Interval | False |
+| Incident type | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### lr-execute-query
 ***
@@ -1580,4 +1576,3 @@ Add a new login to the LogRhythm user
 >|Login|UserProfileId|UserId|DefaultEntityId|HostStatus|DateUpdated|DateCreated|
 >|---|---|---|---|---|---|---|
 >| arichards | -100 | 13 | 1 | Active | 2021-10-20T15:02:17.783Z | 2021-10-20T15:02:17.78Z |
-

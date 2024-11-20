@@ -1,6 +1,6 @@
 Integration with Okta's cloud-based identity management service.
 
-## Configure Okta v2 on Cortex XSOAR
+## Configure Okta v2 in Cortex
 ### API Token Authentication Prerequisites
 1. Sign in to your Okta organization as a user with administrator privileges.
 2. On the **Admin Console**, select **Security** > **API** from the menu, and then select the **Tokens** tab.
@@ -51,27 +51,24 @@ For more information, see the '[Implement OAuth for Okta](https://developer.okta
 
 
 ### Instance Configuration
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Okta v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                              | **Description**                                                                                                                                                                                  | **Required** |
-    |--------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-    | Okta URL (https://&lt;domain&gt;.okta.com) |                                                                                                                                                                                                  | True         |
-    | API Token                                  |                                                                                                                                                                                                  | False        |
-    | Use OAuth 2.0 Authentication               | See detailed instructions on the 'Help' tab.                                                                                                                                                     | False        |
-    | Client ID                                  | Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.                                                                                          | False        |
-    | Private Key                                | In PEM format. Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.                                                                           | False        |
-    | JWT Signing Algorithm                      | Algorithm to sign generated JWT tokens with. Doesn't affect integration's functionality. Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab. | False        |
-    | Key ID                                     | Required and used if more than one key is used for signing JWT tokens.                                                                                                                           | False        |
-    | Trust any certificate (not secure)         |                                                                                                                                                                                                  | False        |
-    | Use system proxy settings                  |                                                                                                                                                                                                  | False        |
 
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter**                              | **Description**                                                                                                                                                                                  | **Required** |
+|--------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| Okta URL (https://&lt;domain&gt;.okta.com) |                                                                                                                                                                                                  | True         |
+| API Token                                  |                                                                                                                                                                                                  | False        |
+| Use OAuth 2.0 Authentication               | See detailed instructions on the 'Help' tab.                                                                                                                                                     | False        |
+| Client ID                                  | Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.                                                                                          | False        |
+| Private Key                                | In PEM format. Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.                                                                           | False        |
+| JWT Signing Algorithm                      | Algorithm to sign generated JWT tokens with. Doesn't affect integration's functionality. Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab. | False        |
+| Key ID                                     | Required and used if more than one key is used for signing JWT tokens.                                                                                                                           | False        |
+| Trust any certificate (not secure)         |                                                                                                                                                                                                  | False        |
+| Use system proxy settings                  |                                                                                                                                                                                                  | False        |
+
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### okta-unlock-user

@@ -2,28 +2,24 @@ Nutanix Hypervisor abstracts and isolates the VMs and their programs from the un
 more efficient use of physical resources, simpler maintenance and operations, and reduced costs. This integration was
 integrated and tested with version v2 of Nutanix.
 
-## Configure Nutanix Hypervisor on Cortex XSOAR
+## Configure Nutanix Hypervisor in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Nutanix Hypervisor.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | \(e.g., https://192.168.0.1:57261\) | True |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Username |  | True |
-    | Incidents Fetch Interval |  | False |
-    | Maximum number of incidents per fetch | The maximum number of incidents to fetch each time. | False |
-    | Alert Status Filters | Fetches incidents by the status filters given. For example, if acknowledged is true, then only alerts that have been acknowledged will be fetched. If 'Auto Resolved' or 'Not Auto Resolved' is selected, then by default also 'Resolved' will be set. | False |
-    | Alert type IDs | Comma-separated list of alert type IDs. Fetches alerts whose type ID matches an alert_type_id in the alert_type_ids list. For example, alert 'Alert E-mail Failure' has type ID A111066. If alert_type_ids = 'A111066', only alerts of 'Alert E-mail Failure' will be displayed. | False |
-    | Impact Types | Comma-separated list  of impact types. Fetch alerts whose impact type matches an impact type in Impact Types list. For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'. If Impact Types = 'SystemIndicator', only alerts with impact type 'SystemIndicator', such as 'Incorrect NTP Configuration' will be displayed. | False |
-    | First fetch timestamp | format: `<number>` `<time unit>`, e.g., 12 hours, 7 days. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | \(e.g., https://192.168.0.1:57261\) | True |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Username |  | True |
+| Incidents Fetch Interval |  | False |
+| Maximum number of incidents per fetch | The maximum number of incidents to fetch each time. | False |
+| Alert Status Filters | Fetches incidents by the status filters given. For example, if acknowledged is true, then only alerts that have been acknowledged will be fetched. If 'Auto Resolved' or 'Not Auto Resolved' is selected, then by default also 'Resolved' will be set. | False |
+| Alert type IDs | Comma-separated list of alert type IDs. Fetches alerts whose type ID matches an alert_type_id in the alert_type_ids list. For example, alert 'Alert E-mail Failure' has type ID A111066. If alert_type_ids = 'A111066', only alerts of 'Alert E-mail Failure' will be displayed. | False |
+| Impact Types | Comma-separated list  of impact types. Fetch alerts whose impact type matches an impact type in Impact Types list. For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'. If Impact Types = 'SystemIndicator', only alerts with impact type 'SystemIndicator', such as 'Incorrect NTP Configuration' will be displayed. | False |
+| First fetch timestamp | format: `<number>` `<time unit>`, e.g., 12 hours, 7 days. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ### Available Alert Type IDs, Impact Types, and Entity Types
 Alert Policies contains the list of all possible alerts in the system,
@@ -48,7 +44,7 @@ The following commands require cluster admin or higher permissions.
 - ***nutanix-hypervisor-alerts-resolve-by-filter***
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### nutanix-hypervisor-hosts-list
 ***
@@ -801,4 +797,3 @@ Resolves alerts using a filter.
 >|num_failed_updates|num_successful_updates|
 >|---|---|
 >| 0 | 0 |
-

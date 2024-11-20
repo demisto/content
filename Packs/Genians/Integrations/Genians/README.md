@@ -47,21 +47,17 @@ Reference the Enforcement Policy section in the [Genian NAC Docs](https://docs.g
 1. Input Tag Name for IP Block (e.g. THREAT, GUEST)
 
 
-## Configure Genian NAC on Cortex XSOAR
+## Configure Genian NAC in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Genians.
-3. Click **Add instance** to create and configure a new integration instance.
     - Name: a textual name for the integration instance.
     - Server IP
     - API Key
     - Tag Name
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1. [Post IP address to a tag: genians-assign-ip-tag](#Post-IP-address-to-a-tag)
 2. [Delete IP address from a tag: genians-unassign-ip-tag](#Delete-IP-address-from-a-tag)
