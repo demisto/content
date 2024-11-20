@@ -9382,7 +9382,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->Add sentence here
+>Master key changed successfully. All key material has been re-encrypted with new master key and committed via jobid 1234
 
 ## pan-os-update-master-key
 
@@ -9411,7 +9411,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->Add sentence here
+>Master key changed successfully. All key material has been re-encrypted with new master key and committed via jobid 2468
 
 ## pan-os-get-master-key
 

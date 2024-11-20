@@ -14554,8 +14554,9 @@ def pan_os_create_master_key_command(args: dict) -> CommandResults:
     """
     create_master_key_cmd = build_master_key_create_or_update_cmd(args, action='create')
     raw_response: dict = http_request(URL, 'GET', params={'type': 'op', 'key': API_KEY, 'cmd': create_master_key_cmd})
+    response_result = dict_safe_get(raw_response, ('response', 'result'))  # human readable message
 
-    return CommandResults(readable_output=f'Returned response {raw_response}', raw_response=raw_response)
+    return CommandResults(readable_output=str(response_result), raw_response=raw_response)
 
 
 def pan_os_update_master_key_command(args: dict) -> CommandResults:
@@ -14569,8 +14570,9 @@ def pan_os_update_master_key_command(args: dict) -> CommandResults:
     """
     update_master_key_cmd = build_master_key_create_or_update_cmd(args, action='update')
     raw_response: dict = http_request(URL, 'GET', params={'type': 'op', 'key': API_KEY, 'cmd': update_master_key_cmd})
+    response_result = dict_safe_get(raw_response, ('response', 'result'))  # human readable message
 
-    return CommandResults(readable_output=f'Returned response {raw_response}', raw_response=raw_response)
+    return CommandResults(readable_output=str(response_result), raw_response=raw_response)
 
 
 def pan_os_get_master_key_command() -> CommandResults:
