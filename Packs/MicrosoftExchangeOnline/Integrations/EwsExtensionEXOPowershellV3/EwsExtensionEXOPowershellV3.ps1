@@ -1512,15 +1512,7 @@ class ExchangeOnlinePowershellV3Client
             # Establish session to remote
             $this.CreateSession()
             # Import and Execute command
-            $cmd_params = @{ }
-            if ($mailbox) {
-                $cmd_params.Mailbox = $mailbox
-            }
-
-            if ($limit -gt 0){
-                $cmd_params.ResultSize = $limit
-            }
-            $response = Get-InboxRule @cmd_params -WarningAction:SilentlyContinue
+            $response = Get-TransportRule -WarningAction:SilentlyContinue
         } finally {
             $this.DisconnectSession()
         }
@@ -1531,11 +1523,114 @@ class ExchangeOnlinePowershellV3Client
 
         .EXAMPLE
         Get-TransportRule
+
         .OUTPUTS
         PSObject - Raw response
 
         .LINK
         https://learn.microsoft.com/en-us/powershell/module/exchange/get-transportrule?view=exchange-ps
+        #>
+    }
+
+    [PSObject]GetMailFlowRule([string]$identity)
+    {
+        $response = ""
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            $cmd_params = @{ }
+            if ($identity) {
+                $cmd_params.Identity = $identity
+            }
+            $response = Get-TransportRule @cmd_params -WarningAction:SilentlyContinue
+        } finally {
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+        .DESCRIPTION
+        Get a mail flow rule (transport rules) in the organization.
+
+        .PARAMETER identity
+        Specifies the rule that you want to view.
+
+        .EXAMPLE
+        Get-TransportRule "Ethical Wall - Sales and Brokerage Departments" | Format-List
+
+        .OUTPUTS
+        PSObject - Raw response
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/get-transportrule?view=exchange-ps
+        #>
+    }
+
+    [PSObject]RemoveMailFlowRule([string]$identity)
+    {
+        $response = ""
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            $cmd_params = @{ }
+            if ($identity) {
+                $cmd_params.Identity = $identity
+            }
+            $response = Remove-TransportRule @cmd_params -WarningAction:SilentlyContinue
+        } finally {
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+        .DESCRIPTION
+        Remove a mail flow rule (transport rule) from the organization.
+
+        .PARAMETER identity
+        Specifies the rule that you want to remove.
+
+        .EXAMPLE
+        Remove-TransportRule -Identity "Redirect messages from kim@contoso.com to legal@contoso.com"
+
+        .OUTPUTS
+        PSObject - Raw response
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/remove-transportrule?view=exchange-ps
+        #>
+    }
+
+    [PSObject]DisableMailFlowRule([string]$identity)
+    {
+        $response = ""
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            $cmd_params = @{ }
+            if ($identity) {
+                $cmd_params.Identity = $identity
+            }
+            $response = Disable-TransportRule @cmd_params -WarningAction:SilentlyContinue
+        } finally {
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+        .DESCRIPTION
+        Disable a mail flow rule (transport rule) in the organization.
+
+        .PARAMETER identity
+        Specifies the rule that you want to disable.
+
+        .EXAMPLE
+        Disable-TransportRule -Identity "Sales Disclaimer"
+
+        .OUTPUTS
+        PSObject - Raw response
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/disable-transportrule?view=exchange-ps
         #>
     }
 }
@@ -2137,8 +2232,7 @@ function EnableRuleCommand {
     )
     $mailbox = $kwargs.mailbox
     $identity = $kwargs.identity
-    $result = $client.EnableRule($mailbox, $identity)
-    $raw_response = @{}
+    $raw_response = $client.EnableRule($mailbox, $identity)
     $human_readable = "Rule $identity has been enabled successfully"
     $entry_context = @{}
     Write-Output $human_readable, $entry_context, $raw_response
@@ -2178,6 +2272,40 @@ function GetMailFlowRuleCommand {
         $human_readable = TableToMarkdown $md_columns "Results of $command"
         $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRule(obj.Name === val.Name)" = $parsed_raw_response }
         Write-Output $human_readable, $entry_context, $parsed_raw_response
+    }
+}
+function RemoveMailFlowRuleCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client
+        [hashtable]$kwargs
+    )
+    $identity = $kwargs.identity
+    $raw_response = $client.RemoveMailFlowRule($identity)
+    if($raw_response -eq $null){
+        Write-Output "No Mail Flow Rule were found."
+    }
+    else{
+        $human_readable = "Mail flow rule $identity has been removed successfully"
+        $entry_context = @{}
+        Write-Output $human_readable, $entry_context, $raw_response
+    }
+}
+function DisableMailFlowRuleCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client
+        [hashtable]$kwargs
+    )
+    $identity = $kwargs.identity
+    $raw_response = $client.DisableMailFlowRule($identity)
+    if($raw_response -eq $null){
+        Write-Output "No Mail Flow Rule were found."
+    }
+    else{
+        $human_readable = "Mail flow rule $identity has been disabled successfully"
+        $entry_context = @{}
+        Write-Output $human_readable, $entry_context, $raw_response
     }
 }
 function TestModuleCommand($client)
@@ -2309,6 +2437,12 @@ function Main
             }
             "$script:COMMAND_PREFIX-mail-flow-rule-get" {
                 ($human_readable, $entry_context, $raw_response) = GetMailFlowRuleCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-mail-flow-rule-remove" {
+                ($human_readable, $entry_context, $raw_response) = RemoveMailFlowRuleCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-mail-flow-rule-disable" {
+                ($human_readable, $entry_context, $raw_response) = DisableMailFlowRuleCommand $exo_client $command_arguments
             }
             default {
                 ReturnError "Could not recognize $command"
