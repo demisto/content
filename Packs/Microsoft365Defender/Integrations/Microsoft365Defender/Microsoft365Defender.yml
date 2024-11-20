@@ -189,12 +189,15 @@ configuration:
   hidden:
   - marketplacev2
   required: false
-- defaultvalue: 'false'
+- additionalinfo: When selected, closing the XSOAR incident is mirrored in Microsoft 365 Defender.
+  defaultvalue: 'false'
   display: Close Mirrored Microsoft 365 Defender Incidents (Outgoing Mirroring)
   name: close_out
   type: 8
-  additionalinfo: When selected, closing the XSOAR incident is mirrored in Microsoft 365 Defender.
-  hidden: true
+  section: Collect
+  advanced: true
+  hidden:
+    - marketplacev2
   required: false
 description: Microsoft 365 Defender is a unified pre- and post-breach enterprise defense suite that natively coordinates detection, prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated protection against sophisticated attacks.
 display: Microsoft 365 Defender
