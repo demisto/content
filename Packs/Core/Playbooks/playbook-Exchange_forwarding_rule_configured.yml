@@ -528,7 +528,7 @@ tasks:
   "15":
     id: "15"
     taskid: 2c156ff3-3b1c-4301-8454-1f3a7c4c3fb4
-    type: condition
+    type: collection
     task:
       id: 2c156ff3-3b1c-4301-8454-1f3a7c4c3fb4
       version: -1
