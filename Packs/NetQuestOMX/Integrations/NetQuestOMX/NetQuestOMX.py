@@ -53,7 +53,7 @@ class Client(BaseClient):
 
         set_integration_context(
             {
-                "Token": self.headers["X-Auth-Token"],
+                "Token": self._headers["X-Auth-Token"],
                 "expiration_time": (
                     now + timedelta(seconds=(TOKEN_TTL - 60))  # decreasing 60s from token expiry for safety
                 ).strftime(DATE_FORMAT_FOR_TOKEN),
@@ -266,13 +266,12 @@ def test_module(client: Client) -> str:
     """
 
     message: str = ''
-    try:
-        # create a list and then delete it for sanity check
-        address_list_create_command(client=client, args={"name": "test_module"})
-        address_list_delete_command(client=client, args={"name": "test_module"})
-        message = 'ok'
-    except DemistoException as e:
-        raise e
+
+    # create a list and then delete it for sanity check
+    address_list_create_command(client=client, args={"name": "test_module"})
+    address_list_delete_command(client=client, args={"name": "test_module"})
+    message = 'ok'
+
     return message
 
 
