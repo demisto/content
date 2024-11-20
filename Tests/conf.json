@@ -2643,7 +2643,8 @@
         },
         {
             "playbookID": "UploadFile Test",
-            "integrations": "Core REST API"
+            "integrations": "Core REST API",
+            "intgration": "HelloWorld"
         },
         {
             "playbookID": "MaxMind Test",
