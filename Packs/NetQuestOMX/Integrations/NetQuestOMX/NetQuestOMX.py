@@ -104,7 +104,7 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                "An error was occurred when optimizing the IP's list."
+                "An error was occurred when optimizing the list of IPs."
             ) from e
         return response
 
@@ -116,7 +116,7 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                "An error was occurred when creating the IP's list."
+                "An error was occurred when creating the list of IPs."
             ) from e
 
     def address_list_rename_request(self, new_name: str, existing_name: str):
@@ -128,7 +128,7 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                f"An error was occurred when renaming the {existing_name} IP's list to {new_name}."
+                f"An error occurred when renaming the {existing_name} IP list to {new_name}."
             ) from e
 
     def address_list_delete_request(self, list_name_to_delete: str):
@@ -140,7 +140,7 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                f"An error was occurred when deleting the {list_name_to_delete} IP's list."
+                f"An error was occurred when deleting the {list_name_to_delete} IP list."
             ) from e
 
 
