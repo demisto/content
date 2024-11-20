@@ -15,7 +15,7 @@ from urllib3 import disable_warnings as urllib3_disable_warnings
 from cyberintegrations import TIPoller
 from traceback import format_exc
 import re
-
+from enum import Enum
 
 # Disable insecure warnings
 urllib3_disable_warnings(InsecureRequestWarning)
@@ -408,6 +408,10 @@ COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES = ["osi/git_repository", "osi/public
 
 COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED = ["compromised/breached"]
 
+class Severity(Enum):
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
 
 MAPPING = {
     "compromised/account_group": {  # GIB Source:sourceType, severity:systemSeverity
@@ -1410,7 +1414,7 @@ class Client(BaseClient):
             if date_from is None:
                 raise DemistoException(
                     "Inappropriate first_fetch format, "
-                    f"please use something like this: 2020-01-01 or January 1 2020 or 3 days. It's now been received: {date_from}"
+                    f"please use a format such as: 2020-01-01 or January 1 2020 or 3 days. The format given is: {date_from}"
                 )
             date_from = date_from.strftime("%Y-%m-%d")  # type: ignore
 
@@ -1752,15 +1756,13 @@ class IncidentBuilder:
         self.mapping = mapping
 
     def get_system_severity(self) -> int:
+        severity_map = {
+            "green": Severity.LOW.value,
+            "orange": Severity.MEDIUM.value,
+            "red": Severity.HIGH.value,
+        }
         severity = self.incident.get("evaluation", {}).get("severity")
-        system_severity = 0
-        if severity == "green":
-            system_severity = 1
-        elif severity == "orange":
-            system_severity = 2
-        elif severity == "red":
-            system_severity = 3
-        return system_severity
+        return severity_map.get(severity, 0)
 
     def get_incident_created_time(self) -> str:
         occured_date_field = INCIDENT_CREATED_DATES_MAPPING.get(
@@ -1770,10 +1772,11 @@ class IncidentBuilder:
         if isinstance(occured_date_field, str):
             occured_date_field = [occured_date_field]
 
-        assert isinstance(
-            occured_date_field, list
-        ), f"Expected list or string for occured_date_field, got {type(occured_date_field).__name__}"
 
+        if not isinstance(occured_date_field, list):
+            raise DemistoException(f"Expected list or string for occured_date_field, got {type(occured_date_field).__name__}")
+        
+        
         for variant in occured_date_field:
             try:
                 incident_occured_date = dateparser_parse(
@@ -1827,7 +1830,7 @@ class IncidentBuilder:
                 datetime.fromisoformat(date)
                 return None
             except ValueError:
-                raise ValueError("Invalid date format provided.")
+                raise ValueError(f"Invalid date format provided: {date}")
 
     def check_dates(self):
         for field, value in self.incident.items():
