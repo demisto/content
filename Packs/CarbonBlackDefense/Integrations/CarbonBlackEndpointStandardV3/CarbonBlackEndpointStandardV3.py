@@ -354,7 +354,7 @@ def module_test_command(client: Client, params: dict) -> str:
     message = "Missing parameters Error: At least one complete set of API keys " \
               "(Custom API keys or Api/Live-Response API keys) is required."
 
-    # if all of the custom API keys are provided
+    # If all the custom API keys are provided.
     if client.api_key and client.api_secret_key:
         try:
             client.module_test_request()
