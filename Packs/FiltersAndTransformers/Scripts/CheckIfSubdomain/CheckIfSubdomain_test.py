@@ -19,7 +19,7 @@ CIDR_RANGES = [
 def test_main(mocker, left, right, call_count, result):
     import CheckIfSubdomain
     current_dir = os.getcwd()
-    CheckIfSubdomain.SUFFIX_LIST_URLS = [f"file://{current_dir}/test_data/public_list.dat"]
+    CheckIfSubdomain.SUFFIX_LIST_URLS = [f"file://{current_dir}/test_data/public_list.dat"]  # disable-secrets-detection
     mocker.patch.object(demisto, 'results')
     CheckIfSubdomain.check_if_subdomain(internal_domains=right, domains=left, use_tldextract_default_list=False)
     assert demisto.results.call_count == call_count
