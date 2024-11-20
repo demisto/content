@@ -408,10 +408,15 @@ COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES = ["osi/git_repository", "osi/public
 
 COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED = ["compromised/breached"]
 
-class Severity(Enum):
+class NumberedSeverity(Enum):
     LOW = 1
     MEDIUM = 2
     HIGH = 3
+
+class StringSeverity(Enum):
+    LOW = "Low"
+    MEDIUM = "Medium"
+    HIGH = "High"
 
 MAPPING = {
     "compromised/account_group": {  # GIB Source:sourceType, severity:systemSeverity
@@ -1374,7 +1379,16 @@ MAPPING = {
     },
 }
 
+DEPRECATED_COLLECTIONS = {
+    "malware/targeted_malware":"malware/malware",
+    "compromised/masked_cards":"compromised/bank_card_group",
+    "compromised/bank_card":"compromised/bank_card_group",
+    "compromised/card":"compromised/bank_card_group",
+    "compromised/account":"compromised/account_group",
+    "attacks/phishing":"attacks/phishing_group",
+}
 
+REMOVED_COLLECTIONS = ["bp/phishing", "bp/phishing_kit", "compromised/imei"]
 class Client(BaseClient):
     """
     Client will implement the service API, and should not contain any Demisto logic.
@@ -1604,6 +1618,14 @@ class CommonHelpers:
 
         return incident
 
+    @staticmethod
+    def validate_collections(collection_name):
+
+        if collection_name in DEPRECATED_COLLECTIONS.keys():
+            raise Exception(
+                f"Collection {collection_name} is obsolete. Please use {DEPRECATED_COLLECTIONS.get(collection_name)}")
+        if collection_name in REMOVED_COLLECTIONS:
+            raise Exception(f"The {collection_name} collection is not valid")
 
 class IndicatorsHelper:
 
@@ -1757,9 +1779,9 @@ class IncidentBuilder:
 
     def get_system_severity(self) -> int:
         severity_map = {
-            "green": Severity.LOW.value,
-            "orange": Severity.MEDIUM.value,
-            "red": Severity.HIGH.value,
+            "green": NumberedSeverity.LOW.value,
+            "orange": NumberedSeverity.MEDIUM.value,
+            "red": NumberedSeverity.HIGH.value,
         }
         severity = self.incident.get("evaluation", {}).get("severity")
         return severity_map.get(severity, 0)
@@ -1808,17 +1830,14 @@ class IncidentBuilder:
         return name
 
     def set_custom_severity(self):
+        severity_map = {
+            "green": StringSeverity.LOW.value,
+            "orange": StringSeverity.MEDIUM.value,
+            "red": StringSeverity.HIGH.value,
+        }
         severity = self.incident.get("evaluation", {}).get("severity")
         if severity:
-            set_severity = "Unknown"
-            if severity == "green":
-                set_severity = "Low"
-            elif severity == "orange":
-                set_severity = "Medium"
-            elif severity == "red":
-                set_severity = "High"
-
-            self.incident["evaluation"]["severity"] = set_severity
+            self.incident["evaluation"]["severity"] = severity_map.get(severity, "Unknown")
 
     @staticmethod
     def date_conversion(date: str):
@@ -2072,6 +2091,7 @@ def fetch_incidents_command(
     incidents = []
     next_run: dict[str, dict[str, int | Any]] = {"last_fetch": {}}
     for collection_name in incident_collections:  # noqa: B007
+        CommonHelpers.validate_collections(collection_name)
         last_fetch = last_run.get("last_fetch", {}).get(collection_name)
         requests_count = 0
         sequpdate = 0
@@ -2150,7 +2170,7 @@ def get_info_by_id_command(collection_name: str):
         :param args: arguments, provided by client.
         """
         results = []
-
+        CommonHelpers.validate_collections(collection_name)
         feed, main_table_data, additional_tables, indicators, readable_output = (
             BuilderCommandResponses(
                 client=client, collection_name=collection_name, args=args
@@ -2222,7 +2242,7 @@ def local_search_command(client: Client, args: dict):
         args.get("date_to", None),
     )
     collection_name = str(args.get("collection_name"))
-
+    CommonHelpers.validate_collections(collection_name)
     date_from_parsed = (
         CommonHelpers.date_parse(date=date_from, arg_name="date_from")
         if date_from is not None
