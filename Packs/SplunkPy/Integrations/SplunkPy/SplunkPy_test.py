@@ -2915,14 +2915,14 @@ def test_parse_fields(fields, expected):
         ({"key1": {"nestedKey": "nestedValue"}, "key2": "value2"}, [{"key1": {"nestedKey": "nestedValue"}, "key2": "value2"}]),
     ]
 )
-def test_ensure_valid_json_format_valid_inputs(events, expected):
+def test_convert_to_json_for_validation_valid_inputs(events, expected):
     """
     Given: A string or dictionary representing valid JSON inputs, including single, multiple, and nested events.
-    When: Calling ensure_valid_json_format.
+    When: Calling convert_to_json_for_validation.
     Then: The function should return a list of dictionaries corresponding to the parsed events.
     """
-    from SplunkPy import ensure_valid_json_format
-    assert ensure_valid_json_format(events) == expected
+    from SplunkPy import convert_to_json_for_validation
+    assert convert_to_json_for_validation(events) == expected
 
 
 @pytest.mark.parametrize(
@@ -2935,15 +2935,15 @@ def test_ensure_valid_json_format_valid_inputs(events, expected):
         "{'key1': 'value1' 'key2': 'value2'}",                  # Missing comma between key-value pairs
     ]
 )
-def test_ensure_valid_json_format_invalid_inputs(invalid_events):
+def test_convert_to_json_for_validation_invalid_inputs(invalid_events):
     """
     Given: A string representing various invalid JSON formats (e.g., missing quotes, missing commas, unmatched braces).
-    When: Calling ensure_valid_json_format.
+    When: Calling convert_to_json_for_validation.
     Then: The function should raise a DemistoException due to invalid JSON format.
     """
-    from SplunkPy import ensure_valid_json_format
+    from SplunkPy import convert_to_json_for_validation
     with pytest.raises(DemistoException, match=r"Make sure that the events are in the correct format"):
-        ensure_valid_json_format(invalid_events)
+        convert_to_json_for_validation(invalid_events)
 
 
 @pytest.mark.parametrize("event, batch_event_data, entry_id, expected_data", [
@@ -2954,13 +2954,13 @@ def test_ensure_valid_json_format_invalid_inputs(invalid_events):
 ])
 @patch("requests.post")
 @patch("SplunkPy.get_events_from_file")  # Replace with the actual module
-@patch("SplunkPy.ensure_valid_json_format")
+@patch("SplunkPy.convert_to_json_for_validation")
 @patch("SplunkPy.validate_indexes")
 @patch("SplunkPy.parse_fields")
 def test_splunk_submit_event_hec(
     mock_parse_fields,
     mock_validate_indexes,
-    mock_ensure_valid_json_format,
+    mock_convert_to_json_for_validation,
     mock_get_events_from_file,
     mock_post,
     event,
@@ -2986,16 +2986,16 @@ def test_splunk_submit_event_hec(
 
     if event:
         # Single event
-        mock_ensure_valid_json_format.return_value = [{"event": event}]
+        mock_convert_to_json_for_validation.return_value = [{"event": event}]
     elif batch_event_data:
         # Batch event data
-        mock_ensure_valid_json_format.return_value = [{'event': 'some event', 'index': 'some index'},
+        mock_convert_to_json_for_validation.return_value = [{'event': 'some event', 'index': 'some index'},
                                                       {'event': 'some event', 'index': 'some index'}]
     elif entry_id:
         # Entry ID
         mock_get_events_from_file.return_value =\
             "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"
-        mock_ensure_valid_json_format.return_value =\
+        mock_convert_to_json_for_validation.return_value =\
             [{'event': 'some event', 'index': 'some index'}, {'event': 'some event', 'index': 'some index'}]
 
     # Act
