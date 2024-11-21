@@ -4,7 +4,7 @@ import hashlib
 import secrets
 import string
 from itertools import zip_longest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 from CoreIRApiModule import *
 
@@ -892,12 +892,13 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
         last_update = remote_args.last_update
         demisto.debug(f"using {remote_args.last_update=} for last_update")
 
-    last_update_utc = dateparser.parse(last_update,
-                                       settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
+    last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})
+    if not last_update_utc:
+        last_update_utc = datetime.now(tz=UTC).replace(tzinfo=None) - timedelta(minutes=xdr_delay+1)
+        demisto.debug(f'Failed to parse {last_update=} will start fetching form {last_update_utc=}')
 
-    if last_update_utc:
-        gte_modification_time_milliseconds = last_update_utc
-        lte_modification_time_milliseconds = datetime.utcnow() - timedelta(minutes=xdr_delay)
+    gte_modification_time_milliseconds = last_update_utc
+    lte_modification_time_milliseconds = datetime.utcnow() - timedelta(minutes=xdr_delay)
     demisto.debug(
         f'Performing get-modified-remote-data command {last_update=} | {gte_modification_time_milliseconds=} |'
         f'{lte_modification_time_milliseconds=}'
