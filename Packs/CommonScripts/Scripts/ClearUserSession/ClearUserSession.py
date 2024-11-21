@@ -61,7 +61,7 @@ def prepare_human_readable(
     """
     result = []
     if human_readable:
-        command = f'!{command_name} {" ".join([f"{arg}={value}" for arg, value in args.items() if value])}'
+        command = f'{command_name} {" ".join([f"{arg}={value}" for arg, value in args.items() if value])}'
         if not is_error:
             result_message = f"#### Result for {command}\n{human_readable}"
             result.append(
@@ -249,54 +249,7 @@ def get_user_id(users_ids: dict, brand_name: str, user_name: str) -> str:
     return ""
 
 
-def okta_clear_user_sessions(
-    command: Command,
-) -> tuple[list[CommandResults], Optional[str]]:
-    """
-    Clears user sessions in Okta by executing the specified command and processes the results.
-
-    This function executes the given command to clear user sessions, aggregates any human-readable outputs
-    and errors, and returns the results.
-
-    Args:
-        command (Command): The command object containing the name and arguments to execute.
-
-    Returns:
-        tuple[list[CommandResults], Optional[str]]:
-            - A list of CommandResults objects representing the outputs and errors of the command execution.
-            - An error message string extracted from the first error result, or None if no errors occurred.
-    """
-    readable_outputs_list = []
-
-    _, human_readable, readable_errors = run_execute_command(
-        command.name, command.args
-    )
-    readable_outputs_list.extend(readable_errors)
-    readable_outputs_list.extend(
-        prepare_human_readable(command.name, command.args, human_readable)
-    )
-    error_message = readable_errors[0].readable_output if readable_errors else ""
-    return readable_outputs_list, error_message
-
-
-def msgraph_user_session_revoke(
-    command: Command,
-) -> tuple[list[CommandResults], str]:
-    """
-    Revokes a user's session in Microsoft Graph and processes the results.
-
-    This function executes the specified command to revoke a user's session,
-    processes the results, and returns both the readable outputs and the human-readable response.
-
-    Args:
-        command (Command): The command object containing the command name and arguments
-            needed for the session revocation.
-
-    Returns:
-        tuple[list[CommandResults], str]:
-            - A list of CommandResults objects containing both errors and readable outputs.
-            - A string representing the human-readable response from the executed command.
-    """
+def clear_user_sessions(command: Command) -> tuple[list[CommandResults], str, Optional[str]]:
     readable_outputs_list = []
 
     _, human_readable, readable_errors = run_execute_command(command.name, command.args)
@@ -304,7 +257,8 @@ def msgraph_user_session_revoke(
     readable_outputs_list.extend(
         prepare_human_readable(command.name, command.args, human_readable)
     )
-    return readable_outputs_list, human_readable
+    error_message = readable_errors[0].readable_output if readable_errors else ""
+    return readable_outputs_list, human_readable, error_message
 
 
 def create_readable_output(outputs):
@@ -400,10 +354,7 @@ def main():
                         brand=OKTA_BRAND,
                     )
                     if okta_clear_user_sessions_command.is_valid_args():
-                        readable_outputs, error_message = okta_clear_user_sessions(
-                            okta_clear_user_sessions_command
-                        )
-
+                        readable_outputs, _, error_message = clear_user_sessions(okta_clear_user_sessions_command)
                         results_for_verbose.extend(readable_outputs)
                         if not error_message:
                             success = True
@@ -422,10 +373,7 @@ def main():
                         brand=MS_GRAPH_BRAND,
                     )
                     if msgraph_user_session_revoke_command.is_valid_args():
-                        readable_outputs, human_readable = msgraph_user_session_revoke(
-                            msgraph_user_session_revoke_command
-                        )
-
+                        readable_outputs, human_readable, _ = clear_user_sessions(msgraph_user_session_revoke_command)
                         results_for_verbose.extend(readable_outputs)
                         if "successfully" in human_readable:
                             success = True

@@ -12,7 +12,7 @@ from ClearUserSession import (
     extract_usernames_with_ids,
     get_user_data,
     get_user_id,
-    okta_clear_user_sessions,
+    clear_user_sessions,
     main,
 )
 
@@ -118,7 +118,7 @@ def test_prepare_human_readable_success():
     assert isinstance(result[0], CommandResults)
     assert (
         result[0].readable_output
-        == "#### Result for !test-command arg1=value1 arg2=value2\nTest output"
+        == "#### Result for test-command arg1=value1 arg2=value2\nTest output"
     )
     assert result[0].mark_as_note is True
 
@@ -143,7 +143,7 @@ def test_prepare_human_readable_error():
     assert isinstance(result[0], CommandResults)
     assert (
         result[0].readable_output
-        == "#### Error for !test-command arg1=value1\nError occurred"
+        == "#### Error for test-command arg1=value1\nError occurred"
     )
     assert result[0].entry_type == EntryType.ERROR
     assert result[0].mark_as_note is True
@@ -188,7 +188,7 @@ def test_prepare_human_readable_empty_args():
 
     assert len(result) == 1
     assert isinstance(result[0], CommandResults)
-    assert result[0].readable_output == "#### Result for !test-command \nTest output"
+    assert result[0].readable_output == "#### Result for test-command \nTest output"
     assert result[0].mark_as_note is True
 
 
@@ -391,13 +391,12 @@ def test_main_successful_execution(mocker: MockerFixture):
     """
     Given:
         Valid arguments for user_name and brands.
-        Mocked responses for get_user_data, okta_clear_user_sessions, and msgraph_user_session_revoke.
+        Mocked responses for get_user_data, clear_user_sessions.
     When:
         The main function is called.
     Then:
         - The get_user_data function should retrieve user IDs successfully.
-        - The okta_clear_user_sessions function should process sessions for Okta users.
-        - The msgraph_user_session_revoke function should revoke sessions for Microsoft Graph users.
+        - The clear_user_sessions function should process sessions.
         - The return_results function should be called with the correct results.
     """
     # Mock demisto.args()
@@ -426,16 +425,10 @@ def test_main_successful_execution(mocker: MockerFixture):
         ),
     )
 
-    # Mock okta_clear_user_sessions
-    mock_okta_clear_user_sessions = mocker.patch(
-        "ClearUserSession.okta_clear_user_sessions",
-        return_value=([CommandResults()], "")
-    )
-
-    # Mock msgraph_user_session_revoke
-    mock_msgraph_user_session_revoke = mocker.patch(
-        "ClearUserSession.msgraph_user_session_revoke",
-        return_value=([CommandResults()], "successfully"),
+    # Mock clear_user_sessions
+    mock_clear_user_sessions = mocker.patch(
+        "ClearUserSession.clear_user_sessions",
+        return_value=([CommandResults()], "", "")
     )
 
     # Mock return_results
@@ -446,8 +439,7 @@ def test_main_successful_execution(mocker: MockerFixture):
 
     # Assert that return_results was called
     assert mock_get_user_data.called
-    assert mock_okta_clear_user_sessions.called
-    assert mock_msgraph_user_session_revoke.called
+    assert mock_clear_user_sessions.called
     assert mock_return_results.called
 
 
@@ -471,8 +463,7 @@ def test_main_user_not_found(mocker: MockerFixture):
 
     # Mock all user data retrieval functions to return empty results
     mocker.patch("ClearUserSession.get_user_data", return_value=([], {}))
-    mocker.patch("ClearUserSession.okta_clear_user_sessions", return_value=([], ""))
-    mocker.patch("ClearUserSession.msgraph_user_session_revoke", return_value=([], ""))
+    mocker.patch("ClearUserSession.clear_user_sessions", return_value=([], ""))
 
     # Mock return_results
     mock_return_results = mocker.patch("ClearUserSession.return_results")
@@ -603,7 +594,7 @@ def test_get_user_id():
     assert result == expected_result
 
 
-def test_okta_clear_user_sessions(mocker: MockerFixture):
+def test_clear_user_sessions(mocker: MockerFixture):
     command = Command(name="okta-clear-sessions", args={"user_id": "12345"})
 
     expected_error_message = "Error: User session clearance failed."
@@ -618,5 +609,5 @@ def test_okta_clear_user_sessions(mocker: MockerFixture):
         ),
     )
 
-    _, error_message = okta_clear_user_sessions(command)
+    _, _, error_message = clear_user_sessions(command)
     assert error_message == expected_error_message
