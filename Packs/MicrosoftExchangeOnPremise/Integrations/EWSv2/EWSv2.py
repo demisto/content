@@ -1,3 +1,4 @@
+import binascii
 import email
 import hashlib
 import uuid
@@ -604,7 +605,7 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
     return m
 
 
-def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
+def handle_html(html_body: str) -> tuple[str, List[Dict[str, Any]]]:
     """
     Extract all data-url content from within the html and return as separate attachments.
     Due to security implications, we support only images here
@@ -618,9 +619,8 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
         name = f'image{i}'
         cid = (f'{name}_{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
         attachment = {
-            'data': base64.b64decode(m.group(3)),
+            'data': base_64_decode(m.group(3)),
             'name': name
-
         }
         attachment['cid'] = cid
         clean_body += html_body[last_index:m.start(1)] + 'cid:' + attachment['cid']
@@ -631,6 +631,15 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
 
     clean_body += html_body[last_index:]
     return clean_body, attachments
+
+
+def base_64_decode(s: str) -> bytes:
+    """
+    Decode a str in a base 64 format to a picture.
+    """
+    s = s.encode('ascii')
+    s += b'=' * (-len(s) % 4)  # add padding
+    return binascii.a2b_base64(s)
 
 
 def get_message_for_body_type(body, body_type, html_body):
