@@ -1,4 +1,4 @@
-In order to connect to the AzureKubernetesServices using either Cortex XSOAR Azure App or the Self-Deployed Azure App, use one of the following methods:
+hello-In order to connect to the AzureKubernetesServices using either Cortex XSOAR Azure App or the Self-Deployed Azure App, use one of the following methods:
 
 - *Authorization Code Flow* (Recommended).
 - *Device Code Flow*.
