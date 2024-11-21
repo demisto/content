@@ -996,18 +996,12 @@ def rasterize_email_command():  # pragma: no cover
 
     navigation_timeout = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
 
-    # with open('htmlBody.html', 'w', encoding='utf-8-sig') as f:
-    #     f.write(f'<html style="background:white";>{html_body}</html>')
-    temp_email_file = tempfile.NamedTemporaryFile(mode='w', suffix='html', delete=False, encoding='utf-8-sig')
-    temp_email_file.write(f'<html style="background:white";>{html_body}</html>')
-
-    path = f'file://{os.path.realpath(temp_email_file.name)}'
-
-    rasterize_output = perform_rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
-                                         offline_mode=offline, navigation_timeout=navigation_timeout, full_screen=full_screen)
-
-    temp_email_file.close()
-    os.unlink(temp_email_file.name)
+    with tempfile.NamedTemporaryFile(mode='w', suffix='html', delete_on_close=False, encoding='utf-8-sig') as tf:
+        tf.write(f'<html style="background:white";>{html_body}</html>')
+        tf.close()
+        path = f'file://{os.path.realpath(tf.name)}'
+        rasterize_output = perform_rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
+                                             offline_mode=offline, navigation_timeout=navigation_timeout, full_screen=full_screen)
 
     res = fileResult(filename=file_name, data=rasterize_output[0][0])
 
