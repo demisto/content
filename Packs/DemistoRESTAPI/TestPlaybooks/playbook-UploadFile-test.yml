@@ -144,7 +144,7 @@ tasks:
       name:
         simple: DemistoUploadFile - test incident
       type:
-        simple: Xpanse Alert
+        simple: Qradar Generic
     separatecontext: false
     continueonerrortype: ""
     view: |-
