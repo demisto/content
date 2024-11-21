@@ -446,7 +446,7 @@ def microsoft_365_defender_incident_get_command(client: Client, args: dict) -> C
 
 @logger
 def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: str, fetch_limit: int, timeout: int = None) -> List[
-    dict]:
+        dict]:
     """
     Uses to fetch incidents into Demisto
     Documentation: https://xsoar.pan.dev/docs/integrations/fetching-incidents#the-fetch-incidents-command
@@ -594,7 +594,7 @@ def microsoft_365_defender_advanced_hunting_command(client: Client, args: dict) 
 
 
 def get_remote_data_command(client: Client, args: dict):
-    #todo - try not implemneting it and see what happens.
+    # todo - try not implemneting it and see what happens.
     pass
 
 
@@ -649,7 +649,7 @@ def main() -> None:
     client_credentials = params.get('client_credentials', False)
     enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or \
-                             params.get('certificate_thumbprint', '')
+        params.get('certificate_thumbprint', '')
 
     private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
                    or params.get('private_key', ''))
@@ -734,8 +734,6 @@ def main() -> None:
 
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
-
-
 
         else:
             raise NotImplementedError
