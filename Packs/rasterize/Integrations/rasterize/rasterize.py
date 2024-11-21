@@ -999,7 +999,7 @@ def rasterize_email_command():  # pragma: no cover
     with tempfile.NamedTemporaryFile(mode='w', suffix='.html', encoding='utf-8-sig') as tf:
         demisto.debug(f'{html_body=}')
         tf.write(f'<html style="background:white";>{html_body}</html>')
-        tf.flush()  # https://stackoverflow.com/questions/3924117/how-to-use-tempfile-namedtemporaryfile-in-python#answer-21944302
+        tf.flush()
         path = f'file://{os.path.realpath(tf.name)}'
         demisto.debug(f'{path=}')
         rasterize_output = perform_rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
