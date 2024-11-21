@@ -85,7 +85,8 @@ def test_microsoft_365_defender_advanced_hunting_command(mocker):
 
 def fetch_check(mocker, client, last_run, first_fetch_time, fetch_limit, mock_results):
     mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
-    results = fetch_incidents(client, first_fetch_time, fetch_limit)
+    mirroring_fields = {"mirroring_direction": "Incoming", "mirroring_incident_id": "1234"}
+    results = fetch_incidents(client, mirroring_fields, first_fetch_time, fetch_limit)
     assert len(results) == len(mock_results)
     for incident, mock_incident in zip(results, mock_results):
         assert incident['name'] == mock_incident['name']

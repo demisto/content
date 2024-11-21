@@ -14,6 +14,13 @@ MAX_ENTRIES = 100
 TIMEOUT = '30'
 BASE_URL = "https://api.security.microsoft.com"
 
+MIRROR_DIRECTION = {
+    'None': None,
+    'Incoming': 'In',
+    'Outgoing': 'Out',
+    'Incoming And Outgoing': 'Both'
+}
+
 ''' CLIENT CLASS '''
 
 
@@ -277,7 +284,7 @@ def _get_meta_data_for_incident(raw_incident: dict) -> dict:
                      'risk level': device.get('riskScore', ''),
                      'tags': ','.join(device.get('tags', []))
                      } for alert in alerts_list
-                    for device in alert.get('devices', [])]
+                    for device in alert.get('devices', [])],
     }
 
 
@@ -438,7 +445,8 @@ def microsoft_365_defender_incident_get_command(client: Client, args: dict) -> C
 
 
 @logger
-def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, timeout: int = None) -> List[dict]:
+def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: str, fetch_limit: int, timeout: int = None) -> List[
+    dict]:
     """
     Uses to fetch incidents into Demisto
     Documentation: https://xsoar.pan.dev/docs/integrations/fetching-incidents#the-fetch-incidents-command
@@ -460,6 +468,7 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
     Returns:
         incidents, new last_run
     """
+
     start_time = time.time()
     test_context_for_token(client)
 
@@ -488,6 +497,8 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
         #       function from the start.
 
         while True:
+            mirror_direction = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction')),
+            mirror_instance = demisto.integrationInstance()
             time_delta = time.time() - start_time
             if timeout and time_delta > timeout:
                 raise DemistoException(
@@ -498,11 +509,12 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
             raw_incidents = response.get('value')
             for incident in raw_incidents:
                 incident.update(_get_meta_data_for_incident(incident))
+                incident.update(mirroring_fields)
 
             incidents += [{
                 "name": f"Microsoft 365 Defender {incident.get('incidentId')}",
                 "occurred": incident.get('createdTime'),
-                "rawJSON": json.dumps(incident)
+                "rawJSON": json.dumps(incident),
             } for incident in raw_incidents]
 
             # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
@@ -581,9 +593,6 @@ def microsoft_365_defender_advanced_hunting_command(client: Client, args: dict) 
                           readable_output=human_readable_table)
 
 
-''' MAIN FUNCTION '''
-
-
 def get_remote_data_command(client: Client, args: dict):
     #todo - try not implemneting it and see what happens.
     pass
@@ -602,7 +611,8 @@ def get_modified_remote_data_command(client: Client, args: dict):
         last_mirror_incident_id = incident_id
 
     # Following is an example for storing the last update to be now and the last incident ID that was handled but we can use it in any other way
-    set_last_mirror_run({"last_update": datetime.datetime.now(datetime.timezone.utc), "last_incident_id": last_mirror_incident_id})
+    set_last_mirror_run(
+        {"last_update": datetime.datetime.now(datetime.timezone.utc), "last_incident_id": last_mirror_incident_id})
     return GetModifiedRemoteDataResponse(modified_incident_ids)
 
 
@@ -612,6 +622,9 @@ def update_remote_system_command(client: Client, args: dict):
 
 def get_mapping_fields_command():
     pass
+
+
+''' MAIN FUNCTION '''
 
 
 def main() -> None:
@@ -636,7 +649,7 @@ def main() -> None:
     client_credentials = params.get('client_credentials', False)
     enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or \
-        params.get('certificate_thumbprint', '')
+                             params.get('certificate_thumbprint', '')
 
     private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
                    or params.get('private_key', ''))
@@ -645,6 +658,11 @@ def main() -> None:
     first_fetch_time = params.get('first_fetch', '3 days').strip()
     fetch_limit = arg_to_number(params.get('max_fetch', 10))
     fetch_timeout = arg_to_number(params.get('fetch_timeout', TIMEOUT))
+
+    mirroring_fields = {
+        'mirroring_direction': MIRROR_DIRECTION.get(params.get('mirror_direction', 'None')),
+        'mirroring_instance': demisto.integrationInstance()
+    }
     demisto.debug(f'Command being called is {demisto.command()}')
 
     command = demisto.command()
@@ -701,7 +719,7 @@ def main() -> None:
         elif command == 'fetch-incidents':
             fetch_limit = arg_to_number(fetch_limit)
             fetch_timeout = arg_to_number(fetch_timeout) if fetch_timeout else None
-            incidents = fetch_incidents(client, first_fetch_time, fetch_limit, fetch_timeout)
+            incidents = fetch_incidents(client, mirroring_fields, first_fetch_time, fetch_limit, fetch_timeout)
             demisto.incidents(incidents)
 
         elif command == 'get-remote-data':
