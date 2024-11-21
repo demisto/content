@@ -15,15 +15,9 @@ During the alert investigation, the playbook will perform the following:
 
 Remediation:
 
-- Automatically disable the malicious scheduled task.
-- Block the malicious IP (requires analyst approval).
+- Automatically disable the malicious scheduled task on the remote host.
+- Terminate the causality process.
 - Automatically Close the alert.
-
-Requirements:
-
-For response actions, the following integrations are required: 
-
-- PAN-OS.
 
 ## Dependencies
 
@@ -39,18 +33,18 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* SearchIncidentsV2
 * Print
 * Set
+* SearchIncidentsV2
 
 ### Commands
 
-* core-get-endpoints
 * core-get-script-execution-results
-* closeInvestigation
 * core-terminate-causality
-* core-get-cloud-original-alerts
+* core-get-endpoints
 * core-get-process-analytics-prevalence
+* closeInvestigation
+* core-get-cloud-original-alerts
 * core-run-script-execute-commands
 
 ## Playbook Inputs
