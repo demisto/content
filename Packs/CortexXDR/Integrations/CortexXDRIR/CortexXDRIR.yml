@@ -63,7 +63,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Cortex XDR.
+- additionalinfo: "When selected, closing the Cortex XSOAR incident is mirrored in Cortex XDR. Notice: If not selected, but 'Close all related alerts in XDR' is selected, the incident will automatically be closed in Cortex XDR."
   defaultvalue: 'true'
   display: Close Mirrored Cortex XDR Incident
   name: close_xdr_incident
