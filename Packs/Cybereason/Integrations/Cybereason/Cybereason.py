@@ -2041,11 +2041,12 @@ def update_malop_investigation_status_command(client: Client, args: dict):
 
 
 def update_malop_investigation_status(client: Client, malop_guid: str, investigation_status: str) -> None:
-    json_body = { "investigationStatus": INVESTIGATION_STATUS_MAP[investigation_status] }
+    json_body = {"investigationStatus": INVESTIGATION_STATUS_MAP[investigation_status]}
 
     response = client.cybereason_api_call('PUT', f'/rest/mmng/v2/malops/{malop_guid}', json_body=json_body)
     if response['status'] != 'SUCCESS':
-        raise Exception(f"Failed to update malop {malop_guid} investigation status to \"{investigation_status}\". Message: {response['message']}")
+        raise Exception(
+            f"Failed to update malop {malop_guid} investigation status to \"{investigation_status}\". Message: {response['message']}")
 
 
 def get_machine_details_command_pagination_params(args: dict) -> dict:
@@ -2221,7 +2222,7 @@ def main():
 
         elif demisto.command() == 'cybereason-process-attack-tree':
             return_results(cybereason_process_attack_tree_command(client, args))
-        
+
         elif demisto.command() == 'cybereason-update-malop-investigation-status':
             return_results(update_malop_investigation_status_command(client, args))
 
