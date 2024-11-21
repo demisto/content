@@ -1,0 +1,506 @@
+category: Messaging and Conferencing
+commonfields:
+  id: SlackV3
+  version: -1
+configuration:
+- display: ''
+  displaypassword: Bot Token
+  hiddenusername: true
+  name: bot_token
+  required: false
+  section: Connect
+  type: 9
+- display: ''
+  displaypassword: User Token
+  hiddenusername: true
+  name: user_token
+  required: false
+  section: Connect
+  type: 9
+- display: ''
+  displaypassword: App Token
+  hiddenusername: true
+  name: app_token
+  required: false
+  section: Connect
+  type: 9
+- advanced: true
+  display: Dedicated Slack channel to receive notifications
+  name: incidentNotificationChannel
+  required: false
+  section: Connect
+  type: 0
+- advanced: true
+  defaultvalue: Low
+  display: Minimum incident severity by which to send messages to Slack
+  name: min_severity
+  options:
+  - Unknown
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: false
+  section: Collect
+  type: 15
+- additionalinfo: By default, externalFormSubmit is enabled in order to allow Ask tasks to be sent correctly.
+  advanced: true
+  display: Types of Notifications to Send.
+  name: permitted_notifications
+  options:
+  - incidentAssigned
+  - assign
+  - incidentOpened
+  - incidentChanged
+  - investigationClosed
+  - investigationDeleted
+  - incidentReminderSLA
+  - taskCompleted
+  - incidentStatusChanged
+  - failedFetchIncidents
+  - mentionNew
+  - mentionOld
+  required: false
+  section: Collect
+  type: 16
+- defaultvalue: Unclassified
+  display: Type of incidents created in Slack
+  name: incidentType
+  required: false
+  section: Connect
+  type: 13
+- advanced: true
+  display: Allow external users to create incidents via DM
+  name: allow_incidents
+  required: false
+  section: Collect
+  type: 8
+- additionalinfo: In some cases, events may not be processed fast enough. If you want to attempt to retry the event, select `false`. Note that this can result in some responses being double-posted.
+  advanced: true
+  defaultvalue: 'true'
+  display: Ignore event retries
+  name: ignore_event_retries
+  required: false
+  section: Collect
+  type: 8
+- advanced: true
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+- additionalinfo: Trust any certificate (not secure). Make sure to mark this parameter if you want the SlackBlockBuilder script to send a response back to the incident context.
+  advanced: true
+  display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  section: Connect
+  type: 8
+- defaultvalue: 'true'
+  display: Enable Incident Mirroring
+  name: mirroring
+  required: false
+  section: Connect
+  type: 8
+- additionalinfo: Whether to enable mirroring only from xsoar to slack, mark it if file mirroring is required in investigations.
+  display: Enable Outbound File Mirroring
+  name: enable_outbound_file_mirroring
+  required: false
+  section: Connect
+  type: 8
+- additionalinfo: If your organization does not require incident mirroring, or data collection, it is possible to disable the `longRunning` parameter. For those organizations who do want to use these features, the parameter should be set to `True` to enable the long-running container.
+  advanced: true
+  defaultvalue: 'true'
+  display: Long running instance. Required for investigation mirroring and direct messages.
+  name: longRunning
+  required: false
+  section: Connect
+  type: 8
+- advanced: true
+  defaultvalue: Cortex XSOAR
+  display: Bot display name in Slack
+  name: bot_name
+  required: false
+  section: Connect
+  type: 0
+- advanced: true
+  defaultvalue: https://avatars.slack-edge.com/2020-05-24/1142885630851_5529c7f034d9b96ec39c_512.png
+  display: Bot icon in Slack - Image URL (Cortex XSOAR icon by default)
+  name: bot_icon
+  required: false
+  section: Connect
+  type: 0
+- advanced: true
+  defaultvalue: '60'
+  display: Maximum time to wait for a rate limiting call in seconds
+  name: max_limit_time
+  required: false
+  section: Connect
+  type: 0
+- advanced: true
+  defaultvalue: '200'
+  display: Number of objects to return in each paginated call
+  name: paginated_count
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: Only supported in Cortex XSOAR V6.1 and above.
+  advanced: true
+  display: Comma-separated list of tags to filter the messages sent from Cortex XSOAR.
+  name: filtered_tags
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: Adding an API key will enable the integration to handle blocks that contain a state and is necessary for the SlackBlockBuilder script.
+  advanced: true
+  display: ''
+  displaypassword: XSOAR API Key
+  hidden: true
+  hiddenusername: true
+  name: demisto_api_key
+  required: false
+  section: Connect
+  type: 9
+- advanced: true
+  defaultvalue: 'false'
+  display: Enable DMs to the bot
+  name: enable_dm
+  required: false
+  section: Collect
+  type: 8
+- additionalinfo: This parameter prevents this integration from storing Users and Channels in the integration context. This parameter also prevents paginated calls which can result in timeout errors for large workspaces.
+  advanced: true
+  defaultvalue: 'false'
+  display: Disable Caching of Users and Channels
+  name: disable_caching
+  required: false
+  section: Collect
+  type: 8
+- additionalinfo: This parameter will write additional data to the logs and should only be used when you are directed to by XSOAR support.
+  advanced: true
+  defaultvalue: 'false'
+  display: Extensive Logging
+  name: extensive_logging
+  required: false
+  section: Connect
+  type: 8
+- additionalinfo: For workspaces where a handful of channels are consistently being used, you may add them as a CSV in the format ChannelName:ChannelID.
+  advanced: true
+  display: Common Channels
+  name: common_channels
+  required: false
+  section: Collect
+  type: 12
+description: Send messages and notifications to your Slack team.
+display: SlackV3
+name: SlackV3
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: all
+      description: The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring.
+      name: type
+      predefined:
+      - all
+      - chat
+      - none
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether the channel is auto-closed when an investigation is closed. Can be "true" or "false". Default is "true".
+      name: autoclose
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: Both
+      description: The mirroring direction.
+      name: direction
+      predefined:
+      - Both
+      - FromDemisto
+      - ToDemisto
+    - auto: PREDEFINED
+      defaultValue: group
+      description: The channel type.
+      name: mirrorTo
+      predefined:
+      - channel
+      - group
+    - description: The name of the channel. The default is "incident-<incidentID>".
+      name: channelName
+    - description: The topic of the channel.
+      name: channelTopic
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to remove the Slack administrator (channel creator) from the mirrored channel.
+      name: kickAdmin
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether the mirrored channel should be private or not (true by default).
+      name: private
+      predefined:
+      - 'true'
+      - 'false'
+    description: Mirrors the investigation between Slack and the Cortex XSOAR War Room.
+    name: mirror-investigation
+  - arguments:
+    - default: true
+      description: 'The message content. When mentioning another Slack user, make sure to do so in the following format: <@user_name>.'
+      name: message
+    - description: The user to whom to send the message. Can be either the username or email address.
+      name: to
+    - description: The name of the Slack channel to which to send the message.
+      name: channel
+    - description: The ID of the Slack channel to which to send the message.
+      name: channel_id
+    - description: An entry ID to send as a link.
+      name: entry
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to include a URL to the relevant component in Cortex XSOAR.
+      name: ignoreAddURL
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The ID of the thread to which to reply. Can be retrieved from a previous send-notification command.
+      name: threadID
+    - description: A JSON string of Slack blocks to send in the message.
+      name: blocks
+    description: Sends a message to a user, group, or channel.
+    name: send-notification
+    outputs:
+    - contextPath: Slack.Thread.ID
+      description: The Slack thread ID.
+      type: String
+  - arguments:
+    - description: The name of the channel to archive. If not provided, the mirrored investigation channel is archived (if the channel exists).
+      name: channel
+    - description: The ID of the channel to archive. If not provided, the mirrored investigation channel is archived (if the channel exists).
+      name: channel_id
+    description: Archives a Slack channel.
+    name: close-channel
+  - arguments:
+    - default: true
+      description: The ID of the file entry to send.
+      name: file
+      required: true
+    - description: The user to whom to send the file. Can be the username or the email address.
+      name: to
+    - description: The name of the Slack group (private channel) to which to send the file.
+      name: group
+    - description: The name of the Slack channel to which to send the file.
+      name: channel
+    - description: The ID of the Slack channel to which to send the file.
+      name: channel_id
+    - description: The ID of the thread to which to reply. Can be retrieved from a previous send-notification command.
+      name: threadID
+    - description: A comment to add to the file.
+      name: comment
+    description: Sends a file to a user, channel, or group. If not specified, the file is sent to the mirrored investigation channel (if the channel exists).
+    name: slack-send-file
+  - arguments:
+    - description: The channel name. If not specified, the topic of the mirrored investigation channel is set (if the channel exists).
+      name: channel
+    - description: The channel ID. If not specified, the topic of the mirrored investigation channel is set (if the channel exists).
+      name: channel_id
+    - default: true
+      description: The topic for the channel.
+      name: topic
+      required: true
+    description: Sets the topic for a channel.
+    name: slack-set-channel-topic
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: private
+      description: The channel type.
+      name: type
+      predefined:
+      - private
+      - public
+    - default: true
+      description: The name of the channel.
+      name: name
+      required: true
+    - description: 'A CSV list of user names or email addresses to invite to the channel. For example: "user1, user2...".'
+      name: users
+    description: Creates a channel in Slack.
+    name: slack-create-channel
+    outputs:
+    - contextPath: Slack.Channel.ID
+      description: The ID of the channel.
+      type: String
+    - contextPath: Slack.Channel.Name
+      description: The name of the channel.
+      type: String
+  - arguments:
+    - default: true
+      description: 'A CSV list of usernames or email addresses to invite to join the channel. For example: "user1, user2...".'
+      name: users
+      required: true
+    - description: The name of the channel to which to invite the users. If the name of the channel is not specified, the name of the mirrored investigation channel is used (if the channel exists).
+      name: channel
+    - description: The ID of the channel to which to invite the users. If the ID of the channel is not specified, the ID of the mirrored investigation channel is used (if the channel exists).
+      name: channel_id
+    description: Invites users to join a channel.
+    name: slack-invite-to-channel
+  - arguments:
+    - default: true
+      description: 'A CSV list of usernames or email addresses to remove from the a channel. For example: "user1, user2...".'
+      name: users
+      required: true
+    - description: The name of the channel from which to remove the users. If the name of the channel is not specified, the mirrored investigation channel is used (if the channel exists).
+      name: channel
+    - description: The ID of the channel from which to remove the users. If the ID of the channel is not specified, the mirrored investigation channel is used (if the channel exists).
+      name: channel_id
+    description: Removes users from the specified channel.
+    name: slack-kick-from-channel
+  - arguments:
+    - default: true
+      description: The new name of the channel.
+      name: name
+      required: true
+    - description: The current name of the channel. If the name of the channel is not specified, the mirrored investigation channel is used (if the channel exists).
+      name: channel
+    - description: The current ID of the channel. If the ID of the channel is not specified, the mirrored investigation channel is used (if the channel exists).
+      name: channel_id
+    description: Renames a channel in Slack.
+    name: slack-rename-channel
+  - arguments:
+    - default: true
+      description: The Slack user (username or email).
+      name: user
+      required: true
+    description: Get details about a specified user.
+    name: slack-get-user-details
+    outputs:
+    - contextPath: Slack.User.ID
+      description: The ID of the user.
+      type: String
+    - contextPath: Slack.User.Username
+      description: The username of the user.
+      type: String
+    - contextPath: Slack.User.Name
+      description: The actual name of the user.
+      type: String
+    - contextPath: Slack.User.DisplayName
+      description: The display name of the user.
+      type: String
+    - contextPath: Slack.User.Email
+      description: The email address of the user.
+      type: String
+  - arguments: []
+    description: Returns the integration context as a file. Use this command for debug purposes only.
+    hidden: true
+    name: slack-get-integration-context
+  - arguments:
+    - description: The channel containing the message.
+      name: channel
+    - description: The ID of the thread of which to pin. Can be retrieved from a previous send-notification command.
+      name: threadID
+      required: true
+    - description: The ID for the channel containing the message.
+      name: channel_id
+    description: Pins a selected message to the given channel.
+    name: slack-pin-message
+  - arguments:
+    - description: The channel the message is posted in.
+      name: channel
+    - description: The ID for the channel the message is posted in.
+      name: channel_id
+    - description: The ID of the thread of which to edit. Can be retrieved from a previous send-notification command.
+      name: threadID
+      required: true
+    - description: The updated message.
+      name: message
+    - description: A JSON string of the block to send.
+      name: blocks
+    - description: Whether to include a URL to the relevant component in XSOAR. Can be "true" or "false". Default value is "false".
+      name: ignore_add_url
+    description: Edit an existing Slack message.
+    name: slack-edit-message
+    outputs:
+    - contextPath: Slack.Thread.ID
+      description: The timestamp identifier for the message.
+      type: String
+    - contextPath: Slack.Thread.Channel
+      description: The channel ID the message was posted in.
+      type: String
+    - contextPath: Slack.Thread.Text
+      description: The text the message was updated with.
+      type: String
+  - arguments:
+    - description: The user id of the user.
+      name: user_id
+      required: true
+    description: Reset user session token in Slack.
+    name: slack-user-session-reset
+  - arguments:
+    - description: Supply this argument to only return channels with this name.
+      name: name_filter
+    - defaultValue: public_channel
+      description: "You can provide a comma separated list of other channels to include in your results. Possible options are: \"public_channel\", \"private_channel\", \"mpim\", and \"im\".  Including these options may require changes to your Bot's OAuth scopes in order to read channels like private, group message, or personal messages."
+      name: channel_types
+    - defaultValue: 'true'
+      description: Default is true (exclude archived channels). This setting allows the command to read channels that have been archived.
+      name: exclude_archived
+    - defaultValue: '100'
+      description: Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results.
+      name: limit
+    - description: Default is the first page of results. If you have more results than your limit, you need to paginate your results with this argument.  This is found with the next_cursor attribute returned by a previous request's response_metadata.
+      name: cursor
+    description: "List all of the channels in the organization workspace. This command required scopes depend on the type of channel-like object you're working with. To use the command, you'll need at least one of the channels:, groups:, im: or mpim: scopes corresponding to the conversation type you're working with."
+    name: slack-list-channels
+    outputs:
+    - contextPath: Slack.Channels.ID
+      description: The ID for the channel.
+      type: string
+    - contextPath: Slack.Channels.Name
+      description: Name of the channel.
+      type: string
+    - contextPath: Slack.Channels.Created
+      description: Epoch timestamp when the channel was created.
+      type: number
+    - contextPath: Slack.Channels.Creator
+      description: ID for the creator of the channel.
+      type: string
+    - contextPath: Slack.Channels.Purpose
+      description: The purpose, or description, of the channel.
+      type: string
+  - arguments:
+    - description: The channel ID associated with the Slack channel.
+      name: channel_id
+      required: true
+    - defaultValue: '100'
+      description: Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results.
+      name: limit
+    - description: The conversation ID.
+      name: conversation_id
+    description: Fetches a conversation's history of messages and events.
+    name: slack-get-conversation-history
+  - arguments:
+    - description: ID of the channel.
+      name: channel_id
+      required: true
+    - description: The timestamp of the thread, that can be extracted using "slack-get-conversation-history" command.
+      name: thread_timestamp
+      required: true
+    - defaultValue: '100'
+      description: Set this argument to specify how many results to return.
+      name: limit
+    description: Retrieves replies to specific messages, regardless of whether it's from a public or private channel, direct message, or otherwise.
+    name: slack-get-conversation-replies
+  dockerimage: demisto/slackv3:1.0.0.117353
+  isFetchSamples: true
+  longRunning: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,21 @@
+{
+    "name": "test_pack",
+    "description": "Adding a description for testing.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Rotem",
+    "url": "",
+    "email": "",
+    "created": "2024-11-21T13:08:26Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "RotemAmit"
+    ]
+}
