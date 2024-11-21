@@ -2644,7 +2644,11 @@
         {
             "playbookID": "UploadFile Test",
             "integrations": ["Core REST API",
-             "QRadar v3"]
+             "QRadar v3"],
+             "instance_names": [
+                "QRadar_20"
+            ]
+
         },
         {
             "playbookID": "MaxMind Test",
