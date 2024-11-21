@@ -13,7 +13,7 @@ Timestamp is extracted from the GMTTime field with the following format - yyyy-m
 ***
  
 ## Data Collection
-To configure Trellix ePO to send logs to Cortex XSIAM, follow the below steps.
+To configure Trellix ePO to send logs to Cortex XSIAM, follow the steps below.
  
 ### Trellix ePO side
 1. Login to the Trellix ePO main console.
