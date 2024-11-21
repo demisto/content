@@ -1520,6 +1520,85 @@ def get_attachment_command(client: Client, args: dict) -> list | CommandResults:
     return CommandResults(readable_output=f'Ticket with sys id {sys_id} has no attachments to retrieve.')
 
 
+def extract_text_and_url_from_possible_answer(text: str) -> tuple[str | None, str | None]:
+    """Checks if the given text contains an url in brackets and returns the url and text before it
+
+    Args:
+        text (str): The text to check
+
+    Returns:
+        tuple[str | None, str | None]: The text before the url and the url itself
+    """
+    pattern = r'\((https?://[^\s)]+)\)'
+    match = re.search(pattern, text)
+    demisto.debug(str(match))
+    if match:
+        url = match.group(1)
+        text_before = text.strip(match.group(0))
+        return text_before, url
+    return None, None
+
+
+def extract_text_and_url_from_form(text: str) -> tuple[str | None, str | None]:
+    """Extracts the url and the question from a form message response
+
+    Args:
+        text (str): The text to parse/extract
+
+    Returns:
+        tuple[str | None, str | None]: The url and the cleaned question text
+    """
+
+    pattern = r'(https?://[^\s)]+)'
+    match = re.search(pattern, text)
+    if match:
+        url = match.group(0)
+        cleaned_text = re.sub(pattern, "", text)
+        return url, cleaned_text
+    return None, None
+
+
+def send_notification(client: Client, args: dict):
+    """Interface for custom ask and data collection tasks using ServiceNow
+
+    Args:
+        client: Client object for requests
+        args: Arguments to use, usually demisto.args()
+    """
+
+    message_type: str = str(args.get("messageType", ""))  # automatically set by demisto
+    to: str = str(args.get("to"))
+    if not to:
+        return_error("The to parameter must be set to the servicenow ticket id!")
+    message: str = str(args.get("message", ""))  # automatically set by demisto
+    service_now_message: str = ""
+
+    if message_type == "externalAskSubmit":  # ask tasks
+        messages = message.split("\n")
+        question: str = ""
+        answers: str = ""
+        for message_line in messages:
+            text, url = extract_text_and_url_from_possible_answer(text=message_line)
+            if text and url:
+                answers += f'<a href="{url}" target="_blank" rel="noopener noreferrer">{text}</a>'
+            else:
+                question += f"{message_line}"
+        service_now_message = f"[code]<h3>{question}</h3>{answers}[/code]"
+    elif message_type == "externalFormSubmit":  # data collection tasks
+        url, text = extract_text_and_url_from_form(message)
+        service_now_message += f'[code]<h3>{text}</h3><a href="{url}" target="_blank"'
+        service_now_message += ' rel="noopener noreferrer">Open Form</a><br>[/code]'
+    else:
+        return_error(f"The message type {message_type} is not implemented yet!")
+    ticket_type = client.get_table_name()
+    client.add_comment(to, ticket_type, "comments", service_now_message)
+    demisto.debug(service_now_message)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'HumanReadable': 'Message sent to ServiceNow successfully!'
+    })
+
+
 def add_tag_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
     """Add tag to a ticket.
 
@@ -3361,6 +3440,8 @@ def main():
             return_results(get_ticket_notes_command(client, args, params))
         elif demisto.command() == 'servicenow-get-ticket-attachments':
             return_results(get_attachment_command(client, args))
+        elif demisto.command() == 'send-notification':
+            return_results(send_notification(client, args))
         elif command in commands:
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)

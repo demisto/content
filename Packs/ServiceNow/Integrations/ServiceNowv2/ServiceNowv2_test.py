@@ -21,7 +21,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, get_timezone_offset, \
     converts_close_code_or_state_to_close_reason, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS, \
     format_incidents_response_with_display_values, get_entries_for_notes, is_time_field, delete_attachment_command, \
-    get_attachment_command, is_new_incident
+    get_attachment_command, is_new_incident, extract_text_and_url_from_possible_answer, extract_text_and_url_from_form
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -2548,3 +2548,29 @@ def test_incident_id_not_in_last_fetched(mocker):
 
     # Assert that set_integration_context was never called because no incident ID was removed
     res.assert_not_called()
+
+
+def test_extract_text_and_url_from_possible_answer():
+
+    sample: str = """This is how liberty dies
+        with thunderous applause.
+        Yes (https://www.shmoop.com/quotes/how-liberty-dies.html)
+        No (https://www.shmoop.com/quotes/how-liberty-dies.html)
+    """
+
+    lines = sample.split("\n")
+    a, b = extract_text_and_url_from_possible_answer(text=lines[0])
+    assert not a
+    assert not b
+    text, url = extract_text_and_url_from_possible_answer(text=lines[2])
+    assert text == "Yes"
+    assert url == "https://www.shmoop.com/quotes/how-liberty-dies.html"
+
+
+def test_extract_text_and_url_from_form():
+
+    sample: str = "I don't know, I'm making this up as I go. https://www.lucasfilm.com/news/indiana-jones-quotes/"
+
+    url, cleaned_text = extract_text_and_url_from_form(text=sample)
+    assert url == "https://www.lucasfilm.com/news/indiana-jones-quotes/"
+    assert cleaned_text == "I don't know, I'm making this up as I go."

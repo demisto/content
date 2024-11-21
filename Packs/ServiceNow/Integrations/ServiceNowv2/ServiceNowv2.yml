@@ -248,6 +248,15 @@ name: ServiceNow v2
 script:
   commands:
   - arguments:
+    - name: message
+      description: The message the ask or data collection generated
+    - name: messageType
+      description: The type of message that should be send
+    - name: to
+      description: Must be the ServiceNow ticket id
+    name: send-notification
+    description: Implements the ask and data collection task interface
+  - arguments:
     - default: true
       description: Ticket system ID for which to retrieve information.
       name: id
