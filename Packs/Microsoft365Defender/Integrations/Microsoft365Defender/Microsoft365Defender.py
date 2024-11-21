@@ -584,6 +584,36 @@ def microsoft_365_defender_advanced_hunting_command(client: Client, args: dict) 
 ''' MAIN FUNCTION '''
 
 
+def get_remote_data_command(client: Client, args: dict):
+    #todo - try not implemneting it and see what happens.
+    pass
+
+
+def get_modified_remote_data_command(client: Client, args: dict):
+    last_update = get_last_mirror_run().get("last_update")
+    last_mirror_incident_id = get_last_mirror_run().get("last_incident_id")
+    last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
+
+    raw_incidents = client.get_incidents(gte_modification_time=last_update_utc, limit=100)
+    modified_incident_ids = list()
+    for raw_incident in raw_incidents:
+        incident_id = raw_incident.get('incident_id')
+        modified_incident_ids.append(incident_id)
+        last_mirror_incident_id = incident_id
+
+    # Following is an example for storing the last update to be now and the last incident ID that was handled but we can use it in any other way
+    set_last_mirror_run({"last_update": datetime.datetime.now(datetime.timezone.utc), "last_incident_id": last_mirror_incident_id})
+    return GetModifiedRemoteDataResponse(modified_incident_ids)
+
+
+def update_remote_system_command(client: Client, args: dict):
+    pass
+
+
+def get_mapping_fields_command():
+    pass
+
+
 def main() -> None:
     """main function, parses params and runs command functions
 
@@ -673,6 +703,22 @@ def main() -> None:
             fetch_timeout = arg_to_number(fetch_timeout) if fetch_timeout else None
             incidents = fetch_incidents(client, first_fetch_time, fetch_limit, fetch_timeout)
             demisto.incidents(incidents)
+
+        elif command == 'get-remote-data':
+            return_results(get_remote_data_command(client, args))
+
+        elif command == 'get-modified-remote-data':
+            modified_incidents = get_modified_remote_data_command(client, args)
+            return_results(modified_incidents)
+
+        elif command == 'update-remote-system':
+            return_results(update_remote_system_command(client, args))
+
+        elif command == 'get-mapping-fields':
+            return_results(get_mapping_fields_command())
+
+
+
         else:
             raise NotImplementedError
     # Log exceptions and return errors
