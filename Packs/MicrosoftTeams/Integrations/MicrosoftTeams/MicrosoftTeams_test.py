@@ -2532,22 +2532,28 @@ def test_token_permissions_list_command(mocker, token, decoded_token, auth_type,
     token_permissions_list_command()
 
     assert expected_hr in results.call_args[0][0].readable_output
-    
+
+
 @pytest.mark.parametrize('xsoar_server, is_xsoar_on_prem, is_xsiam, expected_hr', [
-    ('https://dns-test.name:443',True, False, 'https://dns-test.name:443/instance/execute/teams'),
-    ('https://viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com',False, False, 'https://ext-viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com/xsoar/instance/execute/teams'),
-    ('http://viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com',False, False, 'http://ext-viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com/xsoar/instance/execute/teams'),
-    ('https://viso-test-dummy.xdr-qa-ttt.ss.paloaltonetworks.com',False, True, 'https://ext-viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com/xsoar/instance/execute/teams'),
-    ('http://viso-test-dummy.xdr-qa-ttt.ss.paloaltonetworks.com',False, True, 'http://ext-viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com/xsoar/instance/execute/teams'),
-    ('http://viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com',False, True, 'http://ext-viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com/xsoar/instance/execute/teams'),
+    ('https://dns-test.name:443', True, False, 'https://dns-test.name:443/instance/execute/teams'),
+    ('https://viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com', False, False,
+     'https://ext-viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com/xsoar/instance/execute/teams'),
+    ('http://viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com', False, False,
+     'http://ext-viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com/xsoar/instance/execute/teams'),
+    ('https://viso-test-dummy.xdr-qa-ttt.ss.paloaltonetworks.com', False, True,
+     'https://ext-viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com/xsoar/instance/execute/teams'),
+    ('http://viso-test-dummy.xdr-qa-ttt.ss.paloaltonetworks.com', False, True,
+     'http://ext-viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com/xsoar/instance/execute/teams'),
+    ('http://viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com', False, True,
+     'http://ext-viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com/xsoar/instance/execute/teams'),
 ],
-ids=["Test xsoar 6 server url",
-     "Test xsoar 8 server url (with https:// prefix)",
-     "Test xsoar 8 server url (with http:// prefix)",
-     "Test xsiam server url (with https:// prefix)",
-     "Test xsiam server url (with http:// prefix)",
-     "Test xsiam server url without the '.xdr-' string in the dns name"
-])
+    ids=["Test xsoar 6 server url",
+         "Test xsoar 8 server url (with https:// prefix)",
+         "Test xsoar 8 server url (with http:// prefix)",
+         "Test xsiam server url (with https:// prefix)",
+         "Test xsiam server url (with http:// prefix)",
+         "Test xsiam server url without the '.xdr-' string in the dns name"
+         ])
 def test_create_messaging_endpoint_command(mocker, xsoar_server, is_xsoar_on_prem, is_xsiam, expected_hr):
     """
     Tests the 'create_messaging_endpoint_command' logic.
@@ -2559,7 +2565,7 @@ def test_create_messaging_endpoint_command(mocker, xsoar_server, is_xsoar_on_pre
         4. An xsiam server url (with https:// prefix).
         5. An xsiam server url (with http:// prefix).
         6. An xsiam server url without the '.xdr-' string in the dns name.
-     
+
     When:
         - Running the create_messaging_endpoint_command.
     Then:
@@ -2585,25 +2591,26 @@ def test_create_messaging_endpoint_command(mocker, xsoar_server, is_xsoar_on_pre
     create_messaging_endpoint_command()
 
     assert expected_hr in results.call_args[0][0].readable_output
-    
+
+
 @pytest.mark.parametrize('engine_url, is_xsoar_on_prem, is_xsiam, expected_hr', [
-    ('https://my-engine.com:333',True, False, 'https://my-engine.com:333/instance/execute/teams'),
-    ('https://my-engine.com:333',False, False, 'https://my-engine.com:333/xsoar/instance/execute/teams'),
-    ('https://my-engine.com:333',False, True, 'https://my-engine.com:333/xsoar/instance/execute/teams'),
-    ('https://1.1.1.1:333',False, True, 'https://1.1.1.1:333/xsoar/instance/execute/teams')
+    ('https://my-engine.com:333', True, False, 'https://my-engine.com:333/instance/execute/teams'),
+    ('https://my-engine.com:333', False, False, 'https://my-engine.com:333/xsoar/instance/execute/teams'),
+    ('https://my-engine.com:333', False, True, 'https://my-engine.com:333/xsoar/instance/execute/teams'),
+    ('https://1.1.1.1:333', False, True, 'https://1.1.1.1:333/xsoar/instance/execute/teams')
 ],
-ids=["Test xsoar 6 engine url",
-     "Test xsoar 8 engine url",
-     "Test xsiam engine url",
-     "Test xsoar engine url - with IP",
-])
+    ids=["Test xsoar 6 engine url",
+         "Test xsoar 8 engine url",
+         "Test xsiam engine url",
+         "Test xsoar engine url - with IP",
+         ])
 def test_create_messaging_endpoint_command_for_xsoar_engine(mocker, engine_url, is_xsoar_on_prem, is_xsiam, expected_hr):
     """
     Tests the 'create_messaging_endpoint_command' logic when the user uses an xsoar engine.
 
     Given:
       - An xsoar engine url.
-     
+
     When:
         - Running the create_messaging_endpoint_command on:
             1. xsoar 6
@@ -2629,16 +2636,17 @@ def test_create_messaging_endpoint_command_for_xsoar_engine(mocker, engine_url, 
     create_messaging_endpoint_command()
 
     assert expected_hr in results.call_args[0][0].readable_output
-    
+
+
 @pytest.mark.parametrize('engine_url', [
     ('https://my-engine.com'),
     ('my-engine.com:333'),
     ('https://my engine.com:433'),
 ],
-ids=["Test engine url without a port",
-     "Test engine url without an http or https prefix",
-     "Test engine url with spaces in the dns name",
-])
+    ids=["Test engine url without a port",
+         "Test engine url without an http or https prefix",
+         "Test engine url with spaces in the dns name",
+         ])
 def test_create_messaging_endpoint_command_invalid_xsoar_engine(mocker, engine_url):
     """
     Tests the 'create_messaging_endpoint_command' logic when the user uses an xsoar engine, and provides an invalid engine url.
@@ -2648,10 +2656,10 @@ def test_create_messaging_endpoint_command_invalid_xsoar_engine(mocker, engine_u
         1. without a port.
         2. without an http:// or https:// prefix
         3. with a space in the dns name
-     
+
     When:
         - Running the create_messaging_endpoint_command.
-        
+
     Then:
         Verify that a valueError exception is raised with the error description.
     """
