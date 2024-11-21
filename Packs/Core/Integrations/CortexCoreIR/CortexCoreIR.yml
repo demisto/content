@@ -1673,7 +1673,7 @@ script:
       name: is_raw_command
       type: Boolean
       required: false
-    - description: 'Type of shell command. Possible values: "powershell", "native".' 
+    - description: Type of shell command.
       auto: PREDEFINED
       name: command_type
       predefined:
