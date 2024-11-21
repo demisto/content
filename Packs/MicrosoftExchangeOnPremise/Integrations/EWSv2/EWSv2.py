@@ -1113,7 +1113,7 @@ def handle_attached_email_with_incorrect_message_id(attached_email: Message):
         if attached_email._headers[i][0].lower() == "message-id":
             message_id = attached_email._headers[i][1]
             message_header = attached_email._headers[i][0]
-            demisto.debug(f'Handling Message-ID header, {message_id=}.')
+            demisto.debug(f'Handling Message-ID header, {message_id=}, {message_header=}.')
             try:
                 message_id_value = handle_incorrect_message_id(message_id)
                 if message_id_value != message_id:
@@ -1173,7 +1173,7 @@ def handle_incorrect_message_id(message_id: str) -> str:
     if re.search("\<\[.*\]\>", message_id):
         # find and replace "<[" with "<" and "]>" with ">"
         fixed_message_id = re.sub(r'<\[(.*?)\]>', r'<\1>', message_id)
-        demisto.debug('Fixed message id {message_id} to {fixed_message_id}')
+        demisto.debug(f'Fixed message id {message_id} to {fixed_message_id}')
         return fixed_message_id
     return message_id
 
@@ -1279,6 +1279,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                 attached_email_headers = []
                                 attached_email = handle_attached_email_with_incorrect_message_id(attached_email)
                                 attached_email = handle_attached_email_with_incorrect_from_header(attached_email)
+                                demisto.debug("The current line is 1282")
                                 for h, v in list(attached_email.items()):
                                     if not isinstance(v, str):
                                         try:
