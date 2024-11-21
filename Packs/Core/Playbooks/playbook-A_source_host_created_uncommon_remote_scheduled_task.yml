@@ -13,6 +13,7 @@ description: |-
   - The playbook verifies whether the causality process is signed. If the process is not signed, it proceeds with remediation actions; otherwise, it continues investigating the alert.
 
   Investigation:
+  
   During the alert investigation, the playbook will perform the following:
 
   - Searches for related XSIAM alerts on the endpoint that use the following MITRE techniques to identify malicious activity: T1202 - Indirect Command Execution, T1021 - Remote Services.
