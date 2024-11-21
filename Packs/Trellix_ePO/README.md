@@ -26,7 +26,7 @@ To configure Trellix ePO to send logs to Cortex XSIAM, follow the steps below.
 
 * Note that the test connection stage will only work after you finish the configuration on the broker-vm side and open the selected port on your firewall.
  
-For more information check this article <https://kcm.trellix.com/corporate/index?page=content&id=KB87927>.
+For more information, see [this article](https://kcm.trellix.com/corporate/index?page=content&id=KB87927).
  
 ### Cortex XSIAM side
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
