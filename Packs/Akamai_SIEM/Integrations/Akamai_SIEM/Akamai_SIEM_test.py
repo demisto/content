@@ -1,5 +1,6 @@
 """Imports"""
 # STD packages
+from datetime import datetime
 import time
 import json
 
@@ -9,7 +10,7 @@ from freezegun import freeze_time
 
 # Local imports
 import Akamai_SIEM
-from CommonServerPython import urljoin
+from CommonServerPython import urljoin, DemistoException
 
 
 """Helper functions and fixrtures"""
@@ -150,6 +151,7 @@ class TestCommandsFunctions:
         num_of_results = 500
         page_size = 50
         num_of_pages = num_of_results // page_size
+        mocker.patch.object(Akamai_SIEM, "should_break_before_timeout", return_value=False)
         mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=[
             (
                 [{"id": i + 1, "httpMessage": {"start": i + 1}} for i in range(page_size * j, page_size * (j + 1))],
@@ -169,7 +171,7 @@ class TestCommandsFunctions:
             assert offset == f"offset_{events[-1]['id']}" if events else True
         assert total_events_count == 250
 
-    def test_fetch_events_command__no_results(self, client, requests_mock):
+    def test_fetch_events_command__no_results(self, mocker, client, requests_mock):
         """
         Given:
         - A client object
@@ -184,6 +186,7 @@ class TestCommandsFunctions:
         total_events_count = 0
         last_offset = "11111"
         requests_mock.get(f'{BASE_URL}/50170?limit={size}&offset={last_offset}', text=SEC_EVENTS_EMPTY_TXT)
+        mocker.patch.object(Akamai_SIEM, "should_break_before_timeout", return_value=False)
 
         for _, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(client, '12 hours', 6,  # noqa: B007
                                                                               '50170', {"offset": last_offset}, size):
@@ -204,6 +207,7 @@ class TestCommandsFunctions:
         - Ensure 6 events are returned
         """
         mocker.patch.object(Akamai_SIEM, "FETCH_EVENTS_PAGE_SIZE", new=6, autospec=False)
+        mocker.patch.object(Akamai_SIEM, "should_break_before_timeout", return_value=False)
         total_events_count = 0
         last_offset = None
         requests_mock.get(f'{BASE_URL}/50170?limit=6&from=1575966002', text=SEC_EVENTS_SIX_RESULTS_TXT)
@@ -231,6 +235,7 @@ class TestCommandsFunctions:
         - Ensure 8 events are returned
         """
         mocker.patch.object(Akamai_SIEM, "FETCH_EVENTS_PAGE_SIZE", new=6, autospec=False)
+        mocker.patch.object(Akamai_SIEM, "should_break_before_timeout", return_value=False)
         total_events_count = 0
         last_offset = None
         requests_mock.get(f'{BASE_URL}/50170?limit=6&from=1575966002', text=SEC_EVENTS_SIX_RESULTS_TXT)
@@ -261,6 +266,7 @@ class TestCommandsFunctions:
         - Ensure last_offset is the one returned from the last page we pulled events from (the 1st one)
         """
         mocker.patch.object(Akamai_SIEM, "FETCH_EVENTS_PAGE_SIZE", new=2, autospec=False)
+        mocker.patch.object(Akamai_SIEM, "should_break_before_timeout", return_value=False)
         total_events_count = 0
         last_offset = None
         requests_mock.get(f'{BASE_URL}/50170?limit=2&from=1575966002', text=SEC_EVENTS_TWO_RESULTS_TXT)
@@ -302,6 +308,7 @@ class TestCommandsFunctions:
         ]
         events_not_in_list = [events[0][0][0], events[0][0][2], events[0][0][4]]
         mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=events)
+        mocker.patch.object(Akamai_SIEM, "should_break_before_timeout", return_value=False)
         total_events_count = 0
         hashed = {"506353d42f4aaac34493bdfff026ea0c4463a3bc510fb7aa038df8cea7aabbd1",
                   "fce8004cc56a8fb1131f30d2715412d4dcc90be0564c375d1c6b9aee2103b360",
@@ -321,6 +328,46 @@ class TestCommandsFunctions:
             assert event_not_in_list not in events
         ctx = {"offset": offset, "hashed_events_from_previous_run": list(hashed)}
         assert isinstance(json.dumps(ctx), str)
+
+    def test_index_out_of_range_error(self, mocker, client):
+        """
+        Given:
+        - A client object
+        - 250 events.
+        - hashed events from previous run list with 4 events, 3 events which will appear in the response and one event that won't.
+        When:
+        - Calling fetch_events_command()
+        Then:
+        - Ensure that the events list returned doesn't include the filtered events and that the length of the list is 247.
+        - Ensure that on each iteration, the number of events in the hashed events is 50
+        (even in intervals where some events were deduped).
+        - Ensure the returned offset and hashed events are json serializable.
+        """
+        err_msg = 'Error in API call [416] - Requested Range Not Satisfiable'
+        error_entry = {
+            "clientIp": "192.0.2.228",
+            "detail": "Expired offset parameter in the request",
+            "instance": "https://test.akamaiapis.net/siem/v1/configs=12345?offset=123",
+            "method": "GET",
+            "requestId": "test",
+            "requestTime": "2023-06-20T15:02:30Z",
+            "serverIp": "1.1.1.1",
+            "title": "Expired offset parameter in the request",
+        }
+        err_msg += f'err_msg\n{json.dumps(error_entry)}'
+        mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=DemistoException(err_msg, res ={}))
+        mocker.patch.object(Akamai_SIEM, "should_break_before_timeout", return_value=False)
+        RETURN_ERROR_TARGET = 'Akamai_SIEM.return_error'
+        return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+        Akamai_SIEM.fetch_events_command(client,  # noqa: B007
+                                                                                    '3 days',
+                                                                                    220,
+                                                                                    '',
+                                                                                    {},
+                                                                                    5000
+                                                                                    )
+        assert return_error_mock.call_count == 1
+        assert 'did not include `translated`' in str(e)
 
 
 @pytest.mark.parametrize(
@@ -370,7 +417,7 @@ def test_decode_url(header):
         ({"a": {"id": 1}, "b": {"id": 2}, "c": {"id": 3}}, {"a", "d", "e"}, [{"id": 2}, {"id": 3}]),
     ],
 )
-def test_dedup_events(hashed_events_mapping, hashed_events_from_previous_run, expected_deduped_list):
+def test_dedup_events(hashed_events_mapping, hashed_events_from_previous_run, expected_deduped_list, mocker):
     """
     Given: hashed_events_mapping dict, and hashed_events_from_previous_run set
         - Case 1: dictionary with 3 events with all 3 events hashes appears in the hashed_events_from_previous_run set.
@@ -386,17 +433,39 @@ def test_dedup_events(hashed_events_mapping, hashed_events_from_previous_run, ex
           - Case 3: shouldn't filter any events.
           - Case 4: should filter only the one event that appears in the hashed_events_from_previous_run set.
     """
+    mocker.patch.object(Akamai_SIEM, "should_break_before_timeout", return_value=False)
     deduped_events, hashed_events_from_current_run = Akamai_SIEM.dedup_events(hashed_events_mapping,
                                                                               hashed_events_from_previous_run)
     assert hashed_events_from_current_run == set(hashed_events_mapping.keys())
     assert deduped_events == expected_deduped_list
 
 
-def test_index_out_of_range_error():
-    pass
-
 def test_run_duration_valid():
     pass
 
+
 def test_run_duration_should_break():
     pass
+
+
+@pytest.mark.parametrize(
+    "min_allowed_delta, expected_results",
+    [
+        (30, False), (310, True)
+    ],
+)
+def test_should_break_before_timeout(mocker, min_allowed_delta, expected_results):
+    """
+    Given: min_allowed_delta
+        - Case 1: min_allowed_delta = 30.
+        - Case 2: min_allowed_delta = 300.
+    When: Running should_break_before_timeout with 50 seconds to timeout.
+    Then: Ensure that the right results are returned.
+          - Case 1: should return False (meaning we shouldn't break yet).
+          - Case 2: should return True (meaning we should break).
+    """
+    import demistomock as demisto
+    mocker.patch.object(demisto, 'callingContext', {'context': {'TimeoutDuration': 300000000000}})
+    setattr(Akamai_SIEM, 'EXECUTION_START_TIME', datetime(2024, 4, 10, 10, 0, 0))
+    with freeze_time(datetime(2024, 4, 10, 10, 4, 10)):
+        assert Akamai_SIEM.should_break_before_timeout(min_allowed_delta) == expected_results

@@ -406,6 +406,7 @@ def dedup_events(hashed_events_mapping: dict[str, dict], hashed_events_from_prev
                                   event in hashed_events_mapping.items() if hashed_event in filtered_hashed_events]
     return deduped_events, hashed_events_from_current_run
 
+
 def should_break_before_timeout(min_allowed_delta: int) -> bool:
     """
     Checking whether there's enough time for another fetch request to the Akamai API before docker code loop.
@@ -423,7 +424,8 @@ def should_break_before_timeout(min_allowed_delta: int) -> bool:
     now = datetime.now()
     demisto.info(f"Checking wether execution should break before docker timeout with {EXECUTION_START_TIME=}")
     return timeout_time_seconds - (now - EXECUTION_START_TIME).total_seconds() <= min_allowed_delta
-    
+
+
 @logger
 def fetch_events_command(
     client: Client,
@@ -456,7 +458,15 @@ def fetch_events_command(
             break
         demisto.info(f"[test] {demisto.callingContext.get('context', {})}")
         demisto.info(f"Preparing to get events with {offset=}, {page_size=}, and {fetch_limit=}")
-        events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
+        try:
+            events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
+        except DemistoException as e:
+            if "Requested Range Not Satisfiable" in str(e):
+                err_msg = f'Index out of range error in {INTEGRATION_NAME} Integration.\n' \
+                    'For more information, please refer to the Troubleshooting section in the integration documentation.\n' \
+                    f'original error: [{e}]'
+                raise DemistoException(err_msg)
+
         if not events:
             demisto.info("Didn't receive any events, breaking.")
             break
@@ -571,12 +581,7 @@ def main():  # pragma: no cover
             return_outputs(human_readable, entry_context, raw_response)
 
     except Exception as e:
-        if "Requested Range Not Satisfiable" in str(e):
-            err_msg = f'Index out of range error in {INTEGRATION_NAME} Integration.' \
-                'For more information, please refer to the Troubleshooting section in the integration documentation [{e}]'
-        else:
-            err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
-        return_error(err_msg, error=e)
+        return_error(f'Error in {INTEGRATION_NAME} Integration [{e}]', error=e)
 
 
 if __name__ in ["__builtin__", "builtins", '__main__']:  # pragma: no cover
