@@ -65,7 +65,7 @@ PAGES_LIMITATION = 20
 # chrome instance data keys
 INSTANCE_ID = "instance_id"
 CHROME_INSTANCE_OPTIONS = "chrome_options"
-RASTERIZETION_COUNT = "rasteriztion_count"
+RASTERIZATION_COUNT = "rasterization_count"
 
 BLOCKED_URLS = argToList(demisto.params().get('blocked_urls', '').lower())
 
@@ -338,7 +338,7 @@ def increase_counter_chrome_instances_file(chrome_port: str = ''):
     existing_data = read_json_file()
 
     if chrome_port in existing_data:
-        existing_data[chrome_port][RASTERIZETION_COUNT] = existing_data[chrome_port].get(RASTERIZETION_COUNT, 0) + 1
+        existing_data[chrome_port][RASTERIZATION_COUNT] = existing_data[chrome_port].get(RASTERIZATION_COUNT, 0) + 1
         write_chrome_instances_file(existing_data)
     else:
         demisto.info(f"Chrome port '{chrome_port}' not found.")
@@ -446,7 +446,7 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
                     chrome_port: {
                         INSTANCE_ID: instance_id,
                         CHROME_INSTANCE_OPTIONS: chrome_options,
-                        RASTERIZETION_COUNT: 0
+                        RASTERIZATION_COUNT: 0
                     }
                 }
                 add_new_chrome_instance(new_chrome_instance_content=new_chrome_instance)
@@ -560,6 +560,58 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     return browser, chrome_port
 
 
+def chrome_manager_one_port() -> tuple[Any | None, str | None]:
+    """
+    Manages Chrome instances based on user-specified chrome options and integration instance ID.
+    ONLY uses one chrome instance per chrome option, until https://issues.chromium.org/issues/379034728 is fixed.
+
+
+    This function performs the following steps:
+    1. Retrieves the Chrome options set by the user.
+    2. Checks if the  Chrome options has been used previously.
+        - If the Chrome options wasn't used and the file is empty, generates a new Chrome instance with
+        the specified Chrome options.
+        - If the  Chrome options exists in the dictionary- it reuses the existing Chrome instance.
+        -  If the Chrome options wasn't used and the file isn't empty- it terminates all the use port and
+        generates a new one with the new options.
+
+    Returns:
+        tuple[Any | None, int | None]: A tuple containing:
+            - The Browser or None if an error occurred.
+            - The chrome port or None if an error occurred.
+    """
+    # If instance_id or chrome_options are not set, assign 'None' to these variables.
+    # This way, when fetching the content from the file, if there was no instance_id or chrome_options before,
+    # it can compare between the fetched 'None' string and the 'None' that assigned.
+    instance_id = demisto.callingContext.get('context', {}).get('IntegrationInstanceID', 'None') or 'None'
+    chrome_options = demisto.params().get('chrome_options', 'None')
+    chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
+    demisto.debug(f' chrome_manager {chrome_instances_contents=} {chrome_options=} {instance_id=}')
+    chrome_options_dict = {
+        options[CHROME_INSTANCE_OPTIONS]: {
+            'chrome_port': port
+        }
+        for port, options in chrome_instances_contents.items()
+    }
+    chrome_port = chrome_options_dict.get(chrome_options, {}).get('chrome_port', '')
+    if not chrome_instances_contents:  # or instance_id not in chrome_options_dict.keys():
+        demisto.debug('chrome_manager: condition chrome_instances_contents is empty')
+        return generate_new_chrome_instance(instance_id, chrome_options)
+    if chrome_options in chrome_options_dict:
+        demisto.debug('chrome_manager: condition chrome_options in chrome_options_dict is true'
+                      f'{chrome_options in chrome_options_dict}')
+        browser = get_chrome_browser(chrome_port)
+        return browser, chrome_port
+    for chrome_port_ in chrome_instances_contents:
+        if chrome_port_ == 'None':
+            terminate_port_chrome_instances_file(chrome_port_)
+            demisto.debug(f"chrome_manager {chrome_port_=}, removing the port from chrome_instances file")
+            continue
+        demisto.debug(f"chrome_manager {chrome_port_=}, terminating the port")
+        terminate_chrome(chrome_port=chrome_port_)
+    return generate_new_chrome_instance(instance_id, chrome_options)
+
+
 def generate_new_chrome_instance(instance_id: str, chrome_options: str) -> tuple[Any | None, str | None]:
     chrome_port = generate_chrome_port()
     return start_chrome_headless(chrome_port, instance_id, chrome_options)
@@ -576,7 +628,7 @@ def generate_chrome_port() -> str | None:
 
         if len_running_chromes == 0:
             # There's no Chrome listening on that port, Start a new Chrome there
-            demisto.debug(f"No Chrome found on port {chrome_port}, using it.")
+            demisto.debug(f"No Chrome found on port {chrome_port}, using the port.")
             return str(chrome_port)
 
         # There's already a Chrome listening on that port, Don't use it
@@ -841,7 +893,9 @@ def perform_rasterize(path: str | list[str],
         return None
 
     demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
-    browser, chrome_port = chrome_manager()
+
+    # until https://issues.chromium.org/issues/379034728 is fixed, we can only use one chrome port
+    browser, chrome_port = chrome_manager_one_port()
 
     if browser:
         support_multithreading()
@@ -870,15 +924,16 @@ def perform_rasterize(path: str | list[str],
                 f"active tabs len: {len(browser.list_tab())}")
 
             chrome_instances_file_content: dict = read_json_file()  # CR fix name
-            rasterizations_count = chrome_instances_file_content.get(chrome_port, {}).get(RASTERIZETION_COUNT, 0) + len(
+
+            rasterization_count = chrome_instances_file_content.get(chrome_port, {}).get(RASTERIZATION_COUNT, 0) + len(
                 rasterization_threads)
 
             demisto.debug(f"perform_rasterize checking if the chrome in port:{chrome_port} should be deleted:"
-                          f"{rasterizations_count=}, {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}")
+                          f"{rasterization_count=}, {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}")
             if not chrome_port:
                 demisto.debug("perform_rasterize: the chrome port was not found")
-            elif rasterizations_count >= MAX_RASTERIZATIONS_COUNT:
-                demisto.info(f"perform_rasterize: terminating Chrome after {rasterizations_count=} rasterizations")
+            elif rasterization_count >= MAX_RASTERIZATIONS_COUNT:
+                demisto.info(f"perform_rasterize: terminating Chrome after {rasterization_count=} rasterization")
                 terminate_chrome(chrome_port=chrome_port)
             else:
                 increase_counter_chrome_instances_file(chrome_port=chrome_port)
@@ -1138,7 +1193,6 @@ def get_width_height(args: dict):
 def main():  # pragma: no cover
     demisto.debug(f"main, {demisto.command()=}")
     demisto.debug(f'Using performance params: {MAX_CHROMES_COUNT=}, {MAX_CHROME_TABS_COUNT=}, {MAX_RASTERIZATIONS_COUNT=}')
-
     threading.excepthook = excepthook_recv_loop
     try:
         if demisto.command() == 'test-module':

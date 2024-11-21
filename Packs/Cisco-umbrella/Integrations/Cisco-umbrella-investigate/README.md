@@ -1,28 +1,24 @@
 Cisco Umbrella Investigate enable you to research domains, IPs, and URLs observed by the Umbrella resolvers.
 This integration was integrated and tested with version 2.0.0 of Cisco Umbrella Investigate.
 
-## Configure Cisco Umbrella Investigate on Cortex XSOAR
+## Configure Cisco Umbrella Investigate in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cisco Umbrella Investigate.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API Key | API key and Secret | True |
-    | API Secret |  | True |
-    | Source Reliability |  | True |
-    | Trust any certificate (not secure) |  |  |
-    | Use system proxy settings |  |  |
-    | Base URL | Cisco Umbrella Investigate base URL. | True |
-    | DBot Score Suspicious Threshold (-100 to 100) | Make sure the suspicious threshold is greater than the Malicious threshold. | True |
-    | Score Malicious Threshold (-100 to 100) | Make sure the Malicious threshold is less than the suspicious threshold. | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API Key | API key and Secret | True |
+| API Secret |  | True |
+| Source Reliability |  | True |
+| Trust any certificate (not secure) |  |  |
+| Use system proxy settings |  |  |
+| Base URL | Cisco Umbrella Investigate base URL. | True |
+| DBot Score Suspicious Threshold (-100 to 100) | Make sure the suspicious threshold is greater than the Malicious threshold. | True |
+| Score Malicious Threshold (-100 to 100) | Make sure the Malicious threshold is less than the suspicious threshold. | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### umbrella-domain-categorization

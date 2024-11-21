@@ -1,35 +1,31 @@
 BMC Helix ITSM integration enables customers to manage service request, incident, change request, task, problem investigation, known error and work order tickets.
 This integration was integrated and tested with version 22.1.05 of BmcITSM
 
-## Configure BMC Helix ITSM on Cortex XSOAR
+## Configure BMC Helix ITSM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for BMC Helix ITSM.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | For Example: https://localhost:8008 | True |
-    | User Name |  | True |
-    | Password |  | True |
-    | Maximum Number of Incidents per Fetch | Default is 50. Maximum is 200. | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). |  | False |
-    | Ticket Type | The type of the tickets to fetch. | False |
-    | Ticket Status | The status of the tickets to fetch. Since each ticket type has its own unique set of statuses, select only statuses that match the selected ticket type\(s\). | False |
-    | Ticket Impact | The impact of the tickets to fetch. | False |
-    | Ticket Urgency | The urgency of the tickets to fetch. | False |
-    | Fetch by Query | Search query to fetch tickets. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing parameters. See the BMC documentation for  [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html). | False |
-    | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from BMC Helix ITSM to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to BMC Helix ITSM\), or Incoming and Outgoing \(from/to Cortex XSOAR and BMC Helix ITSM\). | False |
-    | Close Mirrored XSOAR Incident | When selected, closing the BMC Helix ITSM ticket is mirrored in Cortex XSOAR. | False |
-    | Close Mirrored BMC Helix ITSM Ticket | When selected, closing the Cortex XSOAR incident is mirrored in BMC Helix ITSM. | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | For Example: https://localhost:8008 | True |
+| User Name |  | True |
+| Password |  | True |
+| Maximum Number of Incidents per Fetch | Default is 50. Maximum is 200. | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). |  | False |
+| Ticket Type | The type of the tickets to fetch. | False |
+| Ticket Status | The status of the tickets to fetch. Since each ticket type has its own unique set of statuses, select only statuses that match the selected ticket type\(s\). | False |
+| Ticket Impact | The impact of the tickets to fetch. | False |
+| Ticket Urgency | The urgency of the tickets to fetch. | False |
+| Fetch by Query | Search query to fetch tickets. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing parameters. See the BMC documentation for  [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html). | False |
+| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from BMC Helix ITSM to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to BMC Helix ITSM\), or Incoming and Outgoing \(from/to Cortex XSOAR and BMC Helix ITSM\). | False |
+| Close Mirrored XSOAR Incident | When selected, closing the BMC Helix ITSM ticket is mirrored in Cortex XSOAR. | False |
+| Close Mirrored BMC Helix ITSM Ticket | When selected, closing the Cortex XSOAR incident is mirrored in BMC Helix ITSM. | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### bmc-itsm-user-list
 ***
