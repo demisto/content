@@ -911,7 +911,7 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
     last_run_mirroring_str = last_run_mirroring.strftime('%Y-%m-%d %H:%M:%S.%f')
 
     id_to_modification_time = {raw.get('incident_id'): raw.get('modification_time') for raw in raw_incidents}
-    demisto.debug(f"{last_run_mirroring_str=}, modified alerts {id_to_modification_time=}")
+    demisto.debug(f"{last_run_mirroring_str=}, modified incidents {id_to_modification_time=}")
 
     return GetModifiedRemoteDataResponse(list(id_to_modification_time.keys())), last_run_mirroring_str
 
