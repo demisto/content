@@ -6,7 +6,7 @@
 - Log normalization - XDM mapping for key event types.
  
 ### Supported Event Types:
-- Key Mcafee/Trellix products event types - Threat Prevention, Virus Scan, DLP, ATP, Endpoint Security.
+Key Mcafee/Trellix products event types - Threat Prevention, Virus Scan, DLP, ATP, Endpoint Security.
  
 ### Supported Timestamp Formats:
 Timestamp is extracted from the GMTTime field with the following format - yyyy-mm-ddTHH:MM:SS
