@@ -126,6 +126,7 @@ def fix_traceback_line_numbers(trace_str):
     :return: The new formated traceback.
     :rtype: ``str``
     """
+
     def is_adjusted_block(start, end, adjusted_lines):
         return any(
             block_start < start < end < block_end
@@ -148,7 +149,7 @@ def fix_traceback_line_numbers(trace_str):
                 block_start = module_info.get('start_wrapper', module_info['start'])
                 block_end = module_info.get('end_wrapper', module_info['end'])
                 if block_start > module_start_line and block_end < line_num \
-                        and not is_adjusted_block(block_start, block_end, adjusted_lines):
+                    and not is_adjusted_block(block_start, block_end, adjusted_lines):
                     actual_number -= block_end - block_start
                     adjusted_lines[block_start] = block_end
 
@@ -204,6 +205,7 @@ try:
     from typing import Optional, Dict, List, Any, Union, Set, cast
 
     from urllib3 import disable_warnings
+
     disable_warnings()
 
     import dateparser  # type: ignore
@@ -226,7 +228,6 @@ HOUR = timedelta(hours=1)
 
 # The max number of profiling related rows to print to the log on memory dump
 PROFILING_DUMP_ROWS_LIMIT = 20
-
 
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
@@ -477,7 +478,7 @@ class DBotScoreReliability(object):
         )
 
     @staticmethod
-    def get_dbot_score_reliability_from_str(reliability_str):   # pragma: no cover
+    def get_dbot_score_reliability_from_str(reliability_str):  # pragma: no cover
         if reliability_str == DBotScoreReliability.A_PLUS:
             return DBotScoreReliability.A_PLUS
         elif reliability_str == DBotScoreReliability.A:
@@ -1016,7 +1017,7 @@ def positiveUrl(entry):
     return False
 
 
-def positiveFile(entry):    # pragma: no cover
+def positiveFile(entry):  # pragma: no cover
     """
        Checks if the given entry from a file reputation query is positive (known bad) (deprecated)
 
@@ -1101,7 +1102,7 @@ def formatEpochDate(t):
     return ''
 
 
-def shortCrowdStrike(entry):    # pragma: no cover
+def shortCrowdStrike(entry):  # pragma: no cover
     """
        Display CrowdStrike Intel results in Markdown (deprecated)
 
@@ -1140,7 +1141,7 @@ def shortCrowdStrike(entry):    # pragma: no cover
     return entry
 
 
-def shortUrl(entry):    # pragma: no cover
+def shortUrl(entry):  # pragma: no cover
     """
        Formats a URL reputation entry into a short table (deprecated)
 
@@ -1168,7 +1169,7 @@ def shortUrl(entry):    # pragma: no cover
     return {'ContentsFormat': 'text', 'Type': 4, 'Contents': 'Unknown provider for result: ' + entry['Brand']}
 
 
-def shortFile(entry):   # pragma: no cover
+def shortFile(entry):  # pragma: no cover
     """
        Formats a file reputation entry into a short table (deprecated)
 
@@ -1426,7 +1427,7 @@ def encode_string_results(text):
         return text.encode("utf8", "replace")
 
 
-def safe_load_json(json_object):    # pragma: no cover
+def safe_load_json(json_object):  # pragma: no cover
     """
     Safely loads a JSON object from an argument. Allows the argument to accept either a JSON in string form,
     or an entry ID corresponding to a JSON file.
@@ -1440,7 +1441,7 @@ def safe_load_json(json_object):    # pragma: no cover
     if isinstance(json_object, dict) or isinstance(json_object, list):
         return json_object
     if (json_object.startswith('{') and json_object.endswith('}')) or (
-            json_object.startswith('[') and json_object.endswith(']')):
+        json_object.startswith('[') and json_object.endswith(']')):
         try:
             safe_json = json.loads(json_object)
         except ValueError as e:
@@ -1543,7 +1544,7 @@ def aws_table_to_markdown(response, table_header):
     if isinstance(response, dict):
         if len(response) == 1:
             if isinstance(response[list(response.keys())[0]], dict) or isinstance(
-                    response[list(response.keys())[0]], list):
+                response[list(response.keys())[0]], list):
                 if isinstance(response[list(response.keys())[0]], list):
                     list_response = response[list(response.keys())[0]]
                     if not list_response:
@@ -2358,7 +2359,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
 tblToMd = tableToMarkdown
 
 
-def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):     # pragma: no cover
+def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):  # pragma: no cover
     """Receives a dict with flattened key values, and converts them into nested dicts
 
     :type obj: ``dict`` or ``list``
@@ -3055,7 +3056,7 @@ class Common(object):
             if not context_prefix:
                 raise ValueError('context_prefix is mandatory for creating the indicator')
 
-            self.CONTEXT_PATH = '{context_prefix}(val.value && val.value == obj.value)'.\
+            self.CONTEXT_PATH = '{context_prefix}(val.value && val.value == obj.value)'. \
                 format(context_prefix=context_prefix)
 
             self.value = value
@@ -3299,7 +3300,7 @@ class Common(object):
                 ip_context['UpdatedDate'] = self.updated_date
 
             if self.registrar_abuse_name or self.registrar_abuse_address or self.registrar_abuse_country or \
-                    self.registrar_abuse_network or self.registrar_abuse_phone or self.registrar_abuse_email:
+                self.registrar_abuse_network or self.registrar_abuse_phone or self.registrar_abuse_email:
                 ip_context['Registrar'] = {'Abuse': {}}
                 if self.registrar_abuse_name:
                     ip_context['Registrar']['Abuse']['Name'] = self.registrar_abuse_name
@@ -5213,6 +5214,7 @@ class Common(object):
         :return: None
         :rtype: ``None``
         """
+
         class Algorithm(object):
             """
             Algorithm class to enumerate available algorithms
@@ -5425,6 +5427,7 @@ class Common(object):
         :return: None
         :rtype: ``None``
         """
+
         class SubjectAlternativeName(object):
             """
             SubjectAlternativeName class
@@ -5667,6 +5670,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             class EntryType(object):
                 """
                 EntryType class
@@ -5692,7 +5696,6 @@ class Common(object):
                 log_id,  # type: str
                 timestamp  # type: str
             ):
-
                 if not Common.CertificateExtension.SignedCertificateTimestamp.EntryType.is_valid_type(entry_type):
                     raise TypeError(
                         'entry_type must be of type Common.CertificateExtension.SignedCertificateTimestamp.EntryType enum'
@@ -5936,9 +5939,9 @@ class Common(object):
 
             elif (
                 self.extension_type in [
-                    Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
-                    Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS
-                ]
+                Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
+                Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS
+            ]
                 and self.signed_certificate_timestamps is not None
             ):
                 extension_context["Value"] = [sct.to_context() for sct in self.signed_certificate_timestamps]
@@ -6078,10 +6081,10 @@ class Common(object):
                 subject_alternative_name
                 and isinstance(subject_alternative_name, list)
                 and not all(
-                    isinstance(san, str)
-                    or isinstance(san, dict)
-                    or isinstance(san, Common.CertificateExtension.SubjectAlternativeName)
-                    for san in subject_alternative_name)
+                isinstance(san, str)
+                or isinstance(san, dict)
+                or isinstance(san, Common.CertificateExtension.SubjectAlternativeName)
+                for san in subject_alternative_name)
             ):
                 raise TypeError(
                     'subject_alternative_name must be list of str or Common.CertificateExtension.SubjectAlternativeName'
@@ -6247,12 +6250,12 @@ class ScheduledCommand:
                              'version to 6.2.0 or later.'
 
     def __init__(
-            self,
-            command,  # type: str
-            next_run_in_seconds,  # type: int
-            args=None,  # type: Optional[Dict[str, Any]]
-            timeout_in_seconds=None,  # type: Optional[int]
-            items_remaining=0,  # type: Optional[int]
+        self,
+        command,  # type: str
+        next_run_in_seconds,  # type: int
+        args=None,  # type: Optional[Dict[str, Any]]
+        timeout_in_seconds=None,  # type: Optional[int]
+        items_remaining=0,  # type: Optional[int]
     ):
         self.raise_error_if_not_supported()
         self._command = command
@@ -7062,7 +7065,7 @@ class CommandResults:
                 if isinstance(self.outputs, (dict, list)):
                     human_readable = tableToMarkdown('Results', self.outputs)
                 else:
-                    human_readable = self.outputs   # type: ignore[assignment]
+                    human_readable = self.outputs  # type: ignore[assignment]
             if self.outputs_prefix and self.replace_existing:
                 next_token_path, _, next_token_key = self.outputs_prefix.rpartition('.')
                 if not next_token_path:
@@ -7190,7 +7193,8 @@ def return_results(results):
         demisto.results(results.extract_for_local())
 
     elif isinstance(results, GetModifiedRemoteDataResponse):
-        demisto.results(results.to_entry())
+        for entry in results.to_entry():
+            demisto.results(entry)
 
     elif hasattr(results, 'to_entry'):
         entry = results.to_entry()
@@ -7577,6 +7581,7 @@ class CommandRunner:
     :return: None
     :rtype: ``None``
     """
+
     class Command:
         """
         Data class with the data required to execute a command.
@@ -8467,7 +8472,7 @@ def censor_request_logs(request_log):
 
     # Rebuild the request log so that the only change is the masked information.
     censored_string = SEND_PREFIX + \
-        ' '.join(request_log_lst) if request_log.startswith(SEND_PREFIX) else ' '.join(request_log_lst)
+                      ' '.join(request_log_lst) if request_log.startswith(SEND_PREFIX) else ' '.join(request_log_lst)
     censored_string = censored_string.replace(" \\r\\n", "\\r\\n")
     return censored_string
 
@@ -8777,6 +8782,7 @@ if 'requests' in sys.modules:
         CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:' \
                          'ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'
 
+
         class SSLAdapter(HTTPAdapter):
             """
                 A wrapper used for https communication to enable ciphers that are commonly used
@@ -8801,6 +8807,7 @@ if 'requests' in sys.modules:
             def proxy_manager_for(self, *args, **kwargs):
                 kwargs['ssl_context'] = self.context
                 return super(SSLAdapter, self).proxy_manager_for(*args, **kwargs)
+
 
     class BaseClient(object):
         """Client to use in integrations with powerful _http_request
@@ -9128,8 +9135,8 @@ if 'requests' in sys.modules:
                 err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
 
                 err_msg = 'Verify that the server URL parameter' \
-                    ' is correct and that you have access to the server from your host.' \
-                    '\nError Type: {}'.format(err_type)
+                          ' is correct and that you have access to the server from your host.' \
+                          '\nError Type: {}'.format(err_type)
                 if exception.errno and exception.strerror:
                     err_msg += '\nError Number: [{}]\nMessage: {}\n'.format(exception.errno, exception.strerror)
                 else:
@@ -9802,17 +9809,44 @@ class GetModifiedRemoteDataResponse:
     :rtype: ``None``
     """
 
-    def __init__(self, modified_incident_ids):
+    def __init__(self, modified_incident_ids: List[str], modified_incidents_data: List[dict] = None):
         self.modified_incident_ids = modified_incident_ids
+        self.modified_incidents_data = modified_incidents_data
 
     def to_entry(self):
         """Extracts the response
-
         :return: List of incidents to run the get-remote-data command on.
         :rtype: ``list``
         """
-        demisto.info('Modified incidents: {}'.format(self.modified_incident_ids))
-        return {'Contents': self.modified_incident_ids, 'Type': EntryType.NOTE, 'ContentsFormat': EntryFormat.JSON}
+        # Check if there are modified incidents or modified incident IDs
+        if self.modified_incidents_data:
+            demisto.info(f'Modified incidents: {[incident.get("incidentId") for incident in self.modified_incidents_data]}')
+            return [
+                {
+                    'Contents': incident_data,
+                    'Type': EntryType.NOTE,
+                    'ContentsFormat': EntryFormat.JSON,
+                    'EntryContext': {'mirrorRemoteId': incident_data.get('incidentId')}
+                }
+                for incident_data in self.modified_incidents_data
+            ]
+
+        # Fallback: Use modified incident IDs if no detailed data is available
+        if self.modified_incident_ids:
+            demisto.info(f'Modified incident IDs: {self.modified_incident_ids}')
+            return [{
+                'Contents': self.modified_incident_ids,
+                'Type': EntryType.NOTE,
+                'ContentsFormat': EntryFormat.JSON
+            }]
+
+        # Default case: No modified incidents or IDs
+        demisto.info('No modified incidents or incident IDs found.')
+        return [{
+            'Contents': [],
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON
+        }]
 
 
 class SchemeTypeMapping:
@@ -10372,7 +10406,7 @@ def get_last_mirror_run():  # type: () -> Optional[Dict[Any, Any]]
     raise DemistoException("You cannot use getLastMirrorRun as your version is below 6.6.0")
 
 
-def support_multithreading():   # pragma: no cover
+def support_multithreading():  # pragma: no cover
     """Adds lock on the calls to the Cortex XSOAR server from the Demisto object to support integration which use multithreading.
 
     :return: No data returned
@@ -10461,9 +10495,9 @@ def get_message_threads_dump(_sig, _frame):
             if line:
                 code.append("  %s" % (line.strip()))
 
-    ret_value = '\n\n--- Start Threads Dump ---\n'\
-        + '\n'.join(code)\
-        + '\n\n--- End Threads Dump ---\n'
+    ret_value = '\n\n--- Start Threads Dump ---\n' \
+                + '\n'.join(code) \
+                + '\n\n--- End Threads Dump ---\n'
     return ret_value
 
 
@@ -10650,8 +10684,8 @@ def get_message_global_vars():
     for current_key in globals_dict.keys():
         current_value = globals_dict[current_key]
         if not type(current_value) in excluded_types \
-                and current_key not in excluded_globals \
-                and type(current_value).__name__ not in excluded_types_names:
+            and current_key not in excluded_globals \
+            and type(current_value).__name__ not in excluded_types_names:
             globals_dict_full[current_key] = {
                 'name': current_key,
                 'value': current_value,
@@ -10682,8 +10716,8 @@ def get_message_modules_sizes():
     for current_key in globals_dict.keys():
         current_value = globals_dict[current_key]
         if isinstance(current_value, types.ModuleType) \
-                and current_key not in excluded_globals \
-                and type(current_value).__name__ not in excluded_types_names:
+            and current_key not in excluded_globals \
+            and type(current_value).__name__ not in excluded_types_names:
             globals_dict_full[current_key] = {
                 'name': current_key,
                 'value': current_value,
@@ -10723,7 +10757,8 @@ def signal_handler_profiling_dump(_sig, _frame):
     LOG.print_log()
 
 
-def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):  # pragma: no cover
+def register_signal_handler_profiling_dump(signal_type=None,
+                                           profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):  # pragma: no cover
     """
     Function that registers the threads and memory dump signal listener
 
@@ -10777,14 +10812,14 @@ def shorten_string_for_printing(source_string, max_length=64):
     if max_length % 2 == 0:
         # even max_length. Start with one more char than at the beginning
         ret_value = source_string[:extremeties_length + 1] \
-            + '...' \
-            + source_string[-extremeties_length:]
+                    + '...' \
+                    + source_string[-extremeties_length:]
         return ret_value
     else:
         # odd max_length
         ret_value = source_string[:extremeties_length] \
-            + '...' \
-            + source_string[-extremeties_length:]
+                    + '...' \
+                    + source_string[-extremeties_length:]
         return ret_value
 
 
@@ -10822,7 +10857,7 @@ class PollResult:
 
 
 def polling_function(name, interval=30, timeout=600, poll_message='Fetching Results:', polling_arg_name="polling",
-                     requires_polling_arg=True):    # pragma: no cover
+                     requires_polling_arg=True):  # pragma: no cover
     """
     To use on a function that should rerun itself
     Commands that use this decorator must have a Polling argument, polling: true in yaml,
@@ -10899,6 +10934,7 @@ def get_pack_version(pack_name=''):
         case provided. in case not found returns empty string.
     :rtype: ``str``
     """
+
     def _get_packs_by_query(_body_request):
         packs_body_response = demisto.internalHttpRequest(
             'POST', uri='/contentpacks/marketplace/search', body=json.dumps(body_request)
@@ -10937,6 +10973,7 @@ def get_pack_version(pack_name=''):
             if integration.get('id') == _integration_brand and integration_display_name:
                 return integration_display_name
         return ''
+
     # query by pack name
     if pack_name:
         entity_name = pack_name
@@ -11184,13 +11221,15 @@ def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limi
     incidents = []
 
     demisto.debug('lb: Number of incidents before filtering: {}, their ids: {}'.format(len(incidents_res),
-                                                                                       [incident_res[id_field] for incident_res in incidents_res]))
+                                                                                       [incident_res[id_field] for incident_res in
+                                                                                        incidents_res]))
     for incident in incidents_res:
         if incident[id_field] not in found_incidents:
             incidents.append(incident)
 
     demisto.debug('lb: Number of incidents after filtering: {}, their ids: {}'.format(len(incidents),
-                                                                                      [incident[id_field] for incident in incidents]))
+                                                                                      [incident[id_field] for incident in
+                                                                                       incidents]))
     return incidents[:fetch_limit]
 
 
@@ -11297,7 +11336,8 @@ def get_found_incident_ids(last_run, incidents, look_back, id_field, remove_inci
 
 
 def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time, end_fetch_time,
-                                   created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False, new_offset=None):
+                                   created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False,
+                                   new_offset=None):
     """
     Calculates the next fetch time and limit depending the incidents result and creates an updated LastRun object
     with the new time and limit.
@@ -11336,7 +11376,8 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     :rtype: ``Dict``
     """
     demisto.debug("lb: Create updated last run object, len(incidents) is {},"
-                  "look_back is {}, fetch_limit is {}, new_offset is {}".format(len(incidents), look_back, fetch_limit, new_offset))
+                  "look_back is {}, fetch_limit is {}, new_offset is {}".format(len(incidents), look_back, fetch_limit,
+                                                                                new_offset))
     remove_incident_ids = True
     new_limit = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
     if new_offset:
@@ -11370,7 +11411,8 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
 
 
 def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
-                           created_time_field, id_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False, new_offset=None):
+                           created_time_field, id_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False,
+                           new_offset=None):
     """
     Updates the LastRun object with the next fetch time and limit and with the new fetched incident IDs.
 
@@ -11576,7 +11618,7 @@ def xsiam_api_call_with_retries(
     error_msg='',
     is_json_response=False,
     data_type=EVENTS
-):    # pragma: no cover
+):  # pragma: no cover
     """
     Send the fetched events or assests into the XDR data-collector private api.
 
@@ -11757,6 +11799,7 @@ def retry(
     :return: Any
     :rtype: ``Any``
     """
+
     def _retry(func):
         func_name = func.__name__
 
@@ -12083,8 +12126,7 @@ def get_server_config():
     return server_config
 
 
-from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
-
+from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
