@@ -121,6 +121,21 @@ class TestCommandsFunctions:
 
         assert entry_context_tested == {}, "Test query response without security events - check only enrty context"
 
+    @pytest.mark.get_events
+    def test_get_events_command_2(self, client, datadir, requests_mock):
+        """Test query response with security events - check only entry context"""
+        from Akamai_SIEM import get_events_command
+        # About the drop some mean regex right now disable-secrets-detection-start
+        requests_mock.get(f'{BASE_URL}/50170?from=1575966002&limit=5', text=SEC_EVENTS_TXT)
+        human_readable, entry_context_tested, raw_response = get_events_command(client=client,
+                                                                                config_ids='50170',
+                                                                                from_epoch='1575966002',
+                                                                                limit='5')
+        # Drops the mic disable-secrets-detection-end
+        expected_ec = load_params_from_json(json_path=datadir['get_events_expected_ec_2.json'])
+
+        assert entry_context_tested == expected_ec, "Test query response with security events - check only entry context"
+
     def test_fetch_events_command__with_break_in_the_middle(self, client, mocker):
         """
         Given:
