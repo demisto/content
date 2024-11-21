@@ -227,7 +227,7 @@ gov.as
 asia
 
 // at : https://www.iana.org/domains/root/db/at.html
-// Confirmed by registry <it@nic.at> 2008-06-17
+// Confirmed by registry <it@bla.at> 2008-06-17
 at
 ac.at
 co.at
@@ -399,7 +399,7 @@ org.bi
 biz
 
 // bj : https://nic.bj/bj-suffixes.txt
-// submitted by registry <contact@nic.bj>
+// submitted by registry <contact@bla.bj>
 bj
 africa.bj
 agro.bj
@@ -770,7 +770,7 @@ gouv.ci
 !www.ck
 
 // cl : https://www.nic.cl
-// Confirmed by .CL registry <hsalgado@nic.cl>
+// Confirmed by .CL registry <hsalgado@bla.cl>
 cl
 co.cl
 gob.cl
@@ -965,7 +965,7 @@ soc.dz
 tm.dz
 
 // ec : http://www.nic.ec/reg/paso1.asp
-// Submitted by registry <vabboud@nic.ec>
+// Submitted by registry <vabboud@bla.ec>
 ec
 com.ec
 info.ec
@@ -1362,7 +1362,7 @@ org.il
 ממשל.ישראל
 
 // im : https://www.nic.im/
-// Submitted by registry <info@nic.im>
+// Submitted by registry <info@bla.im>
 im
 ac.im
 co.im
@@ -1451,7 +1451,7 @@ net.iq
 
 // ir : http://www.nic.ir/Terms_and_Conditions_ir,_Appendix_1_Domain_Rules
 // Also see http://www.nic.ir/Internationalized_Domain_Names
-// Two <iran>.ir entries added at request of <tech-team@nic.ir>, 2010-04-16
+// Two <iran>.ir entries added at request of <tech-team@bla.ir>, 2010-04-16
 ir
 ac.ir
 co.ir
@@ -3850,7 +3850,7 @@ mil.kz
 com.kz
 
 // la : https://www.iana.org/domains/root/db/la.html
-// Submitted by registry <gavin.brown@nic.la>
+// Submitted by registry <gavin.brown@bla.la>
 la
 int.la
 net.la
@@ -3911,7 +3911,7 @@ org.lr
 net.lr
 
 // ls : http://www.nic.ls/
-// Confirmed by registry <lsadmin@nic.ls>
+// Confirmed by registry <lsadmin@bla.ls>
 ls
 ac.ls
 biz.ls
@@ -4064,7 +4064,7 @@ net.ms
 org.ms
 
 // mt : https://www.nic.org.mt/go/policy
-// Submitted by registry <help@nic.org.mt>
+// Submitted by registry <help@bla.org.mt>
 mt
 com.mt
 edu.mt
@@ -4116,7 +4116,7 @@ net.mw
 org.mw
 
 // mx : http://www.nic.mx/
-// Submitted by registry <farias@nic.mx>
+// Submitted by registry <farias@bla.mx>
 mx
 com.mx
 org.mx
@@ -5610,7 +5610,7 @@ org.so
 sr
 
 // ss : https://registry.nic.ss/
-// Submitted by registry <technical@nic.ss>
+// Submitted by registry <technical@bla.ss>
 ss
 biz.ss
 co.ss
@@ -6057,7 +6057,6 @@ k12.mo.us
 k12.ms.us
 k12.mt.us
 k12.nc.us
-// k12.nd.us  Bug 1028347 - Removed at request of Travis Rosso <trossow@nd.gov>
 k12.ne.us
 k12.nh.us
 k12.nj.us
@@ -6199,7 +6198,6 @@ lib.wy.us
 pvt.k12.ma.us
 chtr.k12.ma.us
 paroch.k12.ma.us
-// Merit Network, Inc. maintains the registry for =~ /(k12|cc|lib).mi.us/ and the following
 //    see also: http://domreg.merit.edu
 //    see also: whois -h whois.domreg.merit.edu help
 ann-arbor.mi.us
@@ -6241,7 +6239,7 @@ mil.vc
 edu.vc
 
 // ve : https://registro.nic.ve/
-// Submitted by registry nic@nic.ve and nicve@conatel.gob.ve
+// Submitted by registry nic@bla.ve and nicve@conatel.gob.ve
 ve
 arts.ve
 bib.ve
@@ -6725,7 +6723,7 @@ org.zw
 
 // List of new gTLDs imported from https://www.icann.org/resources/registries/gtlds/v2/gtlds.json on 2024-10-31T15:17:42Z
 // This list is auto-generated, don't edit it manually.
-// aaa : American Automobile Association, Inc.
+// aaa : American Automobile Association,  
 // https://www.iana.org/domains/root/db/aaa.html
 aaa
 
@@ -6737,19 +6735,11 @@ aarp
 // https://www.iana.org/domains/root/db/abb.html
 abb
 
-// abbott : Abbott Laboratories, Inc.
-// https://www.iana.org/domains/root/db/abbott.html
-abbott
-
-// abbvie : AbbVie Inc.
-// https://www.iana.org/domains/root/db/abbvie.html
-abbvie
-
-// abc : Disney Enterprises, Inc.
+// abc : Disney Enterprises,  
 // https://www.iana.org/domains/root/db/abc.html
 abc
 
-// able : Able Inc.
+// able : Able  
 // https://www.iana.org/domains/root/db/able.html
 able
 
@@ -6785,7 +6775,7 @@ aco
 // https://www.iana.org/domains/root/db/actor.html
 actor
 
-// ads : Charleston Road Registry Inc.
+// ads : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/ads.html
 ads
 
@@ -6816,10 +6806,6 @@ agakhan
 // agency : Binky Moon, LLC
 // https://www.iana.org/domains/root/db/agency.html
 agency
-
-// aig : American International Group, Inc.
-// https://www.iana.org/domains/root/db/aig.html
-aig
 
 // airbus : Airbus S.A.S.
 // https://www.iana.org/domains/root/db/airbus.html
@@ -6853,7 +6839,7 @@ allfinanz
 // https://www.iana.org/domains/root/db/allstate.html
 allstate
 
-// ally : Ally Financial Inc.
+// ally : Ally Financial  
 // https://www.iana.org/domains/root/db/ally.html
 ally
 
@@ -6865,23 +6851,19 @@ alsace
 // https://www.iana.org/domains/root/db/alstom.html
 alstom
 
-// amazon : Amazon Registry Services, Inc.
-// https://www.iana.org/domains/root/db/amazon.html
-amazon
-
-// americanexpress : American Express Travel Related Services Company, Inc.
+// americanexpress : American Express Travel Related Services Company,  
 // https://www.iana.org/domains/root/db/americanexpress.html
 americanexpress
 
-// americanfamily : AmFam, Inc.
+// americanfamily : AmFam,  
 // https://www.iana.org/domains/root/db/americanfamily.html
 americanfamily
 
-// amex : American Express Travel Related Services Company, Inc.
+// amex : American Express Travel Related Services Company,  
 // https://www.iana.org/domains/root/db/amex.html
 amex
 
-// amfam : AmFam, Inc.
+// amfam : AmFam,  
 // https://www.iana.org/domains/root/db/amfam.html
 amfam
 
@@ -6897,7 +6879,7 @@ amsterdam
 // https://www.iana.org/domains/root/db/analytics.html
 analytics
 
-// android : Charleston Road Registry Inc.
+// android : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/android.html
 android
 
@@ -6909,7 +6891,7 @@ anquan
 // https://www.iana.org/domains/root/db/anz.html
 anz
 
-// aol : Yahoo Inc.
+// aol : Yahoo  
 // https://www.iana.org/domains/root/db/aol.html
 aol
 
@@ -6917,11 +6899,11 @@ aol
 // https://www.iana.org/domains/root/db/apartments.html
 apartments
 
-// app : Charleston Road Registry Inc.
+// app : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/app.html
 app
 
-// apple : Apple Inc.
+// apple : Apple  
 // https://www.iana.org/domains/root/db/apple.html
 apple
 
@@ -6953,7 +6935,7 @@ art
 // https://www.iana.org/domains/root/db/arte.html
 arte
 
-// asda : Wal-Mart Stores, Inc.
+// asda : Wal-Mart Stores,  
 // https://www.iana.org/domains/root/db/asda.html
 asda
 
@@ -6961,7 +6943,7 @@ asda
 // https://www.iana.org/domains/root/db/associates.html
 associates
 
-// athleta : The Gap, Inc.
+// athleta : The Gap,  
 // https://www.iana.org/domains/root/db/athleta.html
 athleta
 
@@ -6977,7 +6959,7 @@ auction
 // https://www.iana.org/domains/root/db/audi.html
 audi
 
-// audible : Amazon Registry Services, Inc.
+// audible : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/audible.html
 audible
 
@@ -6989,7 +6971,7 @@ audio
 // https://www.iana.org/domains/root/db/auspost.html
 auspost
 
-// author : Amazon Registry Services, Inc.
+// author : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/author.html
 author
 
@@ -7017,11 +6999,11 @@ azure
 // https://www.iana.org/domains/root/db/baby.html
 baby
 
-// baidu : Baidu, Inc.
+// baidu : Baidu,  
 // https://www.iana.org/domains/root/db/baidu.html
 baidu
 
-// banamex : Citigroup Inc.
+// banamex : Citigroup  
 // https://www.iana.org/domains/root/db/banamex.html
 banamex
 
@@ -7049,7 +7031,7 @@ barclaycard
 // https://www.iana.org/domains/root/db/barclays.html
 barclays
 
-// barefoot : Gallo Vineyards, Inc.
+// barefoot : Gallo Vineyards,  
 // https://www.iana.org/domains/root/db/barefoot.html
 barefoot
 
@@ -7085,7 +7067,7 @@ bbt
 // https://www.iana.org/domains/root/db/bbva.html
 bbva
 
-// bcg : The Boston Consulting Group, Inc.
+// bcg : The Boston Consulting Group,  
 // https://www.iana.org/domains/root/db/bcg.html
 bcg
 
@@ -7117,7 +7099,7 @@ berlin
 // https://www.iana.org/domains/root/db/best.html
 best
 
-// bestbuy : BBY Solutions, Inc.
+// bestbuy : BBY Solutions,  
 // https://www.iana.org/domains/root/db/bestbuy.html
 bestbuy
 
@@ -7185,9 +7167,6 @@ bms
 // https://www.iana.org/domains/root/db/bmw.html
 bmw
 
-// bnpparibas : BNP Paribas
-// https://www.iana.org/domains/root/db/bnpparibas.html
-bnpparibas
 
 // boats : XYZ.COM LLC
 // https://www.iana.org/domains/root/db/boats.html
@@ -7209,11 +7188,11 @@ bom
 // https://www.iana.org/domains/root/db/bond.html
 bond
 
-// boo : Charleston Road Registry Inc.
+// boo : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/boo.html
 boo
 
-// book : Amazon Registry Services, Inc.
+// book : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/book.html
 book
 
@@ -7233,7 +7212,7 @@ bostik
 // https://www.iana.org/domains/root/db/boston.html
 boston
 
-// bot : Amazon Registry Services, Inc.
+// bot : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/bot.html
 bot
 
@@ -7241,19 +7220,15 @@ bot
 // https://www.iana.org/domains/root/db/boutique.html
 boutique
 
-// box : Intercap Registry Inc.
+// box : Intercap Registry  
 // https://www.iana.org/domains/root/db/box.html
 box
-
-// bradesco : Banco Bradesco S.A.
-// https://www.iana.org/domains/root/db/bradesco.html
-bradesco
 
 // bridgestone : Bridgestone Corporation
 // https://www.iana.org/domains/root/db/bridgestone.html
 bridgestone
 
-// broadway : Celebrate Broadway, Inc.
+// broadway : Celebrate Broadway,  
 // https://www.iana.org/domains/root/db/broadway.html
 broadway
 
@@ -7281,7 +7256,7 @@ builders
 // https://www.iana.org/domains/root/db/business.html
 business
 
-// buy : Amazon Registry Services, Inc.
+// buy : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/buy.html
 buy
 
@@ -7301,11 +7276,11 @@ cab
 // https://www.iana.org/domains/root/db/cafe.html
 cafe
 
-// cal : Charleston Road Registry Inc.
+// cal : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/cal.html
 cal
 
-// call : Amazon Registry Services, Inc.
+// call : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/call.html
 call
 
@@ -7325,7 +7300,7 @@ camera
 // https://www.iana.org/domains/root/db/camp.html
 camp
 
-// canon : Canon Inc.
+// canon : Canon  
 // https://www.iana.org/domains/root/db/canon.html
 canon
 
@@ -7345,7 +7320,7 @@ capitalone
 // https://www.iana.org/domains/root/db/car.html
 car
 
-// caravan : Caravan International, Inc.
+// caravan : Caravan International,  
 // https://www.iana.org/domains/root/db/caravan.html
 caravan
 
@@ -7397,11 +7372,11 @@ catholic
 // https://www.iana.org/domains/root/db/cba.html
 cba
 
-// cbn : The Christian Broadcasting Network, Inc.
+// cbn : The Christian Broadcasting Network,  
 // https://www.iana.org/domains/root/db/cbn.html
 cbn
 
-// cbre : CBRE, Inc.
+// cbre : CBRE,  
 // https://www.iana.org/domains/root/db/cbre.html
 cbre
 
@@ -7429,7 +7404,7 @@ cfd
 // https://www.iana.org/domains/root/db/chanel.html
 chanel
 
-// channel : Charleston Road Registry Inc.
+// channel : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/channel.html
 channel
 
@@ -7457,7 +7432,7 @@ chintai
 // https://www.iana.org/domains/root/db/christmas.html
 christmas
 
-// chrome : Charleston Road Registry Inc.
+// chrome : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/chrome.html
 chrome
 
@@ -7469,11 +7444,11 @@ church
 // https://www.iana.org/domains/root/db/cipriani.html
 cipriani
 
-// circle : Amazon Registry Services, Inc.
+// circle : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/circle.html
 circle
 
-// cisco : Cisco Technology, Inc.
+// cisco : Cisco Technology,  
 // https://www.iana.org/domains/root/db/cisco.html
 cisco
 
@@ -7481,7 +7456,7 @@ cisco
 // https://www.iana.org/domains/root/db/citadel.html
 citadel
 
-// citi : Citigroup Inc.
+// citi : Citigroup  
 // https://www.iana.org/domains/root/db/citi.html
 citi
 
@@ -7509,7 +7484,7 @@ click
 // https://www.iana.org/domains/root/db/clinic.html
 clinic
 
-// clinique : The Estée Lauder Companies Inc.
+// clinique : The Estée Lauder Companies  
 // https://www.iana.org/domains/root/db/clinique.html
 clinique
 
@@ -7569,7 +7544,7 @@ compare
 // https://www.iana.org/domains/root/db/computer.html
 computer
 
-// comsec : VeriSign, Inc.
+// comsec : VeriSign,  
 // https://www.iana.org/domains/root/db/comsec.html
 comsec
 
@@ -7609,7 +7584,7 @@ corsica
 // https://www.iana.org/domains/root/db/country.html
 country
 
-// coupon : Amazon Registry Services, Inc.
+// coupon : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/coupon.html
 coupon
 
@@ -7669,7 +7644,7 @@ cymru
 // https://www.iana.org/domains/root/db/cyou.html
 cyou
 
-// dad : Charleston Road Registry Inc.
+// dad : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/dad.html
 dad
 
@@ -7693,11 +7668,11 @@ dating
 // https://www.iana.org/domains/root/db/datsun.html
 datsun
 
-// day : Charleston Road Registry Inc.
+// day : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/day.html
 day
 
-// dclk : Charleston Road Registry Inc.
+// dclk : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/dclk.html
 dclk
 
@@ -7705,11 +7680,11 @@ dclk
 // https://www.iana.org/domains/root/db/dds.html
 dds
 
-// deal : Amazon Registry Services, Inc.
+// deal : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/deal.html
 deal
 
-// dealer : Intercap Registry Inc.
+// dealer : Intercap Registry  
 // https://www.iana.org/domains/root/db/dealer.html
 dealer
 
@@ -7725,17 +7700,13 @@ degree
 // https://www.iana.org/domains/root/db/delivery.html
 delivery
 
-// dell : Dell Inc.
+// dell : Dell  
 // https://www.iana.org/domains/root/db/dell.html
 dell
 
 // deloitte : Deloitte Touche Tohmatsu
 // https://www.iana.org/domains/root/db/deloitte.html
 deloitte
-
-// delta : Delta Air Lines, Inc.
-// https://www.iana.org/domains/root/db/delta.html
-delta
 
 // democrat : Dog Beach, LLC
 // https://www.iana.org/domains/root/db/democrat.html
@@ -7757,7 +7728,7 @@ desi
 // https://www.iana.org/domains/root/db/design.html
 design
 
-// dev : Charleston Road Registry Inc.
+// dev : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/dev.html
 dev
 
@@ -7789,9 +7760,6 @@ directory
 // https://www.iana.org/domains/root/db/discount.html
 discount
 
-// discover : Discover Financial Services
-// https://www.iana.org/domains/root/db/discover.html
-discover
 
 // dish : Dish DBS Corporation
 // https://www.iana.org/domains/root/db/dish.html
@@ -7805,7 +7773,7 @@ diy
 // https://www.iana.org/domains/root/db/dnp.html
 dnp
 
-// docs : Charleston Road Registry Inc.
+// docs : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/docs.html
 docs
 
@@ -7829,7 +7797,7 @@ dot
 // https://www.iana.org/domains/root/db/download.html
 download
 
-// drive : Charleston Road Registry Inc.
+// drive : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/drive.html
 drive
 
@@ -7865,11 +7833,11 @@ dvr
 // https://www.iana.org/domains/root/db/earth.html
 earth
 
-// eat : Charleston Road Registry Inc.
+// eat : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/eat.html
 eat
 
-// eco : Big Room Inc.
+// eco : Big Room  
 // https://www.iana.org/domains/root/db/eco.html
 eco
 
@@ -7921,7 +7889,7 @@ ericsson
 // https://www.iana.org/domains/root/db/erni.html
 erni
 
-// esq : Charleston Road Registry Inc.
+// esq : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/esq.html
 esq
 
@@ -8001,7 +7969,7 @@ farmers
 // https://www.iana.org/domains/root/db/fashion.html
 fashion
 
-// fast : Amazon Registry Services, Inc.
+// fast : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/fast.html
 fast
 
@@ -8009,7 +7977,7 @@ fast
 // https://www.iana.org/domains/root/db/fedex.html
 fedex
 
-// feedback : Top Level Spectrum, Inc.
+// feedback : Top Level Spectrum,  
 // https://www.iana.org/domains/root/db/feedback.html
 feedback
 
@@ -8025,7 +7993,7 @@ ferrero
 // https://www.iana.org/domains/root/db/fidelity.html
 fidelity
 
-// fido : Rogers Communications Canada Inc.
+// fido : Rogers Communications Canada  
 // https://www.iana.org/domains/root/db/fido.html
 fido
 
@@ -8045,7 +8013,7 @@ finance
 // https://www.iana.org/domains/root/db/financial.html
 financial
 
-// fire : Amazon Registry Services, Inc.
+// fire : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/fire.html
 fire
 
@@ -8073,7 +8041,7 @@ fit
 // https://www.iana.org/domains/root/db/fitness.html
 fitness
 
-// flickr : Flickr, Inc.
+// flickr : Flickr,  
 // https://www.iana.org/domains/root/db/flickr.html
 flickr
 
@@ -8081,9 +8049,6 @@ flickr
 // https://www.iana.org/domains/root/db/flights.html
 flights
 
-// flir : FLIR Systems, Inc.
-// https://www.iana.org/domains/root/db/flir.html
-flir
 
 // florist : Binky Moon, LLC
 // https://www.iana.org/domains/root/db/florist.html
@@ -8093,11 +8058,11 @@ florist
 // https://www.iana.org/domains/root/db/flowers.html
 flowers
 
-// fly : Charleston Road Registry Inc.
+// fly : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/fly.html
 fly
 
-// foo : Charleston Road Registry Inc.
+// foo : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/foo.html
 foo
 
@@ -8133,7 +8098,7 @@ foundation
 // https://www.iana.org/domains/root/db/fox.html
 fox
 
-// free : Amazon Registry Services, Inc.
+// free : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/free.html
 free
 
@@ -8157,11 +8122,8 @@ frontier
 // https://www.iana.org/domains/root/db/ftr.html
 ftr
 
-// fujitsu : Fujitsu Limited
-// https://www.iana.org/domains/root/db/fujitsu.html
-fujitsu
 
-// fun : Radix Technologies Inc.
+// fun : Radix Technologies  
 // https://www.iana.org/domains/root/db/fun.html
 fun
 
@@ -8189,11 +8151,11 @@ gal
 // https://www.iana.org/domains/root/db/gallery.html
 gallery
 
-// gallo : Gallo Vineyards, Inc.
+// gallo : Gallo Vineyards,  
 // https://www.iana.org/domains/root/db/gallo.html
 gallo
 
-// gallup : Gallup, Inc.
+// gallup : Gallup,  
 // https://www.iana.org/domains/root/db/gallup.html
 gallup
 
@@ -8205,7 +8167,7 @@ game
 // https://www.iana.org/domains/root/db/games.html
 games
 
-// gap : The Gap, Inc.
+// gap : The Gap,  
 // https://www.iana.org/domains/root/db/gap.html
 gap
 
@@ -8217,7 +8179,7 @@ garden
 // https://www.iana.org/domains/root/db/gay.html
 gay
 
-// gbiz : Charleston Road Registry Inc.
+// gbiz : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/gbiz.html
 gbiz
 
@@ -8237,11 +8199,11 @@ gent
 // https://www.iana.org/domains/root/db/genting.html
 genting
 
-// george : Wal-Mart Stores, Inc.
+// george : Wal-Mart Stores,  
 // https://www.iana.org/domains/root/db/george.html
 george
 
-// ggee : GMO Internet, Inc.
+// ggee : GMO Internet,  
 // https://www.iana.org/domains/root/db/ggee.html
 ggee
 
@@ -8265,7 +8227,7 @@ giving
 // https://www.iana.org/domains/root/db/glass.html
 glass
 
-// gle : Charleston Road Registry Inc.
+// gle : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/gle.html
 gle
 
@@ -8277,7 +8239,7 @@ global
 // https://www.iana.org/domains/root/db/globo.html
 globo
 
-// gmail : Charleston Road Registry Inc.
+// gmail : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/gmail.html
 gmail
 
@@ -8285,7 +8247,7 @@ gmail
 // https://www.iana.org/domains/root/db/gmbh.html
 gmbh
 
-// gmo : GMO Internet, Inc.
+// gmo : GMO Internet,  
 // https://www.iana.org/domains/root/db/gmo.html
 gmo
 
@@ -8309,7 +8271,7 @@ goldpoint
 // https://www.iana.org/domains/root/db/golf.html
 golf
 
-// goo : NTT DOCOMO, INC.
+// goo : NTT DOCOMO,  
 // https://www.iana.org/domains/root/db/goo.html
 goo
 
@@ -8317,19 +8279,19 @@ goo
 // https://www.iana.org/domains/root/db/goodyear.html
 goodyear
 
-// goog : Charleston Road Registry Inc.
+// goog : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/goog.html
 goog
 
-// google : Charleston Road Registry Inc.
+// google : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/google.html
 google
 
-// gop : Republican State Leadership Committee, Inc.
+// gop : Republican State Leadership Committee,  
 // https://www.iana.org/domains/root/db/gop.html
 gop
 
-// got : Amazon Registry Services, Inc.
+// got : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/got.html
 got
 
@@ -8353,7 +8315,7 @@ green
 // https://www.iana.org/domains/root/db/gripe.html
 gripe
 
-// grocery : Wal-Mart Stores, Inc.
+// grocery : Wal-Mart Stores,  
 // https://www.iana.org/domains/root/db/grocery.html
 grocery
 
@@ -8365,7 +8327,7 @@ group
 // https://www.iana.org/domains/root/db/gucci.html
 gucci
 
-// guge : Charleston Road Registry Inc.
+// guge : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/guge.html
 guge
 
@@ -8389,7 +8351,7 @@ hair
 // https://www.iana.org/domains/root/db/hamburg.html
 hamburg
 
-// hangout : Charleston Road Registry Inc.
+// hangout : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/hangout.html
 hangout
 
@@ -8397,17 +8359,10 @@ hangout
 // https://www.iana.org/domains/root/db/haus.html
 haus
 
-// hbo : HBO Registry Services, Inc.
+// hbo : HBO Registry Services,  
 // https://www.iana.org/domains/root/db/hbo.html
 hbo
 
-// hdfc : HDFC BANK LIMITED
-// https://www.iana.org/domains/root/db/hdfc.html
-hdfc
-
-// hdfcbank : HDFC BANK LIMITED
-// https://www.iana.org/domains/root/db/hdfcbank.html
-hdfcbank
 
 // health : Registry Services, LLC
 // https://www.iana.org/domains/root/db/health.html
@@ -8425,7 +8380,7 @@ help
 // https://www.iana.org/domains/root/db/helsinki.html
 helsinki
 
-// here : Charleston Road Registry Inc.
+// here : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/here.html
 here
 
@@ -8437,7 +8392,7 @@ hermes
 // https://www.iana.org/domains/root/db/hiphop.html
 hiphop
 
-// hisamitsu : Hisamitsu Pharmaceutical Co.,Inc.
+// hisamitsu : Hisamitsu Pharmaceutical Co., 
 // https://www.iana.org/domains/root/db/hisamitsu.html
 hisamitsu
 
@@ -8469,7 +8424,7 @@ holiday
 // https://www.iana.org/domains/root/db/homedepot.html
 homedepot
 
-// homegoods : The TJX Companies, Inc.
+// homegoods : The TJX Companies,  
 // https://www.iana.org/domains/root/db/homegoods.html
 homegoods
 
@@ -8477,7 +8432,7 @@ homegoods
 // https://www.iana.org/domains/root/db/homes.html
 homes
 
-// homesense : The TJX Companies, Inc.
+// homesense : The TJX Companies,  
 // https://www.iana.org/domains/root/db/homesense.html
 homesense
 
@@ -8493,7 +8448,7 @@ horse
 // https://www.iana.org/domains/root/db/hospital.html
 hospital
 
-// host : Radix Technologies Inc.
+// host : Radix Technologies  
 // https://www.iana.org/domains/root/db/host.html
 host
 
@@ -8501,7 +8456,7 @@ host
 // https://www.iana.org/domains/root/db/hosting.html
 hosting
 
-// hot : Amazon Registry Services, Inc.
+// hot : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/hot.html
 hot
 
@@ -8517,7 +8472,7 @@ hotmail
 // https://www.iana.org/domains/root/db/house.html
 house
 
-// how : Charleston Road Registry Inc.
+// how : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/how.html
 how
 
@@ -8545,7 +8500,7 @@ ibm
 // https://www.iana.org/domains/root/db/icbc.html
 icbc
 
-// ice : IntercontinentalExchange, Inc.
+// ice : IntercontinentalExchange,  
 // https://www.iana.org/domains/root/db/ice.html
 ice
 
@@ -8569,7 +8524,7 @@ ikano
 // https://www.iana.org/domains/root/db/imamat.html
 imamat
 
-// imdb : Amazon Registry Services, Inc.
+// imdb : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/imdb.html
 imdb
 
@@ -8581,8 +8536,8 @@ immo
 // https://www.iana.org/domains/root/db/immobilien.html
 immobilien
 
-// inc : Intercap Registry Inc.
-// https://www.iana.org/domains/root/db/inc.html
+// inc : Intercap Registry  
+// https://www.iana.org/domains/root/db/ html
 inc
 
 // industries : Binky Moon, LLC
@@ -8593,7 +8548,7 @@ industries
 // https://www.iana.org/domains/root/db/infiniti.html
 infiniti
 
-// ing : Charleston Road Registry Inc.
+// ing : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/ing.html
 ing
 
@@ -8617,7 +8572,7 @@ insure
 // https://www.iana.org/domains/root/db/international.html
 international
 
-// intuit : Intuit Administrative Services, Inc.
+// intuit : Intuit Administrative Services,  
 // https://www.iana.org/domains/root/db/intuit.html
 intuit
 
@@ -8689,19 +8644,16 @@ jll
 // https://www.iana.org/domains/root/db/jmp.html
 jmp
 
-// jnj : Johnson & Johnson Services, Inc.
-// https://www.iana.org/domains/root/db/jnj.html
-jnj
 
 // joburg : ZA Central Registry NPC trading as ZA Central Registry
 // https://www.iana.org/domains/root/db/joburg.html
 joburg
 
-// jot : Amazon Registry Services, Inc.
+// jot : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/jot.html
 jot
 
-// joy : Amazon Registry Services, Inc.
+// joy : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/joy.html
 joy
 
@@ -8717,7 +8669,7 @@ jprs
 // https://www.iana.org/domains/root/db/juegos.html
 juegos
 
-// juniper : JUNIPER NETWORKS, INC.
+// juniper : JUNIPER NETWORKS,  
 // https://www.iana.org/domains/root/db/juniper.html
 juniper
 
@@ -8757,7 +8709,7 @@ kids
 // https://www.iana.org/domains/root/db/kim.html
 kim
 
-// kindle : Amazon Registry Services, Inc.
+// kindle : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/kindle.html
 kindle
 
@@ -8813,7 +8765,7 @@ lacaixa
 // https://www.iana.org/domains/root/db/lamborghini.html
 lamborghini
 
-// lamer : The Estée Lauder Companies Inc.
+// lamer : The Estée Lauder Companies  
 // https://www.iana.org/domains/root/db/lamer.html
 lamer
 
@@ -8869,7 +8821,7 @@ lease
 // https://www.iana.org/domains/root/db/leclerc.html
 leclerc
 
-// lefrak : LeFrak Organization, Inc.
+// lefrak : LeFrak Organization,  
 // https://www.iana.org/domains/root/db/lefrak.html
 lefrak
 
@@ -8909,7 +8861,7 @@ lifestyle
 // https://www.iana.org/domains/root/db/lighting.html
 lighting
 
-// like : Amazon Registry Services, Inc.
+// like : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/like.html
 like
 
@@ -8949,7 +8901,7 @@ living
 // https://www.iana.org/domains/root/db/llc.html
 llc
 
-// llp : Intercap Registry Inc.
+// llp : Intercap Registry  
 // https://www.iana.org/domains/root/db/llp.html
 llp
 
@@ -8989,11 +8941,11 @@ lotto
 // https://www.iana.org/domains/root/db/love.html
 love
 
-// lpl : LPL Holdings, Inc.
+// lpl : LPL Holdings,  
 // https://www.iana.org/domains/root/db/lpl.html
 lpl
 
-// lplfinancial : LPL Holdings, Inc.
+// lplfinancial : LPL Holdings,  
 // https://www.iana.org/domains/root/db/lplfinancial.html
 lplfinancial
 
@@ -9045,7 +8997,7 @@ management
 // https://www.iana.org/domains/root/db/mango.html
 mango
 
-// map : Charleston Road Registry Inc.
+// map : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/map.html
 map
 
@@ -9065,11 +9017,11 @@ markets
 // https://www.iana.org/domains/root/db/marriott.html
 marriott
 
-// marshalls : The TJX Companies, Inc.
+// marshalls : The TJX Companies,  
 // https://www.iana.org/domains/root/db/marshalls.html
 marshalls
 
-// mattel : Mattel Sites, Inc.
+// mattel : Mattel Sites,  
 // https://www.iana.org/domains/root/db/mattel.html
 mattel
 
@@ -9077,7 +9029,7 @@ mattel
 // https://www.iana.org/domains/root/db/mba.html
 mba
 
-// mckinsey : McKinsey Holdings, Inc.
+// mckinsey : McKinsey Holdings,  
 // https://www.iana.org/domains/root/db/mckinsey.html
 mckinsey
 
@@ -9089,7 +9041,7 @@ med
 // https://www.iana.org/domains/root/db/media.html
 media
 
-// meet : Charleston Road Registry Inc.
+// meet : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/meet.html
 meet
 
@@ -9097,7 +9049,7 @@ meet
 // https://www.iana.org/domains/root/db/melbourne.html
 melbourne
 
-// meme : Charleston Road Registry Inc.
+// meme : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/meme.html
 meme
 
@@ -9113,11 +9065,11 @@ men
 // https://www.iana.org/domains/root/db/menu.html
 menu
 
-// merck : Merck Registry Holdings, Inc.
+// merck : Merck Registry Holdings,  
 // https://www.iana.org/domains/root/db/merck.html
 merck
 
-// merckmsd : MSD Registry Holdings, Inc.
+// merckmsd : MSD Registry Holdings,  
 // https://www.iana.org/domains/root/db/merckmsd.html
 merckmsd
 
@@ -9133,7 +9085,7 @@ microsoft
 // https://www.iana.org/domains/root/db/mini.html
 mini
 
-// mint : Intuit Administrative Services, Inc.
+// mint : Intuit Administrative Services,  
 // https://www.iana.org/domains/root/db/mint.html
 mint
 
@@ -9169,7 +9121,7 @@ moda
 // https://www.iana.org/domains/root/db/moe.html
 moe
 
-// moi : Amazon Registry Services, Inc.
+// moi : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/moi.html
 moi
 
@@ -9209,7 +9161,7 @@ moto
 // https://www.iana.org/domains/root/db/motorcycles.html
 motorcycles
 
-// mov : Charleston Road Registry Inc.
+// mov : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/mov.html
 mov
 
@@ -9217,7 +9169,7 @@ mov
 // https://www.iana.org/domains/root/db/movie.html
 movie
 
-// msd : MSD Registry Holdings, Inc.
+// msd : MSD Registry Holdings,  
 // https://www.iana.org/domains/root/db/msd.html
 msd
 
@@ -9237,7 +9189,7 @@ music
 // https://www.iana.org/domains/root/db/nab.html
 nab
 
-// nagoya : GMO Registry, Inc.
+// nagoya : GMO Registry,  
 // https://www.iana.org/domains/root/db/nagoya.html
 nagoya
 
@@ -9257,7 +9209,7 @@ nec
 // https://www.iana.org/domains/root/db/netbank.html
 netbank
 
-// netflix : Netflix, Inc.
+// netflix : Netflix,  
 // https://www.iana.org/domains/root/db/netflix.html
 netflix
 
@@ -9265,11 +9217,11 @@ netflix
 // https://www.iana.org/domains/root/db/network.html
 network
 
-// neustar : NeuStar, Inc.
+// neustar : NeuStar,  
 // https://www.iana.org/domains/root/db/neustar.html
 neustar
 
-// new : Charleston Road Registry Inc.
+// new : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/new.html
 new
 
@@ -9285,7 +9237,7 @@ next
 // https://www.iana.org/domains/root/db/nextdirect.html
 nextdirect
 
-// nexus : Charleston Road Registry Inc.
+// nexus : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/nexus.html
 nexus
 
@@ -9305,7 +9257,7 @@ nhk
 // https://www.iana.org/domains/root/db/nico.html
 nico
 
-// nike : NIKE, Inc.
+// nike : NIKE,  
 // https://www.iana.org/domains/root/db/nike.html
 nike
 
@@ -9329,11 +9281,11 @@ nissay
 // https://www.iana.org/domains/root/db/nokia.html
 nokia
 
-// norton : Gen Digital Inc.
+// norton : Gen Digital  
 // https://www.iana.org/domains/root/db/norton.html
 norton
 
-// now : Amazon Registry Services, Inc.
+// now : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/now.html
 now
 
@@ -9345,7 +9297,7 @@ nowruz
 // https://www.iana.org/domains/root/db/nowtv.html
 nowtv
 
-// nra : NRA Holdings Company, INC.
+// nra : NRA Holdings Company,  
 // https://www.iana.org/domains/root/db/nra.html
 nra
 
@@ -9373,7 +9325,7 @@ observer
 // https://www.iana.org/domains/root/db/office.html
 office
 
-// okinawa : BRregistry, Inc.
+// okinawa : BRregistry,  
 // https://www.iana.org/domains/root/db/okinawa.html
 okinawa
 
@@ -9405,7 +9357,7 @@ ong
 // https://www.iana.org/domains/root/db/onl.html
 onl
 
-// online : Radix Technologies Inc.
+// online : Radix Technologies  
 // https://www.iana.org/domains/root/db/online.html
 online
 
@@ -9413,7 +9365,7 @@ online
 // https://www.iana.org/domains/root/db/ooo.html
 ooo
 
-// open : American Express Travel Related Services Company, Inc.
+// open : American Express Travel Related Services Company,  
 // https://www.iana.org/domains/root/db/open.html
 open
 
@@ -9429,7 +9381,7 @@ orange
 // https://www.iana.org/domains/root/db/organic.html
 organic
 
-// origins : The Estée Lauder Companies Inc.
+// origins : The Estée Lauder Companies  
 // https://www.iana.org/domains/root/db/origins.html
 origins
 
@@ -9449,7 +9401,7 @@ ott
 // https://www.iana.org/domains/root/db/ovh.html
 ovh
 
-// page : Charleston Road Registry Inc.
+// page : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/page.html
 page
 
@@ -9477,7 +9429,7 @@ parts
 // https://www.iana.org/domains/root/db/party.html
 party
 
-// pay : Amazon Registry Services, Inc.
+// pay : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/pay.html
 pay
 
@@ -9489,7 +9441,7 @@ pccw
 // https://www.iana.org/domains/root/db/pet.html
 pet
 
-// pfizer : Pfizer Inc.
+// pfizer : Pfizer  
 // https://www.iana.org/domains/root/db/pfizer.html
 pfizer
 
@@ -9497,7 +9449,7 @@ pfizer
 // https://www.iana.org/domains/root/db/pharmacy.html
 pharmacy
 
-// phd : Charleston Road Registry Inc.
+// phd : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/phd.html
 phd
 
@@ -9537,15 +9489,15 @@ pictet
 // https://www.iana.org/domains/root/db/pictures.html
 pictures
 
-// pid : Top Level Spectrum, Inc.
+// pid : Top Level Spectrum,  
 // https://www.iana.org/domains/root/db/pid.html
 pid
 
-// pin : Amazon Registry Services, Inc.
+// pin : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/pin.html
 pin
 
-// ping : Ping Registry Provider, Inc.
+// ping : Ping Registry Provider,  
 // https://www.iana.org/domains/root/db/ping.html
 ping
 
@@ -9565,11 +9517,11 @@ pizza
 // https://www.iana.org/domains/root/db/place.html
 place
 
-// play : Charleston Road Registry Inc.
+// play : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/play.html
 play
 
-// playstation : Sony Interactive Entertainment Inc.
+// playstation : Sony Interactive Entertainment  
 // https://www.iana.org/domains/root/db/playstation.html
 playstation
 
@@ -9601,7 +9553,7 @@ politie
 // https://www.iana.org/domains/root/db/porn.html
 porn
 
-// pramerica : Prudential Financial, Inc.
+// pramerica : Prudential Financial,  
 // https://www.iana.org/domains/root/db/pramerica.html
 pramerica
 
@@ -9609,15 +9561,15 @@ pramerica
 // https://www.iana.org/domains/root/db/praxi.html
 praxi
 
-// press : Radix Technologies Inc.
+// press : Radix Technologies  
 // https://www.iana.org/domains/root/db/press.html
 press
 
-// prime : Amazon Registry Services, Inc.
+// prime : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/prime.html
 prime
 
-// prod : Charleston Road Registry Inc.
+// prod : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/prod.html
 prod
 
@@ -9625,7 +9577,7 @@ prod
 // https://www.iana.org/domains/root/db/productions.html
 productions
 
-// prof : Charleston Road Registry Inc.
+// prof : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/prof.html
 prof
 
@@ -9649,11 +9601,11 @@ property
 // https://www.iana.org/domains/root/db/protection.html
 protection
 
-// pru : Prudential Financial, Inc.
+// pru : Prudential Financial,  
 // https://www.iana.org/domains/root/db/pru.html
 pru
 
-// prudential : Prudential Financial, Inc.
+// prudential : Prudential Financial,  
 // https://www.iana.org/domains/root/db/prudential.html
 prudential
 
@@ -9685,7 +9637,7 @@ racing
 // https://www.iana.org/domains/root/db/radio.html
 radio
 
-// read : Amazon Registry Services, Inc.
+// read : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/read.html
 read
 
@@ -9729,7 +9681,7 @@ reise
 // https://www.iana.org/domains/root/db/reisen.html
 reisen
 
-// reit : National Association of Real Estate Investment Trusts, Inc.
+// reit : National Association of Real Estate Investment Trusts,  
 // https://www.iana.org/domains/root/db/reit.html
 reit
 
@@ -9813,15 +9765,15 @@ rocks
 // https://www.iana.org/domains/root/db/rodeo.html
 rodeo
 
-// rogers : Rogers Communications Canada Inc.
+// rogers : Rogers Communications Canada  
 // https://www.iana.org/domains/root/db/rogers.html
 rogers
 
-// room : Amazon Registry Services, Inc.
+// room : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/room.html
 room
 
-// rsvp : Charleston Road Registry Inc.
+// rsvp : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/rsvp.html
 rsvp
 
@@ -9841,7 +9793,7 @@ run
 // https://www.iana.org/domains/root/db/rwe.html
 rwe
 
-// ryukyu : BRregistry, Inc.
+// ryukyu : BRregistry,  
 // https://www.iana.org/domains/root/db/ryukyu.html
 ryukyu
 
@@ -9849,7 +9801,7 @@ ryukyu
 // https://www.iana.org/domains/root/db/saarland.html
 saarland
 
-// safe : Amazon Registry Services, Inc.
+// safe : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/safe.html
 safe
 
@@ -9857,7 +9809,7 @@ safe
 // https://www.iana.org/domains/root/db/safety.html
 safety
 
-// sakura : SAKURA Internet Inc.
+// sakura : SAKURA Internet  
 // https://www.iana.org/domains/root/db/sakura.html
 sakura
 
@@ -9869,13 +9821,9 @@ sale
 // https://www.iana.org/domains/root/db/salon.html
 salon
 
-// samsclub : Wal-Mart Stores, Inc.
+// samsclub : Wal-Mart Stores,  
 // https://www.iana.org/domains/root/db/samsclub.html
 samsclub
-
-// samsung : SAMSUNG SDS CO., LTD
-// https://www.iana.org/domains/root/db/samsung.html
-samsung
 
 // sandvik : Sandvik AB
 // https://www.iana.org/domains/root/db/sandvik.html
@@ -9901,7 +9849,7 @@ sarl
 // https://www.iana.org/domains/root/db/sas.html
 sas
 
-// save : Amazon Registry Services, Inc.
+// save : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/save.html
 save
 
@@ -9917,9 +9865,6 @@ sbi
 // https://www.iana.org/domains/root/db/sbs.html
 sbs
 
-// scb : The Siam Commercial Bank Public Company Limited ("SCB")
-// https://www.iana.org/domains/root/db/scb.html
-scb
 
 // schaeffler : Schaeffler Technologies AG & Co. KG
 // https://www.iana.org/domains/root/db/schaeffler.html
@@ -9953,7 +9898,7 @@ science
 // https://www.iana.org/domains/root/db/scot.html
 scot
 
-// search : Charleston Road Registry Inc.
+// search : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/search.html
 search
 
@@ -9961,7 +9906,7 @@ search
 // https://www.iana.org/domains/root/db/seat.html
 seat
 
-// secure : Amazon Registry Services, Inc.
+// secure : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/secure.html
 secure
 
@@ -9969,7 +9914,6 @@ secure
 // https://www.iana.org/domains/root/db/security.html
 security
 
-// seek : Seek Limited
 // https://www.iana.org/domains/root/db/seek.html
 seek
 
@@ -10029,7 +9973,7 @@ shiksha
 // https://www.iana.org/domains/root/db/shoes.html
 shoes
 
-// shop : GMO Registry, Inc.
+// shop : GMO Registry,  
 // https://www.iana.org/domains/root/db/shop.html
 shop
 
@@ -10045,7 +9989,7 @@ shouji
 // https://www.iana.org/domains/root/db/show.html
 show
 
-// silk : Amazon Registry Services, Inc.
+// silk : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/silk.html
 silk
 
@@ -10057,7 +10001,7 @@ sina
 // https://www.iana.org/domains/root/db/singles.html
 singles
 
-// site : Radix Technologies Inc.
+// site : Radix Technologies  
 // https://www.iana.org/domains/root/db/site.html
 site
 
@@ -10081,11 +10025,11 @@ skype
 // https://www.iana.org/domains/root/db/sling.html
 sling
 
-// smart : Smart Communications, Inc. (SMART)
+// smart : Smart Communications,   (SMART)
 // https://www.iana.org/domains/root/db/smart.html
 smart
 
-// smile : Amazon Registry Services, Inc.
+// smile : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/smile.html
 smile
 
@@ -10121,7 +10065,7 @@ solar
 // https://www.iana.org/domains/root/db/solutions.html
 solutions
 
-// song : Amazon Registry Services, Inc.
+// song : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/song.html
 song
 
@@ -10129,7 +10073,7 @@ song
 // https://www.iana.org/domains/root/db/sony.html
 sony
 
-// soy : Charleston Road Registry Inc.
+// soy : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/soy.html
 soy
 
@@ -10137,7 +10081,7 @@ soy
 // https://www.iana.org/domains/root/db/spa.html
 spa
 
-// space : Radix Technologies Inc.
+// space : Radix Technologies  
 // https://www.iana.org/domains/root/db/space.html
 space
 
@@ -10145,7 +10089,7 @@ space
 // https://www.iana.org/domains/root/db/sport.html
 sport
 
-// spot : Amazon Registry Services, Inc.
+// spot : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/spot.html
 spot
 
@@ -10157,7 +10101,7 @@ srl
 // https://www.iana.org/domains/root/db/stada.html
 stada
 
-// staples : Staples, Inc.
+// staples : Staples,  
 // https://www.iana.org/domains/root/db/staples.html
 staples
 
@@ -10169,9 +10113,6 @@ star
 // https://www.iana.org/domains/root/db/statebank.html
 statebank
 
-// statefarm : State Farm Mutual Automobile Insurance Company
-// https://www.iana.org/domains/root/db/statefarm.html
-statefarm
 
 // stc : Saudi Telecom Company
 // https://www.iana.org/domains/root/db/stc.html
@@ -10189,7 +10130,7 @@ stockholm
 // https://www.iana.org/domains/root/db/storage.html
 storage
 
-// store : Radix Technologies Inc.
+// store : Radix Technologies  
 // https://www.iana.org/domains/root/db/store.html
 store
 
@@ -10257,11 +10198,7 @@ systems
 // https://www.iana.org/domains/root/db/tab.html
 tab
 
-// taipei : Taipei City Government
-// https://www.iana.org/domains/root/db/taipei.html
-taipei
-
-// talk : Amazon Registry Services, Inc.
+// talk : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/talk.html
 talk
 
@@ -10305,7 +10242,7 @@ tdk
 // https://www.iana.org/domains/root/db/team.html
 team
 
-// tech : Radix Technologies Inc.
+// tech : Radix Technologies  
 // https://www.iana.org/domains/root/db/tech.html
 tech
 
@@ -10361,15 +10298,15 @@ tires
 // https://www.iana.org/domains/root/db/tirol.html
 tirol
 
-// tjmaxx : The TJX Companies, Inc.
+// tjmaxx : The TJX Companies,  
 // https://www.iana.org/domains/root/db/tjmaxx.html
 tjmaxx
 
-// tjx : The TJX Companies, Inc.
+// tjx : The TJX Companies,  
 // https://www.iana.org/domains/root/db/tjx.html
 tjx
 
-// tkmaxx : The TJX Companies, Inc.
+// tkmaxx : The TJX Companies,  
 // https://www.iana.org/domains/root/db/tkmaxx.html
 tkmaxx
 
@@ -10381,7 +10318,7 @@ tmall
 // https://www.iana.org/domains/root/db/today.html
 today
 
-// tokyo : GMO Registry, Inc.
+// tokyo : GMO Registry,  
 // https://www.iana.org/domains/root/db/tokyo.html
 tokyo
 
@@ -10393,7 +10330,7 @@ tools
 // https://www.iana.org/domains/root/db/top.html
 top
 
-// toray : Toray Industries, Inc.
+// toray : Toray Industries,  
 // https://www.iana.org/domains/root/db/toray.html
 toray
 
@@ -10461,11 +10398,11 @@ tube
 // https://www.iana.org/domains/root/db/tui.html
 tui
 
-// tunes : Amazon Registry Services, Inc.
+// tunes : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/tunes.html
 tunes
 
-// tushu : Amazon Registry Services, Inc.
+// tushu : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/tushu.html
 tushu
 
@@ -10489,7 +10426,7 @@ unicom
 // https://www.iana.org/domains/root/db/university.html
 university
 
-// uno : Radix Technologies Inc.
+// uno : Radix Technologies  
 // https://www.iana.org/domains/root/db/uno.html
 uno
 
@@ -10497,7 +10434,7 @@ uno
 // https://www.iana.org/domains/root/db/uol.html
 uol
 
-// ups : UPS Market Driver, Inc.
+// ups : UPS Market Driver,  
 // https://www.iana.org/domains/root/db/ups.html
 ups
 
@@ -10509,11 +10446,11 @@ vacations
 // https://www.iana.org/domains/root/db/vana.html
 vana
 
-// vanguard : The Vanguard Group, Inc.
+// vanguard : The Vanguard Group,  
 // https://www.iana.org/domains/root/db/vanguard.html
 vanguard
 
-// vegas : Dot Vegas, Inc.
+// vegas : Dot Vegas,  
 // https://www.iana.org/domains/root/db/vegas.html
 vegas
 
@@ -10521,7 +10458,7 @@ vegas
 // https://www.iana.org/domains/root/db/ventures.html
 ventures
 
-// verisign : VeriSign, Inc.
+// verisign : VeriSign,  
 // https://www.iana.org/domains/root/db/verisign.html
 verisign
 
@@ -10613,7 +10550,7 @@ voyage
 // https://www.iana.org/domains/root/db/wales.html
 wales
 
-// walmart : Wal-Mart Stores, Inc.
+// walmart : Wal-Mart Stores,  
 // https://www.iana.org/domains/root/db/walmart.html
 walmart
 
@@ -10625,7 +10562,7 @@ walter
 // https://www.iana.org/domains/root/db/wang.html
 wang
 
-// wanggou : Amazon Registry Services, Inc.
+// wanggou : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/wanggou.html
 wanggou
 
@@ -10653,7 +10590,7 @@ webcam
 // https://www.iana.org/domains/root/db/weber.html
 weber
 
-// website : Radix Technologies Inc.
+// website : Radix Technologies  
 // https://www.iana.org/domains/root/db/website.html
 website
 
@@ -10701,7 +10638,7 @@ windows
 // https://www.iana.org/domains/root/db/wine.html
 wine
 
-// winners : The TJX Companies, Inc.
+// winners : The TJX Companies,  
 // https://www.iana.org/domains/root/db/winners.html
 winners
 
@@ -10729,11 +10666,11 @@ works
 // https://www.iana.org/domains/root/db/world.html
 world
 
-// wow : Amazon Registry Services, Inc.
+// wow : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/wow.html
 wow
 
-// wtc : World Trade Centers Association, Inc.
+// wtc : World Trade Centers Association,  
 // https://www.iana.org/domains/root/db/wtc.html
 wtc
 
@@ -10761,7 +10698,7 @@ xin
 // https://www.iana.org/domains/root/db/xn--11b4c3d.html
 कॉम
 
-// xn--1ck2e1b : Amazon Registry Services, Inc.
+// xn--1ck2e1b : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/xn--1ck2e1b.html
 セール
 
@@ -10857,7 +10794,7 @@ xin
 // https://www.iana.org/domains/root/db/xn--b4w605ferd.html
 淡马锡
 
-// xn--bck1b9a5dre4c : Amazon Registry Services, Inc.
+// xn--bck1b9a5dre4c : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/xn--bck1b9a5dre4c.html
 ファッション
 
@@ -10869,17 +10806,13 @@ xin
 // https://www.iana.org/domains/root/db/xn--c2br7g.html
 नेट
 
-// xn--cck2b3b : Amazon Registry Services, Inc.
+// xn--cck2b3b : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/xn--cck2b3b.html
 ストア
 
-// xn--cckwcxetd : Amazon Registry Services, Inc.
+// xn--cckwcxetd : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/xn--cckwcxetd.html
 アマゾン
-
-// xn--cg4bki : SAMSUNG SDS CO., LTD
-// https://www.iana.org/domains/root/db/xn--cg4bki.html
-삼성
 
 // xn--czr694b : Internet DotTrademark Organisation Limited
 // https://www.iana.org/domains/root/db/xn--czr694b.html
@@ -10897,7 +10830,7 @@ xin
 // https://www.iana.org/domains/root/db/xn--d1acj3b.html
 дети
 
-// xn--eckvdtc9d : Amazon Registry Services, Inc.
+// xn--eckvdtc9d : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/xn--eckvdtc9d.html
 ポイント
 
@@ -10905,7 +10838,7 @@ xin
 // https://www.iana.org/domains/root/db/xn--efvy88h.html
 新闻
 
-// xn--fct429k : Amazon Registry Services, Inc.
+// xn--fct429k : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/xn--fct429k.html
 家電
 
@@ -10925,7 +10858,7 @@ xin
 // https://www.iana.org/domains/root/db/xn--fjq720a.html
 娱乐
 
-// xn--flw351e : Charleston Road Registry Inc.
+// xn--flw351e : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/xn--flw351e.html
 谷歌
 
@@ -10937,11 +10870,11 @@ xin
 // https://www.iana.org/domains/root/db/xn--g2xx48c.html
 购物
 
-// xn--gckr3f0f : Amazon Registry Services, Inc.
+// xn--gckr3f0f : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/xn--gckr3f0f.html
 クラウド
 
-// xn--gk3at1e : Amazon Registry Services, Inc.
+// xn--gk3at1e : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/xn--gk3at1e.html
 通販
 
@@ -10965,11 +10898,11 @@ xin
 // https://www.iana.org/domains/root/db/xn--j1aef.html
 ком
 
-// xn--jlq480n2rg : Amazon Registry Services, Inc.
+// xn--jlq480n2rg : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/xn--jlq480n2rg.html
 亚马逊
 
-// xn--jvr189m : Amazon Registry Services, Inc.
+// xn--jvr189m : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/xn--jvr189m.html
 食品
 
@@ -11049,11 +10982,11 @@ xin
 // https://www.iana.org/domains/root/db/xn--pssy2u.html
 大拿
 
-// xn--q9jyb4c : Charleston Road Registry Inc.
+// xn--q9jyb4c : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/xn--q9jyb4c.html
 みんな
 
-// xn--qcka1pmc : Charleston Road Registry Inc.
+// xn--qcka1pmc : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/xn--qcka1pmc.html
 グーグル
 
@@ -11061,7 +10994,7 @@ xin
 // https://www.iana.org/domains/root/db/xn--rhqv96g.html
 世界
 
-// xn--rovu88b : Amazon Registry Services, Inc.
+// xn--rovu88b : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/xn--rovu88b.html
 書籍
 
@@ -11125,11 +11058,11 @@ xyz
 // https://www.iana.org/domains/root/db/yachts.html
 yachts
 
-// yahoo : Yahoo Inc.
+// yahoo : Yahoo  
 // https://www.iana.org/domains/root/db/yahoo.html
 yahoo
 
-// yamaxun : Amazon Registry Services, Inc.
+// yamaxun : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/yamaxun.html
 yamaxun
 
@@ -11145,15 +11078,15 @@ yodobashi
 // https://www.iana.org/domains/root/db/yoga.html
 yoga
 
-// yokohama : GMO Registry, Inc.
+// yokohama : GMO Registry,  
 // https://www.iana.org/domains/root/db/yokohama.html
 yokohama
 
-// you : Amazon Registry Services, Inc.
+// you : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/you.html
 you
 
-// youtube : Charleston Road Registry Inc.
+// youtube : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/youtube.html
 youtube
 
@@ -11161,19 +11094,16 @@ youtube
 // https://www.iana.org/domains/root/db/yun.html
 yun
 
-// zappos : Amazon Registry Services, Inc.
+// zappos : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/zappos.html
 zappos
 
-// zara : Industria de Diseño Textil, S.A. (INDITEX, S.A.)
-// https://www.iana.org/domains/root/db/zara.html
-zara
 
-// zero : Amazon Registry Services, Inc.
+// zero : Amazon Registry Services,  
 // https://www.iana.org/domains/root/db/zero.html
 zero
 
-// zip : Charleston Road Registry Inc.
+// zip : Charleston Road Registry  
 // https://www.iana.org/domains/root/db/zip.html
 zip
 
@@ -12162,7 +12092,7 @@ poivron.org
 potager.org
 sweetpepper.org
 
-// ASUSTOR Inc. : http://www.asustor.com
+// ASUSTOR   : http://www.asustor.com
 // Submitted by Vincent Tseng <vincenttseng@asustor.com>
 myasustor.com
 
@@ -12200,8 +12130,8 @@ b-data.io
 // Submitted by Petros Angelatos <petrosagg@balena.io>
 balena-devices.com
 
-// BASE, Inc. : https://binc.jp
-// Submitted by Yuya NAGASAWA <public-suffix-list@binc.jp>
+// BASE,   : https://b jp
+// Submitted by Yuya NAGASAWA <public-suffix-list@b jp>
 base.ec
 official.ec
 buyshop.jp
@@ -12237,7 +12167,7 @@ bnr.la
 // Submitted by Andy Ortlieb <aortlieb@atlassian.com>
 bitbucket.io
 
-// Blackbaud, Inc. : https://www.blackbaud.com
+// Blackbaud,   : https://www.blackbaud.com
 // Submitted by Paul Crowder <paul.crowder@blackbaud.com>
 blackbaudcdn.net
 
@@ -12280,7 +12210,7 @@ shop.brendly.hr
 shop.brendly.rs
 
 // BrowserSafetyMark
-// Submitted by Dave Tharp <browsersafetymark.io@quicinc.com>
+// Submitted by Dave Tharp <browsersafetymark.io@quic com>
 browsersafetymark.io
 
 // BRS Media : https://brsmedia.com/
@@ -12354,7 +12284,7 @@ com.se
 // Submitted by Maksym Rivtin <support@cityhost.net.ua>
 cx.ua
 
-// Civilized Discourse Construction Kit, Inc. : https://www.discourse.org/
+// Civilized Discourse Construction Kit,   : https://www.discourse.org/
 // Submitted by Rishabh Nambiar & Michael Brown <team@discourse.org>
 discourse.group
 discourse.team
@@ -12420,11 +12350,11 @@ cloudaccess.host
 freesite.host
 cloudaccess.net
 
-// Cloudera, Inc. : https://www.cloudera.com/
+// Cloudera,   : https://www.cloudera.com/
 // Submitted by Kedarnath Waikar <security@cloudera.com>
 *.cloudera.site
 
-// Cloudflare, Inc. : https://www.cloudflare.com/
+// Cloudflare,   : https://www.cloudflare.com/
 // Submitted by Cloudflare Team <publicsuffixlist@cloudflare.com>
 cf-ipfs.com
 cloudflare-ipfs.com
@@ -12557,7 +12487,7 @@ store.dk
 // Submitted by Abel Boldu / DAppNode Team <community@dappnode.io>
 dyndns.dappnode.io
 
-// Dark, Inc. : https://darklang.com
+// Dark,   : https://darklang.com
 // Submitted by Paul Biggar <ops@darklang.com>
 builtwithdark.com
 darklang.io
@@ -12571,7 +12501,7 @@ instance.datadetect.com
 // Submitted by Richard Li <secalert@datawire.io>
 edgestack.me
 
-// Datto, Inc. : https://www.datto.com/
+// Datto,   : https://www.datto.com/
 // Submitted by Philipp Heckel <ph@datto.com>
 dattolocal.com
 dattorelay.com
@@ -12668,7 +12598,7 @@ shoparena.pl
 // Submitted by Andrew Farmer <andrew.farmer@dreamhost.com>
 dreamhosters.com
 
-// Dreamyoungs, Inc. : https://durumis.com
+// Dreamyoungs,   : https://durumis.com
 // Submitted by Infra Team <infra@durumis.com>
 durumis.com
 
@@ -13019,7 +12949,7 @@ url.tw
 // Submitted by <noc@emfcamp.org>
 at.emf.camp
 
-// Elefunc, Inc. : https://elefunc.com
+// Elefunc,   : https://elefunc.com
 // Submitted by Cetin Sert <domains@elefunc.com>
 rt.ht
 
@@ -13127,7 +13057,7 @@ relay.evervault.dev
 expo.app
 staging.expo.app
 
-// Fabrica Technologies, Inc. : https://www.fabrica.dev/
+// Fabrica Technologies,   : https://www.fabrica.dev/
 // Submitted by Eric Jiang <eric@fabrica.dev>
 onfabrica.com
 
@@ -13212,7 +13142,7 @@ vologda.su
 channelsdvr.net
 u.channelsdvr.net
 
-// Fastly Inc. : http://www.fastly.com/
+// Fastly   : http://www.fastly.com/
 // Submitted by Fastly Security <security@fastly.com>
 edgecompute.app
 fastly-edge.com
@@ -13261,11 +13191,11 @@ mydobiss.com
 // Submitted by Robin Naundorf <r.naundorf@fh-muenster.de>
 fh-muenster.io
 
-// Filegear Inc. : https://www.filegear.com
+// Filegear   : https://www.filegear.com
 // Submitted by Jason Zhu <jason@owtware.com>
 filegear.me
 
-// Firebase, Inc.
+// Firebase,  
 // Submitted by Chris Raynor <chris@firebase.com>
 firebaseapp.com
 
@@ -13372,12 +13302,12 @@ independent-review.uk
 public-inquiry.uk
 royal-commission.uk
 
-// Gehirn Inc. : https://www.gehirn.co.jp/
+// Gehirn   : https://www.gehirn.co.jp/
 // Submitted by Kohei YOSHIDA <tech@gehirn.co.jp>
 gehirn.ne.jp
 usercontent.jp
 
-// Gentlent, Inc. : https://www.gentlent.com
+// Gentlent,   : https://www.gentlent.com
 // Submitted by Tom Klein <tom@gentlent.com>
 gentapps.com
 gentlentapis.com
@@ -13394,13 +13324,13 @@ corpnet.work
 // Submitted by GignoSystemJapan <kakutou-ec@gsj.bz>
 gsj.bz
 
-// GitHub, Inc.
+// GitHub,  
 // Submitted by Patrick Toomey <security@github.com>
 githubusercontent.com
 githubpreview.dev
 github.io
 
-// GitLab, Inc.
+// GitLab,  
 // Submitted by Alex Hanselka <alex@gitlab.com>
 gitlab.io
 
@@ -13422,7 +13352,7 @@ nog.community
 co.ro
 shop.ro
 
-// GMO Pepabo, Inc. : https://pepabo.com/
+// GMO Pepabo,   : https://pepabo.com/
 // Submitted by Hosting Div <admin@pepabo.com>
 lolipop.io
 angry.jp
@@ -13540,7 +13470,7 @@ graphic.design
 // Submitted by Christian Poulter <milchstrasse@goip.de>
 goip.de
 
-// Google, Inc.
+// Google,  
 // Submitted by Shannon McCabe <public-suffix-editors@google.com>
 blogspot.ae
 blogspot.al
@@ -13654,7 +13584,7 @@ gov.nl
 // Submitted by Platform Engineering <info@grafana.com>
 grafana-dev.net
 
-// GrayJay Web Solutions Inc. : https://grayjaysports.ca
+// GrayJay Web Solutions   : https://grayjaysports.ca
 // Submitted by Matt Yamkowy <info@grayjaysports.ca>
 grayjayleagues.com
 
@@ -13777,7 +13707,7 @@ static.hf.space
 // Submitted by Cipriano Groenendal <security@nl.team.blue>
 hypernode.io
 
-// I-O DATA DEVICE, INC. : http://www.iodata.com/
+// I-O DATA DEVICE,   : http://www.iodata.com/
 // Submitted by Yuji Minagawa <domains-admin@iodata.jp>
 iobb.net
 
@@ -13887,13 +13817,10 @@ iopsys.se
 // Submitted by Interplanetary Shipyard <domains@ipshipyard.com>
 *.dweb.link
 
-// IPiFony Systems, Inc. : https://www.ipifony.com/
+// IPiFony Systems,   : https://www.ipifony.com/
 // Submitted by Matthew Hardeman <mhardeman@ipifony.com>
 ipifony.net
 
-// ir.md : https://nic.ir.md
-// Submitted by Ali Soizi <info@nic.ir.md>
-ir.md
 
 // is-a-good.dev : https://is-a-good.dev
 // Submitted by William Harrison <webmaster@is-a-good.dev>
@@ -13912,7 +13839,7 @@ schulserver.de
 test-iserv.de
 iserv.dev
 
-// Jelastic, Inc. : https://jelastic.com/
+// Jelastic,   : https://jelastic.com/
 // Submitted by Ihor Kolodyuk <ik@jelastic.com>
 mel.cloudlets.com.au
 cloud.interhostsolutions.be
@@ -14231,7 +14158,7 @@ memset.net
 // Submitted by Ruben Schmidmeister <psl-maintainers@messerli.ch>
 messerli.app
 
-// Meta Platforms, Inc. : https://meta.com/
+// Meta Platforms,   : https://meta.com/
 // Submitted by Jacob Cordero <public-suffix@meta.com>
 atmeta.com
 apps.fbsbx.com
@@ -14345,11 +14272,11 @@ netfy.app
 // Submitted by Jessica Parsons <jessica@netlify.com>
 netlify.app
 
-// Neustar Inc.
+// Neustar  
 // Submitted by Trung Tran <Trung.Tran@neustar.biz>
 4u.com
 
-// NFSN, Inc. : https://www.NearlyFreeSpeech.NET/
+// NFSN,   : https://www.NearlyFreeSpeech.NET/
 // Submitted by Jeff Wheelhouse <support@nearlyfreespeech.net>
 nfshost.com
 
@@ -14538,7 +14465,7 @@ prvcy.page
 // Submitted by Reese Armstrong <team@obl.ong>
 obl.ong
 
-// Observable, Inc. : https://observablehq.com
+// Observable,   : https://observablehq.com
 // Submitted by Mike Bostock <dns@observablehq.com>
 observablehq.cloud
 static.observableusercontent.com
@@ -14667,7 +14594,7 @@ pgfog.com
 // Submitted by Yann Guichard <yann@pagexl.com>
 pagexl.com
 
-// Pantheon Systems, Inc. : https://pantheon.io/
+// Pantheon Systems,   : https://pantheon.io/
 // Submitted by Gary Dylina <gary@pantheon.io>
 gotpantheon.com
 pantheonsite.io
@@ -14744,9 +14671,6 @@ prequalifyme.today
 // Submitted by Sarah Newman <owner@prgmr.com>
 xen.prgmr.com
 
-// priv.at : http://www.nic.priv.at/
-// Submitted by registry <lendl@nic.at>
-priv.at
 
 // Protonet GmbH : http://protonet.io
 // Submitted by Martin Meier <admin@protonet.io>
@@ -14845,7 +14769,7 @@ ravpage.co.il
 readthedocs-hosted.com
 readthedocs.io
 
-// Red Hat, Inc. OpenShift : https://openshift.redhat.com/
+// Red Hat,   OpenShift : https://openshift.redhat.com/
 // Submitted by Tim Kramer <tkramer@rhcloud.com>
 rhcloud.com
 
@@ -14946,7 +14870,7 @@ ras.ru
 // Submitted by Bobo Liu <support@natfrp.cloud>
 nyat.app
 
-// SAKURA Internet Inc. : https://www.sakura.ad.jp/
+// SAKURA Internet   : https://www.sakura.ad.jp/
 // Submitted by Internet Service Department <rs-vendor-ml@sakura.ad.jp>
 180r.com
 dojin.com
@@ -14996,12 +14920,6 @@ x0.to
 from.tv
 sakura.tv
 
-// Salesforce.com, Inc. https://salesforce.com/
-// Submitted by Salesforce Public Suffix List Team <public-suffix-list@salesforce.com>
-*.builder.code.com
-*.dev-builder.code.com
-*.stg-builder.code.com
-*.001.test.code-builder-stg.platform.salesforce.com
 *.d.crm.dev
 *.w.crm.dev
 *.wa.crm.dev
@@ -15011,7 +14929,7 @@ sakura.tv
 *.we.crm.dev
 *.wf.crm.dev
 
-// Sandstorm Development Group, Inc. : https://sandcats.io/
+// Sandstorm Development Group,   : https://sandcats.io/
 // Submitted by Asheesh Laroia <asheesh@sandstorm.io>
 sandcats.io
 
@@ -15285,7 +15203,7 @@ storebase.store
 // Submitted by Benno Liu <benno@storipress.com>
 storipress.app
 
-// Storj Labs Inc. : https://storj.io/
+// Storj Labs   : https://storj.io/
 // Submitted by Philip Hutchins <hostmaster@storj.io>
 storj.farm
 
@@ -15330,7 +15248,7 @@ supabase.net
 // Submitted by Boris Rybalkin <syncloud@syncloud.it>
 syncloud.it
 
-// Synology, Inc. : https://www.synology.com/
+// Synology,   : https://www.synology.com/
 // Submitted by Rony Weng <ronyweng@synology.com>
 dscloud.biz
 direct.quickconnect.cn
@@ -15359,7 +15277,7 @@ tabitorder.co.il
 // Submitted by Bjoern Henke <dev-server@taifun-software.de>
 taifun-dns.de
 
-// Tailscale Inc. : https://www.tailscale.com
+// Tailscale   : https://www.tailscale.com
 // Submitted by David Anderson <infra+public-suffix-list@tailscale.com>
 ts.net
 *.c.ts.net
@@ -15419,7 +15337,7 @@ arvo.network
 azimuth.network
 tlon.network
 
-// Tor Project, Inc. : https://torproject.org
+// Tor Project,   : https://torproject.org
 // Submitted by Antoine Beaupré <anarcat@torproject.org>
 torproject.net
 pages.torproject.net
@@ -15493,7 +15411,7 @@ uber.space
 // UDR Limited : http://www.udr.hk.com
 // Submitted by registry <hostmaster@udr.hk.com>
 hk.com
-inc.hk
+ hk
 ltd.hk
 hk.org
 
@@ -15541,10 +15459,6 @@ dnsupdate.info
 // Submitted by Gavin Brown <gavin.brown@centralnic.com>
 us.org
 
-// V.UA Domain Administrator : https://domain.v.ua/
-// Submitted by Serhii Rostilo <sergey@rostilo.kiev.ua>
-v.ua
-
 // Val Town, Inc : https://val.town/
 // Submitted by Tom MacWright <security@val.town>
 express.val.run
@@ -15578,11 +15492,11 @@ voorloper.cloud
 // Submitted by Niels Maumenee <storage@vultr.com>
 *.vultrobjects.com
 
-// Waffle Computer Inc., Ltd. : https://docs.waffleinfo.com
+// Waffle Computer  , Ltd. : https://docs.waffleinfo.com
 // Submitted by Masayuki Note <masa@blade.wafflecell.com>
 wafflecell.com
 
-// Webflow, Inc. : https://www.webflow.com
+// Webflow,   : https://www.webflow.com
 // Submitted by Webflow Security Team <security@webflow.com>
 webflow.io
 webflowtest.io
@@ -15615,7 +15529,7 @@ wpsquared.site
 // Submitted by Jung Jin <jungseok.jin@wdc.com>
 remotewd.com
 
-// Whatbox Inc. : https://whatbox.ca/
+// Whatbox   : https://whatbox.ca/
 // Submitted by Anthony Ryan <servers@whatbox.ca>
 box.ca
 
@@ -15634,7 +15548,7 @@ wmflabs.org
 panel.gg
 daemon.panel.gg
 
-// Wix.com, Inc. : https://www.wix.com
+// Wix.com,   : https://www.wix.com
 // Submitted by Shahar Talmi / Alon Kochba <publicsuffixlist@wix.com>
 wixsite.com
 wixstudio.com
@@ -15707,10 +15621,6 @@ ynh.fr
 nohost.me
 noho.st
 
-// ZaNiC : http://www.za.net/
-// Submitted by registry <hostmaster@nic.za.net>
-za.net
-za.org
 
 // ZAP-Hosting GmbH & Co. KG : https://zap-hosting.com
 // Submitted by Julian Alker <security@zap-hosting.com>
