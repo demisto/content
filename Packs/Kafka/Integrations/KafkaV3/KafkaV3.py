@@ -789,7 +789,7 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
     last_fetched_offsets = demisto.getLastRun().get('last_fetched_offsets', {})
     last_topic = demisto.getLastRun().get('last_topic', '')
     stop_consuming_upon_timeout = argToBoolean(demisto_params.get('stop_consuming_upon_timeout', False))
-    poll_timeout = kafka.POLL_TIMEOUT if stop_consuming_upon_timeout else kafka.POLL_TIMEOUT_STOP_UPON_TIMEOUT
+    poll_timeout = kafka.POLL_TIMEOUT_STOP_UPON_TIMEOUT if stop_consuming_upon_timeout else kafka.POLL_TIMEOUT
     demisto.debug(f"Starting fetch incidents with:\n last_topic: {last_topic}, "
                   f"last_fetched_offsets: {last_fetched_offsets}, "
                   f"topic: {topic}, partitions: {partitions}, offset: {offset}, "
