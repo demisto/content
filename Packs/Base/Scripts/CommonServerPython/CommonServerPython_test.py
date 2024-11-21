@@ -33,7 +33,7 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
                                 censor_request_logs, censor_request_logs, safe_sleep, get_server_config, b64_decode
                                 )
-from test_data.b64_decode_test_data import PALO_LOGO_BASE64, PALO_LOGO_DECODED
+from test_data.logo_decoded import PALO_LOGO_BASE64, PALO_LOGO_DECODED
 
 EVENTS_LOG_ERROR = \
     """Error sending new events into XSIAM.

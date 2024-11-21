@@ -1411,7 +1411,6 @@ def b64_encode(text):
 
 
 def b64_decode(b64_str):
-    # type: (str) -> bytes
     """
     Decode a str in a base 64 format to a picture.
     Replaces the use of base64.b64decode function which doesn't add padding to the supplied str.
