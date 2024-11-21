@@ -1,7 +1,7 @@
 name: Security Label Check
 on:
   pull_request:
-    types: [opened, edited, labeled, synchronize]
+    types: [opened, edited, labeled, synchronize, unlabeled]
 jobs:
   security-check:
     runs-on: ubuntu-latest
