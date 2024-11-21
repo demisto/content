@@ -34,7 +34,7 @@ To create or configure the Broker VM, use the information described [here](https
 ### Broker VM
 Follow the below steps to configure the Broker VM to receive Trellix ePO logs.
  
-1. Navigate to **Settings** → **Configuration** → **Data Broker** → **Broker VMs**.
+1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**.
 2. Go to the **APPS** column under the **Brokers** tab and add the **Syslog** app for the relevant broker instance. If the **Syslog** app already exists, hover over it and click **Configure**.
 3. Click **Add New**.
 4. When configuring the Syslog Collector, set the following parameters:
