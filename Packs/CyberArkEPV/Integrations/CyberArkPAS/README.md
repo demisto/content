@@ -1,9 +1,9 @@
-Use the CyberArk Privileged Access Security (PAS) solution to manage users, safes, vaults, and accounts from Cortex XSOAR.
+Use the CyberArk PAM Self-Hosted solution to manage users, safes, vaults, and accounts from Cortex XSOAR.
 
-## Configure CyberArkPAS on Cortex XSOAR
+## Configure CyberArkPAM on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CyberArkPAS.
+2. Search for CyberArkPAM.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
