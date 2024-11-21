@@ -24,7 +24,7 @@ To configure Trellix ePO to send logs to Cortex XSIAM, follow the steps below.
 6. Check **Enable event forwarding**.
 7. Click **Test connection**. If the test was successful, click **Save**.
 
-* Please note that the test connection stage will only work after you finish the configuration on the broker-vm side and open the selected port on your Firewall.
+* Note that the test connection stage will only work after you finish the configuration on the broker-vm side and open the selected port on your firewall.
  
 For more information check this article <https://kcm.trellix.com/corporate/index?page=content&id=KB87927>.
  
