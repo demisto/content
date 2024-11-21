@@ -2873,7 +2873,7 @@ def create_messaging_endpoint_command():
         f"For more information see: [Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#create-the-demisto-bot-in-microsoft-teams)."
 
     demisto.debug(
-        f"The messaging endpoint that should be added to the Demisto bot configuration in Microsoft Teams is:"\
+        f"The messaging endpoint that should be added to the Demisto bot configuration in Microsoft Teams is:"
         f"{messaging_endpoint}")
 
     result = CommandResults(

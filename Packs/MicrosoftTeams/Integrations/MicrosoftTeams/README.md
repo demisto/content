@@ -1146,7 +1146,7 @@ There is no context output for this command.
 >| Channel.Create      |
 
 
-### microsoft-teams-create_messaging_endpoint
+### microsoft-teams-create-messaging-endpoint
 ***
 Generates the messaging endpoint, based on the server url, the server version and the instance configurations. 
 
@@ -1154,7 +1154,7 @@ The messaging endpoint should be added to the Demisto bot configuration in Micro
 
 ##### Base Command
 
-`microsoft-teams-create_messaging_endpoint`
+`microsoft-teams-create-messaging-endpoint`
 
 ##### Input
 
@@ -1166,7 +1166,7 @@ The messaging endpoint should be added to the Demisto bot configuration in Micro
 There is no context output for this command.
 
 ##### Command Example
-```!microsoft-teams-create_messaging_endpoint```
+```!microsoft-teams-create-messaging-endpoint```
 
 ##### Human Readable Output
 >### The messaging endpoint is: 
