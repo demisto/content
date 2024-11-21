@@ -19,7 +19,7 @@ To configure Trellix ePO to send logs to Cortex XSIAM, follow the steps below.
 1. Log in to the Trellix ePO main console.
 2. On the main menu, go to **Configuration** > **Registered Servers**.
 3. Click **New Server** and select **Syslog Server** as the Server type, name it and click **Next**.
-4. On the Server name field please enter the IP address or fully qualified domain name (FQDN) of your broker-vm.
+4. In the Server name field enter the IP address or fully qualified domain name (FQDN) of your broker-vm.
 5. Specify the port through which the ePO will send logs to the broker-vm, the default port is 6514 and it only support syslog event forwarding via TLS protocol.
 6. Check the **Enable event forwarding** box.
 7. Press the **Test connection** button, if the test was successful - click the save button.
