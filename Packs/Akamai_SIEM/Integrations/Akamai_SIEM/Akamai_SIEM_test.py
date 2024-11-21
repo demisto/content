@@ -121,20 +121,36 @@ class TestCommandsFunctions:
 
         assert entry_context_tested == {}, "Test query response without security events - check only enrty context"
 
-    @pytest.mark.get_events
-    def test_get_events_command_2(self, client, datadir, requests_mock):
-        """Test query response with security events - check only entry context"""
-        from Akamai_SIEM import get_events_command
-        # About the drop some mean regex right now disable-secrets-detection-start
-        requests_mock.get(f'{BASE_URL}/50170?from=1575966002&limit=5', text=SEC_EVENTS_TXT)
-        human_readable, entry_context_tested, raw_response = get_events_command(client=client,
-                                                                                config_ids='50170',
-                                                                                from_epoch='1575966002',
-                                                                                limit='5')
-        # Drops the mic disable-secrets-detection-end
-        expected_ec = load_params_from_json(json_path=datadir['get_events_expected_ec_2.json'])
-
-        assert entry_context_tested == expected_ec, "Test query response with security events - check only entry context"
+    def test_fetch_events_command__with_break_in_the_middle(self, client, mocker):
+        """
+        Given:
+        - A client object
+        - 2 mock responses each one with one has 50 events (total 100).
+        When:
+        - Calling fetch_events_command() and getting should_break_before_timeout in the second execution.
+        Then:
+        - Ensure there are only 50 total events received.
+        """
+        page_size = 50
+        events = [
+            (
+                [{"id": i + 1, "httpMessage": {"start": i + 1}} for i in range(page_size * j, page_size * (j + 1))],
+                f"offset_{page_size * (j + 1)}",
+            )
+            for j in range(2)
+        ]
+        mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=events)
+        mocker.patch.object(Akamai_SIEM, "should_break_before_timeout", return_value=False)
+        total_events_count = 0
+        for events, _, total_events_count, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
+                                                                                      '3 days',
+                                                                                      220,
+                                                                                      '',
+                                                                                      {},
+                                                                                      5000
+                                                                                      ):
+            mocker.patch.object(Akamai_SIEM, "should_break_before_timeout", return_value=True)
+        assert total_events_count == 50
 
     def test_fetch_events_command__sanity(self, client, mocker):
         """
@@ -330,29 +346,29 @@ class TestCommandsFunctions:
         assert isinstance(json.dumps(ctx), str)
 
     @pytest.mark.parametrize(
-    "error_entry, error_message, should_expect_extra_info",
-    [
-        ({
-            "clientIp": "192.0.2.228",
-            "detail": "Expired offset parameter in the request",
-            "instance": "https://test.akamaiapis.net/siem/v1/configs=12345?offset=123",
-            "method": "GET",
-            "requestId": "test",
-            "requestTime": "2023-06-20T15:02:30Z",
-            "serverIp": "1.1.1.1",
-            "title": "Expired offset parameter in the request",
-        }, "Error in API call [416] - Requested Range Not Satisfiable", True),
-        ({
-            "clientIp": "192.0.2.85",
-            "detail": "The specified user is unauthorized to access the requested data",
-            "instance": "https://test.akamaiapis.net/siem/v1/configs=12345?offset=123",
-            "method": "GET",
-            "requestId": "9cf2274",
-            "requestTime": "2023-06-20T15:01:11Z",
-            "serverIp": "1.1.1.1",
-            "title": "Unauthorized",
-        }, "Error in API call [403] - Unauthorized", False)
-    ],
+        "error_entry, error_message, should_expect_extra_info",
+        [
+            ({
+                "clientIp": "192.0.2.228",
+                "detail": "Expired offset parameter in the request",
+                "instance": "https://test.akamaiapis.net/siem/v1/configs=12345?offset=123",
+                "method": "GET",
+                "requestId": "test",
+                "requestTime": "2023-06-20T15:02:30Z",
+                "serverIp": "1.1.1.1",
+                "title": "Expired offset parameter in the request",
+            }, "Error in API call [416] - Requested Range Not Satisfiable", True),
+            ({
+                "clientIp": "192.0.2.85",
+                "detail": "The specified user is unauthorized to access the requested data",
+                "instance": "https://test.akamaiapis.net/siem/v1/configs=12345?offset=123",
+                "method": "GET",
+                "requestId": "9cf2274",
+                "requestTime": "2023-06-20T15:01:11Z",
+                "serverIp": "1.1.1.1",
+                "title": "Unauthorized",
+            }, "Error in API call [403] - Unauthorized", False)
+        ],
     )
     def test_index_out_of_range_error(self, mocker, client, error_entry, error_message, should_expect_extra_info):
         """
@@ -451,14 +467,6 @@ def test_dedup_events(hashed_events_mapping, hashed_events_from_previous_run, ex
                                                                               hashed_events_from_previous_run)
     assert hashed_events_from_current_run == set(hashed_events_mapping.keys())
     assert deduped_events == expected_deduped_list
-
-
-def test_run_duration_valid():
-    pass
-
-
-def test_run_duration_should_break():
-    pass
 
 
 @pytest.mark.parametrize(
