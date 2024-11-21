@@ -2804,7 +2804,7 @@ def token_permissions_list_command():
         else:  # Authorization code flow
             roles = decoded_token.get('scp', '')
             roles = roles.split()
-            
+
         if roles:
             roles = sorted(roles)
             hr = tableToMarkdown(f'The API permissions obtained for the used graph access token are: ({len(roles)})',
@@ -2823,35 +2823,37 @@ def token_permissions_list_command():
 
     return_results(result)
 
+
 def create_messaging_endpoint_command():
     """
     Generates the messaging endpoint, based on the server url, the server version and the instance configurations.
-    
+
     The messaging endpoint should be added to the Demisto bot configuration in Microsoft Teams as part of the Prerequisites of
     the integration's set-up.
     Link to documentation: https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#create-the-demisto-bot-in-microsoft-teams
     """
     server_address = ''
     messaging_endpoint = ''
-    
+
     # Get instance name and server url:
     urls = demisto.demistoUrls()
     instance_name = demisto.integrationInstance()
     xsoar_url = urls.get('server', '')
-    
+
     # In case of an xsoar engine user - He must provide us with the engine address:
     engine_url = demisto.args().get('engine_url', '')
     if engine_url and not re.search(XSOAR_ENGINE_URL_REGEX, engine_url):
-        raise ValueError("Invalid engine URL - Please ensure that the engine_url includes the IP (or DNS name) and the port in use, and that it is in the correct format: `https://IP:port` or `http://IP:port`")
+        raise ValueError("Invalid engine URL - Please ensure that the engine_url includes the IP (or DNS name)"
+                         " and the port in use, and that it is in the correct format: `https://IP:port` or `http://IP:port`.")
 
     if is_xsoar_on_prem():
-        if engine_url: # user uses an engine
+        if engine_url:  # user uses an engine
             messaging_endpoint += urljoin(urljoin(engine_url, 'instance/execute'), instance_name)
         else:
             messaging_endpoint += urljoin(urljoin(xsoar_url, 'instance/execute'), instance_name)
-        
-    else: # XSIAM or XSOAR SAAS
-        if engine_url: # user uses an engine
+
+    else:  # XSIAM or XSOAR SAAS
+        if engine_url:  # user uses an engine
             messaging_endpoint += urljoin(urljoin(engine_url, 'xsoar/instance/execute'), instance_name)
         else:
             # Add the 'ext-' prefix to the xsoar url
@@ -2859,23 +2861,27 @@ def create_messaging_endpoint_command():
                 server_address = xsoar_url.replace('http://', 'http://ext-', 1)
             elif xsoar_url.startswith('https://'):
                 server_address = xsoar_url.replace('https://', 'https://ext-', 1)
-                
+
             messaging_endpoint += urljoin(urljoin(server_address, 'xsoar/instance/execute'), instance_name)
-                
+
             if is_xsiam():
                 # Replace the '.xdr-' with '.crtx-' for XSIAM tenants
                 messaging_endpoint = messaging_endpoint.replace('.xdr-', '.crtx-', 1)
-    
-    hr = f"The messaging endpoint is: ```{messaging_endpoint}```\n\n The messaging endpoint should be added to the Demisto bot configuration in Microsoft Teams as part of the Prerequisites of the integration's set-up.\n For more information see: [Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#create-the-demisto-bot-in-microsoft-teams)."
-    
-    demisto.debug(f"The messaging endpoint that should be added to the Demisto bot configuration in Microsoft Teams is: {messaging_endpoint}")
-    
+
+    hr = f"The messaging endpoint is: ```{messaging_endpoint}```\n\n The messaging endpoint should be added to the Demisto bot"\
+        f"configuration in Microsoft Teams as part of the Prerequisites of the integration's set-up.\n"\
+        f"For more information see: [Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#create-the-demisto-bot-in-microsoft-teams)."
+
+    demisto.debug(
+        f"The messaging endpoint that should be added to the Demisto bot configuration in Microsoft Teams is:"\
+        f"{messaging_endpoint}")
+
     result = CommandResults(
         readable_output=hr
     )
 
     return_results(result)
-    
+
 
 def validate_auth_code_flow_params(command: str = ''):
     """
