@@ -1607,10 +1607,8 @@ def main():  # pragma: no cover
                 xdr_delay=xdr_delay,
             )
             last_run_mirroring['mirroring_last_update'] = next_mirroring_time
-
             set_last_mirror_run(last_run_mirroring)
             demisto.debug(f"after get-modified-remote-data, last run={last_run_mirroring}")
-
             return_results(modified_incidents)
 
         elif command == 'xdr-script-run':  # used with polling = true always
