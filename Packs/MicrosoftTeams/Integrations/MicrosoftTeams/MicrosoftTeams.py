@@ -46,6 +46,7 @@ PRIVATE_KEY = replace_spaces_in_credential(PARAMS.get('creds_certificate', {}).g
 
 INCIDENT_TYPE: str = PARAMS.get('incidentType', '')
 URL_REGEX = r'(?<!\]\()https?://[^\s]*'
+XSOAR_ENGINE_URL_REGEX = r'\bhttps?://(?:\w+[\w.-]*\w+|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):\d+(?:/(?:\w+/)*\w+)?'
 ENTITLEMENT_REGEX: str = \
     r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
 MENTION_REGEX = r'^@([^@;]+);| @([^@;]+);'
@@ -2802,8 +2803,8 @@ def token_permissions_list_command():
 
         else:  # Authorization code flow
             roles = decoded_token.get('scp', '')
-            roles = [role for role in roles.split() if '.' in role]
-
+            roles = roles.split()
+            
         if roles:
             roles = sorted(roles)
             hr = tableToMarkdown(f'The API permissions obtained for the used graph access token are: ({len(roles)})',
@@ -2822,6 +2823,59 @@ def token_permissions_list_command():
 
     return_results(result)
 
+def create_messaging_endpoint_command():
+    """
+    Generates the messaging endpoint, based on the server url, the server version and the instance configurations.
+    
+    The messaging endpoint should be added to the Demisto bot configuration in Microsoft Teams as part of the Prerequisites of
+    the integration's set-up.
+    Link to documentation: https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#create-the-demisto-bot-in-microsoft-teams
+    """
+    server_address = ''
+    messaging_endpoint = ''
+    
+    # Get instance name and server url:
+    urls = demisto.demistoUrls()
+    instance_name = demisto.integrationInstance()
+    xsoar_url = urls.get('server', '')
+    
+    # In case of an xsoar engine user - He must provide us with the engine address:
+    engine_url = demisto.args().get('engine_url', '')
+    if engine_url and not re.search(XSOAR_ENGINE_URL_REGEX, engine_url):
+        raise ValueError("Invalid engine URL - Please ensure that the engine_url includes the IP (or DNS name) and the port in use, and that it is in the correct format: `https://IP:port` or `http://IP:port`")
+
+    if is_xsoar_on_prem():
+        if engine_url: # user uses an engine
+            messaging_endpoint += urljoin(urljoin(engine_url, 'instance/execute'), instance_name)
+        else:
+            messaging_endpoint += urljoin(urljoin(xsoar_url, 'instance/execute'), instance_name)
+        
+    else: # XSIAM or XSOAR SAAS
+        if engine_url: # user uses an engine
+            messaging_endpoint += urljoin(urljoin(engine_url, 'xsoar/instance/execute'), instance_name)
+        else:
+            # Add the 'ext-' prefix to the xsoar url
+            if xsoar_url.startswith('http://'):
+                server_address = xsoar_url.replace('http://', 'http://ext-', 1)
+            elif xsoar_url.startswith('https://'):
+                server_address = xsoar_url.replace('https://', 'https://ext-', 1)
+                
+            messaging_endpoint += urljoin(urljoin(server_address, 'xsoar/instance/execute'), instance_name)
+                
+            if is_xsiam():
+                # Replace the '.xdr-' with '.crtx-' for XSIAM tenants
+                messaging_endpoint = messaging_endpoint.replace('.xdr-', '.crtx-', 1)
+    
+    hr = f"The messaging endpoint is: ```{messaging_endpoint}```\n\n The messaging endpoint should be added to the Demisto bot configuration in Microsoft Teams as part of the Prerequisites of the integration's set-up.\n For more information see: [Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#create-the-demisto-bot-in-microsoft-teams)."
+    
+    demisto.debug(f"The messaging endpoint that should be added to the Demisto bot configuration in Microsoft Teams is: {messaging_endpoint}")
+    
+    result = CommandResults(
+        readable_output=hr
+    )
+
+    return_results(result)
+    
 
 def validate_auth_code_flow_params(command: str = ''):
     """
@@ -2920,8 +2974,8 @@ def main():   # pragma: no cover
         'microsoft-teams-user-remove-from-channel': user_remove_from_channel_command,
         'microsoft-teams-generate-login-url': generate_login_url_command,
         'microsoft-teams-auth-reset': reset_graph_auth,
-        'microsoft-teams-token-permissions-list': token_permissions_list_command
-
+        'microsoft-teams-token-permissions-list': token_permissions_list_command,
+        'microsoft-teams-create-messaging-endpoint': create_messaging_endpoint_command
     }
 
     commands_auth_code: dict = {

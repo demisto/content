@@ -1146,6 +1146,36 @@ There is no context output for this command.
 >| Channel.Create      |
 
 
+### microsoft-teams-create_messaging_endpoint
+***
+Generates the messaging endpoint, based on the server url, the server version and the instance configurations. 
+
+The messaging endpoint should be added to the Demisto bot configuration in Microsoft Teams as part of the Prerequisites of the integration's set-up. For more information see - [Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#create-the-demisto-bot-in-microsoft-teams).
+
+##### Base Command
+
+`microsoft-teams-create_messaging_endpoint`
+
+##### Input
+
+| **Argument Name**   | **Description**                                                                 | **Required** |
+|---------------------|---------------------------------------------------------------------------------|--------------|
+| engine_url          | If your instance configuration involve an xsoar engine, provide the engine's IP (or DNS name) and the port in use in the following format - `https://IP:port` or `http://IP:port`. For example - `https://my-engine.name:443`, `http://1.1.1.1:443`. | Optional     | 
+
+##### Context Output
+There is no context output for this command.
+
+##### Command Example
+```!microsoft-teams-create_messaging_endpoint```
+
+##### Human Readable Output
+>### The messaging endpoint is: 
+>|```https://ext-viso-test.crtx-qa-uat.us.paloaltonetworks.com/xsoar/instance/execute/teams-instance```
+>
+> The messaging endpoint should be added to the Demisto bot configuration in Microsoft Teams as part of the Prerequisites of the integration's set up.
+> For more information see: [Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#create-the-demisto-bot-in-microsoft-teams)."
+
+
 ## Running commands from Microsoft Teams
 You can run Cortex XSOAR/Cortex XSIAM commands, according to the user permissions, from Microsoft Teams in a mirrored investigation channel.
 
