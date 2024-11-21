@@ -9356,7 +9356,7 @@ Edit an exception to a Vulnerability Protection profile or Anti Spyware profile.
 
 There is no context output for this command.
 
-## pan-os-create-master-key
+### pan-os-create-master-key
 
 ***
 Create a default master key that encrypts all the private keys and passwords in the configuration.
@@ -9385,7 +9385,7 @@ There is no context output for this command.
 
 >Master key changed successfully. All key material has been re-encrypted with new master key and committed via jobid 1234
 
-## pan-os-update-master-key
+### pan-os-update-master-key
 
 ***
 Update the default master key that encrypts all the private keys and passwords in the configuration.
@@ -9415,10 +9415,10 @@ There is no context output for this command.
 
 >Master key changed successfully. All key material has been re-encrypted with new master key and committed via jobid 2468
 
-## pan-os-get-master-key-details
+### pan-os-get-master-key-details
 
 ***
-Show the properties of the default master key that encrypts all the private keys and passwords in the configuration.
+Show the details of the default master key that encrypts all the private keys and passwords in the configuration.
 
 #### Base Command
 
@@ -9426,7 +9426,7 @@ Show the properties of the default master key that encrypts all the private keys
 
 #### Input
 
-There is no arguments for this command.
+There are no input arguments for this command.
 
 #### Command example
 ```!pan-os-get-master-key-details```
@@ -9469,7 +9469,7 @@ There is no arguments for this command.
 
 #### Human Readable Output
 
-> Master Key Details
-> | Auto-renew master key | Stored on HSM | Remind at | Expire at |
-> | --- | --- | --- | --- |
-> | 0 | no | 2024/11/27 04:26:05 | 2025/02/18 04:26:05 |
+>### Master Key Details
+>| Auto-renew master key | Stored on HSM | Remind at | Expire at |
+>| --- | --- | --- | --- |
+>| 0 | no | 2024/11/27 04:26:05 | 2025/02/18 04:26:05 |
