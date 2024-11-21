@@ -22,7 +22,7 @@
         },
         "resultSignature": {
             "type": "string",
-            "s_array": false
+            "is_array": false
         },
         "resultDescription": {
             "type": "string",
