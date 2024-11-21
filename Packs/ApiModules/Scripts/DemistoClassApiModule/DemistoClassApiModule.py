@@ -62,7 +62,7 @@ if sys.version_info[0] >= 3:
                     start_time = datetime.now()
                     res = super(DemistoScript, self).executeCommand(command, args)
                     duration = (datetime.now() - start_time).total_seconds()
-                    self.debug("{} Took {} seconds".format(command, duration))
+                    self.debug("Execution of {} took {} seconds".format(command, duration))
                     return self._drop_debug_log_entry(res)
                 return super(DemistoScript, self).executeCommand(command, args)
 
@@ -70,10 +70,10 @@ if sys.version_info[0] >= 3:
             def _stringify_last_run(self, last_run, truncate_size=1024):
                 last_run_str = json.dumps(last_run, indent=4)
                 last_run_size = len(last_run_str.encode('utf-8'))
-                if last_run_size > 1 * 1024 * 1024:  # 1MB
+                if last_run_size > 1024 ** 2:  # 1MB
                     self.debug(
-                        "[WARNING] last run is too large: {} MB".format(
-                            round(last_run_size / (1 * 1024 * 1024), 1),
+                        "[WARNING] last run size exceeds recommendation: {} MB".format(
+                            round(last_run_size / (1024 ** 2), 1),
                         )
                     )
                 if len(last_run_str) > truncate_size:
