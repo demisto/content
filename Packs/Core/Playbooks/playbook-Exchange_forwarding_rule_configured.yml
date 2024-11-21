@@ -1,7 +1,25 @@
 id: Exchange forwarding rule configured
 version: -1
 name: Exchange forwarding rule configured
-description: "This playbook addresses the following alerts:\n\n- External Exchange inbox forwarding rule configured.\n- Suspicious Exchange inbox forwarding rule configured.\n- Suspicious Exchange email-hiding inbox rule.\n\nPlaybook Stages:\n \nTriage: \n\n- The playbook retrieves the caller's IP, the forwarding email address, and the domain.\n\nEarly Containment:\n\n- The playbook checks if the IP or domain of the forwarding email address is malicious. If so, it suggests blocking the IP using PAN-OS while continuing the investigation in parallel.\n\nInvestigation:\n\n- The playbook checks for suspicious behaviors, including whether an Exchange admin created the rule outside of working hours, from unusual geolocation, or if the user who created the rule has a high-risk score. It then aggregates all evidence collected during the investigation.\n\nContainment:\n\n- If at least two suspicious evidence are found, the playbook executes soft response actions, including signing the user out and deleting the forwarding email address from the user account mailbox. The user will be notified of these actions via email.\n- If more than two suspicious evidence are found and the alert severity is medium, the playbook executes both soft and hard response actions, recommending the analyst suspend the user account.\n\nRequirements: \n\nFor any response action, you need the following integration:\n- EWS Extension Online Powershell v3 integration."
+description: "This playbook addresses the following alerts:\n\n- External Exchange
+  inbox forwarding rule configured.\n- Suspicious Exchange inbox forwarding rule configured.\n-
+  Suspicious Exchange email-hiding inbox rule.\n\nPlaybook Stages:\n \nTriage: \n\n-
+  The playbook retrieves the caller's IP, the forwarding email address, and the domain.\n\nEarly
+  Containment:\n\n- The playbook checks if the IP or domain of the forwarding email
+  address is malicious. If so, it suggests blocking the IP using PAN-OS while continuing
+  the investigation in parallel.\n\nInvestigation:\n\n- The playbook checks for suspicious
+  behaviors, including whether an Exchange admin created the rule outside of working
+  hours, from an unusual geolocation, or if the user who created the rule has a high-risk
+  score. It then aggregates all evidence collected during the investigation.\n\nContainment:\n\n-
+  If at least two suspicious evidence are found, the playbook executes soft response
+  actions, including signing the user out and deleting the forwarding email address
+  from the user account mailbox. The user will be notified of these actions via email.\n-
+  If two or more pieces of suspicious evidence are found, the playbook will initiate
+  soft response actions. These include signing the user out of their account and removing
+  the forwarding email address from their mailbox. The user will be notified of these
+  actions via email.\n\nRequirements: \n\nFor any response action, you need the following
+  integrations:\n- EWS Extension Online Powershell v3 integration.\n- Azure Active
+  Directory Users."
 tags:
 - TA0009 - Collection
 - TA0010 - Exfiltration
@@ -165,7 +183,7 @@ tasks:
     task:
       id: 0b23837d-9e34-4468-8c26-2d54a9705b83
       version: -1
-      name: Evaluate Domain and IP suspicious level
+      name: Evaluate domain and IP address risk level
       type: condition
       iscommand: false
       brand: ""
@@ -250,7 +268,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -410,
+          "x": -450,
           "y": 520
         }
       }
@@ -354,7 +372,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -410,
+          "x": -450,
           "y": 660
         }
       }
@@ -397,7 +415,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -515,7 +533,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2290
+          "y": 2550
         }
       }
     note: false
@@ -545,8 +563,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 1440
+          "x": 710,
+          "y": 1630
         }
       }
     note: false
@@ -619,8 +637,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 940,
-          "y": 1770
+          "x": 710,
+          "y": 2000
         }
       }
     note: false
@@ -648,7 +666,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2450
+          "y": 2710
         }
       }
     note: false
@@ -693,8 +711,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 2120
+          "x": 1110,
+          "y": 2380
         }
       }
     note: false
@@ -930,7 +948,8 @@ tasks:
       '#default#':
       - "14"
       "Yes":
-      - "37"
+      - "43"
+      - "20"
     separatecontext: false
     conditions:
     - label: "Yes"
@@ -985,37 +1004,12 @@ tasks:
             value:
               simple: ${Core.OriginalAlert.raw_abioc.event.exchange_rule_name}
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: EWS Extension Online Powershell v3
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 690,
-          "y": 1130
+          "x": 710,
+          "y": 1285
         }
       }
     note: false
@@ -1032,7 +1026,7 @@ tasks:
     task:
       id: b09a9327-e34b-4f81-8782-e54ae932ca27
       version: -1
-      name: Is there a domain to check?
+      name: Check for forwarding address domain
       type: condition
       iscommand: false
       brand: ""
@@ -1051,6 +1045,8 @@ tasks:
             value:
               simple: Core.OriginalAlert.raw_abioc.event.forwarding_domain_with_tld
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -1073,17 +1069,16 @@ tasks:
     task:
       id: 73936401-a8d4-4374-8d30-4c9bc55f590e
       version: -1
-      name: Verdict
+      name: Evaluate investigation results
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "25"
-      - "30"
-      - "41"
       - "14"
+      - "37"
+      - "36"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1116,7 +1111,7 @@ tasks:
       '#default#':
       - "14"
       "yes":
-      - "36"
+      - "32"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1145,7 +1140,7 @@ tasks:
       {
         "position": {
           "x": 240,
-          "y": 1130
+          "y": 1285
         }
       }
     note: false
@@ -1175,8 +1170,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 150,
-          "y": 1440
+          "x": 50,
+          "y": 1470
         }
       }
     note: false
@@ -1250,8 +1245,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 150,
-          "y": 2120
+          "x": 50,
+          "y": 1905
         }
       }
     note: false
@@ -1295,8 +1290,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 150,
-          "y": 1600
+          "x": 50,
+          "y": 1630
         }
       }
     note: false
@@ -1326,8 +1321,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -410,
-          "y": 2135
+          "x": -450,
+          "y": 2410
         }
       }
     note: false
@@ -1351,14 +1346,15 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "32"
+      - "30"
+      - "41"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 150,
-          "y": 1310
+          "x": 190,
+          "y": 1140
         }
       }
     note: false
@@ -1382,15 +1378,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "15"
-      - "20"
+      - "25"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 1310
+          "x": 710,
+          "y": 1140
         }
       }
     note: false
@@ -1434,8 +1429,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 940,
-          "y": 1930
+          "x": 710,
+          "y": 2160
         }
       }
     note: false
@@ -1479,8 +1474,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 940,
-          "y": 2120
+          "x": 710,
+          "y": 2380
         }
       }
     note: false
@@ -1576,7 +1571,7 @@ tasks:
       '#default#':
       - "14"
       "yes":
-      - "36"
+      - "32"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1630,8 +1625,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -190,
-          "y": 1130
+          "x": -180,
+          "y": 1285
         }
       }
     note: false
@@ -1675,8 +1670,69 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 1600
+          "x": 710,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 96c197e7-77d5-44fe-8cf8-59d67868acb7
+    type: condition
+    task:
+      id: 96c197e7-77d5-44fe-8cf8-59d67868acb7
+      version: -1
+      name: Check EWS Extension Online Powershell availability
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: EWS Extension Online Powershell v3
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1470
         }
       }
     note: false
@@ -1689,25 +1745,30 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "25_14_#default#": 0.19,
-      "25_37_Yes": 0.5,
+      "25_14_#default#": 0.1,
+      "25_20_Yes": 0.81,
+      "25_43_Yes": 0.45,
       "28_3_yes": 0.43,
       "28_6_#default#": 0.25,
       "30_14_#default#": 0.15,
-      "30_36_yes": 0.4,
-      "34_14_#default#": 0.41,
-      "34_33_yes": 0.61,
-      "38_14_#default#": 0.49,
-      "38_39_yes": 0.42,
-      "41_14_#default#": 0.72,
-      "42_14_#default#": 0.4,
-      "4_5_yes": 0.38
+      "30_32_yes": 0.43,
+      "34_14_#default#": 0.31,
+      "34_33_yes": 0.55,
+      "38_14_#default#": 0.35,
+      "41_14_#default#": 0.16,
+      "41_32_yes": 0.4,
+      "42_14_#default#": 0.16,
+      "42_17_yes": 0.39,
+      "43_14_#default#": 0.11,
+      "43_15_yes": 0.47,
+      "4_5_yes": 0.38,
+      "4_6_#default#": 0.19
     },
     "paper": {
       "dimensions": {
-        "height": 2825,
-        "width": 2130,
-        "x": -410,
+        "height": 3085,
+        "width": 2080,
+        "x": -450,
         "y": -310
       }
     }
