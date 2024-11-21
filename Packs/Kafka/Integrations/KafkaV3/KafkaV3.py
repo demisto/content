@@ -37,7 +37,7 @@ class KafkaCommunicator:
 
     SESSION_TIMEOUT: int = 10000
     REQUESTS_TIMEOUT: float = 10.0
-    POLL_TIMEOUT: float = 1.0  # Increased from 1.0 to prevent frequent 'No results' responses in the kafka-consume-msg command.
+    POLL_TIMEOUT: float = 1.0
     POLL_TIMEOUT_STOP_UPON_TIMEOUT = 10.0
     # which caused test playbook failures in builds.
     MAX_POLLS_FOR_LOG: int = 100
