@@ -18,7 +18,6 @@ import demistomock as demisto
 from exchangelib.properties import ItemId
 from exchangelib.items import Item
 
-from test_data.input_data import PALO_LOGO_BASE64, PALO_LOGO_DECODED
 
 class TestNormalCommands:
     """
@@ -557,26 +556,6 @@ def test_send_mail_with_trailing_comma(mocker):
     assert results[0].get('Contents') == {
         'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
     }
-
-
-CASE_NO_PADDING = (PALO_LOGO_BASE64, PALO_LOGO_DECODED)
-CASE_LESS_PADDING = (PALO_LOGO_BASE64 + '=', PALO_LOGO_DECODED)
-CASE_WITH_PADDING = (PALO_LOGO_BASE64 + '==', PALO_LOGO_DECODED)
-CASE_TOO_MUCH_PADDING = (PALO_LOGO_BASE64 + '===', PALO_LOGO_DECODED)
-
-
-@pytest.mark.parametrize('str_to_decode, expected_encoded',
-                         (CASE_NO_PADDING, CASE_WITH_PADDING, CASE_LESS_PADDING, CASE_TOO_MUCH_PADDING))
-def test_base_64_decode(str_to_decode, expected_encoded):
-    """
-    Given: A base 64 encoded str that represents an image, with different paddings.
-    When: Decoding it to an image file.
-    Then: The str is decoded to binary.
-    """
-    from EWSv2 import base_64_decode
-
-    encoded = base_64_decode(str_to_decode)
-    assert encoded == expected_encoded
 
 
 @pytest.mark.parametrize(

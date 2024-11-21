@@ -1,4 +1,3 @@
-import binascii
 import email
 import hashlib
 import uuid
@@ -619,7 +618,7 @@ def handle_html(html_body: str) -> tuple[str, List[Dict[str, Any]]]:
         name = f'image{i}'
         cid = (f'{name}_{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
         attachment = {
-            'data': base_64_decode(m.group(3)),
+            'data': b64_decode(m.group(3)),
             'name': name
         }
         attachment['cid'] = cid
@@ -631,15 +630,6 @@ def handle_html(html_body: str) -> tuple[str, List[Dict[str, Any]]]:
 
     clean_body += html_body[last_index:]
     return clean_body, attachments
-
-
-def base_64_decode(s: str) -> bytes:
-    """
-    Decode a str in a base 64 format to a picture.
-    """
-    s = s.encode('ascii')
-    s += b'=' * (-len(s) % 4)  # add padding
-    return binascii.a2b_base64(s)
 
 
 def get_message_for_body_type(body, body_type, html_body):

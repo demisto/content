@@ -1163,7 +1163,7 @@ class GraphMailUtils:
                 att = {
                     'maintype': maintype,
                     'subtype': subtype,
-                    'data': base64.b64decode(m.group(3)),
+                    'data': b64_decode(m.group(3)),
                     'name': name,
                     'cid': f'{name}@{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}',
                 }

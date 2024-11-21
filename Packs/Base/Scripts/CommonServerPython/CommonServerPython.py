@@ -7,6 +7,7 @@ Note that adding code to CommonServerUserPython can override functions in Common
 from __future__ import print_function
 
 import base64
+import binascii
 import gc
 import json
 import logging
@@ -1407,6 +1408,16 @@ def b64_encode(text):
     if IS_PY3:
         res = res.decode('utf-8')  # type: ignore
     return res
+
+
+def b64_decode(b64_str: str) -> bytes:
+    """
+    Decode a str in a base 64 format to a picture.
+    Replaces the use of base64.b64decode function which doesn't add padding to the supplied str.
+    """
+    b64 = b64_str.encode('ascii')
+    b64 += b'=' * (-len(b64) % 4)  # add padding
+    return binascii.a2b_base64(b64)
 
 
 def encode_string_results(text):
