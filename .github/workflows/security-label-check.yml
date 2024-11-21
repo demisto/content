@@ -19,7 +19,3 @@ jobs:
             if [[ "$LABELS" != *"Security Approved"* ]]; then
               echo "Security Approved label is missing. The PR still requires a review from the security team."
               exit 1
-            fi
-          else
-            echo "Security Review label is not added. Security review is not required."
-          fi
