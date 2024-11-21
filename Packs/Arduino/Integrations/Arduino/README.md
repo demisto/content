@@ -1,19 +1,15 @@
 Connects to and controls an Arduino pin system using the network.
 
-## Configure Arduino on Cortex XSOAR
+## Configure Arduino in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Arduino.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Hostname or IP | Hostname or IP | True |
-    | Port number | Port number | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Hostname or IP | Hostname or IP | True |
+| Port number | Port number | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### arduino-set-pin
 ***

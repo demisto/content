@@ -2,7 +2,7 @@
     "name": "LastInfoSec",
     "description": "This integration allows to interact with the LastInfoSec API",
     "support": "partner",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.1",
     "author": "Gatewatcher",
     "url": "https://www.gatewatcher.com/",
     "email": "integration@gatewatcher.com",
