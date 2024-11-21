@@ -462,10 +462,12 @@ def fetch_events_command(
             events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
         except DemistoException as e:
             if "Requested Range Not Satisfiable" in str(e):
-                err_msg = f'Index out of range error in {INTEGRATION_NAME} Integration.\n' \
+                err_msg = f'Got Index out of range error when attempting to fetch events from Akamai.\n' \
                     'For more information, please refer to the Troubleshooting section in the integration documentation.\n' \
                     f'original error: [{e}]'
                 raise DemistoException(err_msg)
+            else:
+                raise DemistoException(e)
 
         if not events:
             demisto.info("Didn't receive any events, breaking.")

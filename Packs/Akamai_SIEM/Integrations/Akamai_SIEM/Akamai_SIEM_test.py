@@ -329,22 +329,10 @@ class TestCommandsFunctions:
         ctx = {"offset": offset, "hashed_events_from_previous_run": list(hashed)}
         assert isinstance(json.dumps(ctx), str)
 
-    def test_index_out_of_range_error(self, mocker, client):
-        """
-        Given:
-        - A client object
-        - 250 events.
-        - hashed events from previous run list with 4 events, 3 events which will appear in the response and one event that won't.
-        When:
-        - Calling fetch_events_command()
-        Then:
-        - Ensure that the events list returned doesn't include the filtered events and that the length of the list is 247.
-        - Ensure that on each iteration, the number of events in the hashed events is 50
-        (even in intervals where some events were deduped).
-        - Ensure the returned offset and hashed events are json serializable.
-        """
-        err_msg = 'Error in API call [416] - Requested Range Not Satisfiable'
-        error_entry = {
+    @pytest.mark.parametrize(
+    "error_entry, error_message, should_expect_extra_info",
+    [
+        ({
             "clientIp": "192.0.2.228",
             "detail": "Expired offset parameter in the request",
             "instance": "https://test.akamaiapis.net/siem/v1/configs=12345?offset=123",
@@ -353,21 +341,46 @@ class TestCommandsFunctions:
             "requestTime": "2023-06-20T15:02:30Z",
             "serverIp": "1.1.1.1",
             "title": "Expired offset parameter in the request",
-        }
-        err_msg += f'err_msg\n{json.dumps(error_entry)}'
-        mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=DemistoException(err_msg, res ={}))
+        }, "Error in API call [416] - Requested Range Not Satisfiable", True),
+        ({
+            "clientIp": "192.0.2.85",
+            "detail": "The specified user is unauthorized to access the requested data",
+            "instance": "https://test.akamaiapis.net/siem/v1/configs=12345?offset=123",
+            "method": "GET",
+            "requestId": "9cf2274",
+            "requestTime": "2023-06-20T15:01:11Z",
+            "serverIp": "1.1.1.1",
+            "title": "Unauthorized",
+        }, "Error in API call [403] - Unauthorized", False)
+    ],
+    )
+    def test_index_out_of_range_error(self, mocker, client, error_entry, error_message, should_expect_extra_info):
+        """
+        Given:
+        - A client object and an error entry
+        - Case 1: Mock error entry for 416 error.
+        - Case 2: Mock error entry for 403 error.
+        When:
+        - Calling fetch_events_command and get_events_with_offset throw that error.
+        Then:
+        - Ensure that the error was caught by the fetch_events_command and the relevant message was added along the error itself.
+        - Case 1: Should add extra information to the message.
+        - Case 2: Shouldn't add extra information to the message.
+        """
+        err_msg = f'{error_message}\n{json.dumps(error_entry)}'
+        mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=DemistoException(err_msg, res={}))
         mocker.patch.object(Akamai_SIEM, "should_break_before_timeout", return_value=False)
-        RETURN_ERROR_TARGET = 'Akamai_SIEM.return_error'
-        return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-        Akamai_SIEM.fetch_events_command(client,  # noqa: B007
-                                                                                    '3 days',
-                                                                                    220,
-                                                                                    '',
-                                                                                    {},
-                                                                                    5000
-                                                                                    )
-        assert return_error_mock.call_count == 1
-        assert 'did not include `translated`' in str(e)
+        with pytest.raises(DemistoException) as e:
+            for _, _, _, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
+                                                                                        '3 days',
+                                                                                        220,
+                                                                                        '',
+                                                                                        {},
+                                                                                        5000
+                                                                                        ):
+                pass
+        assert ('Got Index out of range error when attempting to fetch events from Akamai.' in str(e)) == should_expect_extra_info
+        assert ('Expired offset parameter in the request' in str(e)) == should_expect_extra_info
 
 
 @pytest.mark.parametrize(
