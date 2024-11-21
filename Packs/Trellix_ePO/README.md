@@ -32,7 +32,7 @@ For more information, see [this article](https://kcm.trellix.com/corporate/index
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
  
 ### Broker VM
-Follow the below steps to configure the Broker VM to receive Trellix ePO logs.
+Follow the steps below to configure the Broker VM to receive Trellix ePO logs.
  
 1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**.
 2. Go to the *APPS* column under the *Brokers* tab and add the Syslog app for the relevant broker instance. If the Syslog app already exists, hover over it and click **Configure**.
