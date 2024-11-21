@@ -894,7 +894,7 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
 
     last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})
     if not last_update_utc:
-        last_update_utc = datetime.now(tz=UTC).replace(tzinfo=None) - timedelta(minutes=xdr_delay+1)
+        last_update_utc = datetime.now(tz=UTC).replace(tzinfo=None) - timedelta(minutes=xdr_delay + 1)
         demisto.debug(f'Failed to parse {last_update=} will start fetching form {last_update_utc=}')
 
     gte_modification_time_milliseconds = last_update_utc
