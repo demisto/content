@@ -189,7 +189,7 @@ tasks:
               dt:
                 value:
                   simple: '.=val.SearchStatus!=="NotFound" ? val.Name : val.Name +
-                    "_ Preview"'
+                    "_Preview"'
       Interval:
         simple: ${inputs.polling_interval}
       PollingCommandArgName:
