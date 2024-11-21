@@ -2644,7 +2644,7 @@
         {
             "playbookID": "UploadFile Test",
             "integrations": ["Core REST API",
-             "Cortex Xpanse"]
+             "QRadar v3"]
         },
         {
             "playbookID": "MaxMind Test",
