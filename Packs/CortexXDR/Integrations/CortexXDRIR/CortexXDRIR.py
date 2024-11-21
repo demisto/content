@@ -892,10 +892,11 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
         last_update = remote_args.last_update
         demisto.debug(f"using {remote_args.last_update=} for last_update")
 
-    last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})
+    last_update_utc = dateparser.parse(last_update,
+                                       settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
     if not last_update_utc:
         last_update_utc = datetime.utcnow() - timedelta(minutes=xdr_delay + 1)
-        demisto.debug(f'Failed to parse {last_update=} will start fetching form {last_update_utc=}')
+        demisto.debug(f'Failed to parse {last_update=} will search for modified incidents since {last_update_utc=}')
 
     gte_modification_time_milliseconds = last_update_utc
     lte_modification_time_milliseconds = datetime.utcnow() - timedelta(minutes=xdr_delay)
@@ -906,9 +907,7 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
     raw_incidents = client.get_incidents(
         gte_modification_time_milliseconds=gte_modification_time_milliseconds,
         lte_modification_time_milliseconds=lte_modification_time_milliseconds,
-        limit=100
-    )
-
+        limit=100)
     last_run_mirroring = (lte_modification_time_milliseconds + timedelta(milliseconds=1))
     last_run_mirroring_str = last_run_mirroring.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
 
