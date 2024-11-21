@@ -126,6 +126,8 @@ script:
       name: offset
     - description: Partition (number).
       name: partition
+    - description: The poll timeout to consume a message
+    - name: poll_timeout
     description: Consumes a single Kafka message.
     name: kafka-consume-msg
     outputs:

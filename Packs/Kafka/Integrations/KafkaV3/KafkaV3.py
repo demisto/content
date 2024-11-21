@@ -37,7 +37,7 @@ class KafkaCommunicator:
 
     SESSION_TIMEOUT: int = 10000
     REQUESTS_TIMEOUT: float = 10.0
-    POLL_TIMEOUT: float = 10.0  # Increased from 1.0 to prevent frequent 'No results' responses in the splunk-consume-msg command,
+    POLL_TIMEOUT: float = 1.0  # Increased from 1.0 to prevent frequent 'No results' responses in the splunk-consume-msg command,
     # which caused test playbook failures in builds.
     MAX_POLLS_FOR_LOG: int = 100
 
@@ -278,7 +278,7 @@ class KafkaCommunicator:
                                    on_delivery=self.delivery_report)
         kafka_producer.flush()
 
-    def consume(self, topic: str, partition: int = -1, offset: str = '0') -> Message:
+    def consume(self, poll_timeout: float, topic: str, partition: int = -1, offset: str = '0') -> Message:
         """Consume a message from kafka
 
         Args:
@@ -290,7 +290,7 @@ class KafkaCommunicator:
         """
         kafka_consumer = self.get_kafka_consumer()
         kafka_consumer.assign(self.get_topic_partitions(topic, partition, offset, True))
-        polled_msg = kafka_consumer.poll(self.POLL_TIMEOUT)
+        polled_msg = kafka_consumer.poll(poll_timeout)
         demisto.debug(f"polled {polled_msg}")
         kafka_consumer.close()
         return polled_msg
@@ -604,8 +604,9 @@ def consume_message(kafka: KafkaCommunicator, demisto_args: dict) -> CommandResu
     topic = str(demisto_args.get('topic'))
     partition = int(demisto_args.get('partition', -1))
     offset = demisto_args.get('offset', '0')
-
-    message = kafka.consume(topic=topic, partition=partition, offset=offset)
+    
+    message = kafka.consume(float(demisto_args.get('poll_timeout') or kafka.POLL_TIMEOUT), topic=topic, partition=partition, offset=offset)
+    
     if not message:
         return 'No message was consumed.'
     else:
@@ -621,7 +622,7 @@ def consume_message(kafka: KafkaCommunicator, demisto_args: dict) -> CommandResu
                 'Offset': message.offset()
             }
         }
-
+    
         return CommandResults(
             outputs=content,
             readable_output=readable_output,
