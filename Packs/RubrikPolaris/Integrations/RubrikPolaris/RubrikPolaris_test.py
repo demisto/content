@@ -46,6 +46,12 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
+def util_load_text_data(path: str) -> str:
+    """Load a text file."""
+    with open(path, mode='r', encoding='utf-8') as f:
+        return f.read()
+
+
 def test_main_incorrect_credentials(requests_mock, monkeypatch, capfd, caplog):
     """Tests the execution of main function when incorrect credentials are provided."""
     from RubrikPolaris import main
@@ -2803,3 +2809,97 @@ def test_rubrik_radar_suspicious_file_list_command_with_invalid_args(client, arg
     with pytest.raises(ValueError) as e:
         rubrik_radar_suspicious_file_list_command(client, args=args)
     assert str(e.value) == error
+
+
+@patch('RubrikPolaris.return_warning')
+def test_ip_command_success(mock_return, client, requests_mock, capfd):
+    '''
+    Test case scenario for successful execution of ip_command.
+
+    Given:
+       - mocked client.
+    When:
+       - Calling `ip_command` function.
+    Then:
+       - Returns CommandResult.
+    '''
+    response = util_load_json('test_data/ip_command_success_response.json')
+    output = util_load_json('test_data/ip_command_success_output.json')
+    ip_hr = util_load_text_data('test_data/ip_command_success_hr.md')
+    ip_indicator = util_load_json('test_data/ip_indicator.json')
+
+    requests_mock.get(f'{BASE_URL}/thirdparty/workload_summary?search_string=0.0.0.1&search_type=ipv4',
+                      json=response, status_code=200)
+    requests_mock.get(f'{BASE_URL}/thirdparty/workload_summary?search_string=0.0.0.2&search_type=ipv4', json={}, status_code=200)
+
+    args = {"ip": "0.0.0.1,0.0.0.2,0.0.0.256"}
+
+    capfd.close()
+    from RubrikPolaris import ip_command
+    command_output = ip_command(client, args=args)
+
+    assert MESSAGES["IP_NOT_FOUND"].format('0.0.0.2') == mock_return.call_args[0][0]
+    assert output == command_output[0].outputs
+    assert response == command_output[0].raw_response
+    assert ip_hr == command_output[0].readable_output
+    assert 'ip' == command_output[0].outputs_key_field
+    assert OUTPUT_PREFIX['IP'] == command_output[0].outputs_prefix
+    assert ip_indicator == command_output[0].indicator.to_context()
+
+
+def test_ip_command_when_all_ips_invalid(client, capfd):
+    '''
+    Test case scenario for the execution of ip_command with invalid ip addresses.
+
+    Given:
+       - mocked client.
+    When:
+       - Calling `ip_command` function.
+    Then:
+       - Returns exception.
+    '''
+    from RubrikPolaris import ip_command
+
+    args = {'ip': '0: 0: 85a3: 0000: asv: 8a2e: 0370: 7334, 2.2.2'}
+    capfd.close()
+    with pytest.raises(SystemExit) as err:
+        ip_command(client, args)
+
+    assert err.value.code == 0
+
+
+@patch('RubrikPolaris.return_warning')
+def test_domain_command_success(mock_return, client, requests_mock, capfd):
+    '''
+    Test case scenario for successful execution of domain_command.
+
+    Given:
+       - mocked client.
+    When:
+       - Calling `domain_command` function.
+    Then:
+       - Returns CommandResult.
+    '''
+    response = util_load_json('test_data/domain_command_success_response.json')
+    output = util_load_json('test_data/domain_command_success_output.json')
+    domain_hr = util_load_text_data('test_data/domain_command_success_hr.md')
+    domain_indicator = util_load_json('test_data/domain_indicator.json')
+
+    requests_mock.get(f'{BASE_URL}/thirdparty/workload_summary?search_string=DEMO-RADAR&search_type=name',
+                      json=response, status_code=200)
+    requests_mock.get(f'{BASE_URL}/thirdparty/workload_summary?search_string=DEMO-RADAR02&search_type=name',
+                      json={}, status_code=200)
+
+    args = {"domain": "DEMO-RADAR, ,DEMO-RADAR02"}
+
+    capfd.close()
+    from RubrikPolaris import domain_command
+    command_output = domain_command(client, args=args)
+
+    assert MESSAGES["DOMAIN_NOT_FOUND"].format('DEMO-RADAR02') == mock_return.call_args[0][0]
+    assert output == command_output[0].outputs
+    assert response == command_output[0].raw_response
+    assert domain_hr == command_output[0].readable_output
+    assert 'domain' == command_output[0].outputs_key_field
+    assert OUTPUT_PREFIX['DOMAIN'] == command_output[0].outputs_prefix
+    assert domain_indicator == command_output[0].indicator.to_context()

@@ -1,0 +1,13 @@
+{
+    "IP(val.Address && val.Address == obj.Address)": {
+        "Address": "0.0.0.1",
+        "UpdatedDate": "2024-10-18T05:51:31Z"
+    },
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        "Indicator": "0.0.0.1",
+        "Reliability": "A - Completely reliable",
+        "Type": "ip",
+        "Vendor": "Rubrik Security Cloud",
+        "Score": 2
+    }
+}
