@@ -15,7 +15,9 @@
         "EPV",
         "CyberArk",
         "Enterprise Password Vault",
-        "Vault"
+        "Vault",
+        "PAM Self Hosted",
+        "PAM"
     ],
     "marketplaces": [
         "marketplacev2"
