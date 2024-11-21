@@ -45,7 +45,7 @@ Follow the below steps to configure the Broker VM to receive Trellix ePO logs.
     | `Port`                  | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from Trellix ePO.   |
     | `Vendor`                | Enter trellix.                                                                                                                |
     | `Product`               | Enter epo.                                                                                                                    |
-    | `Server Certificate`    | Select the .crt file you created, advise the attached Trellix documentation for help with using openssl.                      |
+    | `Server Certificate`    | Select the .crt file you created. See the attached Trellix documentation for help with using openssl.                      |
     | `Private Key`           | Same as `Server Certificate`, select the .key file you created.                                                               |
     | `Minimal TLS Version`   | Select 1.2.                                                                                                                   |
     ----------------------------------------------------------------------------------------------------------------------------------------------------------- 
