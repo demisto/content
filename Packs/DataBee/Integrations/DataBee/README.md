@@ -1,32 +1,28 @@
 DataBee, from Comcast Technology Solutions, is a cloud-native security and compliance data fabric that ingests data from multiple disparate feeds and then aggregates, compresses, standardizes, enriches, correlates, and normalizes the data before transferring a full time-series dataset to your data lake of choice.
 This integration was integrated and tested with version 1.0 of DataBee.
 
-## Configure DataBee on Cortex XSOAR
+## Configure DataBee in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for DataBee.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Base URL |  | True |
-    | Incident type |  | False |
-    | Username |  | True |
-    | Password |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Additional findings context outputs | Choose additional context data to retrieve from the API. Be aware that requesting extensive context data may impact your server's performance. | False |
-    | Fetch incidents |  | False |
-    | Maximum incidents per fetch |  | True |
-    | First fetch timestamp | Timestamp in ISO format or &lt;number&gt; &lt;time unit&gt;, e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | True |
-    | Severity Filter | Filter findings based on their severity level. For example, a level such as "High" is acceptable. | False |
-    | Impact Filter | Filter findings based on their impact level. For example, a level such as "High" is acceptable. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Base URL |  | True |
+| Incident type |  | False |
+| Username |  | True |
+| Password |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Additional findings context outputs | Choose additional context data to retrieve from the API. Be aware that requesting extensive context data may impact your server's performance. | False |
+| Fetch incidents |  | False |
+| Maximum incidents per fetch |  | True |
+| First fetch timestamp | Timestamp in ISO format or &lt;number&gt; &lt;time unit&gt;, e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | True |
+| Severity Filter | Filter findings based on their severity level. For example, a level such as "High" is acceptable. | False |
+| Impact Filter | Filter findings based on their impact level. For example, a level such as "High" is acceptable. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### databee-device-search
