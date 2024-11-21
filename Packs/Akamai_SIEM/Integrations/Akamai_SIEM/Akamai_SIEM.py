@@ -583,7 +583,8 @@ def main():  # pragma: no cover
             return_outputs(human_readable, entry_context, raw_response)
 
     except Exception as e:
-        return_error(f'Error in {INTEGRATION_NAME} Integration [{e}]', error=e)
+        err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
+        return_error(err_msg, error=e)
 
 
 if __name__ in ["__builtin__", "builtins", '__main__']:  # pragma: no cover
