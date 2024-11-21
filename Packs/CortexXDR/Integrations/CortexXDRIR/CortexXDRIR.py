@@ -885,7 +885,14 @@ def get_mapping_fields_command():
 
 def get_modified_remote_data_command(client, args, mirroring_last_update: str = '', xdr_delay: int = 1):
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update: str = mirroring_last_update or remote_args.last_update
+    last_update: str
+    if mirroring_last_update:
+        last_update = mirroring_last_update
+        demisto.debug(f"using {mirroring_last_update=} for last_update")
+    else:
+        last_update = remote_args.last_update
+        demisto.debug(f"using {remote_args.last_update=} for last_update")
+
     last_update_utc = dateparser.parse(last_update,
                                        settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
 
@@ -904,11 +911,11 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
     # Format with milliseconds as string, truncate microseconds
     last_run_mirroring_str = last_run_mirroring.replace(tzinfo=pytz.UTC).strftime(  # type: ignore
         '%Y-%m-%d %H:%M:%S.%f')[:-3] + '+02:00'  # type: ignore
-    modified_incident_ids = []
-    for raw_incident in raw_incidents:
-        incident_id = raw_incident.get('incident_id')
-        modified_incident_ids.append(incident_id)
-    return GetModifiedRemoteDataResponse(modified_incident_ids), last_run_mirroring_str
+
+    id_to_modification_time = {raw.get('incident_id'): raw.get('modification_time') for raw in raw_incidents}
+    demisto.debug(f"{last_run_mirroring_str=}, modified alerts {id_to_modification_time=}")
+
+    return GetModifiedRemoteDataResponse(list(id_to_modification_time.keys())), last_run_mirroring_str
 
 
 def get_remote_data_command(client, args):
@@ -1032,9 +1039,15 @@ def update_remote_system_command(client, args):
 
             close_xdr_incident = argToBoolean(client._params.get("close_xdr_incident", True))
 
+            status = ""
+            # If the client does not want to close the incident in XDR, temporarily remove the status from the arguments
+            # to update the incident, and add it back later to close the alerts.
             if not close_xdr_incident and (update_args.get('status') in XSOAR_RESOLVED_STATUS_TO_XDR.values()):
                 status = update_args.pop('status')
-                demisto.debug(f"Popped {status=} from update_args, incident status won't be updated in XDR.")
+                resolve_comment = update_args.pop('resolve_comment', None)
+
+                demisto.debug(f"Popped status {status} and {resolve_comment=} from update_args,"
+                              f" incident status won't be updated in XDR.")
 
             update_incident_command(client, update_args)
 
@@ -1044,6 +1057,9 @@ def update_remote_system_command(client, args):
             if is_closed and closed_without_status and remote_is_already_closed:
                 update_args['status'] = current_remote_status
             if close_alerts_in_xdr and is_closed:
+                if status:
+                    update_args['status'] = status
+                    demisto.debug(f'Restored {status=} in order to update the alerts status.')
                 update_related_alerts(client, update_args)
 
         else:
@@ -1583,6 +1599,7 @@ def main():  # pragma: no cover
 
         elif command == 'get-modified-remote-data':
             last_run_mirroring: Dict[str, Any] = demisto.getLastRun()
+            demisto.debug(f"before get-modified-remote-data, last run={last_run_mirroring}")
 
             modified_incidents, next_mirroring_time = get_modified_remote_data_command(
                 client=client,
@@ -1592,6 +1609,7 @@ def main():  # pragma: no cover
             )
             last_run_mirroring['mirroring_last_update'] = next_mirroring_time
             demisto.setLastRun(last_run_mirroring)
+            demisto.debug(f"after get-modified-remote-data, last run={last_run_mirroring}")
             return_results(modified_incidents)
 
         elif command == 'xdr-script-run':  # used with polling = true always
