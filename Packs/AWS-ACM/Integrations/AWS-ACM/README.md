@@ -4,28 +4,24 @@ For more information regarding the AWS ACM service, please visit the official do
 
 For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 
-## Configure AWS - ACM on Cortex XSOAR
+## Configure AWS - ACM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AWS - ACM.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | roleArn | role ARN | False |
-    | roleSessionName | Role Session Name | False |
-    | defaultRegion | AWS Default Region | False |
-    | sessionDuration | Role Session Duration | False |
-    | access_key | Access Key | False |
-    | secret_key | Secret Key | False |
-    | timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified a default of 10 second will be used. | False |
-    | retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. More details about the retries strategy is available [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/retries.html). | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| roleArn | role ARN | False |
+| roleSessionName | Role Session Name | False |
+| defaultRegion | AWS Default Region | False |
+| sessionDuration | Role Session Duration | False |
+| access_key | Access Key | False |
+| secret_key | Secret Key | False |
+| timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified a default of 10 second will be used. | False |
+| retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. More details about the retries strategy is available [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/retries.html). | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### aws-acm-describe-certificate
 ***
@@ -227,5 +223,4 @@ Retrieves a certificate specified by an ARN and its certificate chain . The chai
 | --- | --- | --- |
 | AWS.ACM.Certificates.Certificate | string | String that contains the ACM certificate represented by the ARN specified at input. | 
 | AWS.ACM.Certificates.CertificateChain | string | The certificate chain that contains the root certificate issued by the certificate authority \(CA\). | 
-
 
