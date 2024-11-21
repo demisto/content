@@ -2,11 +2,11 @@ args:
 - description: List of agent IDs of the agent to retrieve.
   name: agent_id
   isArray: true
-- description: List of agent IDs of the agent to retrieve.
-  name: agent_id
+- description: List of agent IPs of the agent to retrieve.
+  name: agent_ip
   isArray: true
-- description: List of agent IDs of the agent to retrieve.
-  name: agent_id
+- description: List of agent hostnames of the agent to retrieve.
+  name: agent_hostname
   isArray: true
 - description: |-
     Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
