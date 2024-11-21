@@ -1,0 +1,18 @@
+{
+  "trigger_id": "b0becdc3d9a6a5636191dd23bf5998b1",
+  "playbook_id": "A source host created uncommon remote scheduled task",
+  "suggestion_reason": "Recommended for the 'Uncommon remote scheduled task creation' alert",
+  "description": "This trigger is responsible for handling 'Uncommon remote scheduled task creation",
+  "trigger_name": "A source host created uncommon remote scheduled task",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "Uncommon remote scheduled task creation"
+        }
+      ]
+    }
+  }
+}
