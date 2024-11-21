@@ -1,6 +1,37 @@
 [MODEL: dataset=msft_azure_firewall_raw]
 call map_msft_azure_resource_logs_common_fields;
 
+// Azure Firewall Threat Intelligence https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwthreatintel 
+filter category = "AZFWThreatIntel" 
+| alter 
+	action = if(properties -> Action != "", properties -> Action),
+	ip_protocol = uppercase(properties -> Protocol),
+	source_ip = properties -> SourceIp,
+	destination_ip = properties -> DestinationIp,
+	target_fqdn = if(properties -> Fqdn != "", properties -> Fqdn),
+	target_url = if(properties -> TargetUrl != "", properties -> TargetUrl),
+	threat_description = if(properties -> ThreatDescription != "", properties -> ThreatDescription)
+| alter 
+	source_ipv4 = if(incidr(source_ip, "0.0.0.0/0"), source_ip),
+	source_ipv6 = if(source_ip ~= "^(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}$", source_ip),
+	destination_ipv4 = if(incidr(destination_ip, "0.0.0.0/0"), destination_ip),
+	destination_ipv6 = if(destination_ip ~= "^(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}$", destination_ip)
+| alter 
+	xdm.alert.description = threat_description,
+	xdm.network.http.url = target_url,
+	xdm.network.ip_protocol = if(ip_protocol = "UDP", XDM_CONST.IP_PROTOCOL_UDP, ip_protocol = "TCP", XDM_CONST.IP_PROTOCOL_TCP, ip_protocol),
+	xdm.observer.action = action,
+	xdm.source.host.ipv4_public_addresses = if(source_ipv4 != null and not incidr(source_ipv4, "10.0.0.0/8") and not incidr(source_ipv4, "172.16.0.0/12") and not incidr(source_ipv4, "192.168.0.0/16") and not incidr(source_ipv4, "127.0.0.0/8") and not incidr(source_ipv4, "169.254.0.0/16") and not incidr(source_ipv4, "100.64.0.0/10"), arraycreate(source_ipv4)),
+	xdm.source.ipv4 = source_ipv4,
+	xdm.source.ipv6 = source_ipv6,
+	xdm.source.port = to_integer(properties -> SourcePort),
+	xdm.target.host.fqdn = target_fqdn,
+	xdm.target.host.ipv4_public_addresses = if(destination_ipv4 != null and not incidr(destination_ipv4, "10.0.0.0/8") and not incidr(destination_ipv4, "172.16.0.0/12") and not incidr(destination_ipv4, "192.168.0.0/16") and not incidr(destination_ipv4, "127.0.0.0/8") and not incidr(destination_ipv4, "169.254.0.0/16") and not incidr(destination_ipv4, "100.64.0.0/10"), arraycreate(destination_ipv4)),
+	xdm.target.ipv4 = destination_ipv4,
+	xdm.target.ipv6 = destination_ipv6,
+	xdm.target.port = to_integer(properties -> DestinationPort),
+	xdm.target.url = target_url;
+
 // Azure Firewall Nat Rule (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwnatrule)
 filter category in ("AZFWNatRule", "AZFWNatRuleAggregation")
 | alter 
@@ -29,7 +60,6 @@ filter category in ("AZFWNatRule", "AZFWNatRuleAggregation")
 	xdm.target.ipv4 = translated_destination_ipv4,
 	xdm.target.ipv6 = translated_destination_ipv6,
 	xdm.target.port = to_integer(properties -> TranslatedPort);
-
 
 filter category = "AZFWDnsQuery" // Azure Firewall DNS query (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwdnsquery)
 | alter 
