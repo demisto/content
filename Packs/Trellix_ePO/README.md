@@ -49,6 +49,6 @@ Follow the steps below to configure the Broker VM to receive Trellix ePO logs.
     | `Private Key`           | Same as `Server Certificate`, select the .key file you created.                                                               |
     | `Minimal TLS Version`   | Select 1.2.                                                                                                                   |
     ----------------------------------------------------------------------------------------------------------------------------------------------------------- 
-5. After data start flowing into Cortex XSIAM, you could query the collected logs under the *`trellix_epo_raw`* dataset.
+5. After the data starts flowing into Cortex XSIAM, you can query the collected logs under the *`trellix_epo_raw`* dataset.
     
 </~XSIAM>
