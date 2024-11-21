@@ -58,7 +58,7 @@ def create_cluster_metadata(topic_partitions):
     """
     cluster_metadata = ClusterMetadata()
     topics_dict = {}
-    for topic in topic_partitions.keys():
+    for topic in topic_partitions:
         topic_metadata = TopicMetadata()
         partitions = topic_partitions[topic]
         partitions_dict = {}
@@ -197,7 +197,7 @@ def test_print_topics_without_offsets(mocker, demisto_args, cluster_tree):
     result = print_topics(KAFKA, demisto_args)
     assert type(result) is CommandResults  # for Pylance
     assert type(result.outputs) is list  # for Pylance
-    for topic in cluster_tree.keys():
+    for topic in cluster_tree:
         topic_partitions = [{'ID': partition} for partition in cluster_tree[topic]]
         assert {'Name': topic, 'Partitions': topic_partitions} in result.outputs
 
@@ -281,7 +281,7 @@ def test_fetch_partitions_no_topics(mocker, demisto_args):
     assert f'Topic {demisto_args["topic"]} was not found in Kafka' in str(exception_info.value)
 
 
-class MessageMock(object):
+class MessageMock:
     """Mocked message class for easier mocking"""
     message = None
     offset_value = None
@@ -870,7 +870,7 @@ def test_fetch_incidents_stop_consuming_upon_timeout_is_true(
         debug.call_args_list[-2][0][0]
         == "Didn't get a message after 10.0 seconds, stop_consuming_upon_timeout is true, break the loop. num_polled_msg=1"
     )
-    assert poll_mock.assert_any_call(10.0)
+    poll_mock.assert_any_call(10.0)
     close_mock.assert_called_once()
     incidents_mock.assert_called_once_with(incidents)
     set_last_run_mock.assert_called_once_with(next_run)
