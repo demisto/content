@@ -505,6 +505,7 @@ def get_events_computer_type(
     new_last_run = {"last_fetch": new_last_fetch_date}
 
     demisto.debug(f"Fetched {len(events)} computers")
+    demisto.debug(f"{latest_event=}")
     demisto.debug(f"{new_last_fetch_date=}")
 
     if next_page:
