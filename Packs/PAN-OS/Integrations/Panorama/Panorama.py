@@ -27,7 +27,7 @@ import shutil
 
 ''' IMPORTS '''
 import uuid
-from typing import Tuple, Callable, ValuesView, Iterator, TYPE_CHECKING, Literal
+from typing import Tuple, Callable, ValuesView, Iterator, Literal, TYPE_CHECKING
 from urllib.parse import urlparse
 
 if TYPE_CHECKING:
@@ -14511,12 +14511,12 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
     )
 
 
-def build_master_key_create_or_update_cmd(args: dict, action: Literal['update', 'create']) -> str:
+def build_master_key_create_or_update_cmd(args: dict, action: Literal['create', 'update']) -> str:
     """Builds the XML command for creating or updating the default master key on Panorama / PAN-OS.
 
     Args:
         args (dict): The command arguments.
-        action ('update' | 'create'): Whether to create a new master key or update an existing one.
+        action ('create'| 'update'): Whether to create a new master key or update an existing one.
 
     Returns:
         str: XML string of the master key create or update command.
@@ -14543,6 +14543,23 @@ def build_master_key_create_or_update_cmd(args: dict, action: Literal['update', 
     return add_argument(arg=master_key_element, field_name='request', member=False)
 
 
+def create_or_update_master_key(args: dict, action: Literal['create', 'update']) -> CommandResults:
+    """Builds an XML command and sends a request to create or update the master key based on the given action.
+
+    Args:
+        args (dict): The command arguments.
+        action ('create'| 'update'): Whether to create a new master key or update an existing one.
+
+    Returns:
+        CommandResults: Contains readable output and raw response.
+    """
+    master_key_cmd = build_master_key_create_or_update_cmd(args, action=action)
+    raw_response: dict = http_request(URL, 'GET', params={'type': 'op', 'key': API_KEY, 'cmd': master_key_cmd})
+    response_result = dict_safe_get(raw_response, ('response', 'result'))  # human readable message
+
+    return CommandResults(readable_output=str(response_result), raw_response=raw_response)
+
+
 def pan_os_create_master_key_command(args: dict) -> CommandResults:
     """Creates a new default master key on Panorama / PAN-OS.
 
@@ -14552,11 +14569,7 @@ def pan_os_create_master_key_command(args: dict) -> CommandResults:
     Returns:
         CommandResults: Contains readable output and raw response.
     """
-    create_master_key_cmd = build_master_key_create_or_update_cmd(args, action='create')
-    raw_response: dict = http_request(URL, 'GET', params={'type': 'op', 'key': API_KEY, 'cmd': create_master_key_cmd})
-    response_result = dict_safe_get(raw_response, ('response', 'result'))  # human readable message
-
-    return CommandResults(readable_output=str(response_result), raw_response=raw_response)
+    return create_or_update_master_key(args, action='create')
 
 
 def pan_os_update_master_key_command(args: dict) -> CommandResults:
@@ -14568,15 +14581,11 @@ def pan_os_update_master_key_command(args: dict) -> CommandResults:
     Returns:
         CommandResults: Contains readable output and raw response.
     """
-    update_master_key_cmd = build_master_key_create_or_update_cmd(args, action='update')
-    raw_response: dict = http_request(URL, 'GET', params={'type': 'op', 'key': API_KEY, 'cmd': update_master_key_cmd})
-    response_result = dict_safe_get(raw_response, ('response', 'result'))  # human readable message
-
-    return CommandResults(readable_output=str(response_result), raw_response=raw_response)
+    return create_or_update_master_key(args, action='update')
 
 
-def pan_os_get_master_key_command() -> CommandResults:
-    """Shows the default master key on Panorama / PAN-OS.
+def pan_os_get_master_key_details_command() -> CommandResults:
+    """Shows the details of the default master key on Panorama / PAN-OS.
 
     Args:
         args (dict): The command arguments.
@@ -14594,12 +14603,13 @@ def pan_os_get_master_key_command() -> CommandResults:
     human_readable = tableToMarkdown(
         'Master Key Details',
         response_result,
+        headers=['auto-renew-mkey', 'on-hsm', 'remind-at', 'expire-at'],
         headerTransform=lambda key: result_to_human_readable.get(key, ' '.join(key.split('-')).capitalize()),
     )
 
     return CommandResults(
         outputs_prefix='Panorama.MasterKey',
-        outputs=raw_response.get('response'),
+        outputs=response_result,
         raw_response=raw_response,
         readable_output=human_readable,
     )
@@ -15793,8 +15803,8 @@ def main():  # pragma: no cover
             return_results(pan_os_create_master_key_command(args))
         elif command == 'pan-os-update-master-key':
             return_results(pan_os_update_master_key_command(args))
-        elif command == 'pan-os-get-master-key':
-            return_results(pan_os_get_master_key_command())
+        elif command == 'pan-os-get-master-key-details':
+            return_results(pan_os_get_master_key_details_command())
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:

@@ -232,15 +232,42 @@ display: Palo Alto Networks PAN-OS
 name: Panorama
 script:
   commands:
-  - name: pan-os-get-master-key
-    description: Fetches the default master key that encrypts all the private keys and passwords in the configuration to secure them.
+  - name: pan-os-get-master-key-details
+    description: Shows the details of the default master key that encrypts all the private keys and passwords in the configuration.
     outputs:
-    - contextPath: Panorama.MasterKey.value
-      description: The encryption master key (16 characters).
+    - contextPath: Panorama.MasterKey.auto-renew-mkey
       type: String
+      description: Whether the master key will be automatically renewed on expiry.
+    - contextPath: Panorama.MasterKey.expire-at
+      type: String
+      description: The date and time when the key is set to expire.
+    - contextPath: Panorama.MasterKey.hours-to-expiry
+      type: String
+      description: The number of hours remaining before the key expires.
+    - contextPath: Panorama.MasterKey.hours-to-reminder
+      type: String
+      description: The number of hours remaining before being notified that the key is set to expire.
+    - contextPath: Panorama.MasterKey.minutes-to-expiry
+      type: String
+      description: The number of minutes remaining before the key expires.
+    - contextPath: Panorama.MasterKey.minutes-to-reminder
+      type: String
+      description: The number of minutes remaining before being notified that the key is set to expire.
+    - contextPath: Panorama.MasterKey.on-hsm
+      type: String
+      description: Whether the key is stored on a Hardware Security Module (HSM).
+    - contextPath: Panorama.MasterKey.remind-at
+      type: String
+      description: The date and time when to be notified that the key is set to expire.
+    - contextPath: Panorama.MasterKey.seconds-to-expiry
+      type: String
+      description: The number of seconds remaining before the key expires.
+    - contextPath: Panorama.MasterKey.seconds-to-reminder
+      type: String
+      description: The number of seconds remaining before being notified that the key is set to expire.
 
   - name: pan-os-create-master-key
-    description: Creates a default master key that encrypts all the private keys and passwords in the configuration to secure them.
+    description: Creates a default master key that encrypts all the private keys and passwords in the configuration.
     arguments:
     - description: The encryption master key. Must be exactly 16 characters.
       name: master_key
@@ -259,7 +286,7 @@ script:
       isArray: false
 
   - name: pan-os-update-master-key
-    description: Updates the default master key that encrypts all the private keys and passwords in the configuration to secure them.
+    description: Updates the default master key that encrypts all the private keys and passwords in the configuration.
     arguments:
     - description: The new encryption master key. Must be exactly 16 characters.
       name: new_master_key
@@ -273,12 +300,12 @@ script:
       isArray: false
     - description: The lifetime of the new key in hours.
       name: lifetime_in_hours
-      type: Integer
+      type: Number
       required: true
       isArray: false
     - description: The time to be notified of new the new key's expiration in hours.
       name: reminder_in_hours
-      type: Integer
+      type: Number
       required: true
       isArray: false
 

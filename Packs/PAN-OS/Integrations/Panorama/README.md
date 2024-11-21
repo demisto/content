@@ -9358,7 +9358,8 @@ There is no context output for this command.
 
 ## pan-os-create-master-key
 
-Creates a default master key that encrypts all the private keys and passwords in the configuration to secure them.
+***
+Create a default master key that encrypts all the private keys and passwords in the configuration.
 
 #### Base Command
 
@@ -9386,7 +9387,8 @@ There is no context output for this command.
 
 ## pan-os-update-master-key
 
-Updates the default master key that encrypts all the private keys and passwords in the configuration to secure them.
+***
+Update the default master key that encrypts all the private keys and passwords in the configuration.
 
 #### Base Command
 
@@ -9413,27 +9415,61 @@ There is no context output for this command.
 
 >Master key changed successfully. All key material has been re-encrypted with new master key and committed via jobid 2468
 
-## pan-os-get-master-key
+## pan-os-get-master-key-details
 
-Fetches the default master key that encrypts all the private keys and passwords in the configuration to secure them.
+***
+Show the properties of the default master key that encrypts all the private keys and passwords in the configuration.
 
 #### Base Command
 
-`pan-os-get-master-key`
+`pan-os-get-master-key-details`
 
 #### Input
 
 There is no arguments for this command.
 
 #### Command example
-```!pan-os-get-master-key```
+```!pan-os-get-master-key-details```
 
 #### Context Output
 
-None
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.MasterKey.auto-renew-mkey | String | Whether the master key will be automatically renewed on expiry. |
+| Panorama.MasterKey.expire-at | String | The date and time when the key is set to expire. |
+| Panorama.MasterKey.hours-to-expiry | String | The number of hours remaining before the key expires. |
+| Panorama.MasterKey.hours-to-reminder | String | The number of hours remaining before being notified that the key is set to expire. |
+| Panorama.MasterKey.minutes-to-expiry | String | The number of minutes remaining before the key expires. |
+| Panorama.MasterKey.minutes-to-reminder | String | The number of minutes remaining before being notified that the key is set to expire. |
+| Panorama.MasterKey.on-hsm | String | Whether the key is stored on a Hardware Security Module (HSM). |
+| Panorama.MasterKey.remind-at | String | The date and time when to be notified that the key is set to expire. |
+| Panorama.MasterKey.seconds-to-expiry | String | The number of seconds remaining before the key expires. |
+| Panorama.MasterKey.seconds-to-reminder | String | The number of seconds remaining before being notified that the key is set to expire. |
+
+#### Context Example
+
+```json
+{
+    "Panorama": {
+        "MasterKey": {
+            "auto-renew-mkey": "0",
+            "expire-at": "2025/02/18 04:26:05",
+            "hours-to-expiry": "2138",
+            "hours-to-reminder": "1992",
+            "minutes-to-expiry": "128288",
+            "minutes-to-reminder": "119520",
+            "on-hsm": "no",
+            "remind-at": "2024/11/27 04:26:05",
+            "seconds-to-expiry": "7697336",
+            "seconds-to-reminder": "7171200"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
->| **Master Key** |
->| --- |
->| QXPa4WCS3TDYHquA |
+> Master Key Details
+> | Auto-renew master key | Stored on HSM | Remind at | Expire at |
+> | --- | --- | --- | --- |
+> | 0 | no | 2024/11/27 04:26:05 | 2025/02/18 04:26:05 |

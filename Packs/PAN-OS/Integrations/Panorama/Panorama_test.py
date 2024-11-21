@@ -8010,7 +8010,7 @@ def test_pan_os_create_master_key_command(requests_mock: RequestsMock):
     assert command_results.raw_response == json.loads(xml2json(xml_response_text))
 
 
-def test_pan_os_get_master_key_command(mocker: MockerFixture, requests_mock: RequestsMock):
+def test_pan_os_get_master_key_details_command(mocker: MockerFixture, requests_mock: RequestsMock):
     """
     When:
         - Calling pan_os_get_master_key_command.
@@ -8018,7 +8018,7 @@ def test_pan_os_get_master_key_command(mocker: MockerFixture, requests_mock: Req
     Assert:
         - Correct human readable, context output, and raw response.
     """
-    from Panorama import pan_os_get_master_key_command, xml2json
+    from Panorama import pan_os_get_master_key_details_command, xml2json
     import Panorama
 
     # Set
@@ -8031,7 +8031,7 @@ def test_pan_os_get_master_key_command(mocker: MockerFixture, requests_mock: Req
     table_to_markdown = mocker.patch('Panorama.tableToMarkdown')
 
     # Arrange
-    command_results: CommandResults = pan_os_get_master_key_command()
+    command_results: CommandResults = pan_os_get_master_key_details_command()
     table_name: str = table_to_markdown.call_args[0][0]
     table_data: dict = table_to_markdown.call_args[0][1]
     raw_response: dict = json.loads(xml2json(xml_response_text))
@@ -8039,5 +8039,5 @@ def test_pan_os_get_master_key_command(mocker: MockerFixture, requests_mock: Req
     # Assert
     assert table_name == 'Master Key Details'
     assert table_data == raw_response['response']['result']
-    assert command_results.outputs == raw_response['response']
+    assert command_results.outputs == raw_response['response']['result']
     assert command_results.raw_response == raw_response
