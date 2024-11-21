@@ -3,12 +3,12 @@
     "description": "Deploy and manage containerized applications with a fully managed Kubernetes service.",
     "support": "xsoar",
     "currentVersion": "1.2.3",
-    "author": "Cortex XSOAR",
+    "author": "Cortex XSOAR hello",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-01-17T14:56:54Z",
     "categories": [
-        "Cloud Service Provider"
+        "Cloud Service Provider hello"
     ],
     "tags": [],
     "useCases": [],
