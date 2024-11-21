@@ -1535,7 +1535,7 @@ def extract_text_and_url_from_possible_answer(text: str) -> tuple[str | None, st
     if match:
         url = match.group(1)
         text_before = text.strip(match.group(0))
-        return text_before, url
+        return text_before.strip(), url.strip()
     return None, None
 
 
@@ -1554,7 +1554,7 @@ def extract_text_and_url_from_form(text: str) -> tuple[str | None, str | None]:
     if match:
         url = match.group(0)
         cleaned_text = re.sub(pattern, "", text)
-        return url, cleaned_text
+        return url.strip(), cleaned_text.strip()
     return None, None
 
 
