@@ -1596,7 +1596,6 @@ def main():  # pragma: no cover
             return_results(action_status_get_command(client, args))
 
         elif command == 'get-modified-remote-data':
-
             last_run_mirroring: Dict[str, Any] = get_last_mirror_run()
             demisto.debug(f"before get-modified-remote-data, last run={last_run_mirroring}")
 
