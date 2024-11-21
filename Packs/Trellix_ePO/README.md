@@ -16,7 +16,7 @@ Timestamp is extracted from the GMTTime field with the following format - yyyy-m
 To configure Trellix ePO to send logs to Cortex XSIAM, follow the steps below.
  
 ### Trellix ePO side
-1. Login to the Trellix ePO main console.
+1. Log in to the Trellix ePO main console.
 2. On the main menu, go to **Configuration** > **Registered Servers**.
 3. Click the **New Server** button and select "Syslog Server" as the **Server type**, name it and click next.
 4. On the Server name field please enter the IP address or fully qualified domain name (FQDN) of your broker-vm.
