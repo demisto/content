@@ -832,6 +832,7 @@ def test_fetch_incidents_stop_consuming_upon_timeout_is_true(
         - Assert the created incidents are as expected
         - Assert setting the last run
         - Assert break method was called
+        - Assert poll method was called with timeout 10.0
     """
     mocker.patch.object(KConsumer, "__init__", return_value=None)
     cluster_metadata = create_cluster_metadata(cluster_tree)
@@ -869,6 +870,7 @@ def test_fetch_incidents_stop_consuming_upon_timeout_is_true(
         debug.call_args_list[-2][0][0]
         == "Didn't get a message after 10.0 seconds, stop_consuming_upon_timeout is true, break the loop. num_polled_msg=1"
     )
+    assert poll_mock.assert_any_call(10.0)
     close_mock.assert_called_once()
     incidents_mock.assert_called_once_with(incidents)
     set_last_run_mock.assert_called_once_with(next_run)
