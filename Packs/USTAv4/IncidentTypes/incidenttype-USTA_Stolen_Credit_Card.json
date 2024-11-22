@@ -1,5 +1,6 @@
 {
     "id": "USTA Stolen Credit Card",
+    "fromVersion": "5.0.0",
     "version": 1,
     "cacheVersn": 0,
     "sequenceNumber": 134387,

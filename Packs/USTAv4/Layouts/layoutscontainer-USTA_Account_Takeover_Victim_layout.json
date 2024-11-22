@@ -540,6 +540,7 @@
 	},
 	"edit": null,
 	"fromServerVersion": "",
+    "fromVersion": "6.0.0",
 	"group": "incident",
 	"id": "USTA Account Takeover Victim Layout",
 	"indicatorsDetails": null,

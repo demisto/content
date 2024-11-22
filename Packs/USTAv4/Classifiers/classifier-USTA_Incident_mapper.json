@@ -6,6 +6,7 @@
 	"description": "",
 	"feed": false,
 	"fromServerVersion": "",
+    "fromVersion": "6.0.0",
 	"id": "USTA Incident Mapper",
 	"incidentSamples": null,
 	"indicatorSamples": null,
@@ -99,8 +100,8 @@
             }
         }
 	},
-	"name": "USTA Incident Mapping (incoming)",
-	"nameRaw": "USTA Incident Mapping (incoming)",
+	"name": "USTA Incident Mapper",
+	"nameRaw": "USTA Incident Mapper",
 	"packID": "",
 	"packName": "",
 	"propagationLabels": [

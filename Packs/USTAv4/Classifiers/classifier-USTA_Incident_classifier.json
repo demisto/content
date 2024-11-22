@@ -6,6 +6,7 @@
 	"description": "",
 	"feed": false,
 	"fromServerVersion": "",
+    "fromVersion": "6.0.0",
 	"id": "USTA Incident Classifier",
 	"incidentSamples": null,
 	"indicatorSamples": null,

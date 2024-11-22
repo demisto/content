@@ -1,5 +1,6 @@
 {
     "id": "incident_ustaaccounttakeoverprevention_source",
+    "fromVersion": "5.0.0",
     "version": 1,
     "cacheVersn": 0,
     "modified": "2024-11-11T16:36:36.480835461Z",
