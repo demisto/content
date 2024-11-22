@@ -38,25 +38,56 @@ def test_start_time_if_last_run_0_return_default():
     assert len(time) == 13
 
 
-@pytest.mark.parametrize('obj, expected', [(None, ''), ('', ''), ("1540390400000", " | where record_created_at > 1540390400000"), ])
+@pytest.mark.parametrize(
+    'obj, expected',
+    [
+        (None, ''),
+        ('', ''),
+        ("1540390400000", " | where record_created_at > 1540390400000"),
+    ]
+)
 def test_time_filter(obj, expected):
     assert better_than_time_filter(obj) == expected
 
 
-@pytest.mark.parametrize('obj, expected', [(None, ''), ('', ''), ("1540390400000", " | where record_created_at == 1540390400000"), ])
+@pytest.mark.parametrize(
+    'obj, expected',
+    [
+        (None, ''),
+        ('', ''),
+        ("1540390400000", " | where record_created_at == 1540390400000"),
+    ]
+)
 def test_equal_time_filter_with_ts(obj, expected):
     assert equal_than_time_filter(obj) == expected
 
 
 def test_parse_incidents():
-    i = parse_incident(
-        {'id': '1af93f46-65c1-4f52-a46a-2a181597fb0c', 'type_id': 'NET:RST-FROM-SLAVE',
-         'name': 'Link RST sent by Slave',
-         'description': 'The slave 10.197.23.139 sent a RST of the connection to the master.', 'severity': 10,
-         'mac_src': '00:02:3e:99:c9:5d', 'mac_dst': '00:c0:c9:30:04:f1', 'ip_src': '10.197.23.182',
-         'ip_dst': '10.197.23.139', 'risk': '4.5', 'protocol': 'iec104', 'src_roles': 'master', 'dst_roles': 'slave',
-         'record_created_at': 1392048082242, 'ack': False, 'port_src': 1097, 'port_dst': 2404, 'status': 'open', 'threat_name': '',
-         'type_name': 'Link RST sent by Slave', 'zone_src': 'RemoteRTU', 'zone_dst': 'RemoteRTU'})
+    i = parse_incident({
+        'id': '1af93f46-65c1-4f52-a46a-2a181597fb0c',
+        'type_id': 'NET:RST-FROM-SLAVE',
+        'name': 'Link RST sent by Slave',
+        'description': 'The slave 10.197.23.139 sent a RST of the connection to the master.',
+        'severity': 10,
+        'mac_src': '00:02:3e:99:c9:5d',
+        'mac_dst': '00:c0:c9:30:04:f1',
+        'ip_src': '10.197.23.182',
+        'ip_dst': '10.197.23.139',
+        'risk': '4.5',
+        'protocol': 'iec104',
+        'src_roles': 'master',
+        'dst_roles': 'slave',
+        'record_created_at': 1392048082242,
+        'ack': False,
+        'port_src': 1097,
+        'port_dst': 2404,
+        'status': 'open',
+        'threat_name': '',
+        'type_name': 'Link RST sent by Slave',
+        'zone_src': 'RemoteRTU',
+        'zone_dst': 'RemoteRTU'
+    })
+
     del i['occurred']
 
     assert i == {
