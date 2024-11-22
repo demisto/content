@@ -41,7 +41,7 @@ configuration:
   type: 8
   required: false
 - display: First Fetch Time
-  additionalinfo: 'The time range to consider for the initial data fetch. Warning: Fetching a large time range may cause performance issues!'
+  additiona,nfo: 'The time range to consider for the initial data fetch. Warning: Fetching a large time range may cause performance issues!'
   defaultvalue: 3 days
   name: first_fetch
   type: 0
