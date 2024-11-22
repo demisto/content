@@ -146,33 +146,35 @@ script:
   commands:
   - name: cyberint-get-indicators
     arguments:
+    - name: date
+      description: Date of data feed for retrieval (e.g. 2024-12-31). The default value is today.
     - name: limit
       description: The maximum number of results to return. The default value is 50.
       defaultValue: "50"
+    - name: offset
+      description: Specifies the starting point or position from which data retrieval or processing should begin.
+      defaultValue: "0"
     outputs:
-    - contextPath: Cyberint.value
-      description: The indicator value.
+    - contextPath: Cyberint.detected_activity
+      description: Detected activity.
       type: String
-    - contextPath: Cyberint.type
+    - contextPath: Cyberint.ioc_type
       description: The indicator type.
       type: String
-    - contextPath: Cyberint.Tags
-      description: Tags that are associated with the indicator.
-      type: String
-    - contextPath: Cyberint.description
-      description: The feed description.
-      type: String
-    - contextPath: Cyberint.detected_activity
-      description: The feed detected activity.
+    - contextPath: Cyberint.ioc_value
+      description: The indicator value.
       type: String
     - contextPath: Cyberint.observation_date
-      description: The feed observation date.
+      description: Observation date.
       type: String
     - contextPath: Cyberint.severity_score
-      description: The feed severity score.
+      description: Severity score.
       type: String
     - contextPath: Cyberint.confidence
-      description: The feed confidence.
+      description: Confidence.
+      type: String
+    - contextPath: Cyberint.description
+      description: Description.
       type: String
     description: Gets indicators from the feed.
   dockerimage: demisto/python3:3.10.13.90168

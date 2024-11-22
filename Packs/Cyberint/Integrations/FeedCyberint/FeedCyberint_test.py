@@ -122,17 +122,9 @@ def test_get_indicators_command(
     expected_url = "http://www.tal1.com/"
     expected_ip = "1.1.1.1"
 
-    params = {
-        "tlp_color": "GREEN",
-        "severity_from": "0",
-        "confidence_from": "0",
-        "feed_name": ["All"],
-        "indicator_type": ["All"],
-        "limit": 10,
-    }
     args = {"limit": 20}
 
-    result = FeedCyberint.get_indicators_command(mock_client, params, args)
+    result = FeedCyberint.get_indicators_command(mock_client, args)
 
     url_indicators = {indicator["value"] for indicator in result.raw_response if indicator["type"] == "URL"}
     ip_indicators = {indicator["value"] for indicator in result.raw_response if indicator["type"] == "IP"}
