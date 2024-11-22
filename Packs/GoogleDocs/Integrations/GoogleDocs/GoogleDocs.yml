@@ -81,7 +81,7 @@ script:
     - contextPath: GoogleDocs.DocumentId
       description: The document ID of the updated document.
       type: Unknown
-  dockerimage: demisto/googleapi-python3:1.0.0.113882
+  dockerimage: demisto/googleapi-python3:1.0.0.115338
   runonce: false
   script: '-'
   type: python

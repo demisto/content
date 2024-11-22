@@ -74,6 +74,16 @@ configuration:
   required: false
   additionalinfo: Limit on the number of incidents retrieved in a single fetch.
   section: Collect
+- display: Akamai Page size
+  name: page_size
+  type: 0
+  required: false
+  section: Collect
+  defaultvalue: '50000'
+  additionalinfo: The number of events to fetch per request to akamai (multiple requests are made for each fetch). If you're getting aggregated delays, increase the number. The maximum is 600,000.
+  hidden:
+  - xsoar
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -86,26 +96,26 @@ configuration:
   section: Connect
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
   section: Connect
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
+  required: false
   section: Collect
   hidden:
   - marketplacev2
-- defaultvalue: '1'
-  display: Events Fetch Interval
+- display: Events Fetch Interval
   name: eventFetchInterval
   type: 19
   required: false
-  advanced: true
   section: Collect
   hidden:
   - xsoar
+  defaultvalue: '1'
+  advanced: true
 - display: Fetch Events
   name: isFetchEvents
   type: 8
@@ -118,6 +128,8 @@ display: Akamai WAF SIEM
 name: Akamai WAF SIEM
 script:
   commands:
+  - description: Reset the last offset in case the offset is invalid.
+    name: akamai-siem-reset-offset
   - arguments:
     - description: 'Unique identifier for each security configuration. To report on more than one configuration, separate the integer identifiers with semicolons (;), for example: 12892;29182;82912.'
       name: config_ids
@@ -208,7 +220,7 @@ script:
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
       type: String
-  dockerimage: demisto/auth-utils:1.0.0.99717
+  dockerimage: demisto/auth-utils:1.0.0.116930
   isfetch: true
   isfetch:marketplacev2: false
   isfetchevents: true

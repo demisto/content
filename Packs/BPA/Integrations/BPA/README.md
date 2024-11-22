@@ -2,23 +2,19 @@ Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama con
 This integration was integrated and tested with version 1.0 of BPA.
 Supported Cortex XSOAR versions: 5.0.0 and later.
 
-## Configure BPA on Cortex XSOAR
+## Configure BPA in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for BPA.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | server | Server URL \(either Firewall or Panorama\). e.g., https:\/\/192.168.0.1 | True |
-    | key | Panorama API Key | True |
-    | token | BPA Access Token | True |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| server | Server URL \(either Firewall or Panorama\). e.g., https:\/\/192.168.0.1 | True |
+| key | Panorama API Key | True |
+| token | BPA Access Token | True |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### pan-os-get-documentation
 ***
@@ -395,4 +391,3 @@ Returns results of BPA job.
 >| device | device_setup_services | 105 | It is recommended to configure a primary and secondary NTP Server Address | NTP Server Address | false | Warning |
 >| device | device_setup_services | 104 |  | Verify Update Server Identity | true | Warning |
 >| device | device_setup_session | 121 |  | Accelerated Aging | true | Warning |
-
