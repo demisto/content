@@ -165,6 +165,9 @@ script:
     - contextPath: LOLBAS.Indicators.Type
       description: 'The type of the indicator.'
       type: String
+    - contextPath: LOLBAS.Indicators.URL
+      description: 'The URL to the indicator.'
+      type: String
   feed: true
   script: '-'
   type: python

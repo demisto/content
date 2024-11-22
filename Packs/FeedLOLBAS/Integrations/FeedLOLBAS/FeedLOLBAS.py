@@ -109,7 +109,8 @@ def map_indicator_fields(raw_indicator: Dict[str, Any]) -> Dict[str, Any]:
         'Commands': mapped_commands,
         'Detections': mapped_detections,
         'Paths': mapped_paths,
-        'description': raw_indicator.get('Description')
+        'description': raw_indicator.get('Description'),
+        'url': raw_indicator.get('url')
     }
 
 
@@ -217,7 +218,8 @@ def get_indicators(client, limit):
         output_list.append({'Type': record.get('type'),
                             'Commands': record.get('fields', {}).get('Commands'),
                             'Detections': record.get('fields', {}).get('Detections'),
-                            'Paths': record.get('fields', {}).get('Paths')} | hr)
+                            'Paths': record.get('fields', {}).get('Paths'),
+                            'URL': record.get('fields', {}).get('url')} | hr)
     return CommandResults(outputs=output_list, outputs_prefix='LOLBAS.Indicators', raw_response=raw_res,
                           readable_output=tableToMarkdown("LOLBAS indicators", hr_list, headers=['Name', 'Description']),
                           outputs_key_field='Name')
