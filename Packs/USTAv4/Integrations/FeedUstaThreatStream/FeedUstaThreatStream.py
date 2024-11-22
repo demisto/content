@@ -72,6 +72,7 @@ def test_module(client: Client) -> str:
         raise e
     return 'ok'
 
+
 def parse_malware_hashes(indicator: dict) -> dict:
     _value = indicator.get("hashes", {}).get("sha256")
     _type = FeedIndicatorType.File
@@ -151,6 +152,7 @@ def search_command(client: Client, args: dict, ioc_feed_type: str) -> CommandRes
         )
     return CommandResults(readable_output='No results found.')
 
+
 def fetch_indicators_command(client: Client, last_run: dict, params: Dict[str, Any]):  # -> tuple[dict, list[dict]]:
     """Fetches indicators from the chosen feed. The indicators are fetched based on the last fetch time we received
     from the last fetch. The indicators are then iterated over, and for each indicator, we create a dictionary with
@@ -203,7 +205,7 @@ def fetch_indicators_command(client: Client, last_run: dict, params: Dict[str, A
 
             elif feed == 'malicious-urls':
                 indicator_obj = parse_malicious_urls(indicator)
-            
+
             elif feed == 'phishing-sites':
                 indicator_obj = parse_phishing_sites(indicator)
 
@@ -230,14 +232,18 @@ def fetch_indicators_command(client: Client, last_run: dict, params: Dict[str, A
         }
     return last_run, parsed_indicators
 
+
 def search_malware_hashes_command(client: Client, args: dict) -> CommandResults:
     return search_command(client, args, 'malware-hashes')
+
 
 def search_malicious_urls_command(client: Client, args: dict) -> CommandResults:
     return search_command(client, args, 'malicious-urls')
 
+
 def search_phishing_site_command(client: Client, args: dict) -> CommandResults:
     return search_command(client, args, 'phishing-sites')
+
 
 def main():
     # demisto params and args
