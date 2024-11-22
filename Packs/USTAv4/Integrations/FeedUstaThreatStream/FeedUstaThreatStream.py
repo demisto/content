@@ -17,6 +17,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 USTA_IOC_FEED_TYPES = [
     "malicious-urls",
     "malware-hashes",
+    "phishing-sites"
 ]
 
 SERVICE_NAME = 'FeedUstaThreatStream'
@@ -86,6 +87,7 @@ def parse_malware_hashes(indicator: dict) -> dict:
             'tags': indicator.get("tags", [])
         }
     }
+    parsed_indicator['fields']['tags'].append('usta-malware-hashes')
     return parsed_indicator
 
 
@@ -102,10 +104,35 @@ def parse_malicious_urls(indicator: dict):
         'type': _type,
         'rawJSON': indicator,
         'fields': {
-            'tags': indicator.get("tags", [])
+            'tags': indicator.get("tags", []),
+            'ip_addresses': indicator.get("ip_addresses", []),
+            'host': indicator.get("host", ''),
         }
     }
+    parsed_indicator['fields']['tags'].append('usta-malicious-urls')
+    return parsed_indicator
 
+
+def parse_phishing_sites(indicator: dict):
+    _value = indicator.get("url")
+    _type = FeedIndicatorType.URL
+
+    # _value may contain only domain. Thus following function may return different indicator type.
+    if new_type := auto_detect_indicator_type(_value):
+        _type = new_type
+
+    parsed_indicator = {
+        'value': _value,
+        'type': _type,
+        'rawJSON': indicator,
+        'fields': {
+            'country': indicator.get("country", ''),
+            'ip_addresses': indicator.get("ip_addresses", []),
+            'tags': indicator.get("tags", []),
+            'host': indicator.get("host", ''),
+        }
+    }
+    parsed_indicator['fields']['tags'].append('usta-phishing-sites')
     return parsed_indicator
 
 
@@ -176,6 +203,9 @@ def fetch_indicators_command(client: Client, last_run: dict, params: Dict[str, A
 
             elif feed == 'malicious-urls':
                 indicator_obj = parse_malicious_urls(indicator)
+            
+            elif feed == 'phishing-sites':
+                indicator_obj = parse_phishing_sites(indicator)
 
             if feed_tags:
                 indicator_obj['fields']['tags'].extend(feed_tags)

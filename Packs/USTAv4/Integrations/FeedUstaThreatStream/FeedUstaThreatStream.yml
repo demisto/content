@@ -24,6 +24,7 @@ configuration:
   - ALL
   - malicious-urls
   - malware-hashes
+  - phishing-sites
   required: true
   type: 16
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
