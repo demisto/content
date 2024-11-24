@@ -415,7 +415,7 @@ def main() -> None:
         elif command == "fetch-events":
             events, next_run = fetch_events(
                 client=client,
-                slot_number=params.get["slot"],  # a required param
+                slot_number=params["slot"],  # a required param
                 port_number=params["port"],  # a required param
                 statistic_types_to_fetch=argToList(params.get("statistic_types_to_fetch", []))
             )
