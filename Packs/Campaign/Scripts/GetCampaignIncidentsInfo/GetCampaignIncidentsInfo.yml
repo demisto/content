@@ -7,7 +7,7 @@ comment: |-
 commonfields:
   id: GetCampaignIncidentsInfo
   version: -1
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.11.10.116949
 enabled: true
 name: GetCampaignIncidentsInfo
 script: ''
