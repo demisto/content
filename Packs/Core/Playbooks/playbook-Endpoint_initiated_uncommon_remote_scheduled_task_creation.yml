@@ -50,7 +50,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": -110
+          "y": -240
         }
       }
     note: false
@@ -468,7 +468,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "74"
+      - "77"
     scriptarguments:
       alert_ids:
         simple: ${alert.id}
@@ -480,7 +481,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 185
+          "y": 25
         }
       }
     note: false
@@ -558,15 +559,13 @@ tasks:
     nexttasks:
       '#none#':
       - "27"
-      - "74"
-      - "77"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 410,
-          "y": 20
+          "y": -110
         }
       }
     note: false
@@ -1038,8 +1037,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 820,
-          "y": 185
+          "x": 630,
+          "y": 195
         }
       }
     note: false
@@ -1169,8 +1168,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": 185
+          "x": 190,
+          "y": 195
         }
       }
     note: false
@@ -1337,10 +1336,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4295,
+        "height": 4425,
         "width": 1780,
         "x": 0,
-        "y": -110
+        "y": -240
       }
     }
   }
