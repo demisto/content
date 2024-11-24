@@ -133,6 +133,70 @@ class Client(BaseClient):
                 f"An error was occurred when deleting the {list_name_to_delete} IP list."
             ) from e
 
+    def metering_stats_request(self, slot_number: str, port_number: str) -> dict[str, Any]:
+        try:
+            metering_stats_event = self._http_request(
+                    method="GET",
+                    url_suffix=f"/api/Systems/Slot/{slot_number}/Ipfix/Status/Metering",
+                    ok_codes=(200,)
+                )
+        except Exception as e:
+            raise DemistoException(
+                f"An error was occurred when requesting for an event of MeteringStats type."
+            ) from e
+
+        metering_stats_event["STAT_TYPE"] = 'MeteringStats'
+
+        return metering_stats_event
+
+    def export_stats_request(self, slot_number: str, port_number: str) -> dict[str, Any]:
+        try:
+            export_stats_event = self._http_request(
+                    method="GET",
+                    url_suffix=f"/api/Systems/Slot/{slot_number}/Ipfix/Status/Export",
+                    ok_codes=(200,)
+                )
+        except Exception as e:
+            raise DemistoException(
+                f"An error was occurred when requesting for an event of MeteringStats type."
+            ) from e
+
+        export_stats_event["STAT_TYPE"] = 'ExportStats'
+
+        return export_stats_event
+
+    def export_peaks_fks_request(self, slot_number: str, port_number: str) -> dict[str, Any]:
+        try:
+            export_peaks_fks_event = self._http_request(
+                    method="GET",
+                    url_suffix=f"/api/Systems/Slot/{slot_number}/Ipfix/Status/ExportHwm",
+                    ok_codes=(200,)
+                )
+        except Exception as e:
+            raise DemistoException(
+                f"An error was occurred when requesting for an event of MeteringStats type."
+            ) from e
+
+        export_peaks_fks_event["STAT_TYPE"] = 'ExportPeakFPS'
+
+        return export_peaks_fks_event
+
+    def optimization_stats_request(self, slot_number: str, port_number: str) -> dict[str, Any]:
+        try:
+            optimization_stats_event = self._http_request(
+                    method="GET",
+                    url_suffix=f"/api/Systems/Slot/{slot_number}/Port/{port_number}/EthernetInterfaces/Status/EthRxTx",
+                    ok_codes=(200,)
+                )
+        except Exception as e:
+            raise DemistoException(
+                f"An error was occurred when requesting for an event of MeteringStats type."
+            ) from e
+
+        optimization_stats_event["STAT_TYPE"] = 'Optimization Stats'
+
+        return optimization_stats_event
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -261,6 +325,52 @@ def test_module(client: Client) -> str:
     return message
 
 
+def add_time_to_events(events: list[dict]):
+    """
+    Adds the _time key to the events.
+    Args:
+        events: list[dict] - list of events to add the _time key to.
+    Returns:
+        list: The events with the _time key.
+    """
+    if events:
+        for event in events:
+            create_time = arg_to_datetime(event["timestamp"])
+            event["_time"] = create_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
+
+
+def fetch_events(client: Client, slot_number: str, port_number: str, statistic_types_to_fetch: list[str]):
+    """
+    Args:
+        client (Client): NetQuest client to use.
+        slot_number (str): A Target Netquest device slot number.
+        port_number (str): A port number to use.
+        statistic_types_to_fetch (list): List of event types to fetch.
+    Returns:
+        events (list[dict]): A list of events (number of events equal to the number of statistic types given)
+        that will be created in XSIAM.
+    """
+    demisto.debug(f'Starting Fetch: the given slot number is = {slot_number} and the given port number is {port_number}')
+
+    events: list[dict] = []
+    statistic_types_mapping: Dict[str, Callable] = {
+        'Metering Stats': client.metering_stats_request,
+        'Export Stats': client.export_stats_request,
+        'Export Peaks FKS': client.export_peaks_fks_request,
+        'Optimization Stats': client.optimization_stats_request,
+
+    }
+
+    events.extend(
+        statistic_types_mapping[statistic_type](
+            client, slot_number, port_number
+        )
+        for statistic_type in statistic_types_to_fetch
+    )
+
+    return events
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -301,6 +411,19 @@ def main() -> None:
 
         elif command in commands:
             return_results(commands[command](client, **args))
+
+        elif command == "fetch-events":
+            events, next_run = fetch_events(
+                client=client,
+                slot_number=params.get["slot"],  # a required param
+                port_number=params["port"],  # a required param
+                statistic_types_to_fetch=argToList(params.get("statistic_types_to_fetch", []))
+                )
+
+            add_time_to_events(events)
+            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+
+            demisto.debug(f'fetched {len(events or [])} events.')
 
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
