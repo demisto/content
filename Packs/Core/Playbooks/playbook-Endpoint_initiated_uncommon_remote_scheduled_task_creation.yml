@@ -1,10 +1,10 @@
-id: A source host created uncommon remote scheduled task
+id: Endpoint initiated uncommon remote scheduled task creation
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: A source host created uncommon remote scheduled task
+name: Endpoint initiated uncommon remote scheduled task creation
 description: |-
-  This playbook handles "Uncommon remote scheduled task creation" alerts, which are generated on the source host that created the remote scheduled task.
+  This playbook handles "Uncommon remote scheduled task creation" alert, which is generated on the source host that created the remote scheduled task.
 
   Playbook Stages:
 
@@ -23,7 +23,7 @@ description: |-
   Remediation:
 
   - Automatically disable the malicious scheduled task on the remote host.
-  - Terminate the causality process.
+  - Automatically terminate the causality process.
   - Automatically close the alert.
 tags:
 - TA0002 - Execution
@@ -43,14 +43,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "27"
+      - "29"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 410,
-          "y": -390
+          "y": -110
         }
       }
     note: false
@@ -98,7 +98,7 @@ tasks:
     task:
       id: 3ddedabb-1395-4234-81f5-a3b098a10721
       version: -1
-      name: Is the causality process signed and prevalent?
+      name: Is the causality process unsigned and not prevalent?
       description: Determines the appropriate verdict based on the signature and prevalence of the causality process.
       type: condition
       iscommand: false
@@ -183,7 +183,7 @@ tasks:
     task:
       id: d6cce08c-349e-44db-807d-b6348886db73
       version: -1
-      name: No Results Found
+      name: No evidence of malicious activity
       type: title
       iscommand: false
       brand: ""
@@ -256,7 +256,7 @@ tasks:
     task:
       id: a376a415-7a05-4085-85ff-e80b02660456
       version: -1
-      name: Close Alert - No results returned
+      name: Close Alert - No evidence of malicious activity
       description: commands.local.cmd.close.inv
       script: Builtin|||closeInvestigation
       type: regular
@@ -267,9 +267,14 @@ tasks:
       - "46"
     scriptarguments:
       closeNotes:
-        simple: No Results Found
+        simple: |-
+          No Evidence of Malicious Activity:
+          - The causality process is signed and prevalent.
+          - No related alerts indicating malicious activity were found on the source host.
+          - No malicious parameters were identified in the command line.
+          - No related alerts indicating malicious activity were found on the remote host.
       closeReason:
-        simple: Resolved - Handled by the playbook "Uncommon remote scheduled task creation"
+        simple: Resolved - Handled by the playbook "Endpoint initiated uncommon remote scheduled task creation"
       id:
         simple: ${alert.id}
     separatecontext: false
@@ -308,7 +313,7 @@ tasks:
       closeNotes:
         simple: Malicious scheduled task detected
       closeReason:
-        simple: Resolved - Handled by the playbook "Uncommon remote scheduled task creation"
+        simple: Resolved - Handled by the playbook "Endpoint initiated uncommon remote scheduled task creation"
       id:
         simple: ${alert.id}
     separatecontext: false
@@ -334,7 +339,7 @@ tasks:
     task:
       id: 9de4fea1-2efe-427d-83e7-5ca0c0ffaff1
       version: -1
-      name: Disable the malicious scheduled task
+      name: Disable the scheduled task on the remote host
       description: Disable the malicious scheduled task by executing shell commands.
       script: '|||core-run-script-execute-commands'
       type: regular
@@ -390,7 +395,7 @@ tasks:
     task:
       id: 93c5df93-c13b-4e70-8ba4-8d0d405c5e56
       version: -1
-      name: Disable the malicious scheduled task manually
+      name: Disable the scheduled task manually
       description: |-
         Dear Analyst,
 
@@ -463,7 +468,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "77"
+      - "2"
     scriptarguments:
       alert_ids:
         simple: ${alert.id}
@@ -475,7 +480,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": -255
+          "y": 185
         }
       }
     note: false
@@ -552,14 +557,16 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "27"
+      - "74"
+      - "77"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 410,
-          "y": 230
+          "y": 20
         }
       }
     note: false
@@ -923,7 +930,7 @@ tasks:
     task:
       id: dfc8da1d-2f1d-4c5a-8de9-d2381c34b396
       version: -1
-      name: Extract the name and path of the malicious scheduled task
+      name: Extract the name and path of the scheduled task
       description: Extract the name and path of the malicious scheduled task and sets the value in context key 'ExtractedTaskName'.
       scriptName: Set
       type: regular
@@ -1022,7 +1029,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "29"
+      - "2"
     scriptarguments:
       hostname:
         simple: ${Core.OriginalAlert.raw_abioc.event.schtasks_remote_host}
@@ -1031,8 +1038,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 410,
-          "y": 70
+          "x": 820,
+          "y": 185
         }
       }
     note: false
@@ -1049,8 +1056,8 @@ tasks:
     task:
       id: a2bad801-d912-45ec-8ac6-5ece49400caa
       version: -1
-      name: Is the XSIAM agent installed on the remote endpoint?
-      description: Checks whether the Cortex XSIAM agent is installed on the remote endpoint.
+      name: Is the XDR agent installed on the remote endpoint?
+      description: Checks whether the Cortex XDR agent is installed on the remote endpoint.
       type: condition
       iscommand: false
       brand: ""
@@ -1090,8 +1097,8 @@ tasks:
     task:
       id: 36164015-8f07-4e5b-873d-024f66adb228
       version: -1
-      name: Is the XSIAM agent install and connected on the remote endpoint?
-      description: Checks whether the Cortex XSIAM agent is installed and connected on the remote endpoint.
+      name: Is the XDR agent install and connected on the remote endpoint?
+      description: Checks whether the Cortex XDR agent is installed and connected on the remote endpoint.
       type: condition
       iscommand: false
       brand: ""
@@ -1153,7 +1160,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "74"
+      - "2"
     scriptarguments:
       process_name:
         simple: ${alert.cgoname}
@@ -1162,8 +1169,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 410,
-          "y": -90
+          "x": 0,
+          "y": 185
         }
       }
     note: false
@@ -1330,10 +1337,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4575,
+        "height": 4295,
         "width": 1780,
         "x": 0,
-        "y": -390
+        "y": -110
       }
     }
   }

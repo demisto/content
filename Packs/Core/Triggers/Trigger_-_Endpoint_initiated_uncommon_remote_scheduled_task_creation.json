@@ -1,9 +1,9 @@
 {
-  "trigger_id": "df44be7092df167c73c5fa4eecc8977b",
-  "playbook_id": "A source host created uncommon remote scheduled task",
+  "trigger_id": "a7ca7229e794c8345cea0ec9827ac9f9",
+  "playbook_id": "Endpoint initiated uncommon remote scheduled task creation",
   "suggestion_reason": "Recommended for the 'Uncommon remote scheduled task creation' alert",
   "description": "This trigger is responsible for handling 'Uncommon remote scheduled task creation' alerts",
-  "trigger_name": "A source host created uncommon remote scheduled task",
+  "trigger_name": "Endpoint initiated uncommon remote scheduled task creation",
   "fromVersion": "8.8.0",
   "alerts_filter": {
     "filter": {
