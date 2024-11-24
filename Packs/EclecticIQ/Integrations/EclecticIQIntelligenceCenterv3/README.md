@@ -4,42 +4,38 @@ This integration was integrated and tested with version 2.14 and 3.0 of Eclectic
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-eclecticiq-intelligence-center-v3).
 
-## Configure EclecticIQ Intelligence Center v3 on Cortex XSOAR
+## Configure EclecticIQ Intelligence Center v3 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for EclecticIQ Intelligence Center v3.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | EclecticIQ Intelligence Center URL (e.g. https://eclecticiq-platform.local) |  | True |
-    | API user token to authenticate in EclecticIQ Intelligence Center |  | True |
-    | EclecticIQ Intelligence Center public API version |  | True |
-    | IP threshold. Minimum maliciousness confidence level to consider the IP address malicious: High, Medium, Low, Safe, Unknown |  | False |
-    | URL threshold. Minimum maliciousness confidence level to consider the URL malicious: High, Medium, Low, Safe, Unknown |  | False |
-    | File threshold. Minimum maliciousness confidence level to consider the file malicious: High, Medium, Low, Safe, Unknown |  | False |
-    | Email threshold. Minimum maliciousness confidence level to consider the email address malicious: High, Medium, Low, Safe, Unknown |  | False |
-    | Domain threshold. Minimum maliciousness confidence level to consider the domain malicious: High, Medium, Low, Safe, Unknown |  | False |
-    | Group name in EclecticIQ Intelligence Center to use as entities source |  | False |
-    | Create sightings automatically in EclecticIQ Intelligence Center when reputation check command executed. |  | False |
-    | Fetch indicators |  |  |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
-    | Source Reliability | Reliability of the source providing the intelligence data | True |
-    |  |  | False |
-    |  |  | False |
-    | Feed Fetch Interval |  | False |
-    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | Feed IDs to fetch | e.g. 12,14,22 | False |
-    |  |  | False |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed |  |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| EclecticIQ Intelligence Center URL (e.g. https://eclecticiq-platform.local) |  | True |
+| API user token to authenticate in EclecticIQ Intelligence Center |  | True |
+| EclecticIQ Intelligence Center public API version |  | True |
+| IP threshold. Minimum maliciousness confidence level to consider the IP address malicious: High, Medium, Low, Safe, Unknown |  | False |
+| URL threshold. Minimum maliciousness confidence level to consider the URL malicious: High, Medium, Low, Safe, Unknown |  | False |
+| File threshold. Minimum maliciousness confidence level to consider the file malicious: High, Medium, Low, Safe, Unknown |  | False |
+| Email threshold. Minimum maliciousness confidence level to consider the email address malicious: High, Medium, Low, Safe, Unknown |  | False |
+| Domain threshold. Minimum maliciousness confidence level to consider the domain malicious: High, Medium, Low, Safe, Unknown |  | False |
+| Group name in EclecticIQ Intelligence Center to use as entities source |  | False |
+| Create sightings automatically in EclecticIQ Intelligence Center when reputation check command executed. |  | False |
+| Fetch indicators |  |  |
+| Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
+| Source Reliability | Reliability of the source providing the intelligence data | True |
+|  |  | False |
+|  |  | False |
+| Feed Fetch Interval |  | False |
+| Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+| Feed IDs to fetch | e.g. 12,14,22 | False |
+|  |  | False |
+| Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed |  |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### ip
