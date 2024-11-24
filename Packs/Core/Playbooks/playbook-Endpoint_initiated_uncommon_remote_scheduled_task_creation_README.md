@@ -4,7 +4,7 @@ Playbook Stages:
 
 Analysis:
 
-- The playbook verifies whether the causality process is signed. If the process is not signed, it proceeds with remediation actions; otherwise, it continues investigating the alert.
+- The playbook verifies whether the causality process is signed and prevalent. If the process is not signed and not prevalent, it proceeds with remediation actions; otherwise, it continues investigating the alert.
 
 Investigation:
 
