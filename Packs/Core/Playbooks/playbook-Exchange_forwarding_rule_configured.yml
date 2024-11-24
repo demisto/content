@@ -9,13 +9,13 @@ description: "This playbook addresses the following alerts:\n\n- External Exchan
   address is malicious. If so, it suggests blocking the IP using PAN-OS while continuing
   the investigation in parallel.\n\nInvestigation:\n\n- The playbook checks for suspicious
   behaviors, including whether an Exchange admin created the rule outside of working
-  hours, from an unusual geolocation, or if the user who created the rule has a high-risk
+  hours, from unusual geolocation, or if the user who created the rule has a high-risk
   score. It then aggregates all evidence collected during the investigation.\n\nContainment:\n\n-
-  If at least two suspicious evidence are found, the playbook executes soft response
-  actions, including signing the user out and deleting the forwarding email address
-  from the user account mailbox. The user will be notified of these actions via email.\n-
-  If two or more pieces of suspicious evidence are found, the playbook will initiate
-  soft response actions. These include signing the user out of their account and removing
+  If at least two suspicious pieces of evidence are found, the playbook executes soft
+  response actions, including signing the user out and deleting the forwarding email
+  address from the user account mailbox. The user will be notified of these actions
+  via email.\n- If more than two pieces of suspicious evidence are found, the playbook
+  will initiate hard response actions. These include disabling the user and removing
   the forwarding email address from their mailbox. The user will be notified of these
   actions via email.\n\nRequirements: \n\nFor any response action, you need the following
   integrations:\n- EWS Extension Online Powershell v3 integration.\n- Azure Active
