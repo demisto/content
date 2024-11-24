@@ -454,6 +454,7 @@ class Client(CoreClient):
             headers=self.headers,
             timeout=self.timeout,
         )
+        demisto.debug(f'after fetch: {reply=}')
         if ALERTS_LIMIT_PER_INCIDENTS < 0:
             ALERTS_LIMIT_PER_INCIDENTS = arg_to_number(reply.get('reply', {}).get('alerts_limit_per_incident')) or 50
             demisto.debug(f'Setting alerts limit per incident to {ALERTS_LIMIT_PER_INCIDENTS}')
@@ -1092,6 +1093,7 @@ def update_related_alerts(client: Client, args: dict):
 def fetch_incidents(client: Client, first_fetch_time, integration_instance, exclude_artifacts: bool, last_run: dict,
                     max_fetch: int = 10, statuses: list = [], starred: Optional[bool] = None,
                     starred_incidents_fetch_window: str = None, incident_wait: int = 5):
+    demisto.debug(f'{last_run=}')
     global ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time')
@@ -1107,9 +1109,12 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
         starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
 
     if incidents_from_previous_run:
+        demisto.debug('Using incidents from last run')
         raw_incidents = incidents_from_previous_run
         ALERTS_LIMIT_PER_INCIDENTS = last_run.get('alerts_limit_per_incident', -1)
+        demisto.debug(f'{ALERTS_LIMIT_PER_INCIDENTS=}')
     else:
+        demisto.debug('Fetching incidents')
         raw_incidents = client.get_multiple_incidents_extra_data(
             gte_creation_time_milliseconds=last_fetch,
             statuses=statuses, limit=max_fetch, starred=starred,
@@ -1117,10 +1122,6 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
             exclude_artifacts=exclude_artifacts, offset=offset,
             incident_wait=incident_wait
         )
-    if raw_incidents:
-        demisto.debug(f'after fetch: from; {raw_incidents[0].get("incident_id")}, to; {raw_incidents[-1].get("incident_id")}, amount; {len(raw_incidents)}')
-    else:
-        demisto.debug('no incidents pulled')
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
@@ -1182,7 +1183,7 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
 
     if non_created_incidents:
         next_run['alerts_limit_per_incident'] = ALERTS_LIMIT_PER_INCIDENTS  # type: ignore[assignment]
-
+    demisto.debug(f'{next_run=}')
     return next_run, incidents
 
 
