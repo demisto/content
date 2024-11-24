@@ -1,9 +1,4 @@
-
-#### Playbooks
-
-##### New: Endpoint initiated uncommon remote scheduled task creation
-
-New: This playbook handles "Uncommon remote scheduled task creation" alert, which is generated on the source host that created the remote scheduled task.
+This playbook handles "Uncommon remote scheduled task creation" alert, which is generated on the source host that created the remote scheduled task.
 
 Playbook Stages:
 
@@ -25,9 +20,46 @@ Remediation:
 - Automatically terminate the causality process.
 - Automatically close the alert.
 
+## Dependencies
 
-#### Triggers Recommendations
+This playbook uses the following sub-playbooks, integrations, and scripts.
 
-##### New: Endpoint initiated uncommon remote scheduled task creation
+### Sub-playbooks
 
-New: This trigger is responsible for handling 'Uncommon remote scheduled task creation' alerts.
+* Command-Line Analysis
+
+### Integrations
+
+* CortexCoreIR
+
+### Scripts
+
+* Print
+* SearchIncidentsV2
+* Set
+
+### Commands
+
+* core-get-process-analytics-prevalence
+* core-get-endpoints
+* core-get-cloud-original-alerts
+* core-run-script-execute-commands
+* closeInvestigation
+* core-get-script-execution-results
+* core-terminate-causality
+
+## Playbook Inputs
+
+---
+There are no inputs for this playbook.
+
+## Playbook Outputs
+
+---
+There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![Endpoint initiated uncommon remote scheduled task creation](../doc_files/Endpoint_initiated_uncommon_remote_scheduled_task_creation.png)
