@@ -622,15 +622,36 @@ def fetch_modified_incidents(client: Client, last_update_time) -> List[dict]:
             incident['mirrorRemoteId'] = incident.get('incidentId')
             incidents.append(incident)
         # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
-        if len(raw_incidents) < int(MAX_ENTRIES): #todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
+        if len(raw_incidents) < int(
+            MAX_ENTRIES):  #todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
             break
         offset += int(MAX_ENTRIES)
     return incidents
 
 
+MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON = {
+    'Not set': 'Resolved',
+    'True Positive': 'Resolved',
+    'False Positive': 'False Positive',
+    'Informational / Expected Activity': 'Resolved',
+}
+
+
 def handle_incoming_closing_incidents(incidents: List[dict]) -> List[dict]:
     #todo: check what will happen if runs on already closed incident -> in terms of the server
-    pass
+    closing_incidents_data = []
+    for incident in incidents:
+        if incident.get('status') == 'Resolved':
+            demisto.debug(
+                f"handle_incoming_closing_incidents for incident {incident.get('incidentId')}"
+            )
+            classification = incident.get('classification')
+            closing_incidents_data.append({
+                "dbotIncidentClose": True,
+                "closeReason": MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON.get(classification, 'Resolved'),
+                'mirrorRemoteId': incident.get('incidentId')
+            })
+    return closing_incidents_data
 
 
 def get_modified_remote_data_command(client: Client, close_incident: bool):
@@ -640,18 +661,19 @@ def get_modified_remote_data_command(client: Client, close_incident: bool):
     time_now = datetime.datetime.now(datetime.timezone.utc)
     try:
         modified_incidents = fetch_modified_incidents(client, last_update_utc)
+        closing_incidents_data = []
         if close_incident:
-            entries = handle_incoming_closing_incidents(modified_incidents)
+            closing_incidents_data = handle_incoming_closing_incidents(modified_incidents)
         set_last_mirror_run({"last_update": time_now.strftime(DATE_FORMAT)})
         #todo - handle incident reopen and closing
         #skip update: In case of a failure. In order to notify the server that the command failed and prevent execution of the get-remote-data commands, returns an error that contains the string "skip update".?
-        return GetModifiedRemoteDataResponse(modified_incidents_data=modified_incidents)
+        return GetModifiedRemoteDataResponse(modified_incidents_data=modified_incidents + closing_incidents_data)
     except Exception as e:
         demisto.debug(f"Error in Microsoft 365 defender incoming mirror \n"
                       f"Error message: {str(e)}")
-        if "Rate limit exceeded" in str(e): #todo - check if this is the correct error message + on the server side what does is expect to ger
+        if "Rate limit exceeded" in str(
+            e):  #todo - check if this is the correct error message + on the server side what does is expect to ger
             return_error("API rate limit")
-
 
 
 def update_remote_system_command(client: Client, args: dict):
