@@ -2594,10 +2594,10 @@ def test_create_messaging_endpoint_command(mocker, xsoar_server, is_xsoar_on_pre
 
 
 @pytest.mark.parametrize('engine_url, is_xsoar_on_prem, is_xsiam, expected_hr', [
-    ('https://my-engine.com:333', True, False, 'https://my-engine.com:333/instance/execute/teams'),
-    ('https://my-engine.com:333', False, False, 'https://my-engine.com:333/xsoar/instance/execute/teams'),
-    ('https://my-engine.com:333', False, True, 'https://my-engine.com:333/xsoar/instance/execute/teams'),
-    ('https://1.1.1.1:333', False, True, 'https://1.1.1.1:333/xsoar/instance/execute/teams')
+    ('https://my-engine.com:333', True, False, 'https://my-engine.com:333'),
+    ('https://my-engine.com:333', False, False, 'https://my-engine.com:333'),
+    ('https://my-engine.com:333', False, True, 'https://my-engine.com:333'),
+    ('https://1.1.1.1:333', False, True, 'https://1.1.1.1:333')
 ],
     ids=["Test xsoar 6 engine url",
          "Test xsoar 8 engine url",
@@ -2618,11 +2618,7 @@ def test_create_messaging_endpoint_command_for_xsoar_engine(mocker, engine_url, 
             3. xsiam
         4. The engine url include an IP and not a DNS name.
     Then:
-        Verify that the messaging endpoint was created as expected:
-        1. The 'instance/execute/teams' suffix was added to the engine url.
-        2. The 'xsoar/instance/execute/teams' suffix was added to the engine url.
-        3. The 'xsoar/instance/execute/teams' suffix was added to the engine url.
-        4. The 'xsoar/instance/execute/teams' suffix was added to the engine url.
+        Verify that the messaging endpoint was created as expected - only the engine url and port (without any suffix).
     """
     from MicrosoftTeams import create_messaging_endpoint_command
     import MicrosoftTeams

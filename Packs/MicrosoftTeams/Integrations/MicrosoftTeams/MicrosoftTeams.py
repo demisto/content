@@ -2843,13 +2843,13 @@ def create_messaging_endpoint_command():
 
     if is_xsoar_on_prem():
         if engine_url:  # user uses an engine
-            messaging_endpoint += urljoin(urljoin(engine_url, 'instance/execute'), instance_name)
+            messaging_endpoint += engine_url
         else:
             messaging_endpoint += urljoin(urljoin(xsoar_url, 'instance/execute'), instance_name)
 
     else:  # XSIAM or XSOAR SAAS
         if engine_url:  # user uses an engine
-            messaging_endpoint += urljoin(urljoin(engine_url, 'xsoar/instance/execute'), instance_name)
+            messaging_endpoint += engine_url
         else:
             # Add the 'ext-' prefix to the xsoar url
             if xsoar_url.startswith('http://'):
