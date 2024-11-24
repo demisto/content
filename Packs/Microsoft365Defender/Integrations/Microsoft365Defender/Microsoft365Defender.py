@@ -635,8 +635,6 @@ MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON = {
     'False Positive': 'False Positive',
     'Informational / Expected Activity': 'Resolved',
 }
-
-
 def handle_incoming_closing_incidents(incidents: List[dict]) -> List[dict]:
     #todo: check what will happen if runs on already closed incident -> in terms of the server
     closing_incidents_data = []
