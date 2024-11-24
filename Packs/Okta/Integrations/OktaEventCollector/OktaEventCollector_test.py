@@ -3,7 +3,7 @@ import dateutil.parser._parser
 import pytest
 from freezegun import freeze_time
 from OktaEventCollector import Client, DemistoException, fetch_events, get_events_command, get_last_run, main, remove_duplicates
-
+import requests_mock
 import demistomock as demisto
 
 
@@ -168,7 +168,7 @@ def test_fetch_event(dummy_client, mocker):
 
 
 @freeze_time('2022-04-17T12:32:36.667Z')
-def test_429_too_many_requests(mocker, requests_mock):
+def test_429_too_many_requests(mocker):
 
     mock_events = [
         {
@@ -188,16 +188,6 @@ def test_429_too_many_requests(mocker, requests_mock):
             'published': '2022-04-17T14:00:03.000Z'
         }
     ]
-    requests_mock.get(
-        'https://testurl.com/api/v1/logs?since=2022-04-17T12%3A32%3A36.667000%2B00%3A00&sortOrder=ASCENDING&limit=5',
-        json=mock_events)
-    requests_mock.get('https://testurl.com/api/v1/logs?since=2022-04-17T14%3A00%3A03.000Z&sortOrder=ASCENDING&limit=5',
-                      status_code=429,
-                      reason='Too many requests',
-                      headers={
-                          'x-rate-limit-remaining': '0',
-                          'x-rate-limit-reset': '1698343702',
-                      })
 
     mocker.patch.object(demisto, 'command', return_value='fetch-events')
     mocker.patch.object(demisto, 'getLastRun', return_value={})
@@ -213,13 +203,25 @@ def test_429_too_many_requests(mocker, requests_mock):
     })
     send_events_to_xsiam_mock = mocker.patch('OktaEventCollector.send_events_to_xsiam', return_value={})
 
-    main()
+    with requests_mock.Mocker() as m:
+        m.get(
+            'https://testurl.com/api/v1/logs?since=2022-04-17T12%3A32%3A36.667000%2B00%3A00&sortOrder=ASCENDING&limit=5',
+            json=mock_events)
+        m.get('https://testurl.com/api/v1/logs?since=2022-04-17T14%3A00%3A03.000Z&sortOrder=ASCENDING&limit=5',
+              status_code=429,
+              reason='Too many requests',
+              headers={
+                  'x-rate-limit-remaining': '0',
+                  'x-rate-limit-reset': '1698343702',
+              })
+
+        main()
 
     send_events_to_xsiam_mock.assert_called_once_with(mock_events, vendor='okta', product='okta')
 
 
 @freeze_time('2022-04-17T12:32:36.667Z')
-def test_okta_get_events(mocker, requests_mock):
+def test_okta_get_events(mocker):
 
     mock_events = [
         {
@@ -239,10 +241,6 @@ def test_okta_get_events(mocker, requests_mock):
             'published': '2022-04-17T14:00:03.000Z'
         }
     ]
-    requests_mock.get(
-        'https://testurl.com/api/v1/logs?sortOrder=ASCENDING&since=2022-04-16T15%3A32%3A36.667000&limit=5',
-        json=mock_events)
-
     mocker.patch.object(demisto, 'command', return_value='okta-get-events')
     mocker.patch.object(demisto, 'getLastRun', return_value={})
     mocker.patch.object(demisto, 'args', return_value={
@@ -260,7 +258,10 @@ def test_okta_get_events(mocker, requests_mock):
         'verify': False
     })
     send_events_to_xsiam_mock = mocker.patch('OktaEventCollector.send_events_to_xsiam', return_value={})
-
-    main()
+    with requests_mock.Mocker() as m:
+        m.get(
+            'https://testurl.com/api/v1/logs?sortOrder=ASCENDING&since=2022-04-16T12%3A32%3A36.667000&limit=5',
+            json=mock_events)
+        main()
 
     send_events_to_xsiam_mock.assert_called_once_with(mock_events, vendor='okta', product='okta')
