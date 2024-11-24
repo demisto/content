@@ -16,15 +16,15 @@ description: |-
   
   During the alert investigation, the playbook will perform the following:
 
-  - Searches for related XSIAM alerts on the endpoint that use the following MITRE techniques to identify malicious activity: T1202 - Indirect Command Execution, T1021 - Remote Services.
-  - Searches for related XSIAM agent alerts on the remote endpoint, to determine if the creation of the scheduled task is part of an attack pattern.
+  - Searches for related Cortex XSIAM alerts on the endpoint that use the following MITRE techniques to identify malicious activity: T1202 - Indirect Command Execution, T1021 - Remote Services.
+  - Searches for related Cortex XSIAM agent alerts on the remote endpoint, to determine if the creation of the scheduled task is part of an attack pattern.
   - Searches for suspicious command-line parameters indicating a malicious scheduled task.
 
   Remediation:
 
   - Automatically disable the malicious scheduled task on the remote host.
   - Terminate the causality process.
-  - Automatically Close the alert.
+  - Automatically close the alert.
 tags:
 - TA0002 - Execution
 - T1053 - Scheduled Task/Job
@@ -809,7 +809,7 @@ tasks:
       id: e2846c17-8044-43e0-881e-17219cfa784c
       version: -1
       name: Notify to War Room - Scheduled Task Disabled
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to War Room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -1015,7 +1015,7 @@ tasks:
       id: 4be27c4b-ad83-46b4-868b-795a35647cd0
       version: -1
       name: Get remote endpoint details
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of the endpoint from the start of the result set (start by counting from 0).
       script: '|||core-get-endpoints'
       type: regular
       iscommand: true
@@ -1050,7 +1050,7 @@ tasks:
       id: a2bad801-d912-45ec-8ac6-5ece49400caa
       version: -1
       name: Is the XSIAM agent installed on the remote endpoint?
-      description: Checks whether the XSIAM agent is installed on the remote endpoint.
+      description: Checks whether the Cortex XSIAM agent is installed on the remote endpoint.
       type: condition
       iscommand: false
       brand: ""
@@ -1091,7 +1091,7 @@ tasks:
       id: 36164015-8f07-4e5b-873d-024f66adb228
       version: -1
       name: Is the XSIAM agent install and connected on the remote endpoint?
-      description: Checks whether the XSIAM agent is installed and connected on the remote endpoint.
+      description: Checks whether the Cortex XSIAM agent is installed and connected on the remote endpoint.
       type: condition
       iscommand: false
       brand: ""
