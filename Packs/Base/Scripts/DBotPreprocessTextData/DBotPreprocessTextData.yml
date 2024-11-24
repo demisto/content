@@ -108,3 +108,4 @@ dockerimage: demisto/ml:1.0.0.105874
 tests:
 - Create Phishing Classifier V2 ML Test
 fromversion: 5.0.0
+autoUpdateDockerImage: false
