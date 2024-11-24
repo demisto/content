@@ -2,7 +2,7 @@
     "name": "XSOAR - Simple Dev to Prod",
     "description": "This pack simplifies exporting custom content items between your XSOAR environments.",
     "support": "community",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.8",
     "author": "Mike Beauchamp",
     "url": "",
     "email": "mbeauchamp@paloaltonetworks.com",
