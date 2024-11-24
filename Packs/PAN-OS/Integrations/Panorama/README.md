@@ -9375,7 +9375,7 @@ Create a default master key that encrypts all the private keys and passwords in 
 
 
 #### Command example
-```!pan-os-create-master-key master_key="Ah3zLmSv9Z7XuDV5" lifetime_in_hours=2160 reminder_in_hours=1992```
+```!pan-os-create-master-key master_key="MyFakeMasterKey1" lifetime_in_hours=2160 reminder_in_hours=1992```
 
 #### Context Output
 
@@ -9405,7 +9405,7 @@ Update the default master key that encrypts all the private keys and passwords i
 
 
 #### Command example
-```!pan-os-update-master-key current_master_key="Ah3zLmSv9Z7XuDV5" new_master_key="QXPa4WCS3TDYHquA" lifetime_in_hours=2160 reminder_in_hours=1992```
+```!pan-os-update-master-key current_master_key="MyFakeMasterKey1" new_master_key="MyFakeMasterKey2" lifetime_in_hours=2160 reminder_in_hours=1992```
 
 #### Context Output
 

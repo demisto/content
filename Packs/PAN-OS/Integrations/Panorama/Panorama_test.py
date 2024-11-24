@@ -7963,8 +7963,8 @@ def test_build_master_key_create_or_update_cmd():
 
     # Set
     args = {
-        'current_master_key': 'Ah3zLmSv9Z7XuDV5',
-        'new_master_key': 'QXPa4WCS3TDYHquA',
+        'current_master_key': 'MyFakeMasterKey1',
+        'new_master_key': 'MyFakeMasterKey2',
         'lifetime_in_hours': '2160',
         'reminder_in_hours': '1992',
     }
@@ -7974,8 +7974,8 @@ def test_build_master_key_create_or_update_cmd():
     # Assert
     assert cmd == (
         '<request><master-key><lifetime>2160</lifetime><reminder>1992</reminder>'
-        '<new-master-key>QXPa4WCS3TDYHquA</new-master-key>'
-        '<current-master-key>Ah3zLmSv9Z7XuDV5</current-master-key>'
+        '<new-master-key>MyFakeMasterKey2</new-master-key>'
+        '<current-master-key>MyFakeMasterKey1</current-master-key>'
         '<on-hsm>no</on-hsm></master-key></request>'
     )
 
@@ -7995,7 +7995,7 @@ def test_pan_os_create_master_key_command(requests_mock: RequestsMock):
     import Panorama
 
     # Set
-    args = {'master_key': 'Ah3zLmSv9Z7XuDV5', 'lifetime_in_hours': '2160', 'reminder_in_hours': '1992'}
+    args = {'master_key': 'MyFakeMasterKey1', 'lifetime_in_hours': '2160', 'reminder_in_hours': '1992'}
     Panorama.URL = 'https://1.1.1.1:443/api/'
 
     xml_root = load_xml_root_from_test_file('test_data/create_master_key.xml')
