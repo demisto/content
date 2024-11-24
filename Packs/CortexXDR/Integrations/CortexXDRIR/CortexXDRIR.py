@@ -1019,20 +1019,17 @@ def update_remote_system_command(client, args):
                 demisto.debug(
                     f'For incident ID: {parsed_args.remote_incident_id} got the following delta keys {str(list(parsed_args.delta.keys()))} to update.')
                 xsoar_to_xdr_delta = get_update_args(parsed_args)
-                demisto.debug(f"update_remote_system_command: After calling get_update_args, {xsoar_to_xdr_delta=}")
+                demisto.debug(f"update_remote_system_command: After returning from get_update_args, {xsoar_to_xdr_delta=}")
                 xsoar_to_xdr_delta['incident_id'] = parsed_args.remote_incident_id
 
                 should_close_xdr_incident = argToBoolean(client._params.get("close_xdr_incident", True))
-                demisto.debug(f"update_remote_system_command: {should_close_xdr_incident=}")  # TODO: remove
                 if not should_close_xdr_incident:
                     demisto.debug(f"Reverting to previous status {parsed_args.data.get('status')} , {xsoar_to_xdr_delta=}")
                     xsoar_to_xdr_delta['status'] = parsed_args.data.get('status')
 
                 update_incident_command(client, xsoar_to_xdr_delta)  # updating xdr with the delta
-                demisto.debug(f"update_remote_system_command: xdr updated. {xsoar_to_xdr_delta=}")  # TODO: remove
 
                 should_close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
-                demisto.debug(f"update_remote_system_command: aaa {should_close_alerts_in_xdr=}, {xsoar_to_xdr_delta=}")  # TODO: remove
 
                 if should_close_alerts_in_xdr and xsoar_to_xdr_delta.get('status') in XDR_RESOLVED_STATUS_TO_XSOAR:
                     update_related_alerts(client, xsoar_to_xdr_delta)
@@ -1041,14 +1038,12 @@ def update_remote_system_command(client, args):
         else:
             demisto.debug(f'Skipping updating remote incident fields [{parsed_args.remote_incident_id}] '
                           f'as it is not new nor changed')
-        demisto.debug("update_remote_system_command returning regular")  # TODO: remove
         return parsed_args.remote_incident_id
 
     except Exception as e:
         demisto.debug(f"Error in outgoing mirror for incident {parsed_args.remote_incident_id} \n"
                       f"Error message: {str(e)}")
 
-        demisto.debug("update_remote_system_command returning from exception")  # TODO: remove
         return parsed_args.remote_incident_id
 
 

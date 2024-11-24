@@ -3110,15 +3110,11 @@ def handle_outgoing_issue_closure(parsed_args: UpdateRemoteSystemArgs):
                      next((parsed_args.data.get(key) for key in close_reason_fields if parsed_args.data.get(key)), None))
     demisto.debug(f"handle_outgoing_issue_closure: incident_id: {parsed_args.remote_incident_id} {closed_reason=}")
     remote_xdr_status = parsed_args.data.get('status') if parsed_args.data else None
-    demisto.debug(f"handle_outgoing_issue_closure {remote_xdr_status=}")  # TODO: remove
     if parsed_args.inc_status == IncidentStatus.DONE and closed_reason and remote_xdr_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
-        demisto.debug(f"itamar - in handle_outgoing_issue_closure inside first if")  # TODO: remove
         if close_notes := parsed_args.delta.get('closeNotes'):
-            demisto.debug(f"itamar - in handle_outgoing_issue_closure inside second if")  # TODO: remove
             demisto.debug(f"handle_outgoing_issue_closure: incident_id: {parsed_args.remote_incident_id} {close_notes=}")
             parsed_args.delta['resolve_comment'] = close_notes
 
-        demisto.debug(f"itamar - calling resolve_xdr_close_reason {parsed_args.delta=}, {closed_reason=}")  # TODO: remove
         parsed_args.delta['status'] = resolve_xdr_close_reason(closed_reason)
         demisto.debug(f"handle_outgoing_issue_closure Closing Remote incident ID: {parsed_args.remote_incident_id} with status {parsed_args.delta['status']}")
 
