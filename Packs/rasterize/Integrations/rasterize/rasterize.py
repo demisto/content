@@ -1009,7 +1009,6 @@ def rasterize_email_command():  # pragma: no cover
 
             res = fileResult(filename=file_name, data=rasterize_output[0][0])
     except Exception as err:
-        tf.close()
         demisto.error(str(err))
         return_error(f'Failed to rasterize email: {err}')
 
