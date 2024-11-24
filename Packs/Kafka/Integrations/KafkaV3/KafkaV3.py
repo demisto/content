@@ -279,7 +279,7 @@ class KafkaCommunicator:
                                    on_delivery=self.delivery_report)
         kafka_producer.flush()
 
-    def consume(self, topic: str, partition: int = -1, offset: str = '0') -> Message:
+    def consume(self, poll_timeout: float, topic: str, partition: int = -1, offset: str = '0') -> Message:
         """Consume a message from kafka
 
         Args:
@@ -291,8 +291,8 @@ class KafkaCommunicator:
         """
         kafka_consumer = self.get_kafka_consumer()
         kafka_consumer.assign(self.get_topic_partitions(topic, partition, offset, True))
-        polled_msg = kafka_consumer.poll(self.POLL_TIMEOUT)
-        demisto.debug(f"polled {polled_msg}")
+        polled_msg = kafka_consumer.poll(poll_timeout)
+        demisto.debug(f"polled {polled_msg} with {poll_timeout=}")
         kafka_consumer.close()
         return polled_msg
 
@@ -606,7 +606,8 @@ def consume_message(kafka: KafkaCommunicator, demisto_args: dict) -> CommandResu
     partition = int(demisto_args.get('partition', -1))
     offset = demisto_args.get('offset', '0')
 
-    message = kafka.consume(topic=topic, partition=partition, offset=offset)
+    message = kafka.consume(float(demisto_args.get('poll_timeout') or kafka.POLL_TIMEOUT),
+                            topic=topic, partition=partition, offset=offset)
     if not message:
         return 'No message was consumed.'
     else:
