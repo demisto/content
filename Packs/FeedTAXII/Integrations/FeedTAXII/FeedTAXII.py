@@ -139,12 +139,13 @@ class FileObject:
             if value is None:
                 continue
             value = value.string.lower()
-
-            result.append({
-                'indicator': value,
-                'htype': htype,
-                'type': 'File'
-            })
+            file_list = value.split('##comma##')
+            for file in file_list:
+                result.append({
+                    'indicator': file,
+                    'htype': htype,
+                    'type': 'File'
+                })
 
         for r in result:
             for r2 in result:
