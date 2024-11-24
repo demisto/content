@@ -214,7 +214,7 @@ def handle_file_type_fields(raw_type: str, indicator_obj: Dict[str, Any]) -> Non
     indicator_obj['fields'][raw_type.upper()] = hash_value
 
 
-def build_params_dict(tags: List[str], attribute_type: List[str], limit: int, page: int, from_timestamp: str | None = None
+def build_params_dict(tags: List[str], attribute_type: List[str], limit: int, page: int, from_timestamp: Optional[int] = None
                       ) -> Dict[str, Any]:
     """
     Creates a dictionary in the format required by MISP to be used as a query.
@@ -235,11 +235,11 @@ def build_params_dict(tags: List[str], attribute_type: List[str], limit: int, pa
         'page': page
     }
     if from_timestamp:
-        params['attribute_timestamp'] = from_timestamp
+        params['attribute_timestamp'] = str(from_timestamp)
     return params
 
 
-def parsing_user_query(query: str, limit: int, page: int = 1, from_timestamp: str | None = None) -> Dict[str, Any]:
+def parsing_user_query(query: str, limit: int, page: int = 1, from_timestamp: Optional[int] | None = None) -> Dict[str, Any]:
     """
     Parsing the query string created by the user by adding necessary argument and removing unnecessary arguments
     Args:
@@ -256,7 +256,7 @@ def parsing_user_query(query: str, limit: int, page: int = 1, from_timestamp: st
         if params.get("timestamp"):
             params['attribute_timestamp'] = params.pop("timestamp")
         if from_timestamp:
-            params['attribute_timestamp'] = from_timestamp
+            params['attribute_timestamp'] = str(from_timestamp)
     except Exception as err:
         demisto.debug(str(err))
         raise DemistoException(f'Could not parse user query. \nError massage: {err}')
@@ -512,7 +512,8 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     )
 
 
-def update_candidate(last_run: dict, last_run_timestamp: str, latest_indicator_timestamp: str, latest_indicator_value: str):
+def update_candidate(last_run: dict, last_run_timestamp: Optional[int], latest_indicator_timestamp: Optional[int],
+                     latest_indicator_value: str):
     """
     Update the candidate timestamp and value based on the latest and last run values.
 
@@ -523,7 +524,8 @@ def update_candidate(last_run: dict, last_run_timestamp: str, latest_indicator_t
         latest_indicator_value: the value of the latest indicator.
     """
     candidate_timestamp = last_run.get('candidate_timestamp') or last_run_timestamp
-    if latest_indicator_timestamp > candidate_timestamp:
+    if (not candidate_timestamp
+            or (latest_indicator_timestamp and latest_indicator_timestamp > candidate_timestamp)):
         last_run['candidate_timestamp'] = latest_indicator_timestamp
         last_run['candidate_value'] = latest_indicator_value
 
@@ -546,7 +548,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     last_run = demisto.getLastRun()
     total_fetched_indicators = 0
     query = params.get('query', None)
-    last_run_timestamp = last_run.get('last_indicator_timestamp') or ""
+    last_run_timestamp = arg_to_number(last_run.get('last_indicator_timestamp'))
     last_run_page = last_run.get('page') or 1
     last_run_value = last_run.get('last_indicator_value') or ""
     params_dict = parsing_user_query(query, LIMIT, from_timestamp=last_run_timestamp) if query else \
@@ -565,7 +567,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
 
         total_fetched_indicators += len(indicators)
         latest_indicator = search_query_per_page['response']['Attribute']
-        latest_indicator_timestamp = latest_indicator[-1]['timestamp']
+        latest_indicator_timestamp = arg_to_number(latest_indicator[-1]['timestamp'])
         latest_indicator_value = latest_indicator[-1]['value']
 
         if last_run_timestamp == latest_indicator_timestamp and latest_indicator_value == last_run_value:
