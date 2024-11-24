@@ -3241,10 +3241,11 @@ class Common(object):
                      malware_family=None, relationships=None, blocked=None, description=None, stix_id=None,
                      whois_records=None, organization_prevalence=None,
                      global_prevalence=None, organization_first_seen=None, organization_last_seen=None,
-                     first_seen_by_source=None, last_seen_by_source=None):
+                     first_seen_by_source=None, last_seen_by_source=None, ip_type="IP"):
 
             # Main value of the indicator
             self.ip = ip
+            self.ip_type = ip_type
 
             # Core custom fields - IP
             self.blocked = blocked
@@ -3429,8 +3430,14 @@ class Common(object):
                                          relationship.to_context()]
                 ip_context['Relationships'] = relationships_context
 
+            if self.ip_type == "IP":
+                context_path = Common.IP.CONTEXT_PATH
+
+            elif self.ip_type == "IPv6":
+                context_path = Common.IP.CONTEXT_PATH.replace("IP", "IPv6")
+
             ret_value = {
-                Common.IP.CONTEXT_PATH: ip_context
+                context_path: ip_context
             }
 
             if self.dbot_score:
