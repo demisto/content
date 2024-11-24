@@ -89,9 +89,10 @@ class DomainNameObject:
         raw_domain = props.find('Value')
         if raw_domain is None or raw_domain.string is None:
             return []
+        raw_domain = raw_domain.string.encode('ascii', 'replace').decode()
         domains_list = raw_domain.split('##comma##')
         return [{
-            'indicator': domain.string.encode('ascii', 'replace').decode(),
+            'indicator': domain,
             'type': 'Domain'
         } for domain in domains_list]
 
@@ -178,9 +179,10 @@ class URIObject:
         raw_url = props.find('Value')
         if raw_url is None or raw_url.string is None:
             return []
+        raw_url = raw_url.string.encode('utf8', 'replace').decode()
         urls_list = raw_url.split('##comma##')
         return [{
-            'indicator': url.string.encode('utf8', 'replace').decode(),
+            'indicator': url,
             'type': type_
         } for url in urls_list]
 
@@ -246,9 +248,10 @@ class HTTPSessionObject:
                     if http_request_header is not None:
                         raw_header = http_request_header.get('raw_header', None)
                         if raw_header is not None:
+                            raw_header = raw_header.split('\n')[0]
                             headers_list = raw_header.split('##comma##')
                             return [{
-                                'indicator': header.split('\n')[0],
+                                'indicator': header,
                                 'type': 'http-session',  # we don't support this type natively in demisto
                                 'header': header
                             } for header in headers_list]
@@ -511,7 +514,7 @@ class TAXIIClient:
     def __init__(self, insecure: bool = True, polling_timeout: int = 20, initial_interval: str = '1 day',
                  discovery_service: str = '', poll_service: str = None, collection: str = None,
                  credentials: dict = None, creds_certificate: dict = {}, cert_text: str = None, key_text: str = None,
-                 feedTags: str = None, tlp_color: str | None = None, enrichmentExcluded: bool = False, **kwargs):
+                 feedTags: str = None, tlp_color: str = None, enrichmentExcluded: bool = False, **kwargs):
         """
         TAXII Client
         :param insecure: Set to true to ignore https certificate
