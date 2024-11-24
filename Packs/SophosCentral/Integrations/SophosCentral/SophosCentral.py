@@ -3312,7 +3312,6 @@ def fetch_incidents(
         None,
         max_fetch,
     )
-    demisto.debug(f"Alerts fetched: {alerts}")
     data_fields = [
         "id",
         "description",
