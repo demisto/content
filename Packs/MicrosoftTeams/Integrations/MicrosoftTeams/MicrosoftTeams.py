@@ -2825,7 +2825,7 @@ def create_messaging_endpoint_command():
 
     The messaging endpoint should be added to the Demisto bot configuration in Microsoft Teams as part of the Prerequisites of
     the integration's set-up.
-    Link to documentation: https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#create-the-demisto-bot-in-microsoft-teams
+    Link to documentation: https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#1-using-cortex-xsoar-or-cortex-xsiam-rerouting
     """
     server_address = ''
     messaging_endpoint = ''
