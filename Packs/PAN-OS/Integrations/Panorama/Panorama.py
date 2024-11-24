@@ -14964,7 +14964,7 @@ def main():  # pragma: no cover
         reliability = params.get('integrationReliability')
         initialize_instance(args=args, params=params)
         command = demisto.command()
-        LOG(f'Command being called is: {command}')
+        LOG(f'Command being called is: {command}.')
 
         # Remove proxy if not set to true in params
         handle_proxy()
