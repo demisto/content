@@ -137,7 +137,7 @@ script:
     - contextPath: Circl.Top
       description: The top 100 of most queried values.
       type: string
-  dockerimage: demisto/python3:3.10.14.99865
+  dockerimage: demisto/python3:3.11.10.116949
   script: ''
   subtype: python3
   type: python

@@ -204,7 +204,7 @@ script:
       - 'false'
       description: Set pin status to true or false.
     description: Set the pinned status of a document embedding.
-  dockerimage: demisto/python3:3.11.9.104657
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   subtype: python3
 fromversion: 6.10.0
