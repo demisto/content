@@ -359,19 +359,19 @@ script:
     - contextPath: VisionOne.Endpoint_Info.installed_product_codes
       description: Product code of the Trend Micro product installed on the endpoint.
       type: string
-    - contextPath: VisionOne.Endpoint_Info.componentUpdatePolicy
+    - contextPath: VisionOne.Endpoint_Info.component_update_policy
       description: The update policy for the module/pattern of the agent installed on the endpoint.
       type: string
-    - contextPath: VisionOne.Endpoint_Info.componentUpdateStatus
+    - contextPath: VisionOne.Endpoint_Info.component_update_status
       description: The status of the module/pattern updates of the agent installed on the endpoint.
       type: string
-    - contextPath: VisionOne.Endpoint_Info.componentVersion
+    - contextPath: VisionOne.Endpoint_Info.component_version
       description: The agent component version.
       type: string
-    - contextPath: VisionOne.Endpoint_Info.policyName
+    - contextPath: VisionOne.Endpoint_Info.policy_name
       description: The name of a policy for an event.
       type: string
-    - contextPath: VisionOne.Endpoint_Info.protectionManager
+    - contextPath: VisionOne.Endpoint_Info.protection_manager
       description: The name of your protection manager.
       type: string
   - arguments:
@@ -1236,7 +1236,7 @@ script:
       - closed
     - description: The status of an investigation, this field is deprecated. e.g. inv_status="in_progress".
       name: inv_status
-      required: true
+      required: false
       auto: PREDEFINED
       predefined:
       - new
@@ -1247,7 +1247,7 @@ script:
       - benign_true_positive
     - description: The findings of a case or investigation. e.g. inv_result="true_positive".
       name: inv_result
-      required: true
+      required: false
       auto: PREDEFINED
       predefined:
       - no_findings
