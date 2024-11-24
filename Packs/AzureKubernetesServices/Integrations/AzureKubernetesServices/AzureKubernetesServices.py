@@ -11,7 +11,7 @@ urllib3.disable_warnings()
 API_VERSION = '2023-02-01'
 PREFIX_URL = 'https://management.azure.com/subscriptions/'
 
-#Cortex XSOAR Azure Cloud hello
+
 class AKSClient:
     def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool,
                  tenant_id: str = None,
