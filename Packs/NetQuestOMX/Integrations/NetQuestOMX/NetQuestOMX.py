@@ -136,13 +136,13 @@ class Client(BaseClient):
     def metering_stats_request(self, slot_number: str, port_number: str) -> dict[str, Any]:
         try:
             metering_stats_event = self._http_request(
-                    method="GET",
-                    url_suffix=f"/api/Systems/Slot/{slot_number}/Ipfix/Status/Metering",
-                    ok_codes=(200,)
-                )
+                method="GET",
+                url_suffix=f"/api/Systems/Slot/{slot_number}/Ipfix/Status/Metering",
+                ok_codes=(200,)
+            )
         except Exception as e:
             raise DemistoException(
-                f"An error was occurred when requesting for an event of MeteringStats type."
+                "An error was occurred when requesting for an event of Metering Stats type."
             ) from e
 
         metering_stats_event["STAT_TYPE"] = 'MeteringStats'
@@ -152,13 +152,13 @@ class Client(BaseClient):
     def export_stats_request(self, slot_number: str, port_number: str) -> dict[str, Any]:
         try:
             export_stats_event = self._http_request(
-                    method="GET",
-                    url_suffix=f"/api/Systems/Slot/{slot_number}/Ipfix/Status/Export",
-                    ok_codes=(200,)
-                )
+                method="GET",
+                url_suffix=f"/api/Systems/Slot/{slot_number}/Ipfix/Status/Export",
+                ok_codes=(200,)
+            )
         except Exception as e:
             raise DemistoException(
-                f"An error was occurred when requesting for an event of MeteringStats type."
+                "An error was occurred when requesting for an event of Export Stats type."
             ) from e
 
         export_stats_event["STAT_TYPE"] = 'ExportStats'
@@ -168,13 +168,13 @@ class Client(BaseClient):
     def export_peaks_fks_request(self, slot_number: str, port_number: str) -> dict[str, Any]:
         try:
             export_peaks_fks_event = self._http_request(
-                    method="GET",
-                    url_suffix=f"/api/Systems/Slot/{slot_number}/Ipfix/Status/ExportHwm",
-                    ok_codes=(200,)
-                )
+                method="GET",
+                url_suffix=f"/api/Systems/Slot/{slot_number}/Ipfix/Status/ExportHwm",
+                ok_codes=(200,)
+            )
         except Exception as e:
             raise DemistoException(
-                f"An error was occurred when requesting for an event of MeteringStats type."
+                "An error was occurred when requesting for an event of Export Peaks FKS type."
             ) from e
 
         export_peaks_fks_event["STAT_TYPE"] = 'ExportPeakFPS'
@@ -184,16 +184,16 @@ class Client(BaseClient):
     def optimization_stats_request(self, slot_number: str, port_number: str) -> dict[str, Any]:
         try:
             optimization_stats_event = self._http_request(
-                    method="GET",
-                    url_suffix=f"/api/Systems/Slot/{slot_number}/Port/{port_number}/EthernetInterfaces/Status/EthRxTx",
-                    ok_codes=(200,)
-                )
+                method="GET",
+                url_suffix=f"/api/Systems/Slot/{slot_number}/Port/{port_number}/EthernetInterfaces/Status/EthRxTx",
+                ok_codes=(200,)
+            )
         except Exception as e:
             raise DemistoException(
-                f"An error was occurred when requesting for an event of MeteringStats type."
+                "An error was occurred when requesting for an event of Optimization Stats type."
             ) from e
 
-        optimization_stats_event["STAT_TYPE"] = 'Optimization Stats'
+        optimization_stats_event["STAT_TYPE"] = 'OptimizationStats'
 
         return optimization_stats_event
 
@@ -418,7 +418,7 @@ def main() -> None:
                 slot_number=params.get["slot"],  # a required param
                 port_number=params["port"],  # a required param
                 statistic_types_to_fetch=argToList(params.get("statistic_types_to_fetch", []))
-                )
+            )
 
             add_time_to_events(events)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
