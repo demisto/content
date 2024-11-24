@@ -1,21 +1,17 @@
 You can use this integration to automate different Camlytics surveillance analysis actions.
 This integration was integrated and tested with version 2.2.5 of Camlytics.
 
-## Configure Camlytics on Cortex XSOAR
+## Configure Camlytics in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Camlytics.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL | True |
+| Use system proxy settings | False |
+| Trust any certificate (not secure) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### camlytics-get-channels
 ***
@@ -445,4 +441,3 @@ Retrieve video analytics events ordered by event id.
 >| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 |  | 77 | 5 | Vehicle |  | -1 |  |  | 2022-01-19T16:22:32.8100000 | 4.213 | ObjectAppear | Test Video.mp4 | 2022-01-19T16:21:14.2130000 |
 >| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 |  | 78 | 4 | Vehicle |  | -1 |  |  | 2022-01-19T16:22:32.1430000 | 3.545 | ObjectAppear | Test Video.mp4 | 2022-01-19T16:21:13.5470000 |
 >| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 |  | 79 | 1 | Unknown |  | -1 |  |  | 2022-01-19T16:22:33.8930000 | 5.589 | ObjectDisappear | Test Video.mp4 | 2022-01-19T16:21:15.5900000 |
-
