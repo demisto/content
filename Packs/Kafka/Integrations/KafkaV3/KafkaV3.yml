@@ -132,6 +132,9 @@ script:
       name: offset
     - description: Partition (number).
       name: partition
+    - description: Poll timeout to consume a message.
+      name: poll_timeout
+      defaultValue: 1.0
     description: Consumes a single Kafka message.
     name: kafka-consume-msg
     outputs:
