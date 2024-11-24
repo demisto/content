@@ -37,7 +37,7 @@ This integration was integrated and tested with versions 8.xx, 9.xx, and 10.xx o
 
 ## Known Limitations
 * Maximum commit queue length is 3. Running numerous Panorama commands simultaneously might cause errors.
-* After you run `panorama-create-` commands and the object is not committed, the `panorama-edit` commands or `panorama-get` commands might not run correctly.
+* After running `panorama-create-` commands and the object is not committed, the `panorama-edit` commands or `panorama-get` commands might not run correctly.
 * URL Filtering `request change` of a URL is not available via the API. Instead, you need to use the https://urlfiltering.paloaltonetworks.com website.
 * If you do not specify a vsys (Firewall instances) or a device group (Panorama instances), you will only be able to execute the following commands.
    * [pan-os-get-url-category](#pan-os-get-url-category)
@@ -48,7 +48,11 @@ This integration was integrated and tested with versions 8.xx, 9.xx, and 10.xx o
    * [pan-os-query-logs](#pan-os-query-logs)
    * [pan-os-check-logs-status](#pan-os-check-logs-status)
    * [pan-os-get-logs](#pan-os-get-logs)
+   * [pan-os-get-master-key-details](#pan-os-get-master-key-details)
+   * [pan-os-create-master-key](#pan-os-create-master-key)
+   * [pan-os-update-master-key](#pan-os-update-master-key)
 * The target argument is supported only in operational type commands. Meaning, you cannot use it with commit, logs, or PCAP commands.
+* After running the `pan-os-create-master-key` or `pan-os-update-master-key` command, the current API key will become invalid and a new one needs to be obtained. Refer to the [documentation on how to get an API key](https://docs.paloaltonetworks.com/pan-os/11-0/pan-os-panorama-api/get-started-with-the-pan-os-xml-api/get-your-api-key).
 
 ## Fetch Incidents
 The Panorama integration now supports fetch incidents.
@@ -9373,6 +9377,9 @@ Create a default master key that encrypts all the private keys and passwords in 
 | lifetime_in_hours | The lifetime of the key in hours. | Required |
 | reminder_in_hours | The time to be notified of the key's expiration in hours. | Required |
 
+#### Limitations
+
+Running this command invalidates the current API key and requires obtaining a new one. Subsequent commands would return an "Invalid Credentials" error until the API key is updated in the configuration of the integration instance. Refer to the [documentation on how to get an API key](https://docs.paloaltonetworks.com/pan-os/11-0/pan-os-panorama-api/get-started-with-the-pan-os-xml-api/get-your-api-key).
 
 #### Command example
 ```!pan-os-create-master-key master_key="MyFakeMasterKey1" lifetime_in_hours=2160 reminder_in_hours=1992```
@@ -9403,6 +9410,9 @@ Update the default master key that encrypts all the private keys and passwords i
 | lifetime_in_hours | The lifetime of the key in hours. | Required |
 | reminder_in_hours | The time to be notified of the key's expiration in hours. | Required |
 
+#### Limitations
+
+Running this command invalidates the current API key and requires obtaining a new one. Subsequent commands would return an "Invalid Credentials" error until the API key is updated in the configuration of the integration instance. Refer to the [documentation on how to get an API key](https://docs.paloaltonetworks.com/pan-os/11-0/pan-os-panorama-api/get-started-with-the-pan-os-xml-api/get-your-api-key).
 
 #### Command example
 ```!pan-os-update-master-key current_master_key="MyFakeMasterKey1" new_master_key="MyFakeMasterKey2" lifetime_in_hours=2160 reminder_in_hours=1992```
