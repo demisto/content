@@ -15,7 +15,7 @@ Exchange Web Services and Office 365 Email sender.
     | proxy | Use system proxy settings | False |
     | impersonation | Has impersonation rights | False |
     | mailbox | Sender Mailbox | False |
-    | Single engine | If relevant, select the engine that acts as a proxy to the server. Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc.  that prevent the Cortex XSOAR server from accessing the remote networks. For more information on Cortex XSOAR engines see: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Engines| False |
+    | Single engine | If relevant, select the engine that acts as a proxy to the server. Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc.  that prevent the Cortex XSOAR server from accessing the remote networks. For more information on Cortex XSOAR engines see: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Engines or https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Engines| False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
