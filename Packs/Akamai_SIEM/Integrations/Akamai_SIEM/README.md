@@ -118,7 +118,7 @@ Get security events from Akamai WAF.
 | limit | Defines the maximum number of security events returned per fetch. | Optional | 
 | from_epoch | The start of a specified time range, expressed in Unix epoch seconds. | Optional | 
 | to_epoch | The end of a specified time range, expressed in Unix epoch seconds. | Optional | 
-| time_stamp | Timestamp of events (<number> <time unit>. For example, 12 hours, 7 days). | Optional | 
+| time_stamp | Timestamp of events (`<number> <time unit>`. For example, 12 hours, 7 days). | Optional | 
 
 #### Context Output
 

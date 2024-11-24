@@ -1,27 +1,23 @@
 CounterTack empowers endpoint security teams to assure endpoint protection for Identifying Cyber Threats. Integrating a predictive endpoint protection platform
 
-## Configure CounterTack on Cortex XSOAR
+## Configure CounterTack in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CounterTack.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. https://democloud.countertack.com) | True |
-    | User Name | True |
-    | Password | True |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
-    | Fetch notifications incidents | False |
-    | Fetch behviors incidents | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g. https://democloud.countertack.com) | True |
+| User Name | True |
+| Password | True |
+| Use system proxy settings | False |
+| Trust any certificate (not secure) | False |
+| Fetch incidents | False |
+| Incident type | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
+| Fetch notifications incidents | False |
+| Fetch behviors incidents | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### countertack-get-endpoints
 ***
