@@ -67,7 +67,7 @@ class Client:
     @logger
     def incidents_list(self, timeout: int, limit: int = MAX_ENTRIES, status: Optional[str] = None,
                        assigned_to: Optional[str] = None, from_date: Optional[datetime] = None,
-                       skip: Optional[int] = None, odata: Optional[dict] = None) -> dict:
+                       skip: Optional[int] = None, odata: Optional[dict] = None, last_update_time: Optional[str] = None) -> dict:
         """
         GET request from the client using OData operators:
             - $top: how many incidents to receive, maximum value is 100
@@ -108,6 +108,11 @@ class Client:
             if from_date:
                 filter_query += ' and ' if filter_query else ''
                 filter_query += f"createdTime gt {from_date}"
+
+            # mirroring get-modified-remote-data
+            if last_update_time:
+                filter_query += ' and ' if filter_query else ''
+                filter_query += f"lastUpdateTime gt {last_update_time}"
 
             if filter_query:
                 params['$filter'] = filter_query  # type: ignore
@@ -446,7 +451,7 @@ def microsoft_365_defender_incident_get_command(client: Client, args: dict) -> C
 
 @logger
 def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: str, fetch_limit: int, timeout: int = None) -> List[
-        dict]:
+    dict]:
     """
     Uses to fetch incidents into Demisto
     Documentation: https://xsoar.pan.dev/docs/integrations/fetching-incidents#the-fetch-incidents-command
@@ -497,8 +502,6 @@ def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: st
         #       function from the start.
 
         while True:
-            mirror_direction = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction')),
-            mirror_instance = demisto.integrationInstance()
             time_delta = time.time() - start_time
             if timeout and time_delta > timeout:
                 raise DemistoException(
@@ -598,22 +601,40 @@ def get_remote_data_command(client: Client, args: dict):
     pass
 
 
+def fetch_modified_incidents(client: Client, last_update_time) -> List[dict]:
+    test_context_for_token(client)  #todo: how to go aabout this in mirroring?
+    incidents = []
+
+    # The API is limited to MAX_ENTRIES incidents for each requests, if we are trying to get more than MAX_ENTRIES
+    # incident we skip (offset) the number of incidents we already fetched.
+    offset = 0
+
+    # This loop fetches all the incidents that had been created after last_run, due to API limitations the fetching
+    # occurs in batches. If timeout was given, exceeding the time will result an error.
+
+    while True:
+        # HTTP request
+        response = client.incidents_list(last_update_time=last_update_time, skip=offset)  #todo: should include timeout?
+        raw_incidents = response.get('value')
+        for incident in raw_incidents:
+            incident.update(_get_meta_data_for_incident(incident))
+            incident['mirrorRemoteId'] = incident.get('incidentId')
+            incidents.append(incident)
+        # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
+        if len(raw_incidents) < int(MAX_ENTRIES): #todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
+            break
+        offset += int(MAX_ENTRIES)
+    return incidents
+
+
 def get_modified_remote_data_command(client: Client, args: dict):
     last_update = get_last_mirror_run().get("last_update")
-    last_mirror_incident_id = get_last_mirror_run().get("last_incident_id")
     last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
-
-    raw_incidents = client.get_incidents(gte_modification_time=last_update_utc, limit=100)
-    modified_incident_ids = list()
-    for raw_incident in raw_incidents:
-        incident_id = raw_incident.get('incident_id')
-        modified_incident_ids.append(incident_id)
-        last_mirror_incident_id = incident_id
-
-    # Following is an example for storing the last update to be now and the last incident ID that was handled but we can use it in any other way
-    set_last_mirror_run(
-        {"last_update": datetime.datetime.now(datetime.timezone.utc), "last_incident_id": last_mirror_incident_id})
-    return GetModifiedRemoteDataResponse(modified_incident_ids)
+    time_now = datetime.datetime.now(datetime.timezone.utc)
+    modified_incidents = fetch_modified_incidents(client, last_update_utc)
+    set_last_mirror_run({"last_update": time_now.strftime(DATE_FORMAT)})
+    #todo - handle incident reopen and closing
+    return GetModifiedRemoteDataResponse(modified_incidents_data=modified_incidents)
 
 
 def update_remote_system_command(client: Client, args: dict):
@@ -649,7 +670,7 @@ def main() -> None:
     client_credentials = params.get('client_credentials', False)
     enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or \
-        params.get('certificate_thumbprint', '')
+                             params.get('certificate_thumbprint', '')
 
     private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
                    or params.get('private_key', ''))

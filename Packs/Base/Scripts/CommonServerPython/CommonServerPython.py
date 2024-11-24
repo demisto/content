@@ -9816,20 +9816,20 @@ class GetModifiedRemoteDataResponse:
         :return: List of incidents to run the get-remote-data command on.
         :rtype: ``list``
         """
-        # Check if there are modified incidents or modified incident IDs
+        entries = []
         if self.modified_incidents_data:
-            demisto.info(f'Modified incidents: {[incident.get("incidentId") for incident in self.modified_incidents_data]}')
-            return [
-                {
+            demisto.info(f'Modified incidents: {[incident.get("mirrorRemoteId") for incident in self.modified_incidents_data]}')
+            for incident_data in self.modified_incidents_data:
+                entries.append({
                     'Contents': incident_data,
                     'Type': EntryType.NOTE,
                     'ContentsFormat': EntryFormat.JSON,
-                    'EntryContext': {'mirrorRemoteId': incident_data.get('incidentId')}
-                }
-                for incident_data in self.modified_incidents_data
-            ]
+                    'EntryContext': {'mirrorRemoteId': incident_data.get('mirrorRemoteId')}
+                })
+                incident_data.pop('mirrorRemoteId', None)
+            return entries
 
-        # Fallback: Use modified incident IDs if no detailed data is available
+
         if self.modified_incident_ids:
             demisto.info(f'Modified incident IDs: {self.modified_incident_ids}')
             return [{
