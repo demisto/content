@@ -33,7 +33,6 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
                                 censor_request_logs, censor_request_logs, safe_sleep, get_server_config, b64_decode
                                 )
-from test_data.logo_decoded import PALO_LOGO_BASE64, PALO_LOGO_DECODED
 
 EVENTS_LOG_ERROR = \
     """Error sending new events into XSIAM.
@@ -3822,10 +3821,12 @@ def test_b64_encode(_input, expected_output):
     assert output == expected_output, 'b64_encode({}) returns: {} instead: {}'.format(_input, output, expected_output)
 
 
-CASE_NO_PADDING = (PALO_LOGO_BASE64, PALO_LOGO_DECODED)
-CASE_LESS_PADDING = (PALO_LOGO_BASE64 + '=', PALO_LOGO_DECODED)
-CASE_WITH_PADDING = (PALO_LOGO_BASE64 + '==', PALO_LOGO_DECODED)
-CASE_TOO_MUCH_PADDING = (PALO_LOGO_BASE64 + '===', PALO_LOGO_DECODED)
+B64_STR = 'This is a test!'
+DECODED_B64 = b'N\x18\xac\x8a\xc6\xadz\xcb'
+CASE_NO_PADDING = (B64_STR, DECODED_B64)
+CASE_LESS_PADDING = (B64_STR + '=', DECODED_B64)
+CASE_WITH_PADDING = (B64_STR + '==', DECODED_B64)
+CASE_TOO_MUCH_PADDING = (B64_STR + '===', DECODED_B64)
 
 
 @pytest.mark.parametrize('str_to_decode, expected_encoded',
