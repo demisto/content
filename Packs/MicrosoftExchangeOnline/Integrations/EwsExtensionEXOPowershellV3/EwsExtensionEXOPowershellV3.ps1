@@ -2317,7 +2317,7 @@ function ListMailFlowRulesCommand {
     }
     else{
         $parsed_raw_response = ParseRawResponse $raw_response
-        $md_columns = $raw_response | Name, State, Priority, Comment, WhenChanged, CreatedBy
+        $md_columns = $raw_response | Select-Object -Property Name, State, Priority, Comment, WhenChanged, CreatedBy
         $human_readable = TableToMarkdown $md_columns "Results of $command"
         $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRules(obj.Name === val.Name)" = $parsed_raw_response }
         Write-Output $human_readable, $entry_context, $parsed_raw_response
@@ -2326,7 +2326,7 @@ function ListMailFlowRulesCommand {
 function GetMailFlowRuleCommand {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
         [hashtable]$kwargs
     )
     $identity = $kwargs.identity
@@ -2336,7 +2336,7 @@ function GetMailFlowRuleCommand {
     }
     else{
         $parsed_raw_response = ParseRawResponse $raw_response
-        $md_columns = $raw_response | Name, State, Priority, Comment, WhenChanged, CreatedBy
+        $md_columns = $raw_response | Select-Object -Property Name, State, Priority, Comment, WhenChanged, CreatedBy
         $human_readable = TableToMarkdown $md_columns "Results of $command"
         $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRule(obj.Name === val.Name)" = $parsed_raw_response }
         Write-Output $human_readable, $entry_context, $parsed_raw_response
@@ -2345,7 +2345,7 @@ function GetMailFlowRuleCommand {
 function RemoveMailFlowRuleCommand {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
         [hashtable]$kwargs
     )
     $identity = $kwargs.identity
@@ -2362,7 +2362,7 @@ function RemoveMailFlowRuleCommand {
 function DisableMailFlowRuleCommand {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
         [hashtable]$kwargs
     )
     $identity = $kwargs.identity
@@ -2379,7 +2379,7 @@ function DisableMailFlowRuleCommand {
 function EnableMailFlowRuleCommand {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
         [hashtable]$kwargs
     )
     $identity = $kwargs.identity
@@ -2396,7 +2396,7 @@ function EnableMailFlowRuleCommand {
 function DisableMailForwardingCommand {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
         [hashtable]$kwargs
     )
     $identity = $kwargs.identity
