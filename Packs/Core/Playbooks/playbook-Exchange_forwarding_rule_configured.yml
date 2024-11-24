@@ -339,29 +339,7 @@ tasks:
       - "35"
     scriptarguments:
       MaliciousIPs:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: ip
-              ignorecase: true
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
+        simple: ${Core.OriginalAlert.event.caller_ip}
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -523,6 +501,8 @@ tasks:
       '#none#':
       - "18"
     scriptarguments:
+      closeReason:
+        simple: Resolved - Handled by the playbook "Exchange forwarding rule configured"
       id:
         complex:
           root: alert
@@ -533,7 +513,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2550
+          "y": 2470
         }
       }
     note: false
@@ -638,7 +618,7 @@ tasks:
       {
         "position": {
           "x": 710,
-          "y": 2000
+          "y": 1960
         }
       }
     note: false
@@ -666,7 +646,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2710
+          "y": 2630
         }
       }
     note: false
@@ -712,7 +692,7 @@ tasks:
       {
         "position": {
           "x": 1110,
-          "y": 2380
+          "y": 2300
         }
       }
     note: false
@@ -999,11 +979,6 @@ tasks:
                         simple: "3"
                 accessor: Indicator
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ${Core.OriginalAlert.raw_abioc.event.exchange_rule_name}
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -1246,7 +1221,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1905
+          "y": 1810
         }
       }
     note: false
@@ -1322,7 +1297,7 @@ tasks:
       {
         "position": {
           "x": -450,
-          "y": 2410
+          "y": 2330
         }
       }
     note: false
@@ -1430,7 +1405,7 @@ tasks:
       {
         "position": {
           "x": 710,
-          "y": 2160
+          "y": 2120
         }
       }
     note: false
@@ -1475,7 +1450,7 @@ tasks:
       {
         "position": {
           "x": 710,
-          "y": 2380
+          "y": 2300
         }
       }
     note: false
@@ -1727,6 +1702,13 @@ tasks:
                         simple: active
                     ignorecase: true
             iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Core.OriginalAlert.raw_abioc.event.exchange_rule_name}
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -1766,7 +1748,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3085,
+        "height": 3005,
         "width": 2080,
         "x": -450,
         "y": -310
