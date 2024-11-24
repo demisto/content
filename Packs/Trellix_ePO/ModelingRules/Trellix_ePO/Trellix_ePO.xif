@@ -5,7 +5,8 @@
         TargetProcessName = parsed_fields -> TargetProcessName,
         OSName = parsed_fields -> OSName,
         TargetPath = parsed_fields -> TargetPath,
-        SourceUserName= split(parsed_fields -> SourceUserName,"\")
+        SourceUserName = split(parsed_fields -> SourceUserName,"\"),
+        TargetUserName = split(parsed_fields -> TargetUserName,"\")
 | alter 
     agent_ipv4 = coalesce(if(SourceIPV4 ~= "(?:\d{1,3}\.){3}\d{1,3}", SourceIPV4),if(IPAddress ~= "(?:\d{1,3}\.){3}\d{1,3}", IPAddress)),
     AgentGUID = ltrim(rtrim(parsed_fields -> AgentGUID,"}"),"{"),
@@ -47,7 +48,7 @@
     xdm.source.process.executable.extension = arrayindex(regextract(SourceProcessName, "\.(.+)"), 0),
     xdm.source.process.executable.filename = SourceProcessName,
     xdm.source.process.executable.md5 = parsed_fields -> SourceProcessHash,
-    xdm.source.process.executable.path = concat(parsed_fields -> SourceFilePath, "\\", SourceProcessName),
+    xdm.source.process.executable.path = concat(parsed_fields -> SourceFilePath, "\", SourceProcessName),
     xdm.source.process.parent_id = parsed_fields -> SourceParentProcessName,
     xdm.source.user.username = coalesce(arrayindex(SourceUserName, -1),parsed_fields -> UserName),
     xdm.source.user.domain = arrayindex(SourceUserName, 0),
@@ -68,4 +69,5 @@
     xdm.target.process.executable.path = TargetFileName,
     xdm.target.process.executable.signer = target_process_signer,
     xdm.target.url = parsed_fields -> TargetURL,
-    xdm.target.user.username = parsed_fields -> TargetUserName;
+    xdm.target.user.username = arrayindex(TargetUserName, -1),
+    xdm.target.user.domain = arrayindex(TargetUserName, 0);
