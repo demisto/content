@@ -10,7 +10,7 @@ tags:
 - ztap
 type: python
 runas: DBotWeakRole
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.11.10.116949
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
