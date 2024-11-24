@@ -68,22 +68,22 @@ script:
     name: netquest-address-list-optimize
     outputs:
       - contextPath: NetQuest.AddressList.OverlappingAddresses
-        description:
+        description: ''
         type: list
       - contextPath: NetQuest.AddressList.OverlapsPresent
-        description:
+        description: ''
         type: boolean
       - contextPath: NetQuest.AddressList.MergedAddresses
-        description:
+        description: ''
         type: list
       - contextPath: NetQuest.AddressList.MergesPresent
-        description:
+        description: ''
         type: boolean
       - contextPath: NetQuest.AddressList.CountsBefore
-        description:
+        description: ''
         type: Dictionary
       - contextPath: NetQuest.AddressList.CountsAfter
-        description:
+        description: ''
         type: Dictionary
   - arguments:
       - description: 'The name of the address list to create'
