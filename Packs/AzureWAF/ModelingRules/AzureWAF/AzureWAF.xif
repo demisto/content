@@ -21,4 +21,5 @@ alter
 [MODEL: dataset=msft_azure_waf_raw]
 call msft_azure_resourcelogs_commonfields
 | alter
+	operationName
     
