@@ -69,7 +69,8 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 INCOMING_MIRRORED_FIELDS = ['ID', 'Etag', 'Title', 'Description', 'Severity', 'Status', 'owner', 'tags', 'FirstActivityTimeUTC',
                                   'LastActivityTimeUTC', 'LastModifiedTimeUTC', 'CreatedTimeUTC', 'IncidentNumber', 'AlertsCount',
                                   'AlertProductNames', 'Tactics', 'relatedAnalyticRuleIds', 'IncidentUrl', 'ProviderIncidentUrl',
-                                  'classification', 'classificationComment', 'alerts', 'entities', 'comments', 'relations']
+                                  'classification', 'classificationReason', 'classificationComment', 'alerts', 'entities',
+                                  'comments', 'relations']
 
 OUTGOING_MIRRORED_FIELDS = {'etag', 'title', 'description', 'severity', 'status', 'tags', 'firstActivityTimeUtc',
                             'lastActivityTimeUtc', 'classification', 'classificationComment', 'classificationReason'}
