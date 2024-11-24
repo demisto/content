@@ -1,8 +1,6 @@
-import demistomock as demisto
 from CommonServerPython import *
-
-import itertools
 from typing import Any
+import itertools
 
 
 class MappedCommand:
@@ -10,8 +8,8 @@ class MappedCommand:
         self,
         brand: str,
         name: str,
-        args_mapping: dict=None,
-        output_mapping: dict=None,
+        args_mapping: dict = None,
+        output_mapping: dict = None,
     ):
         """
         Initialize a MappedCommand object.
@@ -64,7 +62,6 @@ class ModuleManager:
         """
         return command.brand in self._brands_to_run if self._brands_to_run else True
 
-
     def is_brand_available(self, command: MappedCommand) -> bool:
         """
         Check if a brand is available and in the list of brands to run.
@@ -92,8 +89,8 @@ class CommandRunner:
     def _run_execute_command(self, command: MappedCommand) -> dict[str, Any]:
 
         if not self.module_manager.is_brand_available(command):
-            demisto.debug(f'Skipping command "{command.name}" since the brand {command.brand}is not available.')
-            return {'command': command, 'results': None}
+            demisto.debug(f'Skipping command "{command.name}" since the brand {command.brand} is not available.')
+            return {'command': command, 'results': []}
         args = {}
 
         for command_arg_key, endpoint_arg_key in command.args_mapping.items():
@@ -104,15 +101,15 @@ class CommandRunner:
             return {'command': command, 'results': []}
 
         demisto.debug(f'Running "{command=}" with {args=}')
-        current_command_results = to_list(demisto.executeCommand(command.name, args))
-        demisto.debug(f'Command "{command.name}" returned {current_command_results}')
-        return {'command': command, 'results': current_command_results}
+        command_results = to_list(demisto.executeCommand(command.name, args))
+        demisto.debug(f'Command "{command.name}" returned {command_results}')
+        return {'command': command, 'results': command_results}
 
     def _get_commands_outputs(self, command_results: dict[str, Any]):
         demisto.debug(f'starting _get_command_outputs with {command_results=}')
         command, result = command_results['command'], command_results['results']
         args = {command_arg_key: self._endpoint_args[endpoint_arg_key] for command_arg_key, endpoint_arg_key in
-            command.args_mapping.items()}
+                command.args_mapping.items()}
 
         command_context_outputs = []
         human_readable_outputs = []
@@ -120,7 +117,7 @@ class CommandRunner:
         demisto.debug(f'extracting outputs for command "{command.name}" with result {result}')
 
         for entry in result:
-            demisto.debug(f'entry{json.dumps(entry)}')
+            demisto.debug(f'entry {json.dumps(entry)}')
             command_context_outputs.append(entry.get("EntryContext", {}))
             if is_error(entry):
                 command_error_outputs.extend(
@@ -144,6 +141,13 @@ class CommandRunner:
 
 to_list = lambda var: [var] if not isinstance(var, list) else var
 
+def safe_list_get (l: list, idx: int, default: Any):
+  try:
+    return l[idx]
+  except IndexError:
+    return default
+
+
 def create_endpoint(command_output: dict[str, Any], output_mapping: dict[str, str], source: str) -> dict[str, Any]:
     demisto.debug(f'creating endpoint with {command_output=}, {output_mapping=}, {source=}')
 
@@ -153,11 +157,11 @@ def create_endpoint(command_output: dict[str, Any], output_mapping: dict[str, st
     endpoint = {}
 
     for command_output_key, endpoint_key in output_mapping.items():
-        endpoint[endpoint_key] = { 'value': command_output[command_output_key],  'source': source }
+        endpoint[endpoint_key] = {'value': command_output[command_output_key], 'source': source}
         command_output.pop(command_output_key)
 
     for key, value in command_output.items():
-        endpoint[key] = { 'value': value, 'source': source }
+        endpoint[key] = {'value': value, 'source': source}
 
     demisto.debug(f'created {endpoint=}')
     return endpoint
@@ -277,7 +281,7 @@ def get_outputs(output_key: str, raw_context: dict[str, Any]) -> dict[str, Any]:
     if raw_context and output_key:
         context = raw_context.get(output_key, {})
         if isinstance(context, list):
-            context = context[0]
+            context = context[0] if context else {}
     else:
         context = {}
     return context
@@ -302,8 +306,8 @@ def merge_endpoints(endpoints: list[dict[str, dict[str, Any]]]) -> dict[str, Any
         return merged_endpoint
 
 
-
-def run_ad_get_computer(command: MappedCommand, command_runner: CommandRunner, endpoint_args) -> tuple[list[CommandResults], dict[str, Any]]:
+def run_ad_get_computer(command: MappedCommand, command_runner: CommandRunner, endpoint_args) -> tuple[
+    list[CommandResults], dict[str, Any]]:
     demisto.debug(f'Running {command=} with {endpoint_args=}')
     args = {}
     readable_outputs_list = []
@@ -323,13 +327,17 @@ def run_ad_get_computer(command: MappedCommand, command_runner: CommandRunner, e
 
     return readable_outputs_list, endpoint_output
 
-def run_epo_find_system(command: MappedCommand, command_runner: CommandRunner, endpoint_args) -> tuple[list[CommandResults], dict[str, Any]]:
 
+def run_epo_find_system(command: MappedCommand, command_runner: CommandRunner, endpoint_args) -> tuple[
+    list[CommandResults], dict[str, Any]]:
     demisto.debug(f'Running {command=} with {endpoint_args=}')
     args = {}
     readable_outputs_list = []
     entry_context, human_readable, readable_errors = command_runner.run_command_if_available(command)
     readable_outputs_list.extend(readable_errors)
+
+    if not entry_context:
+        return readable_outputs_list, {}
 
     for command_arg_key, endpoint_arg_key in command.args_mapping.items():
         args[command_arg_key] = endpoint_args[endpoint_arg_key] if endpoint_args[endpoint_arg_key] else None
@@ -341,13 +349,17 @@ def run_epo_find_system(command: MappedCommand, command_runner: CommandRunner, e
 
     return readable_outputs_list, endpoint_output
 
-def run_cb_edr_sensors_list(command: MappedCommand, command_runner: CommandRunner, endpoint_args) -> tuple[list[CommandResults], dict[str, Any]]:
 
+def run_cb_edr_sensors_list(command: MappedCommand, command_runner: CommandRunner, endpoint_args) -> tuple[
+    list[CommandResults], dict[str, Any]]:
     demisto.debug(f'Running {command=} with {endpoint_args=}')
     args = {}
     readable_outputs_list = []
     entry_context, human_readable, readable_errors = command_runner.run_command_if_available(command)
     readable_outputs_list.extend(readable_errors)
+
+    if not entry_context:
+        return readable_outputs_list, {}
 
     for command_arg_key, endpoint_arg_key in command.args_mapping.items():
         args[command_arg_key] = endpoint_args[endpoint_arg_key] if endpoint_args[endpoint_arg_key] else None
@@ -359,13 +371,17 @@ def run_cb_edr_sensors_list(command: MappedCommand, command_runner: CommandRunne
 
     return readable_outputs_list, endpoint_output
 
-def run_xdr_list_risky_hosts(command: MappedCommand, command_runner: CommandRunner, endpoint_args) -> tuple[list[CommandResults], dict[str, Any]]:
 
+def run_xdr_list_risky_hosts(command: MappedCommand, command_runner: CommandRunner, endpoint_args) -> tuple[
+    list[CommandResults], dict[str, Any]]:
     demisto.debug(f'Running {command=} with {endpoint_args=}')
     args = {}
     readable_outputs_list = []
     entry_context, human_readable, readable_errors = command_runner.run_command_if_available(command)
     readable_outputs_list.extend(readable_errors)
+
+    if not entry_context:
+        return readable_outputs_list, {}
 
     for command_arg_key, endpoint_arg_key in command.args_mapping.items():
         args[command_arg_key] = endpoint_args[endpoint_arg_key] if endpoint_args[endpoint_arg_key] else None
@@ -376,6 +392,142 @@ def run_xdr_list_risky_hosts(command: MappedCommand, command_runner: CommandRunn
     endpoint_output = create_endpoint(outputs, {'id': 'ID'}, command.brand)
 
     return readable_outputs_list, endpoint_output
+
+
+def run_extrahop_devices_search_mapped_command(
+    command: MappedCommand,
+    command_runner: CommandRunner,
+    endpoint_args
+) -> tuple[list[CommandResults], dict[str, Any]]:
+
+    demisto.debug(f'Running {command=} with {endpoint_args=}')
+    args = {}
+    readable_outputs_list = []
+    entry_context, human_readable, readable_errors = command_runner.run_command_if_available(command)
+    readable_outputs_list.extend(readable_errors)
+
+    if not entry_context:
+        return readable_outputs_list, {}
+
+    for command_arg_key, endpoint_arg_key in command.args_mapping.items():
+        args[command_arg_key] = endpoint_args[endpoint_arg_key] if endpoint_args[endpoint_arg_key] else None
+
+    readable_outputs_list.extend(prepare_human_readable(command.name, args, human_readable))
+    output_key = get_output_key("ExtraHop.Device", entry_context[0])
+    outputs = get_outputs(output_key, entry_context[0])
+    output_mapping = {
+        'Macaddr': 'MACAddress',
+        'Vendor': 'Vendor',
+        'Id': 'ID',
+        'DhcpName': 'DHCPServer',
+        'DnsName': 'Domain'
+    }
+    if outputs.get('Ipaddr6', None) and not outputs.get('Ipaddr4', None):
+        output_mapping['Ipaddr6'] = 'IPAddress'
+    else:
+        output_mapping['Ipaddr4'] = 'IPAddress'
+    endpoint_output = create_endpoint(outputs, output_mapping, command.brand)
+
+    return readable_outputs_list, endpoint_output
+
+def run_core_get_endpoints(command: MappedCommand, command_runner: CommandRunner, endpoint_args) -> tuple[
+    list[CommandResults], dict[str, Any]]:
+    demisto.debug(f'Running {command=} with {endpoint_args=}')
+    args = {}
+    readable_outputs_list = []
+    entry_context, human_readable, readable_errors = command_runner.run_command_if_available(command)
+    readable_outputs_list.extend(readable_errors)
+
+    if not entry_context:
+        return readable_outputs_list, {}
+
+    for command_arg_key, endpoint_arg_key in command.args_mapping.items():
+        args[command_arg_key] = endpoint_args[endpoint_arg_key] if endpoint_args[endpoint_arg_key] else None
+
+    readable_outputs_list.extend(prepare_human_readable(command.name, args, human_readable))
+    output_key = get_output_key("Endpoint", entry_context[0])
+    outputs = get_outputs(output_key, entry_context[0])
+    output_key = get_output_key("Account", entry_context[0])
+    outputs.update(get_outputs(output_key, entry_context[0]))
+    endpoint_output = create_endpoint(outputs, {}, command.brand)
+
+    return readable_outputs_list, endpoint_output
+
+def run_xdr_get_endpoints(command: MappedCommand, command_runner: CommandRunner, endpoint_args) -> tuple[
+    list[CommandResults], list[dict[str, Any]]]:
+    demisto.debug(f'Running {command=} with {endpoint_args=}')
+    args = {}
+    readable_outputs_list = []
+    endpoints = []
+    entry_context, human_readable, readable_errors = command_runner.run_command_if_available(command)
+    readable_outputs_list.extend(readable_errors)
+
+    if not entry_context:
+        return readable_outputs_list, []
+
+    for command_arg_key, endpoint_arg_key in command.args_mapping.items():
+        args[command_arg_key] = endpoint_args[endpoint_arg_key] if endpoint_args[endpoint_arg_key] else None
+
+    readable_outputs_list.extend(prepare_human_readable(command.name, args, human_readable))
+    entry = entry_context[0]
+    output_key = get_output_key("Endpoint", entry)
+    raw_endpoints = to_list(get_outputs(output_key, entry))
+    output_key = get_output_key("Account", entry)
+    raw_accounts = to_list(get_outputs(output_key, entry))
+    for index, raw_endpoint in enumerate(raw_endpoints):
+        raw_endpoint.update(raw_accounts[index])
+        endpoints.append(create_endpoint(raw_endpoint, {}, command.brand))
+
+
+    return readable_outputs_list, endpoints
+
+def run_core_list_risky_hosts(command: MappedCommand, command_runner: CommandRunner, endpoint_args) -> tuple[
+    list[CommandResults], list[dict[str, Any]]]:
+    demisto.debug(f'Running {command=} with {endpoint_args=}')
+    args = {}
+    readable_outputs_list = []
+    endpoints = []
+    entry_context, human_readable, readable_errors = command_runner.run_command_if_available(command)
+    readable_outputs_list.extend(readable_errors)
+
+    if not entry_context:
+        return readable_outputs_list, []
+
+    for command_arg_key, endpoint_arg_key in command.args_mapping.items():
+        args[command_arg_key] = endpoint_args[endpoint_arg_key] if endpoint_args[endpoint_arg_key] else None
+
+    readable_outputs_list.extend(prepare_human_readable(command.name, args, human_readable))
+    entry = entry_context[0]
+    output_key = get_output_key("Core.RiskyHost", entry)
+    risky_hosts = to_list(get_outputs(output_key, entry))
+    for host in risky_hosts:
+        endpoints.append(create_endpoint(host, {'id': 'ID'}, command.brand))
+
+    return readable_outputs_list, endpoints
+
+def run_cs_falcon_search_device(command: MappedCommand, command_runner: CommandRunner, endpoint_args) -> tuple[
+    list[CommandResults], list[dict[str, Any]]]:
+    demisto.debug(f'Running {command=} with {endpoint_args=}')
+    args = {}
+    readable_outputs_list = []
+    endpoints = []
+    entry_context, human_readable, readable_errors = command_runner.run_command_if_available(command)
+    readable_outputs_list.extend(readable_errors)
+
+    if not entry_context:
+        return readable_outputs_list, []
+
+    for command_arg_key, endpoint_arg_key in command.args_mapping.items():
+        args[command_arg_key] = endpoint_args[endpoint_arg_key] if endpoint_args[endpoint_arg_key] else None
+
+    readable_outputs_list.extend(prepare_human_readable(command.name, args, human_readable))
+    entry = entry_context[0]
+    output_key = get_output_key("Endpoint", entry)
+    raw_endpoints = to_list(get_outputs(output_key, entry))
+    for endpoint in raw_endpoints:
+        endpoints.append(create_endpoint(endpoint, {}, command.brand))
+
+    return readable_outputs_list, endpoints
 
 """ MAIN FUNCTION """
 
@@ -400,7 +552,8 @@ def main():
         endpoints_not_found_list: list[str] = []
 
         # Run a loop for commands that do not take an array as an input
-        for agent_id, agent_ip, agent_hostname in list(itertools.zip_longest(agent_ids, agent_ips, agent_hostnames, fillvalue="")):
+        for agent_id, agent_ip, agent_hostname in list(
+            itertools.zip_longest(agent_ids, agent_ips, agent_hostnames, fillvalue="")):
             single_endpoint_outputs = []
             single_endpoint_readable_outputs = []
 
@@ -446,6 +599,7 @@ def main():
                 args_mapping={'endpoint_id_list': 'agent_id', 'ip_list': 'agent_ip', 'hostname': 'agent_hostname'}
             )
 
+            # commands that rely on any argument
             readable_outputs, endpoint_output = run_cb_edr_sensors_list(
                 cb_edr_sensors_list_mapped_command,
                 command_runner,
@@ -455,7 +609,16 @@ def main():
             single_endpoint_outputs.append(endpoint_output)
             single_endpoint_readable_outputs.extend(readable_outputs)
 
+            readable_outputs, endpoint_output = run_core_get_endpoints(
+                core_get_endpoints_mapped_command,
+                command_runner,
+                {'agent_id': agent_id, 'agent_ip': agent_ip, 'agent_hostname': agent_hostname},
+            )
 
+            single_endpoint_outputs.append(endpoint_output)
+            single_endpoint_readable_outputs.extend(readable_outputs)
+
+            # commands that rely on agent_hostname
             if agent_hostname:
                 readable_outputs, endpoint_output = run_ad_get_computer(
                     ad_get_computer_command,
@@ -474,6 +637,16 @@ def main():
                 single_endpoint_outputs.append(endpoint_output)
                 single_endpoint_readable_outputs.extend(readable_outputs)
 
+                readable_outputs, endpoint_output = run_extrahop_devices_search_mapped_command(
+                    extrahop_devices_search_mapped_command,
+                    command_runner,
+                    {'agent_hostname': agent_hostname}
+                )
+
+                single_endpoint_outputs.append(endpoint_output)
+                single_endpoint_readable_outputs.extend(readable_outputs)
+
+            # commands that rely on agent_id
             if agent_id:
                 readable_outputs, endpoint_output = run_xdr_list_risky_hosts(
                     xdr_list_risky_hosts_mapped_command,
@@ -484,8 +657,6 @@ def main():
                 single_endpoint_outputs.append(endpoint_output)
                 single_endpoint_readable_outputs.extend(readable_outputs)
 
-
-
             if verbose:
                 command_results_list.extend(single_endpoint_readable_outputs)
 
@@ -495,8 +666,17 @@ def main():
             else:
                 endpoints_not_found_list.append(agent_id or agent_ip or agent_hostname)
 
-
         demisto.debug(f'ending loop with {command_results_list=}, {endpoint_outputs_list=}, {endpoints_not_found_list=}')
+
+        multiple_endpoint_outputs = []
+        multiple_endpoint_readable_outputs = []
+
+        command_runner = CommandRunner(module_manager, {
+            'agent_id': agent_ids,
+            'agent_ip': agent_ips,
+            'agent_hostname': agent_hostnames
+        })
+
         # Running commands that accept a list as input
         xdr_get_endpoints_mapped_command = MappedCommand(
             brand='Cortex XDR - IR',
@@ -507,8 +687,7 @@ def main():
         core_list_risky_hosts_mapped_command = MappedCommand(
             brand='Cortex Core - IR',
             name='core-list-risky-hosts',
-            args_mapping={'host_id': 'agent_id'},
-            output_mapping={'id': 'ID'}
+            args_mapping={'host_id': 'agent_id'}
         )
 
         cs_falcon_search_device_mapped_command = MappedCommand(
@@ -516,6 +695,43 @@ def main():
             name='cs-falcon-search-device',
             args_mapping={'ids': 'agent_id', 'hostname': 'agent_hostname'}
         )
+
+        readable_outputs, endpoint_outputs = run_xdr_get_endpoints(
+            xdr_get_endpoints_mapped_command,
+            command_runner,
+            {'agent_id': agent_ids, 'agent_ip': agent_ips, 'agent_hostname': agent_hostnames}
+        )
+
+        multiple_endpoint_outputs.append(endpoint_outputs)
+        multiple_endpoint_readable_outputs.extend(readable_outputs)
+
+        readable_outputs, endpoint_outputs = run_core_list_risky_hosts(
+            core_list_risky_hosts_mapped_command,
+            command_runner,
+            {'agent_id': agent_ids, 'agent_ip': agent_ips, 'agent_hostname': agent_hostnames}
+        )
+
+        multiple_endpoint_outputs.append(endpoint_outputs)
+        multiple_endpoint_readable_outputs.extend(readable_outputs)
+
+        readable_outputs, endpoint_outputs = run_cs_falcon_search_device(
+            cs_falcon_search_device_mapped_command,
+            command_runner,
+            {'agent_id': agent_ids, 'agent_hostname': agent_hostnames}
+        )
+
+        multiple_endpoint_outputs.append(endpoint_outputs)
+        multiple_endpoint_readable_outputs.extend(readable_outputs)
+
+        demisto.debug(f'ending calls with {multiple_endpoint_outputs=}')
+
+        for index in range(max(map(len, multiple_endpoint_outputs), default=0)):
+            unmerged_endpoints = [safe_list_get(l, index, {}) for l in multiple_endpoint_outputs]
+            merged_endpoint = merge_endpoints(unmerged_endpoints)
+            if merged_endpoint:
+                endpoint_outputs_list.append(merged_endpoint)
+            else:
+                endpoints_not_found_list.append(agent_ids[index] or agent_ips[index] or agent_hostnames[index])
 
         if endpoints_not_found_list:
             command_results_list.append(
@@ -548,7 +764,6 @@ def main():
 
 
 """ ENTRY POINT """
-
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
