@@ -28,7 +28,7 @@ This integration is fully compatible with the Kafka v2 integration.
     | CSV list of partitions to fetch messages from |  | False |
     | Offset to fetch messages from (exclusive) | The initial offset to start fetching from, not including the value set \(e.g., if 3 is set, the first event that will be fetched will be with offset 4\). If you want to start from the earliest or latest, type in 'earliest' or 'latest' accordingly. | False |
     | Maximum number of messages to fetch |  | False |
-    | Stop consuming upon timeout | When fetching a large amount of messages (100+), we recommend to terminate the consumption of messages upon timeout. This will lead to the termination of the fetch when no messages are received after a defined period of time, instead of continuing to request messages until the number of messages specified in the 'max_fetch' parameter is reached. | False |
+    | Stop consuming upon timeout | When fetching a significant number of messages (100+), it's advisable to halt message consumption upon timeout. This ensures that the fetch terminates if no messages are received after a specified duration, instead of requesting messages until reaching the maximum number of messages to fetch. | False |
     | Consumer Only |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |

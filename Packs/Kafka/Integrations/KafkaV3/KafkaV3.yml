@@ -64,7 +64,7 @@ configuration:
   type: 0
   required: false
 - display: Stop consuming upon timeout
-  additionalinfo: When fetching a large amount of messages (100+), we recommend to terminate the consumption of messages upon timeout. This will lead to the termination of the fetch when no messages are received after a defined period of time, instead of continuing to request messages until the number of messages specified in the 'Maximum number of messages to fetch' parameter is reached.
+  additionalinfo: When fetching a significant number of messages (100+), it's advisable to halt message consumption upon timeout. This ensures that the fetch terminates if no messages are received after a specified duration, instead of requesting messages until reaching the maximum number of messages to fetch.
   name: stop_consuming_upon_timeout
   type: 8
   advanced: true
