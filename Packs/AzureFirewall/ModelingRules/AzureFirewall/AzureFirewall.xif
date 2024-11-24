@@ -2,6 +2,26 @@
 call map_msft_azure_resource_logs_common_fields;
 
 // Azure Firewall Azure Firewall IDPS Signature (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwidpssignature)
+filter category in ("AZFWFqdnResolveFailure", "AZFWInternalFqdnResolutionFailure") 
+| alter 
+	dns_server_ipv4 = arrayindex(regextract(properties -> ServerIp, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
+	dns_server_ipv6 = arrayindex(regextract(properties -> ServerIp, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
+	dns_server_port = to_integer(properties -> ServerPort), 
+	error_msg = if(properties -> Error != "", properties -> Error),
+	policy = if(properties -> Policy != "", properties -> Policy),
+	rule = if(properties -> Rule != "", properties -> Rule)
+| alter
+	xdm.event.outcome = XDM_CONST.OUTCOME_FAILED,
+	xdm.event.outcome_reason = error_msg,
+	xdm.intermediate.host.ipv4_public_addresses = if(dns_server_ipv4 != null and not incidr(dns_server_ipv4, "10.0.0.0/8") and not incidr(dns_server_ipv4, "172.16.0.0/12") and not incidr(dns_server_ipv4, "192.168.0.0/16") and not incidr(dns_server_ipv4, "127.0.0.0/8") and not incidr(dns_server_ipv4, "169.254.0.0/16") and not incidr(dns_server_ipv4, "100.64.0.0/10"), arraycreate(dns_server_ipv4)),
+	xdm.intermediate.ipv4 = dns_server_ipv4,
+	xdm.intermediate.ipv6 = dns_server_ipv6,
+	xdm.intermediate.port = dns_server_port,
+	xdm.network.rule = coalesce(concat(policy, ":", rule), rule, policy),
+	xdm.target.host.fqdn = properties -> Fqdn;
+
+
+// Azure Firewall Azure Firewall IDPS Signature (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwidpssignature)
 filter category = "AZFWIdpsSignature" 
 | alter 
 	action = if(properties -> Action != "", properties -> Action),
