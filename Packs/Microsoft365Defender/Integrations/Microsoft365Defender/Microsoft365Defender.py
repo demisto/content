@@ -513,6 +513,7 @@ def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: st
             for incident in raw_incidents:
                 incident.update(_get_meta_data_for_incident(incident))
                 incident.update(mirroring_fields)
+                demisto.debug("MIRRORING FIELDS: " + str(incident))
 
             incidents += [{
                 "name": f"Microsoft 365 Defender {incident.get('incidentId')}",
@@ -627,14 +628,30 @@ def fetch_modified_incidents(client: Client, last_update_time) -> List[dict]:
     return incidents
 
 
-def get_modified_remote_data_command(client: Client, args: dict):
+def handle_incoming_closing_incidents(incidents: List[dict]) -> List[dict]:
+    #todo: check what will happen if runs on already closed incident -> in terms of the server
+    pass
+
+
+def get_modified_remote_data_command(client: Client, close_incident: bool):
+    #todo - do we want to sync assignedto like in xdr?
     last_update = get_last_mirror_run().get("last_update")
     last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
     time_now = datetime.datetime.now(datetime.timezone.utc)
-    modified_incidents = fetch_modified_incidents(client, last_update_utc)
-    set_last_mirror_run({"last_update": time_now.strftime(DATE_FORMAT)})
-    #todo - handle incident reopen and closing
-    return GetModifiedRemoteDataResponse(modified_incidents_data=modified_incidents)
+    try:
+        modified_incidents = fetch_modified_incidents(client, last_update_utc)
+        if close_incident:
+            entries = handle_incoming_closing_incidents(modified_incidents)
+        set_last_mirror_run({"last_update": time_now.strftime(DATE_FORMAT)})
+        #todo - handle incident reopen and closing
+        #skip update: In case of a failure. In order to notify the server that the command failed and prevent execution of the get-remote-data commands, returns an error that contains the string "skip update".?
+        return GetModifiedRemoteDataResponse(modified_incidents_data=modified_incidents)
+    except Exception as e:
+        demisto.debug(f"Error in Microsoft 365 defender incoming mirror \n"
+                      f"Error message: {str(e)}")
+        if "Rate limit exceeded" in str(e): #todo - check if this is the correct error message + on the server side what does is expect to ger
+            return_error("API rate limit")
+
 
 
 def update_remote_system_command(client: Client, args: dict):
@@ -680,10 +697,14 @@ def main() -> None:
     fetch_limit = arg_to_number(params.get('max_fetch', 10))
     fetch_timeout = arg_to_number(params.get('fetch_timeout', TIMEOUT))
 
+    demisto.info(str(params))
     mirroring_fields = {
         'mirroring_direction': MIRROR_DIRECTION.get(params.get('mirror_direction', 'None')),
         'mirroring_instance': demisto.integrationInstance()
     }
+
+    close_incident = argToBoolean(params.get('close_incident', False))
+    demisto.debug("MIRRORING FIELDS: " + str(mirroring_fields))
     demisto.debug(f'Command being called is {demisto.command()}')
 
     command = demisto.command()
@@ -747,7 +768,7 @@ def main() -> None:
             return_results(get_remote_data_command(client, args))
 
         elif command == 'get-modified-remote-data':
-            modified_incidents = get_modified_remote_data_command(client, args)
+            modified_incidents = get_modified_remote_data_command(client, close_incident)
             return_results(modified_incidents)
 
         elif command == 'update-remote-system':
