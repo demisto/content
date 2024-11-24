@@ -1026,7 +1026,7 @@ tasks:
     task:
       id: b09a9327-e34b-4f81-8782-e54ae932ca27
       version: -1
-      name: Check for forwarding address domain
+      name: Check if a forwarding address domain exist
       type: condition
       iscommand: false
       brand: ""

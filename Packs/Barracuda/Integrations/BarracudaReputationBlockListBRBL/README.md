@@ -1,15 +1,11 @@
 This integration enables reputation checks against IPs from Barracuda Reputation Block List (BRBL)
 This integration was integrated and tested with Barracuda Reputation Block List (BRBL)
-## Configure Barracuda Reputation Block List (BRBL) on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Barracuda Reputation Block List (BRBL).
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure Barracuda Reputation Block List (BRBL) in Cortex
 
 
-4. Click **Test** to validate the connection.
+
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ip
 ***
@@ -70,4 +66,3 @@ Get IP Reputation
 >|indicator|
 >|---|
 >| 1.1.1.1 |
-
