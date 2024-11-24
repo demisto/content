@@ -19,7 +19,7 @@ configuration:
   type: 0
   required: true
   section: Collect
-  defaultValue: '1'
+  defaultvalue: '1'
 - display: Port number
   name: port
   type: 0
