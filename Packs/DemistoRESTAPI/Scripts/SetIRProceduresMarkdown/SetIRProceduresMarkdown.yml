@@ -12,5 +12,5 @@ runas: DBotRole
 subtype: python3
 tests:
 - GetTasksWithSections SetIRProcedures end to end test
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.11.10.116949
 fromversion: 6.0.0
