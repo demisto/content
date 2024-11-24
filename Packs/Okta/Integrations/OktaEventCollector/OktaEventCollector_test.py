@@ -71,7 +71,16 @@ def test_remove_duplicates(events, ids, result):
               '1d0844b6-3148-11ec-9027-a5b57ec5fbbb'], 'next_link': ''}),
     ([],
      '2022-04-17T12:31:36.667',
-     {'after': '2022-04-17T12:31:36.667000', 'ids': [], 'next_link': ''})])
+     {'after': '2022-04-17T12:31:36.667000', 'ids': [], 'next_link': ''}),
+    ([{'published': '2022-04-17T12:31:36',
+       'uuid': '1d0844b6-3148-11ec-9027-a5b57ec5faaa'},
+      {'published': '2022-04-17T12:32:36',
+       'uuid': '1d0844b6-3148-11ec-9027-a5b57ec5fbbb'},
+      {'published': '2022-04-17T12:33:36',
+       'uuid': '1d0844b6-3148-11ec-9027-a5b57ec5fccc'}],
+     '2022-04-17T11:30:00',
+     {'after': '2022-04-17T12:33:36', 'ids': ['1d0844b6-3148-11ec-9027-a5b57ec5fccc'], 'next_link': ''})
+])
 def test_get_last_run(events, last_run_after, result):
     assert get_last_run(events, last_run_after, next_link='') == result
 

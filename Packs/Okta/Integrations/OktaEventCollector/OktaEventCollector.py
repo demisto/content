@@ -1,6 +1,6 @@
 from http import HTTPStatus
 from typing import cast
-
+from dateutil.parser import parse
 from CommonServerPython import *
 
 VENDOR = "okta"
@@ -131,7 +131,13 @@ def get_last_run(events: List[dict], last_run_after, next_link) -> dict:
         if event.get('published') != last_time:
             break
         ids.append(event.get('uuid'))
-    last_time = datetime.strptime(str(last_time).lower().replace('z', ''), '%Y-%m-%dt%H:%M:%S.%f')
+    try:
+        last_time = datetime.strptime(str(last_time).lower().replace('z', ''), '%Y-%m-%dt%H:%M:%S.%f')
+    except ValueError:
+        last_time = parse(str(last_time).lower().replace('z', ''))
+    except Exception as e:  # General exception
+        logger.error(f'Unexpected error parsing published date from event: {e}')
+
     return {'after': last_time.isoformat(), 'ids': ids, 'next_link': next_link}
 
 
