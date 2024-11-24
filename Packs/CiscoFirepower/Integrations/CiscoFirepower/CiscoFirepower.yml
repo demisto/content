@@ -3296,7 +3296,7 @@ script:
     - contextPath: CiscoFP.URLGroups.Overridable
       description: Whether objects can be overridden.
       type: string
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   script: ''
   subtype: python3
