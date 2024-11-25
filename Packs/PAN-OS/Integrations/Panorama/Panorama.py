@@ -14557,6 +14557,9 @@ def create_or_update_master_key(args: dict, action: Literal['create', 'update'])
     raw_response: dict = http_request(URL, 'GET', params={'type': 'op', 'key': API_KEY, 'cmd': master_key_cmd})
     response_result = dict_safe_get(raw_response, ('response', 'result'))  # human readable message
 
+    # Creating or updating the encryption master key by definition invalidates the current API key, refer to the integration docs.
+    demisto.info(f'The master key of {URL} has been {action}d. The current API key has been invalidated.')
+
     return CommandResults(readable_output=str(response_result), raw_response=raw_response)
 
 
