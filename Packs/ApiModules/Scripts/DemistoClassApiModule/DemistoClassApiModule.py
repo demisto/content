@@ -12,33 +12,32 @@ if sys.version_info[0] >= 3:
             (E.g., self.results). """
 
             def initialize(self):
-                self.script_name = self.callingContext["context"].get("ScriptName") or ""
-                self.command_name = self.callingContext["command"] or ""
-                self.exec_type = "command" if self.command_name else "script"
-                self._name = self.script_name or self.command_name
+                script_name = self.callingContext["context"].get("ScriptName") or ""
+                command_name = self.callingContext["command"] or ""
+                self.exec_type = "command" if command_name else "script"
+                self._name = script_name or command_name
                 self.root_caller = self._get_root_caller()
                 self._log_execution_details()
 
             def in_execute_command_call(self):
+                """Returns true if this command / script was executed using demisto.executeCommand()
+                from a different script.
+                """
                 return self.callingContext["context"]["CommandsExecuted"]["CurrLevel"] > 0
 
             def _get_root_caller(self):
+                """Returns the name of the script which called the current command / script using demisto.executeCommand()
+                """
                 executed_commands = self.callingContext["context"].get("ExecutedCommands") or []
                 return executed_commands[0]["name"] if executed_commands else None
 
             def _log_execution_details(self):
-                msg = self.exec_type.title() + " being called is [{}]".format(self._name)
+                """Adds a debug log of the name of the command / script currently being executed.
+                """
+                msg = "Executing {}: {}".format(self.exec_type, self._name)
                 if self.in_execute_command_call() and self.root_caller:
                     msg += " (root caller: {})".format(self.root_caller)
-                super(DemistoWrapper, self).debug(msg)
-
-            def info(self, msg):
-                if not msg.lower().startswith(self.exec_type + " being called is"):
-                    super(DemistoWrapper, self).info(msg)
-
-            def debug(self, msg):
-                if not msg.lower().startswith(self.exec_type + " being called is"):
-                    super(DemistoWrapper, self).debug(msg)
+                self.debug(msg)
 
         class DemistoScript(DemistoWrapper):
             def getFilePath(self, id):
@@ -47,16 +46,22 @@ if sys.version_info[0] >= 3:
                 return res
 
             def _drop_debug_log_entry(self, entries):
+                """Given a list of executeCommand results, sends the log file entry to demisto.results()
+                and returns only non-log file entries.
+                """
                 entries = [entries] if isinstance(entries, dict) else entries
                 if isinstance(entries, list):
                     for idx, entry in enumerate(entries):
                         if entry["Type"] == 16:
-                            entry["File"] = self.script_name + "_" + entry["File"]
                             self.results(entry)
                             return entries[:idx] + entries[idx + 1:]
                 return entries[0] if len(entries) == 1 else entries
 
             def executeCommand(self, command, args):
+                """A wrapper for demisto.executeCommand.
+                When debug-mode is true, adds debug logs before and after the execution,
+                and handles the log file entry.
+                """
                 if self.is_debug:
                     self.debug("Going to execute {}".format(command))
                     start_time = datetime.now()
@@ -68,6 +73,9 @@ if sys.version_info[0] >= 3:
 
         class DemistoIntegration(DemistoWrapper):
             def _stringify_last_run(self, last_run, truncate_size=1024):
+                """Gets a truncated string of the last run object.
+                If last run is larger than 1 MB, a warning log is printed.
+                """
                 last_run_str = json.dumps(last_run, indent=4)
                 last_run_size = len(last_run_str.encode('utf-8'))
                 if last_run_size > 1024 ** 2:  # 1MB
@@ -90,6 +98,10 @@ if sys.version_info[0] >= 3:
                 super(DemistoIntegration, self).setLastRun(obj)
 
             def incidents(self, incidents):
+                """A wrapper for demisto.incidents.
+                Prints the number of incidents pulled, and if they contain their source IDs under the
+                `dbotMirrorId` field, includes them as well.
+                """
                 if isinstance(incidents, list):
                     source_ids = []
                     for inc in incidents:
@@ -102,6 +114,9 @@ if sys.version_info[0] >= 3:
                 super(DemistoIntegration, self).incidents(incidents)
 
             def createIndicators(self, indicators_batch, noUpdate=False):
+                """A wrapper for demisto.createIndicators.
+                Prints the number of indicators pulled, and the execution time of createIndicators().
+                """
                 self.debug("Creating {} indicators".format(len(indicators_batch)))
                 start_time = datetime.now()
                 super(DemistoIntegration, self).createIndicators(indicators_batch, noUpdate)
