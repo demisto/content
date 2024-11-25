@@ -482,11 +482,11 @@ def ip_command(client: Client, args: dict) -> List[CommandResults]:
     """_summary_
 
     Args:
-        client (Client): _description_
-        args (dict): _description_
+        client (Client): An instance of the client to call the GET commands.
+        args (dict): The arguments inputted by the user.
 
     Returns:
-        List[CommandResults]: _description_
+        List[CommandResults]: A list of CommandResults objects to be returned to XSOAR.
     """
 
     def headers_transform(header):
