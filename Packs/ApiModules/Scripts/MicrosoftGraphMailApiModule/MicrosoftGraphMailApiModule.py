@@ -287,13 +287,13 @@ class MsGraphMailBaseClient(MicrosoftClient):
             if not attachment_name.isascii():
                 try:
                     demisto.debug(f"Trying to decode the attachment file name: {attachment_name}")
-                    attachment_name = base64.b64decode(attachment_name)  # type: ignore
+                    attachment_name = b64_decode(attachment_name)  # type: ignore
                 except Exception as e:
                     demisto.debug(f"Could not decode the {attachment_name=}: error: {e}")
 
             if attachment_type == self.FILE_ATTACHMENT:
                 try:
-                    attachment_content = base64.b64decode(attachment.get('contentBytes', ''))
+                    attachment_content = b64_decode(attachment.get('contentBytes', ''))
                 except Exception as e:  # skip the uploading file step
                     demisto.info(f"failed in decoding base64 file attachment with error {str(e)}")
                     continue
@@ -1345,7 +1345,7 @@ class GraphMailUtils:
             name = f"{content_id}-attachmentName-{name}"
         data = raw_attachment.get('contentBytes')
         try:
-            data = base64.b64decode(data)  # type: ignore
+            data = b64_decode(data)  # type: ignore
             return fileResult(name, data)
         except binascii.Error:
             raise DemistoException('Attachment could not be decoded')
