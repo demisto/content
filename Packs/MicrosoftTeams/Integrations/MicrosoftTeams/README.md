@@ -1162,7 +1162,7 @@ The messaging endpoint should be added to the Demisto bot configuration in Micro
 
 | **Argument Name**   | **Description**                                                                 | **Required** |
 |---------------------|---------------------------------------------------------------------------------|--------------|
-| engine_url          | If your instance configuration involve an xsoar engine, provide the engine's IP (or DNS name) and the port in use in the following format - `https://IP:port` or `http://IP:port`. For example - `https://my-engine.name:443`, `http://1.1.1.1:443`. | Optional     | 
+| engine_url          | If your instance configuration involves a Cortex XSOAR engine, provide the engine's IP (or DNS name) and the port in use in the following format - `https://IP:port` or `http://IP:port`. For example - `https://my-engine.name:443`, `http://1.1.1.1:443`. | Optional     | 
 
 ##### Context Output
 There is no context output for this command.
