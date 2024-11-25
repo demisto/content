@@ -2910,17 +2910,20 @@ def test_parse_fields(fields, expected):
     ("Somthing happened", None, None, '{"event": "Somthing happened", "fields": {"field1": "value1"}, "index": "main"}'),
     (None, "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}", None,
      "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"),  # Batch event data
+    (None, None, "some entry_id", "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"),
+    (None, """{'event': "some event's", 'index': 'some index'} {'event': 'some event', 'index': 'some index'}""", None,
+     """{'event': "some event's", 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"""),  # Batch event data with ' in the event
     (None, None, "some entry_id", "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}")
 ])
 @patch("requests.post")
-@patch("SplunkPy.get_events_from_file")  # Replace with the actual module
-@patch("SplunkPy.convert_to_json_for_validation")
+@patch("SplunkPy.get_events_from_file")
+@patch("SplunkPy.extract_indexes")
 @patch("SplunkPy.validate_indexes")
 @patch("SplunkPy.parse_fields")
 def test_splunk_submit_event_hec(
     mock_parse_fields,
     mock_validate_indexes,
-    mock_convert_to_json_for_validation,
+    mock_extract_indexes,
     mock_get_events_from_file,
     mock_post,
     event,
@@ -2946,17 +2949,15 @@ def test_splunk_submit_event_hec(
 
     if event:
         # Single event
-        mock_convert_to_json_for_validation.return_value = [{"event": event}]
+        mock_extract_indexes.return_value = ['some index']
     elif batch_event_data:
         # Batch event data
-        mock_convert_to_json_for_validation.return_value = [{'event': 'some event', 'index': 'some index'},
-                                                            {'event': 'some event', 'index': 'some index'}]
+        mock_extract_indexes.return_value = ['some index1', 'some index2']
     elif entry_id:
         # Entry ID
         mock_get_events_from_file.return_value =\
             "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"
-        mock_convert_to_json_for_validation.return_value =\
-            [{'event': 'some event', 'index': 'some index'}, {'event': 'some event', 'index': 'some index'}]
+        mock_extract_indexes.return_value = ['some index1', 'some index2']
 
     # Act
     splunk_submit_event_hec(
@@ -2983,7 +2984,7 @@ def test_splunk_submit_event_hec(
             "Content-Type": "application/json",
             "X-Splunk-Request-Channel": "test_channel",
         },
-        verify=True,
+        verify=False,
     )
 
 
@@ -3003,9 +3004,9 @@ def test_splunk_submit_event_hec_command_no_required_arguments():
     ("{'index': 'index1', 'event': 'Something happend '} {'index': 'index 2', 'event': 'Something's happend'}", ['index1', 'index 2']),
     ({'index': 'index1', 'value': '123'}, ['index1']),
     ("{'event': 'value'}", []),
-    ('{"index": "index: 3", "event": "Something happend"}, {"index": "index:4", "event": "Something happend"}', ['index3', 'index4']),
+    ('{"index": "index: 3", "event": "Something happend"}, {"index": "index: 3", "event": "Something happend"}', ['index: 3', 'index: 3']),
     ("{'key': 'value'}, {'key': 'value'}", []),
-    ("""{"index": "index_3", "event": "Something` happend"}, {"index": "index-4", "event": "Something' happend"}""", ['index3', 'index4']),
+    ("""{"index": "index_3", "event": "Something` happend"}, {"index": "index-4", "event": "Something' happend"}""", ['index_3', 'index-4']),
 ])
 def test_extract_indexes(events, expected_result):
     from SplunkPy import extract_indexes
