@@ -266,7 +266,7 @@ def test_okta_get_events(mocker, address, command):
         m.get(
             address,
             json=mock_events)
-        result = main()
+        main()
 
     if command == 'test-module':
         send_events_to_xsiam_mock.assert_not_called()
