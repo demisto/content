@@ -2,8 +2,8 @@ from datetime import datetime
 from datetime import timedelta
 
 from freezegun import freeze_time
-from CommonServerPython import get_integration_context, BaseClient
-from NetQuestOMX import Client, TOKEN_TTL, DATE_FORMAT_FOR_TOKEN
+from CommonServerPython import get_integration_context
+from NetQuestOMX import TOKEN_TTL, DATE_FORMAT_FOR_TOKEN, Client
 import json
 import pytest
 
@@ -14,33 +14,24 @@ def util_load_json(path):
 
 
 # ----------------------------------------- COMMAND FUNCTIONS TESTS ---------------------------
-HEADERS = {'Content-Type': 'application/json', "X-Auth-Token": None}
-
-
+@freeze_time('2021-08-26')
 @pytest.fixture
-def netquest_omx_client(mocker, requests_mock):
+def net_quest_omx_client(requests_mock):
     credentials = {"identifier": 'UserName', "password": 'Password'}
-    mocker.patch.object(BaseClient, '_headers', return_value=HEADERS)
-    requests_mock.post('https://www.example.com/api/SessionService/Sessions')
-
+    requests_mock.post('https://www.example.com/api/SessionService/Sessions', json={})
     return Client(base_url='https://www.example.com', credentials=credentials, verify=True, proxy=False)
 
 
-@freeze_time('2021-08-26')
-def test_login_client(mocker, requests_mock, netquest_omx_client):
+def test_login_client(net_quest_omx_client):
     """
     Given:
-        - credentials for the client
+        - NetQuestOMX client object
     When:
-        - creating a NetQuestOMX client object
+        - getting the integration context
     Then:
-        - Ensure the expiration time is written as expected in the integration context
+        - Ensure the expiration time is calculated as expected in the integration context (TTL - 60 seconds safety)
     """
-    from NetQuestOMX import Client
-    mocker.patch.object(BaseClient, 'headers', return_value=HEADERS)
-    requests_mock.post('https://www.example.com/api/SessionService/Sessions')
-    credentials = {"identifier": 'UserName', "password": 'Password'}
-    Client(base_url='https://www.example.com', credentials=credentials, verify=True, proxy=False)
+
     integration_context = get_integration_context()
 
     assert integration_context["expiration_time"] == \
