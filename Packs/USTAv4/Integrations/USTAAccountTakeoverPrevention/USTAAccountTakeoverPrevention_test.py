@@ -18,24 +18,107 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
+def test_test_module(mocker):
+    """Tests test_module command function.
 
     Checks the output of the command function with the expected output.
 
-    No mock is needed here because the say_hello_command does not call
+    No mock is needed here because the test_module_command does not call
     any external API.
     """
-    from BaseIntegration import Client, baseintegration_dummy_command
+    from USTAAccountTakeoverPrevention import Client, test_module
 
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
-    }
-    response = baseintegration_dummy_command(client, args)
+    mock_response = util_load_json('test_data/auth_success_response.json')
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
+    client = Client(
+        base_url='',
+        verify=False,
+        headers={},
+        proxy=False
+    )
 
+    mocker.patch.object(client, 'check_auth', return_value=mock_response)
+
+    response = test_module(client)
+    assert response == 'ok'
+
+def test_compromised_credentials_search_command(mocker):
+    """Tests compromised_credentials_search command function.
+
+    Checks the output of the command function with the expected output.
+
+    No mock is needed here because the compromised_credentials_search_command does not call
+    any external API.
+    """
+    from USTAAccountTakeoverPrevention import Client, compromised_credentials_search_command
+
+    mock_response = util_load_json('test_data/compromised_credentials_search_response.json')
+
+    client = Client(
+        base_url='',
+        verify=False,
+        headers={},
+        proxy=False
+    )
+    mocker.patch.object(client, 'compromised_credentials_search_api_request', return_value=mock_response)
+    response = compromised_credentials_search_command(client, {'username': 'user'})
     assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+    
+
+def test_compromised_credentials_search_command_no_results(mocker):
+    """Tests compromised_credentials_search command function.
+
+    Checks the output of the command function with the expected output.
+
+    No mock is needed here because the compromised_credentials_search_command does not call
+    any external API.
+    """
+    from USTAAccountTakeoverPrevention import Client, compromised_credentials_search_command
+    mock_response = util_load_json('test_data/compromised_credentials_search_empty_response.json')
+
+    client = Client(
+        base_url='',
+        verify=False,
+        headers={},
+        proxy=False
+    )
+    mocker.patch.object(client, 'compromised_credentials_search_api_request', return_value=mock_response)
+    response = compromised_credentials_search_command(client, {'username': 'user'})
+    assert response.outputs == mock_response
+
+def test_fetch_incidents(mocker):
+    """Tests fetch_incidents command function.
+
+    Checks the output of the command function with the expected output.
+
+    No mock is needed here because the fetch_incidents_command does not call
+    any external API.
+    """
+    from USTAAccountTakeoverPrevention import Client, fetch_incidents, USTA_API_PREFIX
+
+    base_url = f'https://usta.prodaft.com/{USTA_API_PREFIX}'
+
+    mock_response = util_load_json('test_data/fetch_incidents_response.json')
+    expected_output = util_load_json('test_data/fetch_incidents_expected_output.json')
+
+    headers: dict = {
+        'Authorization': 'token test123',
+        'Content-Type': 'application/json'
+    }
+
+    client = Client(
+        base_url=base_url,
+        verify=False,
+        headers=headers,
+        proxy=False
+    )
+
+    mocker.patch.object(client, 'compromised_credentials_api_request', return_value=mock_response)
+
+    next_run, incidents = fetch_incidents(
+        client=client,
+        max_results=100,
+        last_run={},
+        first_fetch_time='3 days'
+    )
+    assert incidents == expected_output

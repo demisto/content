@@ -29,7 +29,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
     def check_auth(self):
-        self._http_request('GET', 'malicious-urls', error_handler=self._http_error_handler)
+        self._http_request('GET', 'company/me', error_handler=self._http_error_handler)
 
     def compromised_credentials_api_request(self, **kwargs) -> list:
         params = assign_params(**kwargs)

@@ -1,0 +1,8 @@
+[
+    {
+        "name": "[Employee] Compromised Credentials: USTA Ticket ID : 7668573",
+        "occurred": "2024-11-25T10:09:57.669094Z",
+        "severity": 4,
+        "rawJSON":  "{\"id\": 2403059, \"ticket_id\": 7668573, \"status\": \"open\", \"username\": \"user12345\", \"password\": \"******\", \"password_complexity\": {\"other\": 0, \"score\": 1, \"length\": 6, \"numbers\": 6, \"symbols\": 6, \"lowercase\": 0, \"uppercase\": 0, \"separators\": 0, \"punctuation\": 0}, \"url\": \"https://example.com\", \"is_corporate\": \"False\", \"source\": \"N/A\", \"created\": \"2024-11-25T10:09:57.669094Z\", \"victim_detail\": {\"username\": \"UserDell\", \"ip\": \"0.0.0.0\", \"country\": \"Unknown\", \"phone_number\": \"N/A\", \"computer_name\": \"MASKED-PC\", \"victim_os\": \"Windows\", \"language\": \"English\", \"memory\": \"N/A\", \"cpu\": \"MASKED_CPU\", \"gpu\": \"MASKED_GPU\", \"malware\": \"StealC\", \"infection_date\": \"N/A\", \"created\": \"2024-11-25T10:09:56.817521Z\"}, \"alert_type\": \"compromised_credentials\"}"
+    }
+]
