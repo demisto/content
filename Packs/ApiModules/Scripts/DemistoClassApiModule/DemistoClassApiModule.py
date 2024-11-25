@@ -72,16 +72,18 @@ if sys.version_info[0] >= 3:
                 return super(DemistoScript, self).executeCommand(command, args)
 
         class DemistoIntegration(DemistoWrapper):
-            def _stringify_last_run(self, last_run, truncate_size=1024):
+            LAST_RUN_TRUNCATE_SIZE = 1024
+            LAST_RUN_SIZE_RECOMMENDATION_MB = 1024 ** 2  # 1MB
+            def _stringify_last_run(self, last_run, truncate_size=LAST_RUN_TRUNCATE_SIZE):
                 """Gets a truncated string of the last run object.
                 If last run is larger than 1 MB, a warning log is printed.
                 """
                 last_run_str = json.dumps(last_run, indent=4)
                 last_run_size = len(last_run_str.encode('utf-8'))
-                if last_run_size > 1024 ** 2:  # 1MB
+                if last_run_size > self.LAST_RUN_SIZE_RECOMMENDATION_MB:
                     self.debug(
                         "[WARNING] last run size exceeds recommendation: {} MB".format(
-                            round(last_run_size / (1024 ** 2), 1),
+                            round(last_run_size / self.LAST_RUN_SIZE_RECOMMENDATION_MB, 1),
                         )
                     )
                 if len(last_run_str) > truncate_size:
