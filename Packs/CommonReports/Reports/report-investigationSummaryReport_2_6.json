@@ -1,11 +1,11 @@
 {
-    "id": "docxInvestigationSummaryReport",
+    "id": "investigationSummaryReport",
     "name": "Investigation Summary",
     "description": "A summary report that contains various details such as evidence and investigation time line, investigation team, statistics and more",
-    "fromVersion": "5.0.0",
+    "fromVersion": "9.0.0",
     "tags": [],
     "createdBy": "DBot",
-    "type": "docx",
+    "type": "pdf",
     "orientation": "portrait",
     "recipients": [],
     "system": true,
@@ -981,7 +981,39 @@
                 ],
                 "classes": "collapsing selectable unstackable"
             }
+        },
+        {
+            "type": "text",
+            "data": "Linked Incidents",
+            "layout": {
+                "rowPos": 600000,
+                "columnPos": 100,
+                "style": {
+                    "textAlign": "left",
+                    "fontSize": 24,
+                    "color": "#4e6767",
+                    "pageBreakBefore": "always"
+                }
+            }
+        },
+        {
+            "type": "table",
+            "query": {
+                "type": "sessionData",
+                "filter": "linkedIncidents"
+            },
+            "layout": {
+                "rowPos": 600001,
+                "columnPos": 100,
+                "tableColumns": [
+                    "ID",
+                    "Name",
+                    "Status",
+                    "Closure Reason",
+                    "Close Notes"
+                ],
+                "classes": "collapsing selectable unstackable"
+            }
         }
-    ],
-    "toVersion": "8.9.0"
+    ]
 }

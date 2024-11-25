@@ -2,7 +2,7 @@
     "id": "MTTRbyOwner2Quar",
     "name": "Mean time to Resolve by Incident Owner (Last 2 Quarters)",
     "description": "This report generates Mean Time to Resolve by Incident Owner for last 2 Quarters",
-    "fromVersion": "5.0.0",
+    "fromVersion": "9.0.0",
     "tags": [],
     "createdBy": "DBot",
     "type": "pdf",
@@ -298,6 +298,5 @@
                 }
             }
         }
-    ],
-    "toVersion": "8.9.0"
+    ]
 }

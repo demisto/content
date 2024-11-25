@@ -1,12 +1,11 @@
 {
-    "id": "MTTRbyOwner2Quar",
-    "name": "Mean time to Resolve by Incident Owner (Last 2 Quarters)",
-    "description": "This report generates Mean Time to Resolve by Incident Owner for last 2 Quarters",
-    "fromVersion": "5.0.0",
+    "id": "csvDailyIncidentReport",
+    "name": "Daily incidents",
+    "description": "Daily summary of incidents statistics, followed by a list of all current open incidents.",
     "tags": [],
     "createdBy": "DBot",
-    "type": "pdf",
-    "orientation": "portrait",
+    "type": "csv",
+    "orientation": "",
     "recipients": [],
     "system": true,
     "decoder": {
@@ -105,24 +104,18 @@
         "investigation.closed": {
             "type": "date",
             "value": "Mon, 02 Jan 2006 15:04:05 MST"
-        },
-        "investigation.openDuration": {
-            "type": "duration"
-        },
-        "incident.openDuration": {
-            "type": "duration"
         }
     },
     "sections": [
         {
             "type": "header",
-            "data": "MTTR by Incident Owner (last 2 Quarters)",
+            "data": "Daily Incidents",
             "layout": {
                 "rowPos": 1,
                 "columnPos": 1,
                 "style": {
                     "textAlign": "left",
-                    "fontSize": 24
+                    "fontSize": 28
                 }
             }
         },
@@ -143,161 +136,86 @@
             }
         },
         {
-            "type": "divider",
+            "type": "placeholder",
+            "query": {
+                "type": "incident",
+                "filter": {
+                    "totalOnly": true
+                }
+            },
+            "data": "Total incidents: {0}",
             "layout": {
                 "rowPos": 3,
-                "style": {}
+                "columnPos": 1,
+                "sectionStyle": {
+                    "width": 200
+                },
+                "style": {
+                    "textAlign": "left",
+                    "fontSize": 18
+                }
             }
         },
         {
             "type": "placeholder",
             "query": {
                 "type": "incident",
-                "keys": [
-                    "avg|openDuration / (3600*24)",
-                    "count|1"
-                ],
                 "filter": {
-                    "status": [
-                        2
+                    "notStatus": [
+                        2,
+                        3
                     ],
                     "andOp": true,
-                    "totalOnly": false,
+                    "totalOnly": true,
                     "period": {
-                        "by": "day",
-                        "fromValue": 180,
+                        "by": "hour",
+                        "fromValue": 24,
                         "toValue": 0,
                         "field": "created"
                     }
                 }
             },
-            "data": "MTTR Time: {0} hours for {1} Incidents",
+            "data": "Last day incidents: {0}",
             "layout": {
-                "rowPos": 4,
-                "columnPos": 1,
+                "rowPos": 3,
+                "columnPos": 2,
                 "style": {
                     "textAlign": "left",
-                    "fontSize": 16
+                    "fontSize": 18
                 }
-            }
-        },
-        {
-            "type": "chart",
-            "query": {
-                "type": "incident",
-                "groupBy": [
-                    "closed(m)",
-                    "owner"
-                ],
-                "keys": [
-                    "avg|openDuration / (3600*24)"
-                ],
-                "filter": {
-                    "status": [
-                        2
-                    ],
-                    "andOp": true,
-                    "totalOnly": false,
-                    "period": {
-                        "by": "day",
-                        "fromValue": 180,
-                        "toValue": 0,
-                        "field": "created"
-                    }
-                }
-            },
-            "layout": {
-                "rowPos": 6,
-                "columnPos": 1,
-                "chartType": "line",
-                "style": {
-                    "textAlign": "left",
-                    "fontSize": 12,
-                    "marginTop": -10
-                },
-                "referenceLineX": {
-                    "stroke": "green"
-                },
-                "referenceLineY": {
-                    "stroke": "green"
-                },
-                "dimensions": {
-                    "width": 500,
-                    "height": 300
-                },
-                "legendStyle": {},
-                "legend": [
-                    {
-                        "name": "Critical",
-                        "fill": "#8d070a"
-                    },
-                    {
-                        "name": "High",
-                        "fill": "#D00a00"
-                    },
-                    {
-                        "name": "Medium",
-                        "fill": "#cb4a00"
-                    },
-                    {
-                        "name": "Low",
-                        "fill": "#267634"
-                    },
-                    {
-                        "name": "Informational",
-                        "fill": "#4357b8"
-                    },
-                    {
-                        "name": "Unknown",
-                        "fill": "#999999"
-                    }
-                ]
             }
         },
         {
             "type": "table",
             "query": {
                 "type": "incident",
-                "groupBy": [
-                    "owner",
-                    "closed(m)"
-                ],
-                "keys": [
-                    "avg|openDuration / (3600*24)",
-                    "count|1"
-                ],
                 "filter": {
-                    "status": [
-                        2
+                    "notStatus": [
+                        2,
+                        3
                     ],
-                    "andOp": true,
-                    "totalOnly": false,
-                    "period": {
-                        "by": "day",
-                        "fromValue": 180,
-                        "toValue": 0,
-                        "field": "created"
-                    }
+                    "andOp": true
                 }
             },
             "layout": {
-                "rowPos": 7,
+                "rowPos": 4,
                 "columnPos": 1,
                 "tableColumns": [
-                    "Owner",
-                    "Month closed",
-                    "Total incidents",
-                    "Mean time to close (days)"
+                    "id",
+                    "name",
+                    "occurred",
+                    "created",
+                    "type",
+                    "owner",
+                    "severity",
+                    "status",
+                    "phase",
+                    "dueDate",
+                    "details"
                 ],
-                "classes": "striped stackable small very compact",
-                "readableHeaders": {
-                    "owner": "Owner",
-                    "closed(m)": "Month closed",
-                    "avg|openDuration / (3600*24)": "Mean time to close (days)",
-                    "count|1": "Total incidents"
-                }
+                "classes": "striped stackable small very compact"
             }
         }
     ],
-    "toVersion": "8.9.0"
+    "fromVersion": "9.0.0"
 }

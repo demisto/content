@@ -2,7 +2,7 @@
     "id": "docxInvestigationSummaryReport",
     "name": "Investigation Summary",
     "description": "A summary report that contains various details such as evidence and investigation time line, investigation team, statistics and more",
-    "fromVersion": "5.0.0",
+    "fromVersion": "9.0.0",
     "tags": [],
     "createdBy": "DBot",
     "type": "docx",
@@ -982,6 +982,5 @@
                 "classes": "collapsing selectable unstackable"
             }
         }
-    ],
-    "toVersion": "8.9.0"
+    ]
 }

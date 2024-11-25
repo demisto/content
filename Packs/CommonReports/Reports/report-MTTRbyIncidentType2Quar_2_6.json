@@ -1,8 +1,8 @@
 {
-    "id": "MTTRbyOwner2Quar",
-    "name": "Mean time to Resolve by Incident Owner (Last 2 Quarters)",
-    "description": "This report generates Mean Time to Resolve by Incident Owner for last 2 Quarters",
-    "fromVersion": "5.0.0",
+    "id": "MTTRbyIncidentType2Quar",
+    "name": "Mean time to Resolve by Incident Type (Last 2 Quarters)",
+    "description": "This report generates Mean Time to Resolve by Incident type for last 2 Quarters",
+    "fromVersion": "9.0.0",
     "tags": [],
     "createdBy": "DBot",
     "type": "pdf",
@@ -116,7 +116,7 @@
     "sections": [
         {
             "type": "header",
-            "data": "MTTR by Incident Owner (last 2 Quarters)",
+            "data": "MTTR by Incident type (last 2 Quarters)",
             "layout": {
                 "rowPos": 1,
                 "columnPos": 1,
@@ -171,7 +171,7 @@
                     }
                 }
             },
-            "data": "MTTR Time: {0} hours for {1} Incidents",
+            "data": "MTTR Time: {0} hours for {1} incidents",
             "layout": {
                 "rowPos": 4,
                 "columnPos": 1,
@@ -187,7 +187,7 @@
                 "type": "incident",
                 "groupBy": [
                     "closed(m)",
-                    "owner"
+                    "type"
                 ],
                 "keys": [
                     "avg|openDuration / (3600*24)"
@@ -259,8 +259,8 @@
             "query": {
                 "type": "incident",
                 "groupBy": [
-                    "owner",
-                    "closed(m)"
+                    "closed(m)",
+                    "type"
                 ],
                 "keys": [
                     "avg|openDuration / (3600*24)",
@@ -284,20 +284,19 @@
                 "rowPos": 7,
                 "columnPos": 1,
                 "tableColumns": [
-                    "Owner",
                     "Month closed",
-                    "Total incidents",
+                    "Type",
+                    "# Incidents",
                     "Mean time to close (days)"
                 ],
                 "classes": "striped stackable small very compact",
                 "readableHeaders": {
-                    "owner": "Owner",
+                    "type": "Type",
                     "closed(m)": "Month closed",
                     "avg|openDuration / (3600*24)": "Mean time to close (days)",
-                    "count|1": "Total incidents"
+                    "count|1": "# Incidents"
                 }
             }
         }
-    ],
-    "toVersion": "8.9.0"
+    ]
 }
