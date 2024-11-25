@@ -1435,7 +1435,7 @@ class ExchangeOnlinePowershellV3Client
             if ($identity) {
                 $cmd_params.Identity = $identity
             }
-            $response = Disable-InboxRule @cmd_params -WarningAction:SilentlyContinue
+            $response = Disable-InboxRule -Confirm:$false @cmd_params -WarningAction:SilentlyContinue
         } finally {
             $this.DisconnectSession()
         }
@@ -1577,7 +1577,7 @@ class ExchangeOnlinePowershellV3Client
             if ($identity) {
                 $cmd_params.Identity = $identity
             }
-            $response = Remove-TransportRule @cmd_params -WarningAction:SilentlyContinue
+            $response = Remove-TransportRule -Confirm:$false @cmd_params -WarningAction:SilentlyContinue
         } finally {
             $this.DisconnectSession()
         }
@@ -2287,9 +2287,15 @@ function DisableRuleCommand {
     $mailbox = $kwargs.mailbox
     $identity = $kwargs.identity
     $raw_response = $client.DisableRule($mailbox, $identity)
-    $human_readable = "Rule $identity has been disabled successfully"
-    $entry_context = @{}
-    Write-Output $human_readable, $entry_context, $raw_response
+    $Demisto.Debug("itamar raw_response $raw_response")
+    if($raw_response -eq $null){
+        Write-Output "No mailbox $mailbox was found or no Rule with identity $identity was found in the mailbox"
+    }
+    else {
+        $human_readable = "Rule $identity has been disabled successfully"
+        $entry_context = @{}
+        Write-Output $human_readable, $entry_context, $raw_response
+    }
 }
 function EnableRuleCommand {
     [CmdletBinding()]
