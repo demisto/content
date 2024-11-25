@@ -123,7 +123,6 @@ call o365_common_fields
 	xdm.source.user.identifier = coalesce(LogonUserSid, UserKey),
 	xdm.source.user.username = LogonUserDisplayName,
 	xdm.intermediate.host.hostname = OriginatingServer,
-	xdm.target.resource.id = formid,
 	xdm.observer.type = Workload,  
 	xdm.source.ipv4 = check_src_ipv4,
 	xdm.source.ipv6 = check_src_ipv6,
