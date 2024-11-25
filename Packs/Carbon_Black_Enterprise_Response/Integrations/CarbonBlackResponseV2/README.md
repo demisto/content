@@ -3,29 +3,25 @@ This integration was integrated and tested with product version 6.2 of VMware Ca
 
 Some changes have been made that might affect your existing content. 
 
-## Configure VMware Carbon Black EDR v2 on Cortex XSOAR
+## Configure VMware Carbon Black EDR v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for VMware Carbon Black EDR v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | API Token |  | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Filter alerts by query | Advanced query string. Accepts the same data as the search box on the Alert Search page.<br/>For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf.<br/>If provided, other search filters are not allowed. | False |
-    | Filter alerts by status |  | False |
-    | Filter alerts by feed name |  | False |
-    | Maximum Number Of Incidents To Fetch |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| API Token |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Filter alerts by query | Advanced query string. Accepts the same data as the search box on the Alert Search page.<br/>For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf.<br/>If provided, other search filters are not allowed. | False |
+| Filter alerts by status |  | False |
+| Filter alerts by feed name |  | False |
+| Maximum Number Of Incidents To Fetch |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cb-edr-processes-search
 ***
@@ -1982,4 +1978,3 @@ Display information about the given sensor
 >|Hostname|ID|IPAddress|IsIsolated|MACAddress|Memory|OSVersion|Status|Vendor|
 >|---|---|---|---|---|---|---|---|---|
 >| WIN-SOSSKVTTQAB | 15 | x.x.x.x | No ~~~~~~~~| 06d3d4a5ba28 | 1073332224 | Windows Server 2012 R2 Server Standard, 64-bit | Online | Carbon Black Response |
-
