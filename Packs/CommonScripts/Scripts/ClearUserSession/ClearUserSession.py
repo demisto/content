@@ -170,8 +170,8 @@ def remove_system_user(users_names: list[str]) -> tuple[list, dict]:
             demisto.debug(f"Skipping user: '{user}' is a system user.")
             data_user[user] = {
                 "Result": "Failed",
-                "Message": "Unable to clear system user.",
-                "Brands": "",
+                "Message": "Skipping session clearing: User is a system user.",
+                "Source": [],
             }
         else:
             filtered_users.append(user)
@@ -273,7 +273,7 @@ def create_readable_output(outputs):
         outputs (dict): A dictionary where each key is a username and the value is
             another dictionary containing:
             - "Result" (str): The session result (e.g., Success, Failure).
-            - "Brands" (str, optional): The brand(s) associated with the session.
+            - "Source" (str, optional): The brand(s) associated with the session.
             - "Message" (str): A detailed message related to the session status.
 
     Returns:
@@ -283,16 +283,16 @@ def create_readable_output(outputs):
         {
             "Entity": username,
             "Result": details["Result"],
-            "Brands": details.get("Brands", ""),
+            "Source": ", ".join(details.get("Source", [])),
             "Message": details["Message"],
         }
         for username, details in outputs.items()
     ]
 
     readable_output = tableToMarkdown(
-        name="Users Session Status",
+        name="User(s) Session Status",
         t=data_users_list,
-        headers=["Entity", "Result", "Brands", "Message"],
+        headers=["Entity", "Result", "Source", "Message"],
         removeNull=True,
     )
     return readable_output
@@ -330,14 +330,13 @@ def main():
                 demisto.debug(f"Start getting user account data for user: {user_name=}")
 
                 user_output = {
-                    "Entity": user_name,
                     "Result": "",
-                    "Brands": "",
+                    "Source": [],
                     "Message": "",
                 }
                 if user_name not in users_ids:
                     user_output["Result"] = "Failed"
-                    user_output["Message"] = "Username not found or no integration connect."
+                    user_output["Message"] = "Username not found or no integration configured."
                     outputs[user_name] = user_output
                     continue
 
@@ -386,11 +385,11 @@ def main():
 
                 if success:
                     user_output["Result"] = "Success"
-                    user_output["Brands"] = ", ".join(brands_succeeded)
+                    user_output["Source"] = brands_succeeded
                     user_output["Message"] = SUCCESS_MESSAGE
                 else:
                     user_output["Result"] = "Failed"
-                    user_output["Brands"] = ", ".join(brands_failed)
+                    user_output["Source"] = brands_failed
                     user_output["Message"] = failed_message
 
                 outputs[user_name] = user_output
@@ -407,7 +406,7 @@ def main():
             CommandResults(
                 readable_output=create_readable_output(outputs),
                 outputs=outputs,
-                outputs_prefix="SessionClearingResults",
+                outputs_prefix="SessionClearResults",
             )
         )
 

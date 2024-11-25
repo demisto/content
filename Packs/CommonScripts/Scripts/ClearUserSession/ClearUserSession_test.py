@@ -476,7 +476,7 @@ def test_main_user_not_found(mocker: MockerFixture):
     args, _ = mock_return_results.call_args
     assert len(args[0]) == 1
     assert isinstance(args[0][0], CommandResults)
-    assert "Unable to clear system user" in args[0][0].readable_output
+    assert "Skipping session clearing: User is a system user." in args[0][0].readable_output
     assert (
         "user1" in args[0][0].readable_output
     )
@@ -490,13 +490,13 @@ def test_remove_system_user_with_system_users():
     expected_data_user = {
         "administrator": {
             "Result": "Failed",
-            "Message": "Unable to clear system user.",
-            "Brands": "",
+            "Message": "Skipping session clearing: User is a system user.",
+            "Source": [],
         },
         "system": {
             "Result": "Failed",
-            "Message": "Unable to clear system user.",
-            "Brands": "",
+            "Message": "Skipping session clearing: User is a system user.",
+            "Source": [],
         }
     }
 
