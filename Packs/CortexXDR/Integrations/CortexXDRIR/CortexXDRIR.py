@@ -617,9 +617,9 @@ def get_incident_extra_data_command(client, args):
     if isinstance(raw_incident, list):
         raw_incident = raw_incident[0]
     if raw_incident.get('incident', {}).get('alert_count') > ALERTS_LIMIT_PER_INCIDENTS:
-        demisto.debug(f'for incident:{incident_id} using the old call since "\
-            "alert_count:{raw_incident.get("incident", {}).get("alert_count")} >" \
-            "limit:{ALERTS_LIMIT_PER_INCIDENTS}')
+        demisto.debug(f"for incident:{incident_id} using the old call since "
+            f"alert_count:{raw_incident.get('incident', {}).get('alert_count')} >"
+            "limit:{ALERTS_LIMIT_PER_INCIDENTS}")
         raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
     readable_output = [tableToMarkdown(f'Incident {incident_id}', raw_incident.get('incident'), removeNull=True)]
 
