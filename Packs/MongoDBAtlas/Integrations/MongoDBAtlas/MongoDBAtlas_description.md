@@ -1,4 +1,4 @@
-## MongoDB Atlas Help
+## MongoDB Atlas
 
 ### To create an API key for a project using the MongoDB Atlas UI:
 
