@@ -1150,7 +1150,7 @@ There is no context output for this command.
 
 ### microsoft-teams-create-messaging-endpoint
 ***
-Generates the messaging endpoint, based on the server url, the server version and the instance configurations. 
+Generates the messaging endpoint, based on the server URL, the server version, and the instance configurations. 
 
 The messaging endpoint should be added to the Demisto bot configuration in Microsoft Teams as part of the Prerequisites of the integration's set-up. For more information see - [Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#create-the-demisto-bot-in-microsoft-teams).
 
