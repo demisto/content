@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "LLM Document Management",
+        "AI Playground"
+    ],
+    "caseInsensitive": true,
+    "cliName": "llmnewcontext",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_llmnewcontext",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "llmnewcontext",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "longText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

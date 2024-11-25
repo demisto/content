@@ -1,0 +1,21 @@
+comment: Clears the current workspace conversation buffer stored in an XSOAR field and deletes the LLM's workspace conversation thread. The next question starts a new conversation thread with empty LLM context.
+commonfields:
+  id: AnyLlmClearConvo
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.116949
+enabled: true
+engineinfo: {}
+name: AnyLlmClearConvo
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
