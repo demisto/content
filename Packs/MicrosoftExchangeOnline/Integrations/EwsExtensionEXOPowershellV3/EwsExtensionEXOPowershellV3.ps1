@@ -2286,8 +2286,7 @@ function DisableRuleCommand {
     )
     $mailbox = $kwargs.mailbox
     $identity = $kwargs.identity
-    $result = $client.DisableRule($mailbox, $identity)
-    $raw_response = @{}
+    $raw_response = $client.DisableRule($mailbox, $identity)
     $human_readable = "Rule $identity has been disabled successfully"
     $entry_context = @{}
     Write-Output $human_readable, $entry_context, $raw_response
