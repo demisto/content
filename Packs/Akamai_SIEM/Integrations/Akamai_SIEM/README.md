@@ -40,8 +40,8 @@ A WAF (web application firewall) is a filter that protects against HTTP applicat
     | Config ids to fetch | True | |
     | Incident type | False | |
     | First fetch timestamp | False | |
-    | Fetch limit | False | Limit on the number of incidents retrieved in a single fetch. |
-    | Akamai Page size | False | The number of events to fetch per request to akamai (multiple requests are made for each fetch). If you're getting aggregated delays, increase the number. The maximum is 600,000. |
+    | Fetch limit | False | Limit on the number of incidents retrieved in a single fetch. The maximum is 45k.|
+    | Akamai Page size | False | The number of events to fetch per request to akamai (multiple requests are made for each fetch). If you're getting aggregated delays, increase the number. The maximum is 45,000. |
     | Trust any certificate (not secure) | False | |
     | Use system proxy settings | False | |
 
@@ -266,8 +266,8 @@ Get security events from Akamai WAF.
 ## receiving 416 error code / aggregated delay when fetching events:
 This may be due to not querying for enough events per interval / request.
 The proposed solution in that case is to use the two parameters **Fetch limit** and **Akamai Page size**.
-**Fetch limit** is the number of total events we want to retrieve each fetch interval.
-**Akamai Page size** is the number of events we want to retrieve each request. Note that the suggested maximum for **Akamai Page size** is 200k.
+**Fetch limit** is the number of total events we want to retrieve each fetch interval. Note that the maximum allowed value is 45k.
+**Akamai Page size** is the number of events we want to retrieve each request. Note that the maximum allowed value is 45k.
 Meaning that an interval may execute multiple requests and therefore you should configure **Akamai Page size** < **Fetch limit**
 You should work to find the balance between them in a way that both the command, and the request won't get any timeout.
 
