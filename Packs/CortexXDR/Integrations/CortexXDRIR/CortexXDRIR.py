@@ -1100,8 +1100,9 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
     demisto.debug(f"{last_fetch=}")
+    demisto.debug(f"Previous last run: {last_run=}")
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run, dict) else []
-    demisto.debug(f"{incidents_from_previous_run=}")
+    demisto.debug(f"Incident last run: {incidents_from_previous_run=}")
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
         last_fetch, _ = parse_date_range(first_fetch_time, to_timestamp=True)
@@ -1116,9 +1117,9 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
     if incidents_from_previous_run:
         demisto.debug('using incidents from previous run')
         raw_incidents = incidents_from_previous_run
-        demisto.debug(f'Before: {ALERTS_LIMIT_PER_INCIDENTS=}')
+        demisto.debug(f'Before update: {ALERTS_LIMIT_PER_INCIDENTS=}')
         ALERTS_LIMIT_PER_INCIDENTS = last_run.get('alerts_limit_per_incident', -1) if isinstance(last_run, dict) else -1
-        demisto.debug(f'After: {ALERTS_LIMIT_PER_INCIDENTS=}')
+        demisto.debug(f'After update: {ALERTS_LIMIT_PER_INCIDENTS=}')
     else:
         demisto.debug('no incidents from previous run, fetching')
         if statuses:  
@@ -1194,7 +1195,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
         else:
             raise
     finally:
-        demisto.debug(f'{incident_ids}')
+        demisto.debug(f'Incidents fetched in this run: {incident_ids=}')
 
     if non_created_incidents:
         next_run['incidents_from_previous_run'] = non_created_incidents
@@ -1203,7 +1204,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
         next_run['incidents_from_previous_run'] = []
 
     next_run['time'] = last_fetch + 1
-    demisto.debug(f'{next_run=}')
+    demisto.debug(f'New next run: {next_run=}')
     return next_run, incidents
 
 
