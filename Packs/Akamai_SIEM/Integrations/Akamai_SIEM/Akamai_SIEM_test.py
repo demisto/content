@@ -494,7 +494,8 @@ def test_dedup_events(hashed_events_mapping, hashed_events_from_previous_run, ex
         (datetime(2024, 4, 10, 10, 1, 10), 30, 0, 70, False)
     ],
 )
-def test_is_interval_doesnt_have_enough_time_to_run(mocker, freeze_mock, min_allowed_delta, worst_case_time, expected_time, expected_should_break):
+def test_is_interval_doesnt_have_enough_time_to_run(mocker, freeze_mock,
+                                                    min_allowed_delta, worst_case_time, expected_time, expected_should_break):
     """
     Given: min_allowed_delta
         - Case 1: min_allowed_delta = 30, no worst_case_time set yet, and 50 seconds to timeout.

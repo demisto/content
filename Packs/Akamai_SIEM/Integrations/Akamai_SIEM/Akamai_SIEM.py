@@ -475,17 +475,12 @@ def fetch_events_command(
     offset = ctx.get("offset")
     hashed_events_from_previous_run = set(ctx.get("hashed_events_from_previous_run", set()))
     auto_trigger_next_run = False
-    old_page_size = page_size
     worst_case_time = 0
     execution_counter = 0
     while total_events_count < fetch_limit:
-        if (remaining_events_to_fetch := fetch_limit - total_events_count) < page_size:
-            demisto.info(f"{remaining_events_to_fetch=} < {page_size=}, lowering page_size to {remaining_events_to_fetch}.")
-            old_page_size = page_size
-            page_size = remaining_events_to_fetch
         if execution_counter > 0:
             demisto.info(f"The execution number is {execution_counter}, checking for breaking conditions.")
-            if is_last_request_smaller_than_page_size(len(events), old_page_size):
+            if is_last_request_smaller_than_page_size(len(events), page_size):  # type: ignore[has-type]
                 demisto.info("last request wasn't big enough, breaking.")
                 break
             should_break, worst_case_time = is_interval_doesnt_have_enough_time_to_run(DOCKER_MIN_TIME_TO_RUN, worst_case_time)
@@ -493,6 +488,9 @@ def fetch_events_command(
                 demisto.info("Not enough time for another execution, breaking and triggering next run.")
                 auto_trigger_next_run = True
                 break
+        if (remaining_events_to_fetch := fetch_limit - total_events_count) < page_size:
+            demisto.info(f"{remaining_events_to_fetch=} < {page_size=}, lowering page_size to {remaining_events_to_fetch}.")
+            page_size = remaining_events_to_fetch
         demisto.info(f"Preparing to get events with {offset=}, {page_size=}, and {fetch_limit=}")
         try:
             events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
