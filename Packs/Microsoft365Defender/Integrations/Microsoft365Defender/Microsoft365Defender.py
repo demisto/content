@@ -513,7 +513,7 @@ def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: st
             for incident in raw_incidents:
                 incident.update(_get_meta_data_for_incident(incident))
                 incident.update(mirroring_fields)
-                demisto.debug("MIRRORING FIELDS: " + str(incident))
+                demisto.debug(f"MIRRORING FIELDS: {str(incident)=}")
 
             incidents += [{
                 "name": f"Microsoft 365 Defender {incident.get('incidentId')}",
@@ -630,11 +630,13 @@ def fetch_modified_incidents(client: Client, last_update_time) -> List[dict]:
 
 
 MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON = {
-    'Not set': 'Resolved',
-    'True Positive': 'Resolved',
-    'False Positive': 'False Positive',
-    'Informational / Expected Activity': 'Resolved',
+    'Unknown': 'Resolved',
+    'TruePositive': 'Resolved',
+    'FalsePositive': 'False Positive',
+    'InformationalExpectedActivity': 'Resolved',
 }
+
+
 def handle_incoming_closing_incidents(incidents: List[dict]) -> List[dict]:
     #todo: check what will happen if runs on already closed incident -> in terms of the server
     closing_incidents_data = []
@@ -718,13 +720,14 @@ def main() -> None:
     fetch_timeout = arg_to_number(params.get('fetch_timeout', TIMEOUT))
 
     demisto.info(str(params))
+
     mirroring_fields = {
-        'mirroring_direction': MIRROR_DIRECTION.get(params.get('mirror_direction', 'None')),
-        'mirroring_instance': demisto.integrationInstance()
+        'mirror_direction': MIRROR_DIRECTION.get(params.get('mirror_direction', 'None')),
+        'mirror_instance': demisto.integrationInstance()
     }
 
     close_incident = argToBoolean(params.get('close_incident', False))
-    demisto.debug("MIRRORING FIELDS: " + str(mirroring_fields))
+    demisto.debug(str(mirroring_fields))
     demisto.debug(f'Command being called is {demisto.command()}')
 
     command = demisto.command()
