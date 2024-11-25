@@ -14,6 +14,8 @@ import os
 import re
 import socket
 import sys
+import tempfile
+import threading
 import time
 import traceback
 import types
@@ -29,6 +31,8 @@ from distutils.version import LooseVersion
 from threading import Lock
 from functools import wraps
 from inspect import currentframe
+import cProfile
+import threading
 
 import demistomock as demisto
 import warnings
@@ -12081,7 +12085,102 @@ def get_server_config():
     body = parse_json_string(response.get('body'))
     server_config = body.get('sysConf', {})
     return server_config
+def profiler_thread_function(signal_event: threading.Event, profiler: cProfile.Profile):
+    """
+    Thread function for profiling the content automation execution. The thread will run until a signal is received,
+     or the timeout is reached.
+    :param signal_event: The event to signal when profiling is complete.
+    :param profiler: The Profile object to use for profiling.
+    """
 
+    def dump_result():
+        """
+        Helper function to dump the profiling results to a file and return the file.
+        """
+        # Create a temporary file to store profiling data
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            profiler.dump_stats(temp_file.name)
+            temp_file_path = temp_file.name
+
+        # Read the profiling data from the temporary file
+        with open(temp_file_path, 'rb') as f:
+            profiling_results = f.read()
+
+        # Delete the temporary file
+        os.remove(temp_file_path)
+
+        # Use Demisto's fileResult to create a file from the profiling stats
+        demisto.results(fileResult('profiling_stats.prof', profiling_results))
+
+    # 5 minutes in nanoseconds
+    default_timeout = 60 * 5 * 1e9
+    finish_before_timeout_seconds = 5
+    # The system timeout configuration.
+    timeout_nanoseconds = demisto.callingContext["context"].get("TimeoutDuration") or default_timeout
+    timeout_seconds = timeout_nanoseconds / 1e9
+
+    # Start a timer to handle a timeout 5 second before it expires.
+    timer = threading.Timer(5,
+                            lambda: print("Timeout reached, dumping the profiler results."))
+    timer.start()
+
+    while True:
+        if signal_event.wait(0.1):  # Check for the event signal
+            break
+        if not timer.is_alive():  # Check if the timeout occurred
+            is_timeout = True
+            break
+
+    profiler.disable()
+    dump_result()
+    demisto.debug("Profiler finished.")
+    if is_timeout:
+        raise DemistoException("The script reached to timed out. Profiling results have been saved to the context.")
+
+
+def xsoar_profiler(func):
+    """
+    A decorator that profiles the execution of a function and generates a profiling report.
+    To use, decorate the function that calls the function you want to profile with @xsoar_profiler.
+    Example: I want to profile the function_to_profile() function:
+        function_to_profile():
+            # some code
+
+        @xsoar_profiler
+        foo():
+            function_to_profile()
+
+    :param func: The function to be profiled.
+    :return: The profiled function.
+    """
+
+    def profiler_wrapper(*args, **kwargs):
+        """
+        A wrapper function that profiles the execution of the decorated function.
+        :param args: The positional arguments to be passed to the decorated function.
+        :param kwargs: The keyword arguments to be passed to the decorated function.
+        :return: The result of the decorated function.
+        """
+
+        profiler = cProfile.Profile()
+        # signal for the profiler thread to exit
+        signal_event = threading.Event()
+
+        # Create and start the profiler thread
+        profiler_thread = threading.Thread(target=profiler_thread_function, args=(signal_event, profiler))
+        profiler_thread.start()
+
+        profiler.enable()
+        demisto.debug("Profiler started.")
+        results = func(*args, **kwargs)
+
+        # Signal the profiler cleanup.
+        signal_event.set()
+        # Wait for the profiler thread to finish
+        profiler_thread.join()
+        return results
+
+    return profiler_wrapper
 
 from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
 
