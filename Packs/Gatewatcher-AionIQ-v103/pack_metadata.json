@@ -1,0 +1,25 @@
+{
+    "name": "Gatewatcher AionIQ",
+    "description": "This pack provide integration with Gatewatcher NDR solution : AIonIQ",
+    "support": "partner",
+    "currentVersion": "1.1.21",
+    "author": "Gatewatcher",
+    "url": "https://www.gatewatcher.com/",
+    "email": "integration@gatewatcher.com",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "FabienMht",
+        "CesarGW",
+        "ThibaultReboul",
+	"clement-lyonnet"
+    ]
+}

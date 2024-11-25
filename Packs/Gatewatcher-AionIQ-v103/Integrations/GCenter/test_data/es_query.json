@@ -1,0 +1,105 @@
+{
+    "took": 15,
+    "timed_out": false,
+    "_shards": {
+        "total": 2,
+        "successful": 2,
+        "skipped": 0,
+        "failed": 0
+    },
+    "hits": {
+        "total": {
+            "value": 10000,
+            "relation": "gte"
+        },
+        "max_score": 0.000088265144,
+        "hits": [
+            {
+                "_index": "malware-2022.03.21-000001",
+                "_type": "_doc",
+                "_id": "AI_6rH8B45-K_AzrBMvO",
+                "_score": 0.000088265144,
+                "_source": {
+                    "reporting_token": "No GBOX",
+                    "timestamp": "2022-03-21T11:10:49+0000",
+                    "gcenter": "test.domain.com",
+                    "analyzed_clean": 2,
+                    "type": "malcore",
+                    "engines_up": 16,
+                    "file_type_description": "Executable File",
+                    "engines_installed": 16,
+                    "uuid": "d7e612cb-567a-431b-a14b-9f9f4e88c9a4",
+                    "detail_threat_found": "Infected : Malware/Win32.Generic",
+                    "analyzed_infected": 9,
+                    "in_iface": "monvirt",
+                    "detail_scan_time": 5715,
+                    "@version": "1",
+                    "engine_id": {
+                        "0": {
+                            "id": "038e407ba285f0e01dd30c6e4f77ec19ba",
+                            "scan_result": "CLEAN",
+                            "threat_details": ""
+                        },
+                        "1": {
+                            "id": "054a20c51cbe9d2cc7d6a237d6cd4e08ab",
+                            "scan_result": "INFECTED",
+                            "threat_details": "Malware/Win32.Generic"
+                        }
+                    },
+                    "total_found": "9/16",
+                    "http": {
+                        "hostname": "192.168.0.2",
+                        "http_content_type": "application/pdf",
+                        "protocol": "HTTP/1.1",
+                        "http_method": "GET",
+                        "length": 9311,
+                        "status": 200,
+                        "url": "/18d6caa3f1a4e18ce4db63cfa927fca134e"
+                    },
+                    "sha256": "18d6caa3f1a4e18ce4db63cfa927fca13",
+                    "src_port": 80,
+                    "dest_port": 35168,
+                    "detail_wait_time": 237410,
+                    "file_type": "application/x-dosexec",
+                    "flow_id": 1544096072809159,
+                    "@timestamp": "2022-03-21T14:55:40.676Z",
+                    "src_ip": "192.168.0.2",
+                    "SHA256": "18d6caa3f1a4e18ce4db63cfa927fca",
+                    "processing_time": 243125,
+                    "magic_details": "PE32 executable (GUI) Intel 80386",
+                    "timestamp_detected": "2022-03-21T11:10:49.000Z",
+                    "proto": "TCP",
+                    "gcap": "test.domain.com",
+                    "timestamp_analyzed": "2022-03-21T14:55:40.676Z",
+                    "code": 1,
+                    "analyzed_other": 5,
+                    "state": "Infected",
+                    "engines_last_update_date": "2022-03-20T14:47:00Z",
+                    "severity": 1,
+                    "app_proto": "http",
+                    "fileinfo": {
+                        "tx_id": 0,
+                        "sha256": "18d6caa3f1a4e18ce4db63cfa927fca134e8a403",
+                        "sid": [
+                            1100008
+                        ],
+                        "gaps": false,
+                        "md5": "b6b154eddbf35988b194f9017bd8995c",
+                        "state": "CLOSED",
+                        "size": 9311,
+                        "stored": true,
+                        "file_id": 1136,
+                        "magic": "PDF document, version 1.5",
+                        "filename": "/18d6caa3f1a4e18ce4db63cfa927fca134",
+                        "replica": false
+                    },
+                    "dest_ip": "192.168.0.1",
+                    "analyzed_suspicious": 0,
+                    "event_type": "malware",
+                    "host": "test.domain.com",
+                    "analyzed_error": 0
+                }
+            }
+        ]
+    }
+}
