@@ -1,10 +1,12 @@
 from datetime import datetime
 from datetime import timedelta
 import CommonServerPython
+from CommonServerPython import DemistoException
 from freezegun import freeze_time
 from pytest_mock import MockerFixture
 from NetQuestOMX import TOKEN_TTL, DATE_FORMAT_FOR_TOKEN, Client, fetch_events, address_list_upload_command, \
-    address_list_optimize_command, address_list_create_command, address_list_rename_command, address_list_delete_command
+    address_list_optimize_command, address_list_create_command, address_list_rename_command, address_list_delete_command, \
+    get_events
 import json
 import demistomock as demisto
 import pytest
@@ -125,6 +127,50 @@ def test_fetch_events(requests_mock, net_quest_omx_client):
             for statistic_type in statistic_types_to_fetch
         ]
 
+
+def test_get_events(requests_mock, net_quest_omx_client):
+    """
+    Given:
+        - 2 statistic_types_to_fetch
+    When:
+        - Executing get_events function
+    Then:
+        - Ensure number of events as number of statistic_types_to_fetch (event for each type)
+    """
+
+    params = {"slot": "1", "port": "1"}
+    args = {"statistic_types_to_fetch": "Metering Stats,Export Stats"}
+
+    requests_mock.get(f'{BASE_URL}Systems/Slot/{params["slot"]}/Ipfix/Status/Metering',
+                      json=util_load_json('test_data/MeteringStas.json'))
+
+    requests_mock.get(f'{BASE_URL}Systems/Slot/{params["slot"]}/Ipfix/Status/Export',
+                      json=util_load_json('test_data/ExportStats.json'))
+
+    events = get_events(net_quest_omx_client, params, args)
+
+    assert len(events) == 2
+
+
+def test_get_events_invalid_input(net_quest_omx_client):
+    """
+    Given:
+        - invalid inputs -  statistic_types_to_fetch
+    When:
+        - Executing get_events function
+    Then:
+        - Ensure an exception is thrown
+    """
+
+    params = {"slot": "1", "port": "1"}
+    args = {"statistic_types_to_fetch": "Metering ,Export"}
+    expected_error_msg = "Those are the valid types:" \
+                         " ('Metering Stats', 'Export Stats', 'Export Peaks FPS', 'Optimization Stats')." \
+                         " Please execute the command get-events again with valid input." \
+                         " This input is invalid: ['Metering', 'Export']"
+    with pytest.raises(DemistoException) as e:
+        get_events(net_quest_omx_client, params, args)
+    assert e.value.message == expected_error_msg
 
 def test_address_list_upload_command(mocker, requests_mock, net_quest_omx_client):
     """

@@ -106,6 +106,25 @@ script:
         required: true
     description: "This command deletes the list by the given address."
     name: netquest-address-list-delete
+  - arguments:
+      - auto: PREDEFINED
+        defaultValue: 'false'
+        description: When true, the integration creates Cortex XSIAM events. Otherwise, they will only be displayed.
+        name: should_push_events
+        predefined:
+          - 'true'
+          - 'false'
+        required: true
+      - name: statistic_types_to_fetch
+        description: Comma-separated list of statistic types to return.
+        isArray: true
+        defaultValue: "Metering Stats,Export Stats,Export Peaks FPS,Optimization Stats"
+        required: true
+    description: Gets events from NetQuestOMX. Actually each event is a report for the suitable type. Only for XSIAM.
+    execution: false
+    name: get-events
+    hidden:
+      - xsoar
   runonce: false
   script: '-'
   type: python

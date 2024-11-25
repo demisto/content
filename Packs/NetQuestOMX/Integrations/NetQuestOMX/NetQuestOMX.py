@@ -370,6 +370,40 @@ def fetch_events(client: Client, slot_number: str, port_number: str, statistic_t
     return events
 
 
+def get_events(client: Client, params: dict, args: dict) -> list[dict]:
+    """
+    Args:
+        client (Client): NetQuest client to use.
+        params (dict)
+        args (dict)
+    Returns:
+        events (list[dict]): A list of events (number of events equal to the number of statistic types given)
+        that will be created in XSIAM.
+    """
+
+    # validate the input
+    statistic_types_to_fetch = argToList(args.get("statistic_types_to_fetch", []) or
+                                         params.get("statistic_types_to_fetch", []))  # arg overrides the param
+
+    valid_types = ("Metering Stats", "Export Stats", "Export Peaks FPS", "Optimization Stats")
+
+    for statistic_type in statistic_types_to_fetch:
+        if statistic_type not in valid_types:
+            raise DemistoException(f"Those are the valid types: {valid_types}."
+                                   f" Please execute the command get-events again with valid input."
+                                   f" This input is invalid: {statistic_types_to_fetch}")
+
+    # execute the command
+    events = fetch_events(
+        client=client,
+        slot_number=params["slot"],  # a required param
+        port_number=params["port"],  # a required param
+        statistic_types_to_fetch=statistic_types_to_fetch
+    )
+
+    return events
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -423,6 +457,21 @@ def main() -> None:
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
             demisto.debug(f'fetched {len(events or [])} events.')
+
+        elif command == "get-events":
+
+            events = get_events(client, params, args)
+
+            return_results(
+                CommandResults(
+                    readable_output=tableToMarkdown(f"{VENDOR} Events:", events),
+                    outputs=events
+                )
+            )
+
+            if argToBoolean(args["should_push_events"]):
+                add_time_to_events(events)
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
