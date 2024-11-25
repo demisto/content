@@ -11,7 +11,7 @@ enabled: true
 scripttarget: 0
 subtype: python3
 fromversion: 6.0.0
-dockerimage: demisto/python3:3.11.10.113941
+dockerimage: demisto/sklearn:1.0.0.108551ה
 runas: DBotWeakRole
 tests:
 - No tests (auto formatted)
