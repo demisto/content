@@ -221,7 +221,10 @@ def test_429_too_many_requests(mocker):
 
 
 @freeze_time('2022-04-17T12:32:36.667Z')
-def test_okta_get_events(mocker):
+@pytest.mark.parametrize("address, command", [
+    ('https://testurl.com/api/v1/logs?sortOrder=ASCENDING&since=2022-04-16T12%3A32%3A36.667000&limit=5', 'okta-get-events')
+])
+def test_okta_get_events(mocker, address, command):
 
     mock_events = [
         {
@@ -241,7 +244,7 @@ def test_okta_get_events(mocker):
             'published': '2022-04-17T14:00:03.000Z'
         }
     ]
-    mocker.patch.object(demisto, 'command', return_value='okta-get-events')
+    mocker.patch.object(demisto, 'command', return_value=command)
     mocker.patch.object(demisto, 'getLastRun', return_value={})
     mocker.patch.object(demisto, 'args', return_value={
         'from_date': '1 day',
@@ -260,8 +263,11 @@ def test_okta_get_events(mocker):
     send_events_to_xsiam_mock = mocker.patch('OktaEventCollector.send_events_to_xsiam', return_value={})
     with requests_mock.Mocker() as m:
         m.get(
-            'https://testurl.com/api/v1/logs?sortOrder=ASCENDING&since=2022-04-16T12%3A32%3A36.667000&limit=5',
+            address,
             json=mock_events)
-        main()
+        result = main()
 
-    send_events_to_xsiam_mock.assert_called_once_with(mock_events, vendor='okta', product='okta')
+    if command == 'test-module':
+        assert result == 'ok'
+    else:
+        send_events_to_xsiam_mock.assert_called_once_with(mock_events, vendor='okta', product='okta')

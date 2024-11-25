@@ -167,7 +167,7 @@ def fetch_events(client: Client,
     return events, next_link
 
 
-def main():  # pragma: no cover
+def main():
     try:
         start_time_epoch = int(time.time())
         demisto_params = demisto.params()
@@ -186,7 +186,7 @@ def main():  # pragma: no cover
             get_events_command(client, events_limit, since=after.isoformat())
             demisto.results('ok')
 
-        if command == 'okta-get-events':
+        elif command == 'okta-get-events':
             after = cast(datetime, dateparser.parse(demisto_args.get('from_date').strip()))
             events, _, _ = get_events_command(client, events_limit, since=after.isoformat())
             command_results = CommandResults(
@@ -215,6 +215,8 @@ def main():  # pragma: no cover
             last_run = get_last_run(events, last_run_after, next_link)
             if last_run:
                 demisto.setLastRun(get_last_run(events, last_run_after, next_link))
+        else:
+            return_error('Unrecognized command: ' + demisto.command())
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {e}')
