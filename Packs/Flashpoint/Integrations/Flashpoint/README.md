@@ -2,7 +2,7 @@ Deprecated. Use Flashpoint Ignite instead.
 This integration was integrated and tested with API version 1.0.0 and 4.0.0 of Flashpoint.
 
 ### Auto Extract Indicator
-Both incident types **Flashpoint Alerts** and **Flashpoint Compromised Credentials** support auto extraction feature by default that extract indicators and enriches their reputations using commands and scripts defined for the indicator type (Refer [this](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Indicator-Extraction) for more detail).
+Both incident types **Flashpoint Alerts** and **Flashpoint Compromised Credentials** support auto extraction feature by default that extract indicators and enriches their reputations using commands and scripts defined for the indicator type (Refer [XSOAR 6.12](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Indicator-Extraction) or [XSOAR 8](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Indicator-extraction) for more detail).
 
 ## Configure Flashpoint on Cortex XSOAR
 
