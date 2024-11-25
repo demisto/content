@@ -100,7 +100,7 @@ configuration:
   additionalinfo: Only relevant to `all` feed. Contains metadata that describes both inbound and outbound email delivery to provide visibility into email tracing, TLS compliance, and routing.
   type: 8
   section: Collect
-- name: q_quarantine
+- name: query_quarantine
   display: Query - Email Quarantine
   additionalinfo: A search criterion that can be used to filter emails that match only certain conditions based on email metadata.
   type: 0
@@ -815,7 +815,7 @@ script:
   - name: symantec-email-security-quarantine-email-list
     description: Retrieves the metadata for quarantined emails belonging to the authenticated user. If the user is an administrator, the API provides options to retrieve the metadata for emails quarantined for another user under his administration.
     arguments:
-    - name: q
+    - name: query
       description: 'A search criterion that can be used to filter emails that match only certain conditions based on email metadata. The search syntax is built by a field name and search value enclosed by parenthesis and the operators: ''OR'', ''AND'' to combine multiple search criteria''s or values, example: (email_subject:test). Acceptable field names are: ''dlp_message_id'', ''email_envelope_sender'', ''email_envelope_sender.raw'', ''email_sender'', ''email_envelope_recipient'', ''email_envelope_recipient.raw'', ''email_subject'', ''email_subject.raw''. See the section called “Search String Syntax” on page 16 in: https://techdocs.broadcom.com/content/dam/broadcom/techdocs/us/en/dita/symantec-security-software/email-security/email-security-cloud/content/EmailQuarantineAPIGuide.pdf.'
     - name: sort_column
       description: Specifies the column to use for sorting. Defaults to `email_date_received`.
@@ -1015,7 +1015,7 @@ script:
   - name: symantec-email-security-item-allow-list
     description: Retrieve the allow list items.
     arguments:
-    - name: q
+    - name: query
       description: A string that at least some part of the allow list item must contain.
     - name: sort_column
       description: Specifies the column to use for sorting.
@@ -1087,7 +1087,7 @@ script:
   - name: symantec-email-security-item-block-list
     description: Retrieve the block list items.
     arguments:
-    - name: q
+    - name: query
       description: A string that at least some part of the block list item must contain.
     - name: sort_column
       description: Specifies the column to use for sorting.

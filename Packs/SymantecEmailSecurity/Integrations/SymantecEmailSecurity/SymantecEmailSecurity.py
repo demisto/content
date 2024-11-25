@@ -1302,7 +1302,7 @@ def list_quarantine_email_command(client: QuarantineClient, args: dict[str, Any]
         CommandResults: Outputs of the command that represent an entry in the warroom.
     """
     raw_response = client.list_quarantine_email(
-        q=args.get("q"),
+        q=args.get("query"),
         sort_column=args.get("sort_column"),
         sort_order=args.get("sort_order", SortOrder.DESC.value),
         after=convert_to_epoch_timestamp(args.get("after")),
@@ -1470,7 +1470,7 @@ def list_item_allow_block_command(client: QuarantineClient, args: dict[str, Any]
     """
     raw_response = client.list_item_allow_block_list(
         access_control=args["access_control"],
-        q=args.get("q"),
+        q=args.get("query"),
         sort_column=args.get("sort_column"),
         sort_order=args.get("sort_order", SortOrder.DESC.value),
         from_date=convert_to_epoch_timestamp(args.get("after")),
@@ -1664,7 +1664,7 @@ def fetch_incidents_quarantine(
     last_run: dict[str, Any],
     first_fetch_time: datetime,
     max_results: int = MAX_INCIDENTS_TO_FETCH,
-    q: str | None = None,
+    query: str | None = None,
     filter_type: QuarantineType | None = None,
     admin_domain: str | None = None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
@@ -1676,7 +1676,7 @@ def fetch_incidents_quarantine(
         first_fetch_time (datetime): If last_run is None then fetch all incidents since first_fetch_time.
         max_results (int, optional): Maximum numbers of incidents per fetch.
             Defaults to MAX_INCIDENTS_TO_FETCH.
-        q: (str | None, optional): A search criterion that can be used to filter emails that match only certain
+        query: (str | None, optional): A search criterion that can be used to filter emails that match only certain
             conditions based on email metadata.
             Defaults to None.
         filter_type: (QuarantineType | None, optional): A string used to filter emails based on the quarantine type.
@@ -1704,7 +1704,7 @@ def fetch_incidents_quarantine(
     demisto.debug(f"New run {last_fetch=}, {last_ids=}.")
 
     response = client.list_quarantine_email(
-        q=q,
+        q=query,
         sort_order=SortOrder.ASC.value,
         after=after,
         filter_type=filter_type,
@@ -1892,7 +1892,7 @@ def main() -> None:
                     last_run=last_run.get("email_quarantine", {}),
                     first_fetch_time=first_fetch_time,
                     max_results=max_results,
-                    q=params.get("q_quarantine"),
+                    query=params.get("query_quarantine"),
                     filter_type=params.get("type_quarantine"),
                     admin_domain=params.get("admin_domain_quarantine"),
                 )
