@@ -223,7 +223,7 @@ def test_429_too_many_requests(mocker):
 @freeze_time('2022-04-17T12:32:36.667Z')
 @pytest.mark.parametrize("address, command", [
     ('https://testurl.com/api/v1/logs?sortOrder=ASCENDING&since=2022-04-16T12%3A32%3A36.667000&limit=5', 'okta-get-events'),
-    ('https://testurl.com/api/v1/logs?sortOrder=ASCENDING&since=2022-04-17T14%3A32%3A36.667000&limit=5', 'test-module')
+    ('https://testurl.com/api/v1/logs?sortOrder=ASCENDING&since=2022-04-17T11%3A32%3A36.667000&limit=5', 'test-module')
 ])
 def test_okta_get_events(mocker, address, command):
 
