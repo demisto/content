@@ -12,7 +12,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: If true, will not raise an error if the image is corrupted and could not be processed.
+- additionalinfo: If true, will not raise an error if the image is corrupt and could not be processed.
   display: Skip on corrupted images
   name: skip_corrupted
   section: Connect
