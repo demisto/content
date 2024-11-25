@@ -62,7 +62,7 @@ args:
   - Course of Action
   - Infrastructure
   - Intrusion Set
-- description: The indicator query for all the entity_b results. The indicators that are the results of the query will be used as the destination of the relationship. For example type:ip AND tags:mytag. For more query examples, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Indicators This argument cannot be used in conjunction with the entity_b argument or the entity_b_type argument.
+- description: The indicator query for all the entity_b results. The indicators that are the results of the query will be used as the destination of the relationship. For example type:ip AND tags:mytag. For more query examples, see for XSOAR 6.12 https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Indicators or for XSOAR 8 https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Manage-indicators This argument cannot be used in conjunction with the entity_b argument or the entity_b_type argument.
   name: entity_b_query
 - auto: PREDEFINED
   description: The name of relationship to be created.
