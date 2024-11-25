@@ -38,7 +38,7 @@ PRODUCT = "WAF"
 FETCH_EVENTS_PAGE_SIZE = 15000
 DOCKER_MIN_TIME_TO_RUN = 30
 EXECUTION_START_TIME = datetime.now()
-ALLOWED_PAGE_SIZE_DELTA = 0.95
+ALLOWED_PAGE_SIZE_DELTA_RATIO = 0.95
 MAX_ALLOWED_FETCH_LIMIT = 45000
 
 # Disable insecure warnings
@@ -408,6 +408,7 @@ def dedup_events(hashed_events_mapping: dict[str, dict], hashed_events_from_prev
                                   event in hashed_events_mapping.items() if hashed_event in filtered_hashed_events]
     return deduped_events, hashed_events_from_current_run
 
+
 def is_last_request_smaller_than_page_size(num_events_from_previous_request: int, page_size: int) -> bool:
     """Checks wether the number of events from the last API call was lower by a certain delta than the request page size.
 
@@ -420,32 +421,30 @@ def is_last_request_smaller_than_page_size(num_events_from_previous_request: int
               Otherwise, return False
     """
     demisto.info(f"Checking whether execution should break with {num_events_from_previous_request=} and {page_size=}")
-    return num_events_from_previous_request < page_size * ALLOWED_PAGE_SIZE_DELTA
+    return num_events_from_previous_request < page_size * ALLOWED_PAGE_SIZE_DELTA_RATIO
 
-def should_break_before_timeout(min_allowed_delta: int, execution_counter: int, old_page_size: int, page_size: int) -> bool:
+
+def is_interval_doesnt_have_enough_time_to_run(min_allowed_delta: int, max_time_took: float) -> tuple[bool, float]:
     """
     Checking whether there's enough time for another fetch request to the Akamai API before docker timeout.
-    The function calculates the average request time multiplied by the factor of the page size difference.
+    The function calculates the time of the first request (including the send_events_to_xsiam_part).
     And checks wether the remaining running time (plus a little delta) is less or equal the expected running time.
     The remaining running time is docker timeout limit in seconds - the run time so far (now time - docker execution start time).
-    The page size difference is the future request page size divided by the previous execution page size (old_page_size).
 
     Args:
         min_allowed_delta (int): The minimum allowed delta that should remain before going on another fetch interval.
-        execution_counter (int): The number of execution so far in the current iteration.
-        old_page_size (int): The page size that was used from the previous request.
-        page_size (int): The page size that is going to be used for this request.
+        max_time_took (float): The worst case execution (the first execution) to compare the rest of the executions to.
     Returns:
         bool: Return True if there's not enough time. Otherwise, return False.
     """
     timeout_time_nano_seconds = demisto.callingContext.get('context', {}).get('TimeoutDuration')
     timeout_time_seconds = timeout_time_nano_seconds / 1000000000
     now = datetime.now()
-    time_since_interval_begining = (now - EXECUTION_START_TIME).total_seconds()
-    avg_execution_time =  time_since_interval_begining / execution_counter
-    page_size_difference = page_size / old_page_size
-    demisto.info(f"Checking if execution should break with {time_since_interval_begining=}, {avg_execution_time=}, and {page_size_difference=}")
-    return (timeout_time_seconds - time_since_interval_begining - min_allowed_delta) <= avg_execution_time * page_size_difference
+    time_since_interval_beginning = (now - EXECUTION_START_TIME).total_seconds()
+    if not max_time_took:
+        max_time_took = time_since_interval_beginning
+    demisto.info(f"Checking if execution should break with {time_since_interval_beginning=}, and {max_time_took=}.")
+    return (timeout_time_seconds - time_since_interval_beginning - min_allowed_delta) <= max_time_took, max_time_took
 
 
 @logger
@@ -456,7 +455,6 @@ def fetch_events_command(
     config_ids: str,
     ctx: dict,
     page_size: int,
-    execution_counter: int
 ) -> Iterator[Any]:
     """Iteratively gathers events from Akamai SIEM. Stores the offset in integration context.
 
@@ -467,10 +465,10 @@ def fetch_events_command(
         config_ids: security configuration ids to fetch, e.g. `51000;56080`
         ctx: The integration context
         page_size: The number of events to limit for every request.
-        execution_counter (int): The number of execution so far in the current iteration.
 
     Yields:
-        (list[dict], str, int, str): events, new offset, total number of events fetched, and new last_run time to set.
+        (list[dict], str, int, set[str], bool): events, new offset, total number of events fetched,
+        event hashes from current fetch, and whether to set nexttrigger=0 for next execution.
     """
     total_events_count = 0
     from_epoch, _ = parse_date_range(date_range=fetch_time, date_format='%s')
@@ -478,8 +476,10 @@ def fetch_events_command(
     hashed_events_from_previous_run = set(ctx.get("hashed_events_from_previous_run", set()))
     auto_trigger_next_run = False
     old_page_size = page_size
+    worst_case_time = 0
+    execution_counter = 0
     while total_events_count < fetch_limit:
-        if (remaining_events_to_fetch := total_events_count - fetch_limit) < page_size:
+        if (remaining_events_to_fetch := fetch_limit - total_events_count) < page_size:
             demisto.info(f"{remaining_events_to_fetch=} < {page_size=}, lowering page_size to {remaining_events_to_fetch}.")
             old_page_size = page_size
             page_size = remaining_events_to_fetch
@@ -487,9 +487,9 @@ def fetch_events_command(
             demisto.info(f"The execution number is {execution_counter}, checking for breaking conditions.")
             if is_last_request_smaller_than_page_size(len(events), old_page_size):
                 demisto.info("last request wasn't big enough, breaking.")
-                demisto.info("Reached a break case, will not start a new execution.")
                 break
-            if should_break_before_timeout(DOCKER_MIN_TIME_TO_RUN, execution_counter, old_page_size, page_size):
+            should_break, worst_case_time = is_interval_doesnt_have_enough_time_to_run(DOCKER_MIN_TIME_TO_RUN, worst_case_time)
+            if should_break:
                 demisto.info("Not enough time for another execution, breaking and triggering next run.")
                 auto_trigger_next_run = True
                 break
@@ -499,6 +499,7 @@ def fetch_events_command(
         except DemistoException as e:
             if "Requested Range Not Satisfiable" in str(e):
                 err_msg = f'Got Index out of range error when attempting to fetch events from Akamai.\n' \
+                    "In order to continue fetching, please run 'akamai-siem-reset-offset' on the specific instance.\n" \
                     'For more information, please refer to the Troubleshooting section in the integration documentation.\n' \
                     f'original error: [{e}]'
                 raise DemistoException(err_msg)
@@ -531,8 +532,9 @@ def fetch_events_command(
         total_events_count += len(deduped_events)
         demisto.info(f"After deduplicate events, Got {len(deduped_events)} events, and {offset=}")
         hashed_events_from_previous_run = hashed_events_from_current_run
-        yield deduped_events, offset, total_events_count, hashed_events_from_previous_run, execution_counter + 1, auto_trigger_next_run
-    yield [], offset, total_events_count, hashed_events_from_previous_run, execution_counter + 1, auto_trigger_next_run
+        execution_counter += 1
+        yield deduped_events, offset, total_events_count, hashed_events_from_previous_run, auto_trigger_next_run
+    yield [], offset, total_events_count, hashed_events_from_previous_run, auto_trigger_next_run
 
 
 def decode_url(headers: str) -> dict:
@@ -598,15 +600,13 @@ def main():  # pragma: no cover
             if limit < page_size:
                 demisto.info(f"Got {limit=} lower than {page_size=}, lowering page_size to {limit}.")
                 page_size = limit
-            execution_counter = 0
-            for events, offset, total_events_count, hashed_events_from_current_run, execution_counter, auto_trigger_next_run in fetch_events_command(  # noqa: B007
+            for events, offset, total_events_count, hashed_events_from_current_run, auto_trigger_next_run in fetch_events_command(  # noqa: B007
                 client,
                 "5 minutes",
                 fetch_limit=limit,
                 config_ids=params.get("configIds", ""),
                 ctx=get_integration_context() or {},
-                page_size=page_size,
-                execution_counter=execution_counter
+                page_size=page_size
             ):
                 if events:
                     demisto.info(f"Sending events to xsiam with latest event time is: {events[-1]['_time']}")
