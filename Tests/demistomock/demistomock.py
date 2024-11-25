@@ -429,8 +429,8 @@ contentSecrets = {
 
 
 def initialize():
-  """Runs some initializations to the demisto object. Should not be used in integration code"""
-  pass
+    """Runs some initializations to the demisto object. Should not be used in integration code"""
+    pass
 
 
 def params():

@@ -74,6 +74,7 @@ if sys.version_info[0] >= 3:
         class DemistoIntegration(DemistoWrapper):
             LAST_RUN_TRUNCATE_SIZE = 1024
             LAST_RUN_SIZE_RECOMMENDATION_MB = 1024 ** 2  # 1MB
+
             def _stringify_last_run(self, last_run, truncate_size=LAST_RUN_TRUNCATE_SIZE):
                 """Gets a truncated string of the last run object.
                 If last run is larger than 1 MB, a warning log is printed.
