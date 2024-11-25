@@ -2361,14 +2361,9 @@ function DisableMailFlowRuleCommand {
     )
     $identity = $kwargs.identity
     $raw_response = $client.DisableMailFlowRule($identity)
-    if($raw_response -eq $null){
-        Write-Output "No Mail Flow Rule were found."
-    }
-    else{
-        $human_readable = "Mail flow rule $identity has been disabled successfully"
-        $entry_context = @{}
-        Write-Output $human_readable, $entry_context, $raw_response
-    }
+    $human_readable = "Mail flow rule $identity has been disabled successfully"
+    $entry_context = @{}
+    Write-Output $human_readable, $entry_context, $raw_response
 }
 function EnableMailFlowRuleCommand {
     [CmdletBinding()]
@@ -2378,14 +2373,9 @@ function EnableMailFlowRuleCommand {
     )
     $identity = $kwargs.identity
     $raw_response = $client.EnableMailFlowRule($identity)
-    if($raw_response -eq $null){
-        Write-Output "No Mail Flow Rule were found."
-    }
-    else{
-        $human_readable = "Mail flow rule $identity has been enabled successfully"
-        $entry_context = @{}
-        Write-Output $human_readable, $entry_context, $raw_response
-    }
+    $human_readable = "Mail flow rule $identity has been enabled successfully"
+    $entry_context = @{}
+    Write-Output $human_readable, $entry_context, $raw_response
 }
 function DisableMailForwardingCommand {
     [CmdletBinding()]
@@ -2395,14 +2385,9 @@ function DisableMailForwardingCommand {
     )
     $identity = $kwargs.identity
     $raw_response = $client.DisableMailForwarding($identity)
-    if($raw_response -eq $null){
-        Write-Output "No mail with corresponding identity were found."
-    }
-    else{
-        $human_readable = "Mail forwarding for user $identity has been disabled successfully"
-        $entry_context = @{}
-        Write-Output $human_readable, $entry_context, $raw_response
-    }
+    $human_readable = "Mail forwarding for user $identity has been disabled successfully"
+    $entry_context = @{}
+    Write-Output $human_readable, $entry_context, $raw_response
 }
 function TestModuleCommand($client)
 {
