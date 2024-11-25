@@ -7999,6 +7999,8 @@ def test_pan_os_create_master_key_command(requests_mock: RequestsMock):
     Panorama.URL = 'https://1.1.1.1:443/api/'
 
     xml_root = load_xml_root_from_test_file('test_data/create_master_key.xml')
+    response_result = xml_root.find('result').text
+
     xml_response_text = ElementTree.tostring(xml_root, encoding='unicode')
     requests_mock.get(Panorama.URL, text=xml_response_text)
 
@@ -8006,7 +8008,10 @@ def test_pan_os_create_master_key_command(requests_mock: RequestsMock):
     command_results: CommandResults = pan_os_create_master_key_command(args)
 
     # Assert
-    assert command_results.readable_output == xml_root.find('result').text
+    assert command_results.readable_output == (
+        f'{response_result}. The current API key has been invalidated. '
+        'Generate a new API key and ensure the integration instance is updated accordingly.'
+    )
     assert command_results.raw_response == json.loads(xml2json(xml_response_text))
 
 

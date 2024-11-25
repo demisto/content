@@ -14560,7 +14560,10 @@ def create_or_update_master_key(args: dict, action: Literal['create', 'update'])
     # Creating or updating the encryption master key by definition invalidates the current API key, refer to the integration docs.
     demisto.info(f'The master key of {URL} has been {action}d. The current API key has been invalidated.')
 
-    return CommandResults(readable_output=str(response_result), raw_response=raw_response)
+    return CommandResults(
+        readable_output=f'{response_result}. The current API key has been invalidated. Generate a new API key and ensure the integration instance is updated accordingly.',
+        raw_response=raw_response,
+    )
 
 
 def pan_os_create_master_key_command(args: dict) -> CommandResults:
