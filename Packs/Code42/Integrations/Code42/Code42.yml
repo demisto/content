@@ -134,7 +134,7 @@ script:
     - description: The alert session ID to resolve. Alert session IDs are associated with alerts that are fetched via fetch-incidents.
       name: id
       required: true
-    - description: The desired state for the alert session. Possible states are OPEN, CLOSED_TP (true positive), CLOSED_FP (false positive)
+    - description: The desired state for the alert session. Possible states are OPEN, CLOSED_TP (true positive), CLOSED_FP (false positive).
       name: state
       auto: PREDEFINED
       predefined:

@@ -1,5 +1,4 @@
 {
-	"brands": null,
 	"cacheVersn": 0,
 	"defaultIncidentType": "",
 	"definitionId": "",
@@ -152,5 +151,6 @@
 	"transformer": {},
 	"type": "mapping-incoming",
 	"unclassifiedCases": null,
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.5.0"
 }

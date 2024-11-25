@@ -36,6 +36,7 @@ from Code42 import (
     Code42MissingSearchArgumentsError,
     file_events_search_command,
     file_events_to_table_command,
+    run_command
 )
 from requests import Response, HTTPError
 import time
@@ -416,7 +417,7 @@ MOCK_CODE42_ALERT_CONTEXT = [
         "ID": "sessionid-abc-123",
         "Name": "document file(s) shared via link from corporate Box",
         "Description": "example rule name",
-        "Occurred": "2024-09-11T14:26:00.680000+00:00",
+        "Occurred": "2024-09-11T19:26:00.680000+00:00",
         "Severity": "MODERATE",
         "State": "OPEN",
         "Username": "someactor@domain.com",
@@ -1183,6 +1184,37 @@ def get_empty_legalhold_custodians_response(mocker, base_text):
 """TESTS"""
 
 
+def test_run_command_returns_results(mocker):
+    mock_returner = mocker.patch("Code42.return_results")
+
+    def test_command():
+        return ["result"]
+
+    run_command(test_command)
+    mock_returner.assert_called_once_with("result")
+
+
+def test_run_command_returns_error(mocker):
+    mock_returner = mocker.patch("Code42.return_error")
+
+    def test_command():
+        raise Exception
+
+    run_command(test_command)
+
+    mock_returner.assert_called_once()
+
+
+def test_run_command_forces_array(mocker):
+    mock_returner = mocker.patch("Code42.return_results")
+
+    def test_command():
+        return "result"
+
+    run_command(test_command)
+    mock_returner.assert_called_once_with("result")
+
+
 def test_client_lazily_inits_sdk(mocker, code42_sdk_mock):
     sdk_factory_mock = mocker.patch("py42.sdk.SDKClient.from_jwt_provider")
     response_json_mock = """{"total": 1, "users": [{"username": "Test"}]}"""
@@ -1222,6 +1254,29 @@ def test_client_raises_helpful_error_when_not_given_an_api_client_id(
         create_client()
 
     assert "Got invalid API Client ID" in str(err)
+
+
+def test_create_client_passes_credential_from_demisto(mocker, code42_sdk_mock):
+    mock_Code42Client = mocker.patch("Code42.Code42Client")
+    mock_demisto = mocker.patch("Code42.demisto")
+    mock_demisto.params.return_value = {
+        "credentials": {"identifier": "key-12345", "password": "1234"},
+        "console_url": "https://console.us.code42.com",
+        "api_url": "https://api.us.code42.com",
+        "insecure": False,
+        "proxy": False
+    }
+
+    create_client()
+    mock_Code42Client.assert_called_once()
+    mock_Code42Client.assert_called_with(
+        base_url="https://console.us.code42.com",
+        sdk=None,
+        api_url="https://api.us.code42.com",
+        auth=("key-12345", "1234"),
+        verify=True,
+        proxy=False,
+    )
 
 
 def test_client_when_no_alert_found_returns(mocker, incydr_sdk_mock):

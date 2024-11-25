@@ -1,5 +1,5 @@
 id: Code42 Exfiltration Playbook
-version: 1
+version: -1
 contentitemexportablefields:
   contentitemfields:
     packID: ""
@@ -7,7 +7,6 @@ contentitemexportablefields:
     itemVersion: 6.0.0
     fromServerVersion: 5.0.0
     toServerVersion: ""
-    definitionid: ""
     prevname: ""
 vcShouldKeepItemLegacyProdMachine: false
 name: Code42 Exfiltration Playbook
@@ -1111,3 +1110,4 @@ inputs:
   playbookInputQuery: null
 outputs: []
 sourceplaybookid: Code42 Exfiltration Playbook
+fromversion: "6.0.0"
