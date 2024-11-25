@@ -2032,7 +2032,7 @@ script:
   - arguments:
     - description: The query used to filter the results.
       name: fetch_query
-    - description: A comma-separated list of detection IDs. For example, ldt:1234:1234,ldt:5678:5678. If you use this argument, the fetch_query argument will be ignored.
+    - description: A comma-separated list of incident IDs. For example, inc:1234:1234,inc:5678:5678. If you use this argument, the fetch_query argument will be ignored.
       isArray: true
       name: ids
     description: Lists incident summaries.
