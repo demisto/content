@@ -2864,7 +2864,7 @@ def create_messaging_endpoint_command():
                 messaging_endpoint = messaging_endpoint.replace('.xdr-', '.crtx-', 1)
 
     hr = f"The messaging endpoint is: ```{messaging_endpoint}```\n\n The messaging endpoint should be added to the Demisto bot"\
-        f"configuration in Microsoft Teams as part of the Prerequisites of the integration's set-up.\n"\
+        f" configuration in Microsoft Teams as part of the prerequisites of the integration's setup.\n"\
         f"For more information see: [Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#create-the-demisto-bot-in-microsoft-teams)."
 
     demisto.debug(
