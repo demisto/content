@@ -364,10 +364,10 @@ def fetch_incidents():
                                {"value": str(gwAlerts[i]['_source']['destination']['ip']), "type": "IP"}],
                     'rawJSON': json.dumps(gwAlerts[i]['_source']),
                     'severity': gwAlerts[i]['_source']['event']['severity'],
-                    'CustomFields': {'flowIdGatewatcher': gwAlerts[i]['_source']['network']['flow_id'],
-                                     'GCenterGatewatcher': str(gwAlerts[i]['_source']['observer']['hostname']),
-                                     'GCapGatewatcher': str(gwAlerts[i]['_source']['observer']['gcap']['hostname']),
-                                     'rawEventGatewatcher': json.dumps(gwAlerts[i]['_source'])
+                    'CustomFields': {'gatewatcherflowid': gwAlerts[i]['_source']['network']['flow_id'],
+                                     'gatewatchergcenter': str(gwAlerts[i]['_source']['observer']['hostname']),
+                                     'gatewatchergcap': str(gwAlerts[i]['_source']['observer']['gcap']['hostname']),
+                                     'gatewatcherrawevent': json.dumps(gwAlerts[i]['_source'])
                                      }
                     }
 
@@ -437,10 +437,10 @@ def fetch_incidents():
                     'sourceBrand': "Gatewatcher",
                     'sourceInstance': str(gwMeta[i]['_source']['observer']['hostname'])+" | "+str(gwMeta[i]['_source']['observer']['gcap']['hostname']),
                     'type': "Network",
-                    'CustomFields': {'flowIdGatewatcher': gwMeta[i]['_source']['network']['flow_id'],
-                                     'GCenterGatewatcher': str(gwMeta[i]['_source']['observer']['hostname']),
-                                     'GCapGatewatcher': str(gwMeta[i]['_source']['observer']['gcap']['hostname']),
-                                     'rawEventGatewatcher': json.dumps(gwMeta[i]['_source'])
+                    'CustomFields': {'gatewatcherflowid': gwMeta[i]['_source']['network']['flow_id'],
+                                     'gatewatchergcenter': str(gwMeta[i]['_source']['observer']['hostname']),
+                                     'gatewatchergcap': str(gwMeta[i]['_source']['observer']['gcap']['hostname']),
+                                     'gatewatcherrawevent': json.dumps(gwMeta[i]['_source'])
                                      }
                     }
 
