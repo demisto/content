@@ -2913,7 +2913,7 @@ def test_parse_fields(fields, expected):
     (None, None, "some entry_id",
      "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"),
     (None, """{'event': "some event's", 'index': 'some index'} {'event': 'some event', 'index': 'some index'}""", None,
-     """{'event': "some event's", 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"""),  # Batch event data with ' in the event
+     """{'event': "some event's", 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"""),  # Batch event data with '
     (None, None, "some entry_id", "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}")
 ])
 @patch("requests.post")

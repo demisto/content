@@ -2727,7 +2727,7 @@ def splunk_submit_event_hec(
 
     if not validate_indexes(indexes, service):
         raise DemistoException('Index name does not exist in your splunk instance')
-    
+
     demisto.debug("All indexes are valid, sending events to Splunk.")
 
     headers = {
