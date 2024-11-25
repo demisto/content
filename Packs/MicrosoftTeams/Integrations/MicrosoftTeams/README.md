@@ -166,7 +166,7 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 6. Click **Review + Create**, and wait for the validation to pass.
 7. Click **create** if the validation has passed, and wait for the deployment to finish.
 8. Under Next Steps, click **Go to resource**.
-9. Navigate to **Configuration** on the left bar, and fill in the **Messaging Endpoint** (to get the correct messaging endpoint based on the server url, the server version and the instance configurations use the `microsoft-teams-create-messaging-endpoint`command).
+9. Navigate to **Configuration** on the left bar, and fill in the **Messaging Endpoint**. (To get the correct messaging endpoint based on the server URL, the server version, and the instance configurations. use the `microsoft-teams-create-messaging-endpoint`command).
 10. Store the **Microsoft App ID** value for the next steps, and navigate to **Manage** next to it.
 11. Click **New Client Secret**, fill in the **Description** and **Expires** fields as desired. Then click **Add**.
 12. Copy the client secret from the **value** field and store it for the next steps.
