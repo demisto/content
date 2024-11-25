@@ -55,7 +55,7 @@ Multiple inicidents can be created in one request by sending an array as the req
 
 `curl -POST https://my.demisto.live/instance/execute/webhook -H "Authorization: token" -H "Content-Type: application/json" -d '[{"name":"incident1","rawJson":{"some_field":"some_value"}}, {"name":"incident2","rawJson":{"some_field":"some_value"}}]'`
 
-The payload could then be mapped in the [Cortex XSOAR mapping wizard](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Create-a-Mapper):
+The payload could then be mapped in the [Cortex XSOAR 6.12 mapping wizard](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Create-a-Mapper) or the [Cortex XSOAR 8 mapping wizard](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-an-incident-mapper):
 
 - Note that the *Store sample events for mapping* parameter needs to be set.
 
