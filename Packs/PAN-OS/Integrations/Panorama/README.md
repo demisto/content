@@ -52,7 +52,7 @@ This integration was integrated and tested with versions 8.xx, 9.xx, and 10.xx o
    * [pan-os-create-master-key](#pan-os-create-master-key)
    * [pan-os-update-master-key](#pan-os-update-master-key)
 * The target argument is supported only in operational type commands. Meaning, you cannot use it with commit, logs, or PCAP commands.
-* After running the `pan-os-create-master-key` or `pan-os-update-master-key` command, the current API key will become invalid and a new one needs to be obtained. Refer to the [documentation on how to get an API key](https://docs.paloaltonetworks.com/pan-os/11-0/pan-os-panorama-api/get-started-with-the-pan-os-xml-api/get-your-api-key).
+* Creating or updating the encryption master key of Palo Alto Networks Firewall or Panorama invalidates the current API key and requires obtaining a new one. All subsequent commands will raise an "Invalid Credentials" error until a new API key is obtained and the integration instance is updated accordingly.
 
 ## Fetch Incidents
 The Panorama integration now supports fetch incidents.
@@ -9379,7 +9379,7 @@ Create a default master key that encrypts all the private keys and passwords in 
 
 #### Limitations
 
-Running this command invalidates the current API key and requires obtaining a new one. Subsequent commands would return an "Invalid Credentials" error until the API key is updated in the configuration of the integration instance. Refer to the [documentation on how to get an API key](https://docs.paloaltonetworks.com/pan-os/11-0/pan-os-panorama-api/get-started-with-the-pan-os-xml-api/get-your-api-key).
+Running this command invalidates the current API key and requires obtaining a new one. All subsequent commands will raise an "Invalid Credentials" error until a new API key is obtained and the integration instance is updated accordingly.
 
 #### Command example
 ```!pan-os-create-master-key master_key="MyFakeMasterKey1" lifetime_in_hours=2160 reminder_in_hours=1992```
@@ -9412,7 +9412,7 @@ Update the default master key that encrypts all the private keys and passwords i
 
 #### Limitations
 
-Running this command invalidates the current API key and requires obtaining a new one. Subsequent commands would return an "Invalid Credentials" error until the API key is updated in the configuration of the integration instance. Refer to the [documentation on how to get an API key](https://docs.paloaltonetworks.com/pan-os/11-0/pan-os-panorama-api/get-started-with-the-pan-os-xml-api/get-your-api-key).
+Running this command invalidates the current API key and requires obtaining a new one. All subsequent commands will raise an "Invalid Credentials" error until a new API key is obtained and the integration instance is updated accordingly.
 
 #### Command example
 ```!pan-os-update-master-key current_master_key="MyFakeMasterKey1" new_master_key="MyFakeMasterKey2" lifetime_in_hours=2160 reminder_in_hours=1992```

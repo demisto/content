@@ -4,7 +4,7 @@ To obtain an API key, run the following CURL command and copy the key:
 -curl -H "Content-Type: application/x-www-form-urlencoded" -X POST https://[PanoramaIP]/api/\?type\=keygen -d 'user=[user]&password=[password]'
 ```
 
-**Creating or updating the encryption master key of Palo Alto Networks Firewall or Panorama invalidates the current API key and requires obtaining a new one.**
+***Creating or updating the encryption master key of Palo Alto Networks Firewall or Panorama invalidates the current API key and requires obtaining a new one. All subsequent commands will raise an "Invalid Credentials" error until a new API key is obtained and the integration instance is updated accordingly.***
  
 For more information, visit the [Palo Alto Networks documentation](https://docs.paloaltonetworks.com/panorama).
  
