@@ -2,22 +2,18 @@ Code42 Insider Risk software solutions provide the right balance of transparency
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Configure Code42 Event Collector on Cortex XSIAM
+## Configure Code42 Event Collector in Cortex
 
-1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
-2. Search for Code42 Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g., https://api.us.code42.com, see help section) | True |
-    | API Client ID | True |
-    | API Client Secret | True |
-    | Maximum number of file events per fetch | True |
-    | Maximum number of audit events per fetch | True |
-    | Trust any certificate (not secure) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g., https://api.us.code42.com, see help section) | True |
+| API Client ID | True |
+| API Client Secret | True |
+| Maximum number of file events per fetch | True |
+| Maximum number of audit events per fetch | True |
+| Trust any certificate (not secure) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 ## Code42 Event Collector Authentication
@@ -50,7 +46,7 @@ To use the Code42 Event Collector, make sure you have the correct [product plan]
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### code42-get-events
