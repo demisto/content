@@ -475,12 +475,12 @@ def fetch_events_command(
     offset = ctx.get("offset")
     hashed_events_from_previous_run = set(ctx.get("hashed_events_from_previous_run", set()))
     auto_trigger_next_run = False
-    worst_case_time = 0
+    worst_case_time: float = 0
     execution_counter = 0
     while total_events_count < fetch_limit:
         if execution_counter > 0:
             demisto.info(f"The execution number is {execution_counter}, checking for breaking conditions.")
-            if is_last_request_smaller_than_page_size(len(events), page_size):  # type: ignore[has-type]
+            if is_last_request_smaller_than_page_size(len(events), page_size):  # type: ignore[has-type]  # pylint: disable=E0601
                 demisto.info("last request wasn't big enough, breaking.")
                 break
             should_break, worst_case_time = is_interval_doesnt_have_enough_time_to_run(DOCKER_MIN_TIME_TO_RUN, worst_case_time)
