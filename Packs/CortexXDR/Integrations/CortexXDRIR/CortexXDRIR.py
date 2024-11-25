@@ -1159,8 +1159,8 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
             demisto.debug(f'XDR Incident {incident_id=}')
             alert_count = arg_to_number(incident_data.get('alert_count')) or 0
             if alert_count > ALERTS_LIMIT_PER_INCIDENTS:
-                demisto.debug(f'for incident:{incident_id} using the old call since alert_count:{alert_count} >"
-                              "limit:{ALERTS_LIMIT_PER_INCIDENTS}')
+                demisto.debug(f"for incident:{incident_id} using the old call since alert_count:{alert_count} >"
+                              "limit:{ALERTS_LIMIT_PER_INCIDENTS}")
                 raw_incident_ = client.get_incident_extra_data(incident_id=incident_id)
                 incident_data = sort_incident_data(raw_incident_)
             sort_all_list_incident_fields(incident_data)
