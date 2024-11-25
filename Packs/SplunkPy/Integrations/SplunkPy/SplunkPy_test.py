@@ -2985,7 +2985,7 @@ def test_splunk_submit_event_hec(
             "Content-Type": "application/json",
             "X-Splunk-Request-Channel": "test_channel",
         },
-        verify=False,
+        verify=True,
     )
 
 
