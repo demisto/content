@@ -2477,7 +2477,7 @@ def test_add_data_to_actions_non_dict_data():
     ('dummy_token',
      {'aud': 'url', 'exp': '1111', 'roles': ['AppCatalog.Read.All', 'Group.ReadWrite.All', 'User.Read.All']},
      'Client Credentials',
-     'The API permissions obtained for the used graph access token are'),
+     'The currently present API permissions in the Teams application are'),
     ('dummy_token',
      {'aud': 'url', 'exp': '1111', 'roles': []},
      'Client Credentials',
@@ -2485,7 +2485,7 @@ def test_add_data_to_actions_non_dict_data():
     ('dummy_token',
      {'aud': 'url', 'exp': '1111', 'scp': 'AppCatalog.Read.All Group.ReadWrite.All User.Read.All'},
      'Authorization Code',
-     'The API permissions obtained for the used graph access token are'),
+     'The currently present API permissions in the Teams application are'),
     ('dummy_token',
      {'aud': 'url', 'exp': '1111', 'scp': ''},
      'Authorization Code',
@@ -2586,6 +2586,7 @@ def test_create_messaging_endpoint_command(mocker, xsoar_server, is_xsoar_on_pre
     mocker.patch.object(demisto, 'args', return_value={'engine_url': ''})
     mocker.patch('MicrosoftTeams.is_xsoar_on_prem', return_value=is_xsoar_on_prem)
     mocker.patch('MicrosoftTeams.is_xsiam', return_value=is_xsiam)
+    mocker.patch('MicrosoftTeams.is_using_engine', return_value=False)
     results = mocker.patch.object(MicrosoftTeams, 'return_results')
 
     create_messaging_endpoint_command()
@@ -2627,6 +2628,7 @@ def test_create_messaging_endpoint_command_for_xsoar_engine(mocker, engine_url, 
     mocker.patch.object(demisto, 'args', return_value={'engine_url': engine_url})
     mocker.patch('MicrosoftTeams.is_xsoar_on_prem', return_value=is_xsoar_on_prem)
     mocker.patch('MicrosoftTeams.is_xsiam', return_value=is_xsiam)
+    mocker.patch('MicrosoftTeams.is_using_engine', return_value=True)
     results = mocker.patch.object(MicrosoftTeams, 'return_results')
 
     create_messaging_endpoint_command()
@@ -2664,6 +2666,7 @@ def test_create_messaging_endpoint_command_invalid_xsoar_engine(mocker, engine_u
     mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'https://test-server.com:443'})
     mocker.patch.object(demisto, 'integrationInstance', return_value="teams")
     mocker.patch.object(demisto, 'args', return_value={'engine_url': engine_url})
+    mocker.patch('MicrosoftTeams.is_using_engine', return_value=True)
     mocker.patch.object(MicrosoftTeams, 'return_results')
 
     with pytest.raises(ValueError) as e:
