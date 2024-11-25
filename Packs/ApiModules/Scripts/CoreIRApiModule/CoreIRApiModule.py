@@ -3111,8 +3111,9 @@ def handle_outgoing_issue_closure(parsed_args: UpdateRemoteSystemArgs):
     demisto.debug(f"handle_outgoing_issue_closure: incident_id: {parsed_args.remote_incident_id} {closed_reason=}")
     remote_xdr_status = parsed_args.data.get('status') if parsed_args.data else None
     if parsed_args.inc_status == IncidentStatus.DONE and closed_reason and remote_xdr_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
+        demisto.debug(f"handle_outgoing_issue_closure: XSOAR is closed, xdr is open. updating delta")
         if close_notes := parsed_args.delta.get('closeNotes'):
-            demisto.debug(f"handle_outgoing_issue_closure: incident_id: {parsed_args.remote_incident_id} {close_notes=}")
+            demisto.debug(f"handle_outgoing_issue_closure: adding resolve comment to the delta. {close_notes}")
             parsed_args.delta['resolve_comment'] = close_notes
 
         parsed_args.delta['status'] = resolve_xdr_close_reason(closed_reason)
