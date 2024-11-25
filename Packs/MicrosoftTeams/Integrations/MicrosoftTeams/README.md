@@ -1174,7 +1174,7 @@ There is no context output for this command.
 >### The messaging endpoint is: 
 >|```https://ext-viso-test.crtx-qa-uat.us.paloaltonetworks.com/xsoar/instance/execute/teams-instance```
 >
-> The messaging endpoint should be added to the Demisto bot configuration in Microsoft Teams as part of the Prerequisites of the integration's set up.
+> The messaging endpoint should be added to the Demisto bot configuration in Microsoft Teams as part of the prerequisites of the integration's setup.
 > For more information see: [Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#create-the-demisto-bot-in-microsoft-teams)."
 
 
