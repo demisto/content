@@ -53,8 +53,8 @@ class WordParser:
         try:
             document = Document(self.file_path)
             self.paragraphs = self.get_paragraphs(document)
-            self.tables += self.get_tables(document)
-            self.hyperlinks += self.get_hyperlinks(document)
+            self.tables = self.get_tables(document)
+            self.hyperlinks = self.get_hyperlinks(document)
             self.get_core_properties(document)
         except PackageNotFoundError:
             self.errEntry["Contents"] = "Input file is not a valid docx/doc file."
