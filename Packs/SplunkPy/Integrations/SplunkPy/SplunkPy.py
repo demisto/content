@@ -17,6 +17,7 @@ from splunklib.binding import AuthenticationError, HTTPError, namespace
 
 INTEGRATION_LOG = "Splunk- "
 OUTPUT_MODE_JSON = 'json'  # type of response from splunk-sdk query (json/csv/xml)
+INDEXES_REGEX = r"""["'][\s]*index[\s]*["'][\s]*:[\s]*["']([^"']+)["']"""
 # Define utf8 as default encoding
 params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -2668,9 +2669,20 @@ def parse_fields(fields):
 
 
 def extract_indexes(events: str | dict):
+    """
+    Extracts indexes from the provided events.
+
+    Args:
+        events (str | dict): The input events from which indexes will be extracted.
+        For example: "{"index": "index1", "event": "something happened1"} {"index": "index2", "event": "something happened2"}"
+
+    Returns:
+        List[str]: A list of extracted indexes.
+        For example: ["index1", "index2"]
+
+    """
     events_str = str(events)
-    rgx = r"""["'][\s]*index[\s]*["'][\s]*:[\s]*["']([^"']+)["']"""
-    indexes = re.findall(rgx, events_str)
+    indexes = re.findall(INDEXES_REGEX, events_str)
     return indexes
 
 
@@ -2715,6 +2727,8 @@ def splunk_submit_event_hec(
 
     if not validate_indexes(indexes, service):
         raise DemistoException('Index name does not exist in your splunk instance')
+    
+    demisto.debug("All indexes are valid, sending events to Splunk.")
 
     headers = {
         'Authorization': f'Splunk {hec_token}',
