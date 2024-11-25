@@ -57,13 +57,12 @@ When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), ac
 3. Check the **long running instance** parameter in the integration instance configuration.
 4. Set the **port** parameter. It's under the Connect section in the integration instance configuration.
 5. If using the same bot from the XSOAR 6 instance, make sure to remove the bot from the team and to add it back:
-    - Go to the Microsoft Teams app.
-    - Go to your team, and click the three dots next to the name.
-    - Go to **manage team** > **apps**.
-    - Find your bot, and click the three dots in the same row.
-    - Click **remove**.
-    - Add the bot to the team.
-
+    a. Go to the Microsoft Teams app.
+    b. Go to your team, and click the three dots next to the name.
+    c. Go to **manage team** > **apps**.
+    d. Find your bot, and click the three dots in the same row.
+    e. Click **remove**.
+    f. Add the bot to the team.
 
 ## Setup Examples
 
