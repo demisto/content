@@ -1199,7 +1199,7 @@ Note: To enrich an incident created via the Demisto BOT (`new incident` command)
     This probably means that there is a connection issue, and the web server does not intercept the HTTPS queries from Microsoft Teams.
 
     To troubleshoot:
-   1. Verify that the messaging endpoint is configured correctly according to the method you chose in the [Setup Examples](#setup-examples) step. If the configuration method you have chosen is rerouting, use the `microsoft-teams-create-messaging-endpoint`command ([microsoft-teams-create-messaging-endpoint documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-create-messaging-endpoint)) to get the correct messaging endpoint based on the server url, the server version and the instance configurations.
+   1. Verify that the messaging endpoint is configured correctly according to the method you chose in the [Setup Examples](#setup-examples) step. If the configuration method you have chosen is rerouting, use the `microsoft-teams-create-messaging-endpoint`command ([microsoft-teams-create-messaging-endpoint documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-create-messaging-endpoint)) to get the correct messaging endpoint based on the server URL, the server version, and the instance configurations.
    2. Verify the Docker container is up and running and publish the configured port to the outside world:
 
        From the Cortex XSOAR / Cortex XSOAR engine machine run: `docker ps | grep teams`
