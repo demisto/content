@@ -15,7 +15,6 @@
 8. Add an API Access List Entry by clicking **Add Access List Entry**.
 9. Enter an IP address from which MongoDB Atlas should accept API requests for this API Key. You can also click **Use Current IP Address** if the host you are using to access MongoDB Atlas will also make API requests using this API Key.
 10. Click **Save**.
-
 11. Click **Done**.
 
 ### IMPORTANT
