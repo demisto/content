@@ -78,7 +78,7 @@ For Cortex XSOAR version 8 and Cortex XSIAM: `https://ext-<CORTEXT-XSOAR-SERVER-
 
 The integration instance name, `teams` in this example, needs to be configured in the [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar) step. Make sure to set the instance name in all lowercase letters and as one word.
 
-- Note: You can use the `microsoft-teams-create-messaging-endpoint` command to generate the messaging endpoint, based on the server url, the server version and the instance configurations. For more information see -[microsoft-teams-create-messaging-endpoint documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-create-messaging-endpoint).
+- Note: You can use the `microsoft-teams-create-messaging-endpoint` command to generate the messaging endpoint, based on the server URL, the server version, and the instance configurations. For more information, see -[microsoft-teams-create-messaging-endpoint documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-create-messaging-endpoint).
 
 The port to be configured in [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar) step should be any available port that is not used by another service.
 
