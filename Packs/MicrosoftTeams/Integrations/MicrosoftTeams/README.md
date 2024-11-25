@@ -1226,7 +1226,7 @@ Note: To enrich an incident created via the Demisto BOT (`new incident` command)
 
 2. If you see the following error message: `Error in API call to Microsoft Teams: [403] - UnknownError`, it means the AAD application has insufficient permissions. 
 To retrieves the API permissions associated with the used graph access token you can run the `microsoft-teams-token-permissions-list` command ([microsoft-teams-token-permissions-list documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-token-permissions-list)).
-Compare the permissions list obtained for the token with the permissions required for the command you wish to execute (can be found in the command documentation), if there are missing API permissions, add them to your application, and then run the `microsoft-teams-auth-reset` command (as described here - [microsoft-teams-auth-reset documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-auth-reset)).
+Compare the permissions list obtained for the token with the permissions required for the command you wish to execute (can be found in the command documentation). If there are missing API permissions, add them to your application, and then run the `microsoft-teams-auth-reset` command (as described here - [microsoft-teams-auth-reset documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-auth-reset)).
 
 3. Since the integration works based on Docker port mapping, it can't function if the Docker is set to run with the host networking (`--network=host`). For more details, refer to the [Docker documentation](https://docs.docker.com/network/host/).
 
