@@ -145,6 +145,7 @@ Consumes a single Kafka message.
 | topic | A topic to get messages from. | Required | 
 | offset | Message offset to filter by. Acceptable values are 'Earliest', 'Latest', or any other offest number. Default is Earliest. | Optional | 
 | partition | Partition (number). | Optional | 
+| poll_timeout | Poll timeout to consume the message. | Optional |
 
 
 #### Context Output
