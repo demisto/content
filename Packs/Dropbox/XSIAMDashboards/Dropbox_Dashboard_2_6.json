@@ -147,7 +147,7 @@
                                 "type": "Custom XQL",
                                 "width": 50,
                                 "height": 400,
-                                "phrase": "config timeframe = 7d\n| datamodel dataset = dropbox_dropbox_raw \n| filter xdm.event.type = \"team_policies\" \n| fields xdm.event.operation_sub_type as Policy_Name, xdm.source.user.username as UserName, xdm.target.resource.value as NewValue, xdm.target.resource_before.value as OldValue, xdm.event.type as EventType, xdm.event.description as Description, _time\n| sort desc _time ",
+                                "phrase": "config timeframe = 7d\n| datamodel dataset = dropbox_dropbox_raw \n| filter xdm.event.type = \"team_policies\" \n| fields xdm.event.operation_sub_type as Policy_Name, xdm.source.identity.username as UserName, xdm.target.resource.value as NewValue, xdm.target.resource_before.value as OldValue, xdm.event.type as EventType, xdm.event.description as Description, _time\n| sort desc _time ",
                                 "time_frame": {
                                     "relativeTime": 86400000
                                 },
@@ -169,7 +169,7 @@
                                 "type": "Custom XQL",
                                 "width": 50,
                                 "height": 400,
-                                "phrase": "config timeframe = 7d\n| datamodel dataset = dropbox_dropbox_raw \n| filter xdm.event.type = \"logins\" and xdm.event.operation_sub_type = \"login_fail\" \n| comp count() as Count by xdm.source.user.username \n| sort desc Count\n| limit 10\n| alter User = xdm.source.user.username \n| fields -xdm.source.user.username  ",
+                                "phrase": "config timeframe = 7d\n| datamodel dataset = dropbox_dropbox_raw \n| filter xdm.event.type = \"logins\" and xdm.event.operation_sub_type = \"login_fail\" \n| comp count() as Count by xdm.source.identity.username \n| sort desc Count\n| limit 10\n| alter User = xdm.source.identity.username \n| fields -xdm.source.identity.username  ",
                                 "time_frame": {
                                     "relativeTime": 86400000
                                 },
@@ -249,7 +249,7 @@
             "creation_time": 1667996951841,
             "description": "This dashboard display the top 10 count of failed logins made by users during the last 7 days. A high number of fails can be an indication for a misconfiguration or a malicious activity.",
             "data": {
-                "phrase": "config timeframe = 7d\n| datamodel dataset = dropbox_dropbox_raw \n| filter xdm.event.type = \"logins\" and xdm.event.operation_sub_type = \"login_fail\" \n| comp count() as Count by xdm.source.user.username \n| sort desc Count\n| limit 10\n| alter User = xdm.source.user.username \n| fields -xdm.source.user.username  ",
+                "phrase": "config timeframe = 7d\n| datamodel dataset = dropbox_dropbox_raw \n| filter xdm.event.type = \"logins\" and xdm.event.operation_sub_type = \"login_fail\" \n| comp count() as Count by xdm.source.identity.username \n| sort desc Count\n| limit 10\n| alter User = xdm.source.identity.username \n| fields -xdm.source.identity.username  ",
                 "time_frame": {
                     "relativeTime": 86400000
                 },
@@ -369,7 +369,7 @@
             "creation_time": 1668007118551,
             "description": "This panel displayes the policies changed during the last 7 days. Attackers often change policies in order to achieve persistence.",
             "data": {
-                "phrase": "config timeframe = 7d\n| datamodel dataset = dropbox_dropbox_raw \n| filter xdm.event.type = \"team_policies\" \n| fields xdm.event.operation_sub_type as Policy_Name, xdm.source.user.username as UserName, xdm.target.resource.value as NewValue, xdm.target.resource_before.value as OldValue, xdm.event.type as EventType, xdm.event.description as Description, _time\n| sort desc _time ",
+                "phrase": "config timeframe = 7d\n| datamodel dataset = dropbox_dropbox_raw \n| filter xdm.event.type = \"team_policies\" \n| fields xdm.event.operation_sub_type as Policy_Name, xdm.source.identity.username as UserName, xdm.target.resource.value as NewValue, xdm.target.resource_before.value as OldValue, xdm.event.type as EventType, xdm.event.description as Description, _time\n| sort desc _time ",
                 "time_frame": {
                     "relativeTime": 86400000
                 },
@@ -495,6 +495,5 @@
             }
         }
     ],
-    "fromVersion": "6.10.0",
-    "toVersion": "8.9.0"
+    "fromVersion": "9.0.0"
 }

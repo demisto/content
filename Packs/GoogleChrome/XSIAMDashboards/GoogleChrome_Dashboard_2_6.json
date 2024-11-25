@@ -88,7 +88,7 @@
                                 "type": "Custom XQL",
                                 "width": 25,
                                 "height": 400,
-                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.source.user.username != \"\"\n| filter xdm.source.user.username != \"-\"\n| comp values(xdm.source.user.username) as `DEVICE_USER` by xdm.source.host.hostname\n| filter DEVICE_USER != null",
+                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.source.identity.username != \"\"\n| filter xdm.source.identity.username != \"-\"\n| comp values(xdm.source.identity.username) as `DEVICE_USER` by xdm.source.host.hostname\n| filter DEVICE_USER != null",
                                 "time_frame": {
                                     "relativeTime": 86400000
                                 },
@@ -110,7 +110,7 @@
                                 "type": "Custom XQL",
                                 "width": 25,
                                 "height": 400,
-                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| comp count(xdm.source.user.username) as counts by xdm.source.user.username\n| sort desc counts\n| view graph type = column subtype = grouped layout = horizontal header = \"Security Events by Device Users\" xaxis = xdm.source.user.username yaxis = counts default_limit = `false` ",
+                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| comp count(xdm.source.identity.username) as counts by xdm.source.identity.username\n| sort desc counts\n| view graph type = column subtype = grouped layout = horizontal header = \"Security Events by Device Users\" xaxis = xdm.source.identity.username yaxis = counts default_limit = `false` ",
                                 "time_frame": {
                                     "relativeTime": 604800000
                                 },
@@ -142,7 +142,7 @@
                                             "command": {
                                                 "op": "=",
                                                 "name": "xaxis",
-                                                "value": "xdm.source.user.username"
+                                                "value": "xdm.source.identity.username"
                                             }
                                         },
                                         {
@@ -175,7 +175,7 @@
                                 "type": "Custom XQL",
                                 "width": 25,
                                 "height": 400,
-                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| comp count(xdm.intermediate.user.username) as counts by xdm.intermediate.user.username\n| sort desc counts\n| view graph type = column subtype = grouped layout = horizontal header = \"Security Events by Chrome Users\" xaxis = xdm.intermediate.user.username yaxis = counts default_limit = `false` ",
+                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| comp count(xdm.intermediate.identity.username) as counts by xdm.intermediate.identity.username\n| sort desc counts\n| view graph type = column subtype = grouped layout = horizontal header = \"Security Events by Chrome Users\" xaxis = xdm.intermediate.identity.username yaxis = counts default_limit = `false` ",
                                 "time_frame": {
                                     "relativeTime": 86400000
                                 },
@@ -207,7 +207,7 @@
                                             "command": {
                                                 "op": "=",
                                                 "name": "xaxis",
-                                                "value": "xdm.intermediate.user.username"
+                                                "value": "xdm.intermediate.identity.username"
                                             }
                                         },
                                         {
@@ -436,7 +436,7 @@
                                 "type": "Custom XQL",
                                 "width": 25,
                                 "height": 400,
-                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.event.type != \"\"\n| comp count_distinct(xdm.source.user.username) as distinct_count\n| view graph type = single subtype = standard header = \"Unique Users with Security Events\" yaxis = distinct_count ",
+                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.event.type != \"\"\n| comp count_distinct(xdm.source.identity.username) as distinct_count\n| view graph type = single subtype = standard header = \"Unique Users with Security Events\" yaxis = distinct_count ",
                                 "time_frame": {
                                     "relativeTime": 86400000
                                 },
@@ -734,7 +734,7 @@
             "creation_time": 1687769524281,
             "description": "This widget displays security chrome events by chrome users.",
             "data": {
-                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| comp count(xdm.intermediate.user.username) as counts by xdm.intermediate.user.username\n| sort desc counts\n| view graph type = column subtype = grouped layout = horizontal header = \"Security Events by Chrome Users\" xaxis = xdm.intermediate.user.username yaxis = counts default_limit = `false` ",
+                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| comp count(xdm.intermediate.identity.username) as counts by xdm.intermediate.identity.username\n| sort desc counts\n| view graph type = column subtype = grouped layout = horizontal header = \"Security Events by Chrome Users\" xaxis = xdm.intermediate.identity.username yaxis = counts default_limit = `false` ",
                 "time_frame": {
                     "relativeTime": 86400000
                 },
@@ -766,7 +766,7 @@
                             "command": {
                                 "op": "=",
                                 "name": "xaxis",
-                                "value": "xdm.intermediate.user.username"
+                                "value": "xdm.intermediate.identity.username"
                             }
                         },
                         {
@@ -855,7 +855,7 @@
             "creation_time": 1687770114700,
             "description": "This widget displays device users by their related device names.",
             "data": {
-                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.source.user.username != \"\"\n| filter xdm.source.user.username != \"-\"\n| comp values(xdm.source.user.username) as `DEVICE_USER` by xdm.source.host.hostname\n| filter DEVICE_USER != null",
+                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.source.identity.username != \"\"\n| filter xdm.source.identity.username != \"-\"\n| comp values(xdm.source.identity.username) as `DEVICE_USER` by xdm.source.host.hostname\n| filter DEVICE_USER != null",
                 "time_frame": {
                     "relativeTime": 86400000
                 },
@@ -966,7 +966,7 @@
             "creation_time": 1687774186800,
             "description": "This widget displays the unique users that triggered security events.",
             "data": {
-                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.event.type != \"\"\n| comp count_distinct(xdm.source.user.username) as distinct_count\n| view graph type = single subtype = standard header = \"Unique Users with Security Events\" yaxis = distinct_count ",
+                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.event.type != \"\"\n| comp count_distinct(xdm.source.identity.username) as distinct_count\n| view graph type = single subtype = standard header = \"Unique Users with Security Events\" yaxis = distinct_count ",
                 "time_frame": {
                     "relativeTime": 86400000
                 },
@@ -1110,7 +1110,7 @@
             "creation_time": 1687775796667,
             "description": "This widget displays chrome security events by device users.",
             "data": {
-                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| comp count(xdm.source.user.username) as counts by xdm.source.user.username\n| sort desc counts\n| view graph type = column subtype = grouped layout = horizontal header = \"Security Events by Device Users\" xaxis = xdm.source.user.username yaxis = counts default_limit = `false` ",
+                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| comp count(xdm.source.identity.username) as counts by xdm.source.identity.username\n| sort desc counts\n| view graph type = column subtype = grouped layout = horizontal header = \"Security Events by Device Users\" xaxis = xdm.source.identity.username yaxis = counts default_limit = `false` ",
                 "time_frame": {
                     "relativeTime": 604800000
                 },
@@ -1142,7 +1142,7 @@
                             "command": {
                                 "op": "=",
                                 "name": "xaxis",
-                                "value": "xdm.source.user.username"
+                                "value": "xdm.source.identity.username"
                             }
                         },
                         {
@@ -1263,6 +1263,5 @@
             }
         }
     ],
-    "fromVersion": "8.4.0",
-    "toVersion": "8.9.0"
+    "fromVersion": "9.0.0"
 }
