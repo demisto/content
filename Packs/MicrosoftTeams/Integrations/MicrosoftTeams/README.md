@@ -1124,7 +1124,7 @@ There is no context output for this command.
 ***
 Retrieves the API permissions associated with the used graph access token. 
 
-Use this command if you encounter insufficient permissions error when attempting to execute an integration command. Compare the permissions list obtained for the token with the permissions required for the desired command (can be found in the integration documentation), if there are missing API permissions, add them to your application, and then run the `microsoft-teams-auth-reset` command (as described here - [microsoft-teams-auth-reset docs](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-auth-reset)).
+Use this command if you encounter insufficient permissions error when attempting to execute an integration command. Compare the permissions list obtained for the token with the permissions required for the desired command (can be found in the integration documentation). If there are missing API permissions, add them to your application, and then run the `microsoft-teams-auth-reset` command (as described here - [microsoft-teams-auth-reset docs](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-auth-reset)).
 
 ##### Base Command
 
