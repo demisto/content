@@ -24,7 +24,7 @@ args:
   description: The comma separated flags for pattern matching in regex. "dotall" (s), "multiline" (m), "ignorecase" (i) and "unicode" (u) are supported.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.78960
+dockerimage: demisto/python3:3.11.10.116439
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
