@@ -2287,15 +2287,9 @@ function DisableRuleCommand {
     $mailbox = $kwargs.mailbox
     $identity = $kwargs.identity
     $raw_response = $client.DisableRule($mailbox, $identity)
-    $Demisto.Debug("itamar raw_response $raw_response")
-    if($raw_response -eq $null){
-        Write-Output "No mailbox $mailbox was found or no Rule with identity $identity was found in the mailbox"
-    }
-    else {
-        $human_readable = "Rule $identity has been disabled successfully"
-        $entry_context = @{}
-        Write-Output $human_readable, $entry_context, $raw_response
-    }
+    $human_readable = "Rule $identity has been disabled successfully"
+    $entry_context = @{}
+    Write-Output $human_readable, $entry_context, $raw_response
 }
 function EnableRuleCommand {
     [CmdletBinding()]
@@ -2355,14 +2349,9 @@ function RemoveMailFlowRuleCommand {
     )
     $identity = $kwargs.identity
     $raw_response = $client.RemoveMailFlowRule($identity)
-    if($raw_response -eq $null){
-        Write-Output "No Mail Flow Rule were found."
-    }
-    else{
-        $human_readable = "Mail flow rule $identity has been removed successfully"
-        $entry_context = @{}
-        Write-Output $human_readable, $entry_context, $raw_response
-    }
+    $human_readable = "Mail flow rule $identity has been removed successfully"
+    $entry_context = @{}
+    Write-Output $human_readable, $entry_context, $raw_response
 }
 function DisableMailFlowRuleCommand {
     [CmdletBinding()]
