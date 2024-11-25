@@ -6,30 +6,31 @@ from CommonServerUserPython import *  # noqa: F401
 """IMPORTS"""
 
 import json
-import urllib3
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 from typing import Any, TypeVar
+
 import pytmv1
+import urllib3
 from pytmv1 import (
-    TiAlert,
-    SaeAlert,
-    ObjectType,
-    ResultCode,
-    ObjectRequest,
-    EmailActivity,
     AccountRequest,
-    EndpointRequest,
-    ExceptionObject,
-    EndpointActivity,
-    SuspiciousObject,
+    AlertStatus,
     CollectFileRequest,
     CollectFileTaskResp,
     CustomScriptRequest,
-    InvestigationStatus,
+    EmailActivity,
     EmailMessageIdRequest,
     EmailMessageUIdRequest,
+    EndpointActivity,
+    EndpointRequest,
+    ExceptionObject,
+    ObjectRequest,
+    ObjectType,
+    ResultCode,
+    SaeAlert,
+    SuspiciousObject,
     SuspiciousObjectRequest,
     TerminateProcessRequest,
+    TiAlert,
 )
 
 """CONSTANTS"""
@@ -48,6 +49,8 @@ MEDIUM = "medium"
 NAME = "name"
 PATH = "path"
 IF_MATCH = "if_match"
+INV_RESULT = "inv_result"
+INV_STATUS = "inv_status"
 FALSE = "false"
 TRUE = "true"
 POLL = "poll"
@@ -2426,14 +2429,20 @@ def update_status(
     workbench_id = args.get(WORKBENCH_ID, EMPTY_STRING)
     status = args.get(STATUS, EMPTY_STRING)
     if_match = args.get(IF_MATCH, EMPTY_STRING)
+    inv_res = args.get(INV_RESULT, None)
+    inv_sts = args.get(INV_STATUS, None)
     message: dict[str, Any] = {}
     # Choose Status Enum
     sts = status.upper()
     # Assign enum status
-    status = InvestigationStatus[sts]
+    status = AlertStatus[sts]
     # Make rest call
     resp = v1_client.alert.update_status(
-        alert_id=workbench_id, status=status, if_match=if_match
+        alert_id=workbench_id,
+        status=status,
+        etag=if_match,
+        inv_result=inv_res,
+        inv_status=inv_sts,
     )
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
