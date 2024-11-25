@@ -27,7 +27,8 @@ This integration is fully compatible with the Kafka v2 integration.
     | Topic to fetch incidents from (Required for fetch incidents) |  | False |
     | CSV list of partitions to fetch messages from |  | False |
     | Offset to fetch messages from (exclusive) | The initial offset to start fetching from, not including the value set \(e.g., if 3 is set, the first event that will be fetched will be with offset 4\). If you want to start from the earliest or latest, type in 'earliest' or 'latest' accordingly. | False |
-    | Max number of messages to fetch |  | False |
+    | Maximum number of messages to fetch |  | False |
+    | Stop consuming upon timeout | When fetching a significant number of messages (100+), it's advisable to halt message consumption upon timeout. This ensures that the fetch terminates if no messages are received after a specified duration, instead of requesting messages until reaching the maximum number of messages to fetch. | False |
     | Consumer Only |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
@@ -144,6 +145,7 @@ Consumes a single Kafka message.
 | topic | A topic to get messages from. | Required | 
 | offset | Message offset to filter by. Acceptable values are 'Earliest', 'Latest', or any other offest number. Default is Earliest. | Optional | 
 | partition | Partition (number). | Optional | 
+| poll_timeout | Poll timeout to consume the message. | Optional |
 
 
 #### Context Output
