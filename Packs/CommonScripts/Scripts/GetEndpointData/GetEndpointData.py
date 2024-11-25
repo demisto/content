@@ -786,7 +786,7 @@ def main():
             command_results_list.append(
                 CommandResults(
                     outputs_prefix="Endpoint",
-                    outputs_key_field="Hostname",
+                    outputs_key_field="Hostname.value",
                     outputs=endpoint_outputs_list,
                     readable_output=tableToMarkdown(
                         name="Endpoint(s) data",
