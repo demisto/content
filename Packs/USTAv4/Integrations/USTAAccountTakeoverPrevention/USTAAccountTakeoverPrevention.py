@@ -21,6 +21,8 @@ USTA_TICKET_STATUSES = {
     "passive": 4,
 }
 
+MAX_ALERTS_TO_FETCH = 100
+
 
 class Client(BaseClient):
     def __init__(self, base_url, verify, proxy, headers):
@@ -219,7 +221,15 @@ def main() -> None:
         if cmd == 'test-module':
             return_results(test_module(client))
         elif cmd == 'fetch-incidents':
-            status = USTA_TICKET_STATUSES.get(params.get('status', 'Open').lower(), 'None')
+            status = USTA_TICKET_STATUSES.get(params.get('status', 'Open').lower())
+            max_results = arg_to_number(
+                arg=params.get('max_fetch'),
+                arg_name='max_fetch',
+                required=False
+            )
+            if not max_results or max_results > MAX_ALERTS_TO_FETCH:
+                max_results = MAX_ALERTS_TO_FETCH
+
             next_run, incidents = fetch_incidents(
                 client=client,
                 max_results=100,
