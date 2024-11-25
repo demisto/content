@@ -1611,7 +1611,7 @@ class ExchangeOnlinePowershellV3Client
             if ($identity) {
                 $cmd_params.Identity = $identity
             }
-            $response = Disable-TransportRule @cmd_params -WarningAction:SilentlyContinue
+            $response = Disable-TransportRule -Confirm:$false @cmd_params -WarningAction:SilentlyContinue
         } finally {
             $this.DisconnectSession()
         }
