@@ -1,10 +1,7 @@
 Use the Cofense Triage integration to ingest reported phishing indicators.
 This integration was integrated and tested with version 1.20 of Cofense Triage v2
-## Configure Cofense Triage v2 on Cortex XSOAR
+## Configure Cofense Triage v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cofense Triage v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -21,9 +18,8 @@ This integration was integrated and tested with version 1.20 of Cofense Triage v
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cofense-search-reports
 ***
@@ -650,4 +646,3 @@ Threat Indicators that are designated by analysts as malicious, suspicious or be
 >|Created At|Id|Operator Id|Report Id|Threat Key|Threat Level|Threat Value|
 >|---|---|---|---|---|---|---|
 >| 2020-05-28T22:14:52.690Z | 75 | 2 | 5760 | URL | Malicious | `http://bold-air0example.com/notification.php?email=test@test.net` |
-
