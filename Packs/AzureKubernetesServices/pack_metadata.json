@@ -1,9 +1,9 @@
 {
     "name": "Azure Kubernetes Services",
-    "description": "Deploy and manage containerized applications with a fully managed Kubernetes service.",
+    "description": "#test# Deploy and manage containerized applications with a fully managed Kubernetes service.",
     "support": "xsoar",
     "currentVersion": "1.2.3",
-    "author": "Cortex XSOAR",
+    "author": " #test# Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-01-17T14:56:54Z",
