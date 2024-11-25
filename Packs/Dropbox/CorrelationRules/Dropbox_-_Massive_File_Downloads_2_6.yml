@@ -22,7 +22,7 @@ investigation_query_link: 'datamodel dataset = dropbox_dropbox_raw
 
   | filter xdm.event.type = "file_operations" and xdm.event.operation_sub_type = "file_download"
 
-  | alter user = coalesce(xdm.source.user.username, xdm.target.user.username)
+  | alter user = coalesce(xdm.source.identity.username, xdm.target.identity.username)
 
   | filter user = $user'
 mapping_strategy: CUSTOM
@@ -41,10 +41,9 @@ xql_query: 'datamodel dataset = dropbox_dropbox_raw
 
   | filter xdm.event.type = "file_operations" and xdm.event.operation_sub_type = "file_download"
 
-  | alter user = coalesce(xdm.source.user.username, xdm.target.user.username)
+  | alter user = coalesce(xdm.source.identity.username, xdm.target.identity.username)
 
   | comp values(xdm.source.ipv4) as SourceIP, values(xdm.source.location.country) as Countries, max(_time) as lastTime, values(xdm.target.resource.name) as Files, count() as NumberOfFiles by user
 
   | filter NumberOfFiles > 100'
-fromversion: 6.10.0
-toversion: 8.9.0
+fromversion: 9.0.0
