@@ -2904,13 +2904,14 @@ def test_parse_fields(fields, expected):
     from SplunkPy import parse_fields
     result = parse_fields(fields)
     assert result == expected
-    
+
 
 @pytest.mark.parametrize("event, batch_event_data, entry_id, expected_data", [
     ("Somthing happened", None, None, '{"event": "Somthing happened", "fields": {"field1": "value1"}, "index": "main"}'),
     (None, "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}", None,
      "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"),  # Batch event data
-    (None, None, "some entry_id", "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"),
+    (None, None, "some entry_id",
+     "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"),
     (None, """{'event': "some event's", 'index': 'some index'} {'event': 'some event', 'index': 'some index'}""", None,
      """{'event': "some event's", 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"""),  # Batch event data with ' in the event
     (None, None, "some entry_id", "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}")
@@ -2998,15 +2999,18 @@ def test_splunk_submit_event_hec_command_no_required_arguments():
                        match=r"Invalid input: Please specify one of the following arguments: `event`, "
                        r"`batch_event_data`, or `entry_id`."):
         splunk_submit_event_hec_command({'hec_url': 'hec_url'}, None, {})
-        
-        
+
+
 @pytest.mark.parametrize("events, expected_result", [
-    ("{'index': 'index1', 'event': 'Something happend '} {'index': 'index 2', 'event': 'Something's happend'}", ['index1', 'index 2']),
+    ("{'index': 'index1', 'event': 'Something happend '} {'index': 'index 2', 'event': 'Something's happend'}",
+     ['index1', 'index 2']),
     ({'index': 'index1', 'value': '123'}, ['index1']),
     ("{'event': 'value'}", []),
-    ('{"index": "index: 3", "event": "Something happend"}, {"index": "index: 3", "event": "Something happend"}', ['index: 3', 'index: 3']),
+    ('{"index": "index: 3", "event": "Something happend"}, {"index": "index: 3", "event": "Something happend"}',
+     ['index: 3', 'index: 3']),
     ("{'key': 'value'}, {'key': 'value'}", []),
-    ("""{"index": "index_3", "event": "Something` happend"}, {"index": "index-4", "event": "Something' happend"}""", ['index_3', 'index-4']),
+    ("""{"index": "index_3", "event": "Something` happend"}, {"index": "index-4", "event": "Something' happend"}""",
+     ['index_3', 'index-4']),
 ])
 def test_extract_indexes(events, expected_result):
     from SplunkPy import extract_indexes

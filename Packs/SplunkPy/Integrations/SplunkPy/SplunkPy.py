@@ -2667,29 +2667,6 @@ def parse_fields(fields):
     return None
 
 
-# def convert_to_json_for_validation(events: str | dict):
-#     """Converts a batch of events to a valid JSON format for two validation purposes:
-#         - Ensure the batch of events is in the the correct format expected by the Splunk API (not a Json format).
-#         - To enable extraction of the indexes from the string to validate their existence in the Splunk instance.
-#     Args:
-#         events (str): The batch of events to be formatted as JSON.
-#     Raises:
-#         DemistoException: Raised if the input does not match the format expected by the Splunk API.
-#     Returns:
-#         list: A list of JSON objects derived from the input events.
-#     """
-#     try:
-#         events_str = str(events)
-
-#         events_str = events_str.replace("'", '"')
-#         rgx = re.compile(r"}[\s]*{")
-#         valid_json_events = rgx.sub("},{", events_str)
-#         valid_json_events = json.loads(f"[{valid_json_events}]")
-#         return valid_json_events
-#     except Exception as e:
-#         raise DemistoException(f'{str(e)}\nMake sure that the events are in the correct format.')
-
-
 def extract_indexes(events: str | dict):
     events_str = str(events)
     rgx = r"""["'][\s]*index[\s]*["'][\s]*:[\s]*["']([^"']+)["']"""
@@ -2734,10 +2711,7 @@ def splunk_submit_event_hec(
             source=source,
             time=time_
         )
-    #valid_json_events = convert_to_json_for_validation(events)  # only used for extracting indices
     indexes = extract_indexes(events)
-
-    #indexes = [d.get('index') for d in extracted_indexes if d.get('index')]
 
     if not validate_indexes(indexes, service):
         raise DemistoException('Index name does not exist in your splunk instance')
@@ -2754,8 +2728,6 @@ def splunk_submit_event_hec(
         data = events
     else:
         data = json.dumps(events)
-
-    #demisto.debug(f'{INTEGRATION_LOG} sending {len(valid_json_events)}')
 
     return requests.post(
         f'{baseurl}/services/collector/event',

@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: SplunkPy dev
+  id: SplunkPy
   version: -1
 sectionOrder:
 - Connect
@@ -304,8 +304,8 @@ configuration:
   required: false
   additionalinfo: Add this tag to an entry to mirror it as a comment to Splunk.
 description: Runs queries on Splunk servers.
-display: SplunkPy dev
-name: SplunkPy dev
+display: SplunkPy
+name: SplunkPy
 script:
   commands:
   - arguments:
