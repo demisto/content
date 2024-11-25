@@ -1193,7 +1193,7 @@ def get_width_height(args: dict):
 
 def main():  # pragma: no cover
     incident_id = incident_name = ''
-    incident = demisto.incident()
+    incident: dict = demisto.incident() or {}
     if incident_id := incident.get('id', ''):
         incident_name = incident.get('name')
     demisto.debug(f"main, {demisto.command()=}, {incident_id=}, {incident_name=}")
