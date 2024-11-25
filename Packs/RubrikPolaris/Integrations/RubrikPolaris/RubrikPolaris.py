@@ -11,6 +11,7 @@ import urllib3
 import traceback
 from datetime import date
 import jwt
+import re
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -2166,15 +2167,8 @@ def header_transform_to_title_case(string: str) -> str:
 
     :return: The string in title case.
     '''
-    new_string = []
-    for j, i in enumerate(string):
-        if j == 0:
-            new_string.append(i.upper())
-        elif string[j - 1].islower() and string[j].isupper():
-            new_string.append(' ' + i.upper())
-        else:
-            new_string.append(i)
-    return ''.join(new_string)
+    transformed = re.sub(r'(?<=[a-z])([A-Z])', r' \1', string)
+    return transformed.title()
 
 
 def validate_ip_addresses(ips_list: List[str]) -> Tuple[List[str], List[str]]:
@@ -2190,12 +2184,11 @@ def validate_ip_addresses(ips_list: List[str]) -> Tuple[List[str], List[str]]:
     invalid_ip_addresses = []
     valid_ip_addresses = []
     for ip in ips_list:
-        ip = ip.strip().strip('\"')
-        if ip:
-            if is_ip_valid(ip, accept_v6_ips=True):
-                valid_ip_addresses.append(ip)
-            else:
-                invalid_ip_addresses.append(ip)
+        ip = ip.strip('\"')
+        if is_ip_valid(ip, accept_v6_ips=True):
+            valid_ip_addresses.append(ip)
+        else:
+            invalid_ip_addresses.append(ip)
     return invalid_ip_addresses, valid_ip_addresses
 
 
