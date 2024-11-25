@@ -5006,8 +5006,7 @@ def detections_to_human_readable(detections):
     detections_readable_outputs = []
     for detection in detections:
         readable_output = assign_params(status=detection.get('status'),
-                                        max_severity=detection.get('max_severity_displayname') if LEGACY_VERSION else
-                                        detection.get('severity_name'),
+                                        max_severity=detection.get('max_severity_displayname'),
                                         detection_id=detection.get('detection_id'),
                                         created_time=detection.get('created_timestamp'))
         detections_readable_outputs.append(readable_output)
