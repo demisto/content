@@ -1590,9 +1590,9 @@ def get_detections_entities(detections_ids: list):
         :param detections_ids: IDs of the requested detections.
         :return: Response json of the get detection entities endpoint (detection objects)
     """
-    ids_json = {'ids': detections_ids} if LEGACY_VERSION else {"composite_ids": detections_ids}
-    url = '/detects/entities/summaries/GET/v1' if LEGACY_VERSION else '/alerts/entities/alerts/v2'
-    demisto.debug(f"Getting detections entities from {url} with {ids_json=}. {LEGACY_VERSION=}")
+    ids_json = {'ids': detections_ids}
+    url = '/detects/entities/summaries/GET/v1'
+    demisto.debug(f"Getting detections entities from {url} with {ids_json=}.")
     if detections_ids:
         response = http_request(
             'POST',
@@ -5030,9 +5030,6 @@ def list_detection_summaries_command():
         detections_ids = demisto.get(get_fetch_detections(), 'resources')
     detections_response_data = get_detections_entities(detections_ids)
     detections = list(detections_response_data.get('resources')) if detections_response_data else []
-    if not LEGACY_VERSION:
-        # modify the new version (raptor) outputs to match the old format for backward compatibility
-        detections = [modify_detection_summaries_outputs(detection) for detection in detections]
     detections_human_readable = detections_to_human_readable(detections)
 
     return CommandResults(
