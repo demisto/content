@@ -3,7 +3,6 @@ from datetime import timedelta
 import CommonServerPython
 from freezegun import freeze_time
 from pytest_mock import MockerFixture
-from CommonServerPython import get_integration_context
 from NetQuestOMX import TOKEN_TTL, DATE_FORMAT_FOR_TOKEN, Client, fetch_events, address_list_upload_command, \
     address_list_optimize_command, address_list_create_command, address_list_rename_command, address_list_delete_command
 import json
@@ -52,7 +51,7 @@ def test_new_token_login_client(requests_mock):
     integration_context = CommonServerPython.get_integration_context()
 
     assert integration_context["expiration_time"] == \
-           (datetime.utcnow() + timedelta(seconds=(TOKEN_TTL - 60))).strftime(DATE_FORMAT_FOR_TOKEN)
+        (datetime.utcnow() + timedelta(seconds=(TOKEN_TTL - 60))).strftime(DATE_FORMAT_FOR_TOKEN)
 
 
 @freeze_time('2020-06-03T02:00:00Z')
@@ -71,6 +70,9 @@ def test_old_token_login_client(mocker: MockerFixture):
         "expiration_time": (datetime.utcnow() + timedelta(seconds=TOKEN_TTL)).strftime(DATE_FORMAT_FOR_TOKEN)
     }
     set_integration_context(cache)
+
+    assert get_integration_context() == cache  # sanity check
+
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mock_refresh_access_token = mocker.patch.object(Client, '_refresh_access_token')
@@ -202,5 +204,3 @@ def test_address_list_delete_command(requests_mock, net_quest_omx_client):
     requests_mock.delete(f'{BASE_URL}Systems/Filters/Address/ListName/{name}/Config/List', json={})
     result = address_list_delete_command(client=net_quest_omx_client, args={"name": name})
     assert result.readable_output == f"Successfully deleted {name} list"
-
-
