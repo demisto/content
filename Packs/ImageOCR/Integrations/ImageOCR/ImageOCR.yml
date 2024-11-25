@@ -41,6 +41,7 @@ script:
       defaultValue: False
       name: verbose
     name: image-ocr-extract-text
+    description: Extract text from images.
     outputs:
     - contextPath: File.Text
       description: Extracted text from the passed image file.
