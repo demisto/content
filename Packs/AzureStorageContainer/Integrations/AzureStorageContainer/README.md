@@ -2,23 +2,19 @@
 Create and Manage Azure Storage Container services.
 This integration was integrated and tested with version "2020-10-02" of Azure Storage Container
 
-## Configure Azure Storage Container on Cortex XSOAR
+## Configure Azure Storage Container in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Azure Storage Container.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Storage account name | True |
-    | Account SAS Token | False |
-    | Use Azure Managed Identities | False |
-    | Azure Managed Identities Client ID | False |   
-    | Shared Key | False |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Storage account name | True |
+| Account SAS Token | False |
+| Use Azure Managed Identities | False |
+| Azure Managed Identities Client ID | False |   
+| Shared Key | False |
+| Use system proxy settings | False |
+| Trust any certificate (not secure) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## ## Shared Access Signatures Information (SAS)
 * The required SAS token for this integration should be taken at the **storage account level and not at container level**.
@@ -33,7 +29,7 @@ please make sure your SAS token contains the following permissions:
 ## Shared Key Permissions
 To set the AllowSharedKeyAccess property for an Azure Storage account, a user needs to have the permissions to create and manage storage accounts.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### azure-storage-container-list
 ***

@@ -1,29 +1,25 @@
 Endpoint detection and response to manage and query malops, connections and processes.
 This integration was integrated and tested with version 21.2 of Cybereason
 
-## Configure Cybereason on Cortex XSOAR
+## Configure Cybereason in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cybereason.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. <https://192.168.0.1>) | True |
-    | Credentials | False |
-    | Password | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
-    | Fetch by "MALOP CREATION TIME" or by "MALOP UPDATE TIME" (Fetching by Malop update time might create duplicates of Malops as incidents) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g. <https://192.168.0.1>) | True |
+| Credentials | False |
+| Password | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Fetch incidents | False |
+| Incident type | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
+| Fetch by "MALOP CREATION TIME" or by "MALOP UPDATE TIME" (Fetching by Malop update time might create duplicates of Malops as incidents) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### cybereason-query-processes
@@ -1689,4 +1685,3 @@ Get the results related to machines.
     ]
 }
 ```
-
