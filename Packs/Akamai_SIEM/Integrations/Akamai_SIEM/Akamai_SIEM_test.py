@@ -136,13 +136,45 @@ class TestCommandsFunctions:
 
         assert entry_context_tested == expected_ec, "Test query response with security events - check only entry context"
 
-    def test_fetch_events_command__with_break_in_the_middle(self, client, mocker):
+    def test_fetch_events_command_with_break_before_timeout(self, client, mocker):
         """
         Given:
         - A client object
         - 2 mock responses each one with one has 50 events (total 100).
         When:
         - Calling fetch_events_command() and getting is_interval_doesnt_have_enough_time_to_run in the second execution.
+        Then:
+        - Ensure there are only 50 total events received and auto_trigger_next_run = True.
+        """
+        page_size = 50
+        events = [
+            (
+                [{"id": i + 1, "httpMessage": {"start": i + 1}} for i in range(page_size * j, page_size * (j + 1))],
+                f"offset_{page_size * (j + 1)}",
+            )
+            for j in range(2)
+        ]
+        mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=events)
+        mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
+        total_events_count = 0
+        for events, _, total_events_count, _, auto_trigger_next_run in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
+                                                                                      '3 days',
+                                                                                      220,
+                                                                                      '',
+                                                                                      {},
+                                                                                      50
+                                                                                      ):
+            mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(True, 1))
+        assert total_events_count == 50
+        assert auto_trigger_next_run
+        
+    def test_fetch_events_command_with_break_for_page_too_small(self, client, mocker):
+        """
+        Given:
+        - A client object
+        - 2 mock responses each one with one has 50 events (total 100).
+        When:
+        - Calling fetch_events_command() with page_size > amount of events obtained in first execution.
         Then:
         - Ensure there are only 50 total events received.
         """
@@ -155,16 +187,16 @@ class TestCommandsFunctions:
             for j in range(2)
         ]
         mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=events)
-        mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=False)
+        mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
         total_events_count = 0
         for events, _, total_events_count, _, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
                                                                                       '3 days',
                                                                                       220,
                                                                                       '',
                                                                                       {},
-                                                                                      5000
+                                                                                      page_size=60
                                                                                       ):
-            mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=True)
+            pass
         assert total_events_count == 50
 
     def test_fetch_events_command__sanity(self, client, mocker):
@@ -254,7 +286,7 @@ class TestCommandsFunctions:
         assert total_events_count == 6
         assert last_offset == "218d9"
 
-    def test_fetch_events_command__limit_is_higher_than_page_size(self, client, requests_mock, mocker):
+    def test_fetch_events_command_limit_is_higher_than_page_size(self, client, requests_mock, mocker):
         """
         Given:
         - A client object
@@ -284,7 +316,7 @@ class TestCommandsFunctions:
         assert total_events_count == 8
         assert last_offset == "318d8"
 
-    def test_fetch_events_command__limit_reached(self, client, requests_mock, mocker):
+    def test_fetch_events_command_limit_reached(self, client, requests_mock, mocker):
         """
         Given:
         - A client object
@@ -360,6 +392,39 @@ class TestCommandsFunctions:
             assert event_not_in_list not in events
         ctx = {"offset": offset, "hashed_events_from_previous_run": list(hashed)}
         assert isinstance(json.dumps(ctx), str)
+
+
+    def test_fetch_events_command_with_page_truncated(self, mocker, client, requests_mock):
+        """
+        Given:
+        - A client object
+        - page_size = 2, fetch_limit = 3, and two requests_mock.
+        When:
+        - Calling fetch_events_command()
+        Then:
+        - The request was called correctly in the first fetch_events_command execution with limit = 2 and from_time.
+        - The request was called correctly in the second fetch_events_command execution with limit = 1 and offset.
+        - A total of 3 events received with offset = the offset from the second response.
+        """
+        page_size = 2
+        fetch_limit = 3
+        first_response_mock = '{"id": 1, "httpMessage": {"start": 1}}\n{"id": 2, "httpMessage": {"start": 2}}\n{"offset": "a"}'
+        second_response_mock = '{"id": 3, "httpMessage": {"start": 3}}\n{"offset": "b"}'
+        mocker.patch('CommonServerPython.parse_date_range', return_value='1575966002')
+        requests_mock.get(f"{BASE_URL}/50170?limit=2&from=1575750002", text=first_response_mock)
+        mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
+        total_events_count = 0
+        for _, offset, total_events_count, _, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
+                                                                                      fetch_time='3 days',
+                                                                                      fetch_limit=fetch_limit,
+                                                                                      config_ids='50170',
+                                                                                      ctx={},
+                                                                                      page_size=page_size
+                                                                                      ):
+            requests_mock.get(f"{BASE_URL}/50170?limit=1&offset={offset}", text=second_response_mock)
+        assert total_events_count == fetch_limit
+        assert offset == 'b'
+
 
     @pytest.mark.parametrize(
         "error_entry, error_message, should_expect_extra_info",
@@ -516,3 +581,25 @@ def test_is_interval_doesnt_have_enough_time_to_run(mocker, freeze_mock,
         should_break, worst_case_time = Akamai_SIEM.is_interval_doesnt_have_enough_time_to_run(min_allowed_delta, worst_case_time)
         assert expected_time == worst_case_time
         assert should_break == expected_should_break
+
+@pytest.mark.parametrize(
+    "num_events_from_previous_request, page_size, expected_results",
+    [
+        (300, 400, True),
+        (380, 400, False),
+        (400, 400, False),
+    ],
+)
+def test_is_last_request_smaller_than_page_size(num_events_from_previous_request, page_size, expected_results):
+    """
+    Given: num_events_from_previous_request, and page_size
+        - Case 1: num_events_from_previous_request = 300, page_size = 400.
+        - Case 2: num_events_from_previous_request = 380, page_size = 400.
+        - Case 3: num_events_from_previous_request = 400, page_size = 400.
+    When: Running is_last_request_smaller_than_page_size with ALLOWED_PAGE_SIZE_DELTA_RATIO = 0.95
+    Then: Ensure that the right results and worst_case_time are returned.
+        - Case 1: should return True (meaning we should break).
+        - Case 2: should return False (meaning we shouldn't break yet).
+        - Case 3: Should return False (meaning we shouldn't break yet).
+    """
+    assert Akamai_SIEM.is_last_request_smaller_than_page_size(num_events_from_previous_request, page_size) is expected_results
