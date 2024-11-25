@@ -9,9 +9,9 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": ["Data Source","Alerts"],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["epo","ePO","trellix","Trellix"],
     "marketplaces": [
         "marketplacev2"
     ]
