@@ -340,7 +340,7 @@ class TestCommandsFunctions:
         ]
         events_not_in_list = [events[0][0][0], events[0][0][2], events[0][0][4]]
         mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=events)
-        mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False,1))
+        mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
         total_events_count = 0
         hashed = {"506353d42f4aaac34493bdfff026ea0c4463a3bc510fb7aa038df8cea7aabbd1",
                   "fce8004cc56a8fb1131f30d2715412d4dcc90be0564c375d1c6b9aee2103b360",
