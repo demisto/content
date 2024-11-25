@@ -1,5 +1,5 @@
 {
-  "trigger_id": "4a97ad9acb4c7d7a428ff876d71e0b38",
+  "trigger_id": "4c039023b3a5216ba6774484bf1859ea",
   "playbook_id": "SSO Brute Force",
   "suggestion_reason": "Recommended for 'SSO Brute Force Threat Detected' and 'SSO Brute Force Activity Observed' alerts",
   "description": "This trigger is responsible for handling the 'SSO Brute Force Threat Detected' and 'SSO Brute Force Activity Observed' alerts",
