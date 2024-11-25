@@ -35,4 +35,4 @@ def test_login_client(net_quest_omx_client):
     integration_context = get_integration_context()
 
     assert integration_context["expiration_time"] == \
-           (datetime.utcnow() + timedelta(seconds=(TOKEN_TTL - 60))).strftime(DATE_FORMAT_FOR_TOKEN)
+        (datetime.utcnow() + timedelta(seconds=(TOKEN_TTL - 60))).strftime(DATE_FORMAT_FOR_TOKEN)
