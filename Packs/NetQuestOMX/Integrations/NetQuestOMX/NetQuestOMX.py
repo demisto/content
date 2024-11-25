@@ -166,21 +166,21 @@ class Client(BaseClient):
 
         return export_stats_event
 
-    def export_peaks_fks_request(self, slot_number: str, port_number: str) -> dict[str, Any]:
+    def export_peaks_FPS_request(self, slot_number: str, port_number: str) -> dict[str, Any]:
         try:
-            export_peaks_fks_event = self._http_request(
+            export_peaks_FPS_event = self._http_request(
                 method="GET",
                 url_suffix=f"/api/Systems/Slot/{slot_number}/Ipfix/Status/ExportHwm",
                 ok_codes=(200,)
             )
         except Exception as e:
             raise DemistoException(
-                "An error was occurred when requesting for an event of Export Peaks FKS type."
+                "An error was occurred when requesting for an event of Export Peaks FPS type."
             ) from e
 
-        export_peaks_fks_event["STAT_TYPE"] = 'ExportPeakFPS'
+        export_peaks_FPS_event["STAT_TYPE"] = 'ExportPeaksFPS'
 
-        return export_peaks_fks_event
+        return export_peaks_FPS_event
 
     def optimization_stats_request(self, slot_number: str, port_number: str) -> dict[str, Any]:
         try:
@@ -357,15 +357,13 @@ def fetch_events(client: Client, slot_number: str, port_number: str, statistic_t
     statistic_types_mapping: Dict[str, Callable] = {
         'Metering Stats': client.metering_stats_request,
         'Export Stats': client.export_stats_request,
-        'Export Peaks FKS': client.export_peaks_fks_request,
+        'Export Peaks FPS': client.export_peaks_FPS_request,
         'Optimization Stats': client.optimization_stats_request,
 
     }
 
     events.extend(
-        statistic_types_mapping[statistic_type](
-            client, slot_number, port_number
-        )
+        statistic_types_mapping[statistic_type](slot_number, port_number)
         for statistic_type in statistic_types_to_fetch
     )
 
@@ -414,7 +412,7 @@ def main() -> None:
             return_results(commands[command](client, **args))
 
         elif command == "fetch-events":
-            events, next_run = fetch_events(
+            events = fetch_events(
                 client=client,
                 slot_number=params["slot"],  # a required param
                 port_number=params["port"],  # a required param

@@ -1,0 +1,26 @@
+{
+    "TotalPackets": 18827405,
+    "DroppedPackets": 0,
+    "TotalBytes": 15266439881,
+    "ByteRate": 541123,
+    "PacketRate": 701,
+    "FlowsMetered": 450273,
+    "NewFlowRate": 29,
+    "FlowsInMemory": 1217,
+    "FlowMemoryPctUsed": 0,
+    "NumberOfCollisions": 0,
+    "AveragePacketsPerFlow": 41,
+    "AverageFlowDuration": 6.31,
+    "AverageLongFlowDuration": 199.27,
+    "TotalMacIngressThruputMbps": 4.44,
+    "NonIp": {
+        "Arp": 0,
+        "MACsec": 0,
+        "SixPlusTags": 0,
+        "EightPlusLabels": 0,
+        "IpLengthMismatch": 0,
+        "Other": 0,
+        "Oversized": 0,
+        "Total": 0
+    }
+}

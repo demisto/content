@@ -38,7 +38,7 @@ configuration:
   options:
   - Metering Stats
   - Export Stats
-  - Export Peaks FKS
+  - Export Peaks FPS
   - Optimization Stats
   type: 16
   section: Collect
