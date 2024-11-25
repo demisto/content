@@ -626,6 +626,21 @@ def prepare_incidents_from_alerts_data(
     return next_run, incidents
 
 
+def get_incident_name(hit_source: dict) -> str:
+    '''
+    Determines the incident name based on available fields in the hit source.
+    :param hit_source: The source data from the hit.
+    :return: The incident name.
+    '''
+    for field in ['username', 'email', 'fpid']:
+        value = hit_source.get(field)
+        if value:
+            demisto.debug(f'Setting incident name with {field}: {value}')
+            return value
+    demisto.debug('Setting incident name with default: Compromised Credential Alert')
+    return 'Compromised Credential Alert'
+
+
 def prepare_incidents_from_compromised_credentials_data(response: dict, next_run: dict,
                                                         start_time: str, is_test: bool) -> Tuple[dict, list]:
     """
@@ -652,25 +667,9 @@ def prepare_incidents_from_compromised_credentials_data(response: dict, next_run
 
     for hit in hits:
         hit_source = hit.get('_source', {})
-        incident_name = ''
-        hit_username = hit_source.get('username')
-        if hit_username:
-            incident_name = hit_username
-            demisto.debug(f'Setting incident name with username: {incident_name}')
-        hit_email = hit_source.get('email')
-        if not incident_name and hit_email:
-            incident_name = hit_email
-            demisto.debug(f'Setting incident name with email: {incident_name}')
-        hit_fpid = hit_source.get('fpid')
-        if not incident_name and hit_fpid:
-            incident_name = hit_fpid
-            demisto.debug(f'Setting incident name with fpid: {incident_name}')
-        if not incident_name:
-            incident_name = 'Compromised Credential Alert'
-            demisto.debug(f'Setting incident name with default: {incident_name}')
         incidents.append({
-            'name': incident_name,
-            'severity': IncidentSeverity.__dict__.get(severity.upper()),
+            'name': get_incident_name(hit_source),
+            'severity': getattr(IncidentSeverity, severity.upper(), None),  # safer access to enum
             'occurred': hit_source.get('breach', {}).get('created_at', {}).get('date-time'),
             'rawJSON': json.dumps(hit)
         })
