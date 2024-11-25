@@ -172,6 +172,7 @@ def test_get_events_invalid_input(net_quest_omx_client):
         get_events(net_quest_omx_client, params, args)
     assert e.value.message == expected_error_msg
 
+
 def test_address_list_upload_command(mocker, requests_mock, net_quest_omx_client):
     """
     Given:

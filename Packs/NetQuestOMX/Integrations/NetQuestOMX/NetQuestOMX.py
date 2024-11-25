@@ -382,8 +382,8 @@ def get_events(client: Client, params: dict, args: dict) -> list[dict]:
     """
 
     # validate the input
-    statistic_types_to_fetch = argToList(args.get("statistic_types_to_fetch", []) or
-                                         params.get("statistic_types_to_fetch", []))  # arg overrides the param
+    statistic_types_to_fetch = argToList(args.get("statistic_types_to_fetch", [])
+                                         or params.get("statistic_types_to_fetch", []))  # arg overrides the param
 
     valid_types = ("Metering Stats", "Export Stats", "Export Peaks FPS", "Optimization Stats")
 
