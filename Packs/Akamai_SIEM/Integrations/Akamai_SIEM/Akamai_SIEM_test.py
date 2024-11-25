@@ -167,7 +167,7 @@ class TestCommandsFunctions:
             mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(True, 1))
         assert total_events_count == 50
         assert auto_trigger_next_run
-        
+
     def test_fetch_events_command_with_break_for_page_too_small(self, client, mocker):
         """
         Given:
@@ -393,7 +393,6 @@ class TestCommandsFunctions:
         ctx = {"offset": offset, "hashed_events_from_previous_run": list(hashed)}
         assert isinstance(json.dumps(ctx), str)
 
-
     def test_fetch_events_command_with_page_truncated(self, mocker, client, requests_mock):
         """
         Given:
@@ -424,7 +423,6 @@ class TestCommandsFunctions:
             requests_mock.get(f"{BASE_URL}/50170?limit=1&offset={offset}", text=second_response_mock)
         assert total_events_count == fetch_limit
         assert offset == 'b'
-
 
     @pytest.mark.parametrize(
         "error_entry, error_message, should_expect_extra_info",
@@ -581,6 +579,7 @@ def test_is_interval_doesnt_have_enough_time_to_run(mocker, freeze_mock,
         should_break, worst_case_time = Akamai_SIEM.is_interval_doesnt_have_enough_time_to_run(min_allowed_delta, worst_case_time)
         assert expected_time == worst_case_time
         assert should_break == expected_should_break
+
 
 @pytest.mark.parametrize(
     "num_events_from_previous_request, page_size, expected_results",
