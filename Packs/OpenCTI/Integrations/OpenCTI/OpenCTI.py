@@ -903,10 +903,10 @@ def indicator_field_remove_command(client: OpenCTIApiClient, args: Dict[str, str
     result = {}
 
     if key == 'marking':
-        result = observable_remove_marking(client=client, id=observable_id, value=value)
+        result = indicator_remove_marking(client=client, id=observable_id, value=value)
 
     elif key == 'label':
-        result = observable_remove_label(client=client, id=observable_id, value=value)
+        result = indicator_remove_label(client=client, id=observable_id, value=value)
 
     if result:
         readable_output = f'{key}: {value} was removed successfully from observable: {observable_id}.'
