@@ -598,14 +598,15 @@ def main():  # pragma: no cover
             if limit < page_size:
                 demisto.info(f"Got {limit=} lower than {page_size=}, lowering page_size to {limit}.")
                 page_size = limit
-            for events, offset, total_events_count, hashed_events_from_current_run, auto_trigger_next_run in fetch_events_command(  # noqa: B007
+            for events, offset, total_events_count, hashed_events_from_current_run, auto_trigger_next_run in (  # noqa: B007
+            fetch_events_command(
                 client,
                 "5 minutes",
                 fetch_limit=limit,
                 config_ids=params.get("configIds", ""),
                 ctx=get_integration_context() or {},
                 page_size=page_size
-            ):
+            )):
                 if events:
                     demisto.info(f"Sending events to xsiam with latest event time is: {events[-1]['_time']}")
                     send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
