@@ -9,10 +9,18 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": ["Data Source","Alerts"],
+    "tags": [
+        "Security",
+        "Malware"
+    ],
     "useCases": [],
-    "keywords": ["epo","ePO","trellix","Trellix"],
+    "keywords": [
+        "mcafee",
+        "epo",
+        "trellix"
+    ],
     "marketplaces": [
+        "xsoar",
         "marketplacev2"
     ]
 }
