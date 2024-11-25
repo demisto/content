@@ -1,0 +1,32 @@
+[MODEL: dataset = proofpoint_threat_response_raw]
+// Parsing fields
+alter
+        emails = arrayindex(json_extract_array(event, "$.emails"), 0),
+        attacker_ip_1 = json_extract_scalar(hosts, "$.attacker.0"),
+        attacker_ip_2 = json_extract_scalar(hosts, "$.attacker.1"),
+        attacker_ip_3 = json_extract_scalar(hosts, "$.attacker.2"),
+        incident_field_values = incident_field_values -> []
+| alter
+        src_ipv4 = arraycreate(attacker_ip_1, attacker_ip_2, attacker_ip_3)
+// Mapping fields
+| alter
+        xdm.event.id = to_string(id),
+        xdm.alert.category = json_extract_scalar(event, "$.category"),
+        xdm.alert.severity = json_extract_scalar(event, "$.severity"),
+        xdm.email.sender = json_extract_scalar(emails, "$.sender.email"),
+        xdm.email.message_id = json_extract_scalar(emails, "$.messageId"),
+        xdm.email.subject = json_extract_scalar(emails, "$.subject"),
+        xdm.email.recipients = arraycreate(coalesce(json_extract_scalar(emails, "$.recipient.email"), "")),
+        xdm.alert.name = json_extract_scalar(arrayindex(incident_field_values, 1), "$.value"),
+        xdm.alert.description = json_extract_scalar(event, "$.description"),
+        xdm.email.attachment.path = json_extract_scalar(event, "$.fileName"),
+        xdm.alert.original_alert_id = to_string(json_extract_scalar(event, "$.id")),
+        xdm.source.ipv4 =
+            to_string(
+                if(arrayindex(src_ipv4, 0) ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", arrayindex(src_ipv4, 0),
+                    if(arrayindex(src_ipv4, 1) ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", arrayindex(src_ipv4, 1),
+                        if(arrayindex(src_ipv4, 2) ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", arrayindex(src_ipv4, 2), null
+                        )
+                    )
+                )
+            );

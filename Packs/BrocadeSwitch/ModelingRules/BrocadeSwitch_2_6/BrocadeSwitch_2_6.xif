@@ -1,0 +1,92 @@
+[MODEL: dataset = brocade_switch_raw]
+alter
+    switch_name = arrayindex(regextract(_raw_log, "\<\d+\>\s*\w+\s+\d+\s+\d+:\d+:\d+\s+([\w\-]+)\s"), 0),
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)),
+    event_payload = arrayindex(regextract(_raw_log, "\d{2}\:\d{2}\:\d{2}\s\S+\s(.+)"), 0),
+    event_type = if(_raw_log ~= "SCP\s|scp\s", "SCP",
+                    _raw_log ~= "Radius service for Authentication session gave response", "RADIUS service response",
+                    arrayindex(regextract(_raw_log, "\d{2}\:\d{2}\:\d{2}\s\S+\s(.+?)\:"), 0))
+| alter 
+    access_attempts = arrayindex(regextract(event_payload , "(\d+)\s+attempt"), 0), // Security events
+    access_outcome = arrayindex(regextract(event_payload , "access by user \S+ from src IP \S+ ([^,]+)"), 0), // Security events
+    auth_service_protocol = if(event_type ~= "RADIUS", "RADIUS"), 
+    auth_status = arrayindex(regextract(event_payload , "Auth\.\s*([^\, ]+)"), 0), //outcome for SNMP 
+    client_id = arrayindex(regextract(event_payload , "client\-id\:\s*(\w+)"), 0), // MDUP (Multicast Duplicate) Cluster events
+    command_line = arrayindex(regextract(event_payload, "CLI\s+CMD\:\s*\"?([^\"]+)\"?\s+by\s+\S+"), 0), 
+    command_configuration_mode = arrayindex(regextract(event_payload , "src MAC \S+ (?:from|to)\s+(.+)\s+mode"), 0), 
+    connection_protocol = arrayindex(regextract(event_payload , "Security:\s*(\S+)"), 0), // telnet, ssh etc.
+    dhcps_outcome = if(event_type = "DHCPS", 
+        if(event_payload ~= "Exhausts all allocation methods", "All allocation methods exhausted",
+            event_payload ~= "nothing written to flash", "Nothing written to flash",
+            event_payload ~= "dropping DHCPOFFER message", "Dropping DHCPOFFER message")),
+    dhcps_outcome_reason = if(event_type = "DHCPS", 
+        if(event_payload ~= "no address pool found from received port", "No address pool found from received port",
+            event_payload ~= "lease-binding database is empty", "Lease-binding database is empty",
+            event_payload ~= "unable to find an address pool for rx port", "Unable to find an address pool for rx port")),
+    event_type = if(event_type = null or event_type = "", "Other", event_type),
+    event_sub_type = if(event_type = "Security", arrayindex(regextract(event_payload , "Security:\s*(\S+\s+\S+)"), 0),
+                        event_type = "System", if(event_payload ~= "System: PoE", "Power over Ethernet", 
+                                                  event_payload ~= "Interface ethernet \S+ state \S+", "Interface state status", ""),
+                        event_type = "STP", if(event_payload ~= "STP State \-\>", "STP State transition", 
+                                               event_payload ~= "Bridge TC Event", "Bridge Toplogy Change", "")),
+    interface_port = if(
+        event_type = "SNMP", arrayindex(regextract(event_payload , "Interface:\s*([^,]+)"), 0),
+        event_type = "STP",  arrayindex(regextract(event_payload , "Port\s+(\S+)"), 0),
+        event_type = "DHCPS", arrayindex(regextract(event_payload , "port\s+(\d+)"), 0),
+        event_type = "System", coalesce(
+                    arrayindex(regextract(event_payload , "Interface ethernet ([^,]+)"), 0),
+                    arrayindex(regextract(event_payload , "on port (\w\S+)"), 0))),
+    interface_port_state = if(event_type = "System", arrayindex(regextract(event_payload , "state\s+(\w+)"), 0),
+                              event_type = "STP",    arrayindex(regextract(event_payload , "STP State \-\>\s*(.+)"), 0)),
+    mdup_outcome = arrayindex(regextract(event_payload , "client\-id\:\s*\w+, \s*(.+)"), 0), // MDUP (Multicast Duplicate) Cluster events
+    mdup_outcome_reason = arrayindex(regextract(event_payload , "MDUP HEALTH CHECK:\s*([^:]+)\:"), 0), // MDUP (Multicast Duplicate) Cluster events
+    system_poe_outcome = arrayindex(regextract(event_payload , "because of [^\.]+\.\s*([^\.]+)"), 0), // System PoE (Power over Ethernet) events
+    system_poe_outcome_reason = arrayindex(regextract(event_payload , "because of ([^\.]+)\."), 0), // System PoE (Power over Ethernet) events
+    server_ip = arrayindex(regextract(event_payload , "server_ip=(\S+)"), 0), // RADIUS 
+    server_host_key = arrayindex(regextract(event_payload , "mode using\s+(\S+)"), 0), // Security events  
+    server_response = arrayindex(regextract(event_payload , "response=(\S+)"), 0),  // RADIUS
+    source_ip = if(event_type = "CLI CMD", arrayindex(regextract(event_payload , "from\s\S+\sclient\s(\S+)"), 0), //CLI CMD Audit events
+                   event_type = "SNMP", arrayindex(regextract(event_payload , "intruder IP:\s*([^, ]+)"), 0), // SNMP events
+                   event_type = "Security", arrayindex(regextract(event_payload , "src IP (\S+)"), 0)), // Security events 
+    source_mac = arraystring(regextract(event_payload , "src MAC (\S+)"), ":"), // Extract MAC address from Security events
+    source_username = if(event_type = "CLI CMD", arrayindex(regextract(event_payload, "\sby\s+(\S+)"), 0),
+                         event_type = "Security", arrayindex(regextract(event_payload , "\sby\s+(?:user\s+)?(\S+)"), 0)),
+    syslog_facility = floor(divide(syslog_priority, 8)),
+    terminal_client = if(event_type = "CLI CMD", arrayindex(regextract(event_payload , "\sfrom\s+(\S+)"), 0)), // telnet, ssh etc.
+    vlan = arrayindex(regextract(event_payload , "VLAN\s+(\d+)"), 0) // STP (Spanning Tree Protocol) network events 
+| alter 
+    event_outcome = coalesce(access_outcome, auth_status, dhcps_outcome, mdup_outcome, interface_port_state, server_response, system_poe_outcome), 
+    event_outcome_reason = coalesce(dhcps_outcome_reason, mdup_outcome_reason, system_poe_outcome_reason),
+    source_mac_formatted = arraystring(regextract(source_mac, "[\da-fA-F]{2}"), ":"), // reformat the mac from xxxx.xxxx.xxxx to xx:xx:xx:xx:xx:xx
+    source_ipv4 = if(source_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", source_ip),
+    source_ipv6 = if(source_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", source_ip),
+    syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility, 8))),
+    target_ipv4 = if(server_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", server_ip),
+    target_ipv6 = if(server_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", server_ip)
+| alter
+    xdm.alert.severity = syslog_severity,
+    xdm.auth.auth_method = server_host_key,
+    xdm.auth.privilege_level = command_configuration_mode,
+    xdm.event.description = event_payload,
+    xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
+    xdm.event.operation_sub_type = event_sub_type,
+    xdm.event.outcome = if(event_outcome ~= "fail|REJECT", XDM_CONST.OUTCOME_FAILED, event_outcome),
+    xdm.event.outcome_reason = event_outcome_reason,
+    xdm.event.original_event_type = event_type,
+    xdm.network.application_protocol = coalesce(auth_service_protocol, connection_protocol, terminal_client),
+    xdm.observer.name = switch_name,
+    xdm.source.ipv4 = source_ipv4,
+    xdm.source.ipv6 = source_ipv6,
+    xdm.source.host.device_id = client_id,
+    xdm.source.host.ipv4_addresses = if(source_ipv4 != null, arraycreate(source_ipv4)),
+    xdm.source.host.ipv6_addresses = if(source_ipv6 != null, arraycreate(source_ipv6)),
+    xdm.source.host.mac_addresses = if(source_mac_formatted != null, arraycreate(source_mac_formatted)),
+    xdm.source.sent_packets = to_integer(access_attempts),
+    xdm.source.identity.username = source_username,
+    xdm.target.interface = interface_port,
+    xdm.target.ipv4 = target_ipv4,
+    xdm.target.ipv6 = target_ipv6,
+    xdm.target.host.ipv4_addresses = if(target_ipv4 != null, arraycreate(target_ipv4)),
+    xdm.target.host.ipv6_addresses = if(target_ipv6 != null, arraycreate(target_ipv6)),
+    xdm.target.process.command_line = command_line,
+    xdm.target.vlan = to_integer(vlan);

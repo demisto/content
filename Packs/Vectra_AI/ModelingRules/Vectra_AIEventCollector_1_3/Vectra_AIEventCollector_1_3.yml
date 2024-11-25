@@ -4,3 +4,4 @@ name: Vectra AI Event Collector Modeling Rule
 rules: ''
 schema: ''
 tags: Vectra Detection Audits
+toversion: 8.9.0

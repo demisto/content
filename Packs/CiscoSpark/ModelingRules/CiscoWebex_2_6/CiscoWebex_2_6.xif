@@ -1,0 +1,45 @@
+[MODEL: dataset = "cisco_webex_raw"]
+// Events mapping
+filter source_log_type = "Events"
+| alter
+        xdm.event.type = source_log_type,
+        xdm.event.id = id,
+        xdm.event.description = data -> text,
+        xdm.source.identity.identifier = actorId,
+        xdm.source.identity.username = data -> personDisplayName,
+        xdm.source.identity.upn= data -> personEmail,
+        xdm.source.identity.ou = data -> personOrgId,
+        xdm.event.operation_sub_type = type,
+        xdm.target.resource.type = resource,
+        xdm.target.resource.id = data -> id,
+        xdm.target.resource.sub_type = concat(data -> roomType, data -> callType),
+        xdm.source.host.hostname = data -> host,
+        xdm.event.duration = to_integer(divide(to_integer(data -> callDurationSeconds), 1000));
+// Admin Audit and Security Audit Events mapping
+filter source_log_type = "Admin Audit Events" or source_log_type = "Security Audit Events"
+| alter
+        actorIp = data -> actorIp,
+        eventStatus = coalesce(data -> eventStatus, data -> status, data -> migrationResult, data -> success, data -> actionStatus),
+        result = if(data -> failedReason !~= "\s+" and data -> failedReason != null, data -> failedReason, data -> result != null, data -> result, null)
+| alter
+        xdm.event.type = source_log_type,
+        xdm.event.original_event_type = data -> eventCategory,
+        xdm.event.description = concat(data -> eventDescription, " ", data -> actionText),
+        xdm.event.id = id,
+        xdm.event.outcome = if(eventStatus = "SUCCESS", XDM_CONST.OUTCOME_SUCCESS, eventStatus = "FAILURE", XDM_CONST.OUTCOME_FAILED, null),
+        xdm.event.outcome_reason = result,
+        xdm.source.identity.identifier = actorId,
+        xdm.source.identity.ou = data -> actorOrgName,
+        xdm.source.identity.username = data -> actorName,
+        xdm.source.identity.upn = data -> actorEmail,
+        xdm.source.user_agent = data -> actorUserAgent,
+        xdm.source.ipv4 = if(actorIp  ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", actorIp, null),
+        xdm.source.ipv6 = if(actorIp ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", actorIp, null),
+        xdm.source.application.name = data -> actionClientName,
+        xdm.target.resource.name = data -> targetName,
+        xdm.target.resource.type = data -> targetType,
+        xdm.target.resource.id = data -> targetId,
+        xdm.auth.service = data -> actionClientName,
+        xdm.auth.auth_method = data -> authenticationMethod,
+        xdm.source.process.command_line = data -> commandKey,
+        xdm.network.rule = data -> ruleTitle;

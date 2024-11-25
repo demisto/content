@@ -4,3 +4,4 @@ name: Zero Networks Segment Modeling Rule
 rules: ''
 schema: ''
 tags: Zero Networks Segment
+toversion: 8.9.0

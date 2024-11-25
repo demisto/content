@@ -3,3 +3,4 @@ id: RecordedFutureModelingRule
 name: Recorded Future Modeling Rule
 rules: ''
 schema: ''
+toversion: 8.9.0

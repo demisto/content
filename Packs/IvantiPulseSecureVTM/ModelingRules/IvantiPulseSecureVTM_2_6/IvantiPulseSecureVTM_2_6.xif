@@ -1,0 +1,128 @@
+[MODEL: dataset = ivanti_vtm_raw]
+filter _raw_log ~= "<\d+>[\S\s]+\s+\d+\.\d+.\d+\.\d+\s+\S+[\s\[]\d+[\]\:\s\-]+\[[^\]]+\]\|[^\|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+"
+| alter
+    extract_ip = arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+[^\s]+\s+\S+[\s\[]\d+[\]\:\s\-]+\[[^\]]+\]\|[^\|]+\|([^|]+)\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+"), ""),
+    extract_httpm_url = arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+[^\s]+\s+\S+[\s\[]\d+[\]\:\s\-]+\[[^\]]+\]\|[^\|]+\|[^|]+\|([^|]+)\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+"), ""),
+    extract_duration = to_float(arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+\d+\.\d+.\d+\.\d+\s+\S+[\s\[]\d+[\]\:\s\-]+\[[^\]]+\]\|([^\|]+)\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+"), "")),
+    extract_contenttype_header = arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+[^\s]+\s+\S+[\s\[]\d+[\]\:\s\-]+\[[^\]]+\]\|[^\|]+\|[^|]+\|[^|]+\|([^|]+)\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+"), ""),
+    extract_response_code = arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+[^\s]+\s+\S+[\s\[]\d+[\]\:\s\-]+\[[^\]]+\]\|[^\|]+\|[^|]+\|[^|]+\|[^|]+\|([^|]+)\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+"), ""),
+    extract_vm_user = arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+[^\s]+\s+\S+[\s\[]\d+[\]\:\s\-]+\[[^\]]+\]\|[^\|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|([^|]+)\|[^|]+\|[^|]+\|[^|]+\|[^|]+"), ""),
+    extract_sent_bytes = arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+[^\s]+\s+\S+[\s\[]\d+[\]\:\s\-]+\[[^\]]+\]\|[^\|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|([^|]+)\|[^|]+\|[^|]+\|[^|]+"), ""),
+    extract_cookie_header = arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+[^\s]+\s+\S+[\s\[]\d+[\]\:\s\-]+\[[^\]]+\]\|[^\|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|([^|]+)\|[^|]+\|[^|]+"), ""),
+    extract_referer_header = arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+[^\s]+\s+\S+[\s\[]\d+[\]\:\s\-]+\[[^\]]+\]\|[^\|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|([^|]+)\|[^|]+"), ""),
+    extract_user_agent = arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+[^\s]+\s+\S+[\s\[]\d+[\]\:\s\-]+\[[^\]]+\]\|[^\|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|([^|]+)"), ""),
+    extract_agentapp_name = arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+\d+\.\d+.\d+\.\d+\s+(\S+)[\s\[]\d+[\]\:\s\-]+"), "")
+| alter
+    src_ip_v4 = if(extract_ip !~= ":", extract_ip, null),
+    src_ip_v6 = if(extract_ip ~= ":", extract_ip, null),
+    get_http_method = arraystring(regextract(extract_httpm_url, "^(\S+)\s+\S+"), ""),
+    get_url = arraystring(regextract(extract_httpm_url, "^\S+\s+(\S+)"), ""),
+    combine_contenttyoe_cookie_referer = arraystring(arraycreate(extract_contenttype_header, extract_cookie_header, extract_referer_header), " | "),
+    duration_int_convert = to_integer(multiply(to_float(extract_duration), 1000)) 
+| alter
+    xdm.event.duration = duration_int_convert,
+    xdm.source.ipv4 = src_ip_v4,
+    xdm.source.ipv6 = src_ip_v6,
+    xdm.network.http.method = if(get_http_method="ACL", XDM_CONST.HTTP_METHOD_ACL, get_http_method="BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, get_http_method="BIND", XDM_CONST.HTTP_METHOD_BIND, get_http_method="CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, get_http_method="CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, get_http_method="CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, get_http_method="COPY", XDM_CONST.HTTP_METHOD_COPY, get_http_method="DELETE", XDM_CONST.HTTP_METHOD_DELETE, get_http_method="GET", XDM_CONST.HTTP_METHOD_GET, get_http_method="HEAD", XDM_CONST.HTTP_METHOD_HEAD, get_http_method="LABEL", XDM_CONST.HTTP_METHOD_LABEL, get_http_method="LINK", XDM_CONST.HTTP_METHOD_LINK, get_http_method="LOCK", XDM_CONST.HTTP_METHOD_LOCK, get_http_method="MERGE", XDM_CONST.HTTP_METHOD_MERGE, get_http_method="MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, get_http_method="MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, get_http_method="MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, get_http_method="MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, get_http_method="MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, get_http_method="MOVE", XDM_CONST.HTTP_METHOD_MOVE, get_http_method="OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, get_http_method="ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, get_http_method="PATCH", XDM_CONST.HTTP_METHOD_PATCH, get_http_method="POST", XDM_CONST.HTTP_METHOD_POST, get_http_method="PRI", XDM_CONST.HTTP_METHOD_PRI, get_http_method="PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, get_http_method="PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, get_http_method="PUT", XDM_CONST.HTTP_METHOD_PUT, get_http_method="REBIND", XDM_CONST.HTTP_METHOD_REBIND, get_http_method="REPORT", XDM_CONST.HTTP_METHOD_REPORT, get_http_method="SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, get_http_method="TRACE", XDM_CONST.HTTP_METHOD_TRACE, get_http_method="UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, get_http_method="UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, get_http_method="UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, get_http_method="UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, get_http_method="UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, get_http_method="UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, get_http_method="VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, get_http_method=null, null, to_string(get_http_method)),
+    xdm.target.url = get_url,
+    xdm.network.http.http_header.header = "Content-Type | Cookie | Referer",
+    xdm.network.http.http_header.value = combine_contenttyoe_cookie_referer,
+    xdm.network.http.response_code =  if(extract_response_code = "100", XDM_CONST.HTTP_RSP_CODE_CONTINUE, extract_response_code = "101", XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, extract_response_code = "102", XDM_CONST.HTTP_RSP_CODE_PROCESSING, extract_response_code = "103", XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, extract_response_code = "200", XDM_CONST.HTTP_RSP_CODE_OK, extract_response_code = "201", XDM_CONST.HTTP_RSP_CODE_CREATED, extract_response_code = "202", XDM_CONST.HTTP_RSP_CODE_ACCEPTED, extract_response_code = "203", XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, extract_response_code = "204", XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, extract_response_code = "205", XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, extract_response_code = "206", XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, extract_response_code = "207", XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, extract_response_code = "208", XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, extract_response_code = "226", XDM_CONST.HTTP_RSP_CODE_IM_USED, extract_response_code = "300", XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, extract_response_code = "301", XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, extract_response_code = "302", XDM_CONST.HTTP_RSP_CODE_FOUND, extract_response_code = "303", XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, extract_response_code = "304", XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, extract_response_code = "305", XDM_CONST.HTTP_RSP_CODE_USE_PROXY, extract_response_code = "307", XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, extract_response_code = "308", XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, extract_response_code = "400", XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, extract_response_code = "401", XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, extract_response_code = "402", XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, extract_response_code = "403", XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, extract_response_code = "404", XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, extract_response_code = "405", XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, extract_response_code = "406", XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, extract_response_code = "407", XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, extract_response_code = "408", XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, extract_response_code = "409", XDM_CONST.HTTP_RSP_CODE_CONFLICT, extract_response_code = "410", XDM_CONST.HTTP_RSP_CODE_GONE, extract_response_code = "411", XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, extract_response_code = "412", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, extract_response_code = "413", XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, extract_response_code = "414", XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, extract_response_code = "415", XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, extract_response_code = "416", XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, extract_response_code = "417", XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, extract_response_code = "421", XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, extract_response_code = "422", XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, extract_response_code = "423", XDM_CONST.HTTP_RSP_CODE_LOCKED, extract_response_code = "424", XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, extract_response_code = "425", XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, extract_response_code = "426", XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, extract_response_code = "428", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, extract_response_code = "429", XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, extract_response_code = "431", XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, extract_response_code = "451", XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, extract_response_code = "500", XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, extract_response_code = "501", XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, extract_response_code = "502", XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, extract_response_code = "503", XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, extract_response_code = "504", XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, extract_response_code = "505", XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, extract_response_code = "506", XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, extract_response_code = "507", XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, extract_response_code = "508", XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, extract_response_code = "511", XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, extract_response_code = null, null, to_string(extract_response_code)),
+    xdm.target.identity.username = extract_vm_user,
+    xdm.target.sent_bytes = to_integer(extract_sent_bytes),
+    xdm.source.user_agent = extract_user_agent,
+    xdm.observer.type = extract_agentapp_name;
+
+
+filter _raw_log not contains "|" AND _raw_log not contains "=" AND _raw_log !~= "INFO|WARN|SERIOUS|FATAL"
+| alter
+    extract_tar_host_name = arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+\d+\.\d+.\d+\.\d+\s+\S+[\s\[]\d+[\]\:\s\-]+\[[^\]]+\]\s+([^\s]+)\s+[^\s]+\s+[^\s]+\s+[^\s]+\s+[^\s]+\s+[^\s]+\s+[^\s]+"), ""),
+    extract_src_ip = arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+\d+\.\d+.\d+\.\d+\s+\S+[\s\[]\d+[\]\:\s\-]+\[[^\]]+\]\s+[^\s]+\s+([^\s]+)\s+[^\s]+\s+[^\s]+\s+[^\s]+\s+[^\s]+\s+[^\s]+"), ""),
+    extract_tar_ip_port = arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+\d+\.\d+.\d+\.\d+\s+\S+[\s\[]\d+[\]\:\s\-]+\[[^\]]+\]\s+[^\s]+\s+[^\s]+\s+([^\s]+)\s+[^\s]+\s+[^\s]+\s+[^\s]+\s+[^\s]+"), ""),
+    extract_intermidiate_node = arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+\d+\.\d+.\d+\.\d+\s+\S+[\s\[]\d+[\]\:\s\-]+\[[^\]]+\]\s+[^\s]+\s+[^\s]+\s+[^\s]+\s+([^\s]+)\s+[^\s]+\s+[^\s]+\s+[^\s]+"), ""),
+    extract_src_sent_bytes = to_integer(arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+\d+\.\d+.\d+\.\d+\s+\S+[\s\[]\d+[\]\:\s\-]+\[[^\]]+\]\s+[^\s]+\s+[^\s]+\s+[^\s]+\s+[^\s]+\s+([^\s]+)\s+[^\s]+\s+[^\s]+"), "")),
+    extract_tar_sent_bytes = to_integer(arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+\d+\.\d+.\d+\.\d+\s+\S+[\s\[]\d+[\]\:\s\-]+\[[^\]]+\]\s+[^\s]+\s+[^\s]+\s+[^\s]+\s+[^\s]+\s+[^\s]+\s+([^\s]+)\s+[^\s]+"), "")),
+    extract_duration = arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+\d+\.\d+.\d+\.\d+\s+\S+[\s\[]\d+[\]\:\s\-]+\[[^\]]+\]\s+[^\s]+\s+[^\s]+\s+[^\s]+\s+[^\s]+\s+[^\s]+\s+[^\s]+\s+([^\s]+)"), ""),
+    extract_agentapp_name = arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+\d+\.\d+.\d+\.\d+\s+(\S+)[\s\[]\d+[\]\:\s\-]+"), "")
+| alter
+    get_tar_port = to_integer(arraystring(regextract(extract_tar_ip_port, "^\S+\:(\S+)"), "")),
+    get_tar_ip = arraystring(regextract(extract_tar_ip_port, "^(\S+)\:\S+"), ""),
+    check_intermidiate_node_ip = if(extract_intermidiate_node contains ":", arraystring(regextract(extract_intermidiate_node, "^(\S+)\:\S+"), ""), null),
+    check_intermidiate_node_port = if(extract_intermidiate_node contains ":", to_integer(arraystring(regextract(extract_intermidiate_node, "^\S+\:(\S+)"), "")), null),
+    check_intermidiate_node_name = if(extract_intermidiate_node not contains ":", extract_intermidiate_node , null),
+    duration_int_convert = to_integer(multiply(to_float(extract_duration), 1000)) 
+| alter
+    src_ip_v4 = if(extract_src_ip !~= ":", extract_src_ip, null),
+    src_ip_v6 = if(extract_src_ip ~= ":", extract_src_ip, null),
+    tar_ip_v4 = if(get_tar_ip !~= ":", get_tar_ip, null),
+    tar_ip_v6 = if(get_tar_ip ~= ":", get_tar_ip, null),
+    int_ip_v4 = if(check_intermidiate_node_ip !~= ":", check_intermidiate_node_ip, null),
+    int_ip_v6 = if(check_intermidiate_node_ip ~= ":", check_intermidiate_node_ip, null)  
+| alter
+    xdm.target.host.hostname = extract_tar_host_name,
+    xdm.source.ipv4 = src_ip_v4,
+    xdm.source.ipv6 = src_ip_v6,
+    xdm.target.ipv4 = tar_ip_v4,
+    xdm.target.ipv6 = tar_ip_v6,
+    xdm.target.port = get_tar_port,
+    xdm.intermediate.ipv4 = int_ip_v4,
+    xdm.intermediate.ipv6 = int_ip_v6,
+    xdm.intermediate.port = check_intermidiate_node_port,
+    xdm.intermediate.host.hostname = check_intermidiate_node_name,
+    xdm.source.sent_bytes = extract_src_sent_bytes,
+    xdm.target.sent_bytes = extract_tar_sent_bytes,
+    xdm.event.duration = duration_int_convert,
+    xdm.observer.type = extract_agentapp_name;
+
+
+filter _raw_log ~= "INFO|WARN|SERIOUS|FATAL"
+| alter
+    log_format_check = if(_raw_log ~= "\[\d+\/\S+\/\d+:\d+:\d+:\d+\s+[+-]\d+\]", arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+\d+\.\d+.\d+\.\d+\s+\S+[\s\[]\d+[\]\:\s\-]+\[[^\]]+\]\s+(\S+\s+\S+\s+[\s\S]+)"), ""), arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+\d+\.\d+.\d+\.\d+\s+\S+[\s\[]\d+[\]\:\s\-]+(\S+\s+\S+[\s\S]+)"), ""))
+| alter
+    extract_event_log = arraystring(regextract(log_format_check, "^(\S+)\s+\S+\s\S+\=.*"), ""),
+    extract_event_group_details = arraystring(regextract(log_format_check, "^\S+\s+([\S\s]+\s\b\S+)"), ""),
+    extract_agentapp_name = arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+\d+\.\d+.\d+\.\d+\s+(\S+)[\s\[]\d+[\]\:\s\-]+"), "")
+| alter
+    extract_event_group = arraystring(regextract(extract_event_group_details, "^([^=]+)\s.*"), ""),
+    extract_event_details = arraystring(regextract(extract_event_group_details, "^[^=]+\s(.*)"), "")
+| alter
+    details_with_pipe = replex(extract_event_details, "\s{3,}", "| ")
+| alter
+    get_user = arraystring(regextract(details_with_pipe, "\bUSER=([^|]+)"), ""),
+    get_group = arraystring(regextract(details_with_pipe, "\bGROUP=([^|]+)"), ""),
+    get_auth = arraystring(regextract(details_with_pipe, "\bAUTH=([^|]+)"), ""),
+    get_ip = arraystring(regextract(details_with_pipe, "\bIP=([^|]+)"), ""),
+    get_operation = arraystring(regextract(details_with_pipe, "\bOPERATION=([^|]+)"), ""),
+    get_text = arraystring(regextract(details_with_pipe, "\bTEXT=([^|]+)"), ""),
+    get_object = arraystring(regextract(details_with_pipe, "\bOBJ=([^|]+)"), ""),
+    get_key = arraystring(regextract(details_with_pipe, "\bKEY=([^|]+)"), ""),
+    get_new_value = arraystring(regextract(details_with_pipe, "\bVALUE=([^=]+)\|\s\S+\="), ""),
+    get_old_value = arraystring(regextract(details_with_pipe, "\bOLDVAL=([^=]+)\|\s\S+\="), ""),
+    get_new_resource = if(details_with_pipe ~= "\bFILE=([^|]+)", arraystring(regextract(details_with_pipe, "\bFILE=([^|]+)"), ""), null),
+    get_old_resource = arraystring(regextract(details_with_pipe, "\bOLDFILE=([^|]+)"), ""),
+    get_change_user = if(details_with_pipe ~= "\bMODUSER=([^|]+)", arraystring(regextract(details_with_pipe, "\bMODUSER=([^|]+)"), ""), null),
+    get_change_group = if(details_with_pipe ~= "\bMODGROUP=([^|]+)", arraystring(regextract(details_with_pipe, "\bMODGROUP=([^|]+)"), ""), null)
+| alter
+    src_ip_v4 = if(get_ip !~= ":", get_ip, null),
+    src_ip_v6 = if(get_ip ~= ":", get_ip, null),
+    modified_user_group = arraystring(arraycreate("MODUSR: " + get_change_user, "MODGROUP: " + get_change_group), " | ")
+| alter
+    check_user_group = if(get_change_user = null AND get_change_group = null, null, modified_user_group) 
+| alter
+    xdm.event.log_level = if(extract_event_log ~= "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL, extract_event_log ~= "WAR|WARN", XDM_CONST.LOG_LEVEL_WARNING, extract_event_log ~= "SERIOUS|CRIT", XDM_CONST.LOG_LEVEL_CRITICAL, extract_event_log ~= "FATAL|EMERGENCY", XDM_CONST.LOG_LEVEL_EMERGENCY, extract_event_log ~= "ALE", XDM_CONST.LOG_LEVEL_ALERT, extract_event_log ~= "ERR", XDM_CONST.LOG_LEVEL_ERROR, extract_event_log ~= "NOTI", XDM_CONST.LOG_LEVEL_NOTICE, extract_event_log ~= "DEBUG", XDM_CONST.LOG_LEVEL_DEBUG, extract_event_log = null, null, to_string(extract_event_log)),
+    xdm.event.original_event_type = extract_event_group,
+    xdm.event.description = extract_event_details,
+    xdm.source.identity.username = get_user,
+    xdm.source.identity.groups = arraycreate(get_group),
+    xdm.auth.auth_method = get_auth,
+    xdm.source.ipv4 = src_ip_v4,
+    xdm.source.ipv6 = src_ip_v6,
+    xdm.event.operation_sub_type = get_operation,
+    xdm.alert.description = get_text,
+    xdm.observer.unique_identifier = get_object,
+    xdm.observer.action = get_key,
+    xdm.target.resource.value = get_new_value,
+    xdm.target.resource_before.value = get_old_value,
+    xdm.target.resource.name = coalesce(get_new_resource, check_user_group),
+    xdm.target.resource_before.name = get_old_resource,
+    xdm.observer.type = extract_agentapp_name;

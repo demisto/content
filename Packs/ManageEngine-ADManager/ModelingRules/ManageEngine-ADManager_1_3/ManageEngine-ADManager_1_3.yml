@@ -4,3 +4,4 @@ name: ManageEngine-ADManager Modeling Rule
 rules: ''
 schema: ''
 tags: ManageEngine-ADManager
+toversion: 8.9.0

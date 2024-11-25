@@ -1,0 +1,28 @@
+[MODEL:dataset="recorded_future_intelligence_cloud_raw"]
+
+alter
+// The ID of the alert
+alert_id = id,
+// The name of the rule
+event_description = rule -> name,
+// The ID of the rule
+event_id = rule -> id,
+// The link to the rule in RF system
+alert_subcat = rule -> url.portal,
+// Event type
+event_type = type ,
+// The title of the alert
+alert_name = title ,
+// Description of the alert from AI insights
+alert_description = ai_insights -> text,
+// Event hits
+alert_risks = json_extract_array(hits,"$.") 
+
+| alter xdm.alert.original_alert_id = alert_id ,
+xdm.alert.risks = alert_risks,
+xdm.event.description = event_description ,
+xdm.event.id = event_id ,
+xdm.alert.subcategory = alert_subcat ,
+xdm.event.type = event_type ,
+xdm.alert.name = alert_name ,
+xdm.alert.description = alert_description;

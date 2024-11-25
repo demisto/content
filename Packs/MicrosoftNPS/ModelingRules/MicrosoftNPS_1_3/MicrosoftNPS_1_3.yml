@@ -4,3 +4,4 @@ name: Microsoft NPS Modeling Rule
 rules: ''
 schema: ''
 tags: Microsoft NPS
+toversion: 8.9.0

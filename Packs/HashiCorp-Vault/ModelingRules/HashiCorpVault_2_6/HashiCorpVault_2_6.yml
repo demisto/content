@@ -1,0 +1,6 @@
+fromversion: 9.0.0
+id: HashiCorp_Vault_ModelingRule
+name: HashiCorp Vault Modeling Rule
+rules: ''
+schema: ''
+tags:

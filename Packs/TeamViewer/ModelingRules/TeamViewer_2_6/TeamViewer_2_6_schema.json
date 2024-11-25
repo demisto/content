@@ -1,0 +1,24 @@
+{
+    "teamviewer_tensor_raw": {
+        "EventType": {
+            "type": "string",
+            "is_array": false
+        },
+        "EventName": {
+            "type": "string",
+            "is_array": false
+        },
+        "Author": {
+            "type": "string",
+            "is_array": false
+        },
+        "AffectedItem": {
+            "type": "string",
+            "is_array": false
+        },
+        "EventDetails": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

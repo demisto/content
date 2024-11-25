@@ -1,0 +1,6 @@
+fromversion: 9.0.0
+id: SecureAuth_IdP_ModelingRule
+name: SecureAuth IdP Modeling Rule
+rules: ''
+schema: ''
+tags: 

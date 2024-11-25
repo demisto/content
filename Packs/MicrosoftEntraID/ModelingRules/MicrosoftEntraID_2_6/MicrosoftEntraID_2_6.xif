@@ -1,0 +1,287 @@
+[RULE: EntraID_Common_fields]
+filter category in("AuditLogs", "SignInLogs", "NonInteractiveUserSignInLogs", "ManagedIdentitySignInLogs", "ADFSSignInLogs")
+| alter
+        xdm.source.ipv4 = if(callerIpAddress ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", callerIpAddress, null),
+        xdm.source.ipv6 = if(callerIpAddress ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", callerIpAddress, null),
+        xdm.event.original_event_type = category,
+        xdm.session_context_id = correlationId,
+        xdm.source.user_agent = json_extract_scalar(properties, "$.userAgent");
+
+[RULE: msft_azure_resourcelogs_commonfields]
+alter
+	get_resultSignature_resCode = if(resultSignature ~= "^\d{3}$", to_integer(resultSignature))
+| alter
+	xdm.target.resource.id = resourceId,
+	xdm.source.cloud.project_id = tenantId,
+	xdm.event.operation_sub_type = operationName,
+	xdm.event.original_event_type = category,
+	xdm.event.outcome = if(resultType ~= "Start", XDM_CONST.OUTCOME_UNKNOWN, resultType ~= "[Pp]rogress", XDM_CONST.OUTCOME_UNKNOWN, resultType ~= "Succe", XDM_CONST.OUTCOME_SUCCESS, resultType ~= "Fail", XDM_CONST.OUTCOME_FAILED, resultType ~= "Active", XDM_CONST.OUTCOME_UNKNOWN, resultType ~= "Resolv", XDM_CONST.OUTCOME_SUCCESS, resultType = null, null, to_string(resultType)),
+	xdm.event.outcome_reason = if(resultType !~= "\d+", resultType, resultType ~= "\d+" and resultDescription != null, concat(resultDescription, " Error Code: ", resultType), concat("Error Code: ", resultType)),
+	xdm.network.http.response_code = if(get_resultSignature_resCode = 100, XDM_CONST.HTTP_RSP_CODE_CONTINUE, get_resultSignature_resCode = 101, XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, get_resultSignature_resCode = 102, XDM_CONST.HTTP_RSP_CODE_PROCESSING, get_resultSignature_resCode = 103, XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, get_resultSignature_resCode = 200, XDM_CONST.HTTP_RSP_CODE_OK, get_resultSignature_resCode = 201, XDM_CONST.HTTP_RSP_CODE_CREATED, get_resultSignature_resCode = 202, XDM_CONST.HTTP_RSP_CODE_ACCEPTED, get_resultSignature_resCode = 203, XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, get_resultSignature_resCode = 204, XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, get_resultSignature_resCode = 205, XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, get_resultSignature_resCode = 206, XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, get_resultSignature_resCode = 207, XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, get_resultSignature_resCode = 208, XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, get_resultSignature_resCode = 226, XDM_CONST.HTTP_RSP_CODE_IM_USED, get_resultSignature_resCode = 300, XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, get_resultSignature_resCode = 301, XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, get_resultSignature_resCode = 302, XDM_CONST.HTTP_RSP_CODE_FOUND, get_resultSignature_resCode = 303, XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, get_resultSignature_resCode = 304, XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, get_resultSignature_resCode = 305, XDM_CONST.HTTP_RSP_CODE_USE_PROXY, get_resultSignature_resCode = 307, XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, get_resultSignature_resCode = 308, XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, get_resultSignature_resCode = 400, XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, get_resultSignature_resCode = 401, XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, get_resultSignature_resCode = 402, XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, get_resultSignature_resCode = 403, XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, get_resultSignature_resCode = 404, XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, get_resultSignature_resCode = 405, XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, get_resultSignature_resCode = 406, XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, get_resultSignature_resCode = 407, XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, get_resultSignature_resCode = 408, XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, get_resultSignature_resCode = 409, XDM_CONST.HTTP_RSP_CODE_CONFLICT, get_resultSignature_resCode = 410, XDM_CONST.HTTP_RSP_CODE_GONE, get_resultSignature_resCode = 411, XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, get_resultSignature_resCode = 412, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, get_resultSignature_resCode = 413, XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, get_resultSignature_resCode = 414, XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, get_resultSignature_resCode = 415, XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, get_resultSignature_resCode = 416, XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, get_resultSignature_resCode = 417, XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, get_resultSignature_resCode = 421, XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, get_resultSignature_resCode = 422, XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, get_resultSignature_resCode = 423, XDM_CONST.HTTP_RSP_CODE_LOCKED, get_resultSignature_resCode = 424, XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, get_resultSignature_resCode = 425, XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, get_resultSignature_resCode = 426, XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, get_resultSignature_resCode = 428, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, get_resultSignature_resCode = 429, XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, get_resultSignature_resCode = 431, XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, get_resultSignature_resCode = 451, XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, get_resultSignature_resCode = 500, XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, get_resultSignature_resCode = 501, XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, get_resultSignature_resCode = 502, XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, get_resultSignature_resCode = 503, XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, get_resultSignature_resCode = 504, XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, get_resultSignature_resCode = 505, XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, get_resultSignature_resCode = 506, XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, get_resultSignature_resCode = 507, XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, get_resultSignature_resCode = 508, XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, get_resultSignature_resCode = 511, XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, get_resultSignature_resCode = null, null, to_string(get_resultSignature_resCode)),
+	xdm.event.duration = to_integer(durationMs),
+        xdm.source.ipv4 = if(callerIpAddress ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", arrayindex(regextract(callerIpAddress, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 0)),
+        xdm.source.ipv6 = if(callerIpAddress ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", arrayindex(regextract(callerIpAddress, "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}"), 0)),
+	xdm.session_context_id = correlationId,
+	xdm.source.identity.username = to_string(identity),
+	xdm.event.log_level = if(level = "Informational", XDM_CONST.LOG_LEVEL_INFORMATIONAL, level = "Warning", XDM_CONST.LOG_LEVEL_WARNING, level = "Error", XDM_CONST.LOG_LEVEL_ERROR, level = "Critical", XDM_CONST.LOG_LEVEL_CRITICAL, level = null, null, to_string(level)),
+	xdm.source.cloud.region = location,
+	xdm.source.cloud.provider = if(1=1, XDM_CONST.CLOUD_PROVIDER_AZURE);
+
+
+[MODEL: dataset = msft_azure_raw]
+// AuditLogs mapping
+filter category = "AuditLogs"
+| call EntraID_Common_fields
+| alter
+        xdm.event.type = concat(category, " - ", json_extract_scalar(properties, "$.category")),
+        xdm.event.id = json_extract_scalar(properties, "$.id"),
+        xdm.event.description = arraystring(json_extract_array(properties, "$.targetResources"), " *** "),
+        xdm.event.operation_sub_type = json_extract_scalar(properties, "$.operationName"),
+        xdm.event.outcome_reason = resultDescription,
+        xdm.event.outcome = if(lowercase(json_extract_scalar(properties, "$.result")) = "success", XDM_CONST.OUTCOME_SUCCESS, lowercase(json_extract_scalar(properties, "$.result")) = "failure", XDM_CONST.OUTCOME_FAILED, null),
+        xdm.source.cloud.project_id = tenantId,
+        xdm.source.cloud.geo_region = json_extract_scalar(properties, "$.tenantGeo"),
+        xdm.observer.type = json_extract_scalar(properties, "$.loggedByService"),
+        xdm.source.identity.upn = json_extract_scalar(properties, "$.initiatedBy.user.userPrincipalName"),
+        xdm.source.identity.identifier = json_extract_scalar(properties, "$.initiatedBy.user.id"),
+        xdm.source.identity.username = json_extract_scalar(properties, "$.initiatedBy.user.displayName"),
+        xdm.source.application.name = coalesce(json_extract_scalar(properties, "$.initiatedBy.app.displayName"),json_extract_scalar(properties, "$.initiatedBy.app.servicePrincipalName")),
+        xdm.target.resource.sub_type = json_extract_scalar(properties, "$.category"),
+        xdm.target.resource.id = arraystring(arraymap(json_extract_array(properties, "$.targetResources"), if(json_extract_scalar("@element", "$.id") != null, json_extract_scalar("@element", "$.id"), "-")), ", "),
+        xdm.target.resource.name = arraystring(arraymap(json_extract_array(properties, "$.targetResources"), if((json_extract_scalar("@element", "$.displayName") = null or json_extract_scalar("@element", "$.displayName") = "") and json_extract_scalar("@element", "$.userPrincipalName") = null, "-", json_extract_scalar("@element", "$.userPrincipalName") != null, json_extract_scalar("@element", "$.userPrincipalName"), json_extract_scalar("@element", "$.displayName") != null, json_extract_scalar("@element", "$.displayName"))), ", "),
+        xdm.target.resource.type = arraystring(arraymap(json_extract_array(properties, "$.targetResources"), if(json_extract_scalar("@element", "$.type") != null, json_extract_scalar("@element", "$.type"), "-")), ", ");
+
+filter category in ("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrincipalSignInLogs", "ManagedIdentitySignInLogs", "ADFSSignInLogs")
+| call EntraID_Common_fields
+| alter
+        operatingSystem = lowercase(if(json_extract_scalar(properties, "$.deviceDetail.operatingSystem") != null and json_extract_scalar(properties, "$.deviceDetail.operatingSystem") != "", json_extract_scalar(properties, "$.deviceDetail.operatingSystem"), null)),
+        authenticationMethod = json_extract_scalar(arrayindex(json_extract_array(properties, "$.authenticationDetails"), 0), "$.authenticationMethod"),
+        authenticationMethodDetail = json_extract_scalar(arrayindex(json_extract_array(properties, "$.authenticationDetails"), 0), "$.authenticationMethodDetail")
+| alter
+        xdm.event.type = operationName,
+        xdm.event.duration = if(to_number(durationMs) != 0, to_number(durationMs), to_number(json_extract_scalar(properties, "$.processingTimeInMilliseconds")) != 0, to_number(json_extract_scalar(properties, "$.processingTimeInMilliseconds")), null),
+        xdm.event.id = if(json_extract_scalar(properties, "$.originalRequestId") != null, json_extract_scalar(properties, "$.originalRequestId"), json_extract_scalar(properties, "$.id") != null, json_extract_scalar(properties, "$.id"), null),
+        xdm.source.cloud.project_id = coalesce(json_extract_scalar(properties, "$.homeTenantId"), tenantId),
+        xdm.event.outcome_reason = concat(resultDescription, " Error Code: ", resultType),
+        xdm.event.outcome = if(resultType = "0", XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_FAILED),
+        xdm.source.identity.username = json_extract_scalar(properties, "$.userDisplayName"),
+        xdm.source.identity.upn = json_extract_scalar(properties, "$.userPrincipalName"),
+        xdm.source.identity.identifier = json_extract_scalar(properties, "$.userId"),
+        xdm.source.application.name = if(json_extract_scalar(properties, "$.appDisplayName") != null, json_extract_scalar(properties, "$.appDisplayName"), json_extract_scalar(properties, "$.servicePrincipalName") != null, json_extract_scalar(properties, "$.servicePrincipalName"), null),
+        xdm.auth.service = json_extract_scalar(properties, "$.authenticationProtocol"),
+        xdm.source.host.device_id = if(json_extract_scalar(properties, "$.deviceDetail.deviceId") != null and json_extract_scalar(properties, "$.deviceDetail.deviceId") != "", json_extract_scalar(properties, "$.deviceDetail.deviceId"), null),
+        xdm.source.host.os = if(json_extract_scalar(properties, "$.deviceDetail.operatingSystem") != null and json_extract_scalar(properties, "$.deviceDetail.operatingSystem") != "", json_extract_scalar(properties, "$.deviceDetail.operatingSystem"), null),
+        xdm.source.host.os_family = if(operatingSystem contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, operatingSystem contains "mac", XDM_CONST.OS_FAMILY_MACOS, operatingSystem contains "linux", XDM_CONST.OS_FAMILY_LINUX, operatingSystem contains "android", XDM_CONST.OS_FAMILY_ANDROID, operatingSystem contains "ios", XDM_CONST.OS_FAMILY_IOS, operatingSystem contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, operatingSystem contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, operatingSystem contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, operatingSystem contains "centos", XDM_CONST.OS_FAMILY_CENTOS, operatingSystem contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, operatingSystem contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, operatingSystem contains "scada", XDM_CONST.OS_FAMILY_SCADA, null),
+        xdm.network.http.browser = if(json_extract_scalar(properties, "$.deviceDetail.browser") != null and json_extract_scalar(properties, "$.deviceDetail.browser") != "", json_extract_scalar(properties, "$.deviceDetail.browser"), null),
+        xdm.source.location.country = location,
+        xdm.source.location.city = if(json_extract_scalar(properties, "$.location.city") != null and json_extract_scalar(properties, "$.location.city") != "", json_extract_scalar(properties, "$.location.city"), null),
+        xdm.source.location.latitude = to_float(if(json_extract_scalar(properties, "$.location.geoCoordinates.latitude") != null, json_extract_scalar(properties, "$.location.geoCoordinates.latitude"), null)),
+        xdm.source.location.longitude = to_float(if(json_extract_scalar(properties, "$.location.geoCoordinates.longitude") != null, json_extract_scalar(properties, "$.location.geoCoordinates.longitude"), null)),
+        xdm.logon.type = if(category = "SignInLogs", XDM_CONST.LOGON_TYPE_INTERACTIVE, category = "NonInteractiveUserSignInLogs", "non-interactive", category = "ServicePrincipalSignInLogs" or category = "ManagedIdentitySignInLogs", XDM_CONST.LOGON_TYPE_SERVICE, null),
+        xdm.alert.severity = if(json_extract_scalar(properties, "$.riskLevelDuringSignIn") = "none", null, json_extract_scalar(properties, "$.riskLevelDuringSignIn")),
+        xdm.alert.risks = if(array_length(json_extract_scalar_array(properties, "$.riskEventTypes_v2")) > 0, json_extract_scalar_array(properties, "$.riskEventTypes_v2"), null),
+        xdm.target.resource.name = json_extract_scalar(properties, "$.resourceDisplayName"),
+        xdm.target.resource.id = json_extract_scalar(properties, "$.resourceId"),
+        xdm.auth.auth_method = if(authenticationMethodDetail != null, concat(authenticationMethod, " - ", authenticationMethodDetail), authenticationMethod),
+        xdm.auth.is_mfa_needed = if(lowercase(json_extract_scalar(properties, "$.authenticationRequirement")) contains "multifactor", to_boolean("true"), to_boolean("false")),
+        xdm.auth.privilege_level = if(lowercase(json_extract_scalar(properties, "$.userType")) = "member", XDM_CONST.PRIVILEGE_LEVEL_USER, lowercase(json_extract_scalar(properties, "$.userType")) = "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, null),
+        xdm.source.asn.as_number = to_number(json_extract_scalar(properties, "$.autonomousSystemNumber"));
+
+filter category = "ProvisioningLogs"
+| alter
+        initiatedBy_type = lowercase(json_extract_scalar(properties, "$.initiatedBy.Type"))
+| alter
+        Source_applicationName = if(initiatedBy_type = "application", json_extract_scalar(properties, "$.initiatedBy.Name"), json_extract_scalar(properties, "$.sourceSystem.Name")),
+        Source_userName = if(initiatedBy_type = "user", json_extract_scalar(properties, "$.initiatedBy.Name"), null),
+        Source_userIdentifier = if(initiatedBy_type = "user", json_extract_scalar(properties, "$.initiatedBy.Id"), null)
+| alter
+        xdm.event.original_event_type = category,
+        xdm.event.duration = to_number(durationMs),
+        xdm.event.type = operationName,
+        xdm.event.outcome = if(lowercase(resultType) = "success", XDM_CONST.OUTCOME_SUCCESS, lowercase(resultType) = "failure", XDM_CONST.OUTCOME_FAILED, null),
+        xdm.event.outcome_reason = concat(resultDescription, " Error Code: ", resultSignature),
+        xdm.event.description = arraystring(json_extract_array(properties, "$.provisioningSteps"), " **Next Step:** "),
+        xdm.source.cloud.project_id = tenantId,
+        xdm.event.id = json_extract_scalar(properties, "$.id"),
+        xdm.session_context_id = json_extract_scalar(properties, "$.jobId"),
+        xdm.event.operation_sub_type = json_extract_scalar(properties, "$.provisioningAction"),
+        xdm.source.application.name = if(Source_applicationName != "", Source_applicationName, null),
+        xdm.target.application.name = if(json_extract_scalar(properties, "$.targetSystem.Name") != "", json_extract_scalar(properties, "$.targetSystem.Name"), null),
+        xdm.source.identity.username = if(Source_userName != "", Source_userName, null),
+        xdm.source.identity.identifier = if(Source_userIdentifier != "", Source_userIdentifier, null),
+        xdm.target.resource.id = if(json_extract_scalar(properties, "$.targetIdentity.Id") != "", json_extract_scalar(properties, "$.targetIdentity.Id"), null),
+        xdm.target.resource.type = if(json_extract_scalar(properties, "$.targetIdentity.identityType") != "", json_extract_scalar(properties, "$.targetIdentity.identityType"), null),
+        xdm.target.resource.name = if(json_extract_scalar(properties, "$.targetIdentity.Name") != "", json_extract_scalar(properties, "$.targetIdentity.Name"), null),
+        xdm.target.resource.value = json_extract_scalar(properties, "$.targetIdentity.details.UserPrincipalName");
+
+filter category in ("RiskyUsers", "RiskyServicePrincipals")
+| alter
+        xdm.event.original_event_type = category,
+        xdm.session_context_id = correlationId,
+        xdm.source.cloud.project_id = tenantId,
+        xdm.event.type = operationName,
+        xdm.event.id = json_extract_scalar(properties, "$.id"),
+        xdm.source.identity.username = json_extract_scalar(properties, "$.userDisplayName"),
+        xdm.source.identity.upn = json_extract_scalar(properties, "$.userPrincipalName"),
+        xdm.alert.name = json_extract_scalar(properties, "$.riskDetail"),
+        xdm.alert.severity = json_extract_scalar(properties, "$.riskLevel"),
+        xdm.source.application.name = json_extract_scalar(properties, "$.displayName"),
+        xdm.source.identity.is_disabled = if(to_boolean(json_extract(properties, "$.accountEnabled")) = to_boolean("true"), to_boolean("false"), to_boolean(json_extract(properties, "$.accountEnabled")) = to_boolean("false"), to_boolean("true"), null);
+
+filter category in ("UserRiskEvents", "ServicePrincipalRiskEvents")
+| alter
+        xdm.event.original_event_type = category,
+        xdm.event.description = json_extract_scalar(properties, "$.additionalInfo"),
+        xdm.session_context_id = coalesce(json_extract_scalar(properties, "$.correlationId"), correlationId),
+        xdm.source.cloud.project_id = tenantId,
+        xdm.event.type = json_extract_scalar(properties, "$.activity"),
+        xdm.event.id = json_extract_scalar(properties, "$.id"),
+        xdm.source.ipv4 = if(callerIpAddress ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", callerIpAddress, null),
+        xdm.source.ipv6 = if(callerIpAddress ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", callerIpAddress, null),
+        xdm.logon.logon_guid = if(json_extract_scalar(properties, "$.requestId") != "", json_extract_scalar(properties, "$.requestId"), null),
+        xdm.alert.subcategory = json_extract_scalar(properties, "$.riskEventType"),
+        xdm.alert.severity = json_extract_scalar(properties, "$.riskLevel"),
+        xdm.alert.name = json_extract_scalar(properties, "$.riskDetail"),
+        xdm.observer.type = json_extract_scalar(properties, "$.source"),
+        xdm.source.location.country = if(json_extract_scalar(properties, "$.location.countryOrRegion") != null and json_extract_scalar(properties, "$.location.countryOrRegion") != "", json_extract_scalar(properties, "$.location.countryOrRegion"), null),
+        xdm.source.location.city = if(json_extract_scalar(properties, "$.location.city") != null and json_extract_scalar(properties, "$.location.city") != "", json_extract_scalar(properties, "$.location.city"), null),
+        xdm.source.location.latitude = to_float(if(json_extract_scalar(properties, "$.location.geoCoordinates.latitude") != null, json_extract_scalar(properties, "$.location.geoCoordinates.latitude"), null)),
+        xdm.source.location.longitude = to_float(if(json_extract_scalar(properties, "$.location.geoCoordinates.longitude") != null, json_extract_scalar(properties, "$.location.geoCoordinates.longitude"), null)),
+        xdm.source.identity.username = json_extract_scalar(properties, "$.userDisplayName"),
+        xdm.source.identity.upn = json_extract_scalar(properties, "$.userPrincipalName"),
+        xdm.source.identity.identifier = json_extract_scalar(properties, "$.userId"),
+        xdm.auth.privilege_level = if(lowercase(json_extract_scalar(properties, "$.userType")) = "member", XDM_CONST.PRIVILEGE_LEVEL_USER, lowercase(json_extract_scalar(properties, "$.userType")) = "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, null),
+        xdm.source.application.name = json_extract_scalar(properties, "$.servicePrincipalDisplayName");
+
+filter category not in ("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrincipalSignInLogs", "ManagedIdentitySignInLogs", "ADFSSignInLogs", "AuditLogs", "ProvisioningLogs", "RiskyUsers", "RiskyServicePrincipals", "UserRiskEvents", "ServicePrincipalRiskEvents")
+| call msft_azure_resourcelogs_commonfields;
+
+
+[MODEL:dataset = "msft_azure_ad_raw"]
+alter
+  get_riskLevelAggregated = if(riskLevelAggregated = "none", null, riskLevelAggregated),
+  get_riskLevelDuringSignIn = if(riskLevelDuringSignIn = "none", null, riskLevelDuringSignIn)
+| alter
+  check_ipAddress_v4 = if(ipAddress ~= "(?:\d{1,3}\.){3}\d{1,3}", ipAddress),
+  check_ipAddress_v6 = if(ipAddress ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", ipAddress),
+  check_ipAddressFromResourceProvider_v4 = if(ipAddressFromResourceProvider ~= "(?:\d{1,3}\.){3}\d{1,3}", ipAddressFromResourceProvider),
+  check_ipAddressFromResourceProvider_v6 = if(ipAddressFromResourceProvider ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", ipAddressFromResourceProvider),
+  check_os_field = lowercase(coalesce(operatingSystem, deviceDetail -> operatingSystem)),
+  check_risk_level = coalesce(get_riskLevelDuringSignIn, get_riskLevelAggregated)
+| alter
+  xdm.logon.type = if(signInEventTypes ~= "interactive", XDM_CONST.LOGON_TYPE_INTERACTIVE, signInEventTypes ~= "refreshToken", XDM_CONST.LOGON_TYPE_NEW_CREDENTIALS, signInEventTypes ~= "managedIdentity", XDM_CONST.LOGON_TYPE_BATCH, signInEventTypes ~= "continuousAccessEvaluation", XDM_CONST.LOGON_TYPE_BATCH, signInEventTypes ~= "nonInteractiveUser", XDM_CONST.LOGON_TYPE_NETWORK, signInEventTypes ~= "servicePrincipal", XDM_CONST.LOGON_TYPE_SERVICE, signInEventTypes = null, null, to_string(signInEventTypes)),
+  xdm.alert.risks = if(array_length(arraycreate(riskEventTypes_v2)) > 0, arraycreate(riskEventTypes_v2)),
+  xdm.event.duration = to_integer(ProcessingTimeInMilliseconds),
+  xdm.source.host.ipv4_addresses = arraycreate(check_ipAddress_v4, check_ipAddressFromResourceProvider_v4),
+  xdm.source.host.ipv6_addresses = arraycreate(check_ipAddress_v6, check_ipAddressFromResourceProvider_v6),
+  xdm.source.host.ipv4_public_addresses = arrayfilter(arraycreate(check_ipAddress_v4, check_ipAddressFromResourceProvider_v4), 
+                                            not incidr("@element", "10.0.0.0/8") 
+                                            and not incidr("@element", "172.16.0.0/12") 
+                                            and not incidr("@element", "192.168.0.0/16") 
+                                            and not incidr("@element", "127.0.0.0/8") 
+                                            and not incidr("@element", "169.254.0.0/16") 
+                                            and not incidr("@element", "100.64.0.0/10")),
+  xdm.event.outcome = if(conditionalAccessStatus = "success", XDM_CONST.OUTCOME_SUCCESS, conditionalAccessStatus = "failure", XDM_CONST.OUTCOME_FAILED, conditionalAccessStatus = "notApplied", XDM_CONST.OUTCOME_UNKNOWN),
+  xdm.event.id = coalesce(id, originalRequestId),
+  xdm.source.identity.username = userDisplayName,
+  xdm.source.identity.upn = userPrincipalName,
+  xdm.source.identity.identifier = userId,
+  xdm.source.application.name = coalesce(servicePrincipalName, appDisplayName),
+  xdm.event.operation_sub_type = clientAppUsed,
+  xdm.source.user_agent = userAgent,
+  xdm.session_context_id = correlationId,
+  xdm.auth.service = if(tokenIssuerType = "UnknownFutureValue", authenticationProtocol, tokenIssuerType),
+  xdm.auth.auth_method = clientCredentialType,
+  xdm.alert.name = riskDetail,
+  xdm.alert.severity = check_risk_level,
+  xdm.observer.action = riskState,
+  xdm.target.resource.name = resourceDisplayName,
+  xdm.target.resource.id = resourceId,
+  xdm.source.cloud.project_id = coalesce(homeTenantId, resourceTenantId),
+  xdm.source.host.device_id = deviceDetail -> deviceId,
+  xdm.source.host.hostname = coalesce(homeTenantName, deviceDetail -> displayName),
+  xdm.auth.mfa.method = authenticationMethodsUsed,
+  xdm.auth.mfa.client_details = authenticationRequirement,
+  xdm.auth.is_mfa_needed = if(authenticationRequirement = "multiFactorAuthentication", to_boolean("true"), to_boolean("false")),
+  xdm.event.original_event_type = to_string(signInEventTypes),
+  xdm.auth.privilege_level = if(userType = "member", XDM_CONST.PRIVILEGE_LEVEL_USER, userType = "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, userType = null, null, to_string(userType)),
+  xdm.source.asn.as_number = to_integer(autonomousSystemNumber),
+  xdm.source.host.os = check_os_field,
+  xdm.source.host.os_family = if(check_os_field ~= "win|ms|microsoft", XDM_CONST.OS_FAMILY_WINDOWS,
+                                  check_os_field ~= "mac", XDM_CONST.OS_FAMILY_MACOS,
+                                  check_os_field ~= "linux", XDM_CONST.OS_FAMILY_LINUX,
+                                  check_os_field ~= "android", XDM_CONST.OS_FAMILY_ANDROID,
+                                  check_os_field ~= "ios|iphone", XDM_CONST.OS_FAMILY_IOS,
+                                  check_os_field ~= "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU,
+                                  check_os_field ~= "debian", XDM_CONST.OS_FAMILY_DEBIAN,
+                                  check_os_field ~= "fedora", XDM_CONST.OS_FAMILY_FEDORA,
+                                  check_os_field ~= "cent", XDM_CONST.OS_FAMILY_CENTOS,
+                                  check_os_field ~= "chrome", XDM_CONST.OS_FAMILY_CHROMEOS,
+                                  check_os_field ~= "solaris", XDM_CONST.OS_FAMILY_SOLARIS,
+                                  check_os_field ~= "scada", XDM_CONST.OS_FAMILY_SCADA, 
+                                  check_os_field = null, null, to_string(check_os_field)),
+  xdm.event.outcome_reason = status -> failureReason,
+  xdm.alert.description = status -> additionalDetails,
+  xdm.network.http.browser = deviceDetail -> browser,
+  xdm.network.rule = to_string(appliedConditionalAccessPolicies),
+  xdm.event.description = to_string(arrayconcat(authenticationProcessingDetails -> [], networkLocationDetails -> [], authenticationDetails -> []));
+
+
+
+
+
+[MODEL:dataset = "msft_azure_ad_audit_raw"]
+alter
+  get_parsed_fields_ipaddr = parsed_fields -> ipaddr,
+  get_parsed_fields_userType = parsed_fields -> userType,
+  get_parsed_fields_DeviceOSType = lowercase(parsed_fields -> DeviceOSType),
+  get_initiatedBy_ipAddress = initiatedBy -> ipAddress
+| alter
+  check_parsed_fields_ipaddr_v4 = if(get_parsed_fields_ipaddr ~= "(?:\d{1,3}\.){3}\d{1,3}", get_parsed_fields_ipaddr),
+  check_parsed_fields_ipaddr_v6 = if(get_parsed_fields_ipaddr ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", get_parsed_fields_ipaddr),
+  check_initiatedBy_ipAddress_v4 = if(get_initiatedBy_ipAddress ~= "(?:\d{1,3}\.){3}\d{1,3}", get_initiatedBy_ipAddress),
+  check_initiatedBy_ipAddress_v6 = if(get_initiatedBy_ipAddress ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", get_initiatedBy_ipAddress)
+| alter
+  xdm.source.host.ipv4_addresses = arraycreate(check_parsed_fields_ipaddr_v4, check_initiatedBy_ipAddress_v4),
+  xdm.source.host.ipv6_addresses = arraycreate(check_parsed_fields_ipaddr_v6, check_initiatedBy_ipAddress_v6),
+  xdm.source.host.ipv4_public_addresses = arrayfilter(arraycreate(check_parsed_fields_ipaddr_v4, check_initiatedBy_ipAddress_v4), 
+                                            not incidr("@element", "10.0.0.0/8") 
+                                            and not incidr("@element", "172.16.0.0/12") 
+                                            and not incidr("@element", "192.168.0.0/16") 
+                                            and not incidr("@element", "127.0.0.0/8") 
+                                            and not incidr("@element", "169.254.0.0/16") 
+                                            and not incidr("@element", "100.64.0.0/10")),
+  xdm.event.id = id,
+  xdm.event.outcome = if(result = "success", XDM_CONST.OUTCOME_SUCCESS, result = "failure", XDM_CONST.OUTCOME_FAILED, result = "unknownFutureValue", XDM_CONST.OUTCOME_UNKNOWN, result = "timeout", XDM_CONST.OUTCOME_PARTIAL),
+  xdm.event.original_event_type = category,
+  xdm.source.identity.username = initiatedBy -> user,
+  xdm.source.application.name = coalesce(initiatedBy -> app.displayName, initiatedBy -> app.servicePrincipalName),
+  xdm.source.identity.upn = initiatedBy -> userPrincipalName,
+  xdm.event.outcome_reason = resultReason,
+  xdm.session_context_id = correlationId,
+  xdm.observer.action = operationType,
+  xdm.observer.type = loggedByService,
+  xdm.event.description = to_string(targetResources),
+  xdm.alert.description = parsed_fields -> Details,
+  xdm.alert.subcategory = parsed_fields -> ErrorCode,
+  xdm.event.type = parsed_fields -> EventName,
+  xdm.auth.privilege_level = if(get_parsed_fields_userType = "member", XDM_CONST.PRIVILEGE_LEVEL_USER, get_parsed_fields_userType = "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, get_parsed_fields_userType = null, null, to_string(get_parsed_fields_userType)),
+  xdm.source.host.device_id = coalesce(initiatedBy -> homeTenantId, parsed_fields -> DeviceId),
+  xdm.source.host.hostname = initiatedBy -> homeTenantName,
+  xdm.source.host.os = get_parsed_fields_DeviceOSType,
+  xdm.source.host.os_family = if(get_parsed_fields_DeviceOSType ~= "win|ms|microsoft", XDM_CONST.OS_FAMILY_WINDOWS,
+                                  get_parsed_fields_DeviceOSType ~= "mac", XDM_CONST.OS_FAMILY_MACOS,
+                                  get_parsed_fields_DeviceOSType ~= "linux", XDM_CONST.OS_FAMILY_LINUX,
+                                  get_parsed_fields_DeviceOSType ~= "android", XDM_CONST.OS_FAMILY_ANDROID,
+                                  get_parsed_fields_DeviceOSType ~= "ios|iphone", XDM_CONST.OS_FAMILY_IOS,
+                                  get_parsed_fields_DeviceOSType ~= "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU,
+                                  get_parsed_fields_DeviceOSType ~= "debian", XDM_CONST.OS_FAMILY_DEBIAN,
+                                  get_parsed_fields_DeviceOSType ~= "fedora", XDM_CONST.OS_FAMILY_FEDORA,
+                                  get_parsed_fields_DeviceOSType ~= "cent", XDM_CONST.OS_FAMILY_CENTOS,
+                                  get_parsed_fields_DeviceOSType ~= "chrome", XDM_CONST.OS_FAMILY_CHROMEOS,
+                                  get_parsed_fields_DeviceOSType ~= "solaris", XDM_CONST.OS_FAMILY_SOLARIS,
+                                  get_parsed_fields_DeviceOSType ~= "scada", XDM_CONST.OS_FAMILY_SCADA, 
+                                  get_parsed_fields_DeviceOSType = null, null, to_string(get_parsed_fields_DeviceOSType)),
+  xdm.target.host.hostname = parsed_fields -> targetTenant,
+  xdm.target.host.device_category = parsed_fields -> targetEntityType,
+  xdm.event.operation_sub_type = activityDisplayName;

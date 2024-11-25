@@ -3,3 +3,4 @@ id: fireeye_etp_ModelingRule
 name: FireEye ETP Modeling Rule
 rules: ''
 schema: ''
+toversion: 8.9.0

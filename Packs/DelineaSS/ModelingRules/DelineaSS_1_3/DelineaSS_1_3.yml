@@ -4,3 +4,4 @@ name: Delinea Secret Server
 rules: ''
 schema: ''
 tags: Delinea Secret Server
+toversion: 8.9.0

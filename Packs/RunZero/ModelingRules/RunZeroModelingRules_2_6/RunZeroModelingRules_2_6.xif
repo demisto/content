@@ -1,0 +1,14 @@
+[MODEL: dataset=runzero_runzero_raw]
+alter
+	xdm.event.type = action,
+    xdm.event.id = id,
+    xdm.event.outcome = if(lowercase(to_string(success)) = "false", XDM_CONST.OUTCOME_FAILED, lowercase(to_string(success)) = "true", XDM_CONST.OUTCOME_SUCCESS, success = null, null, to_string(success)),
+    xdm.target.resource.type = target_type,
+    xdm.target.resource.name = target_name,
+    xdm.target.resource.id = target_id,
+    xdm.source.identity.username = if(source_type="user", source_name, null),
+    xdm.source.identity.identifier = if(source_type ="user", source_id, null),
+    xdm.source.host.hostname = if(source_type = "agent", source_name , null),
+    xdm.source.agent.identifier = if(source_type ="agent", source_id, null),
+    xdm.source.process.name = if(source_type not in("agent","user"), source_name , null),
+    xdm.source.process.identifier = if(source_type not in("agent","user"), source_id  , null);

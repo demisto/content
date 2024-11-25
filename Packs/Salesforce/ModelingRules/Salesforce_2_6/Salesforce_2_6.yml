@@ -1,0 +1,6 @@
+fromversion: 9.0.0
+id: salesforce_modeling_rule
+name: Salesforce Modeling Rule
+rules: ''
+schema: ''
+tags: salesforce

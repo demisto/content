@@ -4,3 +4,4 @@ name: AWS WAF Modeling Rule
 rules: ''
 schema: ''
 tags: AWS_WAF
+toversion: 8.9.0

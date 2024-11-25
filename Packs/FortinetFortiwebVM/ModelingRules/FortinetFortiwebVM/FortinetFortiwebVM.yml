@@ -4,3 +4,4 @@ name: Fortinet Fortiweb Modeling Rule
 rules: ''
 schema: ''
 tags: 
+toversion: 8.9.0

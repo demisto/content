@@ -1,0 +1,66 @@
+[MODEL: dataset="juniper_srx_raw"]
+alter
+    event_type = arrayindex(regextract(_raw_log,"(\w+\[\d+\])\:\s"),0)
+| filter
+    event_type contains "["
+| alter timestamp = arrayindex(regextract(_raw_log,"(\d+\:\d+:\d+\.\d+)"), 0)
+| alter hostname = arrayindex(regextract(_raw_log,"([^\s]+)\s\w+\[\d+\]\:\s"),0)
+| alter process = arrayindex(regextract(_raw_log,"\s(\w+)\[\d+"),0)
+| alter processID = arrayindex(regextract(_raw_log,"\s\w+\[(\d+)\]\:\s"),0)
+| alter username = arrayindex(regextract(_raw_log,"ser\s\'([^\']+)"),0)
+| alter message = arrayindex(regextract(_raw_log,"\s\w+\[\d+\]\:\s[^\d]+:\s([^\\]+) "),0)
+| alter tag_name = arrayindex(regextract(_raw_log,"\:\s(\w+\_\w+)"),0)
+| alter
+    xdm.observer.name = hostname,
+    xdm.event.operation = process,
+    xdm.source.process.pid = to_number(processID),
+    xdm.source.identity.username = username,
+    xdm.alert.description = message,
+    xdm.event.type = tag_name;
+
+alter start_raw_log = arrayindex(regextract(_raw_log , "^(\<\d+\>)"),0)
+| filter len(start_raw_log) >0
+| alter Timestamp = arrayindex(regextract(_raw_log,"(\d{4}\-\d{2}\-\d{2}T\d+\:\d+\:\d+.\d+)"), 0)
+| alter destination_address = arrayindex(regextract(_raw_log,"destination\-address\=\"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0)
+| alter file_name = arrayindex(regextract(_raw_log,"\sfilename\=\"([^\"]+)\""),0)
+// extract url
+| alter url1 = arrayindex(regextract(_raw_log,"url\=\"(\S+)."),0)
+| alter url2 = arrayindex(regextract(_raw_log,"URL\=(\S+)"),0)
+| alter url = coalesce(url1,url2)
+// end extract url
+| alter source_port = arrayindex(regextract(_raw_log,"source\-port\=\"(\d+)"),0)
+| alter destination_port = arrayindex(regextract(_raw_log,"destination\-port\=\"(\d+)"),0)
+| alter Reason = arrayindex(regextract(_raw_log,"REASON\=\"([^\"]+)\""),0)
+| alter Object = arrayindex(regextract(_raw_log,"OBJ\=.(\S+)"),0)
+| alter profile_name = arrayindex(regextract(_raw_log,"PROFILE\=\"([^\"]+)"),0)
+| alter source_zone = arrayindex(regextract(_raw_log,"source\-zone\-name\=\"([^\"]+)"),0)
+| alter Packet_Incoming_Interface = arrayindex(regextract(_raw_log,"packet\-incoming\-interface\=\"([^\"]+)"),0)
+| alter Roles = arrayindex(regextract(_raw_log,"roles=\"([^\"]+)"),0)
+| alter Username = arrayindex(regextract(_raw_log,"username\=\"([^\"]+)"),0)
+| alter Destination_Zone_Name = arrayindex(regextract(_raw_log,"destination\-zone\-name\=\"([^\"]+)"),0)
+| alter Policy_Name = arrayindex(regextract(_raw_log,"policy\-name\=\"([^\"]+)"),0)
+| alter Protocol_ID = arrayindex(regextract(_raw_log,"protocol\-id\=\"([^\"]+)"),0)
+| alter Destination_Nat_Rule_Name = arrayindex(regextract(_raw_log,"dst\-nat\-rule\-name\=\"([^\"]+)"),0)
+| alter Source_Nat_Rule_Name = arrayindex(regextract(_raw_log,"src\-nat\-rule\-name\=\"([^\"]+)"),0)
+| alter Nat_Destination_Port = arrayindex(regextract(_raw_log,"nat\-destination\-port\=\"([^\"]+)"),0)
+| alter Nat_Source_Port = arrayindex(regextract(_raw_log,"nat\-source\-port\=\"([^\"]+)"),0)
+| alter Nat_Source_Address = arrayindex(regextract(_raw_log,"nat\-source\-address\=\"([^\"]+)"),0)
+| alter Service_Name = arrayindex(regextract(_raw_log,"service\-name=\"([^\"]+)"),0)
+| alter Nat_Destination_IP = arrayindex(regextract(_raw_log,"nat\-destination\-address\=\"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0)
+// extract source_ip
+| alter source_address_ipv4 = arrayindex(regextract(_raw_log,"source\-address\=\"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"), 0)
+| alter source_adderss_ipv6 = arrayindex(regextract(_raw_log,"source\-address\=\"(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"), 0)
+// end extract source_ip
+| alter
+    xdm.source.ipv4 = source_address_ipv4,
+    xdm.source.ipv6 = source_adderss_ipv6,
+    xdm.target.ipv4 = Destination_address,
+    xdm.target.port = to_integer(Destination_Port),
+    xdm.source.port=to_integer(source_port),
+    xdm.network.rule = Source_Nat_Rule_Name,
+    xdm.network.ip_protocol = if(Protocol_ID="0",XDM_CONST.IP_PROTOCOL_HOPOPT, Protocol_ID="1",XDM_CONST.IP_PROTOCOL_ICMP, Protocol_ID="2",XDM_CONST.IP_PROTOCOL_IGMP, Protocol_ID="3",XDM_CONST.IP_PROTOCOL_GGP, Protocol_ID="4",XDM_CONST.IP_PROTOCOL_IP, Protocol_ID="5",XDM_CONST.IP_PROTOCOL_ST, Protocol_ID="6",XDM_CONST.IP_PROTOCOL_TCP, Protocol_ID="7",XDM_CONST.IP_PROTOCOL_CBT, Protocol_ID="8",XDM_CONST.IP_PROTOCOL_EGP, Protocol_ID="9",XDM_CONST.IP_PROTOCOL_IGP, Protocol_ID="10",XDM_CONST.IP_PROTOCOL_BBN_RCC_MON, Protocol_ID="11",XDM_CONST.IP_PROTOCOL_NVP_II, Protocol_ID="12",XDM_CONST.IP_PROTOCOL_PUP, Protocol_ID="13",XDM_CONST.IP_PROTOCOL_ARGUS, Protocol_ID="14",XDM_CONST.IP_PROTOCOL_EMCON, Protocol_ID="15",XDM_CONST.IP_PROTOCOL_XNET, Protocol_ID="16",XDM_CONST.IP_PROTOCOL_CHAOS, Protocol_ID="17",XDM_CONST.IP_PROTOCOL_UDP, Protocol_ID="18",XDM_CONST.IP_PROTOCOL_MUX, Protocol_ID="19",XDM_CONST.IP_PROTOCOL_DCN_MEAS, Protocol_ID="20",XDM_CONST.IP_PROTOCOL_HMP, Protocol_ID="21",XDM_CONST.IP_PROTOCOL_PRM, Protocol_ID="22",XDM_CONST.IP_PROTOCOL_XNS_IDP, Protocol_ID="23",XDM_CONST.IP_PROTOCOL_TRUNK_1, Protocol_ID="24",XDM_CONST.IP_PROTOCOL_TRUNK_2, Protocol_ID="25",XDM_CONST.IP_PROTOCOL_LEAF_1, Protocol_ID="26",XDM_CONST.IP_PROTOCOL_LEAF_2, Protocol_ID="27",XDM_CONST.IP_PROTOCOL_RDP, Protocol_ID="28",XDM_CONST.IP_PROTOCOL_IRTP, Protocol_ID="29",XDM_CONST.IP_PROTOCOL_ISO_TP4, Protocol_ID="30",XDM_CONST.IP_PROTOCOL_NETBLT, Protocol_ID="31",XDM_CONST.IP_PROTOCOL_MFE_NSP, Protocol_ID="32",XDM_CONST.IP_PROTOCOL_MERIT_INP, Protocol_ID="33",XDM_CONST.IP_PROTOCOL_DCCP, Protocol_ID="34",XDM_CONST.IP_PROTOCOL_3PC, Protocol_ID="35",XDM_CONST.IP_PROTOCOL_IDPR, Protocol_ID="36",XDM_CONST.IP_PROTOCOL_XTP, Protocol_ID="37",XDM_CONST.IP_PROTOCOL_DDP, Protocol_ID="38",XDM_CONST.IP_PROTOCOL_IDPR_CMTP, Protocol_ID="39",XDM_CONST.IP_PROTOCOL_TP, Protocol_ID="40",XDM_CONST.IP_PROTOCOL_IL, Protocol_ID="41",XDM_CONST.IP_PROTOCOL_IPV6, Protocol_ID="42",XDM_CONST.IP_PROTOCOL_SDRP, Protocol_ID="43",XDM_CONST.IP_PROTOCOL_IPV6_ROUTE, Protocol_ID="44",XDM_CONST.IP_PROTOCOL_IPV6_FRAG, Protocol_ID="45",XDM_CONST.IP_PROTOCOL_IDRP, Protocol_ID="46",XDM_CONST.IP_PROTOCOL_RSVP, Protocol_ID="47",XDM_CONST.IP_PROTOCOL_GRE, Protocol_ID="48",XDM_CONST.IP_PROTOCOL_DSR, Protocol_ID="49",XDM_CONST.IP_PROTOCOL_BNA, Protocol_ID="50",XDM_CONST.IP_PROTOCOL_ESP, Protocol_ID="51",XDM_CONST.IP_PROTOCOL_AH, Protocol_ID="52",XDM_CONST.IP_PROTOCOL_I_NLSP, Protocol_ID="53",XDM_CONST.IP_PROTOCOL_SWIPE, Protocol_ID="54",XDM_CONST.IP_PROTOCOL_NARP, Protocol_ID="55",XDM_CONST.IP_PROTOCOL_MOBILE, Protocol_ID="56",XDM_CONST.IP_PROTOCOL_TLSP, Protocol_ID="57",XDM_CONST.IP_PROTOCOL_SKIP, Protocol_ID="58",XDM_CONST.IP_PROTOCOL_IPV6_ICMP, Protocol_ID="59",XDM_CONST.IP_PROTOCOL_IPV6_NONXT, Protocol_ID="60",XDM_CONST.IP_PROTOCOL_IPV6_OPTS, Protocol_ID="62",XDM_CONST.IP_PROTOCOL_CFTP, Protocol_ID="64",XDM_CONST.IP_PROTOCOL_SAT_EXPAK, Protocol_ID="65",XDM_CONST.IP_PROTOCOL_KRYPTOLAN, Protocol_ID="66",XDM_CONST.IP_PROTOCOL_RVD, Protocol_ID="67",XDM_CONST.IP_PROTOCOL_IPPC, Protocol_ID="69",XDM_CONST.IP_PROTOCOL_SAT_MON, Protocol_ID="70",XDM_CONST.IP_PROTOCOL_VISA, Protocol_ID="71",XDM_CONST.IP_PROTOCOL_IPCV, Protocol_ID="72",XDM_CONST.IP_PROTOCOL_CPNX, Protocol_ID="73",XDM_CONST.IP_PROTOCOL_CPHB, Protocol_ID="74",XDM_CONST.IP_PROTOCOL_WSN, Protocol_ID="75",XDM_CONST.IP_PROTOCOL_PVP, Protocol_ID="76",XDM_CONST.IP_PROTOCOL_BR_SAT_MON, Protocol_ID="77",XDM_CONST.IP_PROTOCOL_SUN_ND, Protocol_ID="78",XDM_CONST.IP_PROTOCOL_WB_MON, Protocol_ID="79",XDM_CONST.IP_PROTOCOL_WB_EXPAK, Protocol_ID="80",XDM_CONST.IP_PROTOCOL_ISO_IP, Protocol_ID="81",XDM_CONST.IP_PROTOCOL_VMTP, Protocol_ID="82",XDM_CONST.IP_PROTOCOL_SECURE_VMTP, Protocol_ID="83",XDM_CONST.IP_PROTOCOL_VINES, Protocol_ID="84",XDM_CONST.IP_PROTOCOL_TTP, Protocol_ID="85",XDM_CONST.IP_PROTOCOL_NSFNET_IGP, Protocol_ID="86",XDM_CONST.IP_PROTOCOL_DGP, Protocol_ID="87",XDM_CONST.IP_PROTOCOL_TCF, Protocol_ID="88",XDM_CONST.IP_PROTOCOL_EIGRP, Protocol_ID="89",XDM_CONST.IP_PROTOCOL_OSPFIGP, Protocol_ID="90",XDM_CONST.IP_PROTOCOL_SPRITE_RPC, Protocol_ID="91",XDM_CONST.IP_PROTOCOL_LARP, Protocol_ID="92",XDM_CONST.IP_PROTOCOL_MTP, Protocol_ID="93",XDM_CONST.IP_PROTOCOL_AX25, Protocol_ID="94",XDM_CONST.IP_PROTOCOL_IPIP, Protocol_ID="95",XDM_CONST.IP_PROTOCOL_MICP, Protocol_ID="96",XDM_CONST.IP_PROTOCOL_SCC_SP, Protocol_ID="97",XDM_CONST.IP_PROTOCOL_ETHERIP, Protocol_ID="98",XDM_CONST.IP_PROTOCOL_ENCAP, Protocol_ID="100",XDM_CONST.IP_PROTOCOL_GMTP, Protocol_ID="101",XDM_CONST.IP_PROTOCOL_IFMP, Protocol_ID="102",XDM_CONST.IP_PROTOCOL_PNNI, Protocol_ID="103",XDM_CONST.IP_PROTOCOL_PIM, Protocol_ID="104",XDM_CONST.IP_PROTOCOL_ARIS, Protocol_ID="105",XDM_CONST.IP_PROTOCOL_SCPS, Protocol_ID="106",XDM_CONST.IP_PROTOCOL_QNX, Protocol_ID="107",XDM_CONST.IP_PROTOCOL_AN, Protocol_ID="108",XDM_CONST.IP_PROTOCOL_IPCOMP, Protocol_ID="110",XDM_CONST.IP_PROTOCOL_COMPAQ_PEER, Protocol_ID="111",XDM_CONST.IP_PROTOCOL_IPX_IN_IP, Protocol_ID="112",XDM_CONST.IP_PROTOCOL_VRRP, Protocol_ID="113",XDM_CONST.IP_PROTOCOL_PGM, Protocol_ID="115",XDM_CONST.IP_PROTOCOL_L2TP, Protocol_ID="116",XDM_CONST.IP_PROTOCOL_DDX, Protocol_ID="117",XDM_CONST.IP_PROTOCOL_IATP, Protocol_ID="118",XDM_CONST.IP_PROTOCOL_STP, Protocol_ID="119",XDM_CONST.IP_PROTOCOL_SRP, Protocol_ID="120",XDM_CONST.IP_PROTOCOL_UTI, Protocol_ID="121",XDM_CONST.IP_PROTOCOL_SMP, Protocol_ID="122",XDM_CONST.IP_PROTOCOL_SM, Protocol_ID="123",XDM_CONST.IP_PROTOCOL_PTP, Protocol_ID="124",XDM_CONST.IP_PROTOCOL_ISIS, Protocol_ID="125",XDM_CONST.IP_PROTOCOL_FIRE, Protocol_ID="126",XDM_CONST.IP_PROTOCOL_CRTP, Protocol_ID="127",XDM_CONST.IP_PROTOCOL_CRUDP, Protocol_ID="128",XDM_CONST.IP_PROTOCOL_SSCOPMCE, Protocol_ID="129",XDM_CONST.IP_PROTOCOL_IPLT, Protocol_ID="130",XDM_CONST.IP_PROTOCOL_SPS, Protocol_ID="131",XDM_CONST.IP_PROTOCOL_PIPE, Protocol_ID="132",XDM_CONST.IP_PROTOCOL_SCTP, Protocol_ID="133",XDM_CONST.IP_PROTOCOL_FC, Protocol_ID="134",XDM_CONST.IP_PROTOCOL_RSVP_E2E_IGNORE, Protocol_ID="135",XDM_CONST.IP_PROTOCOL_MOBILITY, Protocol_ID="136",XDM_CONST.IP_PROTOCOL_UDPLITE, Protocol_ID="137",XDM_CONST.IP_PROTOCOL_MPLS_IN_IP,to_string(Protocol_ID)),
+    xdm.source.zone = Source_Zone,
+    xdm.target.zone = Destination_Zone_Name,
+    xdm.target.identity.username = Username,
+    xdm.source.identity.employee_id = Roles,
+    xdm.target.interface = Packet_Incoming_Interface;

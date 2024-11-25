@@ -1,0 +1,34 @@
+[MODEL: dataset = mimecast_mimecast_raw]
+filter
+    xsiem_classifier = "audit_event"
+| alter
+    
+    xdm.event.operation_sub_type = category,
+    xdm.event.description = eventInfo,
+    xdm.event.type = auditType,
+    xdm.source.identity.username = user,
+    xdm.event.id = id;
+
+filter
+    xsiem_classifier = "siem_log"
+| alter
+    rcpt_array = arraymap(json_extract_array(rcpt, "$."), trim("@element", "\"")),
+    recipient_array = arraymap(json_extract_array(Recipient, "$."), trim("@element", "\"")),
+    ip_array = arraymap(json_extract_array(IP , "$."), trim("@element", "\"")),
+    src_ip_array = arraymap(json_extract_array(SourceIP , "$."), trim("@element", "\""))
+| alter
+    xdm.observer.unique_identifier = acc,
+    xdm.event.id = aCode,
+    xdm.email.attachment.filename = AttNames,
+    xdm.email.recipients = arrayconcat(rcpt_array, recipient_array),
+    xdm.email.message_id = MsgId,
+    xdm.email.sender = Sender,
+    xdm.email.subject = Subject,
+    xdm.alert.name = Virus,
+    xdm.email.attachment.extension = fileExt,
+    xdm.email.attachment.file_type = fileMime,
+    xdm.email.attachment.md5 = md5,
+    xdm.email.attachment.sha256 = sha256,
+    xdm.event.description = ScanResultInfo,
+    xdm.event.type = coalesce(Action, Act),
+    xdm.target.host.ipv4_addresses = arrayconcat(ip_array, src_ip_array);

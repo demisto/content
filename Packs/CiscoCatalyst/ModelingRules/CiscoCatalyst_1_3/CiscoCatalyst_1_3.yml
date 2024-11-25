@@ -4,3 +4,4 @@ name: Cisco Catalyst Modeling Rule
 rules: ''
 schema: ''
 tags: Cisco Catalyst
+toversion: 8.9.0

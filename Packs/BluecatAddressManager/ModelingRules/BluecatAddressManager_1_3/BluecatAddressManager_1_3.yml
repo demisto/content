@@ -4,3 +4,4 @@ name: Bluecat Address Manager Modeling Rule
 rules: ''
 schema: ''
 tags: Bluecat Address Manager
+toversion: 8.9.0

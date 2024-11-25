@@ -1,0 +1,87 @@
+[MODEL: dataset="okta_oag_raw"]
+filter _raw_log  contains "monitor"
+|alter 
+    event = arrayindex(regextract(_raw_log,"\s(\w+)\s"),2),
+	description = arrayindex(regextract(_raw_log,"\]\s(.*)$"),0),
+	logLevel = arrayindex(regextract(_raw_log,"\s([A-Z]+)\s\S+\s\["),0),
+	hostname=arrayindex(regextract(_raw_log,"HOSTNAME\=\"([^\"]+)\""),0),
+	outcome=arrayindex(regextract(_raw_log,"STATUS\=\"([^\"]+)\""),0),
+	component=arrayindex(regextract(_raw_log,"\s([A-Z]+)\s\S+\s"),0)
+| alter xdm.target.identity.username = hostname,
+    xdm.event.operation = event,
+    xdm.event.description = description,
+    xdm.target.resource.sub_type = component,
+    xdm.alert.severity = logLevel,
+	xdm.event.outcome=outcome;
+	
+filter _raw_log contains "ACCESS"
+|alter event = arrayindex(regextract(_raw_log,"\s(\w+)\s\["),0),
+description = arrayindex(regextract(_raw_log,"\]\s(.*)$"),0),
+logLevel = arrayindex(regextract(_raw_log,"\s([A-Z]+)\s\S+\s\["),0),
+component=arrayindex(regextract(_raw_log,"\s([A-Z]+)\s\S+\s"),0),
+app=arrayindex(regextract(_raw_log,"APP\=\"([^\"]+)\""),0),
+targetIP=arrayindex(regextract(_raw_log,"REMOTE_IP\=\"([^\"]+)\""),0),
+userAgent=arrayindex(regextract(_raw_log,"USER_AGENT\=\"([^\"]+)\""),0),
+outcome=arrayindex(regextract(_raw_log,"RESULT\=\"([^\"]+)\""),0),
+outcomeReason=arrayindex(regextract(_raw_log,"REASON\=\"([^\"]+)\""),0),
+username=arrayindex(regextract(_raw_log,"SUBJECT\=\"([^\"]+)\""),0),
+username2=arrayindex(regextract(_raw_log,"username\=(\w+)\s"),0),
+sessionID=arrayindex(regextract(_raw_log,"SESSION_ID\=\"([^\"]+)\""),0),
+HTTPmethod=arrayindex(regextract(_raw_log,"METHOD\=\"([^\"]+)\""),0),
+url=arrayindex(regextract(_raw_log,"url\=(.*)\"\sM"),0)
+
+|alter xdm.event.operation = event,
+xdm.event.description = description,
+xdm.target.resource.sub_type = component,
+xdm.alert.severity = logLevel,
+xdm.event.outcome=outcome,
+xdm.source.application.name=app,
+xdm.target.ipv4=targetIP,
+xdm.event.outcome_reason=outcomeReason,
+xdm.source.identity.username=coalesce(username,username2),
+xdm.source.user_agent=userAgent,
+xdm.session_context_id=sessionID,
+xdm.network.http.method=HTTPmethod,
+xdm.network.http.url=url;
+
+filter _raw_log contains "CHECK" and _raw_log NOT contains "SCRIPT" and _raw_log NOT contains "HOST_IP_CHECK" 
+|alter event = arrayindex(regextract(_raw_log,"\s([\w\_]+)\s"),0),
+logLevel = arrayindex(regextract(_raw_log,"\s(\w+)\s"),1),
+component=arrayindex(regextract(_raw_log,"\s([\w\.]+)\s"),1),
+targetIP=arrayindex(regextract(_raw_log,"([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})"),0),
+username=arrayindex(regextract(_raw_log,"USER\=\"([^\"]+)\""),0)
+|alter xdm.event.operation = event,
+xdm.target.resource.sub_type = component,
+xdm.alert.severity = logLevel,
+xdm.target.ipv4=targetIP,
+xdm.source.identity.username=username;
+
+filter _raw_log contains "CHECK" and _raw_log contains "SCRIPT" and _raw_log NOT contains "HOST_IP_CHECK" 
+|alter event = arrayindex(regextract(_raw_log,"\s([\w\_]+)\s"),0),
+logLevel = arrayindex(regextract(_raw_log,"\s([A-Z]+)\s\w+\s\["),0),
+username=arrayindex(regextract(_raw_log,"USER\=\"([^\"]+)\""),0)
+|alter xdm.event.operation = event,
+xdm.alert.severity = logLevel,
+xdm.source.identity.username=username;
+
+filter _raw_log contains "HOST_IP_CHECK" 
+|alter event = arrayindex(regextract(_raw_log,"\s([\w\_]+)\s"),0),
+logLevel = arrayindex(regextract(_raw_log,"\s([A-Z]+)\s\w+\s\["),0),
+username=arrayindex(regextract(_raw_log,"USER\=\"([^\"]+)\""),0),
+description = arrayindex(regextract(_raw_log,"\]\s(.*)$"),0)
+|alter xdm.event.operation = event,
+xdm.alert.severity = logLevel,
+xdm.source.identity.username=username,
+xdm.event.description = description;
+
+filter (_raw_log contains "GET" or _raw_log contains "POST") and _raw_log NOT contains "ACCESS"
+|alter url=arrayindex(regextract(_raw_log,"\s([\w\/.]+)\sHTTP"),0),
+httpMethod=arrayindex(regextract(_raw_log,"\s\"([\"\w]+)\s\/"),0),
+statusCode=arrayindex(regextract(_raw_log,"\"\s(\w+)\s"),0),
+userAgent=arrayindex(regextract(_raw_log,"\"\s\"(.*)\"\s\""),0),
+domain=arrayindex(regextract(_raw_log,"\s([\w.-]+)\s"),1)
+|alter xdm.source.user_agent = userAgent,
+xdm.network.http.method=httpMethod,
+xdm.network.http.url=url,
+xdm.network.http.response_code=statusCode,
+xdm.target.host.fqdn=domain;

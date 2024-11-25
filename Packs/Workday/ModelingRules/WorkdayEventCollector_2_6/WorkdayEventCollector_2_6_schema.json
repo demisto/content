@@ -1,0 +1,173 @@
+{
+    "workday_activity_raw": {
+      "systemAccount": {
+        "type": "string",
+        "is_array": false
+      },
+      "activityAction": {
+        "type": "string",
+        "is_array": false
+      },
+      "userAgent": {
+        "type": "string",
+        "is_array": false
+      },
+      "taskId": {
+        "type": "string",
+        "is_array": false
+      },
+      "deviceType": {
+        "type": "string",
+        "is_array": false
+      },
+      "ipAddress": {
+        "type": "string",
+        "is_array": false
+      },
+      "sessionId": {
+        "type": "string",
+        "is_array": false
+      },
+      "taskDisplayName": {
+        "type": "string",
+        "is_array": false
+      },
+      "target": {
+        "type": "string",
+        "is_array": false
+      }
+    },
+
+    "workday_signon_raw": {
+      "access_restriction_reference": {
+          "type": "string",
+          "is_array": false
+      },
+      "Account_Disabled_or_Expired": {
+          "type": "string",
+          "is_array": false
+      },
+      "api_client_id": {
+          "type": "string",
+          "is_array": false
+      },
+      "authentication_channel": {
+          "type": "string",
+          "is_array": false
+      },
+      "authentication_failure_message": {
+          "type": "string",
+          "is_array": false
+      },
+      "authentication_type": {
+          "type": "string",
+          "is_array": false
+      },
+      "browser_type": {
+          "type": "string",
+          "is_array": false
+      },
+      "Device_is_Trusted": {
+          "type": "string",
+          "is_array": false
+      },
+      "device_type_reference": {
+          "type": "string",
+          "is_array": false
+      },
+      "Failed_Signon": {
+          "type": "string",
+          "is_array": false
+      },
+      "Forgotten_Password_Reset_Request": {
+          "type": "string",
+          "is_array": false
+      },
+      "Has_Grace_Period_for_MFA": {
+          "type": "string",
+          "is_array": false
+      },
+      "Invalid_for_Authentication_Channel": {
+          "type": "string",
+          "is_array": false
+      },
+      "Invalid_for_Authentication_Policy": {
+          "type": "string",
+          "is_array": false
+      },
+      "Invalid_Credentials": {
+          "type": "string",
+          "is_array": false
+      },
+      "location": {
+          "type": "string",
+          "is_array": false
+      },
+      "MFA_Enrollment": {
+          "type": "string",
+          "is_array": false
+      },
+      "MFA_Authentication_Exempt": {
+          "type": "string",
+          "is_array": false
+      },
+      "multi_factor_authentication_type_reference": {
+          "type": "string",
+          "is_array": false
+      },
+      "operating_system": {
+          "type": "string",
+          "is_array": false
+      },
+      "Password_Changed": {
+          "type": "string",
+          "is_array": false
+      },
+      "Required_Password_Change": {
+          "type": "string",
+          "is_array": false
+      },
+      "Requires_MFA": {
+          "type": "string",
+          "is_array": false
+      },
+      "saml_identity_provider_reference": {
+          "type": "string",
+          "is_array": false
+      },
+      "short_session_id": {
+          "type": "string",
+          "is_array": false
+      },
+      "signon_datetime": {
+          "type": "datetime",
+          "is_array": false
+      },
+      "signoff_datetime": {
+          "type": "datetime",
+          "is_array": false
+      },
+      "signon_ip_address": {
+          "type": "string",
+          "is_array": false
+      },
+      "Successful": {
+          "type": "string",
+          "is_array": false
+      },
+      "Tenant_Access_Read_Only": {
+          "type": "string",
+          "is_array": false
+      },
+      "tls_version": {
+          "type": "string",
+          "is_array": false
+      },
+      "user_name": {
+          "type": "string",
+          "is_array": false
+      }
+  }
+
+    
+  }

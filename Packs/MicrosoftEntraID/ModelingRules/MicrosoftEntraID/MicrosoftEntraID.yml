@@ -4,3 +4,4 @@ name: Microsoft Entra ID Modeling Rule
 rules: ''
 schema: ''
 tags: Microsoft Entra ID
+toversion: 8.9.0

@@ -1,0 +1,22 @@
+[MODEL: dataset=observeit_observeit_raw]
+alter
+    int_cefSeverity = to_integer(cefSeverity)
+| alter
+    xdm.event.type = if(cefDeviceEventClassId = "100", "User activity", cefDeviceEventClassId = "200", "DBA activity", cefDeviceEventClassId = "300", "System events", cefDeviceEventClassId = "400", "Alerts activity", cefDeviceEventClassId = "500", "Audit activity", cefDeviceEventClassId = "600", "In-App elements", null),
+    xdm.alert.name = cat,
+    xdm.source.host.os_family = if(lowercase(cs2) contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, lowercase(cs2) contains "mac", XDM_CONST.OS_FAMILY_MACOS, lowercase(cs2) contains "linux", XDM_CONST.OS_FAMILY_LINUX, lowercase(cs2) contains "android", XDM_CONST.OS_FAMILY_ANDROID, lowercase(cs2) contains "ios", XDM_CONST.OS_FAMILY_IOS, lowercase(cs2) contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, lowercase(cs2) contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, lowercase(cs2) contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, lowercase(cs2) contains "centos", XDM_CONST.OS_FAMILY_CENTOS, lowercase(cs2) contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, lowercase(cs2) contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, lowercase(cs2) contains "scada", XDM_CONST.OS_FAMILY_SCADA, to_string(cs2)),
+    xdm.alert.description = cs1,
+    xdm.source.ipv4 = arrayindex(regextract(src, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    xdm.source.ipv6 = arrayindex(regextract(src, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+    xdm.logon.logon_guid = duid,
+    xdm.alert.severity = if(int_cefSeverity <= 6, "Low", int_cefSeverity <= 8, "Medium", int_cefSeverity <= 10, "High", int_cefSeverity > 10, "Critical"),
+    xdm.target.host.hostname = dhost,
+    xdm.target.identity.username = duser,
+    xdm.source.host.hostname = shost,
+    xdm.source.process.name = sproc,
+    xdm.source.identity.username = suser,
+    xdm.target.domain = dntdom,
+    xdm.event.description = reason,
+    xdm.alert.original_alert_id = externalId,
+    xdm.session_context_id = sourceServiceName,
+    xdm.source.application.name = destinationServiceName;

@@ -4,3 +4,4 @@ id: fireeye_nx_modeling_rule
 rules: ''
 schema: ''
 tags: FireEyeNX
+toversion: 8.9.0

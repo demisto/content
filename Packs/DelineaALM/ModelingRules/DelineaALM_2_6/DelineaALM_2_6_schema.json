@@ -1,0 +1,8 @@
+{
+    "thycotic_alm_raw": {
+          "cefName": {
+            "type": "string",
+            "is_array": false
+          }
+    }
+}

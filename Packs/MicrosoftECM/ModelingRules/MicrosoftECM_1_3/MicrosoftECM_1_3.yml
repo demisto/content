@@ -4,3 +4,4 @@ name: Microsoft System Center Configuration Manager
 rules: ''
 schema: ''
 tags: Microsoft System Center Configuration Manager sccm
+toversion: 8.9.0

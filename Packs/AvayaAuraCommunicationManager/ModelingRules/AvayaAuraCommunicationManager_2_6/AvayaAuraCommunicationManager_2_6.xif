@@ -1,0 +1,135 @@
+[MODEL: dataset="avaya_communication_manager_raw"]
+filter _raw_log !~= ":\s+>#2,"
+| alter 
+    process_id = arrayindex(regextract(_raw_log, "\[(\d+)\]"), 0),
+    process_name = coalesce(
+        arrayindex(regextract(_raw_log, "(?:\S+\s+){4}\w+:\s+([\w\-]+)\[\d+") , 0), 
+        arrayindex(regextract(_raw_log, "(?:\S+\s+){4}([\w\-]+)") , 0)),
+    module_name = rtrim(arrayindex(regextract(_raw_log, "^(?:\S+\s+){5}([\w\(\)\:]+)") , 0), ":"),
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "^<\d+>\w+\s+\d{1,2}\s+\S+\s+(\S+)"), 0),
+    msg = arrayindex(regextract(_raw_log, "(?:\S+\s+){4}\s*(.+)"), 0)
+| alter facility_code = floor(divide(syslog_priority, 8))
+| alter facility_description = if(facility_code = 0, "kernel messages", facility_code = 1, "user-level messages", facility_code = 2, "mail system", facility_code = 3, "system daemons", facility_code in (4, 10), "security/authorization messages", facility_code = 5, "syslogd", facility_code = 6, "line printer subsystem", facility_code = 7, "network news subsystem", facility_code = 8, "UUCP subsystem", facility_code in (9, 15), "clock daemon", facility_code = 11, "FTP daemon", facility_code = 12, "NTP subsystem", facility_code = 13, "log audit", facility_code = 14, "log alert", facility_code >= 16 and facility_code <= 23, "local")
+| alter syslog_severity = to_string(subtract(syslog_priority, multiply(facility_code, 8)))
+| alter 
+    accessed_web_page = coalesce(
+        arrayindex(regextract(msg, "web\s+\S+\s+\d+\s+\w+\s+\S+\s+[sfv\-]:?\S*\s+([^\|]+)"), 0), // web events
+        arrayindex(regextract(msg, "web\s+\S+\s{2}\S+\s+\S+\s+[sfv\-]:?\S*\s+([^\|]+)"), 0)), // web events
+    accessed_field_name = arrayindex(regextract(msg, "\|\s*(.+?)\s*\|"), 0),  // web events
+    accessed_field_value = arrayindex(regextract(msg, "\|[^\|]+\|\s*(.+)"), 0),  // web events
+    action_r_status = coalesce( // The status of the action: s: the action was a success. f: the action was a failure other than for a security reason. The letter f could be followed by a colon and an ASCII error code. v: the action was a failure due to a security violation.
+        arrayindex(regextract(msg, "sat\s+(?:\S+\s+){5}([sfv]):?\S*\s+"), 0),
+        arrayindex(regextract(msg, "web\s+\S+\s+\d+\s+\w+\s+\S+\s+([sfv]):?\S*\s+"), 0), 
+        arrayindex(regextract(msg, "web\s+\S+\s{2}\S+\s+\S+\s+([sfv]):?\S*\s+"), 0)),
+    action_r_status_reason = coalesce( // //  The letter f could be followed by a colon and an ASCII error code. e.g., f:1234
+        arrayindex(regextract(msg, "sat\s+(?:\S+\s+){5}[sfv]:(\S+)\s+"), 0),
+        arrayindex(regextract(msg, "web\s+\S+\s+\d+\s+\w+\s+\S+\s+[sfv]:(\S+)\s+"), 0),
+        arrayindex(regextract(msg, "web\s+\S+\s{2}\S+\s+\S+\s+[sfv]:(\S+)\s+"), 0)),
+    attempt_num = arrayindex(regextract(msg, "Attempt\s+(\d+)") , 0),
+    attempt_outcome = arrayindex(regextract(msg, "Attempt\s+\d+\s+(\w+)") , 0),
+    ip_evt_reason = arrayindex(regextract(msg, "reason=\s*(.+)"), 0), // IPEVT events 
+    msg_outcome = if(msg ~= "fail|error|unsuccess", "fail", msg ~= "success", "success"),
+    pid = coalesce(
+        arrayindex(regextract(msg, "pid\s+(\d+)\s+\w+") , 0), // defsat: SAT_auth:session events 
+        arrayindex(regextract(msg, "\sPID=(\d+)") , 0)), // History events 
+    ppid = arrayindex(regextract(msg, "(?:PPID=|session\s+\d+\s+parent\s+)(\d+)") , 0),  // logmanager: SAT_auth:tui03: & History events 
+    protocol = coalesce(
+        arrayindex(regextract(msg, "from \S+ port \d+ (\w+)"), 0), //sshd events  
+        arrayindex(regextract(msg, "via (\w+):"), 0)), // snmpd events
+    pwd = arrayindex(regextract(msg, "PWD=(\S+)"), 0), // sudo events 
+    session_id = arrayindex(regextract(msg, "session\s+(\d+)\s+parent") , 0),
+    sid = coalesce(
+        arrayindex(regextract(msg, "Sid\s+([a-fA-F\d]+)\s+\w+") , 0), // logmanager: SAT_auth:tui03: 
+        arrayindex(regextract(msg, "\ssat (\d+)") , 0)), // sat events 
+    operation = coalesce(
+        arrayindex(regextract(msg, "Login\s+\S+\s+Sid\s+\S+\s+(\S+)") , 0), // logmanager: SAT_auth:tui03: 
+        arrayindex(regextract(_raw_log, "sat (?:\S+\s+){5}[sfv]\s+\S+\s+(.+)"), 0),
+        arrayindex(regextract(msg, "IPEVT\s+(\w+)"), 0)),
+    src_board = arrayindex(regextract(msg, "board=(\S+)"), 0), // IPEVT events  
+    src_ip = coalesce(
+        arrayindex(regextract(msg, "web\s+(\S+)"), 0), // web events 
+        arrayindex(regextract(msg, "ip=(\S+)"), 0), // IPEVT events 
+        arrayindex(regextract(msg, "rhost\s*\[([^\]]+)"), 0), // pam_asg events 
+        arrayindex(regextract(msg, "from (\S+) port \d+"), 0), // sshd events 
+        arrayindex(regextract(msg, "\[([^\]]+)\]:\d+\->"), 0), // snmptrapd events 
+        arrayindex(regextract(msg, "sat (?:\S+\s+){6}(\S+)"), 0)), // sat events
+    src_net_reg = arrayindex(regextract(msg, "net_reg=\s*(\d+)"), 0), // IPEVT events 
+    src_port = coalesce(
+        arrayindex(regextract(msg, "from \S+ port (\d+)"), 0), // sshd events
+        arrayindex(regextract(msg, "\[[^\]]+\]:(\d+)\->"), 0)), // snmpd events 
+    user_uid = coalesce(arrayindex(regextract(msg, "(?i)uid=(\d+)"), 0), arrayindex(regextract(msg, "(?:sat|web)\s+\S+\s+(\d+)"), 0)),
+    user_profile = coalesce( // The access profile number assigned to the user.
+            arrayindex(regextract(msg, "(?:sat(?:\s+\w+){4}|web\s+\S+\s+\d+\s+\w+)\s+(\d+)"), 0),  
+            arrayindex(regextract(msg, "web\s+\S+\s{2}\S+\s+(\d+)"), 0)),
+    user_uname = coalesce(
+        arrayindex(regextract(msg, "(?:sat|web)\s+\S+\s+\d+\s+(\w+)"), 0), // sat & web events
+        arrayindex(regextract(msg, "web\s+\S+\s{2}(\w+)"), 0), // web events 
+        arrayindex(regextract(msg, "Login for \[([^\]]+)"), 0), // pam_asg events 
+        arrayindex(regextract(msg, "(?:Accepted \S+|session \w+) for (?:user )?(\S+)"), 0), // sshd events 
+        arrayindex(regextract(msg, "sudo:\s*(\S+)\s*:?"), 0), // sudo events 
+        arrayindex(regextract(msg, "Login\s+(\S+)\s+(?:Sid|new session)") , 0), // logmanager: SAT_auth:tui03: events 
+        arrayindex(regextract(msg, "for user (\S+)"), 0), // cron events 
+        arrayindex(regextract(msg, "user name:(\S+)"), 0), // pam_root_login events 
+        if(process_name ~= "(?i)(cron)", arrayindex(regextract(msg, "^\(([^\)]+)"), 0))), // cron events
+    target_cmd = coalesce(
+        arrayindex(regextract(msg, "CMD\s+\(([^\)]+)"), 0), // cron events  
+        arrayindex(regextract(msg, "COMMAND=(.+)"), 0),
+        if(process_name = "-bash" or msg ~= "HISTORY", arrayindex(regextract(msg, "UID=\d+\s+(.+)"), 0))), // sudo events 
+    target_ip = arrayindex(regextract(msg, "\->\[([^\]]+)\]:\d+"), 0), // snmpd events 
+    target_ip_addresses = arrayrange(regextract(msg, "ip=[\sT]?([\d\.\:]+)"), 1, 10), // IPEVT events
+    target_port = arrayindex(regextract(msg, "\->\[[^\]]+\]:(\d+)"), 0), // snmpd events 
+    target_net_reg = arrayindex(regextract(msg, "net_reg=\s*(\d+)"), 1), // snmpd events 
+    target_username = coalesce(
+        arrayindex(regextract(msg, "USER=(\S+)"), 0), // sudo events
+        if(process_name ~= "(?i)(cron)", arrayindex(regextract(msg, "^\(([^\)]+)"), 0))), // crond events 
+    tty = coalesce(
+        arrayindex(regextract(msg, "TTY=(\S+)"), 0), // sudo events 
+        arrayindex(regextract(msg, "tty\s*\[([^\]]+)"), 0)) // login pam_asg events 
+| alter target_ip_addresses = arrayconcat(target_ip_addresses, arraycreate(target_ip))
+| alter event_outcome = coalesce(msg_outcome, attempt_outcome)
+| alter 
+    event_type = if(msg ~= "\s+sat\s+", "SAT", module_name = "web", "Web Activity", module_name = "IPEVT", module_name, module_name ~= ":|HISTORY", concat(process_name, " : ", module_name), process_name),
+    event_outcome = if(action_r_status = "s" or event_outcome = "success", XDM_CONST.OUTCOME_SUCCESS, action_r_status in ("f", "v") or event_outcome = "fail", XDM_CONST.OUTCOME_FAILED),
+    facility = concat(to_string(facility_code), " (", facility_description, ")"),
+    src_ipv4 = if(src_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", src_ip),
+    src_ipv6 = if(src_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", src_ip),
+    target_ipv4_addresses = arrayfilter(target_ip_addresses, "@element" ~= "(?:\d{1,3}\.){3}\d{1,3}"),
+	target_ipv6_addresses = arrayfilter(target_ip_addresses, "@element" ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}")
+| alter 
+    xdm.alert.severity = syslog_severity,
+    xdm.event.description = msg,
+    xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
+    xdm.event.operation_sub_type = operation,
+    xdm.event.outcome = event_outcome,
+    xdm.event.outcome_reason = coalesce(action_r_status_reason, ip_evt_reason),
+    xdm.event.type = event_type,
+    xdm.network.ip_protocol = protocol,
+    xdm.network.session_id = session_id,
+    xdm.observer.type = facility,
+    xdm.source.host.device_category = src_board,
+    xdm.source.host.device_id = src_net_reg,
+    xdm.source.interface = tty,
+    xdm.source.ipv4 = src_ipv4,
+    xdm.source.ipv6 = src_ipv6,
+    xdm.source.host.hostname = syslog_hostname,
+    xdm.source.port = to_integer(src_port),
+    xdm.source.process.executable.directory = pwd,
+    xdm.source.process.name = process_name,
+    xdm.source.process.parent_id = coalesce(ppid, sid),
+    xdm.source.process.pid = to_integer(coalesce(pid, process_id, session_id)),
+    xdm.source.sent_packets = to_integer(attempt_num),
+    xdm.source.identity.groups = if(user_profile != null, arraycreate(user_profile)),
+    xdm.source.identity.identifier = user_uid,
+    xdm.source.identity.username = user_uname,
+    xdm.target.host.device_id = target_net_reg,
+    xdm.target.host.ipv4_addresses = target_ipv4_addresses,
+    xdm.target.host.ipv6_addresses = target_ipv6_addresses,
+    xdm.target.ipv4 = arrayindex(target_ipv4_addresses, 0),
+    xdm.target.ipv6 = arrayindex(target_ipv6_addresses, 0),
+    xdm.target.port = to_integer(target_port),
+    xdm.target.process.command_line = target_cmd,
+    xdm.target.resource.id = accessed_field_name,
+    xdm.target.resource.name = accessed_web_page,
+    xdm.target.resource.value = accessed_field_value,
+    xdm.target.identity.username = target_username;

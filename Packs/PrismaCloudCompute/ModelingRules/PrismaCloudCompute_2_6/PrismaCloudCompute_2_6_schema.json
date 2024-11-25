@@ -1,0 +1,136 @@
+{
+    "prisma_cloud_compute_raw": {
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "container": {
+            "type": "string",
+            "is_array": false
+        },
+        "image": {
+            "type": "string",
+            "is_array": false
+        },
+        "imageID": {
+            "type": "string",
+            "is_array": false
+        },
+        "tags": {
+            "type": "string",
+            "is_array": false
+        },
+        "host": {
+            "type": "string",
+            "is_array": false
+        },
+        "fqdn": {
+            "type": "string",
+            "is_array": false
+        },
+        "function": {
+            "type": "string",
+            "is_array": false
+        },
+        "region": {
+            "type": "string",
+            "is_array": false
+        },
+        "provider": {
+            "type": "string",
+            "is_array": false
+        },
+        "osRelease": {
+            "type": "string",
+            "is_array": false
+        },
+        "osDistro": {
+            "type": "string",
+            "is_array": false
+        },
+        "runtime": {
+            "type": "string",
+            "is_array": false
+        },
+        "appID": {
+            "type": "string",
+            "is_array": false
+        },
+        "rule": {
+            "type": "string",
+            "is_array": false
+        },
+        "message": {
+            "type": "string",
+            "is_array": false
+        },
+        "aggregated": {
+            "type": "string",
+            "is_array": false
+        },
+        "rest": {
+            "type": "string",
+            "is_array": false
+        },
+        "forensics": {
+            "type": "string",
+            "is_array": false
+        },
+        "accountID": {
+            "type": "string",
+            "is_array": false
+        },
+        "cluster": {
+            "type": "string",
+            "is_array": false
+        },
+        "category": {
+            "type": "string",
+            "is_array": false
+        },
+        "labels": {
+            "type": "string",
+            "is_array": false
+        },
+        "collections": {
+            "type": "string",
+            "is_array": false
+        },
+        "complianceIssues": {
+            "type": "string",
+            "is_array": false
+        },
+        "vulnerabilities": {
+            "type": "string",
+            "is_array": false
+        },
+        "aggregatedAlerts": {
+            "type": "string",
+            "is_array": false
+        },
+        "dropped": {
+            "type": "string",
+            "is_array": false
+        },
+        "command": {
+            "type": "string",
+            "is_array": false
+        },
+        "startupProcess": {
+            "type": "string",
+            "is_array": false
+        },
+        "namespaces": {
+            "type": "string",
+            "is_array": false
+        },
+        "user": {
+            "type": "string",
+            "is_array": false
+        },        
+        "accountIDs": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}                                                        

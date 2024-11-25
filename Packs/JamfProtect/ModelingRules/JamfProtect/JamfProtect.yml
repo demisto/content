@@ -4,3 +4,4 @@ name: JamfProtect Modeling Rule
 rules: ''
 schema: ''
 tags: Jamf
+toversion: 8.9.0

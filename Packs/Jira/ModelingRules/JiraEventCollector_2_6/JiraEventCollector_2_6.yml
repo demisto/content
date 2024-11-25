@@ -1,0 +1,5 @@
+fromversion: 9.0.0
+id: JiraEventCollector
+name: JiraEventCollector
+rules: ''
+schema: ''

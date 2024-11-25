@@ -1,0 +1,37 @@
+[MODEL: dataset="cyber_ark_vault_raw"]
+alter
+    event_description = uppercase(cefName),
+    reason_uppercase = uppercase(reason),
+    cs2_len = len(cs2),
+    cn2_len = len(to_string(cn2))
+| alter 
+    xdm.alert.name = cefName,
+    xdm.alert.severity = cefSeverity,
+    xdm.alert.original_alert_id = to_string(cn1),
+    xdm.database.name = cs4, // ExtraDetails.DataBase
+    xdm.event.id = cefDeviceEventClassId,
+    xdm.event.type = cefName,
+    xdm.event.description = msg,
+    xdm.event.operation_sub_type = act,
+    xdm.event.outcome = if(event_description ~= "SUCCESS|SUCCEEDED",XDM_CONST.OUTCOME_SUCCESS, event_description ~= "FAIL|UNAUTHORIZED|BLOCK|INCORRECT", XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = if(reason_uppercase ~= "FAILURE|WARNING|INFO", reason, cn2_len > 0, cn2, msg),
+    xdm.event.log_level = if(cefSeverity = "10", XDM_CONST.LOG_LEVEL_CRITICAL, cefSeverity = "7", XDM_CONST.LOG_LEVEL_ERROR, cefSeverity = "5", XDM_CONST.LOG_LEVEL_INFORMATIONAL),
+    xdm.intermediate.ipv4 = if(dvc ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dvc, null),
+    xdm.intermediate.ipv6 = if(dvc ~= "[a-fA-F\d\:]{8,}", dvc, null),
+    xdm.network.application_protocol = app, // ExtraDetails.Protocol
+    xdm.network.session_id = to_string(externalID), // ExtraDetails.SessionID
+    xdm.observer.version = cefDeviceVersion, 
+    xdm.source.identity.username = suser,
+    xdm.source.ipv4 = if(shost ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", shost), 
+    xdm.source.ipv6 = if(shost ~= "[a-fA-F\d\:]{8,}", shost), 
+    xdm.source.host.hostname = if(shost !~= "\d{1,3}\.\d{1,3}\d{1,3}\.\d{1,3}|[a-fA-F\d\:]{8,}", shost), 
+    xdm.source.host.device_category = cs3,
+    xdm.source.process.command_line = reason, // ExtraDetails.Command
+    xdm.target.ipv4 = if(dhost ~= "\d{1,3}\.\d{1,3}\d{1,3}\.\d{1,3}", dhost), 
+    xdm.target.ipv6 =  if(dhost ~= "[a-fA-F\d\:]{8,}", dhost), 
+    xdm.target.host.hostname = if(dhost !~= "\d{1,3}\.\d{1,3}\d{1,3}\.\d{1,3}|[a-fA-F\d\:]{8,}", dhost), 
+    xdm.target.identity.username = if(len(duser) > 0, duser, cs1),
+    xdm.target.file.filename = fname,
+    xdm.target.resource.name = if(cs2_len > 0, cs2), // name of the target safe 
+    xdm.target.resource.type = if(cs2_len > 0, trim(cs2Label, "\"")); // "Safe Name" label
+    

@@ -4,3 +4,4 @@ name: Ivanti Connect Secure Modeling Rules
 rules: ''
 schema: ''
 tags: 'Ivanti Pulse Connect Secure VPN'
+toversion: 8.9.0

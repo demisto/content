@@ -4,3 +4,4 @@ name: Darktrace Modeling Rule
 rules: ''
 schema: ''
 tags: darktrace
+toversion: 8.9.0

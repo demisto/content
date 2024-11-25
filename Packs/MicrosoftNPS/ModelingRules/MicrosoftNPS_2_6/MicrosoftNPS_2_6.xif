@@ -1,0 +1,20 @@
+[MODEL: dataset=msft_radius_raw]
+alter packet_type = regextract(_raw_log,"\<Packet\-Type\sdata_type\=\"\d+\"\>([^\<]+)\<")
+| alter extract_timestamp = arrayindex(regextract(_raw_log,"\<Timestamp\sdata_type\=\"\d+\"\>([^\<]+)\<"),0)
+| alter change_format_timestamp = parse_timestamp("%m/%d/%Y %H:%M:%E3S", extract_timestamp)
+    ,hostname = arrayindex(regextract(_raw_log,"\<Computer\-Name\sdata_type\=\"\d+\"\>([^\<]+)\<"),0)
+    ,original_event_type = if(packet_type ="1","Access-Request",packet_type ="2","Access-Accept",packet_type ="3","Access-Reject",packet_type ="4","Accounting-Request",null)
+    ,Client_username = arrayindex(regextract(_raw_log,"(?:Id\><|-)User\-Name\sdata_type\=\"\d+\"\>([^\<]+)\<"),0)
+    ,host_device_id = arrayindex(regextract(_raw_log,"\<Called\-Station\-Id\sdata_type\=\"\d+\"\>([^\<]+)\<"),0)
+    ,host_ipv4_addresses = regextract(_raw_log,"\<Client\-IP\-Address\sdata_type\=\"\d+\"\>([^\<]+)\<")
+    ,Client_port = arrayindex(regextract(_raw_log,"\<NAS\-Port\sdata_type\=\"\d+\"\>([^\<]+)\<"),0)
+    ,reason = arrayindex(regextract(_raw_log,"\<Reason\-Code\sdata_type\=\"\d+\"\>([^\<]+)\<"),0)
+// map the fields to the Auth
+| alter
+    xdm.intermediate.host.hostname = hostname,
+    xdm.event.type = original_event_type,
+    xdm.source.identity.username = Client_username,
+    xdm.target.host.device_id = host_device_id,
+    xdm.source.host.ipv4_addresses = host_ipv4_addresses,
+    xdm.source.port = to_number(Client_port),
+    xdm.event.outcome_reason = reason;

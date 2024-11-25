@@ -4,3 +4,4 @@ name: Trend Micro Vision One Modeling Rule
 rules: ''
 schema: ''
 tags: trend_micro_vision_one
+toversion: 8.9.0

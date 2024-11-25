@@ -1,0 +1,5 @@
+fromversion: 9.0.0
+id: MicrosoftWindowsEvents
+name: MicrosoftWindowsEvents
+rules: ''
+schema: ''

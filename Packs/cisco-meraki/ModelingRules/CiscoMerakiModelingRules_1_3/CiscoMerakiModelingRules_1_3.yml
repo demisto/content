@@ -4,3 +4,4 @@ name: Cisco Meraki Modeling Rule
 rules: ''
 schema: ''
 tags: Cisco Meraki
+toversion: 8.9.0

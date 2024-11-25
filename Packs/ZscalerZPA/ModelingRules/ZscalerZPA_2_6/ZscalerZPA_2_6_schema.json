@@ -1,0 +1,160 @@
+{
+    "zscaler_zpa_raw": {
+        "policy": {
+          "type": "string",
+          "is_array": false
+        },
+        "dstPort": {
+          "type": "int",
+          "is_array": false
+        },
+        "dst": {
+          "type": "string",
+          "is_array": false
+        },
+        "src": {
+          "type": "string",
+          "is_array": false
+        },
+        "_vendor": {
+          "type": "string",
+          "is_array": false
+        },
+        "_product": {
+          "type": "string",
+          "is_array": false
+        },
+        "usrName": {
+          "type": "string",
+          "is_array": false
+        },
+        "Connector": {
+          "type": "string",
+          "is_array": false
+        },
+        "AppGroup": {
+          "type": "string",
+          "is_array": false
+        },
+        "ClientZEN": {
+          "type": "string",
+          "is_array": false
+        },
+        "SessionID": {
+          "type": "string",
+          "is_array": false
+        },
+        "InternalReason": {
+          "type": "string",
+          "is_array": false
+        },
+        "ApplicationName": {
+          "type": "string",
+          "is_array": false
+        },
+        "ConnectionStatus": {
+          "type": "string",
+          "is_array": false
+        },
+        "DoubleEncryption": {
+          "type": "string",
+          "is_array": false
+        },
+        "ClientCountryCode": {
+          "type": "string",
+          "is_array": false
+        },
+        "identHostName": {
+          "type": "string",
+          "is_array": false
+        },
+        "ConnectionID": {
+          "type": "string",
+          "is_array": false
+        },
+        "cat": {
+          "type": "string",
+          "is_array": false
+        },
+        "CertificateCN": {
+          "type": "string",
+          "is_array": false
+        },
+        "ApplicationSegment": {
+          "type": "string",
+          "is_array": false
+        },
+        "srcPreNAT": {
+          "type": "string",
+          "is_array": false
+        },
+        "ClientLatitude": {
+          "type": "string",
+          "is_array": false
+        },
+        "ClientLongitude": {
+          "type": "string",
+          "is_array": false
+        },
+        "PolicyProcessingTime": {
+          "type": "string",
+          "is_array": false
+        },
+        "proto": {
+          "type": "string",
+          "is_array": false
+        },
+        "srcBytes": {
+          "type": "int",
+          "is_array": false
+        },
+        "dstBytes": {
+          "type": "int",
+          "is_array": false
+        },
+        "Platform": {
+            "type": "string",
+            "is_array": false
+          },
+        "SessionStatus": {
+            "type": "string",
+            "is_array": false
+          },
+        "_id": {
+            "type": "string",
+            "is_array": false
+          },
+        "Version": {
+            "type": "string",
+            "is_array": false
+          },
+          "ZEN": {
+            "type": "string",
+            "is_array": false
+          },
+        "Customer": {
+            "type": "string",
+            "is_array": false
+          },
+        "_final_reporting_device_ip": {
+            "type": "string",
+            "is_array": false
+          },
+        "CountryCode": {
+            "type": "string",
+            "is_array": false
+          },
+        "SessionType": {
+            "type": "string",
+            "is_array": false
+          },
+        "leefProductVersion": {
+            "type": "string",
+            "is_array": false
+          },
+        "Idp": {
+            "type": "string",
+            "is_array": false
+          }
+    }
+  }

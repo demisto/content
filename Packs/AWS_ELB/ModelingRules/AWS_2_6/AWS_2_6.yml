@@ -1,0 +1,6 @@
+fromversion: 9.0.0
+id: AWS_ELB_ModelingRule
+name: AWS ELB Modeling Rule
+rules: ''
+schema: ''
+tags: ''

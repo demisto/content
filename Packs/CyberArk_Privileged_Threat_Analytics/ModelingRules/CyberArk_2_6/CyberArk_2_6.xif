@@ -1,0 +1,28 @@
+[MODEL: dataset = "cyberark_pta_raw"]
+// This is a beta Modeling Rule, which lets you process CyberArk PTA log fields to XDM fields.
+// Since the Modeling Rule is considered as beta, it might not contain some of the fields that are available from the logs.
+// We appreciate your feedback on the quality and usability of the Modeling Rule to help us identify issues, fix them, and continually improve.
+alter
+	src_ip_v4 = if(src !~= ":", src, null),
+    src_ip_v6 = if(src ~= ":", src, null),
+	tar_ip_v4 = if(dst !~= ":", dst, null),
+    tar_ip_v6 = if(dst ~= ":", dst, null)
+| alter	
+	xdm.source.ipv4 = src_ip_v4,
+	xdm.source.ipv6 = src_ip_v6,
+	xdm.target.ipv4 = tar_ip_v4,
+	xdm.target.ipv6 = tar_ip_v6,
+	xdm.source.identity.user_type = if(suser ~= "@", XDM_CONST.USER_TYPE_REGULAR, suser ~= "Vault user", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT),
+	xdm.target.identity.user_type = if(duser ~= "@", XDM_CONST.USER_TYPE_REGULAR, duser ~= "Vault user", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT),
+	xdm.event.description = cs1,
+	xdm.alert.original_alert_id = cs2,
+	xdm.observer.unique_identifier = cs3,
+	xdm.intermediate.application.name = cs4,
+	xdm.event.operation_sub_type = cs5,
+	xdm.target.host.hostname = dhost,
+	xdm.target.identity.username = duser,
+	xdm.source.host.hostname = shost,
+	xdm.source.identity.username = suser,
+	xdm.event.type = cefName,
+	xdm.alert.severity = cefSeverity,
+	xdm.event.id = cefDeviceEventClassId;

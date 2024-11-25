@@ -1,0 +1,36 @@
+[MODEL: dataset=illusive_illusive_raw]
+filter
+    cefname = "Audit" or cefname = "Violation"
+| alter
+    xdm.event.type = cat,
+    xdm.source.ipv4 = dvc,
+    xdm.event.description = if(cefName = "Violation", cs2, cefName = "Audit", msg),
+    xdm.target.identity.username = duser,
+    xdm.event.outcome = if(outcome ~= "fail", XDM_CONST.OUTCOME_FAILED, outcome = "SUCCESS", XDM_CONST.OUTCOME_SUCCESS, outcome = null, null, to_string(outcome)),
+    xdm.event.operation_sub_type = cefName,
+    xdm.alert.severity = cefSeverity,
+    xdm.source.cloud.project = cefDeviceProduct,
+    xdm.source.agent.version = cefDeviceVersion,
+    xdm.alert.description = if(cefName = "Violation", msg),
+    xdm.source.identity.user_type = if(cs1 = "USER_CREDENTIALS", cs3),
+    xdm.target.resource.name = if(cs1 = "CROWN_JEWEL_CREDENTIALS", cs3),
+    xdm.target.resource.type = cs4;
+
+filter
+    cat = "illusive:alerts"
+| alter
+    xdm.event.type = cat,
+    xdm.target.host.ipv4_addresses = arraycreate(dvc),
+    xdm.event.description = msg,
+    xdm.event.id = to_string(cn2),
+    xdm.target.module.path = cs1,
+    xdm.alert.name = destinationServiceName,
+    xdm.target.host.hostname = dhost,
+    xdm.target.identity.username = duser,
+    xdm.source.host.hostname = shost,
+    xdm.source.process.name = sproc,
+    xdm.source.host.ipv4_addresses = arraycreate(src),
+    xdm.event.operation_sub_type = cefName,
+    xdm.observer.version = cefVersion,
+    xdm.alert.severity = cefSeverity,
+    xdm.target.agent.version = cefDeviceVersion;

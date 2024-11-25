@@ -1,0 +1,232 @@
+[MODEL: dataset="symantec_swg_raw"]
+/* Access Logs 
+    Log Format: https://knowledge.broadcom.com/external/article/175519/wss-access-log-fields-and-changes.html 
+    Fields Description: https://techdocs.broadcom.com/us/en/symantec-security-software/web-and-network-security/cloud-swg/help/wss-reference/accesslogformats-ref.html
+*/
+alter // initialize util constants
+    field_separator = "##", // an arbitrary string that would be used as a temporary field separator to construct an ordinal list of all fields. This string must be different from any valid consecutive string that may appear on the original raw log.  
+    NIL = "-" // the character that represents a blank field on symantec swg 
+
+// extract log fields which are separated by double quotes e.g., "user agent"
+| alter quoted_fields = regextract(_raw_log, "\"(\S[^\"]+)") 
+
+// split the raw log into segments, using quotes as a segment delimiter 
+| alter log_segments = split(_raw_log, "\"")
+
+ // clean white spaces from the extracted segments
+| alter log_segments_cleaned = arrayfilter(arraymap(log_segments, trim("@element")), len("@element") > 0)
+
+// insert a delimiter between the different fields within each segment 
+| alter field_delimited_log_segments = arraymap(log_segments_cleaned, 
+        // if the segment is originally a quoted string, leave it as is: 
+        if(quoted_fields contains trim("@element"), "@element", 
+        // edge case where the field is a comma-separated list (e.g. cs-auth-groups) of values and the original comparison fails 
+        "@element" ~= ",\s", "@element",
+        // else, add the defined separator between each field in the segment (separated originally by a space)
+        arraystring(regextract("@element", "\S+"), field_separator)))
+
+// add the field separator between the segments and flatten them to a unified string
+| alter flattened_field_list  = arraystring(field_delimited_log_segments, field_separator)
+
+// split the delimited string of fields into an index-based array 
+| alter field_list = split(flattened_field_list, field_separator)
+
+// Extract the fields according to their relative ordinal location 
+| alter // Field order is according to the following format: https://knowledge.broadcom.com/external/article/175519/wss-access-log-fields-and-changes.html. #Fields: x-bluecoat-request-tenant-id date time x-bluecoat-appliance-name time-taken c-ip cs-userdn cs-auth-groups x-exception-id sc-filter-result cs-categories cs(Referer) sc-status s-action cs-method rs(Content-Type) cs-uri-scheme cs-host cs-uri-port cs-uri-path cs-uri-query cs-uri-extension cs(User-Agent) s-ip sc-bytes cs-bytes x-icap-reqmod-header(X-ICAP-Metadata) x-icap-respmod-header(X-ICAP-Metadata) x-data-leak-detected x-virus-id x-bluecoat-location-id x-bluecoat-location-name x-bluecoat-access-type x-bluecoat-application-name x-bluecoat-application-operation r-ip r-supplier-country x-rs-certificate-validate-status x-rs-certificate-observed-errors x-cs-ocsp-error x-rs-ocsp-error x-rs-connection-negotiated-ssl-version x-rs-connection-negotiated-cipher x-rs-connection-negotiated-cipher-size x-rs-certificate-hostname x-rs-certificate-hostname-categories x-cs-connection-negotiated-ssl-version x-cs-connection-negotiated-cipher x-cs-connection-negotiated-cipher-size x-cs-certificate-subject cs-icap-status cs-icap-error-details rs-icap-status rs-icap-error-details s-supplier-ip s-supplier-country s-supplier-failures x-cs-client-ip-country cs-threat-risk x-rs-certificate-hostname-threat-risk x-client-agent-type x-client-os x-client-agent-sw x-client-device-id x-client-device-name x-client-device-type x-client-security-posture-details x-client-security-posture-risk-score x-bluecoat-reference-id x-sc-connection-issuer-keyring x-sc-connection-issuer-keyring-alias x-cloud-rs x-bluecoat-placeholder cs(X-Requested-With) x-random-ipv6 x-bluecoat-transaction-uuid
+    x_bluecoat_request_tenant_id = arrayindex(field_list, 0), // Tenant ID for the request.
+    // date = arrayindex(field_list, 1), // GMT date in YYYY-MM-DD format.
+    // time = arrayindex(field_list, 2), // GMT time in HH:MM:SS format.
+    x_bluecoat_appliance_name = arrayindex(field_list, 3), // Configured name of the appliance.
+    time_taken = arrayindex(field_list, 4), // Time taken (in milliseconds) to process the request. The time is measured from the first byte of client request data that is received by the proxy, to the last byte sent by the proxy to the client. The time includes delays by ICAP, and so on.
+    c_ip = arrayindex(field_list, 5), // Client IP address.
+    cs_userdn = arrayindex(field_list, 6), // Full username of a client authenticated to the proxy (fully distinguished).
+    cs_auth_groups = arrayindex(field_list, 7), // List of groups that an authenticated user belongs to. Only groups that are referenced by policy are included.
+    x_exception_id = arrayindex(field_list, 8), // Identifier of the exception resolved (empty if the transaction has not been terminated).
+    sc_filter_result = arrayindex(field_list, 9), // Content filtering result, such as DENIED, PROXIED, or OBSERVED.
+    cs_categories = arrayindex(field_list, 10), // All content categories of the request URL.
+    cs_referer = arrayindex(field_list, 11), // Content of request header Referer.
+    sc_status = arrayindex(field_list, 12), // Protocol status code from the appliance to the client.
+    s_action = arrayindex(field_list, 13), // The action the appliance took to process the request. Possible values include ALLOWED, DENIED, FAILED, and SERVER_ERROR.
+    cs_method = arrayindex(field_list, 14), // Request method that is used from the client to the appliance.
+    rs_content_type = arrayindex(field_list, 15), // Content of request header Content-Type.
+    cs_uri_scheme = arrayindex(field_list, 16), // Scheme from the log URL.
+    cs_host = arrayindex(field_list, 17), // Hostname from the client request URL. If URL rewrite policies are used, the value of this field is derived from the log URL.
+    cs_uri_port = arrayindex(field_list, 18), // Port from the log URL.
+    cs_uri_path = arrayindex(field_list, 19), // Path from the log URL, not including the query.
+    cs_uri_query = arrayindex(field_list, 20), // Query from the log URL.
+    cs_uri_extension = arrayindex(field_list, 21), // Document extension from the original requested URL.
+    cs_user_agent = arrayindex(field_list, 22), // Content of request header User-Agent.
+    s_ip = arrayindex(field_list, 23), // IP address of the appliance on which the client established its connection.
+    sc_bytes = arrayindex(field_list, 24), // Number of HTTP/1.1 bytes sent from the appliance to the client.
+    cs_bytes = arrayindex(field_list, 25), // Number of HTTP/1.1 bytes sent from the client to the appliance.
+    // x_icap_reqmod_header = arrayindex(field_list, 26), // ICAP REQMOD header details
+    // x_icap_respmod_header = arrayindex(field_list, 27), // ICAP RESPMOD header details
+    // x_data_leak_detected = arrayindex(field_list, 28), // Whether a data leak has occurred, according to the ICAP response.
+    x_virus_id = arrayindex(field_list, 29), // Identifier of a virus if one was detected.
+    x_bluecoat_location_id = arrayindex(field_list, 30), // ID of the cloud service customer site.
+    x_bluecoat_location_name = arrayindex(field_list, 31), // Cloud service location name of the Edge SWG appliance.
+    x_bluecoat_access_type = arrayindex(field_list, 32), // Method used to access the cloud service.
+    x_bluecoat_application_name = arrayindex(field_list, 33), // Reports the application name.
+    x_bluecoat_application_operation = arrayindex(field_list, 34), // Reports the operation of an application.
+    r_ip = arrayindex(field_list, 35), // IP address from the outbound server URL.
+    r_supplier_country = arrayindex(field_list, 36), // Reports the country of the IP address to which Cloud SWG connected. The country of the first IP address returned from a DNS resolution of the server URL host. For example, if the transaction was denied based on an earlier condition such as URL category, the field indicates the country that the service tried to connect to first.
+    x_rs_certificate_validate_status = arrayindex(field_list, 37), // Result of validating the server TLS/SSL certificate.
+    x_rs_certificate_observed_errors = arrayindex(field_list, 38), // Errors observed in the server certificate.
+    x_cs_ocsp_error = arrayindex(field_list, 39), // An error was observed during the OCSP check for a client certificate.
+    x_rs_ocsp_error = arrayindex(field_list, 40), // Errors that occurred during the OCSP check of the server certificate
+    x_rs_connection_negotiated_ssl_version = arrayindex(field_list, 41), // Version of the SSL protocol negotiated for the server connection.
+    x_rs_connection_negotiated_cipher = arrayindex(field_list, 42), // OpenSSL cipher suite negotiated for the server connection.
+    // x_rs_connection_negotiated_cipher_size = arrayindex(field_list, 43), // Cipher size of the OpenSSL cipher suite negotiated for the server connection.
+    x_rs_certificate_hostname = arrayindex(field_list, 44), // Hostname from the server TLS/SSL certificate.
+    x_rs_certificate_hostname_categories = arrayindex(field_list, 45), // All content categories of the server TLS/SSL certificate hostname.
+    x_cs_connection_negotiated_ssl_version = arrayindex(field_list, 46), // Version of the SSL protocol negotiated for the client connection.
+    x_cs_connection_negotiated_cipher = arrayindex(field_list, 47), // OpenSSL cipher suite negotiated for the client connection.
+    // x_cs_connection_negotiated_cipher_size = arrayindex(field_list, 48), // Cipher size of the OpenSSL cipher suite negotiated for the client connection.
+    x_cs_certificate_subject = arrayindex(field_list, 49), // Subject of the certificate presented by the client.
+    // cs_icap_status = arrayindex(field_list, 50), // REQMOD ICAP error details.
+    // cs_icap_error_details = arrayindex(field_list, 51), // ICAP REQMOD status.
+    // rs_icap_status = arrayindex(field_list, 52), // ICAP RESPMOD status.
+    // rs_icap_error_details = arrayindex(field_list, 53), // ICAP RESPMOD error details.
+    s_supplier_ip = arrayindex(field_list, 54), // IP address used to contact the upstream host. This address is only set if a connection is made, or if an exception does not occur.
+    s_supplier_country = arrayindex(field_list, 55), // The geolocation (country) associated with the IP address of the connection, which is identified by s-supplier-ip. This location is only set if a connection is made, or if an exception does not occur.
+    // s_supplier_failures = arrayindex(field_list, 56), // A list of entries where the IP address resolved but did not result in a successful connection. Each entry comprises the IP address, country, and whether the connection was denied or timed out. This field is designed for use with Symantec Reporter.
+    x_cs_client_ip_country = arrayindex(field_list, 57), // The country associated with the client IP address.
+    cs_threat_risk = arrayindex(field_list, 58), // Threat risk level of the request URL.
+    // x_rs_certificate_hostname_threat_risk = arrayindex(field_list, 59), // Threat risk level of the server TLS/SSL certificate hostname.
+    x_client_agent_type = arrayindex(field_list, 60), // Agent type of the authenticated client.
+    x_client_os = arrayindex(field_list, 61), // Client operating system.
+    x_client_agent_sw = arrayindex(field_list, 62), // Client agent software.
+    x_client_device_id = arrayindex(field_list, 63), // A unique identifier for the client device.
+    x_client_device_name = arrayindex(field_list, 64), // The name of the device.
+    x_client_device_type = arrayindex(field_list, 65), // Agent type of the authenticated client.
+    x_client_security_posture_details = arrayindex(field_list, 66), // Information that is related to how secure the client environment is per the compliance policy.
+    // x_client_security_posture_risk_score = arrayindex(field_list, 67), // The risk score that indicates the security posture of the client.
+    x_bluecoat_reference_id = arrayindex(field_list, 68), // Reference ID specified in the reference_id(Rule_ID) action in a policy rule.
+    x_sc_connection_issuer_keyring = arrayindex(field_list, 69), // Issuer for forged certificates.
+    x_sc_connection_issuer_keyring_alias = arrayindex(field_list, 70), // Key alias name in the HSM issuer for forged certificates.
+    // x_cloud_rs = arrayindex(field_list, 71), // Summary of RS server processing in the form (<rs-ratings>:<rating-source>:<rating-label>).
+    // x_bluecoat_placeholder = arrayindex(field_list, 72), // A placeholder represented by a dash .
+    cs_x_requested_with = arrayindex(field_list, 73), // Content of request header X-Requested-With.
+    x_random_ipv6 = arrayindex(field_list, 74), // Static IPv6 address per tenant per internal IP address per hour. The value changes every hour and is produced by X-Forwarded-For. https://techdocs.broadcom.com/us/en/symantec-security-software/web-and-network-security/cloud-swg/help/admin-matrix/privacy-controls/privacy-xff.html
+    x_bluecoat_transaction_uuid = arrayindex(field_list, 75) // Globally unique per-request identifier generated by the appliance. Default exception pages include the transaction ID. You can look for the ID in the access log to learn more about the transaction.
+
+| alter // post-extraction processing 
+    cloud_location = concat(trim(x_bluecoat_location_name, "\""), " (", x_bluecoat_location_id, ")"),
+    cs_auth_groups = if(cs_auth_groups != NIL, arraymap(split(cs_auth_groups, ","), trim("@element"))),
+    cs_user_domain = arrayindex(regextract(cs_userdn, "(\w+)\\[\w\-]+") , 0),
+    cs_userdn = arrayindex(regextract(cs_userdn, "(?:[^\\]+\\)?(.+)"), 0),
+    c_ip_ipv4 = if(c_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", c_ip),
+    c_ip_ipv6 = if(c_ip ~= "[\da-fA-F]+\:[\da-fA-F]+", c_ip),
+    r_ip_ipv4 = if(r_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", r_ip),
+    r_ip_ipv6 = if(r_ip ~= "[\da-fA-F]+\:[\da-fA-F]+", r_ip),
+    s_ip_ipv4 = if(s_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", s_ip),
+    s_ip_ipv6 = if(s_ip ~= "[\da-fA-F]+\:[\da-fA-F]+", s_ip),
+    s_supplier_ip_ipv4 = if(s_supplier_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", s_supplier_ip),
+    s_supplier_ip_ipv6 = if(s_supplier_ip ~= "[\da-fA-F]+\:[\da-fA-F]+", s_supplier_ip),
+    url = if(cs_uri_scheme != NIL, concat(replace(cs_uri_scheme, "ssl", "https"), "://", cs_host, ":", cs_uri_port, cs_uri_path, trim(cs_uri_query, "-"))),
+    url_categories = rtrim(arraystring(arraydistinct(split(concat(cs_categories, ";", trim(x_rs_certificate_hostname_categories, "-")), ";")), ";"), ";"),
+    negotiated_cipher = if(x_cs_connection_negotiated_cipher = x_rs_connection_negotiated_cipher, x_cs_connection_negotiated_cipher, concat(x_cs_connection_negotiated_cipher, ";", x_rs_connection_negotiated_cipher)),
+    negotiated_tls_version = if(x_cs_connection_negotiated_ssl_version = x_rs_connection_negotiated_ssl_version, x_cs_connection_negotiated_ssl_version, concat(x_cs_connection_negotiated_ssl_version, ";", x_rs_connection_negotiated_ssl_version)),
+    os = if(x_client_os != NIL, lowercase(x_client_os)), // lower case for enum value comparison 
+    target_resource = concat(cs_uri_path, trim(cs_uri_query, NIL)),
+    x_client_os = replace(x_client_os, "%20", " ")
+
+| alter // clean blank fields (replace "-" with null) 
+    cs_method = if(cs_method != NIL and cs_method != "unknown", cs_method),
+    cs_referer = if(cs_referer != NIL, cs_referer),
+    cs_threat_risk = if(cs_threat_risk not in (NIL, "none"), cs_threat_risk),
+    cs_uri_extension = if(cs_uri_extension != NIL, cs_uri_extension),
+    cs_user_agent = if(cs_user_agent != NIL, cs_user_agent),
+    cs_userdn = if(cs_userdn != NIL, cs_userdn),
+    cs_x_requested_with = if(cs_x_requested_with != NIL, cs_x_requested_with),
+    negotiated_cipher = if(negotiated_cipher not in (NIL, "none"), negotiated_cipher),
+    negotiated_tls_version = if(negotiated_tls_version != NIL, negotiated_tls_version),
+    rs_content_type = if(rs_content_type != NIL, rs_content_type),
+    s_action = if(s_action != NIL, s_action),
+    s_supplier_country = if(s_supplier_country != NIL, s_supplier_country),
+    x_bluecoat_application_operation = if(x_bluecoat_application_operation not in (NIL, "none"), x_bluecoat_application_operation),
+    x_bluecoat_application_name = if(x_bluecoat_application_name != NIL, x_bluecoat_application_name),
+    x_bluecoat_reference_id = if(x_bluecoat_reference_id != NIL, x_bluecoat_reference_id),
+    x_client_agent_sw = if(x_client_agent_sw != NIL, x_client_agent_sw),
+    x_client_agent_type = if(x_client_agent_type != NIL, x_client_agent_type),
+    x_client_device_id = if(x_client_device_id != NIL, x_client_device_id),
+    x_client_device_name = if(x_client_device_name != NIL, x_client_device_name),
+    x_client_device_type = if(x_client_device_type != NIL, x_client_device_type),
+    x_client_os = if(x_client_os != NIL, x_client_os),
+    x_client_security_posture_details = if(x_client_security_posture_details != NIL, x_client_security_posture_details),
+    x_cs_certificate_subject = if(x_cs_certificate_subject != NIL, x_cs_certificate_subject),
+    x_cs_client_ip_country = if(x_cs_client_ip_country != NIL, x_cs_client_ip_country),
+    x_cs_ocsp_error = if(x_cs_ocsp_error != NIL, x_cs_ocsp_error),
+    x_exception_id = if(x_exception_id != NIL, x_exception_id),
+    x_rs_certificate_hostname = if(x_rs_certificate_hostname != NIL, x_rs_certificate_hostname),
+    x_rs_certificate_observed_errors = if(x_rs_certificate_observed_errors not in (NIL, "none"), x_rs_certificate_observed_errors),
+    x_rs_certificate_validate_status = if(x_rs_certificate_validate_status not in (NIL, "none"), x_rs_certificate_validate_status),
+    x_rs_ocsp_error = if(x_rs_ocsp_error != NIL, x_rs_ocsp_error),
+    x_sc_connection_issuer_keyring = if(x_sc_connection_issuer_keyring != NIL, x_sc_connection_issuer_keyring),
+    x_sc_connection_issuer_keyring_alias = if(x_sc_connection_issuer_keyring_alias != NIL, x_sc_connection_issuer_keyring_alias),
+    x_virus_id = if(x_virus_id != NIL, x_virus_id)
+
+| alter // mapping based on the following format: https://techdocs.broadcom.com/us/en/symantec-security-software/web-and-network-security/cloud-swg/help/wss-reference/accesslogformats-ref.html
+    xdm.alert.original_threat_id = x_virus_id,
+    xdm.alert.risks = if(x_client_security_posture_details != null, arraycreate(x_client_security_posture_details)),
+    xdm.alert.severity = cs_threat_risk,
+    xdm.event.duration = to_integer(time_taken),
+    xdm.event.id = x_bluecoat_transaction_uuid, 
+    xdm.event.operation = x_bluecoat_application_operation,
+    xdm.event.operation_sub_type = s_action,
+    xdm.event.outcome = coalesce(sc_filter_result),
+    xdm.event.outcome_reason = coalesce(x_exception_id, x_rs_certificate_observed_errors, x_rs_certificate_validate_status, x_rs_ocsp_error, x_cs_ocsp_error),
+    xdm.intermediate.cloud.zone = cloud_location, 
+    xdm.intermediate.location.country = if(s_supplier_country != null, s_supplier_country), 
+    xdm.intermediate.host.hostname = x_bluecoat_appliance_name, 
+    xdm.intermediate.host.device_id = x_bluecoat_request_tenant_id, 
+    xdm.intermediate.host.ipv4_addresses = arraydistinct(arraycreate(s_ip_ipv4, s_supplier_ip_ipv4)),
+    xdm.intermediate.host.ipv6_addresses = arraydistinct(arraycreate(s_ip_ipv6, s_supplier_ip_ipv6)),
+    xdm.intermediate.is_proxy = to_boolean("TRUE"), 
+    xdm.intermediate.ipv4 = s_ip_ipv4,
+    xdm.intermediate.ipv6 = s_ip_ipv6,
+    xdm.network.application_protocol = uppercase(cs_uri_scheme),
+    xdm.network.http.url = if(cs_uri_scheme ~= "http|ssl", url),
+    xdm.network.http.method = if(cs_method != null, if(cs_method = "ACL", XDM_CONST.HTTP_METHOD_ACL, cs_method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, cs_method = "BIND", XDM_CONST.HTTP_METHOD_BIND, cs_method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, cs_method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, cs_method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, cs_method = "COPY", XDM_CONST.HTTP_METHOD_COPY, cs_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, cs_method = "GET", XDM_CONST.HTTP_METHOD_GET, cs_method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, cs_method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, cs_method = "LINK", XDM_CONST.HTTP_METHOD_LINK, cs_method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, cs_method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, cs_method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, cs_method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, cs_method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, cs_method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, cs_method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, cs_method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, cs_method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, cs_method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, cs_method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, cs_method = "POST", XDM_CONST.HTTP_METHOD_POST, cs_method = "PRI", XDM_CONST.HTTP_METHOD_PRI, cs_method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, cs_method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, cs_method = "PUT", XDM_CONST.HTTP_METHOD_PUT, cs_method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, cs_method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, cs_method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, cs_method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, cs_method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, cs_method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, cs_method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, cs_method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, cs_method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, cs_method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, cs_method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, to_string(cs_method))),
+    xdm.network.http.referrer = cs_referer,
+    xdm.network.http.response_code = if(sc_status != "0", if(sc_status = "100", XDM_CONST.HTTP_RSP_CODE_CONTINUE, sc_status = "101", XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, sc_status = "102", XDM_CONST.HTTP_RSP_CODE_PROCESSING, sc_status = "103", XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, sc_status = "200", XDM_CONST.HTTP_RSP_CODE_OK, sc_status = "201", XDM_CONST.HTTP_RSP_CODE_CREATED, sc_status = "202", XDM_CONST.HTTP_RSP_CODE_ACCEPTED, sc_status = "203", XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, sc_status = "204", XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, sc_status = "205", XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, sc_status = "206", XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, sc_status = "207", XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, sc_status = "208", XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, sc_status = "226", XDM_CONST.HTTP_RSP_CODE_IM_USED, sc_status = "300", XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, sc_status = "301", XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, sc_status = "302", XDM_CONST.HTTP_RSP_CODE_FOUND, sc_status = "303", XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, sc_status = "304", XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, sc_status = "305", XDM_CONST.HTTP_RSP_CODE_USE_PROXY, sc_status = "307", XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, sc_status = "308", XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, sc_status = "400", XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, sc_status = "401", XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, sc_status = "402", XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, sc_status = "403", XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, sc_status = "404", XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, sc_status = "405", XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, sc_status = "406", XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, sc_status = "407", XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, sc_status = "408", XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, sc_status = "409", XDM_CONST.HTTP_RSP_CODE_CONFLICT, sc_status = "410", XDM_CONST.HTTP_RSP_CODE_GONE, sc_status = "411", XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, sc_status = "412", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, sc_status = "413", XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, sc_status = "414", XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, sc_status = "415", XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, sc_status = "416", XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, sc_status = "417", XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, sc_status = "421", XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, sc_status = "422", XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, sc_status = "423", XDM_CONST.HTTP_RSP_CODE_LOCKED, sc_status = "424", XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, sc_status = "425", XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, sc_status = "426", XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, sc_status = "428", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, sc_status = "429", XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, sc_status = "431", XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, sc_status = "451", XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, sc_status = "500", XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, sc_status = "501", XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, sc_status = "502", XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, sc_status = "503", XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, sc_status = "504", XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, sc_status = "505", XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, sc_status = "506", XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, sc_status = "507", XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, sc_status = "508", XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, sc_status = "511", XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, sc_status = null, null, to_string(sc_status))),
+    xdm.network.http.content_type = rs_content_type, 
+    xdm.network.http.http_header.value = coalesce(cs_x_requested_with, x_random_ipv6),
+    xdm.network.http.http_header.header = if(cs_x_requested_with != null, "X-Requested-With", x_random_ipv6 != null, "X-Forwarded-For"),
+    xdm.network.http.url_category = url_categories, 
+    xdm.network.rule = x_bluecoat_reference_id,
+    xdm.network.tls.cipher = negotiated_cipher,
+    xdm.network.tls.protocol_version = negotiated_tls_version,
+    xdm.network.tls.client_certificate.subject = x_cs_certificate_subject,
+    xdm.network.tls.server_certificate.issuer = coalesce(x_sc_connection_issuer_keyring, x_sc_connection_issuer_keyring_alias), 
+    xdm.network.tls.server_name = x_rs_certificate_hostname,
+    xdm.network.tls.server_certificate.subject = x_rs_certificate_hostname,
+    xdm.observer.action = s_action,
+    xdm.observer.type = x_bluecoat_access_type, 
+    xdm.source.agent.type = x_client_agent_type, 
+    xdm.source.agent.version = x_client_agent_sw, 
+    xdm.source.host.device_category = x_client_device_type, 
+    xdm.source.host.device_id = x_client_device_id, 
+    xdm.source.ipv4 = c_ip_ipv4,
+    xdm.source.ipv6 = coalesce(c_ip_ipv6, x_random_ipv6),
+    xdm.source.host.hostname = x_client_device_name, 
+    xdm.source.host.os = x_client_os, 
+    xdm.source.host.os_family = if(os contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, os contains "mac", XDM_CONST.OS_FAMILY_MACOS, os contains "linux", XDM_CONST.OS_FAMILY_LINUX, os contains "android", XDM_CONST.OS_FAMILY_ANDROID, os contains "ios", XDM_CONST.OS_FAMILY_IOS, os contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, os contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, os contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, os contains "centos", XDM_CONST.OS_FAMILY_CENTOS, os contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, os contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, os contains "scada", XDM_CONST.OS_FAMILY_SCADA, to_string(os)),
+    xdm.source.location.country = if(x_cs_client_ip_country != null, x_cs_client_ip_country), 
+    xdm.source.sent_bytes = to_number(cs_bytes), 
+    xdm.source.user_agent = cs_user_agent, 
+    xdm.source.identity.domain = cs_user_domain,
+    xdm.source.identity.groups = cs_auth_groups, 
+    xdm.source.identity.username = cs_userdn, 
+    xdm.target.application.name = x_bluecoat_application_name, 
+    xdm.target.file.extension = cs_uri_extension, 
+    xdm.target.ipv4 = r_ip_ipv4,
+    xdm.target.ipv6 = r_ip_ipv6,
+    xdm.target.host.hostname = cs_host, 
+    xdm.target.host.ipv4_addresses = if(r_ip_ipv4 != null, arraycreate(r_ip_ipv4)),
+    xdm.target.host.ipv6_addresses = if(r_ip_ipv6 != null, arraycreate(r_ip_ipv6)),
+    xdm.target.location.country = if(r_supplier_country != null, trim(r_supplier_country, "\"")), 
+    xdm.target.port = to_integer(cs_uri_port),
+    xdm.target.resource.value = target_resource,
+    xdm.target.sent_bytes = to_number(sc_bytes),
+    xdm.target.url = url; 

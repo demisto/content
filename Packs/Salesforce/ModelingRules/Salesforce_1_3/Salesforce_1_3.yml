@@ -4,3 +4,4 @@ name: Salesforce Modeling Rule
 rules: ''
 schema: ''
 tags: salesforce
+toversion: 8.9.0

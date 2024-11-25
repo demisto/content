@@ -1,0 +1,274 @@
+[MODEL: dataset="infoblox_infoblox_raw"]
+/**************/
+// DNS Queries /
+/**************/
+// https://docs.infoblox.com/space/nios85/35816694/Capturing+DNS+Queries+and+Responses
+filter _raw_log ~= "client\s+(?:\@0x[\da-fA-F]+\s+)?[\da-fA-F\.\:]+\#\d{1,5}(?:\s+\([^\)]+\))?:\s+query"
+| alter // Extract syslog headers & syslog message 
+    syslog_process_id = arrayindex(regextract(_raw_log, "\s\w+\[(\d+)\]"), 0),
+    syslog_process_name = arrayindex(regextract(_raw_log, "\s(\w+)\[\d+\]"), 0),
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)),
+    syslog_msg = coalesce( 
+        arrayindex(regextract(_raw_log, "\w+\[\d+\]:\s*(.+)"), 0), // messages that are sent directly from infoblox 
+        arrayindex(regextract(_raw_log, "^\<\d+\>\w?\s+(?:\S+\s+){6}(.+)"), 0)) // messages that are downloaded to file and sent via an intermediate syslog client 
+| alter syslog_facility_code = floor(divide(syslog_priority, 8))
+| alter syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility_code, 8)))
+| alter // Extract the DNS query data out of the syslog messages 
+    client_ip = arrayindex(regextract(_raw_log, "client\s+(?:\@0x[\da-fA-F]+\s+)?([\da-fA-F\.\:]+)\#\d{1,5}"), 0),
+    client_port = arrayindex(regextract(_raw_log, "client\s+(?:\@0x[\da-fA-F]+\s+)?[\da-fA-F\.\:]+\#(\d{1,5})"), 0),
+    dns_server_ip = arrayindex(regextract(_raw_log, "query\:\s+\S+\s+(?:\@0x[\da-fA-F]+\s+)?\w+\s+\w+\s+[\+\-](?:[SETDC\(\)\d]+)?\s+\(?([\da-fA-F\.\:]+)"), 0),
+    query_domain_name = coalesce(arrayindex(regextract(_raw_log, "query\:\s+(\S+)"), 0), arrayindex(regextract(_raw_log, "\(([^\)]+)\):\s+query"), 0)),
+    query_class = arrayindex(regextract(_raw_log, "query\:\s+\S+\s+(?:\@0x[\da-fA-F]+\s+)?(\w+)"), 0), // see https://datatracker.ietf.org/doc/html/rfc1035#section-3.2.4
+    query_record_type = arrayindex(regextract(_raw_log, "query\:\s+\S+\s+(?:\@0x[\da-fA-F]+\s+)?\w+\s+(\w+)"), 0), // see https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-4
+    query_flags = arrayindex(regextract(_raw_log, "query\:\s+\S+\s+(?:\@0x[\da-fA-F]+\s+)?\w+\s+\w+\s+([\+\-](?:[SETDC\(\)\d]+)?)"), 0),
+    rcode = arrayindex(regextract(_raw_log, "query failed\s*\((\w+)"), 0)
+| alter // Post extraction processing 
+    application_protocol = "DNS",
+	client_ipv4 = if(client_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", client_ip),
+	client_ipv6 = if(client_ip ~= ":", client_ip),
+    dns_server_ipv4 = if(dns_server_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", dns_server_ip),
+	dns_server_ipv6 = if(dns_server_ip ~= ":", dns_server_ip),
+    ip_protocol = if(query_flags contains "T", XDM_CONST.IP_PROTOCOL_TCP)
+| alter // XDM Mapping 
+    xdm.alert.severity = syslog_severity,
+    xdm.event.type = "DNS Query",
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
+    xdm.event.outcome = if(rcode != null, XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = rcode,
+    xdm.intermediate.ipv4 = dns_server_ipv4,
+    xdm.intermediate.ipv6 = dns_server_ipv6,
+    xdm.network.application_protocol = application_protocol,
+    xdm.network.dns.dns_question.class = if(query_class = "IN", 1, query_class = "CS", 2, query_class = "CH", 3, query_class = "HS", 4), // see https://datatracker.ietf.org/doc/html/rfc1035#section-3.2.4
+    xdm.network.dns.dns_question.name = query_domain_name,
+    xdm.network.dns.dns_question.type = if(query_record_type = "A", XDM_CONST.DNS_RECORD_TYPE_A, query_record_type = "AAAA", XDM_CONST.DNS_RECORD_TYPE_AAAA, query_record_type = "AFSDB", XDM_CONST.DNS_RECORD_TYPE_AFSDB, query_record_type = "APL", XDM_CONST.DNS_RECORD_TYPE_APL, query_record_type = "CAA", XDM_CONST.DNS_RECORD_TYPE_CAA, query_record_type = "CDNSKEY", XDM_CONST.DNS_RECORD_TYPE_CDNSKEY, query_record_type = "CDS", XDM_CONST.DNS_RECORD_TYPE_CDS, query_record_type = "CERT", XDM_CONST.DNS_RECORD_TYPE_CERT, query_record_type = "CNAME", XDM_CONST.DNS_RECORD_TYPE_CNAME, query_record_type = "CSYNC", XDM_CONST.DNS_RECORD_TYPE_CSYNC, query_record_type = "DHCID", XDM_CONST.DNS_RECORD_TYPE_DHCID, query_record_type = "DLV", XDM_CONST.DNS_RECORD_TYPE_DLV, query_record_type = "DNAME", XDM_CONST.DNS_RECORD_TYPE_DNAME, query_record_type = "DNSKEY", XDM_CONST.DNS_RECORD_TYPE_DNSKEY, query_record_type = "DS", XDM_CONST.DNS_RECORD_TYPE_DS, query_record_type = "EUI48", XDM_CONST.DNS_RECORD_TYPE_EUI48, query_record_type = "EUI64", XDM_CONST.DNS_RECORD_TYPE_EUI64, query_record_type = "HINFO", XDM_CONST.DNS_RECORD_TYPE_HINFO, query_record_type = "HIP", XDM_CONST.DNS_RECORD_TYPE_HIP, query_record_type = "HTTPS", XDM_CONST.DNS_RECORD_TYPE_HTTPS, query_record_type = "IPSECKEY", XDM_CONST.DNS_RECORD_TYPE_IPSECKEY, query_record_type = "KEY", XDM_CONST.DNS_RECORD_TYPE_KEY, query_record_type = "KX", XDM_CONST.DNS_RECORD_TYPE_KX, query_record_type = "LOC", XDM_CONST.DNS_RECORD_TYPE_LOC, query_record_type = "MX", XDM_CONST.DNS_RECORD_TYPE_MX, query_record_type = "NAPTR", XDM_CONST.DNS_RECORD_TYPE_NAPTR, query_record_type = "NS", XDM_CONST.DNS_RECORD_TYPE_NS, query_record_type = "NSEC", XDM_CONST.DNS_RECORD_TYPE_NSEC, query_record_type = "NSEC3", XDM_CONST.DNS_RECORD_TYPE_NSEC3, query_record_type = "NSEC3PARAM", XDM_CONST.DNS_RECORD_TYPE_NSEC3PARAM, query_record_type = "OPENPGPKEY", XDM_CONST.DNS_RECORD_TYPE_OPENPGPKEY, query_record_type = "PTR", XDM_CONST.DNS_RECORD_TYPE_PTR, query_record_type = "RRSIG", XDM_CONST.DNS_RECORD_TYPE_RRSIG, query_record_type = "RP", XDM_CONST.DNS_RECORD_TYPE_RP, query_record_type = "SIG", XDM_CONST.DNS_RECORD_TYPE_SIG, query_record_type = "SMIMEA", XDM_CONST.DNS_RECORD_TYPE_SMIMEA, query_record_type = "SOA", XDM_CONST.DNS_RECORD_TYPE_SOA, query_record_type = "SRV", XDM_CONST.DNS_RECORD_TYPE_SRV, query_record_type = "SSHFP", XDM_CONST.DNS_RECORD_TYPE_SSHFP, query_record_type = "SVCB", XDM_CONST.DNS_RECORD_TYPE_SVCB, query_record_type = "TA", XDM_CONST.DNS_RECORD_TYPE_TA, query_record_type = "TKEY", XDM_CONST.DNS_RECORD_TYPE_TKEY, query_record_type = "TLSA", XDM_CONST.DNS_RECORD_TYPE_TLSA, query_record_type = "TSIG", XDM_CONST.DNS_RECORD_TYPE_TSIG, query_record_type = "TXT", XDM_CONST.DNS_RECORD_TYPE_TXT, query_record_type = "URI", XDM_CONST.DNS_RECORD_TYPE_URI, query_record_type = "ZONEMD", XDM_CONST.DNS_RECORD_TYPE_ZONEMD, query_record_type),
+    xdm.network.dns.is_response = if(rcode = null, to_boolean("FALSE")),
+    xdm.network.dns.response_code = if(rcode = "NOERROR", XDM_CONST.DNS_RESPONSE_CODE_NO_ERROR, rcode = "FORMERR", XDM_CONST.DNS_RESPONSE_CODE_FORMAT_ERROR, rcode = "SERVFAIL", XDM_CONST.DNS_RESPONSE_CODE_SERVER_FAILURE, rcode = "NXDOMAIN", XDM_CONST.DNS_RESPONSE_CODE_NON_EXISTENT_DOMAIN, rcode = "NOTIMP", XDM_CONST.DNS_RESPONSE_CODE_NOT_IMPLEMENTED, rcode ~= "REFUSED", XDM_CONST.DNS_RESPONSE_CODE_QUERY_REFUSED, rcode ~= "YXDOMAIN", XDM_CONST.DNS_RESPONSE_CODE_NAME_EXISTS_WHEN_IT_SHOULD_NOT, rcode = "YXRRSET", XDM_CONST.DNS_RESPONSE_CODE_RR_SET_EXISTS_WHEN_IT_SHOULD_NOT, rcode = "NXRRSET", XDM_CONST.DNS_RESPONSE_CODE_RR_SET_THAT_SHOULD_EXIST_DOES_NOT, rcode = "NOTAUTH", XDM_CONST.DNS_RESPONSE_CODE_SERVER_NOT_AUTHORITATIVE_FOR_ZONE, rcode = "NOTZONE", XDM_CONST.DNS_RESPONSE_CODE_NAME_NOT_CONTAINED_IN_ZONE, rcode = "BADVERS", XDM_CONST.DNS_RESPONSE_CODE_BAD_OPT_VERSION, rcode = "BADSIG", XDM_CONST.DNS_RESPONSE_CODE_TSIG_SIGNATURE_FAILURE, rcode = "BADKEY", XDM_CONST.DNS_RESPONSE_CODE_KEY_NOT_RECOGNIZED, rcode = "BADTIME", XDM_CONST.DNS_RESPONSE_CODE_SIGNATURE_OUT_OF_TIME_WINDOW, rcode = "BADMODE", XDM_CONST.DNS_RESPONSE_CODE_BAD_TKEY_MODE, rcode = "BADNAME", XDM_CONST.DNS_RESPONSE_CODE_DUPLICATE_KEY_NAME, rcode = "BADALG", XDM_CONST.DNS_RESPONSE_CODE_ALGORITHM_NOT_SUPPORTED, rcode = "BADTRUNC", XDM_CONST.DNS_RESPONSE_CODE_BAD_TRUNCATION, rcode),
+    xdm.network.ip_protocol = ip_protocol, 
+    xdm.network.protocol_layers = arraycreate(application_protocol, ip_protocol),
+    xdm.source.ipv4 = client_ipv4,
+    xdm.source.ipv6 = client_ipv6,
+    xdm.source.port = to_number(client_port),
+    xdm.source.process.name = syslog_process_name,
+    xdm.source.process.pid = to_number(syslog_process_id);
+
+/****************/
+// DNS Responses /
+/****************/
+// https://docs.infoblox.com/space/nios85/35816694/Capturing+DNS+Queries+and+Responses
+filter _raw_log ~= "(?:UDP|TCP):\s*query:\s*(?:\S+\s+){3}response:"   
+| alter // Extract syslog headers & syslog message 
+    syslog_process_id = arrayindex(regextract(_raw_log, "\s\w+\[(\d+)\]"), 0),
+    syslog_process_name = arrayindex(regextract(_raw_log, "\s(\w+)\[\d+\]"), 0),
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)),
+    syslog_msg = coalesce( 
+        arrayindex(regextract(_raw_log, "\w+\[\d+\]:\s*(.+)"), 0), // messages that are sent directly from infoblox 
+        arrayindex(regextract(_raw_log, "^\<\d+\>\w?\s+(?:\S+\s+){6}(.+)"), 0)) // messages that are downloaded to file and sent via an intermediate syslog client 
+| alter syslog_facility_code = floor(divide(syslog_priority, 8))
+| alter syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility_code, 8)))
+| alter // Extract DNS query & response data 
+    client_ip = arrayindex(regextract(syslog_msg, "client\s+([\da-fA-F\.\:]+)\#\d{1,5}"), 0),
+    client_port = arrayindex(regextract(syslog_msg, "client\s+[\da-fA-F\.\:]+\#(\d{1,5})"), 0),
+    ip_protocol = arrayindex(regextract(syslog_msg, "client\s+[\da-fA-F\.\:]+\#\d{1,5}:\s+(TCP|UDP)"), 0),
+    query_domain_name = arrayindex(regextract(syslog_msg, "query\:\s+(\S+)"), 0),
+    query_class = arrayindex(regextract(syslog_msg, "query\:\s+\S+\s+(?:\@0x[\da-fA-F]+\s+)?(\w+)"), 0), // see https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-2
+    query_record_type = arrayindex(regextract(syslog_msg, "query\:\s+\S+\s+(?:\@0x[\da-fA-F]+\s+)?\w+\s+(\w+)"), 0), // https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-4
+    response_rcode = arrayindex(regextract(syslog_msg, "response\:\s+(\S+)"), 0), // see https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-6
+    response_flags = arrayindex(regextract(syslog_msg, "response\:\s+\S+\s+((?:\+|\-)*[ATEDVL]{0,6})"), 0),
+    response_rr = arrayfilter(split(arrayindex(regextract(syslog_msg, "response\:\s+(?:\S+\s+){2}(.+)"), 0), ";"), len("@element") > 0) // response resource records (RR)
+| alter // Extract ipv4 & ipv6 resolved addresses (A & AAAA record types, respectively)
+    response_resolved_ipv4_addresses = arraymap(response_rr, arrayindex(regextract("@element", "(?:\S+\s+){3}A\s+(\S+)"), 0)), // A records 
+    response_resolved_ipv6_addresses = arraymap(response_rr, arrayindex(regextract("@element", "(?:\S+\s+){3}A{4}\s+(\S+)"), 0)) // AAAA records
+| alter // Isolate only the requested records types from the entire response 
+    response_requested_records = if(query_record_type = "ANY", response_rr, arrayfilter(response_rr,  arrayindex(regextract("@element", "(?:\S+\s+){3}(\S+)"), 0) = query_record_type))
+| alter // Extract the domain names and their associated record values from the response  
+    response_domain_names = arraymap(response_requested_records, rtrim(arrayindex(regextract("@element", "(\S+)"), 0), ".")),
+    response_values = arraymap(response_requested_records, arrayindex(regextract("@element", "(?:\S+\s+){4}(.+)"), 0))
+| alter // reformat the domain names & values from array to semicolon separated strings
+    response_distinct_domain_names = arraydistinct(response_domain_names),
+    response_distinct_values = arraydistinct(response_values)
+| alter 
+    response_domain_names = if(array_length(response_distinct_domain_names) = 1, arraystring(response_distinct_domain_names, ";"), arraystring(response_domain_names, ";")),
+    response_values = if(array_length(response_distinct_values) = 1, arraystring(response_distinct_values, ";"), arraystring(response_values, ";"))
+| alter // additional processing 
+    application_protocol = "DNS",
+	client_ipv4 = if(client_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", client_ip),
+	client_ipv6 = if(client_ip ~= ":", client_ip),
+    query_class_enum = if(query_class = "IN", 1, query_class = "CS", 2, query_class = "CH", 3, query_class = "HS", 4), // see https://datatracker.ietf.org/doc/html/rfc1035#section-3.2.4
+    query_record_type_enum = if(query_record_type = "A", XDM_CONST.DNS_RECORD_TYPE_A, query_record_type = "AAAA", XDM_CONST.DNS_RECORD_TYPE_AAAA, query_record_type = "AFSDB", XDM_CONST.DNS_RECORD_TYPE_AFSDB, query_record_type = "APL", XDM_CONST.DNS_RECORD_TYPE_APL, query_record_type = "CAA", XDM_CONST.DNS_RECORD_TYPE_CAA, query_record_type = "CDNSKEY", XDM_CONST.DNS_RECORD_TYPE_CDNSKEY, query_record_type = "CDS", XDM_CONST.DNS_RECORD_TYPE_CDS, query_record_type = "CERT", XDM_CONST.DNS_RECORD_TYPE_CERT, query_record_type = "CNAME", XDM_CONST.DNS_RECORD_TYPE_CNAME, query_record_type = "CSYNC", XDM_CONST.DNS_RECORD_TYPE_CSYNC, query_record_type = "DHCID", XDM_CONST.DNS_RECORD_TYPE_DHCID, query_record_type = "DLV", XDM_CONST.DNS_RECORD_TYPE_DLV, query_record_type = "DNAME", XDM_CONST.DNS_RECORD_TYPE_DNAME, query_record_type = "DNSKEY", XDM_CONST.DNS_RECORD_TYPE_DNSKEY, query_record_type = "DS", XDM_CONST.DNS_RECORD_TYPE_DS, query_record_type = "EUI48", XDM_CONST.DNS_RECORD_TYPE_EUI48, query_record_type = "EUI64", XDM_CONST.DNS_RECORD_TYPE_EUI64, query_record_type = "HINFO", XDM_CONST.DNS_RECORD_TYPE_HINFO, query_record_type = "HIP", XDM_CONST.DNS_RECORD_TYPE_HIP, query_record_type = "HTTPS", XDM_CONST.DNS_RECORD_TYPE_HTTPS, query_record_type = "IPSECKEY", XDM_CONST.DNS_RECORD_TYPE_IPSECKEY, query_record_type = "KEY", XDM_CONST.DNS_RECORD_TYPE_KEY, query_record_type = "KX", XDM_CONST.DNS_RECORD_TYPE_KX, query_record_type = "LOC", XDM_CONST.DNS_RECORD_TYPE_LOC, query_record_type = "MX", XDM_CONST.DNS_RECORD_TYPE_MX, query_record_type = "NAPTR", XDM_CONST.DNS_RECORD_TYPE_NAPTR, query_record_type = "NS", XDM_CONST.DNS_RECORD_TYPE_NS, query_record_type = "NSEC", XDM_CONST.DNS_RECORD_TYPE_NSEC, query_record_type = "NSEC3", XDM_CONST.DNS_RECORD_TYPE_NSEC3, query_record_type = "NSEC3PARAM", XDM_CONST.DNS_RECORD_TYPE_NSEC3PARAM, query_record_type = "OPENPGPKEY", XDM_CONST.DNS_RECORD_TYPE_OPENPGPKEY, query_record_type = "PTR", XDM_CONST.DNS_RECORD_TYPE_PTR, query_record_type = "RRSIG", XDM_CONST.DNS_RECORD_TYPE_RRSIG, query_record_type = "RP", XDM_CONST.DNS_RECORD_TYPE_RP, query_record_type = "SIG", XDM_CONST.DNS_RECORD_TYPE_SIG, query_record_type = "SMIMEA", XDM_CONST.DNS_RECORD_TYPE_SMIMEA, query_record_type = "SOA", XDM_CONST.DNS_RECORD_TYPE_SOA, query_record_type = "SRV", XDM_CONST.DNS_RECORD_TYPE_SRV, query_record_type = "SSHFP", XDM_CONST.DNS_RECORD_TYPE_SSHFP, query_record_type = "SVCB", XDM_CONST.DNS_RECORD_TYPE_SVCB, query_record_type = "TA", XDM_CONST.DNS_RECORD_TYPE_TA, query_record_type = "TKEY", XDM_CONST.DNS_RECORD_TYPE_TKEY, query_record_type = "TLSA", XDM_CONST.DNS_RECORD_TYPE_TLSA, query_record_type = "TSIG", XDM_CONST.DNS_RECORD_TYPE_TSIG, query_record_type = "TXT", XDM_CONST.DNS_RECORD_TYPE_TXT, query_record_type = "URI", XDM_CONST.DNS_RECORD_TYPE_URI, query_record_type = "ZONEMD", XDM_CONST.DNS_RECORD_TYPE_ZONEMD, query_record_type)
+| alter // XDM Mapping 
+    xdm.alert.severity = syslog_severity,
+    xdm.event.type = "DNS Response",
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
+    xdm.event.outcome = if(response_rcode = "NOERROR", XDM_CONST.OUTCOME_SUCCESS, response_rcode != null, XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = response_rcode,
+    xdm.network.application_protocol = application_protocol,
+    xdm.network.dns.authoritative = if(response_flags contains "A", to_boolean("TRUE"), to_boolean("FALSE")),
+    xdm.network.dns.dns_question.class = query_class_enum,
+    xdm.network.dns.dns_question.name = query_domain_name,
+    xdm.network.dns.dns_question.type = query_record_type_enum,
+    xdm.network.dns.dns_resource_record.class = query_class_enum,
+    xdm.network.dns.dns_resource_record.name = response_domain_names,
+    xdm.network.dns.dns_resource_record.type = query_record_type_enum,
+    xdm.network.dns.dns_resource_record.value = response_values,
+    xdm.network.dns.is_response = to_boolean("TRUE"),
+    xdm.network.dns.is_truncated = if(response_flags contains "t", to_boolean("TRUE"), to_boolean("FALSE")),
+    xdm.network.dns.response_code = if(response_rcode = "NOERROR", XDM_CONST.DNS_RESPONSE_CODE_NO_ERROR, response_rcode = "FORMERR", XDM_CONST.DNS_RESPONSE_CODE_FORMAT_ERROR, response_rcode = "SERVFAIL", XDM_CONST.DNS_RESPONSE_CODE_SERVER_FAILURE, response_rcode = "NXDOMAIN", XDM_CONST.DNS_RESPONSE_CODE_NON_EXISTENT_DOMAIN, response_rcode = "NOTIMP", XDM_CONST.DNS_RESPONSE_CODE_NOT_IMPLEMENTED, response_rcode ~= "REFUSED", XDM_CONST.DNS_RESPONSE_CODE_QUERY_REFUSED, response_rcode ~= "YXDOMAIN", XDM_CONST.DNS_RESPONSE_CODE_NAME_EXISTS_WHEN_IT_SHOULD_NOT, response_rcode = "YXRRSET", XDM_CONST.DNS_RESPONSE_CODE_RR_SET_EXISTS_WHEN_IT_SHOULD_NOT, response_rcode = "NXRRSET", XDM_CONST.DNS_RESPONSE_CODE_RR_SET_THAT_SHOULD_EXIST_DOES_NOT, response_rcode = "NOTAUTH", XDM_CONST.DNS_RESPONSE_CODE_SERVER_NOT_AUTHORITATIVE_FOR_ZONE, response_rcode = "NOTZONE", XDM_CONST.DNS_RESPONSE_CODE_NAME_NOT_CONTAINED_IN_ZONE, response_rcode = "BADVERS", XDM_CONST.DNS_RESPONSE_CODE_BAD_OPT_VERSION, response_rcode = "BADSIG", XDM_CONST.DNS_RESPONSE_CODE_TSIG_SIGNATURE_FAILURE, response_rcode = "BADKEY", XDM_CONST.DNS_RESPONSE_CODE_KEY_NOT_RECOGNIZED, response_rcode = "BADTIME", XDM_CONST.DNS_RESPONSE_CODE_SIGNATURE_OUT_OF_TIME_WINDOW, response_rcode = "BADMODE", XDM_CONST.DNS_RESPONSE_CODE_BAD_TKEY_MODE, response_rcode = "BADNAME", XDM_CONST.DNS_RESPONSE_CODE_DUPLICATE_KEY_NAME, response_rcode = "BADALG", XDM_CONST.DNS_RESPONSE_CODE_ALGORITHM_NOT_SUPPORTED, response_rcode = "BADTRUNC", XDM_CONST.DNS_RESPONSE_CODE_BAD_TRUNCATION, response_rcode),
+    xdm.network.ip_protocol = if(ip_protocol = "TCP", XDM_CONST.IP_PROTOCOL_TCP, ip_protocol = "UDP", XDM_CONST.IP_PROTOCOL_UDP),
+    xdm.network.protocol_layers = arraycreate(application_protocol, ip_protocol),
+    xdm.source.ipv4 = client_ipv4,
+    xdm.source.ipv6 = client_ipv6,
+    xdm.source.port = to_integer(client_port),
+    xdm.source.process.name = syslog_process_name,
+    xdm.source.process.pid = to_integer(syslog_process_id),
+    xdm.target.host.ipv4_addresses = response_resolved_ipv4_addresses,
+    xdm.target.host.ipv6_addresses = response_resolved_ipv6_addresses,
+    xdm.target.ipv4 = arrayindex(response_resolved_ipv4_addresses, 0),
+    xdm.target.ipv6 = arrayindex(response_resolved_ipv6_addresses, 0);
+
+/**************/
+// DHCP Events /
+/*************/
+filter _raw_log ~= "(?:dhcpd|omshell|dhcrelay|dhclient)\[\d+\]" or _raw_log ~= "DHCP\w+"
+| alter // Extract syslog headers & syslog message 
+    syslog_process_id = arrayindex(regextract(_raw_log, "\s\w+\[(\d+)\]"), 0),
+    syslog_process_name = arrayindex(regextract(_raw_log, "\s(\w+)\[\d+\]"), 0),
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)),
+    syslog_msg = coalesce( 
+        arrayindex(regextract(_raw_log, "\w+\[\d+\]:\s*(.+)"), 0), // messages that are sent directly from infoblox 
+        arrayindex(regextract(_raw_log, "^\<\d+\>\w?\s+(?:\S+\s+){6}(.+)"), 0)) // messages that are downloaded to a file and sent via an intermediate syslog client 
+| alter syslog_facility_code = floor(divide(syslog_priority, 8))
+| alter syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility_code, 8)))
+| alter // Extract the DHCP message type (https://www.iana.org/assignments/bootp-dhcp-parameters/bootp-dhcp-parameters.xhtml#message-type-53)
+    dhcp_msg_type = arrayindex(regextract(syslog_msg, "(DHCP\w+)") , 0)
+| alter // Extract DHCP data  
+    application_protocol = "DHCP", 
+    dhcp_acknowledged_ip = arrayindex(regextract(_raw_log, "DHCPACK\s+(?:on|to)\s+((?:\d{1,3}\.){3}\d{1,3})"), 0),
+    dhcp_not_acknowledged_ip = arrayindex(regextract(_raw_log, "DHCPNAK\s+on\s+((?:\d{1,3}\.){3}\d{1,3})"), 0),
+    dhcp_bootstrap_server_ip = arrayindex(regextract(_raw_log, "DHCPREQUEST\s+for\s+\S+\s+\(((?:\d{1,3}\.){3}\d{1,3})"), 0),
+    dhcp_client_ip = coalesce(
+        arrayindex(regextract(_raw_log, "(?:DHCPDECLINE|DHCPRELEASE)\s+of\s+((?:\d{1,3}\.){3}\d{1,3})"), 0),
+        arrayindex(regextract(_raw_log, "(?:DHCPINFORM|DHCPLEASEQUERY)\s+from\s+((?:\d{1,3}\.){3}\d{1,3})"), 0)), 
+    dhcp_client_mac_address = coalesce(
+        arrayindex(regextract(syslog_msg, "from\s+((?:[a-fA-F\d]{2}:){5}[\da-fA-F]{2})"), 0),
+        arrayindex(regextract(syslog_msg, "\s+on\s+\S+\s+to\s+((?:[a-fA-F\d]{2}:){5}[\da-fA-F]{2})"), 0),
+        arrayindex(regextract(syslog_msg, "\s+to\s+\S+\s+\(((?:[a-fA-F\d]{2}:){5}[\da-fA-F]{2})"), 0)),
+    dhcp_client_hostname = coalesce(
+        arrayindex(regextract(_raw_log, "from\s+\S+\s+\(([^\)]+)"), 0), 
+        arrayindex(regextract(_raw_log, "\s+on\s+\S+\s+to\s+\S+\s+\(([\w\-\.]+)"), 0)),
+    dhcp_client_interface = arrayindex(regextract(_raw_log, "via\s+(\w+)(?:\s|$)"), 0), // interface port 
+    dhcp_client_uid = rtrim(arrayindex(regextract(_raw_log, "uid\s+(\S+)"), 0), ":"), // client unique identifier 
+    dhcp_expired_lease_ip = arrayindex(regextract(_raw_log, "DHCPEXPIRE\s+on\s+((?:\d{1,3}\.){3}\d{1,3})"), 0),
+    dhcp_lease_duration = arrayindex(regextract(_raw_log, "lease\-duration\s+(\d+)"), 0), 
+    dhcp_offered_ip = arrayindex(regextract(_raw_log, "DHCPOFFER\s+on\s+((?:\d{1,3}\.){3}\d{1,3})"), 0),
+    dhcp_relay_agent_ip = coalesce(
+        arrayindex(regextract(_raw_log, "via\s+((?:\d{1,3}\.){3}\d{1,3})"), 0),
+        arrayindex(regextract(_raw_log, "relay(?:\-agent)?\s+((?:\d{1,3}\.){3}\d{1,3})"), 0)),
+    dhcp_requested_ip = arrayindex(regextract(_raw_log, "DHCPREQUEST\s+for\s+((?:\d{1,3}\.){3}\d{1,3})"), 0),
+    is_renewal = if(_raw_log ~= "RENEW", to_boolean("TRUE")),
+    msg_suffix = coalesce(
+        arrayindex(regextract(_raw_log, "via \S+(?:\s+TransID\s+\w+)?:\s+(.+)"), 0),
+        arrayindex(regextract(_raw_log, "(?:uid|TransID)\s+\S+:\s+(.+)$"), 0),
+        if(dhcp_msg_type = "DHCPREQUEST", arrayindex(regextract(_raw_log, "\(([^\)]+)\)$"), 0))),
+    target_network = arrayindex(regextract(_raw_log, "network\s+((?:\d{1,3}\.){3}\d{1,3}\/\d+)"), 0), 
+    transaction_id = arrayindex(regextract(_raw_log, "TransID\s+(\w+)"), 0)
+| alter // XDM mapping 
+    xdm.alert.severity = syslog_severity,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
+    xdm.event.operation_sub_type = if(msg_suffix = "RENEW", msg_suffix),
+    xdm.event.outcome = if(dhcp_msg_type in ("DHCPACK", "DHCPLEASEQUERYDONE"), XDM_CONST.OUTCOME_SUCCESS, dhcp_msg_type in ("DHCPDECLINE", "DHCPNAK", "DHCPLEASEUNKNOWN") or msg_suffix ~= "failed|abandoned", XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = if(msg_suffix != "RENEW", msg_suffix),
+    xdm.event.type = "DHCP",
+    xdm.intermediate.ipv4 = dhcp_relay_agent_ip,
+    xdm.network.application_protocol = application_protocol,
+    xdm.network.dhcp.chaddr = dhcp_client_mac_address,
+    xdm.network.dhcp.ciaddr = coalesce(dhcp_client_ip, dhcp_expired_lease_ip, if(is_renewal, dhcp_requested_ip)),
+    xdm.network.dhcp.client_hostname = dhcp_client_hostname,
+    xdm.network.dhcp.giaddr = dhcp_relay_agent_ip,
+    xdm.network.dhcp.lease = to_integer(dhcp_lease_duration),
+    xdm.network.dhcp.message_type = if(dhcp_msg_type = "DHCPDISCOVER", XDM_CONST.DHCP_MESSAGE_TYPE_DHCPDISCOVER, dhcp_msg_type = "DHCPOFFER", XDM_CONST.DHCP_MESSAGE_TYPE_DHCPOFFER, dhcp_msg_type = "DHCPREQUEST", XDM_CONST.DHCP_MESSAGE_TYPE_DHCPREQUEST, dhcp_msg_type = "DHCPDECLINE", XDM_CONST.DHCP_MESSAGE_TYPE_DHCPDECLINE, dhcp_msg_type = "DHCPACK", XDM_CONST.DHCP_MESSAGE_TYPE_DHCPACK, dhcp_msg_type = "DHCPNAK", XDM_CONST.DHCP_MESSAGE_TYPE_DHCPNAK, dhcp_msg_type = "DHCPRELEASE", XDM_CONST.DHCP_MESSAGE_TYPE_DHCPRELEASE, dhcp_msg_type = "DHCPINFORM", XDM_CONST.DHCP_MESSAGE_TYPE_DHCPINFORM, dhcp_msg_type = "DHCPFORCERENEW", XDM_CONST.DHCP_MESSAGE_TYPE_DHCPFORCERENEW, dhcp_msg_type = "DHCPLEASEQUERY", XDM_CONST.DHCP_MESSAGE_TYPE_DHCPLEASEQUERY, dhcp_msg_type = "DHCPLEASEUNASSIGNED", XDM_CONST.DHCP_MESSAGE_TYPE_DHCPLEASEUNASSIGNED, dhcp_msg_type = "DHCPLEASEUNKNOWN", XDM_CONST.DHCP_MESSAGE_TYPE_DHCPLEASEUNKNOWN, dhcp_msg_type = "DHCPLEASEACTIVE", XDM_CONST.DHCP_MESSAGE_TYPE_DHCPLEASEACTIVE, dhcp_msg_type = "DHCPBULKLEASEQUERY", XDM_CONST.DHCP_MESSAGE_TYPE_DHCPBULKLEASEQUERY, dhcp_msg_type = "DHCPLEASEQUERYDONE", XDM_CONST.DHCP_MESSAGE_TYPE_DHCPLEASEQUERYDONE, dhcp_msg_type = "DHCPACTIVELEASEQUERY", XDM_CONST.DHCP_MESSAGE_TYPE_DHCPACTIVELEASEQUERY, dhcp_msg_type = "DHCPLEASEQUERYSTATUS", XDM_CONST.DHCP_MESSAGE_TYPE_DHCPLEASEQUERYSTATUS, dhcp_msg_type = "DHCPTLS", XDM_CONST.DHCP_MESSAGE_TYPE_DHCPTLS, dhcp_msg_type),
+    xdm.network.dhcp.requested_address = dhcp_requested_ip,
+    xdm.network.dhcp.siaddr = dhcp_bootstrap_server_ip,
+    xdm.network.dhcp.yiaddr = coalesce(dhcp_offered_ip, dhcp_acknowledged_ip, dhcp_not_acknowledged_ip),
+    xdm.network.protocol_layers = arraycreate(application_protocol),
+    xdm.session_context_id = transaction_id,
+    xdm.source.host.device_id = dhcp_client_uid,
+    xdm.source.host.mac_addresses = arraycreate(dhcp_client_mac_address),
+    xdm.source.interface = dhcp_client_interface,
+    xdm.source.ipv4 = coalesce(dhcp_client_ip, dhcp_expired_lease_ip), 
+    xdm.source.process.name = syslog_process_name,
+    xdm.source.process.pid = to_integer(syslog_process_id),
+    xdm.target.ipv4 = dhcp_bootstrap_server_ip,
+    xdm.target.subnet = target_network;
+
+/***************/
+// Audit Events /
+/***************/
+filter _raw_log ~= "httpd(?:\[\d+\])?:"
+| alter // Extract syslog headers & syslog message 
+    syslog_process_id = arrayindex(regextract(_raw_log, "\s\w+\[(\d+)\]"), 0),
+    syslog_process_name = arrayindex(regextract(_raw_log, "\s(\w+)\[\d+\]"), 0),
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)),
+    syslog_msg = coalesce( 
+        arrayindex(regextract(_raw_log, "\w+\[\d+\]:\s*(.+)"), 0), // messages that are sent directly from infoblox 
+        arrayindex(regextract(_raw_log, "^\<\d+\>\w?\s+(?:\S+\s+){6}(.+)"), 0)) // messages that are downloaded to a file and sent via an intermediate syslog client 
+| alter syslog_facility_code = floor(divide(syslog_priority, 8))
+| alter syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility_code, 8)))
+| alter // Extract audit data from the syslog message 
+    auth_methods = arrayindex(regextract(_raw_log, "auth=(.*?)\s"), 0),
+    client_ipv4 = arrayindex(regextract(_raw_log, "ip=(.*?)\s"), 0),
+    client_user_groups = arrayindex(regextract(_raw_log, "group=(.*?)\s"), 0),
+    client_user_username = arrayindex(regextract(_raw_log, "\s\[(.*?)\]\:"), 0),
+    original_event_type = arrayindex(regextract(_raw_log, ":\s.*?:\s(.*?)\s-\s-"), 0),
+    server_process_name = arrayindex(regextract(_raw_log, "to=(.*?)\s"), 0)
+| alter // XDM mapping
+    xdm.alert.severity = syslog_severity,
+    xdm.auth.auth_method = auth_methods,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
+    xdm.event.original_event_type = original_event_type,
+    xdm.event.type = "AUDIT",
+    xdm.intermediate.process.name = server_process_name,
+    xdm.source.ipv4 = client_ipv4,
+    xdm.source.process.name = syslog_process_name,
+    xdm.source.process.pid = to_integer(syslog_process_id),
+    xdm.source.identity.groups = arraycreate(client_user_groups),
+    xdm.source.identity.username = client_user_username;
+
+/**************************/
+// Fallback Mapping Events /
+/**************************/
+// General implicit fallback mapping for all other Infoblox events
+filter // Exclude event types which are already mapped 
+    _raw_log !~= "httpd\[\d+\]" // NOT Audit 
+    and _raw_log !~= "client\s+(?:\@0x[\da-fA-F]+\s+)?[\da-fA-F\.\:]+\#\d{1,5}(?:\s+\([^\)]+\))?:\s+query" // NOT DNS Query
+    and _raw_log !~= "(?:UDP|TCP):\s*query:\s*(?:\S+\s+){3}response:" // NOT DNS Response
+    and _raw_log !~= "(?:dhcpd|omshell|dhcrelay|dhclient)\[\d+\]" and _raw_log ~= "DHCP\w+" // NOT DHCP
+| alter // Extract syslog headers & syslog message 
+    syslog_process_id = arrayindex(regextract(_raw_log, "\s\w+\[(\d+)\]"), 0),
+    syslog_process_name = arrayindex(regextract(_raw_log, "\s(\w+)\[\d+\]"), 0),
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)),
+    syslog_msg = coalesce( 
+        arrayindex(regextract(_raw_log, "\w+\[\d+\]:\s*(.+)"), 0), // messages that are sent directly from infoblox 
+        arrayindex(regextract(_raw_log, "^\<\d+\>\w?\s+(?:\S+\s+){6}(.+)"), 0)) // messages that are downloaded to a file and sent via an intermediate syslog client 
+| alter syslog_facility_code = floor(divide(syslog_priority, 8))
+| alter syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility_code, 8)))
+| alter // Extract additional fields from the syslog message 
+    dns_event_type = if(_raw_log ~= "named\[\d+\]" or _raw_log ~= "(?:client|config|database|dnssec|general|lame_servers|network|notify|query|queries|query[_\-]rewrite|resolver|responses|rpz|security|update|update_security|xfer[_\-]in|xfer[_\-]out):", "DNS"),
+    dns_event_subtype = arrayindex(regextract(_raw_log, "((?:client|config|database|dnssec|general|lame_servers|network|notify|query|queries|query[_\-]rewrite|resolver|responses|rpz|security|update|update_security|xfer[_\-]in|xfer[_\-]out)):"), 0),
+    dnz_respone_policy_zone = coalesce(arrayindex(regextract(_raw_log, "rpz:\s+([\w\-\.]+)\:"), 0), arrayindex(regextract(_raw_log, "policy zone\s+\'([^']+)\'"), 0)), 
+    resolved_domain = arrayindex(regextract(_raw_log, "resolving \'([\w\.\-]+)"), 0)
+| alter event_type = if(dns_event_type != null and dns_event_subtype != null, concat(dns_event_type, " ", dns_event_subtype))
+| alter // XDM Mapping
+    xdm.alert.severity = syslog_severity,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
+    xdm.event.outcome = if(syslog_msg ~= "success", XDM_CONST.OUTCOME_SUCCESS),
+    xdm.event.type = coalesce(event_type, dns_event_type),
+    xdm.network.dns.dns_question.name = resolved_domain,
+    xdm.network.dns.dns_resource_record.name = resolved_domain,
+    xdm.source.process.name = syslog_process_name,
+    xdm.source.process.pid = to_integer(syslog_process_id),
+    xdm.target.zone = dnz_respone_policy_zone;

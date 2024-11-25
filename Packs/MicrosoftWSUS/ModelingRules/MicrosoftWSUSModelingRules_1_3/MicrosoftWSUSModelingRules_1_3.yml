@@ -4,3 +4,4 @@ name: Microsoft WSUS Modeling Rule
 rules: ''
 schema: ''
 tags: Microsoft WSUS
+toversion: 8.9.0

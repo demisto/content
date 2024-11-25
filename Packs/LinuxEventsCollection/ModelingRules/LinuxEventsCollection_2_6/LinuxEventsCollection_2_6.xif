@@ -1,0 +1,206 @@
+[MODEL: dataset="linux_linux_raw"]
+
+/*  authentications logs 
+    models logs from /var/log/auth.log, /var/log/secure files
+    and syslog logs which origin from security/authorization messages & log audit facilities. */ 
+alter syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\w+"), 0))
+| alter syslog_facility = floor(divide(syslog_priority, 8))
+
+| filter _log_source_file_name in("auth*", "secure") or syslog_facility in(4, 10, 13)
+| alter // extract constant headers and event_description   
+    hostname = arrayindex(regextract(_raw_log, "\d{2}\S\d{2}\S\d{2}\s+(\S+)"), 0),
+    process_name = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\s\S+\s+([\%\w\-]+)"), 0),
+    pid = to_integer(arrayindex(regextract(_raw_log, "\d{2}\S\d{2}\S\d{2}\s+\S+\s\S+\[(\d+)\]"), 0)),
+    event_description = to_string(arrayindex(regextract(_raw_log, "\d{2}\S\d{2}\S\d{2}\s+\S+\s+[^\:]+\:\s*(.*)"), 0))
+| alter // extract event-specific fields 
+    src_ip = arrayindex(regextract(event_description,"(?:\s|rhost=)(\d{1,3}(?:\.\d{1,3}){3})"), 0),
+    username = coalesce(arrayindex(regextract(event_description ,"(?i)\s+USER\=([\w\-\.]+)"), 0),
+                        arrayindex(regextract(event_description ,"(?:authenticat\w+|invalid|illegal|for|by)\s+user\s+[\"\(]*([\w\-\.]+)"), 0),
+                        arrayindex(regextract(event_description ,"for\s+([\w\-\.]+)\s+from"), 0)),
+    logged_in_user = coalesce(arrayindex(regextract(event_description, "logname=(\S+)"), 0),
+                              arrayindex(regextract(event_description, "([\w\-\.]+)\s*:\s+(?:TTY=|\d+\s+incorrect password attempt)"), 0),
+                              arrayindex(regextract(event_description, "session opened for user \S+ by ([\w\-\.]+)"), 0)),
+    remote_user = arrayindex(regextract(event_description, "ruser=(\S+)"), 0),
+    command = coalesce(arrayindex(regextract(event_description ,"\[COMMAND\=([^\]]+)\]"), 0),
+                       arrayindex(regextract(event_description ,"COMMAND=(.*)"), 0),
+                       arrayindex(regextract(event_description ,"\s*\[[^\]]+\]:\s(.*)"), 0)),
+    cwd = arrayindex(regextract(event_description ,"\scwd:(\S+)"), 0),
+    pwd = arrayindex(regextract(event_description ,"PWD=(\S+)"), 0),
+    filename = coalesce(arrayindex(regextract(event_description ,"\sfilename:([^]]+)"), 0),
+                        arrayindex(regextract(event_description ,"read\S*\s+(\/\S+)"), 0)), // dnsmasq events
+    uid = arrayindex(regextract(event_description ,"[^\-]uid[\:\=](\d+)"), 0),
+    euid = arrayindex(regextract(event_description ,"euid=(\d+)"), 0),
+    tty = coalesce(arrayindex(regextract(event_description ,"(?i)tty=([^\]\s]+)"), 0)),
+    src_port = to_integer(coalesce(arrayindex(regextract(event_description ,"from\s+(?:\d{1,3}\.){3}\d{1,3}:(\d+)"), 0),
+                                   arrayindex(regextract(event_description ,"(?:by|from|for|user\s+\S+)\s+\S*\s*port\s+(\d+)"), 0))),
+    target_username = coalesce(arrayindex(regextract(event_description ,"password\s+changed\s+for\s+([\w\-\.]+)"), 0), // passwd events
+                               arrayindex(regextract(event_description ,"changed\s+password\s+expiry\s+for\s+([\w\-\.]+)"), 0), //chage events 
+                               if(process_name = "useradd", arrayindex(regextract(event_description, "name=([^,]+)"), 0))), // useradd events
+    target_uid = if(process_name = "useradd", arrayindex(regextract(event_description, "UID=(\d+)"), 0)),
+    target_group_id = if(process_name ~= "useradd|groupadd", arrayindex(regextract(event_description, "GID=(\d+)"), 0)),
+    target_group_name = if(process_name = "groupadd", arrayindex(regextract(event_description, "name=(\w+)"), 0)),
+    target_ip =  arrayindex(regextract(event_description ,"((?:\d{1,3}\.){3}\d{1,3})\#\d+"), 0),
+    target_port = to_integer(coalesce(arrayindex(regextract(event_description ,"on\s+\S+\s+port\s+(\d+)"), 0),
+                                      arrayindex(regextract(event_description ,"(?:\d{1,3}\.){3}\d{1,3}\#(\d+)"), 0))), // dnsmasq events
+    target_service = arrayindex(regextract(event_description ,"service\s+(?:name=)\'([^\']+)"), 0), 
+    target_process_name = arrayindex(regextract(event_description ,"process \d+ \(([^\)]+)"), 0), 
+    target_pid = to_integer(coalesce(arrayindex(regextract(event_description, "pid=(\d+)"), 0),
+                                     arrayindex(regextract(event_description, "process\s+(\d+)"), 0))),
+    target_directory= if(process_name = "useradd", arrayindex(regextract(event_description, "home=([^,]+)"), 0)),
+    sha256 = arrayindex(regextract(event_description ,"SHA256:(\S+)"), 0),
+    session_id = coalesce(arrayindex(regextract(event_description ,"session\s+(\d+)"), 0),
+                          arrayindex(regextract(event_description ,"\ssid[\:\=](\d+)"), 0)),
+    operation = if(process_name ~= "useradd|groupadd", arrayindex(regextract(event_description, "([^:]+):"), 0)),
+    sub_process = if(process_name = "systemd", arrayindex(regextract(event_description ,"([\w\.\-]+):"), 0)),
+    authentication_protocol = arrayindex(regextract(event_description, "from \S+ port \d+ (\w+)"), 0),
+    log_level = arrayindex(regextract(event_description, "^([a-zA-Z]+):"), 0)
+| alter event_type =  if(event_description ~= "Accepted password", "Accepted password for user",
+                           event_description ~= "received for user", "Auth status received for user",
+                           event_description ~= "incorrect password attempts", "Incorrect password attempts",
+                           event_description ~= "Connection closed by authenticating", "Connection closed by authenticating user",
+                           event_description ~= "Connection closed by invalid", "Connection closed by invalid user",
+                           event_description ~= "Connection closed", "Connection closed",
+                           event_description ~= "Connection reset", "Connection reset", 
+                           event_description ~= "Disconnected from authenticating", "Disconnected from authenticating user",
+                           event_description ~= "Disconnected from \d{1,3}[\:\.]", "Disconnected from host",
+                           event_description ~= "Disconnecting invalid user", "Disconnecting invalid user",
+                           event_description ~= "Failed password", "Failed Password for invalid user",
+                           event_description ~= "password check failed", "Password check failed for user",
+                           event_description ~= "password changed for", "Password changed for user",
+                           event_description ~= "PAM \d+ more authetication failure", "PAM authentication failure",
+                           event_description ~= "PAM: User not known \w+", "PAM unknown user",
+                           event_description ~= "Postponed keyboard-interactive for invalid user", "Postponed keyboard-interactive for invalid user",
+                           event_description ~= "Postponed keyboard-interactive for \w+", "Postponed keyboard-interactive for user",
+                           event_description ~= "maximum authentication attempts", "Maximum authentication attempts",
+                           event_description ~= "Received disconnect from", "Received disconnect from host",
+                           event_description ~= "Access denied for user", "Access denied for user",
+                           event_description ~= "Timeout before authentication", "Timeout before authentication",
+                           event_description ~= "input_userauth_request: invalid user", "input_userauth_request: invalid user",
+                           event_description ~= "authentication failure", "Authentication failure",
+                           event_description ~= "authentication success", "Authentication success",
+                           event_description ~= "expired password for user", "Password expired for user",
+                           event_description ~= "Server listening", "Server listening",
+                           event_description ~= "session closed", "session closed",
+                           event_description ~= "session opened", "session opened",
+                           process_name)
+| alter 
+    outcome_reason = if(event_type IN ("Received disconnect from host", "Disconnecting invalid user"), arrayindex(regextract(event_description, "port\s+\S+\s+([^\[]+)"), 0), arrayindex(regextract(event_description, "received for user \S+:\s*\d+\s*\(([^\)]+)"), 0)),
+    username = if(process_name in ("su", "sudo"), coalesce(logged_in_user, remote_user), coalesce(logged_in_user, remote_user, username)),
+    target_username = if(process_name in("su", "sudo"), username, target_username),
+    target_group = coalesce(target_group_name, target_group_id), 
+    log_level = if(log_level ~= "debug|info|notice|warn|error|critical|alert|emergency|fatal", uppercase(log_level), null)
+| alter
+    xdm.source.host.hostname = hostname, 
+    xdm.event.type = process_name, 
+    xdm.event.original_event_type = if(event_type != process_name, concat(process_name, ": ", event_type), process_name),
+    xdm.event.description = event_description,
+    xdm.event.log_level = if(log_level ~= "DEBUG", XDM_CONST.LOG_LEVEL_DEBUG, log_level ~= "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level ~= "NOTICE", XDM_CONST.LOG_LEVEL_NOTICE, log_level ~= "WARN", XDM_CONST.LOG_LEVEL_WARNING, log_level ~= "ERROR", XDM_CONST.LOG_LEVEL_ERROR, log_level ~= "CRITICAL", XDM_CONST.LOG_LEVEL_CRITICAL, log_level ~= "ALERT", XDM_CONST.LOG_LEVEL_ALERT, log_level ~= "EMERGENCY|FATAL", XDM_CONST.LOG_LEVEL_EMERGENCY),
+    xdm.event.operation_sub_type = operation,
+    xdm.event.outcome = if(event_description ~= "(?i)success|succeed|accepted|pass;", XDM_CONST.OUTCOME_SUCCESS, 
+                           event_description ~= "(?i)fail|invalid|denied|illegal|incorrect|unknown|timeout|error|fatal|expired|refused|not met|user not known", XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = outcome_reason,
+    xdm.network.application_protocol = authentication_protocol, 
+    xdm.network.application_protocol_category = if(authentication_protocol ~= "ssh", "networking"), 
+    xdm.network.application_protocol_subcategory = if(authentication_protocol ~= "ssh", "encrypted-tunnel"),
+    xdm.network.session_id = session_id,
+    xdm.source.application.name = sub_process, 
+    xdm.source.ipv4 = src_ip,
+    xdm.source.identity.username = if(process_name in ("su", "sudo"), coalesce(logged_in_user, remote_user), coalesce(logged_in_user, remote_user, username)),
+    xdm.source.process.name = process_name,
+    xdm.source.process.pid = pid,
+    xdm.source.process.executable.path = coalesce(cwd, pwd),
+    xdm.source.identity.identifier = uid,
+    xdm.source.interface = tty,
+    xdm.source.port = src_port, 
+    xdm.source.process.executable.sha256 = sha256,
+    xdm.target.ipv4 = target_ip,
+    xdm.target.port = target_port,
+    xdm.target.file.path = filename,
+    xdm.target.file.directory = target_directory, 
+    xdm.target.host.hostname = hostname,
+    xdm.target.process.pid = target_pid,
+    xdm.target.process.name = coalesce(target_process_name, target_service),
+    xdm.target.process.command_line = command,
+    xdm.target.identity.identifier = coalesce(target_uid, euid),
+    xdm.target.identity.username = target_username,
+    xdm.target.identity.groups = if(target_group != null, arraycreate(target_group));
+
+/*  general syslog & application messages logs 
+    models all other log files which or not authentication logs or cron logs (e.g. modeling of /var/log/syslog, /var/log/messages, etc.) */ 
+alter syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\w+"), 0))
+| alter syslog_facility = floor(divide(syslog_priority, 8))
+    | filter _log_source_file_name not in ("auth*", "secure", "cron") and syslog_facility not in (4, 9, 10, 13, 15)
+| alter 
+    get_hostname = to_string(arrayindex(regextract(_raw_log, "\d{2}\S\d{2}\S\d{2}\s+([^\s]+)"), 0)),
+    get_process_name = to_string(arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\s\S+\s+([\%\w\-]+)"), 0)),
+    get_tar_pid = to_integer(arrayindex(regextract(_raw_log, "\d{2}\S\d{2}\S\d{2}\s+[^\s]+\s[^\s]+\[(\d+)\]"),0)),
+    get_src_pid = to_integer(arrayindex(regextract(_raw_log, "\[pid\s+(\d+)\]"),0)),
+    get_event_description = arrayindex(regextract(_raw_log, "\d{2}\S\d{2}\S\d{2}\s+\S+\s+[^\:]+\:\s*(.*)"), 0),
+    get_log_level = arrayindex(regextract(_raw_log ,"\:\s\<([a-zA-Z]+)\>"),0),
+    get_user_name = arrayindex(regextract(_raw_log ,"\:\s\(([a-zA-Z]+)\)\sCMD"),0),
+    get_command_line = arrayindex(regextract(_raw_log ,"\)\sCMD\s\(([^\)]+)\)"),0),
+    get_error_file = if(_raw_log ~= "\[ERROR\]", arrayindex(regextract(_raw_log ,"File\s\"\"([^\"]+)\"\""),0), null),
+    get_warning_username = if(_raw_log ~= "\[WARNING\]", replex(arrayindex(regextract(_raw_log ,"for user ([^\@]+)"),0), "'", ""), null),
+    get_level_des = if(_raw_log ~= "level=", arrayindex(regextract(_raw_log ,"level=([^\s]+)"),0), null),
+    get_msg_des = if(_raw_log ~= "level=", arrayindex(regextract(_raw_log ,"msg=[\"]+([^\"]+)"),0), null),
+    get_info_url = if(_raw_log ~= "\[INFO\]", arrayindex(regextract(_raw_log ,"URL\:\s+([^\|]+)"),0), null),
+    get_info_issuer = if(_raw_log ~= "\[INFO\]", arrayindex(regextract(_raw_log ,"SSL\:\s+ca\:\s+([^\|]+)"),0), null),
+    get_info_certificate = if(_raw_log ~= "\[INFO\]", arrayindex(regextract(_raw_log ,"SSL\:[^\|]+\|[^\|]+\|certificate:(\s[^\|]+)"),0), null),
+    get_src_ip1 = arrayindex(regextract(_raw_log ,"Source\s+(\d+\.\d+\.\d+\.\d+)\s+replaced\s+with\s+\d+\.\d+\.\d+\.\d+"),0),
+    get_src_ip2 = arrayindex(regextract(_raw_log ,"source\s+\d+\.\d+\.\d+\.\d+\s+from\s+(\d+\.\d+\.\d+\.\d+)"),0),
+    get_src_ip3 = arrayindex(regextract(_raw_log ,"\[(\d+\.\d+\.\d+\.\d+)\]\:\d+\-\>\[\d+\.\d+\.\d+\.\d+\]\:\d+"),0),
+    get_src_ip4 = arrayindex(regextract(_raw_log ,"\[client\s+(\d+\.\d+\.\d+\.\d+)\:\d+\]"),0),
+    get_src_ip5 = arrayindex(regextract(_raw_log ,"from\s+unknown\[([^\]]+)\]"),0),
+    get_changed_ip = arrayindex(regextract(_raw_log ,"Source\s+\d+\.\d+\.\d+\.\d+\s+replaced\s+with\s+(\d+\.\d+\.\d+\.\d+)"),0),
+    get_tar_ip1 = arrayindex(regextract(_raw_log ,"\[\d+\.\d+\.\d+\.\d+\]\:\d+\-\>\[(\d+\.\d+\.\d+\.\d+)\]\:\d+"),0),
+    get_src_port1 = to_integer(arrayindex(regextract(_raw_log ,"\[\d+\.\d+\.\d+\.\d+\]\:(\d+)\-\>\[\d+\.\d+\.\d+\.\d+\]\:\d+"),0)),
+    get_src_port2 = to_integer(arrayindex(regextract(_raw_log ,"\[client\s+\d+\.\d+\.\d+\.\d+\:(\d+)\]"),0)),
+    get_tar_port1 = to_integer(arrayindex(regextract(_raw_log ,"\[\d+\.\d+\.\d+\.\d+\]\:\d+\-\>\[\d+\.\d+\.\d+\.\d+\]\:(\d+)"),0))
+| alter
+    xdm.event.log_level = if(_raw_log ~= "\[ERROR\]", XDM_CONST.LOG_LEVEL_ERROR, _raw_log ~= "\[WARNING\]", XDM_CONST.LOG_LEVEL_WARNING, _raw_log ~= "\[INFO\]", XDM_CONST.LOG_LEVEL_INFORMATIONAL, get_log_level = "error", XDM_CONST.LOG_LEVEL_ERROR, get_log_level = "warning", XDM_CONST.LOG_LEVEL_WARNING, get_log_level = "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, get_log_level = "debug", XDM_CONST.LOG_LEVEL_DEBUG, get_level_des ~= "error", XDM_CONST.LOG_LEVEL_ERROR, get_level_des ~= "warning", XDM_CONST.LOG_LEVEL_WARNING, get_level_des ~= "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL),
+    xdm.target.host.hostname = get_hostname,
+    xdm.target.process.name = get_process_name,
+    xdm.target.process.pid = get_tar_pid,
+    xdm.event.type = get_process_name, 
+    xdm.event.description = get_event_description,
+    xdm.target.identity.username = get_user_name,
+    xdm.target.process.command_line = get_command_line,
+    xdm.target.file.path = get_error_file,
+    xdm.source.identity.identifier = get_warning_username,
+    xdm.alert.description = get_msg_des,
+    xdm.target.url = get_info_url,
+    xdm.network.tls.client_certificate.issuer = get_info_issuer,
+    xdm.network.tls.client_certificate.subject = get_info_certificate,
+    xdm.source.ipv4 = coalesce(get_src_ip1, get_src_ip2, get_src_ip3, get_src_ip4, get_src_ip5),
+    xdm.target.ipv4 = coalesce(get_changed_ip, get_tar_ip1),
+    xdm.source.port = coalesce(get_src_port1, get_src_port2),
+    xdm.target.port = get_tar_port1,
+    xdm.source.process.pid = get_src_pid;
+
+/*  cron & scheduled jobs logs
+    models logs from /var/log/cron and syslog logs which origin from clock daemon facility.  */ 
+alter syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\w+"), 0))
+| alter syslog_facility = floor(divide(syslog_priority, 8))
+| filter _log_source_file_name = "cron" or syslog_facility in (9, 15)
+| alter
+    get_hostname = arrayindex(regextract(_raw_log, "\d{2}\S\d{2}\S\d{2}\s+([^\s]+)"), 0),
+    get_process_name = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\s\S+\s+([\%\w\-]+)"), 0),
+    get_pid = to_integer(arrayindex(regextract(_raw_log, "\d{2}\S\d{2}\S\d{2}\s+[^\s]+\s[^\s]+\[(\d+)\]"),0)),
+    get_event_description = arrayindex(regextract(_raw_log, "\d{2}\S\d{2}\S\d{2}\s+\S+\s+[^\:]+\:\s*(.*)"), 0),
+    get_operation_sub = arrayindex(regextract(_raw_log, "\:\s+\(\S+\s+([[:upper:]]+)\s"),0)
+| alter
+    get_task = to_string(arrayindex(regextract(get_event_description, "^\s+\(([^\)]+)\)"),0)),
+    get_info_des = if(get_operation_sub = "INFO", arrayindex(regextract(_raw_log, "\:\s+\(\S+\s+INFO\s+\(([^\)]+)\)"),0), null),
+    get_mail_des = if(get_operation_sub = "MAIL", arrayindex(regextract(_raw_log, "\:\s+\(\S+\s+MAIL\s+\(([^\)]+)\)"),0), null),
+    get_cmd_command = if(get_operation_sub = "CMD", arrayindex(regextract(_raw_log, "\:\s+\(\S+\s+CMD\s+(.*)"),0), null)
+| alter
+    xdm.event.log_level = if(get_operation_sub = "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL, get_operation_sub = "ERROR", XDM_CONST.LOG_LEVEL_ERROR, get_operation_sub ~= "ALERT", XDM_CONST.LOG_LEVEL_ALERT, get_operation_sub ~= "CRIT", XDM_CONST.LOG_LEVEL_CRITICAL, get_operation_sub ~= "DEBUG", XDM_CONST.LOG_LEVEL_DEBUG, get_operation_sub ~= "EMERG", XDM_CONST.LOG_LEVEL_EMERGENCY, get_operation_sub ~= "NOTICE", XDM_CONST.LOG_LEVEL_NOTICE, get_operation_sub ~= "WARNI", XDM_CONST.LOG_LEVEL_WARNING),
+    xdm.source.host.hostname = get_hostname,
+    xdm.source.process.parent_id = get_process_name,
+    xdm.event.type = get_process_name, 
+    xdm.event.description = get_event_description,
+    xdm.source.process.pid = get_pid,
+    xdm.source.process.executable.file_type = get_task,
+    xdm.event.operation_sub_type = get_operation_sub,
+    xdm.alert.description = coalesce(get_info_des, get_mail_des),
+    xdm.source.process.command_line = get_cmd_command;

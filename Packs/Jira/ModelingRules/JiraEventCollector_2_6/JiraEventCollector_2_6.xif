@@ -1,0 +1,14 @@
+[MODEL: dataset=atlassian_jira_raw]
+alter
+	jira_status_change = json_extract_scalar(changedValues, "$.changedTo")
+| alter
+	xdm.event.operation = summary,
+	xdm.source.ipv4 = remoteAddress,
+	xdm.source.identity.username = authorKey,
+	xdm.source.identity.identifier = authorAccountId,
+	xdm.event.operation_sub_type = category,
+	xdm.target.identity.identifier = json_extract_scalar(objectItem, "$.id"),
+	xdm.target.identity.username = json_extract_scalar(objectItem, "$.name"),
+	xdm.target.resource.type = json_extract_scalar(objectItem, "$.typeName"),
+	xdm.event.outcome = if(jira_status_change != null, XDM_CONST.OUTCOME_SUCCESS, jira_status_change = null, null),
+	xdm.event.outcome_reason = jira_status_change;

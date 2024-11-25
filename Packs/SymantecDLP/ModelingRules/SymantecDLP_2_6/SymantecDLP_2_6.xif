@@ -1,0 +1,39 @@
+[MODEL: dataset = symantec_dlp_raw]
+filter _raw_log ~= "{.*\"APPLICATION_NAME\":"
+| alter json_content = replex(arrayindex(regextract(_raw_log ,"(\{.*\})"),0), "\\+", "\\\\")
+| alter
+        DESTINATION_IP = json_extract_scalar(json_content, "$.DESTINATION_IP"),
+        ENDPOINT_USERNAME = json_extract_scalar(json_content, "$.ENDPOINT_USERNAME"),
+        MACHINE_IP = json_extract_scalar(json_content, "$.MACHINE_IP"),
+        SEVERITY = json_extract_scalar(json_content, "$.SEVERITY"),
+        json_TARGET = if(json_extract_scalar(json_content, "$.TARGET") != null and lowercase(json_extract_scalar(json_content, "$.TARGET")) != "n/a", json_extract_scalar(json_content, "$.TARGET"), null),
+        json_SUBJECT = if(json_extract_scalar(json_content, "$.SUBJECT") != null and lowercase(json_extract_scalar(json_content, "$.SUBJECT")) != "n/a", json_extract_scalar(json_content, "$.SUBJECT"), null)
+| alter
+        xdm.source.application.name = json_extract_scalar(json_content, "$.APPLICATION_NAME"),
+        xdm.intermediate.identity.username = json_extract_scalar(json_content, "$.APPLICATION_USER"),
+        xdm.target.file.filename = json_extract_scalar(json_content, "$.FILE_NAME"),
+        xdm.target.file.path = json_extract_scalar(json_content, "$.PATH"),
+        xdm.target.file.directory = json_extract_scalar(json_content, "$.PARENT_PATH"),
+        xdm.observer.action = json_extract_scalar(json_content, "$.BLOCKED"),
+        xdm.target.ipv4 = if(DESTINATION_IP ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", DESTINATION_IP, null),
+        xdm.target.ipv6 = if(DESTINATION_IP ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", DESTINATION_IP, null),
+        xdm.source.host.device_id = json_extract_scalar(json_content, "$.ENDPOINT_DEVICE_ID"),
+        xdm.source.host.hostname = coalesce(json_extract_scalar(json_content, "$.ENDPOINT_MACHINE"), json_TARGET),
+        xdm.source.identity.username = if(ENDPOINT_USERNAME ~= ".*\.*", arrayindex(regextract(ENDPOINT_USERNAME, "\\(.*)"), 0), ENDPOINT_USERNAME),
+        xdm.source.identity.domain = if(ENDPOINT_USERNAME ~= ".*\.*", arrayindex(regextract(ENDPOINT_USERNAME, "(.*)\\"), 0), null),
+        xdm.source.ipv4 = if(MACHINE_IP ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", MACHINE_IP, null),
+        xdm.source.ipv6 = if(MACHINE_IP ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", MACHINE_IP, null),
+        xdm.alert.original_alert_id = json_extract_scalar(json_content, "$.INCIDENT_ID"),
+        xdm.alert.name = coalesce(json_extract_scalar(json_content, "$.POLICY"), json_SUBJECT),
+        xdm.alert.subcategory = json_extract_scalar(json_content, "$.RULES"),
+        xdm.alert.severity = if(SEVERITY contains ":", arrayindex(regextract(SEVERITY, ":(.*)"), 0), SEVERITY),
+        xdm.alert.description = concat("User Justification: ", json_extract_scalar(json_content, "$.USER_JUSTIFICATION")),
+        xdm.event.type = json_extract_scalar(json_content, "$.PROTOCOL"),
+        xdm.observer.name = json_extract_scalar(json_content, "$.MONITOR_NAME"),
+        xdm.target.url = json_extract_scalar(json_content, "$.RECIPIENTS");
+
+filter _raw_log !~= "{.*\"APPLICATION_NAME\":"
+| alter
+        xdm.source.host.hostname = arrayindex(regextract(_raw_log, "\[([^\]]+)\]"), 0),
+        xdm.event.type = arrayindex(regextract(_raw_log, "]\s([^-]+)\s-"), 0),
+        xdm.event.description = arrayindex(regextract(_raw_log, "]\s[^-]+\s-\s(.*)"), 0);

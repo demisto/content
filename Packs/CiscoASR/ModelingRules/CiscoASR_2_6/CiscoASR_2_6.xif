@@ -1,0 +1,33 @@
+[MODEL: dataset = cisco_asr_raw]
+alter
+    get_node_id1 = arraystring(regextract(_raw_log, "\:([^:]+):\S{3}\s\d{2}\s\d{2}:\d{2}:\d{2}"), ""),
+    get_node_id2 = arraystring(regextract(_raw_log, "([^\:]+)\:[^\:]+\d{2}:\d{2}:\d{2}[^\:]+\:\s[^\[]+\[\d+\]"), ""),
+    get_process_name = arraystring(regextract(_raw_log, "(\S+)\[\d+\][\s:]+\%"), ""),
+    get_pid = arraystring(regextract(_raw_log, "\S+\[(\d+)\][\s:]+\%"), ""),
+    get_msg_group = arraystring(regextract(_raw_log, "\S+\[\d+\][\s:]+\%(.*)\-\d+\-"), ""),
+    get_msg_group2 = arraystring(regextract(_raw_log, "\%(.*)\-\d+\-"), ""),
+    get_severity = arraystring(regextract(_raw_log, "\S+\[\d+\][\s:]+\%.*\-(\d+)\-"), ""),
+    get_severity2 = arraystring(regextract(_raw_log, "\%.*\-(\d+)\-"), ""),
+    get_msg_code = arraystring(regextract(_raw_log, "\S+\[\d+\][\s:]+\%.*\-\d+\-([^\s\:]+)"), ""),
+    get_msg_code2 = arraystring(regextract(_raw_log, "\%.*\-\d+\-([^\s\:]+)"), ""),
+    get_msg = arraystring(regextract(_raw_log, "\S+\[\d+\][\s:]+\%.*\-\d+\-[^\s]+[\s:]+(.*)"), ""),
+    get_msg2 = arraystring(regextract(_raw_log, "\%.*\-\d+\-[^\s]+[\s:]+(.*)"), "")
+| alter
+    c_get_msg_group = if(get_msg_group !~= "\S", null, get_msg_group),
+    c_get_severity = if(get_severity !~= "\S", null, get_severity),
+    c_get_msg_code = if(get_msg_code !~= "\S", null, get_msg_code),
+    c_get_msg = if(get_msg !~= "\S", null, get_msg)
+| alter
+    check_node_id = if(get_node_id2 ~= "\S+\/\S+\/\S+", arraystring(regextract(get_node_id2, "\s(\S+)\s\S+\/\S+\/\S+"), ""),get_node_id1),
+    check_msg_group = coalesce(c_get_msg_group, get_msg_group2),
+    check_severity = coalesce(c_get_severity, get_severity2),
+    check_msg_code = coalesce(c_get_msg_code, get_msg_code2),
+    check_msg = coalesce(c_get_msg, get_msg2)
+| alter
+    xdm.source.host.hostname = check_node_id,
+    xdm.source.process.name = get_process_name,
+    xdm.source.process.pid = to_integer(get_pid),
+    xdm.target.resource.type = check_msg_group,
+    xdm.alert.severity = check_severity,
+    xdm.target.resource.sub_type = check_msg_code,
+    xdm.event.description = check_msg;

@@ -1,0 +1,100 @@
+{
+  "sentinelone_xdr_raw": {
+    "eventType": {
+      "type": "string",
+      "is_array": false
+    },
+    "agentDetectionInfo": {
+      "type": "string",
+      "is_array": false
+    },
+    "agentId": {
+      "type": "string",
+      "is_array": false
+    },
+    "userId": {
+      "type": "string",
+      "is_array": false
+    },
+    "indicators": {
+      "type": "string",
+      "is_array": false
+    },
+    "id": {
+      "type": "string",
+      "is_array": false
+    },
+    "accountId": {
+      "type": "string",
+      "is_array": false
+    },
+    "containerInfo": {
+      "type": "string",
+      "is_array": false
+    },
+    "accountName": {
+      "type": "string",
+      "is_array": false
+    },
+    "threatId": {
+      "type": "string",
+      "is_array": false
+    },
+    "sourceProcessInfo": {
+      "type": "string",
+      "is_array": false
+    },
+    "agentUpdatedVersion": {
+      "type": "string",
+      "is_array": false
+    },
+    "primaryDescription": {
+      "type": "string",
+      "is_array": false
+    },
+    "ruleInfo": {
+      "type": "string",
+      "is_array": false
+    },
+    "mitigationStatus": {
+      "type": "string",
+      "is_array": false
+    },
+    "targetProcessInfo": {
+      "type": "string",
+      "is_array": false
+    },
+    "groupName": {
+      "type": "string",
+      "is_array": false
+    },
+    "threatInfo": {
+      "type": "string",
+      "is_array": false
+    },
+    "osFamily": {
+      "type": "string",
+      "is_array": false
+    },
+    "alertInfo": {
+      "type": "string",
+      "is_array": false
+    },
+    "agentRealtimeInfo": {
+      "type": "string",
+      "is_array": false
+    },
+    "sourceParentProcessInfo": {
+      "type": "string",
+      "is_array": false
+    },
+    "data": {
+      "type": "string",
+      "is_array": false
+    },
+    "activityType": {
+      "type": "int",
+      "is_array": false
+    }
+  }
+}

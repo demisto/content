@@ -1,0 +1,40 @@
+{
+  "microsoft_dhcp_raw": {
+    "description": {
+      "type": "string",
+      "is_array": false
+    },
+    "ipAddress": {
+      "type": "string",
+      "is_array": false
+    },      
+    "fb_host": {
+      "type": "string",
+      "is_array": false
+    },
+    "hostName": {
+      "type": "string",
+      "is_array": false
+    },
+    "macAddress": {
+      "type": "string",
+      "is_array": false
+    },
+    "userName": {
+      "type": "string",
+      "is_array": false
+    },
+    "id": {
+      "type": "string",
+      "is_array": false
+    },
+    "transactionID": {
+      "type": "string",
+      "is_array": false
+    },
+    "qResult": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

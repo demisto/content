@@ -1,0 +1,67 @@
+[RULE: ClearswiftDLP_header_fields]
+alter
+        log_type = arrayindex(regextract(_raw_log, "\:\d+Z?\s+[\S]+\s+([\S]+)\s"), 0)
+| alter
+        find_type = if(log_type = "msw", "Policy Enforcement", log_type = "uiaudit", "User Interface Service Access", log_type = "adminauth", "User Authentication")
+| alter
+        xdm.event.type = find_type,
+        xdm.event.original_event_type = log_type,
+        xdm.observer.name = arrayindex(regextract(_raw_log, "\:\d+Z?\s+([\S]+)\s+[\S]+\s"), 0);
+
+[MODEL: dataset="clearswift_dlp_raw"]
+// Policy Enforcement Mapping
+call ClearswiftDLP_header_fields
+| filter log_type = "msw"
+| alter
+        xdm.alert.subcategory = arrayindex(regextract(_raw_log, "\:\d+Z?\s+[\S]+\s+[\S]+\s\S+\s\S+\s\S+\s\S+\s\S+\s\[(\S+)\]"), 0),
+        xdm.alert.original_alert_id = arrayindex(regextract(_raw_log, "\:\d+Z?\s+[\S]+\s+[\S]+\s\S+\s\S+\s\S+\s\S+\s\S+\s\[\S+\]\s\[\S+\]\s([^\|]+)"), 0),
+        xdm.email.sender = arrayindex(regextract(_raw_log, "\:\d+Z?\s+[\S]+\s+[\S]+\s\S+\s\S+\s\S+\s\S+\s\S+\s\[\S+\]\s\S+\s[^\|]*\|([^\|]+)\|"), 0),
+        xdm.source.identity.username = arrayindex(regextract(_raw_log, "\:\d+Z?\s+[\S]+\s+[\S]+\s\S+\s\S+\s\S+\s\S+\s\S+\s\[\S+\]\s\S+\s[^\|]*\|([^\|]+)\|"), 0),
+        xdm.email.recipients = arraymap(split(arrayindex(regextract(_raw_log, "\:\d+Z?\s+[\S]+\s+[\S]+\s\S+\s\S+\s\S+\s\S+\s\S+\s\[\S+\]\s\S+\s[^\|]*\|[^\|]*\|([^\|]+)\|"), 0), ","), trim("@element")),
+        xdm.email.subject = arrayindex(regextract(_raw_log, "\:\d+Z?\s+[\S]+\s+[\S]+\s\S+\s\S+\s\S+\s\S+\s\S+\s\[\S+\]\s\S+\s[^\|]*\|[^\|]*\|[^\|]*\|([^\|]+)"), 0),
+        xdm.event.outcome_reason = arrayindex(regextract(_raw_log, "\:\d+Z?\s+[\S]+\s+[\S]+\s\S+\s\S+\s\S+\s\S+\s\S+\s\[\S+\]\s\S+\s[^\|]*\|[^\|]*\|[^\|]*\|[^\|]*\|([^|]+)\|"), 0),
+        xdm.network.rule = arraystring(regextract(_raw_log, "\:\d+Z?\s+[\S]+\s+[\S]+\s\S+\s\S+\s\S+\s\S+\s\S+\s\[\S+\]\s\S+\s[^\|]*\|[^\|]*\|[^\|]*\|[^\|]*\|[^|]*\|([^|]+)"), ""),
+        xdm.alert.description = arraystring(regextract(_raw_log, "\:\d+Z?\s+[\S]+\s+[\S]+\s\S+\s\S+\s\S+\s\S+\s\S+\s\[\S+\]\s\S+\s[^\|]*\|[^\|]*\|[^\|]*\|[^\|]*\|[^|]*\|[^|]*\|(.*)$"), ""),
+        xdm.observer.action = arraystring(regextract(_raw_log, "\:\d+Z?\s+[\S]+\s+[\S]+\s\S+\s\S+\s\S+\s\S+\s\S+\s\[\S+\]\s\S+\s[^\|]*\|[^\|]*\|[^\|]*\|[^\|]*\|[^-]+-\s([^\|]+)\|"), "");
+
+// User Interface Service Access Mapping
+call ClearswiftDLP_header_fields
+| filter log_type = "uiaudit"
+| alter
+        event_type = arrayindex(regextract(_raw_log, "\[\d+\]\s\[\w+\]\s\[([^\]]+)\]"), 0)
+| alter
+        url_category = uppercase(if(event_type = "NAVIGATE", arrayindex(regextract(_raw_log, "\[\d+\]\s\[\w*\]\s\[[\w\s]*\]\s\[[^\]]*\]\s\[[^\]]*\]\s\[([^\]]+)\]\s"), 0), null)),
+        user_role = lowercase(if(event_type = "LOGIN", arrayindex(regextract(_raw_log, "\[\d+\]\s\[\w*\]\s\[[\w\s]*\]\s\[[^\]]*\]\s\[[^\]]*\]\s\[([^\]]+)\]"), 0), null))
+| alter
+        xdm.event.description = event_type,
+        xdm.network.session_id = arrayindex(regextract(_raw_log, "\[\d+\]\s\[(\w+)\]"), 0),
+        xdm.session_context_id = arrayindex(regextract(_raw_log, "\[\d+\]\s\[(\w+)\]"), 0),
+        xdm.source.ipv4 = arrayindex(regextract(_raw_log, "\[\d+\]\s\[\w*\]\s\[[\w\s]*\]\s\[(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\]"), 0),
+        xdm.source.ipv6 = arrayindex(regextract(_raw_log, "\[\d+\]\s\[\w*\]\s\[[\w\s]*\]\s\[([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})\]"), 0),
+        xdm.email.sender = arrayindex(regextract(_raw_log, "\[\d+\]\s\[\w*\]\s\[[\w\s]*\]\s\[[^\]]*\]\s\[([^\]]+)\]"), 0),
+        xdm.source.identity.username = arrayindex(regextract(_raw_log, "\[\d+\]\s\[\w*\]\s\[[\w\s]*\]\s\[[^\]]*\]\s\[([^\]]+)\]"), 0),
+        xdm.network.http.url = if(event_type = "NAVIGATE", arrayindex(regextract(_raw_log, "\[\d+\]\s\[\w*\]\s\[[\w\s]*\]\s\[[^\]]*\]\s\[[^\]]*\]\s\[[^\]]*\]\s\[([^\]]+)\]"), 0), null),
+        xdm.target.identity.username = if(event_type contains "USER", arrayindex(regextract(_raw_log, "\[\d+\]\s\[\w*\]\s\[[\w\s]*\]\s\[[^\]]*\]\s\[[^\]]+\]\s\[([^\]:]+)"), 0), null),
+        xdm.target.resource.name = if(event_type contains "USER", arrayindex(regextract(_raw_log, "\[\d+\]\s\[\w*\]\s\[[\w\s]*\]\s\[[^\]]*\]\s\[[^\]]+\]\s\[([^\]:]+)"), 0), null),
+        xdm.target.resource_before.value = if(event_type = "UPDATE USER ROLE", arrayindex(regextract(_raw_log, "\[\d+\]\s\[\w*\]\s\[[\w\s]*\]\s\[[^\]]*\]\s\[[^\]]+\]\s\[[^\]:]+:\s\w+\s(\w+)"), 0), null),
+        xdm.target.resource.value = if(event_type = "UPDATE USER ROLE", arrayindex(regextract(_raw_log, "\[\d+\]\s\[\w*\]\s\[[\w\s]*\]\s\[[^\]]*\]\s\[[^\]]+\]\s\[[^\]:]+:\s\w+\s\w+\s->\s(\w+)"), 0), null),
+        xdm.auth.privilege_level = if(user_role ~= "analyst", XDM_CONST.PRIVILEGE_LEVEL_USER, user_role ~= "admin", XDM_CONST.PRIVILEGE_LEVEL_ADMIN, user_role ~= "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, user_role ~= "system", XDM_CONST.PRIVILEGE_LEVEL_SYSTEM, user_role ~= "user", XDM_CONST.PRIVILEGE_LEVEL_USER, null),
+        xdm.network.http.url_category = if(url_category contains "ABORTION", XDM_CONST.URL_CATEGORY_ABORTION, url_category contains "DRUGS", XDM_CONST.URL_CATEGORY_ABUSED_DRUGS, url_category contains "ADULT", XDM_CONST.URL_CATEGORY_ADULT, url_category contains "ALCOHOL" or url_category contains "TOBACCO", XDM_CONST.URL_CATEGORY_ALCOHOL_AND_TOBACCO, url_category contains "AUCTIONS", XDM_CONST.URL_CATEGORY_AUCTIONS, url_category contains "BUSINESS" or url_category contains "ECONOMY", XDM_CONST.URL_CATEGORY_BUSINESS_AND_ECONOMY, url_category contains "COMMAND AND CONTROL" or url_category contains "C&C", XDM_CONST.URL_CATEGORY_COMMAND_AND_CONTROL, url_category contains "COMPUTER" or url_category contains "INTERNET", XDM_CONST.URL_CATEGORY_COMPUTER_AND_INTERNET_INFO, url_category contains "CONTENT DELIVERY NETWORKS" or url_category contains "CDN", XDM_CONST.URL_CATEGORY_CONTENT_DELIVERY_NETWORKS, url_category contains "COPYRIGHT", XDM_CONST.URL_CATEGORY_COPYRIGHT_INFRINGEMENT, url_category contains "CRYPTO", XDM_CONST.URL_CATEGORY_CRYPTOCURRENCY, url_category contains "DATING", XDM_CONST.URL_CATEGORY_DATING, url_category contains "DYNAMIC DNS", XDM_CONST.URL_CATEGORY_DYNAMIC_DNS, url_category contains "EDUCATIONAL INSTITUTIONS", XDM_CONST.URL_CATEGORY_EDUCATIONAL_INSTITUTIONS, url_category contains "ENTERTAINMENT" and url_category contains "ARTS", XDM_CONST.URL_CATEGORY_ENTERTAINMENT_AND_ARTS, url_category contains "EXTREMISM", XDM_CONST.URL_CATEGORY_EXTREMISM, url_category contains "FINANCIAL" or url_category contains "FINANCE", XDM_CONST.URL_CATEGORY_FINANCIAL_SERVICES, url_category contains "GAMBLING", XDM_CONST.URL_CATEGORY_GAMBLING, url_category contains "GAMES", XDM_CONST.URL_CATEGORY_GAMES, url_category contains "GOVERNMENT", XDM_CONST.URL_CATEGORY_GOVERNMENT, url_category contains "GRAYWARE", XDM_CONST.URL_CATEGORY_GRAYWARE, url_category contains "HACKING", XDM_CONST.URL_CATEGORY_HACKING, url_category contains "HEALTH" or url_category contains "MEDICINE", XDM_CONST.URL_CATEGORY_HEALTH_AND_MEDICINE, url_category contains "HOME" or url_category contains "GARDEN", XDM_CONST.URL_CATEGORY_HOME_AND_GARDEN, url_category contains "HUNTING" or url_category contains "FISHING", XDM_CONST.URL_CATEGORY_HUNTING_AND_FISHING, url_category contains "INSUFFICIENT CONTENT", XDM_CONST.URL_CATEGORY_INSUFFICIENT_CONTENT, url_category contains "INTERNET COMMUNICATIONS" and url_category contains "TELEPHONY", XDM_CONST.URL_CATEGORY_INTERNET_COMMUNICATIONS_AND_TELEPHONY, url_category contains "INTERNET PORTALS", XDM_CONST.URL_CATEGORY_INTERNET_PORTALS, url_category contains "JOB", XDM_CONST.URL_CATEGORY_JOB_SEARCH, url_category contains "LEGAL", XDM_CONST.URL_CATEGORY_LEGAL, url_category contains "MALWARE", XDM_CONST.URL_CATEGORY_MALWARE, url_category contains "MILITARY", XDM_CONST.URL_CATEGORY_MILITARY, url_category contains "MOTOR VEHICLES", XDM_CONST.URL_CATEGORY_MOTOR_VEHICLES, url_category contains "MUSIC", XDM_CONST.URL_CATEGORY_MUSIC, url_category contains "DOMAIN" and url_category contains "REGIST", XDM_CONST.URL_CATEGORY_NEWLY_REGISTERED_DOMAIN, url_category contains "NEWS", XDM_CONST.URL_CATEGORY_NEWS, url_category contains "NOT RESOLVED", XDM_CONST.URL_CATEGORY_NOT_RESOLVED, url_category contains "NUDITY", XDM_CONST.URL_CATEGORY_NUDITY, url_category contains "ONLINE STORAGE" and url_category contains "BACKUP", XDM_CONST.URL_CATEGORY_ONLINE_STORAGE_AND_BACKUP, url_category contains "PARKED", XDM_CONST.URL_CATEGORY_PARKED, url_category contains "PEER TO PEER", XDM_CONST.URL_CATEGORY_PEER_TO_PEER, url_category contains "PERSONAL SITES" or url_category contains "BLOG", XDM_CONST.URL_CATEGORY_PERSONAL_SITES_AND_BLOGS, url_category contains "PHILOSOPHY" or url_category contains "POLITICAL ADVOCACY", XDM_CONST.URL_CATEGORY_PHILOSOPHY_AND_POLITICAL_ADVOCACY, url_category contains "PHISHING", XDM_CONST.URL_CATEGORY_PHISHING, url_category contains "PRIVATE IP ADDRESSES", XDM_CONST.URL_CATEGORY_PRIVATE_IP_ADDRESSES, url_category contains "PROXY" or url_category contains "ANONYMIZERS", XDM_CONST.URL_CATEGORY_PROXY_AVOIDANCE_AND_ANONYMIZERS, url_category contains "QUESTIONABLE", XDM_CONST.URL_CATEGORY_QUESTIONABLE, url_category contains "REAL ESTATE", XDM_CONST.URL_CATEGORY_REAL_ESTATE, url_category contains "HOBBIES" or url_category contains "RECREATION", XDM_CONST.URL_CATEGORY_RECREATION_AND_HOBBIES, url_category contains "REFERENCE", XDM_CONST.URL_CATEGORY_REFERENCE_AND_RESEARCH, url_category contains "RELIGION", XDM_CONST.URL_CATEGORY_RELIGION, url_category contains "SEARCH ENGINES", XDM_CONST.URL_CATEGORY_SEARCH_ENGINES, url_category contains "SEX EDUCATION", XDM_CONST.URL_CATEGORY_SEX_EDUCATION, url_category contains "SHAREWARE" and url_category contains "FREEWARE", XDM_CONST.URL_CATEGORY_SHAREWARE_AND_FREEWARE, url_category contains "SHOPPING", XDM_CONST.URL_CATEGORY_SHOPPING, url_category contains "SOCIAL_NETWORK", XDM_CONST.URL_CATEGORY_SOCIAL_NETWORKING, url_category contains "SOCIETY", XDM_CONST.URL_CATEGORY_SOCIETY, url_category contains "SPORTS", XDM_CONST.URL_CATEGORY_SPORTS, url_category contains "STOCK", XDM_CONST.URL_CATEGORY_STOCK_ADVICE_AND_TOOLS, url_category contains "MEDIA" and url_category contains "STREAM", XDM_CONST.URL_CATEGORY_STREAMING_MEDIA, url_category contains "INTIMATE APPAREL", XDM_CONST.URL_CATEGORY_SWIMSUITS_AND_INTIMATE_APPAREL, url_category contains "TRAINING" and url_category contains "Sport", XDM_CONST.URL_CATEGORY_TRAINING_AND_TOOLS, url_category contains "TRANSLATION", XDM_CONST.URL_CATEGORY_TRANSLATION, url_category contains "TRAVEL", XDM_CONST.URL_CATEGORY_TRAVEL, url_category contains "UNKNOWN", XDM_CONST.URL_CATEGORY_UNKNOWN, url_category contains "WEAPONS", XDM_CONST.URL_CATEGORY_WEAPONS, url_category contains "WEB ADVERTISEMENTS", XDM_CONST.URL_CATEGORY_WEB_ADVERTISEMENTS, url_category contains "WEB HOSTING", XDM_CONST.URL_CATEGORY_WEB_HOSTING, url_category contains "WEB BASED EMAIL", XDM_CONST.URL_CATEGORY_WEB_BASED_EMAIL, to_string(url_category));
+
+// User Authentication Mapping
+call ClearswiftDLP_header_fields
+| filter log_type = "adminauth"
+| alter
+        log_level = lowercase(arrayindex(regextract(_raw_log, "\:\d+Z?\s+[\S]+\s+[\S]+\s\S+\s\S+\s\S+\s(\w+)\s"), 0)),
+        event_subtype = arrayindex(regextract(_raw_log, "\:\d+Z?\s+[\S]+\s+[\S]+\s\S+\s\S+\s\S+\s\w*\s\[([^\]]+)\]"), 0),
+        description = arrayindex(regextract(_raw_log, "\:\d+Z?\s+[\S]+\s+[\S]+\s\S+\s\S+\s\S+\s\w*\s\[[^\]]+\]\S\s(.*)?\sReason:"), 0),
+        domain = arrayindex(regextract(_raw_log, "\'[^:]+\:\/\/([^:]+)\:\d+"), 0),
+        destination_port = arrayindex(regextract(_raw_log, "\'[^:]+\:\/\/[^:]+\:(\d+)"), 0),
+        outcome_reason = arrayindex(regextract(_raw_log, "\sReason:\s\[([^\]]+)\]"), 0)
+| alter
+        xdm.event.operation_sub_type = event_subtype,
+        xdm.event.log_level = if(log_level ~= "alert", XDM_CONST.LOG_LEVEL_ALERT, log_level ~= "critical", XDM_CONST.LOG_LEVEL_CRITICAL, log_level ~= "debug", XDM_CONST.LOG_LEVEL_DEBUG, log_level ~= "emergency", XDM_CONST.LOG_LEVEL_EMERGENCY, log_level ~= "error", XDM_CONST.LOG_LEVEL_ERROR, log_level ~= "informational", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level ~= "notice", XDM_CONST.LOG_LEVEL_NOTICE, log_level ~= "warning", XDM_CONST.LOG_LEVEL_WARNING, log_level = null, null, to_string(log_level)),
+        xdm.event.description = description,
+        xdm.target.domain = domain,
+        xdm.target.port = to_integer(destination_port),
+        xdm.event.outcome_reason = outcome_reason;

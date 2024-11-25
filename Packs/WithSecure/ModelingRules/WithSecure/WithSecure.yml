@@ -4,3 +4,4 @@ name: Endpoint Protection With Secure Modeling Rule
 rules: ''
 schema: ''
 tags: Endpoint_Protection
+toversion: 8.9.0

@@ -1,0 +1,53 @@
+[MODEL: dataset="zscaler_zpa_raw"]
+filter
+    cat in ("ZPA User Status", "ZPA User Activity")
+| alter
+    proto_int = to_integer(proto)
+| alter
+    xdm.network.rule = policy,
+    xdm.source.port = to_integer(0),
+    xdm.target.ipv4 = if(cat="ZPA User Status", srcPreNAT, dst),
+    xdm.target.port = if(cat="ZPA User Status", to_integer(0), to_integer(dstPort)),
+    xdm.source.ipv4 = src,
+    xdm.source.identity.username = usrName,
+    xdm.observer.name = Connector,
+    xdm.network.application_protocol_category = AppGroup,
+    xdm.observer.unique_identifier = ClientZEN,
+    xdm.session_context_id = SessionID,
+    xdm.event.outcome_reason = InternalReason,
+    xdm.event.outcome = ConnectionStatus,
+    xdm.network.tls.cipher = DoubleEncryption,
+    xdm.source.location.country = ClientCountryCode,
+    xdm.source.host.hostname = identHostName,
+    xdm.source.agent.identifier = ConnectionID,
+    xdm.event.type = cat,
+    xdm.event.operation_sub_type = ApplicationSegment,
+    xdm.source.host.ipv4_addresses = arraycreate(coalesce(srcPreNAT, "")),
+    xdm.network.ip_protocol = if(proto_int = 0 ,XDM_CONST.IP_PROTOCOL_HOPOPT, proto_int = 1 ,XDM_CONST.IP_PROTOCOL_ICMP, proto_int = 2 ,XDM_CONST.IP_PROTOCOL_IGMP, proto_int = 3 ,XDM_CONST.IP_PROTOCOL_GGP, proto_int = 4 ,XDM_CONST.IP_PROTOCOL_IP, proto_int = 5 ,XDM_CONST.IP_PROTOCOL_ST, proto_int = 6 ,XDM_CONST.IP_PROTOCOL_TCP, proto_int = 7 ,XDM_CONST.IP_PROTOCOL_CBT, proto_int = 8 ,XDM_CONST.IP_PROTOCOL_EGP, proto_int = 9 ,XDM_CONST.IP_PROTOCOL_IGP, proto_int = 10 ,XDM_CONST.IP_PROTOCOL_BBN_RCC_MON, proto_int = 11 ,XDM_CONST.IP_PROTOCOL_NVP_II, proto_int = 12 ,XDM_CONST.IP_PROTOCOL_PUP, proto_int = 13 ,XDM_CONST.IP_PROTOCOL_ARGUS, proto_int = 14 ,XDM_CONST.IP_PROTOCOL_EMCON, proto_int = 15 ,XDM_CONST.IP_PROTOCOL_XNET, proto_int = 16 ,XDM_CONST.IP_PROTOCOL_CHAOS, proto_int = 17 ,XDM_CONST.IP_PROTOCOL_UDP, proto_int = 18 ,XDM_CONST.IP_PROTOCOL_MUX, proto_int = 19 ,XDM_CONST.IP_PROTOCOL_DCN_MEAS, proto_int = 20 ,XDM_CONST.IP_PROTOCOL_HMP, proto_int = 21 ,XDM_CONST.IP_PROTOCOL_PRM, proto_int = 22 ,XDM_CONST.IP_PROTOCOL_XNS_IDP, proto_int = 23 ,XDM_CONST.IP_PROTOCOL_TRUNK_1, proto_int = 24 ,XDM_CONST.IP_PROTOCOL_TRUNK_2, proto_int = 25 ,XDM_CONST.IP_PROTOCOL_LEAF_1, proto_int = 26 ,XDM_CONST.IP_PROTOCOL_LEAF_2, proto_int = 27 ,XDM_CONST.IP_PROTOCOL_RDP, proto_int = 28 ,XDM_CONST.IP_PROTOCOL_IRTP, proto_int = 29 ,XDM_CONST.IP_PROTOCOL_ISO_TP4, proto_int = 30 ,XDM_CONST.IP_PROTOCOL_NETBLT, proto_int = 31 ,XDM_CONST.IP_PROTOCOL_MFE_NSP, proto_int = 32 ,XDM_CONST.IP_PROTOCOL_MERIT_INP, proto_int = 33 ,XDM_CONST.IP_PROTOCOL_DCCP, proto_int = 34 ,XDM_CONST.IP_PROTOCOL_3PC, proto_int = 35 ,XDM_CONST.IP_PROTOCOL_IDPR, proto_int = 36 ,XDM_CONST.IP_PROTOCOL_XTP, proto_int = 37 ,XDM_CONST.IP_PROTOCOL_DDP, proto_int = 38 ,XDM_CONST.IP_PROTOCOL_IDPR_CMTP, proto_int = 39 ,XDM_CONST.IP_PROTOCOL_TP, proto_int = 40 ,XDM_CONST.IP_PROTOCOL_IL, proto_int = 41 ,XDM_CONST.IP_PROTOCOL_IPV6, proto_int = 42 ,XDM_CONST.IP_PROTOCOL_SDRP, proto_int = 43 ,XDM_CONST.IP_PROTOCOL_IPV6_ROUTE, proto_int = 44 ,XDM_CONST.IP_PROTOCOL_IPV6_FRAG, proto_int = 45 ,XDM_CONST.IP_PROTOCOL_IDRP, proto_int = 46 ,XDM_CONST.IP_PROTOCOL_RSVP, proto_int = 47 ,XDM_CONST.IP_PROTOCOL_GRE, proto_int = 48 ,XDM_CONST.IP_PROTOCOL_DSR, proto_int = 49 ,XDM_CONST.IP_PROTOCOL_BNA, proto_int = 50 ,XDM_CONST.IP_PROTOCOL_ESP, proto_int = 51 ,XDM_CONST.IP_PROTOCOL_AH, proto_int = 52 ,XDM_CONST.IP_PROTOCOL_I_NLSP, proto_int = 53 ,XDM_CONST.IP_PROTOCOL_SWIPE, proto_int = 54 ,XDM_CONST.IP_PROTOCOL_NARP, proto_int = 55 ,XDM_CONST.IP_PROTOCOL_MOBILE, proto_int = 56 ,XDM_CONST.IP_PROTOCOL_TLSP, proto_int = 57 ,XDM_CONST.IP_PROTOCOL_SKIP, proto_int = 58 ,XDM_CONST.IP_PROTOCOL_IPV6_ICMP, proto_int = 59 ,XDM_CONST.IP_PROTOCOL_IPV6_NONXT, proto_int = 60 ,XDM_CONST.IP_PROTOCOL_IPV6_OPTS, proto_int = 62 ,XDM_CONST.IP_PROTOCOL_CFTP, proto_int = 64 ,XDM_CONST.IP_PROTOCOL_SAT_EXPAK, proto_int = 65 ,XDM_CONST.IP_PROTOCOL_KRYPTOLAN, proto_int = 66 ,XDM_CONST.IP_PROTOCOL_RVD, proto_int = 67 ,XDM_CONST.IP_PROTOCOL_IPPC, proto_int = 69 ,XDM_CONST.IP_PROTOCOL_SAT_MON, proto_int = 70 ,XDM_CONST.IP_PROTOCOL_VISA, proto_int = 71 ,XDM_CONST.IP_PROTOCOL_IPCV, proto_int = 72 ,XDM_CONST.IP_PROTOCOL_CPNX, proto_int = 73 ,XDM_CONST.IP_PROTOCOL_CPHB, proto_int = 74 ,XDM_CONST.IP_PROTOCOL_WSN, proto_int = 75 ,XDM_CONST.IP_PROTOCOL_PVP, proto_int = 76 ,XDM_CONST.IP_PROTOCOL_BR_SAT_MON, proto_int = 77 ,XDM_CONST.IP_PROTOCOL_SUN_ND, proto_int = 78 ,XDM_CONST.IP_PROTOCOL_WB_MON, proto_int = 79 ,XDM_CONST.IP_PROTOCOL_WB_EXPAK, proto_int = 80 ,XDM_CONST.IP_PROTOCOL_ISO_IP, proto_int = 81 ,XDM_CONST.IP_PROTOCOL_VMTP, proto_int = 82 ,XDM_CONST.IP_PROTOCOL_SECURE_VMTP, proto_int = 83 ,XDM_CONST.IP_PROTOCOL_VINES, proto_int = 84 ,XDM_CONST.IP_PROTOCOL_TTP, proto_int = 85 ,XDM_CONST.IP_PROTOCOL_NSFNET_IGP, proto_int = 86 ,XDM_CONST.IP_PROTOCOL_DGP, proto_int = 87 ,XDM_CONST.IP_PROTOCOL_TCF, proto_int = 88 ,XDM_CONST.IP_PROTOCOL_EIGRP, proto_int = 89 ,XDM_CONST.IP_PROTOCOL_OSPFIGP, proto_int = 90 ,XDM_CONST.IP_PROTOCOL_SPRITE_RPC, proto_int = 91 ,XDM_CONST.IP_PROTOCOL_LARP, proto_int = 92 ,XDM_CONST.IP_PROTOCOL_MTP, proto_int = 93 ,XDM_CONST.IP_PROTOCOL_AX25, proto_int = 94 ,XDM_CONST.IP_PROTOCOL_IPIP, proto_int = 95 ,XDM_CONST.IP_PROTOCOL_MICP, proto_int = 96 ,XDM_CONST.IP_PROTOCOL_SCC_SP, proto_int = 97 ,XDM_CONST.IP_PROTOCOL_ETHERIP, proto_int = 98 ,XDM_CONST.IP_PROTOCOL_ENCAP, proto_int = 100 ,XDM_CONST.IP_PROTOCOL_GMTP, proto_int = 101 ,XDM_CONST.IP_PROTOCOL_IFMP, proto_int = 102 ,XDM_CONST.IP_PROTOCOL_PNNI, proto_int = 103 ,XDM_CONST.IP_PROTOCOL_PIM, proto_int = 104 ,XDM_CONST.IP_PROTOCOL_ARIS, proto_int = 105 ,XDM_CONST.IP_PROTOCOL_SCPS, proto_int = 106 ,XDM_CONST.IP_PROTOCOL_QNX, proto_int = 107 ,XDM_CONST.IP_PROTOCOL_AN, proto_int = 108 ,XDM_CONST.IP_PROTOCOL_IPCOMP, proto_int = 110 ,XDM_CONST.IP_PROTOCOL_COMPAQ_PEER, proto_int = 111 ,XDM_CONST.IP_PROTOCOL_IPX_IN_IP, proto_int = 112 ,XDM_CONST.IP_PROTOCOL_VRRP, proto_int = 113 ,XDM_CONST.IP_PROTOCOL_PGM, proto_int = 115 ,XDM_CONST.IP_PROTOCOL_L2TP, proto_int = 116 ,XDM_CONST.IP_PROTOCOL_DDX, proto_int = 117 ,XDM_CONST.IP_PROTOCOL_IATP, proto_int = 118 ,XDM_CONST.IP_PROTOCOL_STP, proto_int = 119 ,XDM_CONST.IP_PROTOCOL_SRP, proto_int = 120 ,XDM_CONST.IP_PROTOCOL_UTI, proto_int = 121 ,XDM_CONST.IP_PROTOCOL_SMP, proto_int = 122 ,XDM_CONST.IP_PROTOCOL_SM, proto_int = 123 ,XDM_CONST.IP_PROTOCOL_PTP, proto_int = 124 ,XDM_CONST.IP_PROTOCOL_ISIS, proto_int = 125 ,XDM_CONST.IP_PROTOCOL_FIRE, proto_int = 126 ,XDM_CONST.IP_PROTOCOL_CRTP, proto_int = 127 ,XDM_CONST.IP_PROTOCOL_CRUDP, proto_int = 128 ,XDM_CONST.IP_PROTOCOL_SSCOPMCE, proto_int = 129 ,XDM_CONST.IP_PROTOCOL_IPLT, proto_int = 130 ,XDM_CONST.IP_PROTOCOL_SPS, proto_int = 131 ,XDM_CONST.IP_PROTOCOL_PIPE, proto_int = 132 ,XDM_CONST.IP_PROTOCOL_SCTP, proto_int = 133 ,XDM_CONST.IP_PROTOCOL_FC, proto_int = 134 ,XDM_CONST.IP_PROTOCOL_RSVP_E2E_IGNORE, proto_int = 135 ,XDM_CONST.IP_PROTOCOL_MOBILITY, proto_int = 136 ,XDM_CONST.IP_PROTOCOL_UDPLITE, proto_int = 137 ,XDM_CONST.IP_PROTOCOL_MPLS_IN_IP,to_string(proto)),
+    xdm.event.duration = to_integer(PolicyProcessingTime),
+    xdm.target.process.name = ApplicationName,
+    xdm.observer.version = leefProductVersion,
+    xdm.event.id = SessionID,
+    xdm.source.sent_bytes = to_integer(srcBytes),
+    xdm.target.sent_bytes = to_integer(dstBytes),
+    xdm.source.host.os_family = if(Platform = "windows",XDM_CONST.OS_FAMILY_WINDOWS, Platform = "mac", XDM_CONST.OS_FAMILY_MACOS , Platform ~= "el\d",XDM_CONST.OS_FAMILY_LINUX,to_string(Platform)),
+    xdm.source.application.version = Version,
+    xdm.event.description = SessionStatus,
+    xdm.network.tls.client_certificate.subject = CertificateCN,
+    xdm.auth.mfa.client_details = customer,
+    xdm.target.host.hostname = ZEN,
+    xdm.target.application.name = "Zscaler Private Access (ZPA)",
+    xdm.auth.mfa.provider = Idp,
+    xdm.event.tags = arraycreate("VPN");
+
+filter cat in ("Connector Status")
+| alter
+    xdm.event.type = cat,
+    xdm.source.agent.version = Version,
+    xdm.target.resource_before.name = Connector,
+    xdm.target.host.hostname = ZEN,
+    xdm.source.ipv4 = src,
+    xdm.target.resource_before.parent_id = Customer,
+    xdm.session_context_id = SessionID,
+    xdm.source.location.country = CountryCode,
+    xdm.target.resource_before.type = SessionType;

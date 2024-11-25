@@ -1,0 +1,1017 @@
+[MODEL: dataset = "vmware_vcenter_raw"]
+// sps (Storage management service) events 
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "sps"
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter
+    process_identifier = arrayindex(regextract(syslog_msg, "\[([\w-]+)\]\s+\w+\s+opId="), 0),
+    thread_id = to_integer(arrayindex(regextract(syslog_msg, "thread\-(\d+)\]"), 0)),
+    msg_severity = arrayindex(regextract(syslog_msg, "\[[\w-]+\]\s+(\w+)"), 0),
+    operation_id = arrayindex(regextract(syslog_msg, "opId=(\S+)"), 0),
+    app_component = arrayindex(regextract(syslog_msg, "opId=\S*\s+(\S+)"), 0),
+    event_payload = arrayindex(regextract(syslog_msg, "opId=\S*\s+\S+\s+\-\s+(.+)"), 0)
+| alter 
+    // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity),
+    datastore = arrayindex(regextract(event_payload, "datastore=(\S+)"), 0),
+    duration_ms = to_integer(coalesce(arrayindex(regextract(event_payload, "took\s+(\d+)\s+millis"), 0),
+                   arrayindex(regextract(event_payload, "Time\s+taken:\s+(\d+)\s+ms"), 0))),
+    url = arrayindex(regextract(event_payload, "(https:\S+)"), 0)
+| alter 
+    port = to_integer(arrayindex(regextract(url, ":(\d+)"), 0))
+| alter
+    xdm.alert.severity = severity,
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.duration = duration_ms,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.session_context_id = operation_id,
+    xdm.source.application.name = app_component, 
+    xdm.source.host.hostname = syslog_hostname, 
+    xdm.source.process.thread_id = thread_id,
+    xdm.source.process.name = event_type,
+    xdm.source.process.identifier = process_identifier,  
+    xdm.target.port = port,
+    xdm.target.url = url,
+    xdm.target.resource.type = if(datastore != null, "datastore"),
+    xdm.target.resource.value = datastore;
+
+// vpxd-svcs-perf events 
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "vpxd-svcs-perf"
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter 
+    process_identifier = arrayindex(regextract(syslog_msg, "\w+\s+\[(\S+)"), 0),
+    thread_id = to_integer(arrayindex(regextract(syslog_msg, "pool\-\d+\-thread\-(\d+)"), 0)),
+    msg_severity = arrayindex(regextract(syslog_msg, "(\w+)\s+\S+\s+opId="), 0),
+    app_component = arrayindex(regextract(syslog_msg, "\w+\s+(\S+)\s+opId="), 0),
+    operation_id = arrayindex(regextract(syslog_msg, "opId=([^\]]+)"), 0),
+    operation = arrayindex(regextract(syslog_msg, "Operation (\S+) took"), 0), 
+    event_payload = arrayindex(regextract(syslog_msg, "opId=\S*\]\s+(.+)"), 0), 
+    duration_ms = to_integer(arrayindex(regextract(syslog_msg, "took\s+(\d+)\s+ms"), 0)) 
+| alter // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field 
+    severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
+| alter
+    xdm.alert.severity = severity,
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.operation_sub_type = operation, 
+    xdm.event.duration = duration_ms,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.network.application_protocol = if(event_payload ~= "LDAP", "LDAP"),
+    xdm.network.ldap.operation = if(event_payload ~= "Requesting LDAP connection", XDM_CONST.LDAP_OPERATION_BIND_REQUEST), 
+    xdm.session_context_id = operation_id,
+    xdm.source.process.thread_id = thread_id,
+    xdm.source.process.name = event_type,
+    xdm.source.process.identifier = process_identifier,
+    xdm.source.application.name = app_component, 
+    xdm.source.host.hostname = syslog_hostname;
+
+// vpxd-main (VMware vCenter-Services), vsan-health-main (virtual storage area network health service) & vum-vmacore (vSphere Update Manager) events 
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type in( "vsan-health-main", "vpxd-main", "vum-vmacore", "StatsMonitor", "vdtc-main")
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter
+    msg_severity = uppercase(arrayindex(regextract(syslog_msg, "(\w+)\s+[\w-]+\[\d+"), 0)),
+    pid = to_integer(arrayindex(regextract(syslog_msg, "[\w-]+\[(\d+)\]"), 0)),
+    operation_id = arrayindex(regextract(syslog_msg, "opI[dD]=([\w-]+)"), 0),
+    sub_module = arrayindex(regextract(syslog_msg, "sub=([\w-]+)"), 0),
+    user = coalesce(arrayindex(regextract(syslog_msg, "GetUserInfo\w+\(([^,]+)"), 0), arrayindex(regextract(syslog_msg, "user:\s*(\S+)"), 0)),
+    http_response_code = arrayindex(regextract(syslog_msg, "code:\s+(\d+)"), 0),
+    event_payload = coalesce(arrayindex(regextract(syslog_msg, "\w+=\S+\]\s+(.+)"), 0), trim(arrayindex(regextract(syslog_msg, "v\[\d+\]\s+\[.+?\]\s+(.+)"), 0), "--"), syslog_msg )
+| alter 
+    // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity),
+    session_id = coalesce(arrayindex(regextract(event_payload, "session[\:\s\[\<]*([a-fA-F\d\-]{8,})"), 0), arrayindex(regextract(event_payload, "--\s+([a-fA-F\d-]{8,})"), 0))
+| alter
+    xdm.alert.severity = severity,
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.network.session_id = session_id,
+    xdm.network.http.response_code = if(http_response_code = "100", XDM_CONST.HTTP_RSP_CODE_CONTINUE, http_response_code = "101", XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, http_response_code = "102", XDM_CONST.HTTP_RSP_CODE_PROCESSING, http_response_code = "103", XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, http_response_code = "200", XDM_CONST.HTTP_RSP_CODE_OK, http_response_code = "201", XDM_CONST.HTTP_RSP_CODE_CREATED, http_response_code = "202", XDM_CONST.HTTP_RSP_CODE_ACCEPTED, http_response_code = "203", XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, http_response_code = "204", XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, http_response_code = "205", XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, http_response_code = "206", XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, http_response_code = "207", XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, http_response_code = "208", XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, http_response_code = "226", XDM_CONST.HTTP_RSP_CODE_IM_USED, http_response_code = "300", XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, http_response_code = "301", XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, http_response_code = "302", XDM_CONST.HTTP_RSP_CODE_FOUND, http_response_code = "303", XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, http_response_code = "304", XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, http_response_code = "305", XDM_CONST.HTTP_RSP_CODE_USE_PROXY, http_response_code = "307", XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, http_response_code = "308", XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, http_response_code = "400", XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, http_response_code = "401", XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, http_response_code = "402", XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, http_response_code = "403", XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, http_response_code = "404", XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, http_response_code = "405", XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, http_response_code = "406", XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, http_response_code = "407", XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, http_response_code = "408", XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, http_response_code = "409", XDM_CONST.HTTP_RSP_CODE_CONFLICT, http_response_code = "410", XDM_CONST.HTTP_RSP_CODE_GONE, http_response_code = "411", XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, http_response_code = "412", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, http_response_code = "413", XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, http_response_code = "414", XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, http_response_code = "415", XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, http_response_code = "416", XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, http_response_code = "417", XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, http_response_code = "421", XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, http_response_code = "422", XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, http_response_code = "423", XDM_CONST.HTTP_RSP_CODE_LOCKED, http_response_code = "424", XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, http_response_code = "425", XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, http_response_code = "426", XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, http_response_code = "428", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, http_response_code = "429", XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, http_response_code = "431", XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, http_response_code = "451", XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, http_response_code = "500", XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, http_response_code = "501", XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, http_response_code = "502", XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, http_response_code = "503", XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, http_response_code = "504", XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, http_response_code = "505", XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, http_response_code = "506", XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, http_response_code = "507", XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, http_response_code = "508", XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, http_response_code = "511", XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, http_response_code = null, null, to_string(http_response_code)),
+    xdm.session_context_id = operation_id, 
+    xdm.source.identity.username = user, 
+    xdm.source.process.pid = pid, 
+    xdm.source.process.name = event_type,
+    xdm.source.application.name = sub_module, 
+    xdm.source.host.hostname = syslog_hostname;
+
+// dnsmasq events 
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "dnsmasq"
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter
+    pid = to_integer(arrayindex(regextract(syslog_msg, "[\w-]+\[(\d+)\]"), 0)),
+    event_payload = arrayindex(regextract(syslog_msg, "dnsmasq\[\d+\]:\s+(.+)"), 0)
+| alter 
+    // extract the severity from the syslog header priority field   
+    severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))),
+    dns_event_fields = regextract(event_payload, "(\S+)")
+| alter 
+    dns_operation = arrayindex(dns_event_fields, 0),
+    dns_record_name = arrayindex(dns_event_fields, 1),
+    dns_direction_context = arrayindex(dns_event_fields, 2),
+    dns_record_value = arrayindex(dns_event_fields, 3)
+| alter 
+    dns_query_type = arrayindex(regextract(dns_operation, "query\[([^\]]+)"), 0),
+    dns_client_ipv4 = if(dns_direction_context = "from" and dns_record_value ~= "\d+\.", dns_record_value),
+    dns_client_ipv6 = if(dns_direction_context = "from" and dns_record_value ~= "[\da-fA-F]+:", dns_record_value),
+    dns_forwarder_ipv4 = if(dns_operation = "forwarded" and dns_record_value ~= "\d+\.", dns_record_value),
+    dns_forwarder_ipv6 = if(dns_operation = "forwarded" and dns_record_value ~= "[\da-fA-F]+:", dns_record_value)
+| alter 
+    xdm.alert.severity = severity,
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.operation_sub_type = dns_operation, 
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.intermediate.ipv4 = dns_forwarder_ipv4, 
+    xdm.intermediate.ipv6 = dns_forwarder_ipv6,
+    xdm.network.application_protocol = "DNS",
+    xdm.network.dns.dns_resource_record.type = if(dns_record_value ~= "CNAME", XDM_CONST.DNS_RECORD_TYPE_CNAME), 
+    xdm.network.dns.dns_resource_record.name = dns_record_name, 
+    xdm.network.dns.dns_resource_record.value = if(dns_direction_context = "is", dns_record_value), 
+    xdm.network.dns.dns_question.type = if(dns_query_type="A",XDM_CONST.DNS_RECORD_TYPE_A, dns_query_type="AAAA",XDM_CONST.DNS_RECORD_TYPE_AAAA, dns_query_type="AFSDB",XDM_CONST.DNS_RECORD_TYPE_AFSDB, dns_query_type="APL",XDM_CONST.DNS_RECORD_TYPE_APL, dns_query_type="CAA",XDM_CONST.DNS_RECORD_TYPE_CAA, dns_query_type="CDNSKEY",XDM_CONST.DNS_RECORD_TYPE_CDNSKEY, dns_query_type="CDS",XDM_CONST.DNS_RECORD_TYPE_CDS, dns_query_type="CERT",XDM_CONST.DNS_RECORD_TYPE_CERT, dns_query_type="CNAME",XDM_CONST.DNS_RECORD_TYPE_CNAME, dns_query_type="CSYNC",XDM_CONST.DNS_RECORD_TYPE_CSYNC, dns_query_type="DHCID",XDM_CONST.DNS_RECORD_TYPE_DHCID, dns_query_type="DLV",XDM_CONST.DNS_RECORD_TYPE_DLV, dns_query_type="DNAME",XDM_CONST.DNS_RECORD_TYPE_DNAME, dns_query_type="DNSKEY",XDM_CONST.DNS_RECORD_TYPE_DNSKEY, dns_query_type="DS",XDM_CONST.DNS_RECORD_TYPE_DS, dns_query_type="EUI48",XDM_CONST.DNS_RECORD_TYPE_EUI48, dns_query_type="EUI64",XDM_CONST.DNS_RECORD_TYPE_EUI64, dns_query_type="HINFO",XDM_CONST.DNS_RECORD_TYPE_HINFO, dns_query_type="HIP",XDM_CONST.DNS_RECORD_TYPE_HIP, dns_query_type="HTTPS",XDM_CONST.DNS_RECORD_TYPE_HTTPS, dns_query_type="IPSECKEY",XDM_CONST.DNS_RECORD_TYPE_IPSECKEY, dns_query_type="KEY",XDM_CONST.DNS_RECORD_TYPE_KEY, dns_query_type="KX",XDM_CONST.DNS_RECORD_TYPE_KX, dns_query_type="LOC",XDM_CONST.DNS_RECORD_TYPE_LOC, dns_query_type="MX",XDM_CONST.DNS_RECORD_TYPE_MX, dns_query_type="NAPTR",XDM_CONST.DNS_RECORD_TYPE_NAPTR, dns_query_type="NS",XDM_CONST.DNS_RECORD_TYPE_NS, dns_query_type="NSEC",XDM_CONST.DNS_RECORD_TYPE_NSEC, dns_query_type="NSEC3",XDM_CONST.DNS_RECORD_TYPE_NSEC3, dns_query_type="NSEC3PARAM",XDM_CONST.DNS_RECORD_TYPE_NSEC3PARAM, dns_query_type="OPENPGPKEY",XDM_CONST.DNS_RECORD_TYPE_OPENPGPKEY, dns_query_type="PTR",XDM_CONST.DNS_RECORD_TYPE_PTR, dns_query_type="RRSIG",XDM_CONST.DNS_RECORD_TYPE_RRSIG, dns_query_type="RP",XDM_CONST.DNS_RECORD_TYPE_RP, dns_query_type="SIG",XDM_CONST.DNS_RECORD_TYPE_SIG, dns_query_type="SMIMEA",XDM_CONST.DNS_RECORD_TYPE_SMIMEA, dns_query_type="SOA",XDM_CONST.DNS_RECORD_TYPE_SOA, dns_query_type="SRV",XDM_CONST.DNS_RECORD_TYPE_SRV, dns_query_type="SSHFP",XDM_CONST.DNS_RECORD_TYPE_SSHFP, dns_query_type="SVCB",XDM_CONST.DNS_RECORD_TYPE_SVCB, dns_query_type="TA",XDM_CONST.DNS_RECORD_TYPE_TA, dns_query_type="TKEY",XDM_CONST.DNS_RECORD_TYPE_TKEY, dns_query_type="TLSA",XDM_CONST.DNS_RECORD_TYPE_TLSA, dns_query_type="TSIG",XDM_CONST.DNS_RECORD_TYPE_TSIG, dns_query_type="TXT",XDM_CONST.DNS_RECORD_TYPE_TXT, dns_query_type="URI",XDM_CONST.DNS_RECORD_TYPE_URI, dns_query_type="ZONEMD",XDM_CONST.DNS_RECORD_TYPE_ZONEMD, to_string(dns_query_type)),
+    xdm.source.process.pid = pid, 
+    xdm.source.process.name = event_type,
+    xdm.source.ipv4 = dns_client_ipv4, 
+    xdm.source.ipv6 = dns_client_ipv6,
+    xdm.source.host.hostname = syslog_hostname;
+
+// analytics events 
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "analytics"
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter 
+    msg_internal_header =  arrayfilter(split(arrayindex(regextract(syslog_msg, "(\d{4}\-\S+\s+\S+\s+\S+\s+\S+)"), 0)), len("@element") > 0),
+    event_payload = arrayindex(regextract(syslog_msg, "\d{4}\-\S+\s+\S+\s+\S+\s+\S+(.+)"), 0),
+    json_payload = arrayindex(regextract(syslog_msg, "\-\-\>(\{.+\})"), 0)
+| alter 
+    // internal header fields 
+    thread_identifier = arrayindex(msg_internal_header, 1),
+    msg_severity = uppercase(arrayindex(msg_internal_header, 2)), 
+    application_component_class = arrayindex(msg_internal_header, 3)
+| alter 
+    // payload fields 
+    target_url =  arrayindex(regextract(event_payload, "(https?\S+)"), 0), 
+    collectorID = coalesce(arrayindex(regextract(event_payload, "collectorId[:=]([\w\.\-]+\w)"), 0), arrayindex(regextract(event_payload, "spec\s+for\s+([\w\.\-]+\w)"), 0)),
+    collectorInstanceID = arrayindex(regextract(event_payload, "[iI]nstanceId[:=]([\w\.\-]+)"), 0),
+    trust_store_path = arrayindex(regextract(event_payload, "trust\s+store\s+at\s+path:\s+(\S+)"), 0),
+    reason = coalesce(arrayindex(regextract(event_payload, "Reason\:\s*(\S{3}.+)"), 0), arrayindex(regextract(event_payload, "The\s+reason[^\:]+\:(.+);"), 0)),
+    // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity),
+    http_response_code = json_payload -> status, // for json payloads 
+    api_endpoint_path = json_payload -> path // for json payloads 
+| alter
+    xdm.alert.severity = severity,
+    xdm.event.type = event_type,
+    xdm.event.description = coalesce(json_payload, syslog_msg),
+    xdm.event.outcome = if(event_payload ~= "fail", XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = reason,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.network.http.url = coalesce(target_url, api_endpoint_path),
+    xdm.network.http.response_code = if(http_response_code = "100", XDM_CONST.HTTP_RSP_CODE_CONTINUE, http_response_code = "101", XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, http_response_code = "102", XDM_CONST.HTTP_RSP_CODE_PROCESSING, http_response_code = "103", XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, http_response_code = "200", XDM_CONST.HTTP_RSP_CODE_OK, http_response_code = "201", XDM_CONST.HTTP_RSP_CODE_CREATED, http_response_code = "202", XDM_CONST.HTTP_RSP_CODE_ACCEPTED, http_response_code = "203", XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, http_response_code = "204", XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, http_response_code = "205", XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, http_response_code = "206", XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, http_response_code = "207", XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, http_response_code = "208", XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, http_response_code = "226", XDM_CONST.HTTP_RSP_CODE_IM_USED, http_response_code = "300", XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, http_response_code = "301", XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, http_response_code = "302", XDM_CONST.HTTP_RSP_CODE_FOUND, http_response_code = "303", XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, http_response_code = "304", XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, http_response_code = "305", XDM_CONST.HTTP_RSP_CODE_USE_PROXY, http_response_code = "307", XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, http_response_code = "308", XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, http_response_code = "400", XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, http_response_code = "401", XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, http_response_code = "402", XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, http_response_code = "403", XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, http_response_code = "404", XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, http_response_code = "405", XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, http_response_code = "406", XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, http_response_code = "407", XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, http_response_code = "408", XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, http_response_code = "409", XDM_CONST.HTTP_RSP_CODE_CONFLICT, http_response_code = "410", XDM_CONST.HTTP_RSP_CODE_GONE, http_response_code = "411", XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, http_response_code = "412", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, http_response_code = "413", XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, http_response_code = "414", XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, http_response_code = "415", XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, http_response_code = "416", XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, http_response_code = "417", XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, http_response_code = "421", XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, http_response_code = "422", XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, http_response_code = "423", XDM_CONST.HTTP_RSP_CODE_LOCKED, http_response_code = "424", XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, http_response_code = "425", XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, http_response_code = "426", XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, http_response_code = "428", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, http_response_code = "429", XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, http_response_code = "431", XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, http_response_code = "451", XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, http_response_code = "500", XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, http_response_code = "501", XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, http_response_code = "502", XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, http_response_code = "503", XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, http_response_code = "504", XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, http_response_code = "505", XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, http_response_code = "506", XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, http_response_code = "507", XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, http_response_code = "508", XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, http_response_code = "511", XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, http_response_code = null, null, to_string(http_response_code)), 
+    xdm.observer.name = collectorID,
+    xdm.observer.unique_identifier = collectorInstanceID,
+    xdm.source.process.identifier = thread_identifier,
+    xdm.source.process.name = event_type,
+    xdm.source.application.name = application_component_class, 
+    xdm.source.host.hostname = syslog_hostname,
+    xdm.target.resource.type = if(trust_store_path != null, "Trust Store Path"),
+    xdm.target.resource.value = trust_store_path;
+
+// eam-access (VMware ESX Agent Manager Access) events 
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "eam-access"
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter tomcat_access_log_fields = arrayindex(regextract(syslog_msg, "(\".+)"), 0)
+| alter 
+    client_remote_machine = arrayindex(regextract(syslog_msg, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 0),
+    server_local_address = arrayindex(regextract(syslog_msg, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 1),
+    thread_identifier = arrayindex(regextract(syslog_msg, "\[(\S+)\]"), 0),
+    http_method = arrayindex(regextract(tomcat_access_log_fields, "\"(\w+)"), 0),
+    uri = arrayindex(regextract(tomcat_access_log_fields, "\"\w+\s+(\S+)"), 0),
+    http_response_code = arrayindex(regextract(tomcat_access_log_fields, "\"\s+(\d+)"), 0),
+    bytes_sent = to_number(arrayindex(regextract(tomcat_access_log_fields, "\d+\s+(\d+)"), 0)),
+    process_time_ms = to_integer(arrayindex(regextract(_raw_log, "time\s+(\d+)\s+msec"), 0)),
+    user_agent = arrayindex(regextract(tomcat_access_log_fields, "\]\s+\"([^\"]+)"), 0),
+    // extract the severity from the syslog header priority field   
+    severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8)))
+| alter
+    xdm.alert.severity = severity,
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.duration = process_time_ms,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.network.http.url = uri, 
+    xdm.network.http.method = if(http_method = "ACL", XDM_CONST.HTTP_METHOD_ACL, http_method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, http_method = "BIND", XDM_CONST.HTTP_METHOD_BIND, http_method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, http_method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, http_method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, http_method = "COPY", XDM_CONST.HTTP_METHOD_COPY, http_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, http_method = "GET", XDM_CONST.HTTP_METHOD_GET, http_method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, http_method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, http_method = "LINK", XDM_CONST.HTTP_METHOD_LINK, http_method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, http_method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, http_method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, http_method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, http_method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, http_method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, http_method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, http_method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, http_method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, http_method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, http_method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, http_method = "POST", XDM_CONST.HTTP_METHOD_POST, http_method = "PRI", XDM_CONST.HTTP_METHOD_PRI, http_method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, http_method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, http_method = "PUT", XDM_CONST.HTTP_METHOD_PUT, http_method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, http_method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, http_method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, http_method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, http_method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, http_method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, http_method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, http_method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, http_method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, http_method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, http_method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, to_string(http_method)),
+    xdm.network.http.response_code = if(http_response_code = "100", XDM_CONST.HTTP_RSP_CODE_CONTINUE, http_response_code = "101", XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, http_response_code = "102", XDM_CONST.HTTP_RSP_CODE_PROCESSING, http_response_code = "103", XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, http_response_code = "200", XDM_CONST.HTTP_RSP_CODE_OK, http_response_code = "201", XDM_CONST.HTTP_RSP_CODE_CREATED, http_response_code = "202", XDM_CONST.HTTP_RSP_CODE_ACCEPTED, http_response_code = "203", XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, http_response_code = "204", XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, http_response_code = "205", XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, http_response_code = "206", XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, http_response_code = "207", XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, http_response_code = "208", XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, http_response_code = "226", XDM_CONST.HTTP_RSP_CODE_IM_USED, http_response_code = "300", XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, http_response_code = "301", XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, http_response_code = "302", XDM_CONST.HTTP_RSP_CODE_FOUND, http_response_code = "303", XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, http_response_code = "304", XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, http_response_code = "305", XDM_CONST.HTTP_RSP_CODE_USE_PROXY, http_response_code = "307", XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, http_response_code = "308", XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, http_response_code = "400", XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, http_response_code = "401", XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, http_response_code = "402", XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, http_response_code = "403", XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, http_response_code = "404", XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, http_response_code = "405", XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, http_response_code = "406", XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, http_response_code = "407", XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, http_response_code = "408", XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, http_response_code = "409", XDM_CONST.HTTP_RSP_CODE_CONFLICT, http_response_code = "410", XDM_CONST.HTTP_RSP_CODE_GONE, http_response_code = "411", XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, http_response_code = "412", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, http_response_code = "413", XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, http_response_code = "414", XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, http_response_code = "415", XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, http_response_code = "416", XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, http_response_code = "417", XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, http_response_code = "421", XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, http_response_code = "422", XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, http_response_code = "423", XDM_CONST.HTTP_RSP_CODE_LOCKED, http_response_code = "424", XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, http_response_code = "425", XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, http_response_code = "426", XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, http_response_code = "428", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, http_response_code = "429", XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, http_response_code = "431", XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, http_response_code = "451", XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, http_response_code = "500", XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, http_response_code = "501", XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, http_response_code = "502", XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, http_response_code = "503", XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, http_response_code = "504", XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, http_response_code = "505", XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, http_response_code = "506", XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, http_response_code = "507", XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, http_response_code = "508", XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, http_response_code = "511", XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, http_response_code = null, null, to_string(http_response_code)), 
+    xdm.source.ipv4 = client_remote_machine,
+    xdm.source.user_agent = user_agent, 
+    xdm.source.sent_bytes = bytes_sent, 
+    xdm.source.process.identifier = thread_identifier,
+    xdm.source.process.name = event_type,
+    xdm.source.host.hostname = syslog_hostname,
+    xdm.target.resource.value = uri,
+    xdm.target.ipv4 = server_local_address;
+
+// envoy-access events 
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "envoy-access"
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter
+    msg_severity = uppercase(arrayindex(regextract(syslog_msg, "(\w+)\s+[\w-]+\[\d+"), 0)),
+    pid = to_integer(arrayindex(regextract(syslog_msg, "[\w-]+\[(\d+)\]"), 0)),
+    sub_module = arrayindex(regextract(syslog_msg, "sub=([\w-]+)"), 0),
+    event_payload = coalesce(arrayindex(regextract(syslog_msg, "\w+=\S+\]\s+(.+)"), 0), trim(arrayindex(regextract(syslog_msg, "v\[\d+\]\s+\[.+?\]\s+(.+)"), 0), "--"), syslog_msg )
+| alter envoy_proxy_access_log_fields = regextract(event_payload, "\S+")
+| alter 
+    // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity),
+    http_method = ltrim(arrayindex(envoy_proxy_access_log_fields, 1), "\""),
+    uri = arrayindex(envoy_proxy_access_log_fields, 2),
+    http_protocol = rtrim(arrayindex(envoy_proxy_access_log_fields, 3), "\""),
+    http_response_code = arrayindex(envoy_proxy_access_log_fields, 4),
+    bytes_received = to_number(arrayindex(envoy_proxy_access_log_fields, 7)),
+    bytes_sent = to_number(arrayindex(envoy_proxy_access_log_fields, 8)),
+    client_ip = arrayindex(regextract(arrayindex(envoy_proxy_access_log_fields, 12), "(\d+[^\:]+)"), 0),
+    client_port = arrayindex(regextract(arrayindex(envoy_proxy_access_log_fields, 12), ":(\d{1,5})"), 0),
+    server_ip = arrayindex(regextract(arrayindex(envoy_proxy_access_log_fields, 13), "(\d+[^\:]+)"), 0),
+    server_port = arrayindex(regextract(arrayindex(envoy_proxy_access_log_fields, 13), ":(\d{1,5})"), 0),
+    client2_ip = arrayindex(regextract(arrayindex(envoy_proxy_access_log_fields, 14), "(\d+[^\:]+)"), 0),
+    proxy_ip = arrayindex(regextract(arrayindex(envoy_proxy_access_log_fields, 15), "(\d+[^\:]+)"), 0),
+    proxy_port = to_integer(arrayindex(regextract(arrayindex(envoy_proxy_access_log_fields, 15), ":(\d{1,5})"), 0))
+| alter
+    xdm.alert.severity = severity,
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.intermediate.ipv4 = proxy_ip, 
+    xdm.intermediate.host.ipv4_addresses = arraycreate(proxy_ip),
+    xdm.intermediate.port = proxy_port,
+    xdm.network.application_protocol = http_protocol, 
+    xdm.network.http.url = uri, 
+    xdm.network.http.method = if(http_method = "ACL", XDM_CONST.HTTP_METHOD_ACL, http_method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, http_method = "BIND", XDM_CONST.HTTP_METHOD_BIND, http_method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, http_method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, http_method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, http_method = "COPY", XDM_CONST.HTTP_METHOD_COPY, http_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, http_method = "GET", XDM_CONST.HTTP_METHOD_GET, http_method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, http_method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, http_method = "LINK", XDM_CONST.HTTP_METHOD_LINK, http_method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, http_method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, http_method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, http_method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, http_method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, http_method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, http_method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, http_method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, http_method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, http_method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, http_method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, http_method = "POST", XDM_CONST.HTTP_METHOD_POST, http_method = "PRI", XDM_CONST.HTTP_METHOD_PRI, http_method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, http_method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, http_method = "PUT", XDM_CONST.HTTP_METHOD_PUT, http_method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, http_method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, http_method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, http_method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, http_method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, http_method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, http_method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, http_method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, http_method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, http_method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, http_method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, to_string(http_method)),
+    xdm.network.http.response_code = if(http_response_code = "100", XDM_CONST.HTTP_RSP_CODE_CONTINUE, http_response_code = "101", XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, http_response_code = "102", XDM_CONST.HTTP_RSP_CODE_PROCESSING, http_response_code = "103", XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, http_response_code = "200", XDM_CONST.HTTP_RSP_CODE_OK, http_response_code = "201", XDM_CONST.HTTP_RSP_CODE_CREATED, http_response_code = "202", XDM_CONST.HTTP_RSP_CODE_ACCEPTED, http_response_code = "203", XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, http_response_code = "204", XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, http_response_code = "205", XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, http_response_code = "206", XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, http_response_code = "207", XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, http_response_code = "208", XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, http_response_code = "226", XDM_CONST.HTTP_RSP_CODE_IM_USED, http_response_code = "300", XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, http_response_code = "301", XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, http_response_code = "302", XDM_CONST.HTTP_RSP_CODE_FOUND, http_response_code = "303", XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, http_response_code = "304", XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, http_response_code = "305", XDM_CONST.HTTP_RSP_CODE_USE_PROXY, http_response_code = "307", XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, http_response_code = "308", XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, http_response_code = "400", XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, http_response_code = "401", XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, http_response_code = "402", XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, http_response_code = "403", XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, http_response_code = "404", XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, http_response_code = "405", XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, http_response_code = "406", XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, http_response_code = "407", XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, http_response_code = "408", XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, http_response_code = "409", XDM_CONST.HTTP_RSP_CODE_CONFLICT, http_response_code = "410", XDM_CONST.HTTP_RSP_CODE_GONE, http_response_code = "411", XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, http_response_code = "412", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, http_response_code = "413", XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, http_response_code = "414", XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, http_response_code = "415", XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, http_response_code = "416", XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, http_response_code = "417", XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, http_response_code = "421", XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, http_response_code = "422", XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, http_response_code = "423", XDM_CONST.HTTP_RSP_CODE_LOCKED, http_response_code = "424", XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, http_response_code = "425", XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, http_response_code = "426", XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, http_response_code = "428", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, http_response_code = "429", XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, http_response_code = "431", XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, http_response_code = "451", XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, http_response_code = "500", XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, http_response_code = "501", XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, http_response_code = "502", XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, http_response_code = "503", XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, http_response_code = "504", XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, http_response_code = "505", XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, http_response_code = "506", XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, http_response_code = "507", XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, http_response_code = "508", XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, http_response_code = "511", XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, http_response_code = null, null, to_string(http_response_code)), 
+    xdm.source.application.name = sub_module, 
+    xdm.source.ipv4 = client_ip,
+    xdm.source.port = to_integer(client_port), 
+    xdm.source.host.ipv4_addresses = arraycreate(client_ip, client2_ip),
+    xdm.source.sent_bytes = bytes_sent, 
+    xdm.source.process.pid = pid, 
+    xdm.source.process.name = event_type,
+    xdm.source.host.hostname = syslog_hostname,
+    xdm.target.sent_bytes = bytes_received,
+    xdm.target.resource.value = uri,
+    xdm.target.port = to_integer(server_port),
+    xdm.target.ipv4 = server_ip,
+    xdm.target.host.ipv4_addresses = arraycreate(server_ip);
+
+//  trustmanagement-gc 
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "trustmanagement-gc"
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter 
+    // since the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8)))
+| alter
+    xdm.alert.severity = severity,
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.source.process.name = event_type,
+    xdm.source.host.hostname = syslog_hostname;
+
+// trustmanagement-svcs
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "trustmanagement-svcs"
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter 
+    thread_identifier = arrayindex(regextract(syslog_msg, "\w+\s+\[([\w-]+)\s+"), 0),
+    msg_severity = arrayindex(regextract(syslog_msg, "(\w+)\s+\S+\s+opId="), 0),
+    app_class_component = arrayindex(regextract(syslog_msg, "\w+\s+(\S+)\s+opId="), 0),
+    operation_id = arrayindex(regextract(syslog_msg, "opId=([^\]]+)"), 0),
+    event_payload = arrayindex(regextract(syslog_msg, "opId=\S*\]\s+(.+)"), 0)
+| alter 
+    user = coalesce(arrayindex(regextract(event_payload, "User (\S+)"), 0), arrayindex(regextract(event_payload, "\[value=([^,]+)"), 0)),
+    group = regextract(event_payload, "group (\S+)"),
+    ms = to_integer(coalesce( arrayindex(regextract(event_payload, "(?:ms|Ms|MS)(?:\W+|\s+)(\d+)"), 0), arrayindex(regextract(event_payload, "(\d+)\s+ms"), 0))),
+    // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
+| alter
+    xdm.alert.severity = severity, 
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.duration = ms, 
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.session_context_id = operation_id,
+    xdm.source.application.name = app_class_component, 
+    xdm.source.process.identifier = thread_identifier,
+    xdm.source.process.name = event_type,
+    xdm.source.identity.username = user, 
+    xdm.source.identity.groups = group, 
+    xdm.source.host.hostname = syslog_hostname;
+
+// eam-api
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "eam-api" 
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter 
+    msg_severity = arrayindex(regextract(syslog_msg, "\|\s*(\w+)"), 0),
+    module = arrayindex(regextract(syslog_msg, "\|\s*(\w+)"), 1),
+    app_component = arrayindex(regextract(syslog_msg, "\|\s*(\S+)"), 2),
+    pid = to_integer(arrayindex(regextract(syslog_msg, "\|\s*(\d+)\s*\|"), 0)),
+    event_payload = arrayindex(regextract(syslog_msg, "\|\s*([^\|]+)"), 4)
+| alter 
+    // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity),
+    operation_id = arrayindex(regextract(event_payload, "opId=([\w\-]+)"), 0),
+    session_id = arrayindex(regextract(event_payload, "sessionId=([\w\-]+)"), 0)
+| alter
+    xdm.alert.severity = severity, 
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.network.session_id = session_id,
+    xdm.session_context_id = operation_id,
+    xdm.source.application.name = coalesce(app_component, module),
+    xdm.source.process.pid = pid, 
+    xdm.source.process.name = event_type,
+    xdm.source.host.hostname = syslog_hostname;
+
+// wcpsvc
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "wcpsvc" 
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter 
+    msg_severity = uppercase(arrayindex(regextract(syslog_msg, "\S+\s+(\w+)"), 0)),
+    module = arrayindex(regextract(syslog_msg, "\S+\s+\w+\s+(\w+)"), 0),
+    module_id = arrayindex(regextract(syslog_msg, "\w+\s+\[([^\]]+)\]"), 0),
+    operation_id = arrayindex(regextract(syslog_msg, "opId=([\w\-]+)"), 0),
+    target_hosts = regextract(syslog_msg, "Hostname:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),
+    target_port = to_integer(arrayindex(regextract(syslog_msg, "Port:(\d+)"), 0))
+| alter // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
+| alter
+    xdm.alert.severity = severity, 
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.session_context_id = operation_id,
+    xdm.source.application.name = coalesce(module, module_id),
+    xdm.source.process.identifier = module_id,
+    xdm.source.process.name = event_type,
+    xdm.source.host.hostname = syslog_hostname,
+    xdm.target.port = target_port,
+    xdm.target.host.ipv4_addresses = target_hosts;
+
+// ui-threadmonitor
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "ui-threadmonitor" 
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter 
+    msg_severity = uppercase(arrayindex(regextract(syslog_msg, "\S+\s+\[\s*(\w+)"), 0)),
+    module = arrayindex(regextract(syslog_msg, "\]\s+([\w\-]+)"), 0),
+    application_component = arrayindex(regextract(syslog_msg, "\]\s+[\w\-]+\s+(\S+)"), 0)
+| alter // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
+| alter
+    xdm.alert.severity = severity, 
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.source.application.name = coalesce(application_component, module),
+    xdm.source.process.name = event_type,
+    xdm.source.host.hostname = syslog_hostname;
+
+// ssoadminserver 
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "ssoadminserver" 
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter
+    process_identifier = arrayindex(regextract(syslog_msg, "\S+\s+\w+\s+\w+\[([^\]]+)"), 0),
+    thread_id = to_integer(arrayindex(regextract(syslog_msg, "thread\-(\d+)\]"), 0)),
+    msg_severity = arrayindex(regextract(syslog_msg, "\S+\s+(\w+)"), 0),
+    operation_id = arrayindex(regextract(syslog_msg, "opId=([a-fA-F\-\d]+)"), 0),
+    app_component = arrayindex(regextract(syslog_msg, "opId=\S*\s+\[(\S+)\]"), 0),
+    user = coalesce(arrayindex(regextract(syslog_msg, "User\s*\{Name:\s*([^,]+)"), 0), 
+                arrayindex(regextract(syslog_msg, "SubjectNameId\s*\[value=([^\,]+)"), 0), 
+                arrayindex(regextract(syslog_msg, "User\s+(\S+)\s+is"), 0)),
+    user_domain = coalesce(arrayindex(regextract(syslog_msg, "Domain:\s*([\w\.]+)"), 0),
+                  arrayindex(regextract(syslog_msg, "SubjectNameId\s*\[value=[^\@]+\@([^\,]+)"), 0)),
+    user_role = regextract(syslog_msg, "role\s+\'([^\']+)")
+| alter // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
+| alter
+    xdm.alert.severity = severity, 
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.source.process.thread_id = thread_id,
+    xdm.source.application.name = coalesce(app_component),
+    xdm.session_context_id = operation_id,
+    xdm.source.process.identifier = process_identifier,
+    xdm.source.process.name = event_type,
+    xdm.source.identity.username = user,
+    xdm.source.identity.domain = user_domain,
+    xdm.source.identity.groups = user_role, 
+    xdm.source.host.hostname = syslog_hostname;
+
+// ui-main 
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "ui-main" 
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter
+    msg_severity = arrayindex(regextract(syslog_msg, "\S+\s+\[\s*(\w+)\s*\]"), 0),
+    module_identifier = arrayindex(regextract(syslog_msg, "\S+\s+\[\s*\w+\s*\]\s+(\S+)"), 0),
+    event_payload = arrayindex(regextract(syslog_msg, "\S+\s+\[\s*\w+\s*\]\s+\S+\s+(.+)"), 0)
+| alter 
+    // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity),
+    session_id = coalesce(arrayindex(regextract(event_payload, "\S+\s+(\d+)\s+\S+\s+\S+"), 0), 
+                          arrayindex(regextract(event_payload, "session\s+(\d+)"), 0),
+                          arrayindex(regextract(event_payload, "session\s+id:\s*(\d+)"), 0),
+                          arrayindex(regextract(event_payload, "sessionId\s*(\d+)"), 0)),
+    ms = to_integer(arrayindex(regextract(event_payload, "(\d+)\s+ms"), 0)),
+    application_component = coalesce(arrayindex(regextract(event_payload, "\S+\s+\S+\s+\S+\s+(\w+\.\w+\S+)"), 0),
+                                     arrayindex(regextract(event_payload, "(\w+\.\w+\S+)"), 0))
+| alter
+    xdm.alert.severity = severity, 
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.duration = ms,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.network.session_id = session_id,
+    xdm.source.application.name = application_component,
+    xdm.source.process.identifier = module_identifier,
+    xdm.source.process.name = event_type,
+    xdm.source.host.hostname = syslog_hostname;
+
+// procstate
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "procstate" 
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter // since the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8)))
+| alter
+    xdm.alert.severity = severity,
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.source.process.name = event_type,
+    xdm.source.host.hostname = syslog_hostname;
+
+// content-library
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "content-library" 
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter 
+    internal_header_fields = regextract(syslog_msg, "\|\s*(\S+)"),
+    event_payload =  arrayindex(regextract(syslog_msg, "\|\s*([^\|]+)"), 4)
+| alter 
+    msg_severity = arrayindex(internal_header_fields, 0),
+    operation_id = arrayindex(internal_header_fields, 1),
+    thread_identifier = arrayindex(internal_header_fields, 2),
+    module = arrayindex(internal_header_fields, 3)
+| alter 
+    http_method = arrayindex(regextract(event_payload, "method:\s*(\S+)"), 0),
+    url = arrayindex(regextract(event_payload, "url:\s*(\S+)"), 0),
+    target_service = arrayindex(regextract(event_payload, "service\s+\'([^\']+)"), 0),
+    operation = arrayindex(regextract(event_payload, "operation\s+\'([^\']+)"), 0),  
+    wsdl_name = arrayindex(regextract(event_payload, "wsdlName=(\S+)"), 0),
+    // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
+| alter
+    xdm.alert.severity = severity, 
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.operation_sub_type = operation, 
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.network.http.method = if(http_method = "ACL", XDM_CONST.HTTP_METHOD_ACL, http_method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, http_method = "BIND", XDM_CONST.HTTP_METHOD_BIND, http_method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, http_method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, http_method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, http_method = "COPY", XDM_CONST.HTTP_METHOD_COPY, http_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, http_method = "GET", XDM_CONST.HTTP_METHOD_GET, http_method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, http_method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, http_method = "LINK", XDM_CONST.HTTP_METHOD_LINK, http_method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, http_method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, http_method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, http_method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, http_method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, http_method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, http_method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, http_method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, http_method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, http_method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, http_method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, http_method = "POST", XDM_CONST.HTTP_METHOD_POST, http_method = "PRI", XDM_CONST.HTTP_METHOD_PRI, http_method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, http_method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, http_method = "PUT", XDM_CONST.HTTP_METHOD_PUT, http_method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, http_method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, http_method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, http_method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, http_method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, http_method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, http_method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, http_method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, http_method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, http_method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, http_method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, to_string(http_method)),
+    xdm.network.http.url = url,
+    xdm.source.application.name = module,
+    xdm.session_context_id = operation_id,
+    xdm.source.process.identifier = thread_identifier,
+    xdm.source.process.name = event_type,
+    xdm.source.host.hostname = syslog_hostname,
+    xdm.target.resource.value = coalesce(target_service, wsdl_name),
+    xdm.target.resource.type = if(target_service != null, "Service Name", wsdl_name != null, "WSDL Name");
+
+// vpxd-svcs-access
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "vpxd-svcs-access" 
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter 
+    event_payload = arrayindex(regextract(syslog_msg, "\S+\s+(.+)"), 0),
+    // since the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8)))
+| alter 
+    thread_identifier =  arrayindex(regextract(event_payload, "\S+\s+\S+\s+(\S+)"), 0),
+    http_response_code = arrayindex(regextract(event_payload, "\S+\s+\S+\s+\S+\s+(\d+)"), 0),
+    user_agent = arrayindex(regextract(event_payload, "\d{3}\s+\"([^\"]+)"), 0),
+    http_method = arrayindex(regextract(event_payload, "\"\s+(\w+)"), 0),
+    uri = arrayindex(regextract(event_payload, "\"\s+\w+\s+(\S+)"), 0),
+    http_version = arrayindex(regextract(event_payload, "\/\S+\s+(HTTP\S+)"), 0)
+| alter
+    xdm.alert.severity = severity,
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.network.http.method = if(http_method = "ACL", XDM_CONST.HTTP_METHOD_ACL, http_method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, http_method = "BIND", XDM_CONST.HTTP_METHOD_BIND, http_method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, http_method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, http_method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, http_method = "COPY", XDM_CONST.HTTP_METHOD_COPY, http_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, http_method = "GET", XDM_CONST.HTTP_METHOD_GET, http_method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, http_method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, http_method = "LINK", XDM_CONST.HTTP_METHOD_LINK, http_method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, http_method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, http_method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, http_method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, http_method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, http_method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, http_method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, http_method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, http_method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, http_method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, http_method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, http_method = "POST", XDM_CONST.HTTP_METHOD_POST, http_method = "PRI", XDM_CONST.HTTP_METHOD_PRI, http_method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, http_method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, http_method = "PUT", XDM_CONST.HTTP_METHOD_PUT, http_method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, http_method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, http_method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, http_method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, http_method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, http_method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, http_method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, http_method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, http_method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, http_method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, http_method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, to_string(http_method)),
+    xdm.network.http.response_code = if(http_response_code = "100", XDM_CONST.HTTP_RSP_CODE_CONTINUE, http_response_code = "101", XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, http_response_code = "102", XDM_CONST.HTTP_RSP_CODE_PROCESSING, http_response_code = "103", XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, http_response_code = "200", XDM_CONST.HTTP_RSP_CODE_OK, http_response_code = "201", XDM_CONST.HTTP_RSP_CODE_CREATED, http_response_code = "202", XDM_CONST.HTTP_RSP_CODE_ACCEPTED, http_response_code = "203", XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, http_response_code = "204", XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, http_response_code = "205", XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, http_response_code = "206", XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, http_response_code = "207", XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, http_response_code = "208", XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, http_response_code = "226", XDM_CONST.HTTP_RSP_CODE_IM_USED, http_response_code = "300", XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, http_response_code = "301", XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, http_response_code = "302", XDM_CONST.HTTP_RSP_CODE_FOUND, http_response_code = "303", XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, http_response_code = "304", XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, http_response_code = "305", XDM_CONST.HTTP_RSP_CODE_USE_PROXY, http_response_code = "307", XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, http_response_code = "308", XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, http_response_code = "400", XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, http_response_code = "401", XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, http_response_code = "402", XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, http_response_code = "403", XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, http_response_code = "404", XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, http_response_code = "405", XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, http_response_code = "406", XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, http_response_code = "407", XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, http_response_code = "408", XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, http_response_code = "409", XDM_CONST.HTTP_RSP_CODE_CONFLICT, http_response_code = "410", XDM_CONST.HTTP_RSP_CODE_GONE, http_response_code = "411", XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, http_response_code = "412", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, http_response_code = "413", XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, http_response_code = "414", XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, http_response_code = "415", XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, http_response_code = "416", XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, http_response_code = "417", XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, http_response_code = "421", XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, http_response_code = "422", XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, http_response_code = "423", XDM_CONST.HTTP_RSP_CODE_LOCKED, http_response_code = "424", XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, http_response_code = "425", XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, http_response_code = "426", XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, http_response_code = "428", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, http_response_code = "429", XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, http_response_code = "431", XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, http_response_code = "451", XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, http_response_code = "500", XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, http_response_code = "501", XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, http_response_code = "502", XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, http_response_code = "503", XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, http_response_code = "504", XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, http_response_code = "505", XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, http_response_code = "506", XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, http_response_code = "507", XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, http_response_code = "508", XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, http_response_code = "511", XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, http_response_code = null, null, to_string(http_response_code)),
+    xdm.network.http.url = uri,
+    xdm.network.application_protocol = http_version,
+    xdm.source.user_agent = user_agent,
+    xdm.source.process.identifier = thread_identifier,
+    xdm.source.process.name = event_type,
+    xdm.source.host.hostname = syslog_hostname,
+    xdm.target.resource.value = uri;
+
+// sso-tomcat & lookupsvc-localhost_access events 
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type in ("sso-tomcat", "lookupsvc-localhost_access")
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter 
+    // since the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))),
+    event_payload = arrayindex(regextract(syslog_msg, "\[[^\]]+\]\s+(.+)"), 0),
+    http_request_line = regextract(arrayindex(regextract(syslog_msg, "HTTP\S+\s+\w+\s+\/\S+"), 0), "(\S+)")
+| alter 
+    thread_identifier =  arrayindex(regextract(event_payload, "(\S+)"), 0),
+    user_agent = arrayindex(regextract(event_payload, "Request\]\s+\"([^\"]+)"), 0),
+    client_ip =  coalesce(arrayindex(regextract(event_payload, "Request\]\s+(\S+):\d{1,5}"), 0), 
+                          arrayindex(regextract(event_payload, "Request\]\s+\"[^\"]+\"\s+[^\/]+\/(\S+):\d{1,5}"), 0)),
+    client_port =  coalesce(arrayindex(regextract(event_payload, "Request\]\s+\S+:(\d{1,5})"), 0), 
+                          arrayindex(regextract(event_payload, "Request\]\s+\"[^\"]+\"\s+[^\/]+\/\S+:(\d{1,5})"), 0)),
+    server_ip = arrayindex(regextract(event_payload, "\"\s+(\d+[^\/]+)[^\:]+\:\d{1,5}"), 0),
+    server_port = to_integer(arrayindex(regextract(event_payload, "to\s+local\s+(\d{1,5})"), 0)),
+    http_version = arrayindex(http_request_line, 0),
+    http_method = arrayindex(http_request_line, 1),
+    uri = arrayindex(http_request_line, 2),
+    bytes = to_number(arrayindex(regextract(event_payload, "(\d+)\s+bytes"), 0)),
+    http_response_code = arrayindex(regextract(event_payload, "Response\]\s+(\d+)"), 0),
+    process_duration_ms = to_integer(arrayindex(regextract(event_payload, "(\d+)ms"), 0))
+| alter
+    xdm.alert.severity = severity,
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg, 
+    xdm.event.duration = process_duration_ms,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.network.http.method = if(http_method = "ACL", XDM_CONST.HTTP_METHOD_ACL, http_method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, http_method = "BIND", XDM_CONST.HTTP_METHOD_BIND, http_method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, http_method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, http_method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, http_method = "COPY", XDM_CONST.HTTP_METHOD_COPY, http_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, http_method = "GET", XDM_CONST.HTTP_METHOD_GET, http_method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, http_method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, http_method = "LINK", XDM_CONST.HTTP_METHOD_LINK, http_method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, http_method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, http_method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, http_method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, http_method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, http_method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, http_method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, http_method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, http_method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, http_method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, http_method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, http_method = "POST", XDM_CONST.HTTP_METHOD_POST, http_method = "PRI", XDM_CONST.HTTP_METHOD_PRI, http_method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, http_method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, http_method = "PUT", XDM_CONST.HTTP_METHOD_PUT, http_method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, http_method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, http_method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, http_method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, http_method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, http_method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, http_method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, http_method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, http_method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, http_method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, http_method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, to_string(http_method)),
+    xdm.network.http.response_code = if(http_response_code = "100", XDM_CONST.HTTP_RSP_CODE_CONTINUE, http_response_code = "101", XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, http_response_code = "102", XDM_CONST.HTTP_RSP_CODE_PROCESSING, http_response_code = "103", XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, http_response_code = "200", XDM_CONST.HTTP_RSP_CODE_OK, http_response_code = "201", XDM_CONST.HTTP_RSP_CODE_CREATED, http_response_code = "202", XDM_CONST.HTTP_RSP_CODE_ACCEPTED, http_response_code = "203", XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, http_response_code = "204", XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, http_response_code = "205", XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, http_response_code = "206", XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, http_response_code = "207", XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, http_response_code = "208", XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, http_response_code = "226", XDM_CONST.HTTP_RSP_CODE_IM_USED, http_response_code = "300", XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, http_response_code = "301", XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, http_response_code = "302", XDM_CONST.HTTP_RSP_CODE_FOUND, http_response_code = "303", XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, http_response_code = "304", XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, http_response_code = "305", XDM_CONST.HTTP_RSP_CODE_USE_PROXY, http_response_code = "307", XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, http_response_code = "308", XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, http_response_code = "400", XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, http_response_code = "401", XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, http_response_code = "402", XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, http_response_code = "403", XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, http_response_code = "404", XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, http_response_code = "405", XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, http_response_code = "406", XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, http_response_code = "407", XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, http_response_code = "408", XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, http_response_code = "409", XDM_CONST.HTTP_RSP_CODE_CONFLICT, http_response_code = "410", XDM_CONST.HTTP_RSP_CODE_GONE, http_response_code = "411", XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, http_response_code = "412", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, http_response_code = "413", XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, http_response_code = "414", XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, http_response_code = "415", XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, http_response_code = "416", XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, http_response_code = "417", XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, http_response_code = "421", XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, http_response_code = "422", XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, http_response_code = "423", XDM_CONST.HTTP_RSP_CODE_LOCKED, http_response_code = "424", XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, http_response_code = "425", XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, http_response_code = "426", XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, http_response_code = "428", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, http_response_code = "429", XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, http_response_code = "431", XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, http_response_code = "451", XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, http_response_code = "500", XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, http_response_code = "501", XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, http_response_code = "502", XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, http_response_code = "503", XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, http_response_code = "504", XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, http_response_code = "505", XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, http_response_code = "506", XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, http_response_code = "507", XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, http_response_code = "508", XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, http_response_code = "511", XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, http_response_code = null, null, to_string(http_response_code)),
+    xdm.network.http.url = uri,
+    xdm.network.application_protocol = http_version,
+    xdm.source.ipv4 = client_ip,
+    xdm.source.port = to_integer(client_port), 
+    xdm.source.user_agent = user_agent,
+    xdm.source.sent_bytes = bytes, 
+    xdm.source.process.identifier = thread_identifier,
+    xdm.source.process.name = event_type,
+    xdm.source.host.hostname = syslog_hostname,
+    xdm.target.resource.value = uri,
+    xdm.target.ipv4 = server_ip, 
+    xdm.target.port = server_port;
+
+// vmon
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "vmon" 
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter 
+    event_payload = arrayindex(regextract(syslog_msg, "\S+\s+(.+)"), 0),
+     // since the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8)))
+| alter
+    host_id = arrayindex(regextract(event_payload, "(host-\w+)"), 0),
+    service = arrayindex(regextract(event_payload, "ֿ\s+\<([\w\-]+)"), 0),
+    user = arrayindex(regextract(event_payload, "as user (\S+)"), 0),
+    command = coalesce(arrayindex(regextract(syslog_msg, "Constructed command:\s*(.+)"), 0),
+                    arrayindex(regextract(syslog_msg, "Running\s+the\s+(.+)\s+command"), 0)),
+    state =  arrayindex(regextract(event_payload, "State (\w+)"), 0),
+    op = arrayindex(regextract(event_payload, "service\s+batch\s+op\s+(\w+)"), 0)
+| alter
+    xdm.alert.severity = severity,
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.operation_sub_type = op, 
+    xdm.event.outcome = state,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.source.host.device_id = host_id, 
+    xdm.source.process.command_line = command, 
+    xdm.source.application.name = service, 
+    xdm.source.identity.username = user,
+    xdm.source.process.name = event_type,
+    xdm.source.host.hostname = syslog_hostname;
+
+// rhttpproxy-main
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "rhttpproxy-main" 
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter
+    msg_severity = uppercase(arrayindex(regextract(syslog_msg, "(\w+)\s+[\w-]+\[\d+"), 0)),
+    pid = to_integer(arrayindex(regextract(syslog_msg, "[\w-]+\[(\d+)\]"), 0)),
+    sub_module = arrayindex(regextract(syslog_msg, "sub=([\w-]+)"), 0)
+| alter // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
+| alter
+    xdm.alert.severity = severity, 
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.source.process.pid = pid,
+    xdm.source.application.name = sub_module, 
+    xdm.source.process.name = event_type,
+    xdm.source.host.hostname = syslog_hostname;
+
+// sudo
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "sudo" 
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter
+    user = coalesce(arrayindex(regextract(syslog_msg, "USER=(\w+)"), 0),
+                    arrayindex(regextract(syslog_msg, "for\s+user\s+(\w+)"), 0)),
+    uid = arrayindex(regextract(syslog_msg, "uid=(\d+)"), 0),
+    command = arrayindex(regextract(syslog_msg, "COMMAND=(\S+)"), 0),
+    working_directory = arrayindex(regextract(syslog_msg, "PWD=(\S+)"), 0),
+    process = rtrim(arrayindex(regextract(syslog_msg, "(\S+)"), 0), ":"),
+    // since the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8)))
+| alter
+    xdm.alert.severity = severity,
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.source.identity.username = user, 
+    xdm.source.identity.identifier = uid, 
+    xdm.source.process.command_line = command, 
+    xdm.source.process.executable.directory = working_directory, 
+    xdm.source.process.name = coalesce(process, event_type),
+    xdm.source.host.hostname = syslog_hostname;
+
+// sca-vmon.std
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "sca-vmon.std" 
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter
+    msg_severity = arrayindex(regextract(syslog_msg, "(\w+):\s+"), 0),
+    module = arrayindex(regextract(syslog_msg, "\w+:\s+(\w+):"), 0),
+    event_payload = coalesce(arrayindex(regextract(syslog_msg, "\w+:\s+\w+:\s+(.+)"), 0),
+                             arrayindex(regextract(syslog_msg, "\w{3}\s+\d{1,2},\s+\d{4}\s+\S+\s+[AP]M\s+(.+)"), 0),
+                             syslog_msg)
+| alter 
+    user =  arrayindex(regextract(event_payload, "\'([^\']+)\'\s+on\ssession"), 0),
+    session_id =  arrayindex(regextract(event_payload, "on\ssession\s+([a-fA-F\d\-]+)"), 0),
+    // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
+| alter
+    xdm.alert.severity = severity, 
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.outcome = if(event_payload contains "Successfully", XDM_CONST.OUTCOME_SUCCESS),
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.network.session_id = session_id, 
+    xdm.source.identity.username = user, 
+    xdm.source.application.name = module,  
+    xdm.source.process.name = event_type,
+    xdm.source.host.hostname = syslog_hostname;
+
+// applmgmt
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "applmgmt" 
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter
+    pid = to_integer(arrayindex(regextract(syslog_msg, "\[(\d+)\]"), 0)),
+    msg_severity = arrayindex(regextract(syslog_msg, "\[\d+\]\s*(\w+)\:"), 0),
+    event_payload = arrayindex(regextract(syslog_msg, "\[\d+\]\s*\w+\:(.+)"), 0)
+| alter 
+    user =  arrayindex(regextract(event_payload, "User=([^,]+)"), 0),
+    groups = arrayfilter(regextract(arrayindex(regextract(event_payload, "groups=\{([^\}]+\})"), 0), "\'([^\']+)"), len("@element") > 2),
+    file =  arrayindex(regextract(event_payload, "file\s+(\/\S+)"), 0),
+    // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
+| alter
+    xdm.alert.severity = severity, 
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.source.identity.username = user, 
+    xdm.source.identity.groups = groups, 
+    xdm.source.process.name = event_type,
+    xdm.source.process.pid = pid,
+    xdm.source.host.hostname = syslog_hostname,
+    xdm.target.file.filename = file; 
+
+// vstats
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "vstats" 
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter 
+    event_payload = arrayindex(regextract(syslog_msg, "\S+\s+\w+\s+\S+\s+(.+)"), 0),
+    // since the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8)))
+| alter 
+    resource_name = arrayindex(regextract(event_payload, "\{\"([^\"]+)"), 0),
+    resource_value = arrayindex(regextract(event_payload, "\{\"[^\"]+\"\:\s*\"([^\"]+)"), 0)
+| alter
+    xdm.alert.severity = severity,
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.source.process.name = event_type,
+    xdm.source.host.hostname = syslog_hostname,
+    xdm.target.resource.name = resource_name,
+    xdm.target.resource.value = resource_value;
+
+// vmafdd
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "vmafdd" 
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter 
+    process_name = arrayindex(regextract(syslog_msg, "\[([^\]]+)"), 0),
+    msg_severity = arrayindex(regextract(syslog_msg, "\]\[(\w+)"), 0)
+| alter // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
+| alter
+    xdm.alert.severity = severity, 
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.source.process.name = coalesce(process_name, event_type),
+    xdm.source.host.hostname = syslog_hostname;
+
+// certificatemanagement-svcs
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "certificatemanagement-svcs" 
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter 
+    process_identifier = arrayindex(regextract(syslog_msg, "\w+\s+\[(\S+)"), 0),
+    thread_id = to_integer(arrayindex(regextract(syslog_msg, "pool\-\d+\-thread\-(\d+)"), 0)),
+    msg_severity = arrayindex(regextract(syslog_msg, "(\w+)\s+\S+\s+opId="), 0),
+    app_component = arrayindex(regextract(syslog_msg, "\w+\s+(\S+)\s+opId="), 0),
+    operation_id = arrayindex(regextract(syslog_msg, "opId=([^\]]+)"), 0),
+    operation = arrayindex(regextract(syslog_msg, "Operation (\S+) took"), 0), 
+    ms = to_integer(arrayindex(regextract(syslog_msg, "took\s+(\d+)\s+ms"), 0)) 
+| alter // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
+| alter 
+    xdm.alert.severity = severity, 
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.operation_sub_type = operation,
+    xdm.event.duration = ms, 
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.session_context_id = operation_id,
+    xdm.source.application.name = app_component, 
+    xdm.source.process.thread_id = thread_id, 
+    xdm.source.process.identifier = process_identifier,
+    xdm.source.process.name = event_type,
+    xdm.source.host.hostname = syslog_hostname;
+
+// cis-license
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "cis-license" 
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter 
+    thread_id = to_integer(arrayindex(regextract(syslog_msg, "\S+\s+(\S+)"), 0)),
+    msg_severity = coalesce(arrayindex(regextract(syslog_msg, "\S+\s+\S+\s+(\w+)\s+"), 0),
+                            arrayindex(regextract(syslog_msg, "\S+\s+\S+\s+\S+\s+(\w+)\s+"), 0)),
+    app_component = coalesce(arrayindex(regextract(syslog_msg, "\S+\s+\S+\s+\w+\s+(\w+\.\S+)"), 0),
+                            arrayindex(regextract(syslog_msg, "\S+\s+\S+\s+\S+\s+\w+\s+(\w+\.\S+)"), 0)),
+    operation_id = arrayindex(regextract(syslog_msg, "operationID=(\S+)"), 0),
+    user = arrayindex(regextract(syslog_msg, "User\s+\'([^\']+)"), 0)
+| alter // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
+| alter 
+    xdm.alert.severity = severity, 
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.session_context_id = operation_id,
+    xdm.source.application.name = app_component, 
+    xdm.source.process.thread_id = thread_id, 
+    xdm.source.process.name = event_type,
+    xdm.source.identity.username = user, 
+    xdm.source.host.hostname = syslog_hostname;
+
+// vdtc-main
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "vdtc-main" 
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter
+    msg_severity = uppercase(arrayindex(regextract(syslog_msg, "(\w+)\s+[\w-]+\[\d+"), 0)),
+    pid = to_integer(arrayindex(regextract(syslog_msg, "[\w-]+\[(\d+)\]"), 0)),
+    sub_module = arrayindex(regextract(syslog_msg, "sub=([\w-]+)"), 0)
+| alter // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
+| alter 
+    xdm.alert.severity = severity, 
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.source.application.name = sub_module, 
+    xdm.source.process.pid = pid,
+    xdm.source.process.name = event_type,
+    xdm.source.host.hostname = syslog_hostname;
+
+// applmgmt-audit
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "applmgmt-audit" 
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter
+    msg_severity = arrayindex(regextract(syslog_msg, "\S+\s+(\w+)"), 0),
+    event_payload = arrayindex(regextract(syslog_msg, "\S+\s+\w+\s+(.+)"), 0)
+| alter 
+    user = coalesce(arrayindex(regextract(event_payload, "User=([^,]+)"), 0), 
+                    rtrim(arrayindex(regextract(event_payload, "user\s*:\s*(\S+)"), 0), ".")),
+    auth_method = arrayindex(regextract(event_payload, "method=(\w+)"), 0), 
+    status = arrayindex(regextract(event_payload, "Status\s*:\s*(\w+)"), 0), 
+    is_authorized = arrayindex(regextract(event_payload, "authorized=(\w+)"), 0), 
+    privileges = regextract(event_payload, "priv=(\w+)"),
+    service_id = arrayindex(regextract(event_payload, "service_id:\s*([\w\.]+)"), 0),
+    operation_id = arrayindex(regextract(event_payload, "operation_id:\s*([\w\.]+)"), 0),
+    // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
+| alter 
+    xdm.alert.severity = severity, 
+    xdm.auth.auth_method = auth_method,
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.outcome = if(status = "Success" or is_authorized = "True", XDM_CONST.OUTCOME_SUCCESS, is_authorized = "False", XDM_CONST.OUTCOME_FAILED, status),
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.session_context_id = operation_id,
+    xdm.source.process.name = event_type,
+    xdm.intermediate.process.identifier = service_id,
+    xdm.source.identity.username = user, 
+    xdm.source.identity.groups = privileges,
+    xdm.source.host.hostname = syslog_hostname;
+
+// vapi-endpoint-access
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "vapi-endpoint-access" 
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter
+    // since the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))),
+    thread_identifier = arrayindex(regextract(syslog_msg, "\|\s*(\S+)"), 0),
+    event_payload = arrayindex(regextract(syslog_msg, "\|\s*[^\|]+\s+\|\s*(.+)"), 0),
+    http_request_line = regextract(arrayindex(regextract(syslog_msg, "\"(\w+\s+\/\S+\s+HTTP\S[^\"]+)"), 0), "(\S+)")
+| alter 
+    http_method = arrayindex(http_request_line, 0), 
+    uri = arrayindex(http_request_line, 1), 
+    http_version = arrayindex(http_request_line, 2),
+    http_response_code = arrayindex(regextract(event_payload, "\"\s+(\d+)\s+\d+"), 0),
+    bytes = to_integer(arrayindex(regextract(event_payload, "\"\s+\d+\s+(\d+)"), 0)),
+    user_agent = arrayindex(regextract(event_payload, "\"\s+\"([^\"]+)\"\s+\d+"), 0),
+    session_id = arrayindex(regextract(event_payload, "id\s+([a-fA-F\d\-]+)"), 0),
+    service = arrayindex(regextract(event_payload, "service\s+([\w\.]+)"), 0)
+| alter
+    xdm.alert.severity = severity,
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.network.session_id = session_id, 
+    xdm.network.http.method = if(http_method = "ACL", XDM_CONST.HTTP_METHOD_ACL, http_method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, http_method = "BIND", XDM_CONST.HTTP_METHOD_BIND, http_method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, http_method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, http_method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, http_method = "COPY", XDM_CONST.HTTP_METHOD_COPY, http_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, http_method = "GET", XDM_CONST.HTTP_METHOD_GET, http_method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, http_method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, http_method = "LINK", XDM_CONST.HTTP_METHOD_LINK, http_method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, http_method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, http_method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, http_method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, http_method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, http_method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, http_method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, http_method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, http_method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, http_method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, http_method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, http_method = "POST", XDM_CONST.HTTP_METHOD_POST, http_method = "PRI", XDM_CONST.HTTP_METHOD_PRI, http_method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, http_method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, http_method = "PUT", XDM_CONST.HTTP_METHOD_PUT, http_method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, http_method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, http_method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, http_method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, http_method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, http_method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, http_method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, http_method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, http_method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, http_method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, http_method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, to_string(http_method)),
+    xdm.network.http.response_code = if(http_response_code = "100", XDM_CONST.HTTP_RSP_CODE_CONTINUE, http_response_code = "101", XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, http_response_code = "102", XDM_CONST.HTTP_RSP_CODE_PROCESSING, http_response_code = "103", XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, http_response_code = "200", XDM_CONST.HTTP_RSP_CODE_OK, http_response_code = "201", XDM_CONST.HTTP_RSP_CODE_CREATED, http_response_code = "202", XDM_CONST.HTTP_RSP_CODE_ACCEPTED, http_response_code = "203", XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, http_response_code = "204", XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, http_response_code = "205", XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, http_response_code = "206", XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, http_response_code = "207", XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, http_response_code = "208", XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, http_response_code = "226", XDM_CONST.HTTP_RSP_CODE_IM_USED, http_response_code = "300", XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, http_response_code = "301", XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, http_response_code = "302", XDM_CONST.HTTP_RSP_CODE_FOUND, http_response_code = "303", XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, http_response_code = "304", XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, http_response_code = "305", XDM_CONST.HTTP_RSP_CODE_USE_PROXY, http_response_code = "307", XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, http_response_code = "308", XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, http_response_code = "400", XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, http_response_code = "401", XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, http_response_code = "402", XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, http_response_code = "403", XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, http_response_code = "404", XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, http_response_code = "405", XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, http_response_code = "406", XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, http_response_code = "407", XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, http_response_code = "408", XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, http_response_code = "409", XDM_CONST.HTTP_RSP_CODE_CONFLICT, http_response_code = "410", XDM_CONST.HTTP_RSP_CODE_GONE, http_response_code = "411", XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, http_response_code = "412", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, http_response_code = "413", XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, http_response_code = "414", XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, http_response_code = "415", XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, http_response_code = "416", XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, http_response_code = "417", XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, http_response_code = "421", XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, http_response_code = "422", XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, http_response_code = "423", XDM_CONST.HTTP_RSP_CODE_LOCKED, http_response_code = "424", XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, http_response_code = "425", XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, http_response_code = "426", XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, http_response_code = "428", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, http_response_code = "429", XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, http_response_code = "431", XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, http_response_code = "451", XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, http_response_code = "500", XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, http_response_code = "501", XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, http_response_code = "502", XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, http_response_code = "503", XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, http_response_code = "504", XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, http_response_code = "505", XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, http_response_code = "506", XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, http_response_code = "507", XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, http_response_code = "508", XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, http_response_code = "511", XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, http_response_code = null, null, to_string(http_response_code)),
+    xdm.network.http.url = uri,
+    xdm.network.application_protocol = http_version,
+    xdm.source.user_agent = user_agent,
+    xdm.source.sent_bytes = bytes,
+    xdm.source.process.identifier = thread_identifier,
+    xdm.source.process.name = event_type,
+    xdm.source.host.hostname = syslog_hostname,
+    xdm.target.resource.value = uri,
+    xdm.target.application.name = service;
+
+// crond
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "crond" 
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter
+    // since the log does not include an explicit severity, extract it from the syslog header priority field   
+    severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))),
+    user = arrayindex(regextract(syslog_msg, "\(([^\)]+)"), 0),
+    command = arrayindex(regextract(syslog_msg, "CMD\s+\(\s*([^\)]+)"), 0)
+| alter 
+    xdm.alert.severity = severity,
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.source.process.name = event_type,
+    xdm.source.identity.username = user, 
+    xdm.source.process.command_line = command,
+    xdm.source.host.hostname = syslog_hostname;
+
+// general fallback mapping for all other event types which are currently not mapped explicitly 
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type NOT IN ("analytics", "applmgmt", "applmgmt-audit", "certificatemanagement-svcs", "cis-license", "content-library", "crond", "dnsmasq", "eam-access", "eam-api", "envoy-access", "lookupsvc-localhost_access", "procstate", "rhttpproxy-main", "sca-vmon.std", "sps", "sso-tomcat", "ssoadminserver", "StatsMonitor", "sudo", "trustmanagement-gc", "trustmanagement-svcs", "ui-main", "ui-threadmonitor", "vapi-endpoint-access", "vdtc-main", "vmafdd", "vmon", "vpxd-main", "vpxd-svcs-access", "vpxd-svcs-perf", "vsan-health-main", "vstats", "vum-vmacore", "vum-vmacore", "wcpsvc")
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter
+    operation_id = arrayindex(regextract(syslog_msg, "opI[dD]=([\w\-]+)"), 0),
+    severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))),
+    username = coalesce(arrayindex(regextract(syslog_msg, "USER=(\w+)"), 0),
+                    arrayindex(regextract(syslog_msg, "for\s+user\s+(\w+)"), 0),
+                    arrayindex(regextract(_raw_log, "User\s\'*([^\@]+)\@"),0),
+                    arrayindex(regextract(_raw_log, "Username=\'([^\']+)\'"),0))
+| alter 
+    xdm.event.type = event_type,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.source.process.name = event_type,
+    xdm.source.identity.username = username, 
+    xdm.session_context_id = operation_id,
+    xdm.source.host.hostname = syslog_hostname;

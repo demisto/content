@@ -1,0 +1,22 @@
+[MODEL: dataset = tanium_threat_response_raw]
+alter
+        platform = lowercase(json_extract_scalar(_raw_log, "$.Match Details.finding.system_info.platform"))
+| alter
+        xdm.source.host.hostname = json_extract_scalar(_raw_log, "$.Computer Name"),
+        xdm.source.ipv4 =  arrayindex(regextract(json_extract_scalar(_raw_log, "$.Computer IP"), "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+        xdm.source.ipv6 =  arrayindex(regextract(json_extract_scalar(_raw_log, "$.Computer IP"), "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+        xdm.alert.severity = if(json_extract_scalar(_raw_log, "$.Impact Score") != "", json_extract_scalar(_raw_log, "$.Impact Score"), null),
+        xdm.source.host.os = json_extract_scalar(_raw_log, "$.Match Details.finding.system_info.os"),
+        xdm.source.host.os_family = if(platform contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, platform contains "mac", XDM_CONST.OS_FAMILY_MACOS, platform contains "linux", XDM_CONST.OS_FAMILY_LINUX, platform contains "android", XDM_CONST.OS_FAMILY_ANDROID, platform contains "ios", XDM_CONST.OS_FAMILY_IOS, platform contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, platform contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, platform contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, platform contains "centos", XDM_CONST.OS_FAMILY_CENTOS, platform contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, platform contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, platform contains "scada", XDM_CONST.OS_FAMILY_SCADA, to_string(platform)),
+        xdm.alert.original_alert_id = json_extract_scalar(_raw_log, "$.Alert Id"),
+        xdm.alert.original_threat_id = json_extract_scalar(_raw_log, "$.Intel Id"),
+        xdm.alert.name = json_extract_scalar(_raw_log, "$.Intel Name"),
+        xdm.alert.subcategory = json_extract_scalar(_raw_log, "$.Intel Labels"),
+        xdm.alert.mitre_techniques = json_extract_array(_raw_log, "$.MITRE Techniques"),
+        xdm.alert.description = to_string(json_extract(_raw_log, "$.Match Details.match")),
+        xdm.source.identity.username = json_extract_scalar(_raw_log, "$.Match Details.match.properties.user"),
+        xdm.source.process.name = json_extract_scalar(_raw_log, "$.Match Details.match.properties.name"),
+        xdm.source.process.pid = to_integer(json_extract_scalar(_raw_log, "$.Match Details.match.properties.pid")),
+        xdm.source.process.command_line = json_extract_scalar(_raw_log, "$.Match Details.match.properties.args"),
+        xdm.source.process.parent_id = json_extract_scalar(_raw_log, "$.Match Details.match.properties.ppid"),
+        xdm.source.process.executable.md5 = json_extract_scalar(_raw_log, "$.Match Details.match.properties.file.md5");

@@ -1,0 +1,47 @@
+[MODEL: dataset=dropbox_dropbox_raw]
+filter
+    json_extract_scalar(event_category, "$['.tag']") != "logins"
+| alter actor_type = json_extract_scalar(actor, "$['.tag']")
+| alter
+    xdm.event.type = json_extract_scalar(event_category, "$['.tag']"),
+    xdm.event.operation_sub_type = json_extract_scalar(event_type, "$['.tag']"),
+    xdm.event.description = json_extract_scalar(event_type, "$.description"),
+    xdm.target.resource.type = json_extract_scalar(assets, "$.0['.tag']"),
+    xdm.target.resource.name = coalesce(json_extract_scalar(assets, "$.0.display_name"), json_extract_scalar(details, "$.app_info.display_name")),
+    xdm.target.resource.id = coalesce(json_extract_scalar(assets, "$.0.file_id"), json_extract_scalar(details, "$.app_info.app_id")),
+    xdm.session_context_id = json_extract_scalar(origin, "$.access_method.end_user.session_id"),
+    xdm.source.ipv4 = json_extract_scalar(origin, "$.geo_location.ip_address"),
+    xdm.source.location.city = json_extract_scalar(origin, "$.geo_location.city"),
+    xdm.source.location.region = json_extract_scalar(origin, "$.geo_location.region"),
+    xdm.source.location.country = json_extract_scalar(origin, "$.geo_location.country"),
+    xdm.target.identity.groups = arraycreate( coalesce(json_extract_scalar(context, "$['.tag']"),"")),
+    xdm.target.identity.identifier = json_extract_scalar(context, "$.account_id"),
+    xdm.target.identity.username = json_extract_scalar(context, "$.display_name"),
+    xdm.source.identity.user_type = if(actor_type in ("admin","anonymous","reseller","user"),XDM_CONST.USER_TYPE_REGULAR ,actor_type in ("app","dropbox"),XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,to_string(actor_type)),
+    xdm.source.identity.username = coalesce(json_extract_scalar(actor, "$.user.display_name"), json_extract_scalar(actor, "$.admin.display_name"), json_extract_scalar(actor, "$.reseller.reseller_name")),
+    xdm.source.identity.identifier = coalesce(json_extract_scalar(actor, "$.user.account_id"), json_extract_scalar(actor, "$.admin.account_id")),
+    xdm.target.resource.value = coalesce(json_extract_scalar(details, "$.new_value['.tag']"), json_extract_scalar(details, "$.certificate_details.sha1_fingerprint"), json_extract_scalar(details, "$.new_certificate_details.sha1_fingerprint")),
+    xdm.target.resource_before.value = coalesce(json_extract_scalar(details, "$.previous_value['.tag']"), json_extract_scalar(details, "$.new_certificate_details.sha1_fingerprint")),
+    xdm.source.agent.identifier = json_extract_scalar(details, "$.user_agent"),
+    xdm.observer.vendor = "dropbox",
+    xdm.observer.product = "dropbox";
+
+filter
+    json_extract_scalar(event_category, "$['.tag']") = "logins"
+| alter actor_type = json_extract_scalar(actor, "$['.tag']")
+| alter
+    xdm.event.type = json_extract_scalar(event_category, "$['.tag']"),
+    xdm.event.operation_sub_type = json_extract_scalar(event_type, "$['.tag']"),
+    xdm.event.description = json_extract_scalar(event_type, "$.description"),
+    xdm.session_context_id = json_extract_scalar(origin, "$.access_method.end_user.session_id"),
+    xdm.source.ipv4 = json_extract_scalar(origin, "$.geo_location.ip_address"),
+    xdm.source.location.city = json_extract_scalar(origin, "$.geo_location.city"),
+    xdm.source.location.region = json_extract_scalar(origin, "$.geo_location.region"),
+    xdm.source.location.country = json_extract_scalar(origin, "$.geo_location.country"),
+    xdm.source.identity.user_type = if(actor_type in ("admin","anonymous","reseller","user"),XDM_CONST.USER_TYPE_REGULAR ,actor_type in ("app","dropbox"),XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,to_string(actor_type)),
+    xdm.source.identity.first_name = arrayindex(split(coalesce(json_extract_scalar(actor, "$.admin.display_name"), json_extract_scalar(actor, "$.user.display_name"), json_extract_scalar(actor, "$.reseller.reseller_name")), " "), 0),
+    xdm.source.identity.last_name = arrayindex(split(coalesce(json_extract_scalar(actor, "$.admin.display_name"), json_extract_scalar(actor, "$.user.display_name")), " "), 1),
+    xdm.source.identity.identifier = coalesce(json_extract_scalar(actor, "$.admin.account_id"), json_extract_scalar(actor, "$.user.account_id")),
+    xdm.source.identity.username = coalesce(json_extract_scalar(actor, "$.admin.email"), json_extract_scalar(actor, "$.user.email"), json_extract_scalar(actor, "$.reseller.reseller_email")),
+    xdm.observer.vendor = "dropbox",
+    xdm.observer.product = "dropbox";
