@@ -790,7 +790,7 @@ def indicator_add_marking(client: OpenCTIApiClient, id: str | None, value: str |
     """ Add indicator marking to opencti
         Args:
             client: OpenCTI Client object
-            id(str): observable id to update
+            id(str): indicator id to update
             value(str): marking name to add
 
         Returns:
@@ -800,7 +800,7 @@ def indicator_add_marking(client: OpenCTIApiClient, id: str | None, value: str |
         result = client.stix_domain_object.add_marking_definition(id=id, marking_definition_id=value)
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't add marking to observable.")
+        raise DemistoException("Can't add marking to indicator.")
     return result
 
 
@@ -808,7 +808,7 @@ def indicator_add_label(client: OpenCTIApiClient, id: str | None, value: str | N
     """ Add indicator label to opencti
         Args:
             client: OpenCTI Client object
-            id(str): observable id to update
+            id(str): indicator id to update
             value(str): label name to add
 
         Returns:
@@ -818,7 +818,7 @@ def indicator_add_label(client: OpenCTIApiClient, id: str | None, value: str | N
         result = client.stix_domain_object.add_label(id=id, label_id=value)
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't add label to observable.")
+        raise DemistoException("Can't add label to indicator.")
     return result
 
 
@@ -853,7 +853,7 @@ def indicator_remove_label(client: OpenCTIApiClient, id: str | None, value: str 
     """ Remove indicator label from opencti
         Args:
             client: OpenCTI Client object
-            id(str): observable id to update
+            id(str): indicator id to update
             value(str): label name to remove
 
         Returns:
@@ -863,7 +863,7 @@ def indicator_remove_label(client: OpenCTIApiClient, id: str | None, value: str 
         result = client.stix_domain_object.remove_label(id=id, label_id=value)
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't remove label from observable.")
+        raise DemistoException("Can't remove label from indicator.")
     return result
 
 
@@ -871,7 +871,7 @@ def indicator_remove_marking(client: OpenCTIApiClient, id: str | None, value: st
     """ Remove indicator marking from opencti
         Args:
             client: OpenCTI Client object
-            id(str): observable id to update
+            id(str): indicator id to update
             value(str): marking name to remove
 
         Returns:
@@ -882,7 +882,7 @@ def indicator_remove_marking(client: OpenCTIApiClient, id: str | None, value: st
         result = client.stix_domain_object.remove_marking_definition(id=id, marking_definition_id=value)
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't remove marking from observable.")
+        raise DemistoException("Can't remove marking from indicator.")
     return result
 
 
@@ -896,20 +896,20 @@ def indicator_field_remove_command(client: OpenCTIApiClient, args: Dict[str, str
         Returns:
             readable_output
         """
-    observable_id = args.get("id")
+    indicator_id = args.get("id")
     # works only with marking and label
     key = args.get("field")
     value = args.get("value")
     result = {}
 
     if key == 'marking':
-        result = indicator_remove_marking(client=client, id=observable_id, value=value)
+        result = indicator_remove_marking(client=client, id=indicator_id, value=value)
 
     elif key == 'label':
-        result = indicator_remove_label(client=client, id=observable_id, value=value)
+        result = indicator_remove_label(client=client, id=indicator_id, value=value)
 
     if result:
-        readable_output = f'{key}: {value} was removed successfully from observable: {observable_id}.'
+        readable_output = f'{key}: {value} was removed successfully from indicator: {indicator_id}.'
     else:
         raise DemistoException(f"Can't remove {key}.")
     return CommandResults(readable_output=readable_output)
