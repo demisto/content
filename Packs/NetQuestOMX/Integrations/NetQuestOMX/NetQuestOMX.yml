@@ -68,7 +68,7 @@ script:
     name: netquest-address-list-optimize
     outputs:
       - contextPath: NetQuest.AddressList.OverlappingAddresses
-        description: OverlappingAddresses.
+        description: Overlapping Addresses.
         type: list
       - contextPath: NetQuest.AddressList.OverlapsPresent
         description: OverlapsPresent.
