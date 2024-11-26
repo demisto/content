@@ -170,8 +170,7 @@ def check_feed(client: Client) -> str:
 
 def main():
     params = demisto.params()
-    # server_url = (params.get('server_url')).rstrip()
-    server_url='https://www.nccgroup.com/us/research-blog/feed/'
+    server_url = (params.get('server_url')).rstrip()
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
