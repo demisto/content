@@ -271,7 +271,7 @@ The proposed solution in that case is to use the two parameters **Fetch limit** 
 **Akamai Page size** is the number of events we want to retrieve each request. Note that the maximum allowed value is 45k.
 Meaning that an interval may execute multiple requests and therefore you should configure **Akamai Page size** < **Fetch limit**
 You should work to find the balance between them in a way that both the command, and the request won't get any timeout.
-Note that in cases your the ingestion rate from the Akamai API is higher, the integration will detect it and automatically trigger the next interval without the waiting in between intervals.
+Note that in cases your the ingestion rate from the Akamai API is higher, the integration will detect it and immediately starts the next run.
 
 ### Known limitations
 
