@@ -30,7 +30,7 @@ configuration:
   type: 8
   required: false
   section: Collect
-  additionalinfo: XSIAM fetch events checkbox.
+  additionalinfo: Whether to collect events.
   hidden:
     - xsoar
 - display: Statistic types to fetch
