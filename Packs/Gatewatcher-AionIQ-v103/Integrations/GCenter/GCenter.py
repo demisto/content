@@ -374,8 +374,17 @@ def fetch_incidents():
         # IP and port fields
         if 'port' in gwAlerts[i]['_source']['source'].keys() and gwAlerts[i]['_source']['destination'].keys():
             incident['details'] = "Source IP: "+str(gwAlerts[i]['_source']['source']['ip'])+"\n"+"Source port: "+str(gwAlerts[i]['_source']['source']['port'])+"\n"+"Destination IP: "+str(gwAlerts[i]['_source']['destination']['ip'])+"\n"+"Destination port: "+str(gwAlerts[i]['_source']['destination']['port'])
+            
+            incident['CustomFields']['gatewatchersourceip'] = str(gwAlerts[i]['_source']['source']['ip'])
+            incident['CustomFields']['gatewatchersourceport'] = gwAlerts[i]['_source']['source']['port']
+            incident['CustomFields']['gatewatcherdestinationip'] = str(gwAlerts[i]['_source']['destination']['ip'])
+            incident['CustomFields']['gatewatcherdestinationport'] = gwAlerts[i]['_source']['destination']['port']
+
         else:
             incident['details'] = "Source IP: "+str(gwAlerts[i]['_source']['source']['ip'])+"\n"+"Destination IP: "+str(gwAlerts[i]['_source']['destination']['ip'])
+
+            incident['CustomFields']['gatewatchersourceip'] = str(gwAlerts[i]['_source']['source']['ip'])
+            incident['CustomFields']['gatewatcherdestinationip'] = str(gwAlerts[i]['_source']['destination']['ip'])
 
         # Network protocol and transport fields
         if 'protocol' in gwAlerts[i]['_source']['network'].keys():
@@ -447,8 +456,17 @@ def fetch_incidents():
         # IP and port fields
         if 'port' in gwMeta[i]['_source']['source'].keys() and gwMeta[i]['_source']['destination'].keys():
             incident['details'] = "Source IP: "+str(gwMeta[i]['_source']['source']['ip'])+"\n"+"Source port: "+str(gwMeta[i]['_source']['source']['port'])+"\n"+"Destination IP: "+str(gwMeta[i]['_source']['destination']['ip'])+"\n"+"Destination port: "+str(gwMeta[i]['_source']['destination']['port'])
+
+            incident['CustomFields']['gatewatchersourceip'] = str(gwMeta[i]['_source']['source']['ip'])
+            incident['CustomFields']['gatewatchersourceport'] = gwMeta[i]['_source']['source']['port']
+            incident['CustomFields']['gatewatcherdestinationip'] = str(gwMeta[i]['_source']['destination']['ip'])
+            incident['CustomFields']['gatewatcherdestinationport'] = gwMeta[i]['_source']['destination']['port']
+
         else:
             incident['details'] = "Source IP: "+str(gwMeta[i]['_source']['source']['ip'])+"\n"+"Destination IP: "+str(gwMeta[i]['_source']['destination']['ip'])
+
+            incident['CustomFields']['gatewatchersourceip'] = str(gwMeta[i]['_source']['source']['ip'])
+            incident['CustomFields']['gatewatcherdestinationip'] = str(gwMeta[i]['_source']['destination']['ip'])
 
         # Network protocol and transport fields
         if 'protocol' in gwMeta[i]['_source']['network'].keys():
