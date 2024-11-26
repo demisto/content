@@ -6,9 +6,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import json
-import requests
 import dateparser
-from typing import Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -28,35 +26,39 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, verify: bool, proxy: bool, auth: tuple):
-        headers = self.get_token_and_set_headers(base_url, auth)
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self._headers = self.get_token_and_set_headers(auth)
 
-    @staticmethod
-    def get_token_and_set_headers(base_url: str, auth: tuple):
+    def get_token_and_set_headers(self, auth: tuple) -> dict:
         """
         Get JWT token by authentication and set headers.
 
         Args:
-            base_url (str): url for authentication.
             auth (tuple): credentials for authentication.
 
         Returns:
-             headers with token.
+            headers with token.
+
+        Raises:
+            DemistoException if authentication request was not successful.
         """
         try:
-            data = {
-                'username': auth[0],
-                'password': auth[1],
-                'token': True}
+            data = {'username': auth[0], 'password': auth[1], 'token': True}
             headers = {'ContentType': 'application/x-www-form-urlencoded'}
-            token = requests.post(url=f'{base_url}/auth',
-                                  headers=headers,
-                                  data=data).text
+
+            token = self._http_request(
+                method='POST',
+                url_suffix='/auth',
+                headers=headers,
+                data=data,
+                resp_type='text',
+                raise_on_status=True,
+            )
             return {'Authorization': f'Bearer {token}', 'content-type': 'application/json'}
-        except Exception:
-            raise ValueError('URL is not set correctly, please review URL,\n'
-                             'Read URL instructions at ? button in "Qualys API Platform URL" '
-                             'parameter')
+
+        except Exception as e:
+            raise DemistoException('Authentication failed. Verify the Qualys API Platform URL, '
+                                   'access credentials, and other connection parameters.') from e
 
     def incidents_list_test(self):
         """
@@ -65,8 +67,7 @@ class Client(BaseClient):
         return:
             response (Response): API response from Qualys FIM.
         """
-        return self._http_request(method='GET', url_suffix='fim/v1/incidents/',
-                                  params={'pageSize': '1'}, resp_type='response')
+        return self.incidents_list(data={'pageSize': '1'})
 
     def events_list(self, data: dict):
         """
@@ -90,7 +91,7 @@ class Client(BaseClient):
         return:
             response (Dict): API response from Qualys FIM.
         """
-        return self._http_request(method='GET', url_suffix=f'fim/v1/events/{event_id}')
+        return self._http_request(method='GET', url_suffix=f'fim/v2/events/{event_id}')
 
     def incidents_list(self, data: dict):
         """
@@ -102,8 +103,7 @@ class Client(BaseClient):
         return:
             response (Dict): API response from Qualys FIM.
         """
-        return self._http_request(method='POST', url_suffix='fim/v3/incidents/search',
-                                  json_data=data)
+        return self._http_request(method='POST', url_suffix='fim/v3/incidents/search', json_data=data)
 
     def get_incident_events(self, incident_id: str, data: dict):
         """
@@ -557,7 +557,7 @@ def list_assets_command(client: Client, args: dict):
 
 def fetch_incidents(client: Client, last_run: Dict[str, int],
                     max_fetch: str, fetch_filter: str,
-                    first_fetch_time: str) -> Tuple[Dict, List[dict]]:
+                    first_fetch_time: str) -> tuple[Dict, List[dict]]:
     """
     Fetch incidents (alerts) each minute (by default).
     Args:
@@ -623,7 +623,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     return {'last_fetch': next_run_timestamp, 'last_fetched_id': last_incident_id}, incidents
 
 
-def test_module(client: Client):
+def test_module(client: Client) -> str:
     """
     Returning 'ok' indicates that the integration works like it is supposed to.
      Connection to the service is successful.
@@ -632,22 +632,21 @@ def test_module(client: Client):
         client: Qualys FIM client.
 
     Returns:
-        'ok' if test passed, anything else will fail the test.
+        'ok' if test passed.
+
+    Raises:
+        DemistoException: If test failed (e.g. due to failed authentication).
     """
     try:
-        result = client.incidents_list_test()
-        if result.ok:
-            return 'ok'
-    except Exception as exception:
-        error_msg = None
-        if 'Authorization' in str(exception):
-            error_msg = "Authentication wasn't successful,\n" \
-                        " Please check credentials,\n" \
-                        " or specify correct Platform URL."
-        if error_msg:
-            return error_msg
-        else:
-            return DemistoException(str(exception))
+        client.incidents_list_test()  # raises exception if non-okay response
+        return 'ok'
+    except Exception as e:
+        if 'Authorization' in str(e):
+            DemistoException("Authentication wasn't successful,\n"
+                             " Please check credentials,\n"
+                             " or specify correct Platform URL.")
+
+        raise
 
 
 def main():
