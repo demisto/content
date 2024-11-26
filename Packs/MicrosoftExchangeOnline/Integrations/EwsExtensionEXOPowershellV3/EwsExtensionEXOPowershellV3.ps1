@@ -2318,7 +2318,7 @@ function ListMailFlowRulesCommand {
         $parsed_raw_response = ParseRawResponse $raw_response
         $md_columns = $raw_response | Select-Object -Property Name, State, Priority, Comment, WhenChanged, CreatedBy
         $human_readable = TableToMarkdown $md_columns "Results of $command"
-        $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRules(obj.Name === val.Name)" = $parsed_raw_response }
+        $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRules(obj.Guid === val.Guid)" = $parsed_raw_response }
         Write-Output $human_readable, $entry_context, $parsed_raw_response
     }
 }
@@ -2337,7 +2337,7 @@ function GetMailFlowRuleCommand {
         $parsed_raw_response = ParseRawResponse $raw_response
         $md_columns = $raw_response | Select-Object -Property Name, State, Priority, Comment, WhenChanged, CreatedBy
         $human_readable = TableToMarkdown $md_columns "Results of $command"
-        $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRule(obj.Name === val.Name)" = $parsed_raw_response }
+        $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRule(obj.Guid === val.Guid)" = $parsed_raw_response }
         Write-Output $human_readable, $entry_context, $parsed_raw_response
     }
 }
