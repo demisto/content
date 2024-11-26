@@ -51,18 +51,9 @@ class Client(BaseClient):
 
         demisto.debug("IntegrationContext token cache is empty or token has expired, regenerating a new token")
 
-        self._refresh_access_token()
+        self._refresh_access_token(now)
 
-        set_integration_context(
-            {
-                "Token": self._headers["X-Auth-Token"],
-                "expiration_time": (
-                    now + timedelta(seconds=TOKEN_TTL_S)
-                ).strftime(DATE_FORMAT_FOR_TOKEN),
-            }
-        )
-
-    def _refresh_access_token(self):
+    def _refresh_access_token(self, now: datetime):
         """
         Since the validity of the Access Token is 120 minutes, this method refreshes the token.
         """
@@ -75,6 +66,15 @@ class Client(BaseClient):
             raise DemistoException(
                 "An error was occurred when creating a new token. Please verify your credentials."
             ) from e
+
+        set_integration_context(
+            {
+                "Token": self._headers["X-Auth-Token"],
+                "expiration_time": (
+                    now + timedelta(seconds=TOKEN_TTL_S)
+                ).strftime(DATE_FORMAT_FOR_TOKEN),
+            }
+        )
 
     def address_list_upload_request(self, file_name: str):
         try:
