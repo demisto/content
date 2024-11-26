@@ -139,7 +139,7 @@ def test_fetch_alert_type(mocker, fetch_limit, expected_alert_count):
     Then: Ensure the correct number of alerts are fetched, the page link is set correctly,
      and the last page alert IDs are correctly recorded and validated.
     """
-    from MongoDBAtlas import fetch_alert_type, get_page_url
+    from MongoDBAtlas import fetch_alerts_command, get_page_url
     mocked_alerts = util_load_json('test_data/raw_alerts_page_1.json')
     mocker.patch('MongoDBAtlas.get_page_from_last_run_for_alerts', return_value=mocked_alerts)
     mocker.patch('MongoDBAtlas.get_page_url', side_effect=["", get_page_url])
@@ -147,7 +147,7 @@ def test_fetch_alert_type(mocker, fetch_limit, expected_alert_count):
     client = create_client()
 
     last_run = {"page_link": None, "last_page_alerts_ids": []}
-    output, last_run_new_dict = fetch_alert_type(client, fetch_limit, last_run)
+    output, last_run_new_dict = fetch_alerts_command(client, fetch_limit, last_run)
 
     assert len(output) == expected_alert_count
     last_page_alerts_ids = last_run_new_dict.get('last_page_alerts_ids')
@@ -168,7 +168,7 @@ def test_fetch_alert_type_using_next_page(mocker, fetch_limit, expected_alert_co
     Then: Ensure the correct number of alerts are fetched, the next page link is set properly,
      and the last page alert IDs are correctly updated after the fetch.
     """
-    from MongoDBAtlas import fetch_alert_type
+    from MongoDBAtlas import fetch_alerts_command
 
     mocked_alerts_page_1 = util_load_json('test_data/raw_alerts_page_1.json')
     mocked_alerts_page_2 = util_load_json('test_data/raw_alerts_page_2.json')
@@ -180,7 +180,7 @@ def test_fetch_alert_type_using_next_page(mocker, fetch_limit, expected_alert_co
 
     last_run = {"page_link": None, "last_page_alerts_ids": []}
 
-    output, last_run_new_dict = fetch_alert_type(client, fetch_limit, last_run)
+    output, last_run_new_dict = fetch_alerts_command(client, fetch_limit, last_run)
     expected_ids_page_1 = [str(i) for i in range(1, expected_alert_count + 1)]
 
     assert len(output) == expected_alert_count
@@ -189,7 +189,7 @@ def test_fetch_alert_type_using_next_page(mocker, fetch_limit, expected_alert_co
 
     last_run = {"page_link": None, "last_page_alerts_ids": ["1"]}
 
-    output, last_run_new_dict = fetch_alert_type(client, fetch_limit, last_run)
+    output, last_run_new_dict = fetch_alerts_command(client, fetch_limit, last_run)
 
     assert len(output) == expected_alert_count
 
@@ -205,7 +205,7 @@ def test_fetch_alert_type_while_more_alerts_created(mocker):
     Then: Ensure the correct number of alerts are returned in each fetch, that the last page link is set correctly,
      and that the IDs in last_page_alerts_ids match the expected values after both fetches.
     """
-    from MongoDBAtlas import fetch_alert_type
+    from MongoDBAtlas import fetch_alerts_command
 
     mocked_alerts_page_1 = util_load_json('test_data/raw_alerts_page_1.json')
     mocker.patch('MongoDBAtlas.get_page_from_last_run_for_alerts', return_value=mocked_alerts_page_1)
@@ -215,7 +215,7 @@ def test_fetch_alert_type_while_more_alerts_created(mocker):
 
     last_run = {"page_link": None, "last_page_alerts_ids": []}
 
-    output, last_run_new_dict = fetch_alert_type(
+    output, last_run_new_dict = fetch_alerts_command(
         client, len(mocked_alerts_page_1.get('results')), last_run
     )
 
@@ -232,7 +232,7 @@ def test_fetch_alert_type_while_more_alerts_created(mocker):
         len(mocked_alerts_page_1_with_more_alerts.get('results'))
         - len(mocked_alerts_page_1.get('results'))
     )
-    output, last_run_new_dict = fetch_alert_type(client, additional_alerts_amount, last_run)
+    output, last_run_new_dict = fetch_alerts_command(client, additional_alerts_amount, last_run)
     assert len(output) == additional_alerts_amount
 
     expected_ids = [str(i) for i in range(1, 9)]
@@ -258,7 +258,7 @@ def test_fetch_event_type(mocker, fetch_limit, expected_event_count):
     Then: Ensure that the number of events returned matches the expected count,
      and the min_time in last_run is updated to the lasted creation time.
     """
-    from MongoDBAtlas import fetch_event_type
+    from MongoDBAtlas import fetch_events_command
 
     mocked_events_page_1 = util_load_json('test_data/raw_events_page_1.json')
     mocker.patch('MongoDBAtlas.Client.get_events_request', return_value=mocked_events_page_1)
@@ -268,7 +268,7 @@ def test_fetch_event_type(mocker, fetch_limit, expected_event_count):
 
     last_run = {"min_time": "2024-11-05T11:10:01Z", "events_with_created_min_time": []}
 
-    output, last_run_new_dict = fetch_event_type(
+    output, last_run_new_dict = fetch_events_command(
         client, fetch_limit, last_run
     )
 
@@ -285,7 +285,7 @@ def test_fetch_event_type_min_time_repeat(mocker):
      and no duplicate event IDs are present in the final output.
     """
 
-    from MongoDBAtlas import fetch_event_type
+    from MongoDBAtlas import fetch_events_command
     raw_events_page_duplicated_dates = util_load_json('test_data/raw_events_page_duplicated_dates.json')
     mocker.patch('MongoDBAtlas.Client.get_events_request', return_value=raw_events_page_duplicated_dates)
     mocker.patch('MongoDBAtlas.get_page_url', return_value=None)
@@ -294,7 +294,7 @@ def test_fetch_event_type_min_time_repeat(mocker):
 
     last_run = {"min_time": "2024-11-05T11:00:01Z", "events_with_created_min_time": []}
 
-    output, last_run_new_dict = fetch_event_type(
+    output, last_run_new_dict = fetch_events_command(
         client, 4, last_run
     )
 
@@ -307,7 +307,7 @@ def test_fetch_event_type_min_time_repeat(mocker):
     first_fetch_events_with_created_min_time = copy.deepcopy(events_with_created_min_time)
 
     last_run = {"min_time": min_time, "events_with_created_min_time": events_with_created_min_time}
-    output, last_run_new_dict = fetch_event_type(
+    output, last_run_new_dict = fetch_events_command(
         client, 10, last_run
     )
 
@@ -331,7 +331,7 @@ def test_fetch_event_type_using_previous_page(mocker, fetch_limit, expected_even
     Then: Ensure that the total number of events matches the expected count,
      min_time is updated based on the last event's created time, and no duplicate event IDs are present in the output.
     """
-    from MongoDBAtlas import fetch_event_type
+    from MongoDBAtlas import fetch_events_command
 
     raw_events_page_1 = util_load_json('test_data/raw_events_page_1.json')
     raw_events_page_2 = util_load_json('test_data/raw_events_page_2.json')
@@ -344,7 +344,7 @@ def test_fetch_event_type_using_previous_page(mocker, fetch_limit, expected_even
 
     last_run = {"min_time": "2024-01-01T11:10:01Z", "events_with_created_min_time": []}
 
-    output, last_run_new_dict = fetch_event_type(
+    output, last_run_new_dict = fetch_events_command(
         client, fetch_limit, last_run
     )
 
@@ -402,7 +402,7 @@ def test_get_events_first_time_events(mocker, fetch_limit, mock_side_effect, exp
     mocker.patch.object(Client, 'get_events_request', side_effect=mock_side_effect)
 
     client = create_client()
-    results = client.get_events_first_time_events(fetch_limit)
+    results = client.get_events_first_run(fetch_limit)
 
     assert len(results) == expected_length
     assert results[-1]["id"] == expected_last_id

@@ -15,6 +15,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 VENDOR = 'MongoDB'
 PRODUCT = 'Atlas'
 DEFAULT_FETCH_LIMIT = 2500
+ITEMS_PER_PAGE = 500
 
 ''' CLIENT CLASS '''
 
@@ -32,7 +33,7 @@ class Client(BaseClient):
         }
         super().__init__(base_url=base_url, verify=verify, headers=headers, auth=auth)
 
-    def get_alerts_request(self, page_num: int = None, items_per_page: int = 500) -> dict:
+    def get_alerts_request(self, page_num: int = None, items_per_page: int = ITEMS_PER_PAGE) -> dict:
         """
         Fetch a paginated list of alerts from the service API.
 
@@ -51,7 +52,7 @@ class Client(BaseClient):
         )
         return results
 
-    def get_events_request(self, page_num: int = None, items_per_page: int = 500, min_date: str = None) -> dict:
+    def get_events_request(self, page_num: int = None, items_per_page: int = ITEMS_PER_PAGE, min_date: str = None) -> dict:
         """
         Fetch a paginated list of events from the service API.
 
@@ -76,7 +77,7 @@ class Client(BaseClient):
         Sends an HTTP GET request to fetch data using `page_link`.
 
         Args:
-            page_link (str): The URL to the specific page of data to fetch.
+            page_link (str): The full URL to the specific data page to fetch.
 
         Returns:
             The API response containing the data retrieved from the provided page link.
@@ -87,7 +88,7 @@ class Client(BaseClient):
         )
         return results
 
-    def get_events_first_time_events(self, fetch_limit: int) -> list:
+    def get_events_first_run(self, fetch_limit: int) -> list:
         """
         Fetches events from multiple pages, ensuring that the total number of fetched events does not exceed the specified
         `fetch_limit`.
@@ -99,7 +100,7 @@ class Client(BaseClient):
             list: A list of events, truncated to the `fetch_limit` if necessary.
         """
         results: List[dict] = []
-        items_per_page = min(fetch_limit, 500)
+        items_per_page = min(fetch_limit, ITEMS_PER_PAGE)
         page_num = 1
 
         while len(results) < fetch_limit:
@@ -112,7 +113,7 @@ class Client(BaseClient):
             if len(results) >= fetch_limit:
                 return results[:fetch_limit]
 
-            items_per_page = min(fetch_limit - len(results), 500)
+            items_per_page = min(fetch_limit - len(results), ITEMS_PER_PAGE)
             page_num += 1
 
         return results
@@ -208,26 +209,6 @@ def remove_alerts_by_ids(alerts: list, ids: list) -> list:
     return results
 
 
-def get_page_from_last_run_for_alerts(client: Client, page_link: str) -> dict:
-    """
-    Retrieves alerts based on the last fetched page link or performs an initial fetch.
-
-    Args:
-        client (Client): MongoDB Atlas client.
-        page_link (str): The URL of the last fetched page, if available.
-
-    Returns:
-        dict: The API response containing alerts data.
-    """
-    if page_link:
-        demisto.debug(f'Getting a response from page {page_link}')
-        response = client.get_response_from_page_link(page_link)
-    else:
-        demisto.debug('Initialize the first page')
-        response = client.get_alerts_request(page_num=1, items_per_page=500)
-    return response
-
-
 def create_last_run_dict_for_alerts(links: list, last_page_alerts_ids: list) -> dict:
     """
     Updates the last_run dictionary with the current page's self URL and event IDs.
@@ -245,7 +226,7 @@ def create_last_run_dict_for_alerts(links: list, last_page_alerts_ids: list) -> 
     }
 
 
-def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[list, dict]:
+def fetch_alerts_command(client: Client, fetch_limit: int, last_run: dict) -> tuple[list, dict]:
     """
     Fetches alerts until fetch_limit is reached, or no more alerts are available.
 
@@ -262,7 +243,12 @@ def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[
     demisto.debug('Start to fetch alerts')
     page_link = last_run.get('page_link', "")
 
-    response = get_page_from_last_run_for_alerts(client, page_link)  # get the last page or the first page
+    if page_link:
+        demisto.debug(f'Getting a response from page {page_link}')
+        response = client.get_response_from_page_link(page_link)
+    else:
+        demisto.debug('Initialize the first page')
+        response = client.get_alerts_request(page_num=1, items_per_page=ITEMS_PER_PAGE)
 
     links = response.get('links', [])
     results = response.get('results', [])
@@ -271,7 +257,6 @@ def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[
 
     alerts = remove_alerts_by_ids(results, last_page_alerts_ids)
     demisto.debug(f'Those are the events ids from the last run {last_page_alerts_ids}')
-    current_fetched_alerts_amount = 0
     output = []
 
     while True:
@@ -279,9 +264,8 @@ def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[
             enrich_event(alert, event_type='alerts')
             output.append(alert)
             last_page_alerts_ids.append(alert.get('id'))
-            current_fetched_alerts_amount += 1
 
-            if current_fetched_alerts_amount >= fetch_limit:
+            if len(output) >= fetch_limit:
                 last_run_new_dict = create_last_run_dict_for_alerts(links, last_page_alerts_ids)
                 demisto.debug(f'The limit is reached. Amount of fetched alerts is {len(output)}')
                 return output, last_run_new_dict
@@ -396,7 +380,7 @@ def first_time_fetching_events(client: Client, fetch_limit: int) -> tuple[list, 
             - results (list): A list of event dictionaries.
             - new_min_time (str): The creation time of the latest fetched event.
     """
-    results = client.get_events_first_time_events(fetch_limit)
+    results = client.get_events_first_run(fetch_limit)
     for event in results:
         enrich_event(event, event_type='events')
     last_fetched_event = results[0] if results else None
@@ -404,7 +388,7 @@ def first_time_fetching_events(client: Client, fetch_limit: int) -> tuple[list, 
     return results, new_min_time
 
 
-def fetch_event_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[list, dict]:
+def fetch_events_command(client: Client, fetch_limit: int, last_run: dict) -> tuple[list, dict]:
     """
     Fetches events until fetch_limit is reached, or no more events are available.
 
@@ -432,7 +416,6 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[
     links = response.get('links', [])
     events = response.get('results', [])
 
-    current_fetched_events_amount = 0
     output = []
     new_min_date = min_date
 
@@ -444,10 +427,9 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict) -> tuple[
 
             enrich_event(event, 'events')
             output.append(event)
-            current_fetched_events_amount += 1
             new_min_date = get_latest_date(new_min_date, event.get('created'))
 
-            if current_fetched_events_amount >= fetch_limit:
+            if len(output) >= fetch_limit:
                 demisto.debug(f'Fetch limit reached. Total events fetched: {len(output)}')
                 new_last_run_obj = create_last_run_dict_for_events(output, new_min_date)
                 return output, new_last_run_obj
@@ -478,15 +460,16 @@ def test_module(client: Client) -> str:
     Returns:
         'ok' if test passed, anything else will fail the test
     """
-    client.get_alerts_request(page_num=1, items_per_page=1)
+    fetch_events_command(client=client,fetch_limit=1, last_run={})
+    # client.get_alerts_request(page_num=1, items_per_page=1)
     return 'ok'
 
 
 def fetch_events(client: Client, fetch_limit: int) -> tuple[list, dict]:
     last_run = demisto.getLastRun()
 
-    alerts_output, last_run_alerts = fetch_alert_type(client, fetch_limit, last_run)
-    events_output, last_run_events = fetch_event_type(client, fetch_limit, last_run)
+    alerts_output, last_run_alerts = fetch_alerts_command(client, fetch_limit, last_run)
+    events_output, last_run_events = fetch_events_command(client, fetch_limit, last_run)
 
     last_run_new_obj = {**last_run_alerts, **last_run_events}
     return (alerts_output + events_output), last_run_new_obj
