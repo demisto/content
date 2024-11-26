@@ -398,6 +398,6 @@ repos:
       - --base-branch
       - origin/master
       - --print_github_annotation
-      - true
+      - 'true'
       - --exit-zero
     skip:nightly: true
