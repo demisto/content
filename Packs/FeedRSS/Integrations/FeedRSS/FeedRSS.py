@@ -63,10 +63,11 @@ class Client(BaseClient):
 
             publications = []
             if indicator:
-                published = dateparser.parse(indicator.published)
-                if not published:
-                    continue
-                published_iso = published.strftime('%Y-%m-%dT%H:%M:%S')
+                published = None
+                if hasattr(indicator, 'published'):
+                    published = dateparser.parse(indicator.published)
+                published_iso = published.strftime('%Y-%m-%dT%H:%M:%S') if published else ''
+
                 publications.append({
                     'timestamp': published_iso,
                     'link': link,
@@ -169,7 +170,8 @@ def check_feed(client: Client) -> str:
 
 def main():
     params = demisto.params()
-    server_url = (params.get('server_url')).rstrip()
+    # server_url = (params.get('server_url')).rstrip()
+    server_url='https://www.nccgroup.com/us/research-blog/feed/'
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
