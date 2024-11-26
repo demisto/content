@@ -11,7 +11,7 @@ name = "pypi-public"
 url = "https://pypi.org/simple/"
 
 [tool.poetry.dependencies]
-python = "^3.9,<3.11"
+python = "^3.10,<3.11"
 
 [tool.poetry.group.github-actions.dependencies]
 packaging = "^24"
@@ -31,7 +31,8 @@ requests-mock = ">=1.9.3"
 pytest-mock = ">=3.7.0"
 freezegun = ">=1.1.0"
 dateparser = ">=1.2.0"
-ruff = "*"  # See `.pre-commit-config-template` for version used in pre-commit. Version here doesn't matter.
+ruff = "*"  # See `.pre-commit-config_template` for version used in pre-commit. Version here doesn't matter.
+riff = "*"  # See `.pre-commit-config_template` for version used in pre-commit. Version here doesn't matter.
 
 [tool.poetry.group.typing.dependencies]
 types-tqdm = "^4.66.0.2"
