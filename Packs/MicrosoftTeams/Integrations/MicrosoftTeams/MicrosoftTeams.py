@@ -2806,7 +2806,7 @@ def token_permissions_list_command():
 
         if roles:
             roles = sorted(roles)
-            hr = tableToMarkdown(f'The currently present API permissions in the Teams application are: ({len(roles)})',
+            hr = tableToMarkdown(f'The current API permissions in the Teams application are: ({len(roles)})',
                                  roles, headers=['Permission'])
         else:
             hr = 'No permissions obtained for the used graph access token.'
