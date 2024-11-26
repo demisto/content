@@ -13,6 +13,7 @@ Use this integration to fetch audit logs, alerts and computer events from Jamf P
 | Max alert events per fetch | Maximum number of alert events to fetch at a time. Default is 1000| False |
 | Max audit events per fetch | Maximum number of audit events to fetch at a time. Default is 20,000| False |
 | Max computer events per fetch | Maximum number of computer events to fetch at a time. Default is 1000| False |
+| Fetch all computers | When set to true, retrieves all available computers during the initial fetch. Note: This may cause a delay until all computers are retrieved. | False |
 
 
 

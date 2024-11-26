@@ -2,33 +2,29 @@ Note: This integration should be used as part of our IAM premium pack. For furth
 For more information, please refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
 Integrate with Atlassian's services to execute generic ILM management operations such as create, update, delete, etc, for employee lifecycle processes.
 
-## Configure Atlassian IAM on Cortex XSOAR
+## Configure Atlassian IAM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Atlassian IAM.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Atlassian URL |  | True |
-    | Access Token |  | True |
-    | Directory ID |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | create_user_enabled | Allow creating users. If set to false, iam-create-user command will be skipped, and user will not be created. | False |
-    | update_user_enabled | Allow updating users | False |
-    | enable_user_enabled | Allow enabling users | False |
-    | disable_user_enabled | Allow disabling users | False |
-    | Automatically create user if not found in update command |  | False |
-    | Incoming Mapper | Incoming Mapper | True |
-    | Outgoing Mapper | Outgoing Mapper | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Atlassian URL |  | True |
+| Access Token |  | True |
+| Directory ID |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| create_user_enabled | Allow creating users. If set to false, iam-create-user command will be skipped, and user will not be created. | False |
+| update_user_enabled | Allow updating users | False |
+| enable_user_enabled | Allow enabling users | False |
+| disable_user_enabled | Allow disabling users | False |
+| Automatically create user if not found in update command |  | False |
+| Incoming Mapper | Incoming Mapper | True |
+| Outgoing Mapper | Outgoing Mapper | True |
     
     * To allow the integration to access the mapper from within the code, as required by the ILM pack, both mappers have to be configured in their proper respective fields and not in the "Mapper (outgoing)" dropdown list selector.
 
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### iam-create-user
 ***
@@ -393,5 +389,4 @@ Disable an active user.
 >|brand|instanceName|skipped|reason|
 >|---|---|---|---|
 >| Atlassian IAM | Atlassian IAM_instance_1 | true | User does not exist |
-
 

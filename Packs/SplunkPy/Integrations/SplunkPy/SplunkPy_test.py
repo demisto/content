@@ -2906,61 +2906,25 @@ def test_parse_fields(fields, expected):
     assert result == expected
 
 
-@pytest.mark.parametrize(
-    "events, expected",
-    [
-        ("{'key1': 'value1'} {'key2': 'value2'}", [{"key1": "value1"}, {"key2": "value2"}]),
-        ("{'key1': 'value1'}", [{"key1": "value1"}]),
-        ({"key1": "value1", "key2": "value2"}, [{"key1": "value1", "key2": "value2"}]),
-        ({"key1": {"nestedKey": "nestedValue"}, "key2": "value2"}, [{"key1": {"nestedKey": "nestedValue"}, "key2": "value2"}]),
-    ]
-)
-def test_convert_to_json_for_validation_valid_inputs(events, expected):
-    """
-    Given: A string or dictionary representing valid JSON inputs, including single, multiple, and nested events.
-    When: Calling convert_to_json_for_validation.
-    Then: The function should return a list of dictionaries corresponding to the parsed events.
-    """
-    from SplunkPy import convert_to_json_for_validation
-    assert convert_to_json_for_validation(events) == expected
-
-
-@pytest.mark.parametrize(
-    "invalid_events",
-    [
-        "{key1: {'nestedKey': 'nestedValue'}}",                # Missing double quotes on the outer key
-        "{'key1': {nestedKey: 'nestedValue'}}",                 # Missing double quotes on nested key
-        "{'key1': 'value1', 'key2': 'value2'",                  # Missing closing brace
-        "{'key1': 'value1', 'key2': 'value2'}, {'key3': 'value3'",  # Missing closing brace on one event
-        "{'key1': 'value1' 'key2': 'value2'}",                  # Missing comma between key-value pairs
-    ]
-)
-def test_convert_to_json_for_validation_invalid_inputs(invalid_events):
-    """
-    Given: A string representing various invalid JSON formats (e.g., missing quotes, missing commas, unmatched braces).
-    When: Calling convert_to_json_for_validation.
-    Then: The function should raise a DemistoException due to invalid JSON format.
-    """
-    from SplunkPy import convert_to_json_for_validation
-    with pytest.raises(DemistoException, match=r"Make sure that the events are in the correct format"):
-        convert_to_json_for_validation(invalid_events)
-
-
 @pytest.mark.parametrize("event, batch_event_data, entry_id, expected_data", [
     ("Somthing happened", None, None, '{"event": "Somthing happened", "fields": {"field1": "value1"}, "index": "main"}'),
     (None, "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}", None,
      "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"),  # Batch event data
+    (None, None, "some entry_id",
+     "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"),
+    (None, """{'event': "some event's", 'index': 'some index'} {'event': 'some event', 'index': 'some index'}""", None,
+     """{'event': "some event's", 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"""),  # with '
     (None, None, "some entry_id", "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}")
 ])
 @patch("requests.post")
-@patch("SplunkPy.get_events_from_file")  # Replace with the actual module
-@patch("SplunkPy.convert_to_json_for_validation")
+@patch("SplunkPy.get_events_from_file")
+@patch("SplunkPy.extract_indexes")
 @patch("SplunkPy.validate_indexes")
 @patch("SplunkPy.parse_fields")
 def test_splunk_submit_event_hec(
     mock_parse_fields,
     mock_validate_indexes,
-    mock_convert_to_json_for_validation,
+    mock_extract_indexes,
     mock_get_events_from_file,
     mock_post,
     event,
@@ -2986,17 +2950,15 @@ def test_splunk_submit_event_hec(
 
     if event:
         # Single event
-        mock_convert_to_json_for_validation.return_value = [{"event": event}]
+        mock_extract_indexes.return_value = ['some index']
     elif batch_event_data:
         # Batch event data
-        mock_convert_to_json_for_validation.return_value = [{'event': 'some event', 'index': 'some index'},
-                                                            {'event': 'some event', 'index': 'some index'}]
+        mock_extract_indexes.return_value = ['some index1', 'some index2']
     elif entry_id:
         # Entry ID
         mock_get_events_from_file.return_value =\
             "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"
-        mock_convert_to_json_for_validation.return_value =\
-            [{'event': 'some event', 'index': 'some index'}, {'event': 'some event', 'index': 'some index'}]
+        mock_extract_indexes.return_value = ['some index1', 'some index2']
 
     # Act
     splunk_submit_event_hec(
@@ -3037,3 +2999,19 @@ def test_splunk_submit_event_hec_command_no_required_arguments():
                        match=r"Invalid input: Please specify one of the following arguments: `event`, "
                        r"`batch_event_data`, or `entry_id`."):
         splunk_submit_event_hec_command({'hec_url': 'hec_url'}, None, {})
+
+
+@pytest.mark.parametrize("events, expected_result", [
+    ("{'index': 'index1', 'event': 'Something happend '} {'index': 'index 2', 'event': 'Something's happend'}",
+     ['index1', 'index 2']),
+    ({'index': 'index1', 'value': '123'}, ['index1']),
+    ("{'event': 'value'}", []),
+    ('{"index": "index: 3", "event": "Something happend"}, {"index": "index: 3", "event": "Something happend"}',
+     ['index: 3', 'index: 3']),
+    ("{'key': 'value'}, {'key': 'value'}", []),
+    ("""{"index": "index_3", "event": "Something` happend"}, {"index": "index-4", "event": "Something' happend"}""",
+     ['index_3', 'index-4']),
+])
+def test_extract_indexes(events, expected_result):
+    from SplunkPy import extract_indexes
+    assert extract_indexes(events) == expected_result
