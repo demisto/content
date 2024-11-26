@@ -231,7 +231,7 @@ def fetch_alerts_command(client: Client, fetch_limit: int, last_run: dict) -> tu
     Fetches alerts until fetch_limit is reached, or no more alerts are available.
 
     Args:
-        client (Client): MongoDBAtlas client.
+        client (Client): MongoDBAtlasEventCollector client.
         fetch_limit: The maximum number of alerts to fetch.
         last_run (dict): Dictionary containing data from the previous run.
 
@@ -393,7 +393,7 @@ def fetch_events_command(client: Client, fetch_limit: int, last_run: dict) -> tu
     Fetches events until fetch_limit is reached, or no more events are available.
 
     Args:
-        client (Client): MongoDBAtlas client.
+        client (Client): MongoDBAtlasEventCollector client.
         fetch_limit (int): The maximum number of events to fetch.
         last_run (dict): Dictionary containing data from the previous run.
 
@@ -493,7 +493,7 @@ def get_events(client: Client, args) -> tuple[list, CommandResults]:
     command_results = CommandResults(
         readable_output=human_readable,
         outputs=output,
-        outputs_prefix='MongoDBAtlas',
+        outputs_prefix='MongoDBAtlasEventCollector',
     )
     return output, command_results
 

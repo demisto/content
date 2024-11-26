@@ -11,7 +11,7 @@ MOCK_PUBLIC_KEY = "public_key"
 
 
 def create_client():
-    from MongoDBAtlas import Client
+    from MongoDBAtlasEventCollector import Client
     return Client(
         base_url=MOCK_BASEURL, verify=False,
         group_id=MOCK_GROUP_ID, private_key=MOCK_PRIVATE_KEY,
@@ -32,7 +32,7 @@ def test_add_entry_status_field():
     Then: Ensure the '_ENTRY_STATUS' field is correctly added with the value 'new' if the 'created' and 'updated' timestamps
      are the same, or 'updated' if the 'updated' timestamp differs from the 'created' timestamp.
     """
-    from MongoDBAtlas import add_entry_status_field
+    from MongoDBAtlasEventCollector import add_entry_status_field
     test_cases = [
         {
             "event": {"created": "2024-10-27T12:07:17Z", "updated": "2024-10-27T12:07:17Z"},
@@ -55,7 +55,7 @@ def test_get_page_url():
     When: Calling the `get_page_url` function to extract the 'next' URL.
     Then: Ensure the correct page URL is returned if present, or empty string if no page type URL is found.
     """
-    from MongoDBAtlas import get_page_url
+    from MongoDBAtlasEventCollector import get_page_url
     links_with_next = [
         {"rel": "prev", "href": "page/1"},
         {"rel": "next", "href": "page/3"},
@@ -85,7 +85,7 @@ def test_add_time_field():
     Then: Ensure the '_time' field is correctly added, using the 'updated' timestamp if present,
      otherwise using the 'created' timestamp.
     """
-    from MongoDBAtlas import add_time_field
+    from MongoDBAtlasEventCollector import add_time_field
     event = {
         "created": "2024-10-27T12:07:17Z",
         "updated": "2024-10-27T13:07:17Z"
@@ -108,7 +108,7 @@ def test_remove_alerts_by_ids():
       - The function returns a list of alerts with only the alerts whose IDs are not in the removal list.
       - The output matches the expected list, confirming that only the specified alerts were removed.
     """
-    from MongoDBAtlas import remove_alerts_by_ids
+    from MongoDBAtlasEventCollector import remove_alerts_by_ids
     alerts = [
         {"id": 1, "name": "alert1"},
         {"id": 2, "name": "alert2"},
@@ -139,10 +139,10 @@ def test_fetch_alert_type(mocker, fetch_limit, expected_alert_count):
     Then: Ensure the correct number of alerts are fetched, the page link is set correctly,
      and the last page alert IDs are correctly recorded and validated.
     """
-    from MongoDBAtlas import fetch_alerts_command, get_page_url
+    from MongoDBAtlasEventCollector import fetch_alerts_command, get_page_url
     mocked_alerts = util_load_json('test_data/raw_alerts_page_1.json')
-    mocker.patch('MongoDBAtlas.Client.get_alerts_request', return_value=mocked_alerts)
-    mocker.patch('MongoDBAtlas.get_page_url', side_effect=["", get_page_url])
+    mocker.patch('MongoDBAtlasEventCollector.Client.get_alerts_request', return_value=mocked_alerts)
+    mocker.patch('MongoDBAtlasEventCollector.get_page_url', side_effect=["", get_page_url])
 
     client = create_client()
 
@@ -168,13 +168,13 @@ def test_fetch_alert_type_using_next_page(mocker, fetch_limit, expected_alert_co
     Then: Ensure the correct number of alerts are fetched, the next page link is set properly,
      and the last page alert IDs are correctly updated after the fetch.
     """
-    from MongoDBAtlas import fetch_alerts_command
+    from MongoDBAtlasEventCollector import fetch_alerts_command
 
     mocked_alerts_page_1 = util_load_json('test_data/raw_alerts_page_1.json')
     mocked_alerts_page_2 = util_load_json('test_data/raw_alerts_page_2.json')
-    mocker.patch('MongoDBAtlas.Client.get_alerts_request', return_value=mocked_alerts_page_1)
-    mocker.patch('MongoDBAtlas.get_page_url', return_value=True)
-    mocker.patch('MongoDBAtlas.Client.get_response_from_page_link', return_value=mocked_alerts_page_2)
+    mocker.patch('MongoDBAtlasEventCollector.Client.get_alerts_request', return_value=mocked_alerts_page_1)
+    mocker.patch('MongoDBAtlasEventCollector.get_page_url', return_value=True)
+    mocker.patch('MongoDBAtlasEventCollector.Client.get_response_from_page_link', return_value=mocked_alerts_page_2)
 
     client = create_client()
 
@@ -205,11 +205,11 @@ def test_fetch_alert_type_while_more_alerts_created(mocker):
     Then: Ensure the correct number of alerts are returned in each fetch, that the last page link is set correctly,
      and that the IDs in last_page_alerts_ids match the expected values after both fetches.
     """
-    from MongoDBAtlas import fetch_alerts_command
+    from MongoDBAtlasEventCollector import fetch_alerts_command
 
     mocked_alerts_page_1 = util_load_json('test_data/raw_alerts_page_1.json')
-    mocker.patch('MongoDBAtlas.Client.get_alerts_request', return_value=mocked_alerts_page_1)
-    mocker.patch('MongoDBAtlas.get_page_url', return_value=False)
+    mocker.patch('MongoDBAtlasEventCollector.Client.get_alerts_request', return_value=mocked_alerts_page_1)
+    mocker.patch('MongoDBAtlasEventCollector.get_page_url', return_value=False)
 
     client = create_client()
 
@@ -225,7 +225,7 @@ def test_fetch_alert_type_while_more_alerts_created(mocker):
     # assert last_run_new_dict.get('page_link') == 'self1'
 
     mocked_alerts_page_1_with_more_alerts = util_load_json('test_data/raw_alerts_page_1_with_more_alerts.json')
-    mocker.patch('MongoDBAtlas.Client.get_alerts_request', return_value=mocked_alerts_page_1_with_more_alerts)
+    mocker.patch('MongoDBAtlasEventCollector.Client.get_alerts_request', return_value=mocked_alerts_page_1_with_more_alerts)
 
     last_run = copy.deepcopy(last_run_new_dict)
     additional_alerts_amount = (
@@ -258,11 +258,11 @@ def test_fetch_event_type(mocker, fetch_limit, expected_event_count):
     Then: Ensure that the number of events returned matches the expected count,
      and the min_time in last_run is updated to the lasted creation time.
     """
-    from MongoDBAtlas import fetch_events_command
+    from MongoDBAtlasEventCollector import fetch_events_command
 
     mocked_events_page_1 = util_load_json('test_data/raw_events_page_1.json')
-    mocker.patch('MongoDBAtlas.Client.get_events_request', return_value=mocked_events_page_1)
-    mocker.patch('MongoDBAtlas.get_page_url', return_value=None)
+    mocker.patch('MongoDBAtlasEventCollector.Client.get_events_request', return_value=mocked_events_page_1)
+    mocker.patch('MongoDBAtlasEventCollector.get_page_url', return_value=None)
 
     client = create_client()
 
@@ -285,10 +285,10 @@ def test_fetch_event_type_min_time_repeat(mocker):
      and no duplicate event IDs are present in the final output.
     """
 
-    from MongoDBAtlas import fetch_events_command
+    from MongoDBAtlasEventCollector import fetch_events_command
     raw_events_page_duplicated_dates = util_load_json('test_data/raw_events_page_duplicated_dates.json')
-    mocker.patch('MongoDBAtlas.Client.get_events_request', return_value=raw_events_page_duplicated_dates)
-    mocker.patch('MongoDBAtlas.get_page_url', return_value=None)
+    mocker.patch('MongoDBAtlasEventCollector.Client.get_events_request', return_value=raw_events_page_duplicated_dates)
+    mocker.patch('MongoDBAtlasEventCollector.get_page_url', return_value=None)
 
     client = create_client()
 
@@ -331,14 +331,14 @@ def test_fetch_event_type_using_previous_page(mocker, fetch_limit, expected_even
     Then: Ensure that the total number of events matches the expected count,
      min_time is updated based on the last event's created time, and no duplicate event IDs are present in the output.
     """
-    from MongoDBAtlas import fetch_events_command
+    from MongoDBAtlasEventCollector import fetch_events_command
 
     raw_events_page_1 = util_load_json('test_data/raw_events_page_1.json')
     raw_events_page_2 = util_load_json('test_data/raw_events_page_2.json')
 
-    mocker.patch('MongoDBAtlas.Client.get_events_request', return_value=raw_events_page_2)
-    mocker.patch('MongoDBAtlas.get_page_url', side_effect=[None, True, False])
-    mocker.patch('MongoDBAtlas.Client.get_response_from_page_link', return_value=raw_events_page_1)
+    mocker.patch('MongoDBAtlasEventCollector.Client.get_events_request', return_value=raw_events_page_2)
+    mocker.patch('MongoDBAtlasEventCollector.get_page_url', side_effect=[None, True, False])
+    mocker.patch('MongoDBAtlasEventCollector.Client.get_response_from_page_link', return_value=raw_events_page_1)
 
     client = create_client()
 
@@ -397,7 +397,7 @@ def test_get_events_first_time_events(mocker, fetch_limit, mock_side_effect, exp
       - The last event ID in the results aligns with the expected ID based on the fetch limit.
       - No duplicate events are returned.
     """
-    from MongoDBAtlas import Client
+    from MongoDBAtlasEventCollector import Client
 
     mocker.patch.object(Client, 'get_events_request', side_effect=mock_side_effect)
 

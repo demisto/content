@@ -61,7 +61,7 @@ script:
       name: limit
       required: true
     outputs:
-      - contextPath: MongoDBAtlas
+      - contextPath: MongoDBAtlasEventCollector
         description: The list of the events and alerts.
         type: List
   runonce: false
