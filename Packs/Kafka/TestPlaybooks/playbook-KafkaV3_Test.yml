@@ -207,6 +207,8 @@ tasks:
         simple: "0"
       topic:
         simple: testsa17
+      poll_timeout:
+        simple: "10.0"
     separatecontext: false
     view: |-
       {
