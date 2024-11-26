@@ -179,7 +179,7 @@ def fetch_events(
     Fetches a set of events from the BloodHound Enterprise API.
 
     This function retrieves events based on the provided parameters and the last run state.
-    It keeps track of the last event retrieved and pagination details to ensure that the 
+    It keeps track of the last event retrieved and pagination details to ensure that the
     next fetch operation continues from the correct point.
 
     Args:
@@ -238,8 +238,8 @@ def get_events_with_pagination(
     """
     Retrieves a paginated list of events from the BloodHound Enterprise API.
 
-    This function fetches events in batches, handling pagination internally to ensure 
-    the correct number of events is retrieved. It also filters out events that have already 
+    This function fetches events in batches, handling pagination internally to ensure
+    the correct number of events is retrieved. It also filters out events that have already
     been processed by checking against a provided last event ID.
 
     Args:
@@ -255,7 +255,7 @@ def get_events_with_pagination(
             - A list of events that were fetched.
             - An integer indicating the number of events to skip in the next fetch if applicable.
     """
-    fetched_events:list = []
+    fetched_events: list = []
     pagination_skip = initial_skip
 
     while len(fetched_events) < max_events:

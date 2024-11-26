@@ -14,7 +14,7 @@ def create_mock_client(test_events):
 
     # Mock the search_events method to return slices of the test_events
     def mock_search_events(limit, from_date, until_date, skip):
-        return test_events[skip : skip + limit]
+        return test_events[skip: skip + limit]
 
     client.search_events.side_effect = mock_search_events
     return client
@@ -231,7 +231,8 @@ def test_fetch_all_events():
         - The date range for fetching events is set from "2024-11-22T00:00:00Z" to "2024-11-24T23:59:59Z".
 
     When:
-        - The `get_events_with_pagination` function is called to fetch events within the specified date range with the limit set to `max_events`.
+        - The `get_events_with_pagination` function called to fetch events within the specified date range with the limit
+            set to `max_events`.
 
     Then:
         - Ensure that the number of events returned matches the total number of events in `test_events`.
@@ -262,10 +263,12 @@ def test_fetch_all_events_in_second_fetch():
         - The `last_event_id` is set to 2051, indicating the starting point for the second fetch.
 
     When:
-        - The `get_events_with_pagination` function is called to fetch events within the specified date range from "2024-11-22T00:00:00Z" to "2024-11-24T23:59:59Z", with the `last_event_id` set to 2051.
+        - The `get_events_with_pagination` function is called to fetch events within the specified
+        date range from "2024-11-22T00:00:00Z" to "2024-11-24T23:59:59Z", with the `last_event_id` set to 2051.
 
     Then:
-        - Ensure that the number of events returned is equal to the total number of events in `test_events` excluding the first event (i.e., starting from event ID 2052).
+        - Ensure that the number of events returned is equal to the total number of events in `test_events`
+            excluding the first event (i.e., starting from event ID 2052).
         - Validate that the `next_skip` value is 0, indicating that there are no more events to fetch.
     """
     from BloodHoundEnterprise import get_events_with_pagination
@@ -296,7 +299,7 @@ def test_fetch_limited_events():
         - The date range for fetching events is from "2024-11-22T00:00:00Z" to "2024-11-24T23:59:59Z".
 
     When:
-        - The `get_events_with_pagination` function is called to fetch a limited number of events (10) within the specified date range.
+        - The `get_events_with_pagination` function is called to fetch a limited number of events within the specified date range.
 
     Then:
         - Ensure that the number of events returned matches the `max_events` limit, which should be 10.
@@ -328,10 +331,12 @@ def test_pagination_with_initial_skip():
         - The date range for fetching events is from "2024-11-22T00:00:00Z" to "2024-11-24T23:59:59Z".
 
     When:
-        - The `get_events_with_pagination` function is called to fetch a limited number of events (10) starting after the initial skip of 5.
+        - The `get_events_with_pagination` function is called to fetch a limited number
+        of events (10) starting after the initial skip of 5.
 
     Then:
-        - Verify that the first event returned matches the event after the initial skip (i.e., `events[0]['id']` should equal the ID of the event at `initial_skip` index).
+        - Verify that the first event returned matches the event after the initial skip
+        (i.e., `events[0]['id']` should equal the ID of the event at `initial_skip` index).
         - Ensure that the number of events returned matches the `max_events` limit, which should be 10.
         - Confirm that the `next_skip` value equals `initial_skip + max_events`, indicating the total number of events processed.
     """
@@ -364,7 +369,8 @@ def test_fetch_with_last_event_id():
         - The date range for fetching events is from "2024-11-22T00:00:00Z" to "2024-11-24T23:59:59Z".
 
     When:
-        - The `get_events_with_pagination` function is called with the specified `last_event_id` to fetch events that have a higher ID than 2060.
+        - The `get_events_with_pagination` function is called with the
+        specified `last_event_id` to fetch events that have a higher ID than 2060.
 
     Then:
         - Verify that all returned events have an `id` greater than 2060.
