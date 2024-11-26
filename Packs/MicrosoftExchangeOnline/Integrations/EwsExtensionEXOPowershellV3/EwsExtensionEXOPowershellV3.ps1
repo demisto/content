@@ -1679,7 +1679,7 @@ class ExchangeOnlinePowershellV3Client
             if ($identity) {
                 $cmd_params.Identity = $identity
             }
-            $response = Set-Mailbox @cmd_params -WarningAction:SilentlyContinue
+            $response = Set-Mailbox @cmd_params -ForwardingAddress $null -ForwardingSmtpAddress $null -DeliverToMailboxAndForward $false -WarningAction:SilentlyContinue
         } finally {
             $this.DisconnectSession()
         }
