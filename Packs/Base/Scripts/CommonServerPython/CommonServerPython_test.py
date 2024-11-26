@@ -9937,10 +9937,10 @@ def test_is_integration_instance_running_on_engine(mocker, instance_name, expect
                 2. The result is an empty string.
     """
     mock_response = {
-        'body': {'instances': [
+        'body': """{'instances': [
             {'id': '1111', 'name': 'instance_name1', 'engine': 'engine_id'},
             {'id': '2222', 'name': 'instance_name2', 'engine': ''}
-        ]},
+        ]}""",
     }
     mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
     mocker.patch.object(demisto, 'integrationInstance', return_value=instance_name)
@@ -9963,10 +9963,10 @@ def test_get_engine_base_url(mocker):
 
     """
     mock_response = {
-        'body': {'engines': [
+        'body': """{'engines': [
             {'id': '1111', 'baseUrl': '11.111.111.33:443'},
             {'id': '2222', 'baseUrl': '11.111.111.44:443'}
-        ]},
+        ]}""",
     }
     mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
     res = get_engine_base_url('1111')
