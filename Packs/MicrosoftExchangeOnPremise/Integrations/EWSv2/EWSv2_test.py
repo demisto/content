@@ -633,7 +633,7 @@ def test_categories_parse_item_as_dict():
     assert return_value.get("categories") == ['Purple category', 'Orange category']
 
 
-def test_parse_incident_from_item():
+def test_parse_incident_from_item(mocker):
     """
     Given -
         a Message with attachments contains non-ASCII characters.
@@ -646,6 +646,8 @@ def test_parse_incident_from_item():
     """
     from EWSv2 import parse_incident_from_item
     from exchangelib.attachments import AttachmentId, ItemAttachment
+
+    mocker.patch('EWSv2.fileResult')
 
     message = Message(subject='message4',
                       message_id='message4',
