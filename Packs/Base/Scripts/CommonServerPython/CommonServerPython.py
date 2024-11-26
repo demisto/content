@@ -8635,7 +8635,10 @@ def is_integration_instance_running_on_engine():
     if engine_id: # engine_id = '' for instances that don't run on engine
         demisto.debug(f"The {instance_name} instance runs on an xsoar engine, engine ID is: {engine_id}")
         return engine_id
-    
+    else:
+        demisto.debug(f"The {instance_name} instance does not run on an xsoar engine.")
+        return ''
+     
 def get_engine_base_url(engine_id):
     """Gets the xsoar engine id and returns it's base url. 
     For example: for engine_id = '4c80ce87-5a73-401c-b6a7-f4f12f86ff32', base url = '10.180.188.186:8443'.
