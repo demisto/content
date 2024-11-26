@@ -56,27 +56,10 @@ from exchangelib.version import (
     EXCHANGE_2016,
     EXCHANGE_2019,
 )
-from exchangelib.version import VERSIONS as EXC_VERSIONS
 from future import utils as future_utils
 from requests.exceptions import ConnectionError
 
 from CommonServerPython import *
-
-
-# Exchange2 2019 patch - server dosen't connect with 2019 but with other versions creating an error mismatch (see CIAC-3086),
-# overriding this function to remove minor version test and remove error throw.
-# opened bug for exchanglib here https://github.com/ecederstrand/exchangelib/issues/1210
-def our_fullname(self):  # pragma: no cover
-    for build, api_version, full_name in EXC_VERSIONS:
-        # removed 'or self.build.minor_version != build.minor_version'
-        if self.build and self.build.major_version != build.major_version:
-            continue
-        if self.api_version == api_version:
-            return full_name
-    return None
-
-
-Version.fullname = our_fullname
 
 
 class exchangelibInsecureSSLAdapter(SSLAdapter):
