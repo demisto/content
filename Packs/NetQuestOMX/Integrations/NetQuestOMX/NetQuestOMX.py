@@ -225,7 +225,7 @@ def address_list_upload_command(client: Client, args: dict):
         client.address_list_upload_request(file_name)
     except Exception as e:
         raise DemistoException(
-            f"An error was occurred when uploading the given file. Please check the file, {file_name=}."
+            f"An error occurred when uploading {file_name}."
         ) from e
 
     return CommandResults(readable_output="Address list was successfully uploaded")
