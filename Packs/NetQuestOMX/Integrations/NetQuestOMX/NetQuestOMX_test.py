@@ -168,9 +168,8 @@ def test_get_events_invalid_input(net_quest_omx_client):
                          " ('Metering Stats', 'Export Stats', 'Export Peaks FPS', 'Optimization Stats')." \
                          " Please execute the command get-events again with valid input." \
                          " This input is invalid: ['Metering', 'Export']"
-    with pytest.raises(DemistoException) as e:
+    with pytest.raises(DemistoException, match=expected_error_msg) as e:
         get_events(net_quest_omx_client, params, args)
-    assert e.value.message == expected_error_msg
 
 
 def test_address_list_upload_command(mocker, requests_mock, net_quest_omx_client):
