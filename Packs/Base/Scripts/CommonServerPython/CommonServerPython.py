@@ -8596,12 +8596,76 @@ def is_xsiam():
 
 def is_using_engine():
     """Determines whether or not the platform is using engine.
+    NOTE: 
+     - This method works only for system integrations (not custom).
+     - On xsoar 8, this method works only for integrations that runs on the xsoar pod - not on the engine-0 (mainly long running
+       integrations) such as:  EDL, Cortex Core - IOC, Cortex Core - IR, ExportIndicators, Generic Webhook, PingCastle,
+       Publish List, Simple API Proxy, Syslog v2, TAXII Server, TAXII2 Server, Web File Repository, Workday_IAM_Event_Generator, 
+       XSOAR-Web-Server, Microsoft Teams, AWS-SNS-Listener.
+
     :return: True iff the platform is using engine.
     :rtype: ``bool``
     """
     return demisto.demistoVersion().get("engine")
 
+def is_integration_instance_running_on_engine():
+    """Determines whether or not the current integration instance is running on an xsoar engine.
+    If yes - returns the engine id.
+    
+    :return: The engine id iff the instance is running on an xsaor engine.
+    :rtype: ``str``
+    """
+    integrations_raw_response = demisto.internalHttpRequest(
+        'POST', uri='/settings/integration/search', body=json.dumps({})
+    )
+    integrations_body_raw_response = integrations_raw_response.get('body')
+    try:
+        integrations_body_response = json.loads(integrations_body_raw_response) # type: ignore
+    except json.JSONDecodeError:
+        demisto.debug(f'Unable to load response {integrations_body_raw_response}')
+        integrations_body_response = {}
+        
+    instances = integrations_body_response.get('instances', [])
+    instance_name = demisto.integrationInstance()
+    demisto.debug(f"Search for the data of the {instance_name} instance.")
+    for instance in instances:
+        if instance_name == instance.get('name', ''):
+            engine_id = instance.get('engine', '')
+            
+    if engine_id: # engine_id = '' for instances that don't run on engine
+        demisto.debug(f"The {instance_name} instance runs on an xsoar engine, engine ID is: {engine_id}")
+        return engine_id
+    
+def get_engine_base_url(engine_id):
+    """Gets the xsoar engine id and returns it's base url. 
+    For example: for engine_id = '4c80ce87-5a73-401c-b6a7-f4f12f86ff32', base url = '10.180.188.186:8443'.
 
+    :type engine_id: ``str``
+    :param engine_id: The xsoar engine id.
+
+    :return: The base URL of the engine.
+    :rtype: ``str`
+    """
+
+    engines_raw_response = demisto.internalHttpRequest(
+        'GET', uri='/engines', body=json.dumps({})
+    )
+    engines_body_raw_response = engines_raw_response.get('body')
+    
+    try:
+        engines_body_response = json.loads(engines_body_raw_response) # type: ignore
+    except json.JSONDecodeError:
+        demisto.debug(f'Unable to load response {engines_body_raw_response}')
+        engines_body_response = {}
+    
+    engines =  engines_body_response.get('engines', [])
+    for engine in engines:
+        if engine.get('id') == engine_id:
+            engine_base_url = engine.get('baseUrl', '')
+            return engine_base_url
+        
+    return ''
+    
 class DemistoHandler(logging.Handler):
     """
         Handler to route logging messages to an IntegrationLogger or demisto.debug if not supplied
