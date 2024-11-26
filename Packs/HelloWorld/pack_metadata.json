@@ -1,6 +1,6 @@
 {
     "name": "HelloWorld",
-    "description": "This is the Hello World integration for getting started.",
+    "description": "This is the Hello World integration for getting started. Test Cortex XSOAR",
     "support": "community",
     "currentVersion": "3.0.12",
     "author": "Cortex XSOAR",

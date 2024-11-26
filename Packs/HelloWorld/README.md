@@ -15,4 +15,4 @@ The purpose of this pack is to learn how to build a Cortex XSOAR content pack.
 
 As part of this pack, you get an out-of-the-box automation, classifiers, incident fields and a Hello World layout. In addition there are two playbooks:
 - A playbook that will handle the alerts coming from the Hello World service.
-- A playbook that simulates a vulnerability scan using the "HelloWorld" sample integration. It's used to demonstrate how to use the GenericPolling mechanism to run jobs that take several seconds or minutes to complete.
+- A playbook that simulates a vulnerability scan using the "HelloWorld" sample integration. It's used to demonstrate how to use the GenericPolling mechanism to run jobs that take several seconds or minutes to complete Test Cortex XSOAR.

@@ -1,4 +1,4 @@
-Hello World Script
+Hello World Script Test Cortex XSOAR
 ## Script Data
 ---
 

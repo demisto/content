@@ -14,7 +14,7 @@ configuration:
   section: Connect
 - defaultvalue: ACTIVE
   section: Collect
-  display: Fetch alerts with status (ACTIVE, CLOSED)
+  display: Fetch alerts with status (ACTIVE, CLOSED) Test Cortex XSOAR
   name: alert_status
   options:
   - ACTIVE

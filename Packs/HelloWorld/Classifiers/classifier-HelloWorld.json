@@ -2,7 +2,7 @@
     "id": "HelloWorld",
     "name": "Hello World - Classification",
     "type": "classification",
-    "description": "Classifies Hello World alerts.",
+    "description": "Test Cortex XSOAR Classifies Hello World alerts.",
     "fromVersion": "6.0.0",
     "keyTypeMap": {
         "Hello World Alert": "Hello World Alert"
