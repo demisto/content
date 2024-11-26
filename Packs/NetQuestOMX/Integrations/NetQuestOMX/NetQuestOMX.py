@@ -366,7 +366,6 @@ def fetch_events(client: Client, slot_number: str, port_number: str, statistic_t
         'Export Stats': client.export_stats_request,
         'Export Peaks FPS': client.export_peaks_FPS_request,
         'Optimization Stats': client.optimization_stats_request,
-
     }
 
     events.extend(
