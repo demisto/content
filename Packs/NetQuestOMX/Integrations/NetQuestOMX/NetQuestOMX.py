@@ -323,10 +323,14 @@ def test_module(client: Client) -> str:
     message: str = ''
 
     # create a list and then delete it for sanity check
-    address_list_create_command(client=client, args={"name": "test_module"})
-    address_list_delete_command(client=client, args={"name": "test_module"})
-    message = 'ok'
+    address_list_create_command(client=client, args={"name": "cortex_instance_test"})
+    try:
+        address_list_delete_command(client=client, args={"name": "cortex_instance_test"})
+    except Exception as e:
+        raise DemistoException("An error was occurred when deleting the cortex_instance_test IP's list."
+                               "Please delete this list manually. It's was created only for testing.") from e
 
+    message = 'ok'
     return message
 
 
