@@ -8659,11 +8659,14 @@ def get_engine_base_url(engine_id):
         engines_body_response = {}
     
     engines =  engines_body_response.get('engines', [])
+    demisto.debug(f"Search for the data of engine ID {engine_id}.")
     for engine in engines:
         if engine.get('id') == engine_id:
             engine_base_url = engine.get('baseUrl', '')
+            demisto.debug(f"The base URL of engine ID {engine_id} is: {engine_base_url}.")
             return engine_base_url
         
+    demisto.debug(f"Couldn't find a base url for engine ID {engine_id}.")
     return ''
     
 class DemistoHandler(logging.Handler):
