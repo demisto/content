@@ -408,13 +408,13 @@ def fetch_incidents():
 
         # Shellcode alert
         if 'shellcode' in gwAlerts[i]['_source'].keys():
-            incident['type'] = "Gatewatcher Shellcode"
+            incident['type'] = "Gatewatcher Shellcode detect engine alert"
 
             incident['CustomFields']['gatewatchershellcodesubtype'] = str(gwAlerts[i]['_source']['shellcode']['sub_type'])
 
         # Malicious Powershell alert
         if 'malicious_powershell' in gwAlerts[i]['_source'].keys():
-            incident['type'] = "Gatewatcher Malicious Powershell"
+            incident['type'] = "Gatewatcher Malicious Powershell engine alert"
 
             incident['CustomFields']['gatewatchermaliciouspowershellprobaobfuscated'] = str(gwAlerts[i]['_source']['malicious_powershell']['proba_obfuscated'])
             incident['CustomFields']['gatewatchermaliciouspowershellscore'] = str(gwAlerts[i]['_source']['malicious_powershell']['score'])
