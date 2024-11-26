@@ -55,7 +55,8 @@ class Client(BaseClient):
 
     def _refresh_access_token(self, now: datetime):
         """
-        Since the validity of the Access Token is 120 minutes, this method refreshes the token.
+        Since the validity of the Access Token is 120 minutes, this method refreshes the token
+        and keep the token and the expiration time in the integration context.
         """
 
         try:
