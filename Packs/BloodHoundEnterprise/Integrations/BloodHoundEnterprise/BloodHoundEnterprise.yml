@@ -28,7 +28,7 @@ configuration:
   required: false
   type: 8
   section: Collect
-- defaultvalue: 1000
+- defaultvalue: 250
   section: Collect
   advanced: true
   display: Maximum number of events per fetch
@@ -63,7 +63,7 @@ script:
       - 'true'
       - 'false'
       required: false
-    - description: The number of events to return. Default is 500.
+    - description: The number of events to return. Default is 250.
       name: limit
       required: false
     description: Gets events from BloodHound Enterprise.

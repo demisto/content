@@ -40,7 +40,7 @@ Gets events from BloodHound Enterprise.
 | start | The start date from which to filter events. (e.g., 2024-07-10T08:08:46.76). | Optional | 
 | end | The end date from which to filter events. (e.g., 2024-07-11T08:09:47.08). | Optional | 
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. | Optional | 
-| limit | The number of events to return. Default is 500. | Optional | 
+| limit | The number of events to return. Default is 250. | Optional | 
 
 #### Context Output
 

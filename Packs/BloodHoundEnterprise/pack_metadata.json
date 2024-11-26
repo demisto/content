@@ -1,6 +1,6 @@
 {
     "name": "BloodHound Enterprise",
-    "description": "## FILL MANDATORY FIELD ##",
+    "description": "The BloodHound Enterprise integration for Cortex XSAIM enables event collection and analysis from the BloodHound Enterprise platform.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

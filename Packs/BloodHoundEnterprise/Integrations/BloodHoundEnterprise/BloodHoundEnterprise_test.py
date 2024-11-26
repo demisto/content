@@ -1,76 +1,91 @@
-from unittest.mock import patch
 from freezegun import freeze_time
 import demistomock as demisto
+from unittest.mock import Mock
+import json
 
 
-def mock_client():
-    """
-    Create a mock client for testing.
-    """
-    from BloodHoundEnterprise import Client, Credentials
-
-    return Client(
-        base_url="example.com",
-        verify=False,
-        proxy=False,
-        credentials=Credentials(token_id="token_id", token_key="token_key"),
-    )
+def load_test_events():
+    with open('test_data/event_list.json') as file:
+        return json.load(file)
 
 
-@freeze_time("2024-11-20T13:17:24.074375+02:00")
+def create_mock_client(test_events):
+    client = Mock()
+
+    # Mock the search_events method to return slices of the test_events
+    def mock_search_events(limit, from_date, until_date, skip):
+        return test_events[skip:skip + limit]
+
+    client.search_events.side_effect = mock_search_events
+    return client
+
+
+@freeze_time("2024-11-22T13:28:27.698038Z")
 def test_fetch_events_first_time(mocker):
     """
     Given:
-    - fetch events command (fetches detectPions)
+        - A mock client with a predefined set of test events loaded from a JSON file.
+        - The current date and time are frozen at "2024-11-22T13:28:27.698038Z".
+        - No previous fetch history from `demisto.getLastRun` (indicating the first time fetching events).
+        - The parameter for `max_events_per_fetch` is set to "7".
 
     When:
-    - Running fetch-events command
+        - The `fetch_events` function is called to retrieve events with the mock client.
 
     Then:
-    - Ensure number of events fetched, and next run fields
+        - Ensure that exactly 7 events are fetched.
+        - Validate that the next run metadata (`next_run`) is correctly updated with:
+            - `last_event_created_at` timestamp.
+            - `last_event_id` of the last fetched event.
+            - `prev_fetch_id` set to 1.
+            - `skip` indicating the number of events fetched.
+        - Verify that the first event in the fetched list has the correct ID (2051).
     """
     from BloodHoundEnterprise import fetch_events
 
+    test_events = load_test_events()
+    client = create_mock_client(test_events)
     mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch.object(demisto, "debug")
-    client = mock_client()
-    mocker.patch.object(
-        client,
-        "search_events",
-        return_value=[
-            {"id": 2043, "created_at": "2024-11-20T11:18:15.516244Z", "actor_id": ""},
-            {
-                "id": 2044,
-                "created_at": "2024-11-20T11:18:16.592573Z",
-                "actor_id": "testExample",
-            },
-        ],
-    )
+
     next_run, events = fetch_events(
         client=client,
-        params={},
+        params={"max_events_per_fetch": "7"},
     )
 
-    assert len(events) == 2
+    assert len(events) == 7
     assert next_run == {
-        "last_event_created_at": "2024-11-20T11:18:16.592573Z",
-        "last_event_id": 2044,
+        "last_event_created_at": "2024-11-22T13:27:27.698038+02:00",
+        "last_event_id": 2057,
         "prev_fetch_id": 1,
+        "skip": 7,
     }
-    assert events[0].get("id") == 2043
+    assert events[0].get("id") == 2051
 
 
 @freeze_time("2024-11-20T13:17:24.074375+02:00")
 def test_fetch_events_second_time(mocker):
     """
     Given:
-    - fetch events command (fetches detectPions)
+        - A mock client with a predefined set of test events loaded from a JSON file.
+        - The current date and time are frozen at "2024-11-20T13:17:24.074375+02:00".
+        - The previous fetch history is simulated using `demisto.getLastRun`, with the following values:
+            - `last_event_created_at` set to "2024-11-24T12:43:57.27948Z".
+            - `last_event_id` set to 2072.
+            - `prev_fetch_id` set to 1.
 
     When:
-    - Running fetch-events command
+        - The `fetch_events` function is called to retrieve events with the mock client,
+            with a parameter for `max_events_per_fetch` set to "2".
 
     Then:
-    - Ensure number of events fetched, and next run fields
+        - Ensure that exactly 2 events are fetched.
+        - Validate that the first event in the fetched list has the correct ID (2073).
+        - Verify that the next run metadata (`next_run`) is correctly updated with:
+            - `last_event_created_at` timestamp.
+            - `last_event_id` of the last fetched event (2074).
+            - `prev_fetch_id` incremented to 2.
+            - `skip` indicating the number of events fetched (2).
     """
     from BloodHoundEnterprise import fetch_events
 
@@ -78,53 +93,45 @@ def test_fetch_events_second_time(mocker):
         demisto,
         "getLastRun",
         return_value={
-            "last_event_created_at": "2024-11-20T11:18:16.592573Z",
-            "last_event_id": 2043,
+            "last_event_created_at": "2024-11-24T12:43:57.27948Z",
+            "last_event_id": 2072,
             "prev_fetch_id": 1,
         },
     )
     mocker.patch.object(demisto, "debug")
-    client = mock_client()
-    mocker.patch.object(
-        client,
-        "search_events",
-        return_value=[
-            {"id": 2043, "created_at": "2024-11-20T11:18:15.516244Z", "actor_id": ""},
-            {
-                "id": 2044,
-                "created_at": "2024-11-20T11:18:16.592573Z",
-                "actor_id": "testExample",
-            },
-        ],
-    )
+    test_events = load_test_events()
+    client = create_mock_client(test_events)
     next_run, events = fetch_events(
         client=client,
-        params={},
+        params={"max_events_per_fetch": "2"},
     )
 
-    assert len(events) == 1
+    assert len(events) == 2
+    assert events[0].get("id") == 2073
     assert next_run == {
-        "last_event_created_at": "2024-11-20T11:18:16.592573Z",
-        "last_event_id": 2044,
+        "last_event_created_at": "2024-11-24T12:43:57.27948Z",
+        "last_event_id": 2074,
         "prev_fetch_id": 2,
+        "skip": 2,
     }
-    assert events[0].get("id") == 2044
 
 
 def test_test_module_command(mocker):
+    
+    from BloodHoundEnterprise import test_module
     """
     Given:
-    - test module command (fetches detections)
+        - A mock client with a predefined set of test events loaded from a JSON file.
+        - The `_request` method of the mock client is patched to avoid making actual requests.
 
     When:
-    - Pressing test button
+        - The `test_module` function is called to test the module's functionality with the mock client.
 
     Then:
-    - Test module passed
+        - Ensure that the result of the `test_module` function is "ok", indicating the module is working as expected.
     """
-    from BloodHoundEnterprise import test_module
-
-    client = mock_client()
+    test_events = load_test_events()
+    client = create_mock_client(test_events)
     mocker.patch.object(client, "_request")
     res = test_module(client)
     assert res == "ok"
@@ -133,57 +140,72 @@ def test_test_module_command(mocker):
 def test_get_events_command(mocker):
     """
     Given:
-    - get_events command (fetches detections)
+        - A mock client with a predefined set of test events loaded from a JSON file.
+        - The `args` dictionary contains the following parameters:
+            - `start`: "2024-11-23T18:39:35.546751Z"
+            - `end`: "2024-11-23T18:39:58.113381Z"
+            - `limit`: "3"
 
     When:
-    - running get events command
+        - The `get_events_command` function is called with the mock client and the provided arguments.
 
     Then:
-    - events and human readable as expected
+        - Ensure that exactly 3 events are returned.
+        - Validate that the first event in the list has the correct ID (2051).
+        - Ensure that the human-readable output (`hr.readable_output`) contains the string "2052".
     """
     from BloodHoundEnterprise import get_events_command
 
     args = {
-        "start": "2024-11-18T11:16:09.076711Z",
-        "end": "2024-11-18T14:00:20.303699Z",
+        "start": "2024-11-23T18:39:35.546751Z",
+        "end": "2024-11-23T18:39:58.113381Z",
+        "limit": "3"
     }
-    client = mock_client()
-    mocker.patch.object(
-        client,
-        "search_events",
-        return_value=[
-            {
-                "id": 1990,
-                "created_at": "2024-11-18T11:16:09.076711Z",
-            },
-            {
-                "id": 1991,
-                "created_at": "2024-11-18T14:00:20.301456Z",
-            },
-            {
-                "id": 1992,
-                "created_at": "2024-11-18T14:00:20.303699Z",
-            },
-        ],
-    )
+    test_events = load_test_events()
+    client = create_mock_client(test_events)
+
     events, hr = get_events_command(
         client=client,
         args=args,
     )
 
     assert len(events) == 3
-    assert events[0].get("id") == 1990
-    assert "1992" in hr.readable_output
+    assert events[0].get("id") == 2051
+    assert "2052" in hr.readable_output
 
 
 def test_client_request(mocker):
+    """
+    Given:
+        - The `query_params` dictionary includes:
+            - `limit`: 50
+            - `sort_by`: "created_at"
+            - `after`: "2024-11-18T11:16:09.076711Z"
+            - `before`: "2024-11-18T14:00:20.303699Z"
+        - The `_http_request` method is patched to avoid actual HTTP requests.
+        - The `demisto.debug` method is patched to capture debug log outputs.
+
+    When:
+        - The `client._request` method is called with the provided `query_params`.
+
+    Then:
+        - Ensure that the debug log contains the expected query string with `sort_by=created_at` and `after` parameters.
+        - Validate that the expected parameters are found in the log call arguments.
+    """
+    from BloodHoundEnterprise import Client, Credentials
     query_params = {
         "limit": 50,
         "sort_by": "created_at",
         "after": "2024-11-18T11:16:09.076711Z",
         "before": "2024-11-18T14:00:20.303699Z",
     }
-    client = mock_client()
+    client = Client(
+        base_url="example.com",
+        verify=False,
+        proxy=False,
+        credentials=Credentials(token_id="token_id", token_key="token_key"),
+    )
+
     mocker.patch.object(client, "_http_request")
     log = mocker.patch.object(demisto, "debug")
     client._request(query_params=query_params)
@@ -192,4 +214,167 @@ def test_client_request(mocker):
         in call.args[0]
         for call in log.call_args_list
     )
-    assert found, "'aaa' was not found in any demisto.debug calls."
+    assert found, "'sort_by=created_at&after' was not found in any demisto.debug calls."
+
+
+def test_fetch_all_events():
+    """
+    Given:
+        - A mock client with a predefined set of test events loaded from a JSON file.
+        - The `max_events` is set to the total number of events available in the `test_events` list.
+        - The date range for fetching events is set from "2024-11-22T00:00:00Z" to "2024-11-24T23:59:59Z".
+
+    When:
+        - The `get_events_with_pagination` function is called to fetch events within the specified date range with the limit set to `max_events`.
+
+    Then:
+        - Ensure that the number of events returned matches the total number of events in `test_events`.
+        - Validate that the `next_skip` value is correctly calculated, which should be 24 in this case.
+    """
+    from BloodHoundEnterprise import get_events_with_pagination
+    test_events = load_test_events()
+    client = create_mock_client(test_events)
+
+    max_events = len(test_events)
+    events, next_skip = get_events_with_pagination(
+        client=client,
+        start_date="2024-11-22T00:00:00Z",
+        end_date="2024-11-24T23:59:59Z",
+        max_events=max_events
+    )
+
+    assert len(events) == len(test_events)
+    assert next_skip == 24
+
+
+def test_fetch_all_events_in_second_fetch():
+    """
+    Given:
+        - A mock client with a predefined set of test events loaded from a JSON file.
+        - The `max_events` is set to the total number of events available in the `test_events` list.
+        - The `last_event_id` is set to 2051, indicating the starting point for the second fetch.
+
+    When:
+        - The `get_events_with_pagination` function is called to fetch events within the specified date range from "2024-11-22T00:00:00Z" to "2024-11-24T23:59:59Z", with the `last_event_id` set to 2051.
+
+    Then:
+        - Ensure that the number of events returned is equal to the total number of events in `test_events` excluding the first event (i.e., starting from event ID 2052).
+        - Validate that the `next_skip` value is 0, indicating that there are no more events to fetch.
+    """
+    from BloodHoundEnterprise import get_events_with_pagination
+    test_events = load_test_events()
+    client = create_mock_client(test_events)
+
+    max_events = len(test_events)
+    last_event_id = 2051
+
+    events, next_skip = get_events_with_pagination(
+        client=client,
+        start_date="2024-11-22T00:00:00Z",
+        end_date="2024-11-24T23:59:59Z",
+        max_events=max_events,
+        last_event_id=last_event_id
+    )
+
+    assert len(events) == len(test_events[1:])
+    assert next_skip == 0
+
+
+def test_fetch_limited_events():
+    """
+    Given:
+        - A mock client with a predefined set of test events loaded from a JSON file.
+        - The `max_events` parameter is set to 10, limiting the number of events to fetch.
+        - The date range for fetching events is from "2024-11-22T00:00:00Z" to "2024-11-24T23:59:59Z".
+
+    When:
+        - The `get_events_with_pagination` function is called to fetch a limited number of events (10) within the specified date range.
+
+    Then:
+        - Ensure that the number of events returned matches the `max_events` limit, which should be 10.
+        - Validate that the `next_skip` value is equal to `max_events` (10), indicating the number of events fetched.
+    """
+    from BloodHoundEnterprise import get_events_with_pagination
+    test_events = load_test_events()
+    client = create_mock_client(test_events)
+
+    max_events = 10
+    events, next_skip = get_events_with_pagination(
+        client=client,
+        start_date="2024-11-22T00:00:00Z",
+        end_date="2024-11-24T23:59:59Z",
+        max_events=max_events
+    )
+
+    assert len(events) == max_events
+    assert next_skip == max_events
+
+
+def test_pagination_with_initial_skip():
+    """
+    Given:
+        - A mock client with a predefined set of test events loaded from a JSON file.
+        - The `initial_skip` parameter is set to 5, meaning the first 5 events should be skipped.
+        - The `max_events` parameter is set to 10, limiting the number of events to fetch.
+        - The date range for fetching events is from "2024-11-22T00:00:00Z" to "2024-11-24T23:59:59Z".
+
+    When:
+        - The `get_events_with_pagination` function is called to fetch a limited number of events (10) starting after the initial skip of 5.
+
+    Then:
+        - Verify that the first event returned matches the event after the initial skip (i.e., `events[0]['id']` should equal the ID of the event at `initial_skip` index).
+        - Ensure that the number of events returned matches the `max_events` limit, which should be 10.
+        - Confirm that the `next_skip` value equals `initial_skip + max_events`, indicating the total number of events processed.
+    """
+    from BloodHoundEnterprise import get_events_with_pagination
+    test_events = load_test_events()
+    client = create_mock_client(test_events)
+
+    initial_skip = 5
+    max_events = 10
+    events, next_skip = get_events_with_pagination(
+        client=client,
+        start_date="2024-11-22T00:00:00Z",
+        end_date="2024-11-24T23:59:59Z",
+        max_events=max_events,
+        initial_skip=initial_skip
+    )
+
+    assert events[0]['id'] == test_events[initial_skip]['id']
+    assert len(events) == max_events
+    assert next_skip == initial_skip + max_events
+
+
+def test_fetch_with_last_event_id():
+    """
+    Given:
+        - A mock client with a predefined set of test events loaded from a JSON file.
+        - The `last_event_id` parameter is set to 2060, meaning events with an ID less than or equal to 2060 should be excluded.
+        - The `max_events` parameter is set to 5, limiting the number of events to fetch.
+        - The date range for fetching events is from "2024-11-22T00:00:00Z" to "2024-11-24T23:59:59Z".
+
+    When:
+        - The `get_events_with_pagination` function is called with the specified `last_event_id` to fetch events that have a higher ID than 2060.
+
+    Then:
+        - Verify that all returned events have an `id` greater than 2060.
+        - Ensure that the number of events fetched matches the `max_events` limit, which is 5.
+        - Confirm that the first event in the returned list has an `id` greater than `last_event_id` (2060).
+    """
+    from BloodHoundEnterprise import get_events_with_pagination
+    test_events = load_test_events()
+    client = create_mock_client(test_events)
+
+    last_event_id = 2060
+    max_events = 5
+    events, next_skip = get_events_with_pagination(
+        client=client,
+        start_date="2024-11-22T00:00:00Z",
+        end_date="2024-11-24T23:59:59Z",
+        max_events=max_events,
+        last_event_id=last_event_id
+    )
+
+    assert all(event['id'] > last_event_id for event in events)
+    assert len(events) == max_events
+    assert events[0]['id'] > last_event_id

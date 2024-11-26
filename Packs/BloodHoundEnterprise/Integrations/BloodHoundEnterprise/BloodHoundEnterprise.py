@@ -14,11 +14,12 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "BloodHound"
 PRODUCT = "Enterprise"
-FETCH_LIMIT = 1000
+FETCH_LIMIT = 250
 BASE_URL = "https://{server_url}"
+PAGE_LIMIT = 50
 
 
-class Credentials():
+class Credentials:
     def __init__(self, token_id: str, token_key: str) -> None:
         self.token_id = token_id
         self.token_key = token_key
@@ -28,23 +29,46 @@ class Credentials():
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
+    """
+    A client to interact with the BloodHound Enterprise API.
 
-    This Client implements API calls, and does not contain any Demisto logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this HelloWorld implementation, no special attributes defined
+    This client handles authentication and makes API requests to fetch audit events.
+    It supports operations like searching events within a date range and limiting the number of results.
+
+    Attributes:
+        base_url (str): The base URL of the API.
+        credentials (Credentials): Contains API credentials (token ID and token key).
+        verify (bool): Whether to verify SSL certificates.
+        proxy (bool): Whether to use a proxy.
     """
 
     def __init__(self, base_url, credentials: Credentials, verify, proxy):
+        """
+        Initializes the Client with the given API parameters.
+
+        Args:
+            base_url (str): The base URL of the API.
+            credentials (Credentials): API credentials for authentication.
+            verify (bool): SSL verification flag.
+            proxy (bool): Proxy usage flag.
+        """
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self._credentials = credentials
 
     def _request(
         self, method: str = "GET", uri: str = "/api/v2/audit", query_params: dict = {}
     ) -> dict:
+        """
+        Makes an authenticated HTTP request to the API.
 
+        Args:
+            method (str): The HTTP method to use (e.g., 'GET', 'POST'). Defaults to 'GET'.
+            uri (str): The API endpoint to send the request to. Defaults to '/api/v2/audit'.
+            query_params (Optional[Dict]): The query parameters to include in the request.
+
+        Returns:
+            Dict: The response data as a dictionary.
+        """
         if query_params:
             encoded_params = urllib.parse.urlencode(query_params)
             uri_with_params = f"{uri}?{encoded_params}"
@@ -64,7 +88,7 @@ class Client(BaseClient):
             "Signature": base64.b64encode(digester.digest()),
             "Content-Type": "application/json",
         }
-        demisto.debug(f"exeuting API call with encrypt url: {uri_with_params}, headers: {headers}")
+        demisto.debug(f"exeuting API call with encrypt url: {uri_with_params},")
 
         return self._http_request(
             method=method, url_suffix=uri_with_params, headers=headers
@@ -75,24 +99,26 @@ class Client(BaseClient):
         limit: int,
         from_date: str | None = None,
         until_date: str | None = None,
-    ) -> List[Dict]:  # noqa: E501
+        skip: int | None = None,
+    ) -> List[Dict]:
         """
-        Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
-        All the parameters are passed directly to the API as HTTP POST parameters in the request
+        Searches for audit events using the API with pagination and optional date filtering.
 
         Args:
-            prev_id: previous id that was fetched.
-            limit: limit.
-            from_date: get events from from_date.
+            limit (int): The maximum number of events to retrieve.
+            from_date (Optional[str]): The start date to filter events (ISO 8601 format).
+            until_date (Optional[str]): The end date to filter events (ISO 8601 format).
+            skip (Optional[int]): The number of events to skip for pagination.
 
         Returns:
-            List[Dict]: the next events
+            List[Dict]: A list of events retrieved from the API.
         """
         query_params = {
             "limit": limit,
             "sort_by": "created_at",
             "after": from_date,
             "before": until_date,
+            "skip": skip,
         }
         remove_nulls_from_dictionary(query_params)
         response = self._request(query_params=query_params)
@@ -101,18 +127,13 @@ class Client(BaseClient):
 
 def test_module(client: Client) -> str:
     """
-    Tests API connectivity and authentication
-    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
-    successful.
-    Raises exceptions if something goes wrong.
+    Tests the connection to the BloodHound Enterprise API.
 
     Args:
-        client (Client): HelloWorld client to use.
-        params (Dict): Integration parameters.
-        first_fetch_time(str): The first fetch time as configured in the integration params.
+        client (Client): The client object to interact with the API.
 
     Returns:
-        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
+        str: "ok" if the connection is successful, or an authorization error message.
     """
     try:
         client._request(query_params={"limit": "1", "sort_by": "created_at"})
@@ -127,13 +148,24 @@ def test_module(client: Client) -> str:
 
 
 def get_events_command(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
-    limit = args.get("limit", 50)
+    """
+    Retrieves events from the BloodHound Enterprise API based on provided parameters.
+
+    Args:
+        client (Client): The API client to use for the request.
+        args (dict): Command arguments, including:
+            - 'start' (str): Start date for event retrieval.
+            - 'end' (str, optional): End date for event retrieval.
+            - 'limit' (int, optional): Maximum number of events to retrieve.
+
+    Returns:
+        tuple[List[Dict], CommandResults]: A list of events and the command results with readable output.
+    """
+    limit = arg_to_number(args.get("limit", 250))
     from_date = args.get("start")
-    until_date = args.get("end")
-    events = client.search_events(
-        limit=limit,
-        from_date=from_date,
-        until_date=until_date,
+    until_date = args.get("end") or datetime.now().astimezone().isoformat("T")
+    events, _ = get_events_with_pagination(
+        client, start_date=from_date, end_date=until_date, max_events=limit
     )
     hr = tableToMarkdown(name="Test Event", t=events)
     return events, CommandResults(readable_output=hr)
@@ -144,51 +176,105 @@ def fetch_events(
     params: dict[str, str],
 ) -> tuple[Dict, List[Dict]]:
     """
+    Fetches a set of events from the BloodHound Enterprise API.
+
+    This function retrieves events based on the provided parameters and the last run state.
+    It keeps track of the last event retrieved and pagination details to ensure that the 
+    next fetch operation continues from the correct point.
+
     Args:
-        client (Client): HelloWorld client to use.
-        last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
-        first_fetch_time: If last_run is None (first time we are fetching), it contains the timestamp in
-            milliseconds on when to start fetching events.
-        alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
-        max_events_per_fetch (int): number of events per fetch
+        client (Client): The API client used to interact with BloodHound Enterprise.
+        params (dict[str, str]): Configuration parameters, including:
+            - 'max_events_per_fetch' (str): Maximum number of events to fetch per API call.
+
     Returns:
-        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
-        list: List of events that will be created in XSIAM.
+        tuple[Dict, List[Dict]]:
+            - A dictionary containing the next run details (e.g., last event timestamp and ID).
+            - A list of fetched events.
     """
-    first_fetch_time = (datetime.now().astimezone() - timedelta(minutes=1)).isoformat('T')
+    first_fetch_time = (datetime.now().astimezone() - timedelta(minutes=1)).isoformat(
+        "T"
+    )
+    now = datetime.now().astimezone().isoformat("T")
     last_run = demisto.getLastRun()
     from_date = last_run.get("last_event_created_at", first_fetch_time)
     from_event = int(last_run.get("last_event_id", 0))
-    limit = arg_to_number(params.get("max_events_per_fetch")) or FETCH_LIMIT
+    last_run_skip = int(last_run.get("skip", 0))
+    fetch_limit = arg_to_number(params.get("max_events_per_fetch")) or FETCH_LIMIT
 
     prev_fetch_id = int(last_run.get("prev_fetch_id", 0))
     fetch_id = prev_fetch_id + 1
 
-    events = client.search_events(
-        limit=limit,
-        from_date=from_date,
+    events, skip = get_events_with_pagination(
+        client,
+        start_date=from_date,
+        end_date=now,
+        max_events=fetch_limit,
+        last_event_id=from_event,
+        initial_skip=last_run_skip,
     )
-    demisto.debug(f"Fetched event with id: {fetch_id}.")
-    if from_event:
-        events = events[
-            next(
-                (
-                    i
-                    for i, item in enumerate(events)
-                    if item.get("id") == from_event + 1
-                ),
-                len(events),
-            ) :
-        ]
-    demisto.debug(f"Fetched {len(events)} events in fetch No: {fetch_id}")
 
+    demisto.debug(f"Fetched event id: {fetch_id}.")
+    demisto.debug(f"Fetched {len(events)} events in fetch No: {fetch_id}")
     next_run = {
         "last_event_created_at": events[-1].get("created_at") if events else from_date,
         "last_event_id": events[-1].get("id") if events else from_event,
         "prev_fetch_id": fetch_id,
     }
-    demisto.debug(f"Setting next run {next_run}.")
+    if skip:
+        next_run["skip"] = last_run_skip + len(events)
+        next_run["last_event_created_at"] = from_date
     return next_run, events
+
+
+def get_events_with_pagination(
+    client: Client,
+    start_date,
+    end_date,
+    max_events,
+    last_event_id: int = 0,
+    initial_skip: int = 0,
+) -> tuple[list, int]:
+    """
+    Retrieves a paginated list of events from the BloodHound Enterprise API.
+
+    This function fetches events in batches, handling pagination internally to ensure 
+    the correct number of events is retrieved. It also filters out events that have already 
+    been processed by checking against a provided last event ID.
+
+    Args:
+        client (Client): The API client used to interact with BloodHound Enterprise.
+        start_date (str): The starting date for the event search (inclusive).
+        end_date (str): The ending date for the event search (exclusive).
+        max_events (int): Maximum number of events to fetch.
+        last_event_id (int, optional): The ID of the last event processed. Defaults to 0.
+        initial_skip (int, optional): The initial number of events to skip. Defaults to 0.
+
+    Returns:
+        tuple[list, int]:
+            - A list of events that were fetched.
+            - An integer indicating the number of events to skip in the next fetch if applicable.
+    """
+    fetched_events:list = []
+    pagination_skip = initial_skip
+
+    while len(fetched_events) < max_events:
+        page_size = min(PAGE_LIMIT, max_events - len(fetched_events))
+        response = client.search_events(
+            limit=page_size,
+            from_date=start_date,
+            until_date=end_date,
+            skip=pagination_skip,
+        )
+        if not response:
+            break
+        pagination_skip += len(response)
+        new_events = [item for item in response if item.get("id", 0) > last_event_id]
+        fetched_events.extend(new_events)
+    next_skip = (
+        initial_skip + len(fetched_events) if len(fetched_events) == max_events else 0
+    )
+    return fetched_events, next_skip
 
 
 """ MAIN FUNCTION """
@@ -217,8 +303,8 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
     credentials = Credentials(
-        token_id= (params.get("api_token_id") or {}).get("password", ""),
-        token_key=(params.get("api_token_key") or {}).get("password", "")
+        token_id=(params.get("api_token_id") or {}).get("password", ""),
+        token_key=(params.get("api_token_key") or {}).get("password", ""),
     )
     server_url = params.get("server_url")
     base_url = BASE_URL.format(server_url=server_url)
@@ -254,6 +340,7 @@ def main() -> None:  # pragma: no cover
             add_time_to_events(events)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
+            demisto.debug(f"Setting next run to: {next_run}.")
 
     # Log exceptions and return errors
     except Exception as e:

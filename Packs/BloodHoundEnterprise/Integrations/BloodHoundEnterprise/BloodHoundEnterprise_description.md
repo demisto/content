@@ -15,4 +15,4 @@ To set up the **BloodHoundEnterprise** integration, configure the following para
 
 ### Collect Section
 - **Fetch events**: Enable this option to fetch events automatically.
-- **Maximum number of events per fetch** (advanced): The maximum number of audit events to retrieve per fetch. Default is `1000`.
+- **Maximum number of events per fetch** (advanced): The maximum number of audit events to retrieve per fetch. Default is `250`.
