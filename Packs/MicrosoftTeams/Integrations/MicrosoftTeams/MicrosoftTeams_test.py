@@ -2500,7 +2500,7 @@ def test_token_permissions_list_command(mocker, token, decoded_token, auth_type,
     Tests the 'token_permissions_list_command' logic:
     For client credentials auth flow, the API permissions are found under the 'roles' key in the decoded token data,
     while for the auth code flow they are found under the 'scp' key.
-    This test checks that we extract the api permissions from the graph access token successfully for both auth types.
+    This test checks that we extract the API permissions from the graph access token successfully for both auth types.
 
     Given:
         1. A dummy token, mocked response of the jet.decode func with API permissions roles under the 'roles' key -
