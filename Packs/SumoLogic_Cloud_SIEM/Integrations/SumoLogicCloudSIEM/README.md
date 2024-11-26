@@ -6,31 +6,27 @@ Only use this integration if your Cloud SIEM portal url ends with `.sumologic.co
 
 You'll need an access key in order to complete the instance setup. Instructions on how to generate access keys can be found [here](https://help.sumologic.com/Manage/Security/Access-Keys).
 
-## Configure SumoLogicSEC on Cortex XSOAR
+## Configure SumoLogicSEC in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SumoLogicSEC.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Sumo Logic API Endpoint | https://api.&amp;lt;deployment&amp;gt;.sumologic.com/api/ | True |
-    | Sumo Logic Instance Endpoint | For the incident field sumoURL link to work, e.g: https://&amp;lt;yoursubdomain&amp;gt;.&amp;lt;deployment&amp;gt;.sumologic.com | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Access ID |  | True |
-    | Access Key |  | True |
-    | Incidents Fetch Interval |  | False |
-    | Fetch Limit | Fetch limit of Sumo Logic insights | False |
-    | Override default fetch query | Default fetch query is status:in\("new", "inprogress"\) | False |
-    | First fetch time |  | False |
-    | Pull associated Sumo Logic signals | Whether to pull the Sumo Logic Signals associated with the Insights as Cortex XSOAR incidents | False |
-    | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Sumo Logic SIEM to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Sumo Logic SIEM\), or Incoming and Outgoing \(from/to Cortex XSOAR and Sumo Logic SIEM\). | False |
-    | Close Mirrored Cortex XSOAR Incident (Incoming Mirroring) | When selected, closing the Sumo Logic Insight with a "Closed" status will close the Cortex XSOAR incident. | False |
-    | Close Mirrored Sumo Logic Insight (Outgoing Mirroring) | When selected, closing the Cortex XSOAR incident will close the Sumo Logic Insight in SIEM. | False |
-    | Override Record Summary Fields | Record Summary Fields included when fetching Insights (override default) | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Sumo Logic API Endpoint | https://api.&amp;lt;deployment&amp;gt;.sumologic.com/api/ | True |
+| Sumo Logic Instance Endpoint | For the incident field sumoURL link to work, e.g: https://&amp;lt;yoursubdomain&amp;gt;.&amp;lt;deployment&amp;gt;.sumologic.com | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Access ID |  | True |
+| Access Key |  | True |
+| Incidents Fetch Interval |  | False |
+| Fetch Limit | Fetch limit of Sumo Logic insights | False |
+| Override default fetch query | Default fetch query is status:in\("new", "inprogress"\) | False |
+| First fetch time |  | False |
+| Pull associated Sumo Logic signals | Whether to pull the Sumo Logic Signals associated with the Insights as Cortex XSOAR incidents | False |
+| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Sumo Logic SIEM to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Sumo Logic SIEM\), or Incoming and Outgoing \(from/to Cortex XSOAR and Sumo Logic SIEM\). | False |
+| Close Mirrored Cortex XSOAR Incident (Incoming Mirroring) | When selected, closing the Sumo Logic Insight with a "Closed" status will close the Cortex XSOAR incident. | False |
+| Close Mirrored Sumo Logic Insight (Outgoing Mirroring) | When selected, closing the Cortex XSOAR incident will close the Sumo Logic Insight in SIEM. | False |
+| Override Record Summary Fields | Record Summary Fields included when fetching Insights (override default) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## API documentation and query examples
 
@@ -103,7 +99,7 @@ The table below shows differences between this integration and the legacy JASK i
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### sumologic-sec-insight-get-details
 ***
