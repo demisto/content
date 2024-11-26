@@ -2,7 +2,7 @@ id: Detect & Manage Phishing Campaigns
 version: -1
 name: Detect & Manage Phishing Campaigns
 description: |-
-  Added to trig build This playbook is used to find, create and manage phishing campaigns. When a number of similar phishing incidents exist in the system, the playbook can be used to do the following:
+  Trig build. Added to trig build This playbook is used to find, create and manage phishing campaigns. When a number of similar phishing incidents exist in the system, the playbook can be used to do the following:
   1. Find and link related incidents to the same phishing attack (a phishing campaign).
   2. Search for an existing Phishing Campaign incident, or create a new incident for the linked Phishing incidents.
   3. Link all detected phishing incidents to the Phishing Campaign incident that was found or that was created previously.

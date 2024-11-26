@@ -85,6 +85,7 @@ INCIDENTS_CONTEXT_TD = 'incidents(obj.id == val.id)'
 
 
 def return_outputs_custom(readable_output, outputs=None, tag=None):
+    
     return_entry = {
         "Type": entryTypes["note"],
         "HumanReadable": readable_output,
@@ -92,6 +93,7 @@ def return_outputs_custom(readable_output, outputs=None, tag=None):
         "Contents": outputs,
         "EntryContext": outputs,
     }
+    
     if tag is not None:
         return_entry["Tags"] = [f'campaign_{tag}']
     demisto.results(return_entry)
