@@ -43,7 +43,7 @@ class Client(BaseClient):
                 cache["expiration_time"], DATE_FORMAT_FOR_TOKEN
             )
 
-            # check if token is still valid, continue using it. otherwise regenerate a new one
+            # if the token is still valid, continue using it. otherwise, generate a new one.
             if (seconds_left := (expiration_time - now).total_seconds()) > 0:
                 demisto.debug(f"No need to regenerate the token, it is still valid for {seconds_left} more seconds")
                 return
