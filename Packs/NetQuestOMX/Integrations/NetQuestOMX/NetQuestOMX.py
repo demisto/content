@@ -33,7 +33,8 @@ class Client(BaseClient):
 
     def login(self):
         """
-        In this method, the validity of the Access Token is checked, since the Access Token has a 120 minutes validity period.
+        If there's an existing token in context, its validity is checked. 
+        Otherwise, logs in and stores token in the `Client` instance
         Refreshes the token as needed.
         """
         now = datetime.utcnow()
