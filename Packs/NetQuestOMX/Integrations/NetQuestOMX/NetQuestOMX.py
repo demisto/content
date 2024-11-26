@@ -258,7 +258,7 @@ def address_list_create_command(client: Client, args: dict):
         client.address_list_create_request(name)
     except Exception as e:
         raise DemistoException(
-            f"An error was occurred when creating an IP's list with {name=}. Maybe a list with the name {name} already exists."
+            f"An error was occurred when creating an IP list with {name=}. This may indicate a list with this name already exists."
         ) from e
 
     return CommandResults(readable_output=f"Successfully created a new instance of {name}")
