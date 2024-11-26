@@ -86,7 +86,7 @@ script:
         description: CountsAfter.
         type: Dictionary
   - arguments:
-      - description: 'The name of the address list to create'
+      - description: 'What to name the new address list'
         name: name
         required: true
     description: "This replaces the old list entity and overrides it."
