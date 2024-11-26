@@ -380,3 +380,24 @@ repos:
     - --diff
     - git diff HEAD
     skip: true
+
+- repo: https://github.com/dorschw/riff
+  rev: v0.0.287.0
+  hooks:
+  - id: riff
+    entry: riff
+    types: [python]
+    args:
+      - --select
+      - ANN001,ANN201,ANN202,ANN204,ANN205,ANN206
+      - --base-branch
+      - origin/master
+    args:ci:
+      - --select
+      - ANN001,ANN201,ANN202,ANN204,ANN205,ANN206
+      - --base-branch
+      - origin/master
+      - --print_github_annotation
+      - true
+      - --exit-zero
+    skip:nightly: true
