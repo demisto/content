@@ -2650,7 +2650,7 @@ def test_create_messaging_endpoint_command_invalid_xsoar_engine(mocker, engine_u
     Tests the 'create_messaging_endpoint_command' logic when the user uses an xsoar engine, and provides an invalid engine url.
 
     Given:
-      - An invalid engine url:
+      - An invalid engine URL:
         1. without a port.
         2. without an http:// or https:// prefix
         3. with a space in the dns name
