@@ -21,17 +21,23 @@ alter
 	xdm.target.ipv6 = destination_ipv6,
 	xdm.target.port = to_integer(properties -> DestinationPort);
 
+[RULE: msft_azure_firewall_map_policy_rule_fields]
+alter 
+	policy = if(properties -> Policy != "", properties -> Policy),
+	rule = if(properties -> Rule != "", properties -> Rule)
+| alter xdm.network.rule = coalesce(concat(policy, ":", rule), rule, policy)
+
+
 [MODEL: dataset=msft_azure_firewall_raw]
 // Azure Firewall Azure Firewall IDPS Signature (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwidpssignature)
 filter category in ("AZFWFqdnResolveFailure", "AZFWInternalFqdnResolutionFailure") 
-| call map_msft_azure_fw_resource_logs_common_fields
+| call msft_azure_firewall_map_common_event_fields
+| call msft_azure_firewall_map_policy_rule_fields
 | alter 
 	dns_server_ipv4 = arrayindex(regextract(properties -> ServerIp, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
 	dns_server_ipv6 = arrayindex(regextract(properties -> ServerIp, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
 	dns_server_port = to_integer(properties -> ServerPort), 
-	error_msg = if(properties -> Error != "", properties -> Error),
-	policy = if(properties -> Policy != "", properties -> Policy),
-	rule = if(properties -> Rule != "", properties -> Rule)
+	error_msg = if(properties -> Error != "", properties -> Error)
 | alter
 	xdm.event.outcome = XDM_CONST.OUTCOME_FAILED,
 	xdm.event.outcome_reason = error_msg,
@@ -39,96 +45,59 @@ filter category in ("AZFWFqdnResolveFailure", "AZFWInternalFqdnResolutionFailure
 	xdm.intermediate.ipv4 = dns_server_ipv4,
 	xdm.intermediate.ipv6 = dns_server_ipv6,
 	xdm.intermediate.port = dns_server_port,
-	xdm.network.rule = coalesce(concat(policy, ":", rule), rule, policy),
 	xdm.target.host.fqdn = properties -> Fqdn;
 
 // Azure Firewall Azure Firewall IDPS Signature (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwidpssignature)
 filter category = "AZFWIdpsSignature" 
-| call map_msft_azure_fw_resource_logs_common_fields
+| call msft_azure_firewall_map_common_event_fields
+| call msft_azure_firewall_map_common_network_fields
 | call msft_azure_firewall_map_ip_protocol
 | alter 
-	action = if(properties -> Action != "", properties -> Action),
-	source_ip = properties -> SourceIp,
-	destination_ip = properties -> DestinationIp,
 	signature_category = if(properties -> Category != "", properties -> Category),
 	signature_description = if(properties -> Description != "", properties -> Description),
 	signature_id = if(properties -> SignatureId != "", properties -> SignatureId),
 	signature_severity = if(properties -> Severity != "", to_string(properties -> Severity))
-| alter 
-	source_ipv4 = if(incidr(source_ip, "0.0.0.0/0"), source_ip),
-	source_ipv6 = if(source_ip ~= "^(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}$", source_ip),
-	destination_ipv4 = if(incidr(destination_ip, "0.0.0.0/0"), destination_ip),
-	destination_ipv6 = if(destination_ip ~= "^(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}$", destination_ip)
 | alter 
 	xdm.alert.description = signature_description,
 	xdm.alert.original_threat_id = signature_id,
 	xdm.alert.original_threat_name = signature_description,
 	xdm.alert.severity = signature_severity,
 	xdm.alert.subcategory = signature_category,
-	xdm.event.outcome = if(action = "Allow", XDM_CONST.OUTCOME_SUCCESS, action = "Deny" or action = "Drop", XDM_CONST.OUTCOME_FAILED),
-	xdm.observer.action = action,
-	xdm.source.host.ipv4_public_addresses = if(source_ipv4 != null and not incidr(source_ipv4, "10.0.0.0/8") and not incidr(source_ipv4, "172.16.0.0/12") and not incidr(source_ipv4, "192.168.0.0/16") and not incidr(source_ipv4, "127.0.0.0/8") and not incidr(source_ipv4, "169.254.0.0/16") and not incidr(source_ipv4, "100.64.0.0/10"), arraycreate(source_ipv4)),
-	xdm.source.ipv4 = source_ipv4,
-	xdm.source.ipv6 = source_ipv6,
-	xdm.source.port = to_integer(properties -> SourcePort),
-	xdm.target.host.ipv4_public_addresses = if(destination_ipv4 != null and not incidr(destination_ipv4, "10.0.0.0/8") and not incidr(destination_ipv4, "172.16.0.0/12") and not incidr(destination_ipv4, "192.168.0.0/16") and not incidr(destination_ipv4, "127.0.0.0/8") and not incidr(destination_ipv4, "169.254.0.0/16") and not incidr(destination_ipv4, "100.64.0.0/10"), arraycreate(destination_ipv4)),
-	xdm.target.ipv4 = destination_ipv4,
-	xdm.target.ipv6 = destination_ipv6,
-	xdm.target.port = to_integer(properties -> DestinationPort);
-
-
+	xdm.event.outcome = if(action = "Allow", XDM_CONST.OUTCOME_SUCCESS, action = "Deny" or action = "Drop", XDM_CONST.OUTCOME_FAILED);
 
 // Azure Firewall Threat Intelligence https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwthreatintel 
 filter category = "AZFWThreatIntel" 
-| call map_msft_azure_fw_resource_logs_common_fields
+| call msft_azure_firewall_map_common_event_fields
+| call msft_azure_firewall_map_common_network_fields
 | call msft_azure_firewall_map_ip_protocol
 | alter 
-	action = if(properties -> Action != "", properties -> Action),
-	source_ip = properties -> SourceIp,
-	destination_ip = properties -> DestinationIp,
 	target_fqdn = if(properties -> Fqdn != "", properties -> Fqdn),
 	target_url = if(properties -> TargetUrl != "", properties -> TargetUrl),
 	threat_description = if(properties -> ThreatDescription != "", properties -> ThreatDescription)
 | alter 
-	source_ipv4 = if(incidr(source_ip, "0.0.0.0/0"), source_ip),
-	source_ipv6 = if(source_ip ~= "^(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}$", source_ip),
-	destination_ipv4 = if(incidr(destination_ip, "0.0.0.0/0"), destination_ip),
-	destination_ipv6 = if(destination_ip ~= "^(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}$", destination_ip)
-| alter 
 	xdm.alert.description = threat_description,
 	xdm.network.http.url = target_url,
-	xdm.observer.action = action,
-	xdm.source.host.ipv4_public_addresses = if(source_ipv4 != null and not incidr(source_ipv4, "10.0.0.0/8") and not incidr(source_ipv4, "172.16.0.0/12") and not incidr(source_ipv4, "192.168.0.0/16") and not incidr(source_ipv4, "127.0.0.0/8") and not incidr(source_ipv4, "169.254.0.0/16") and not incidr(source_ipv4, "100.64.0.0/10"), arraycreate(source_ipv4)),
-	xdm.source.ipv4 = source_ipv4,
-	xdm.source.ipv6 = source_ipv6,
-	xdm.source.port = to_integer(properties -> SourcePort),
 	xdm.target.host.fqdn = target_fqdn,
-	xdm.target.host.ipv4_public_addresses = if(destination_ipv4 != null and not incidr(destination_ipv4, "10.0.0.0/8") and not incidr(destination_ipv4, "172.16.0.0/12") and not incidr(destination_ipv4, "192.168.0.0/16") and not incidr(destination_ipv4, "127.0.0.0/8") and not incidr(destination_ipv4, "169.254.0.0/16") and not incidr(destination_ipv4, "100.64.0.0/10"), arraycreate(destination_ipv4)),
-	xdm.target.ipv4 = destination_ipv4,
-	xdm.target.ipv6 = destination_ipv6,
-	xdm.target.port = to_integer(properties -> DestinationPort),
 	xdm.target.url = target_url;
 
 // Azure Firewall Nat Rule (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwnatrule)
 filter category in ("AZFWNatRule", "AZFWNatRuleAggregation")
-| call map_msft_azure_fw_resource_logs_common_fields
+| call msft_azure_firewall_map_common_event_fields
 | call msft_azure_firewall_map_ip_protocol
+| call msft_azure_firewall_map_policy_rule_fields
 | alter 
 	destination_ipv4 = arrayindex(regextract(properties -> DestinationIp, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
 	destination_ipv6 = arrayindex(regextract(properties -> DestinationIp, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
-	policy = if(properties -> Policy != "", properties -> Policy),
 	source_ipv4 = arrayindex(regextract(properties -> SourceIp, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
 	source_ipv6 = arrayindex(regextract(properties -> SourceIp, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
 	translated_destination_ipv4 = arrayindex(regextract(properties -> TranslatedIp, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
 	translated_destination_ipv6 = arrayindex(regextract(properties -> TranslatedIp, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
-	rule = if(properties -> Rule != "", properties -> Rule)
 | alter 
 	xdm.intermediate.host.ipv4_public_addresses = if(destination_ipv4 != null and not incidr(destination_ipv4, "10.0.0.0/8") and not incidr(destination_ipv4, "172.16.0.0/12") and not incidr(destination_ipv4, "192.168.0.0/16") and not incidr(destination_ipv4, "127.0.0.0/8") and not incidr(destination_ipv4, "169.254.0.0/16") and not incidr(destination_ipv4, "100.64.0.0/10"), arraycreate(destination_ipv4)),
 	xdm.intermediate.ipv4 = destination_ipv4,
 	xdm.intermediate.ipv6 = destination_ipv6,
 	xdm.intermediate.is_nat = to_boolean("TRUE"),
 	xdm.intermediate.port = to_integer(properties -> DestinationPort),
-	xdm.network.rule = coalesce(concat(policy, ":", rule), rule, policy),
 	xdm.source.host.ipv4_public_addresses = if(source_ipv4 != null and not incidr(source_ipv4, "10.0.0.0/8") and not incidr(source_ipv4, "172.16.0.0/12") and not incidr(source_ipv4, "192.168.0.0/16") and not incidr(source_ipv4, "127.0.0.0/8") and not incidr(source_ipv4, "169.254.0.0/16") and not incidr(source_ipv4, "100.64.0.0/10"), arraycreate(source_ipv4)),
 	xdm.source.ipv4 = source_ipv4,
 	xdm.source.ipv6 = source_ipv6,
@@ -139,7 +108,7 @@ filter category in ("AZFWNatRule", "AZFWNatRuleAggregation")
 	xdm.target.port = to_integer(properties -> TranslatedPort);
 
 filter category = "AZFWDnsQuery" // Azure Firewall DNS query (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwdnsquery)
-| call map_msft_azure_fw_resource_logs_common_fields
+| call msft_azure_firewall_map_common_event_fields
 | call msft_azure_firewall_map_ip_protocol
 | alter 
 	dns_query_type = properties -> QueryType,
@@ -169,41 +138,23 @@ filter category = "AZFWDnsQuery" // Azure Firewall DNS query (https://learn.micr
 
 // Azure Firewall Network Rule (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwnetworkrule)
 filter category in ("AZFWNetworkRule", "AZFWNetworkRuleAggregation") 
-| call map_msft_azure_fw_resource_logs_common_fields
+| call msft_azure_firewall_map_common_event_fields
+| call msft_azure_firewall_map_common_network_fields
 | call msft_azure_firewall_map_ip_protocol
-| alter
-	destination_ipv4 = arrayindex(regextract(properties -> DestinationIp, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
-	destination_ipv6 = arrayindex(regextract(properties -> DestinationIp, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
-	action = if(properties -> Action != "", properties -> Action),
-	policy = if(properties -> Policy != "", properties -> Policy),
-	rule = if(properties -> Rule != "", properties -> Rule),
-	source_ipv4 = arrayindex(regextract(properties -> SourceIp, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
-	source_ipv6 = arrayindex(regextract(properties -> SourceIp, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0)
+| call msft_azure_firewall_map_policy_rule_fields
 | alter 
 	xdm.event.outcome = if(action = "Allow", XDM_CONST.OUTCOME_SUCCESS, action = "Deny" or action = "Drop", XDM_CONST.OUTCOME_FAILED),
-	xdm.event.outcome_reason = if(properties -> ActionReason != "", properties -> ActionReason),
-	xdm.network.rule = coalesce(concat(policy, ":", rule), rule, policy),
-	xdm.observer.action = action,
-	xdm.source.ipv4 = source_ipv4,
-	xdm.source.ipv6 = source_ipv6,
-	xdm.source.port = to_integer(properties -> SourcePort),
-    xdm.source.host.ipv4_public_addresses = if(source_ipv4 != null and not incidr(source_ipv4, "10.0.0.0/8") and not incidr(source_ipv4, "172.16.0.0/12") and not incidr(source_ipv4, "192.168.0.0/16") and not incidr(source_ipv4, "127.0.0.0/8") and not incidr(source_ipv4, "169.254.0.0/16") and not incidr(source_ipv4, "100.64.0.0/10"), arraycreate(source_ipv4)),
-	xdm.target.ipv4 = destination_ipv4,
-	xdm.target.ipv6 = destination_ipv6,
-    xdm.target.host.ipv4_public_addresses = if(destination_ipv4 != null and not incidr(destination_ipv4, "10.0.0.0/8") and not incidr(destination_ipv4, "172.16.0.0/12") and not incidr(destination_ipv4, "192.168.0.0/16") and not incidr(destination_ipv4, "127.0.0.0/8") and not incidr(destination_ipv4, "169.254.0.0/16") and not incidr(destination_ipv4, "100.64.0.0/10"), arraycreate(destination_ipv4)),
-	xdm.target.port = to_integer(properties -> DestinationPort);
+	xdm.event.outcome_reason = if(properties -> ActionReason != "", properties -> ActionReason);
 
 
 filter category in(
 	"AZFWApplicationRule", // Azure Firewall Application Rule (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwapplicationrule)
 	"AZFWApplicationRuleAggregation") //  & Azure Firewall Network Rule Aggregation (Policy Analytics) (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwapplicationruleaggregation)
-| call map_msft_azure_fw_resource_logs_common_fields
+| call msft_azure_firewall_map_common_event_fields
+| call msft_azure_firewall_map_policy_rule_fields
 | alter 
-	action = if(properties -> Action != "", properties -> Action),
 	application_protocol = uppercase(properties -> Protocol),
 	is_explicit_proxy_request = to_boolean(properties -> IsExplicitProxyRequest),
-	policy = if(properties -> Policy != "", properties -> Policy),
-	rule = if(properties -> Rule != "", properties -> Rule),
 	source_ip = properties -> SourceIp,
 	target_fqdn = properties -> Fqdn,
 	target_url = if(properties -> TargetUrl != "", properties -> TargetUrl),
@@ -220,8 +171,6 @@ filter category in(
 	xdm.network.application_protocol = application_protocol,
 	xdm.network.http.url = target_url,
 	xdm.network.http.url_category = if(web_category = "ABORTION", XDM_CONST.URL_CATEGORY_ABORTION, web_category ~= "DRUGS", XDM_CONST.URL_CATEGORY_ABUSED_DRUGS, web_category = "ADULT", XDM_CONST.URL_CATEGORY_ADULT, web_category ~= "ALCOHOL|TOBACCO", XDM_CONST.URL_CATEGORY_ALCOHOL_AND_TOBACCO, web_category = "AUCTIONS", XDM_CONST.URL_CATEGORY_AUCTIONS, web_category ~= "BUSINESS|ECONOMY", XDM_CONST.URL_CATEGORY_BUSINESS_AND_ECONOMY, web_category ~= "COMMAND|CONTROL", XDM_CONST.URL_CATEGORY_COMMAND_AND_CONTROL, web_category ~= "COMPUTER|INTERNET INFO", XDM_CONST.URL_CATEGORY_COMPUTER_AND_INTERNET_INFO, web_category ~= "CONTENT DELIVERY NETWORKS|CDN", XDM_CONST.URL_CATEGORY_CONTENT_DELIVERY_NETWORKS, web_category ~= "COPYRIGHT|INFRINGEMENT", XDM_CONST.URL_CATEGORY_COPYRIGHT_INFRINGEMENT, web_category ~= "CRYPTO", XDM_CONST.URL_CATEGORY_CRYPTOCURRENCY, web_category = "DATING", XDM_CONST.URL_CATEGORY_DATING, web_category ~= "DNS", XDM_CONST.URL_CATEGORY_DYNAMIC_DNS, web_category ~= "EDUCATIONAL|INSTITUTIONS", XDM_CONST.URL_CATEGORY_EDUCATIONAL_INSTITUTIONS, web_category ~= "ENTERTAINMENT|ARTS", XDM_CONST.URL_CATEGORY_ENTERTAINMENT_AND_ARTS, web_category = "EXTREMISM", XDM_CONST.URL_CATEGORY_EXTREMISM, web_category = "FINANCIAL|FINANCE", XDM_CONST.URL_CATEGORY_FINANCIAL_SERVICES, web_category = "GAMBLING", XDM_CONST.URL_CATEGORY_GAMBLING, web_category = "GAMES", XDM_CONST.URL_CATEGORY_GAMES, web_category = "GOVERNMENT", XDM_CONST.URL_CATEGORY_GOVERNMENT, web_category = "GRAYWARE", XDM_CONST.URL_CATEGORY_GRAYWARE, web_category = "HACKING", XDM_CONST.URL_CATEGORY_HACKING, web_category ~= "HEALTH|MEDICINE", XDM_CONST.URL_CATEGORY_HEALTH_AND_MEDICINE, web_category ~= "HOME|GARDEN", XDM_CONST.URL_CATEGORY_HOME_AND_GARDEN, web_category ~= "HUNTING|FISHING", XDM_CONST.URL_CATEGORY_HUNTING_AND_FISHING, web_category = "INSUFFICIENT CONTENT", XDM_CONST.URL_CATEGORY_INSUFFICIENT_CONTENT, web_category ~= "INTERNET COMMUNICATIONS|TELEPHONY", XDM_CONST.URL_CATEGORY_INTERNET_COMMUNICATIONS_AND_TELEPHONY, web_category = "PORTAL", XDM_CONST.URL_CATEGORY_INTERNET_PORTALS, web_category ~= "JOB", XDM_CONST.URL_CATEGORY_JOB_SEARCH, web_category = "LEGAL", XDM_CONST.URL_CATEGORY_LEGAL, web_category = "MALWARE", XDM_CONST.URL_CATEGORY_MALWARE, web_category = "MILITARY", XDM_CONST.URL_CATEGORY_MILITARY, web_category ~= "MOTOR|VEHICLES", XDM_CONST.URL_CATEGORY_MOTOR_VEHICLES, web_category = "MUSIC", XDM_CONST.URL_CATEGORY_MUSIC, web_category = "REGISTERED DOMAIN", XDM_CONST.URL_CATEGORY_NEWLY_REGISTERED_DOMAIN, web_category = "NEWS", XDM_CONST.URL_CATEGORY_NEWS, web_category = "NOT RESOLVED", XDM_CONST.URL_CATEGORY_NOT_RESOLVED, web_category = "NUDITY", XDM_CONST.URL_CATEGORY_NUDITY, web_category ~= "STORAGE|BACKUP", XDM_CONST.URL_CATEGORY_ONLINE_STORAGE_AND_BACKUP, web_category = "PARKED", XDM_CONST.URL_CATEGORY_PARKED, web_category ~= "PEER", XDM_CONST.URL_CATEGORY_PEER_TO_PEER, web_category ~= "PERSONAL SITE|BLOGS", XDM_CONST.URL_CATEGORY_PERSONAL_SITES_AND_BLOGS, web_category ~= "PHILOSOPHY|POLITICAL|ADVOCACY", XDM_CONST.URL_CATEGORY_PHILOSOPHY_AND_POLITICAL_ADVOCACY, web_category = "PHISHING", XDM_CONST.URL_CATEGORY_PHISHING, web_category = "PRIVATE IP", XDM_CONST.URL_CATEGORY_PRIVATE_IP_ADDRESSES, web_category ~= "PROXY AVOIDANCE|ANONYMIZERS", XDM_CONST.URL_CATEGORY_PROXY_AVOIDANCE_AND_ANONYMIZERS, web_category = "QUESTIONABLE", XDM_CONST.URL_CATEGORY_QUESTIONABLE, web_category = "REAL ESTATE", XDM_CONST.URL_CATEGORY_REAL_ESTATE, web_category ~= "RECREATION|HOBBIES", XDM_CONST.URL_CATEGORY_RECREATION_AND_HOBBIES, web_category ~= "REFERENCE|RESEARCH", XDM_CONST.URL_CATEGORY_REFERENCE_AND_RESEARCH, web_category = "RELIGION", XDM_CONST.URL_CATEGORY_RELIGION, web_category ~= "SEARCH ENGINE", XDM_CONST.URL_CATEGORY_SEARCH_ENGINES, web_category = "SEX EDUCATION", XDM_CONST.URL_CATEGORY_SEX_EDUCATION, web_category ~= "SHAREWARE|FREEWARE", XDM_CONST.URL_CATEGORY_SHAREWARE_AND_FREEWARE, web_category = "SHOPPING", XDM_CONST.URL_CATEGORY_SHOPPING, web_category ~= "SOCIAL NETWORK", XDM_CONST.URL_CATEGORY_SOCIAL_NETWORKING, web_category = "SOCIETY", XDM_CONST.URL_CATEGORY_SOCIETY, web_category = "SPORTS", XDM_CONST.URL_CATEGORY_SPORTS, web_category ~= "STOCK", XDM_CONST.URL_CATEGORY_STOCK_ADVICE_AND_TOOLS, web_category ~= "STREAM|MEDIA", XDM_CONST.URL_CATEGORY_STREAMING_MEDIA, web_category ~= "SWIMSUITS|APPAREL", XDM_CONST.URL_CATEGORY_SWIMSUITS_AND_INTIMATE_APPAREL, web_category ~= "TRAINING", XDM_CONST.URL_CATEGORY_TRAINING_AND_TOOLS, web_category = "TRANSLATION", XDM_CONST.URL_CATEGORY_TRANSLATION, web_category = "TRAVEL", XDM_CONST.URL_CATEGORY_TRAVEL, web_category = "UNKNOWN", XDM_CONST.URL_CATEGORY_UNKNOWN, web_category = "WEAPONS", XDM_CONST.URL_CATEGORY_WEAPONS, web_category ~= "ADVERTISEMENTS", XDM_CONST.URL_CATEGORY_WEB_ADVERTISEMENTS, web_category = "WEB HOSTING", XDM_CONST.URL_CATEGORY_WEB_HOSTING, web_category ~= "EMAIL", XDM_CONST.URL_CATEGORY_WEB_BASED_EMAIL),
-	xdm.network.rule = coalesce(concat(policy, ":", rule), rule, policy),
-	xdm.observer.action = action,
 	xdm.source.host.ipv4_public_addresses = if(source_ipv4 != null and not incidr(source_ipv4, "10.0.0.0/8") and not incidr(source_ipv4, "172.16.0.0/12") and not incidr(source_ipv4, "192.168.0.0/16") and not incidr(source_ipv4, "127.0.0.0/8") and not incidr(source_ipv4, "169.254.0.0/16") and not incidr(source_ipv4, "100.64.0.0/10"), arraycreate(source_ipv4)),
 	xdm.source.ipv4 = source_ipv4,
 	xdm.source.ipv6 = source_ipv6,
@@ -235,50 +184,23 @@ filter category in(
 
 // https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwfatflow
 filter category = "AZFWFatFlow" // Azure Firewall Fat Flow Log
-| call map_msft_azure_fw_resource_logs_common_fields
-| call msft_azure_firewall_map_ip_protocol
-| alter 
-	destination_ipv4 = arrayindex(regextract(properties -> DestinationIp, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
-	destination_ipv6 = arrayindex(regextract(properties -> DestinationIp, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
-	source_ipv4 = arrayindex(regextract(properties -> SourceIp, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
-	source_ipv6 = arrayindex(regextract(properties -> SourceIp, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0)
-| alter 
-	xdm.source.ipv4 = source_ipv4,
-	xdm.source.ipv6 = source_ipv6,
-	xdm.source.port = to_integer(properties -> SourcePort),
-    xdm.source.host.ipv4_public_addresses = if(source_ipv4 != null and not incidr(source_ipv4, "10.0.0.0/8") and not incidr(source_ipv4, "172.16.0.0/12") and not incidr(source_ipv4, "192.168.0.0/16") and not incidr(source_ipv4, "127.0.0.0/8") and not incidr(source_ipv4, "169.254.0.0/16") and not incidr(source_ipv4, "100.64.0.0/10"), arraycreate(source_ipv4)),
-	xdm.target.ipv4 = destination_ipv4,
-	xdm.target.ipv6 = destination_ipv6,
-    xdm.target.host.ipv4_public_addresses = if(destination_ipv4 != null and not incidr(destination_ipv4, "10.0.0.0/8") and not incidr(destination_ipv4, "172.16.0.0/12") and not incidr(destination_ipv4, "192.168.0.0/16") and not incidr(destination_ipv4, "127.0.0.0/8") and not incidr(destination_ipv4, "169.254.0.0/16") and not incidr(destination_ipv4, "100.64.0.0/10"), arraycreate(destination_ipv4)),
-	xdm.target.port = to_integer(properties -> DestinationPort);
-
+| call msft_azure_firewall_map_common_event_fields
+| call msft_azure_firewall_map_common_network_fields
+| call msft_azure_firewall_map_ip_protocol;
 
 // https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwflowtrace 
 filter category = "AZFWFlowTrace" // Azure Firewall Flow Trace Log
-| call map_msft_azure_fw_resource_logs_common_fields
+| call msft_azure_firewall_map_common_event_fields
+| call msft_azure_firewall_map_common_network_fields
 | call msft_azure_firewall_map_ip_protocol
-| alter 
-	action = if(properties -> Action != "", properties -> Action),
-	destination_ipv4 = arrayindex(regextract(properties -> DestinationIp, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
-	destination_ipv6 = arrayindex(regextract(properties -> DestinationIp, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
-	flag = properties -> Flag,
-	source_ipv4 = arrayindex(regextract(properties -> SourceIp, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
-	source_ipv6 = arrayindex(regextract(properties -> SourceIp, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0)
+| alter flag = properties -> Flag
 | alter 
 	xdm.event.outcome = if(flag ~= "\-ACK", XDM_CONST.OUTCOME_SUCCESS, flag = "INVALID", XDM_CONST.OUTCOME_FAILED),
-	xdm.event.outcome_reason = if(properties -> ActionReason != "", properties -> ActionReason),
-	xdm.observer.action = action,
-	xdm.source.ipv4 = source_ipv4,
-	xdm.source.ipv6 = source_ipv6,
-	xdm.source.port = to_integer(properties -> SourcePort),
-    xdm.source.host.ipv4_public_addresses = if(source_ipv4 != null and not incidr(source_ipv4, "10.0.0.0/8") and not incidr(source_ipv4, "172.16.0.0/12") and not incidr(source_ipv4, "192.168.0.0/16") and not incidr(source_ipv4, "127.0.0.0/8") and not incidr(source_ipv4, "169.254.0.0/16") and not incidr(source_ipv4, "100.64.0.0/10"), arraycreate(source_ipv4)),
-	xdm.target.ipv4 = destination_ipv4,
-	xdm.target.ipv6 = destination_ipv6,
-    xdm.target.host.ipv4_public_addresses = if(destination_ipv4 != null and not incidr(destination_ipv4, "10.0.0.0/8") and not incidr(destination_ipv4, "172.16.0.0/12") and not incidr(destination_ipv4, "192.168.0.0/16") and not incidr(destination_ipv4, "127.0.0.0/8") and not incidr(destination_ipv4, "169.254.0.0/16") and not incidr(destination_ipv4, "100.64.0.0/10"), arraycreate(destination_ipv4)),
-	xdm.target.port = to_integer(properties -> DestinationPort);
+	xdm.event.outcome_reason = if(properties -> ActionReason != "", properties -> ActionReason);
 
-[RULE: map_msft_azure_fw_resource_logs_common_fields] 
-alter 
+[RULE: msft_azure_firewall_map_common_event_fields] 
+alter action = if(properties -> Action != "", properties -> Action)
+| alter 
 	xdm.event.original_event_type = category, // The log category of the event being logged. 
 	xdm.event.type = if(
 		category = "AZFWApplicationRule", "Azure Firewall Application Rule",
@@ -293,6 +215,7 @@ alter
 		category = "AZFWNetworkRule", "Azure Firewall Network Rule",
 		category = "AZFWNetworkRuleAggregation", "Azure Firewall Network Rule Aggregation",
 		category = "AZFWThreatIntel", "Azure Firewall Threat Intelligence"),
+	xdm.observer.action = action,
 	xdm.observer.name = arrayindex(regextract(resourceId, "/([^\/]+)$"), -1), // extract from resourceId last segment from after last /
 	xdm.observer.type = "Microsoft.Network/azureFirewalls", // https://learn.microsoft.com/en-us/azure/azure-monitor/reference/supported-logs/microsoft-network-azurefirewalls-logs
 	xdm.observer.unique_identifier = resourceId,
