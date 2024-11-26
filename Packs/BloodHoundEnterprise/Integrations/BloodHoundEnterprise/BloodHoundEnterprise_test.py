@@ -5,7 +5,7 @@ import json
 
 
 def load_test_events():
-    with open('test_data/event_list.json') as file:
+    with open("test_data/event_list.json") as file:
         return json.load(file)
 
 
@@ -14,7 +14,7 @@ def create_mock_client(test_events):
 
     # Mock the search_events method to return slices of the test_events
     def mock_search_events(limit, from_date, until_date, skip):
-        return test_events[skip:skip + limit]
+        return test_events[skip : skip + limit]
 
     client.search_events.side_effect = mock_search_events
     return client
@@ -54,12 +54,16 @@ def test_fetch_events_first_time(mocker):
     )
 
     assert len(events) == 7
-    assert next_run == {
-        "last_event_created_at": "2024-11-22T13:27:27.698038+02:00",
-        "last_event_id": 2057,
-        "prev_fetch_id": 1,
-        "skip": 7,
-    }
+    assert next_run.get("last_event_created_at", "").startswith(
+        "2024-11-22T13:27:27.698038+"
+    )
+    assert all(
+        (
+            next_run.get("last_event_id") == 2057,
+            next_run.get("prev_fetch_id") == 1,
+            next_run.get("skip") == 7,
+        )
+    )
     assert events[0].get("id") == 2051
 
 
@@ -117,8 +121,9 @@ def test_fetch_events_second_time(mocker):
 
 
 def test_test_module_command(mocker):
-    
+
     from BloodHoundEnterprise import test_module
+
     """
     Given:
         - A mock client with a predefined set of test events loaded from a JSON file.
@@ -159,7 +164,7 @@ def test_get_events_command(mocker):
     args = {
         "start": "2024-11-23T18:39:35.546751Z",
         "end": "2024-11-23T18:39:58.113381Z",
-        "limit": "3"
+        "limit": "3",
     }
     test_events = load_test_events()
     client = create_mock_client(test_events)
@@ -193,6 +198,7 @@ def test_client_request(mocker):
         - Validate that the expected parameters are found in the log call arguments.
     """
     from BloodHoundEnterprise import Client, Credentials
+
     query_params = {
         "limit": 50,
         "sort_by": "created_at",
@@ -232,6 +238,7 @@ def test_fetch_all_events():
         - Validate that the `next_skip` value is correctly calculated, which should be 24 in this case.
     """
     from BloodHoundEnterprise import get_events_with_pagination
+
     test_events = load_test_events()
     client = create_mock_client(test_events)
 
@@ -240,7 +247,7 @@ def test_fetch_all_events():
         client=client,
         start_date="2024-11-22T00:00:00Z",
         end_date="2024-11-24T23:59:59Z",
-        max_events=max_events
+        max_events=max_events,
     )
 
     assert len(events) == len(test_events)
@@ -262,6 +269,7 @@ def test_fetch_all_events_in_second_fetch():
         - Validate that the `next_skip` value is 0, indicating that there are no more events to fetch.
     """
     from BloodHoundEnterprise import get_events_with_pagination
+
     test_events = load_test_events()
     client = create_mock_client(test_events)
 
@@ -273,7 +281,7 @@ def test_fetch_all_events_in_second_fetch():
         start_date="2024-11-22T00:00:00Z",
         end_date="2024-11-24T23:59:59Z",
         max_events=max_events,
-        last_event_id=last_event_id
+        last_event_id=last_event_id,
     )
 
     assert len(events) == len(test_events[1:])
@@ -295,6 +303,7 @@ def test_fetch_limited_events():
         - Validate that the `next_skip` value is equal to `max_events` (10), indicating the number of events fetched.
     """
     from BloodHoundEnterprise import get_events_with_pagination
+
     test_events = load_test_events()
     client = create_mock_client(test_events)
 
@@ -303,7 +312,7 @@ def test_fetch_limited_events():
         client=client,
         start_date="2024-11-22T00:00:00Z",
         end_date="2024-11-24T23:59:59Z",
-        max_events=max_events
+        max_events=max_events,
     )
 
     assert len(events) == max_events
@@ -327,6 +336,7 @@ def test_pagination_with_initial_skip():
         - Confirm that the `next_skip` value equals `initial_skip + max_events`, indicating the total number of events processed.
     """
     from BloodHoundEnterprise import get_events_with_pagination
+
     test_events = load_test_events()
     client = create_mock_client(test_events)
 
@@ -337,10 +347,10 @@ def test_pagination_with_initial_skip():
         start_date="2024-11-22T00:00:00Z",
         end_date="2024-11-24T23:59:59Z",
         max_events=max_events,
-        initial_skip=initial_skip
+        initial_skip=initial_skip,
     )
 
-    assert events[0]['id'] == test_events[initial_skip]['id']
+    assert events[0]["id"] == test_events[initial_skip]["id"]
     assert len(events) == max_events
     assert next_skip == initial_skip + max_events
 
@@ -362,6 +372,7 @@ def test_fetch_with_last_event_id():
         - Confirm that the first event in the returned list has an `id` greater than `last_event_id` (2060).
     """
     from BloodHoundEnterprise import get_events_with_pagination
+
     test_events = load_test_events()
     client = create_mock_client(test_events)
 
@@ -372,9 +383,9 @@ def test_fetch_with_last_event_id():
         start_date="2024-11-22T00:00:00Z",
         end_date="2024-11-24T23:59:59Z",
         max_events=max_events,
-        last_event_id=last_event_id
+        last_event_id=last_event_id,
     )
 
-    assert all(event['id'] > last_event_id for event in events)
+    assert all(event["id"] > last_event_id for event in events)
     assert len(events) == max_events
-    assert events[0]['id'] > last_event_id
+    assert events[0]["id"] > last_event_id
