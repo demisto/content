@@ -460,7 +460,7 @@ def test_module(client: Client) -> str:
     Returns:
         'ok' if test passed, anything else will fail the test
     """
-    fetch_events_command(client=client,fetch_limit=1, last_run={})
+    fetch_events_command(client=client, fetch_limit=1, last_run={})
     # client.get_alerts_request(page_num=1, items_per_page=1)
     return 'ok'
 
