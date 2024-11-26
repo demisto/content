@@ -141,7 +141,7 @@ def test_fetch_alert_type(mocker, fetch_limit, expected_alert_count):
     """
     from MongoDBAtlas import fetch_alerts_command, get_page_url
     mocked_alerts = util_load_json('test_data/raw_alerts_page_1.json')
-    mocker.patch('MongoDBAtlas.get_page_from_last_run_for_alerts', return_value=mocked_alerts)
+    mocker.patch('MongoDBAtlas.Client.get_alerts_request', return_value=mocked_alerts)
     mocker.patch('MongoDBAtlas.get_page_url', side_effect=["", get_page_url])
 
     client = create_client()
@@ -172,7 +172,7 @@ def test_fetch_alert_type_using_next_page(mocker, fetch_limit, expected_alert_co
 
     mocked_alerts_page_1 = util_load_json('test_data/raw_alerts_page_1.json')
     mocked_alerts_page_2 = util_load_json('test_data/raw_alerts_page_2.json')
-    mocker.patch('MongoDBAtlas.get_page_from_last_run_for_alerts', return_value=mocked_alerts_page_1)
+    mocker.patch('MongoDBAtlas.Client.get_alerts_request', return_value=mocked_alerts_page_1)
     mocker.patch('MongoDBAtlas.get_page_url', return_value=True)
     mocker.patch('MongoDBAtlas.Client.get_response_from_page_link', return_value=mocked_alerts_page_2)
 
@@ -208,7 +208,7 @@ def test_fetch_alert_type_while_more_alerts_created(mocker):
     from MongoDBAtlas import fetch_alerts_command
 
     mocked_alerts_page_1 = util_load_json('test_data/raw_alerts_page_1.json')
-    mocker.patch('MongoDBAtlas.get_page_from_last_run_for_alerts', return_value=mocked_alerts_page_1)
+    mocker.patch('MongoDBAtlas.Client.get_alerts_request', return_value=mocked_alerts_page_1)
     mocker.patch('MongoDBAtlas.get_page_url', return_value=False)
 
     client = create_client()
@@ -225,7 +225,7 @@ def test_fetch_alert_type_while_more_alerts_created(mocker):
     # assert last_run_new_dict.get('page_link') == 'self1'
 
     mocked_alerts_page_1_with_more_alerts = util_load_json('test_data/raw_alerts_page_1_with_more_alerts.json')
-    mocker.patch('MongoDBAtlas.get_page_from_last_run_for_alerts', return_value=mocked_alerts_page_1_with_more_alerts)
+    mocker.patch('MongoDBAtlas.Client.get_alerts_request', return_value=mocked_alerts_page_1_with_more_alerts)
 
     last_run = copy.deepcopy(last_run_new_dict)
     additional_alerts_amount = (
