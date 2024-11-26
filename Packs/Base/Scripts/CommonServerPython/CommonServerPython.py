@@ -8616,6 +8616,7 @@ def is_integration_instance_running_on_engine():
     :return: The engine id iff the instance is running on an xsaor engine.
     :rtype: ``str``
     """
+    engine_id = ''
     integrations_raw_response = demisto.internalHttpRequest(
         'POST', uri='/settings/integration/search', body=json.dumps({})
     )
