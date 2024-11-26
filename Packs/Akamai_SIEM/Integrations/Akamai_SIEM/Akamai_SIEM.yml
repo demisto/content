@@ -80,7 +80,7 @@ configuration:
   required: false
   section: Collect
   defaultvalue: '15000'
-  additionalinfo: The number of events to fetch per request to akamai (multiple requests are made for each fetch). If you're getting aggregated delays, increase the number. The maximum is 45,000.
+  additionalinfo: The number of events to fetch per request to akamai (multiple requests are made for each fetch). If you're getting aggregated delays, increase the number. The maximum is 45,000. Note that if your API has higher ingestion rate, the integration will be able to detect it and ignore the interval configured in order to fetch events quicker.
   hidden:
   - xsoar
   advanced: true

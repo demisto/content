@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "Added limitations to **Fetch limit** and **page size** parameters due to Restrictions from the platform. The maximum allowed amount is 45k. Note that this change will not fail the execution, but if higher rates are configured, the fetch will use 45k."
-}

@@ -35,10 +35,10 @@ INTEGRATION_CONTEXT_NAME = 'Akamai'
 
 VENDOR = "Akamai"
 PRODUCT = "WAF"
-FETCH_EVENTS_PAGE_SIZE = 15000
-DOCKER_MIN_TIME_TO_RUN = 30
+FETCH_EVENTS_MAX_PAGE_SIZE = 15000  # Allowed events limit per request.
+TIME_TO_RUN_BUFFER = 30  #  When calculating time left to run, will use this as a safe zone delta.
 EXECUTION_START_TIME = datetime.now()
-ALLOWED_PAGE_SIZE_DELTA_RATIO = 0.95
+ALLOWED_PAGE_SIZE_DELTA_RATIO = 0.95  # uses this delta to overcome differences from Akamai When calculating latest request size.
 MAX_ALLOWED_FETCH_LIMIT = 45000
 
 # Disable insecure warnings
@@ -438,12 +438,13 @@ def is_interval_doesnt_have_enough_time_to_run(min_allowed_delta: int, max_time_
         bool: Return True if there's not enough time. Otherwise, return False.
     """
     timeout_time_nano_seconds = demisto.callingContext.get('context', {}).get('TimeoutDuration')
-    timeout_time_seconds = timeout_time_nano_seconds / 1000000000
+    demisto.info(f"Got {timeout_time_nano_seconds} non seconds for the execution.")
+    timeout_time_seconds = timeout_time_nano_seconds / 1_000_000_000
     now = datetime.now()
     time_since_interval_beginning = (now - EXECUTION_START_TIME).total_seconds()
     if not max_time_took:
         max_time_took = time_since_interval_beginning
-    demisto.info(f"Checking if execution should break with {time_since_interval_beginning=}, and {max_time_took=}.")
+    demisto.info(f"Checking if execution should break with {time_since_interval_beginning=}, {max_time_took=}.")
     return (timeout_time_seconds - time_since_interval_beginning - min_allowed_delta) <= max_time_took, max_time_took
 
 
@@ -483,7 +484,7 @@ def fetch_events_command(
             if is_last_request_smaller_than_page_size(len(events), page_size):  # type: ignore[has-type]  # pylint: disable=E0601
                 demisto.info("last request wasn't big enough, breaking.")
                 break
-            should_break, worst_case_time = is_interval_doesnt_have_enough_time_to_run(DOCKER_MIN_TIME_TO_RUN, worst_case_time)
+            should_break, worst_case_time = is_interval_doesnt_have_enough_time_to_run(TIME_TO_RUN_BUFFER, worst_case_time)
             if should_break:
                 demisto.info("Not enough time for another execution, breaking and triggering next run.")
                 auto_trigger_next_run = True
@@ -495,6 +496,7 @@ def fetch_events_command(
         try:
             events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
         except DemistoException as e:
+            demisto.info(f"Got an error when trying to request for new events from Akamai\n{e}")
             if "Requested Range Not Satisfiable" in str(e):
                 err_msg = f'Got Index out of range error when attempting to fetch events from Akamai.\n' \
                     "In order to continue fetching, please run 'akamai-siem-reset-offset' on the specific instance.\n" \
@@ -590,7 +592,7 @@ def main():  # pragma: no cover
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         elif command == "fetch-events":
-            page_size = int(params.get("page_size", FETCH_EVENTS_PAGE_SIZE))
+            page_size = int(params.get("page_size", FETCH_EVENTS_MAX_PAGE_SIZE))
             limit = int(params.get("fetchLimit", 300000))
             if limit > MAX_ALLOWED_FETCH_LIMIT:
                 demisto.info(f"Got {limit=} larger than {MAX_ALLOWED_FETCH_LIMIT=}, setting limit to {MAX_ALLOWED_FETCH_LIMIT}.")

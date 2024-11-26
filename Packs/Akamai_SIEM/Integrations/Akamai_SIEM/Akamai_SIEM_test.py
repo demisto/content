@@ -246,7 +246,7 @@ class TestCommandsFunctions:
         Then:
         - Ensure no events are returned and the offset is the same
         """
-        from Akamai_SIEM import FETCH_EVENTS_PAGE_SIZE as size
+        from Akamai_SIEM import FETCH_EVENTS_MAX_PAGE_SIZE as size
         total_events_count = 0
         last_offset = "11111"
         requests_mock.get(f'{BASE_URL}/50170?limit={size}&offset={last_offset}', text=SEC_EVENTS_EMPTY_TXT)
@@ -270,7 +270,7 @@ class TestCommandsFunctions:
         Then:
         - Ensure 6 events are returned
         """
-        mocker.patch.object(Akamai_SIEM, "FETCH_EVENTS_PAGE_SIZE", new=6, autospec=False)
+        mocker.patch.object(Akamai_SIEM, "FETCH_EVENTS_MAX_PAGE_SIZE", new=6, autospec=False)
         mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
         total_events_count = 0
         last_offset = None
@@ -298,7 +298,7 @@ class TestCommandsFunctions:
         Then:
         - Ensure 8 events are returned
         """
-        mocker.patch.object(Akamai_SIEM, "FETCH_EVENTS_PAGE_SIZE", new=6, autospec=False)
+        mocker.patch.object(Akamai_SIEM, "FETCH_EVENTS_MAX_PAGE_SIZE", new=6, autospec=False)
         mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
         total_events_count = 0
         last_offset = None
@@ -329,7 +329,7 @@ class TestCommandsFunctions:
         - Ensure 2 events are returned
         - Ensure last_offset is the one returned from the last page we pulled events from (the 1st one)
         """
-        mocker.patch.object(Akamai_SIEM, "FETCH_EVENTS_PAGE_SIZE", new=2, autospec=False)
+        mocker.patch.object(Akamai_SIEM, "FETCH_EVENTS_MAX_PAGE_SIZE", new=2, autospec=False)
         mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
         total_events_count = 0
         last_offset = None
