@@ -14,8 +14,6 @@ import os
 import re
 import socket
 import sys
-import tempfile
-import threading
 import time
 import traceback
 import types
@@ -31,8 +29,6 @@ from distutils.version import LooseVersion
 from threading import Lock
 from functools import wraps
 from inspect import currentframe
-import cProfile
-import threading
 
 import demistomock as demisto
 import warnings
@@ -153,7 +149,7 @@ def fix_traceback_line_numbers(trace_str):
                 block_start = module_info.get('start_wrapper', module_info['start'])
                 block_end = module_info.get('end_wrapper', module_info['end'])
                 if block_start > module_start_line and block_end < line_num \
-                    and not is_adjusted_block(block_start, block_end, adjusted_lines):
+                        and not is_adjusted_block(block_start, block_end, adjusted_lines):
                     actual_number -= block_end - block_start
                     adjusted_lines[block_start] = block_end
 
@@ -1445,7 +1441,7 @@ def safe_load_json(json_object):  # pragma: no cover
     if isinstance(json_object, dict) or isinstance(json_object, list):
         return json_object
     if (json_object.startswith('{') and json_object.endswith('}')) or (
-        json_object.startswith('[') and json_object.endswith(']')):
+            json_object.startswith('[') and json_object.endswith(']')):
         try:
             safe_json = json.loads(json_object)
         except ValueError as e:
@@ -1548,7 +1544,7 @@ def aws_table_to_markdown(response, table_header):
     if isinstance(response, dict):
         if len(response) == 1:
             if isinstance(response[list(response.keys())[0]], dict) or isinstance(
-                response[list(response.keys())[0]], list):
+                    response[list(response.keys())[0]], list):
                 if isinstance(response[list(response.keys())[0]], list):
                     list_response = response[list(response.keys())[0]]
                     if not list_response:
@@ -3304,7 +3300,7 @@ class Common(object):
                 ip_context['UpdatedDate'] = self.updated_date
 
             if self.registrar_abuse_name or self.registrar_abuse_address or self.registrar_abuse_country or \
-                self.registrar_abuse_network or self.registrar_abuse_phone or self.registrar_abuse_email:
+                    self.registrar_abuse_network or self.registrar_abuse_phone or self.registrar_abuse_email:
                 ip_context['Registrar'] = {'Abuse': {}}
                 if self.registrar_abuse_name:
                     ip_context['Registrar']['Abuse']['Name'] = self.registrar_abuse_name
@@ -5943,9 +5939,9 @@ class Common(object):
 
             elif (
                 self.extension_type in [
-                Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
-                Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS
-            ]
+                    Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
+                    Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS
+                ]
                 and self.signed_certificate_timestamps is not None
             ):
                 extension_context["Value"] = [sct.to_context() for sct in self.signed_certificate_timestamps]
@@ -6085,10 +6081,10 @@ class Common(object):
                 subject_alternative_name
                 and isinstance(subject_alternative_name, list)
                 and not all(
-                isinstance(san, str)
-                or isinstance(san, dict)
-                or isinstance(san, Common.CertificateExtension.SubjectAlternativeName)
-                for san in subject_alternative_name)
+                    isinstance(san, str)
+                    or isinstance(san, dict)
+                    or isinstance(san, Common.CertificateExtension.SubjectAlternativeName)
+                    for san in subject_alternative_name)
             ):
                 raise TypeError(
                     'subject_alternative_name must be list of str or Common.CertificateExtension.SubjectAlternativeName'
@@ -8475,7 +8471,7 @@ def censor_request_logs(request_log):
 
     # Rebuild the request log so that the only change is the masked information.
     censored_string = SEND_PREFIX + \
-                      ' '.join(request_log_lst) if request_log.startswith(SEND_PREFIX) else ' '.join(request_log_lst)
+        ' '.join(request_log_lst) if request_log.startswith(SEND_PREFIX) else ' '.join(request_log_lst)
     censored_string = censored_string.replace(" \\r\\n", "\\r\\n")
     return censored_string
 
@@ -8785,7 +8781,6 @@ if 'requests' in sys.modules:
         CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:' \
                          'ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'
 
-
         class SSLAdapter(HTTPAdapter):
             """
                 A wrapper used for https communication to enable ciphers that are commonly used
@@ -8810,7 +8805,6 @@ if 'requests' in sys.modules:
             def proxy_manager_for(self, *args, **kwargs):
                 kwargs['ssl_context'] = self.context
                 return super(SSLAdapter, self).proxy_manager_for(*args, **kwargs)
-
 
     class BaseClient(object):
         """Client to use in integrations with powerful _http_request
@@ -10660,8 +10654,8 @@ def get_message_global_vars():
     for current_key in globals_dict.keys():
         current_value = globals_dict[current_key]
         if not type(current_value) in excluded_types \
-            and current_key not in excluded_globals \
-            and type(current_value).__name__ not in excluded_types_names:
+                and current_key not in excluded_globals \
+                and type(current_value).__name__ not in excluded_types_names:
             globals_dict_full[current_key] = {
                 'name': current_key,
                 'value': current_value,
@@ -10692,8 +10686,8 @@ def get_message_modules_sizes():
     for current_key in globals_dict.keys():
         current_value = globals_dict[current_key]
         if isinstance(current_value, types.ModuleType) \
-            and current_key not in excluded_globals \
-            and type(current_value).__name__ not in excluded_types_names:
+                and current_key not in excluded_globals \
+                and type(current_value).__name__ not in excluded_types_names:
             globals_dict_full[current_key] = {
                 'name': current_key,
                 'value': current_value,
@@ -10788,14 +10782,14 @@ def shorten_string_for_printing(source_string, max_length=64):
     if max_length % 2 == 0:
         # even max_length. Start with one more char than at the beginning
         ret_value = source_string[:extremeties_length + 1] \
-                    + '...' \
-                    + source_string[-extremeties_length:]
+            + '...' \
+            + source_string[-extremeties_length:]
         return ret_value
     else:
         # odd max_length
         ret_value = source_string[:extremeties_length] \
-                    + '...' \
-                    + source_string[-extremeties_length:]
+            + '...' \
+            + source_string[-extremeties_length:]
         return ret_value
 
 
@@ -12117,6 +12111,8 @@ def xsoar_profiler(func):
     :param func: The function to be profiled.
     :return: The profiled function.
     """
+    import cProfile
+    import threading
 
     def profiler_wrapper(*args, **kwargs):
         """
@@ -12126,7 +12122,7 @@ def xsoar_profiler(func):
         :return: The result of the decorated function.
         """
 
-        def profiler_function(signal_event: threading.Event, profiler: cProfile.Profile):
+        def profiler_function(signal_event, profiler):
             """
             A helper function that runs the profiled function. When the profiled function is finished
              a signal is received and the profiling data is dumped to a temporary file.
@@ -12139,6 +12135,7 @@ def xsoar_profiler(func):
                 """
                 Helper function to dump the profiling results to a file and return the file.
                 """
+                import tempfile
                 # Create a temporary file to store profiling data
                 with tempfile.NamedTemporaryFile(delete=False) as temp_file:
                     profiler.dump_stats(temp_file.name)
@@ -12178,8 +12175,8 @@ def xsoar_profiler(func):
             demisto.debug("Profiler finished.")
             return failed_on_timeout
 
-        def function_runner(func, profiler: cProfile.Profile, signal_event: threading.Event,
-                            results: dict, *args, **kwargs):
+        def function_runner(func, profiler, signal_event,
+                            results, *args, **kwargs):
             """
             A wrapper function that runs the targeted profiled function and captures the results in the results list.
             :param func: The function to be profiled.
@@ -12202,15 +12199,15 @@ def xsoar_profiler(func):
         results = {}
         profiler = cProfile.Profile()
         signal_event = threading.Event()
-
-        profiler_thread = threading.Thread(target=function_runner, args=(func, profiler, signal_event, results, *args),
+        profiler_thread = threading.Thread(target=function_runner, args=(func, profiler, signal_event, results, args),
                                            kwargs=kwargs)
         profiler_thread.start()
 
         failed_on_timeout = profiler_function(signal_event, profiler)
         if failed_on_timeout:
             raise DemistoException("The profiled function failed due to a timeout")
-        if res := results.get("function_results"):
+        if results.get("function_results"):
+            res = results.get("function_results")
             if isinstance(res, Exception):
                 raise res
             return res
