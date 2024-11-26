@@ -4,15 +4,18 @@ import CommonServerPython
 from CommonServerPython import DemistoException
 from freezegun import freeze_time
 from pytest_mock import MockerFixture
-from NetQuestOMX import TOKEN_TTL, DATE_FORMAT_FOR_TOKEN, Client, fetch_events, address_list_upload_command, \
+from NetQuestOMX import TOKEN_TTL_S, DATE_FORMAT_FOR_TOKEN, Client, fetch_events, address_list_upload_command, \
     address_list_optimize_command, address_list_create_command, address_list_rename_command, address_list_delete_command, \
     get_events
 import json
 import demistomock as demisto
 import pytest
+import requests
+import requests_mock
 
 BASE_URL = "https://www.example.com/api/"
 INTEGRATION_CONTEXT = {}
+
 
 
 def get_integration_context():
@@ -33,27 +36,37 @@ def util_load_json(path):
 @pytest.fixture
 def net_quest_omx_client(requests_mock):
     credentials = {"identifier": 'UserName', "password": 'Password'}
-    requests_mock.post(f'{BASE_URL}SessionService/Sessions', json={'Token': 'TEST'})
+    with requests_mock.Mocker() as mock:
+        # Set up the mock response
+        mock.post(f'{BASE_URL}SessionService/Sessions', status_code=200, headers={"X-Auth-Token": "TEST"})
+
     return Client(base_url='https://www.example.com', credentials=credentials, verify=True, proxy=False)
 
-
 @freeze_time('2020-06-03T02:00:00Z')
-def test_new_token_login_client(requests_mock):
+def test_new_token_login_client():
     """
     Given:
         - NetQuestOMX client object
     When:
         - getting the integration context
     Then:
-        - Ensure the expiration time of the new token is calculated as expected in the integration context (TTL - 60s for safety)
+        - Ensure the expiration time of the new token is calculated as expected in the integration context
     """
     credentials = {"identifier": 'UserName', "password": 'Password'}
-    requests_mock.post(f'{BASE_URL}SessionService/Sessions', json={'Token': 'TEST'})
+
+    url = f'{BASE_URL}SessionService/Sessions'
+
+    with requests_mock.Mocker() as mock:
+        # Set up the mock response
+        mock.post(url, status_code=200, headers={"X-Auth-Token": "TEST"})
+
+    requests.post(url, data={})
+
     Client(base_url='https://www.example.com', credentials=credentials, verify=True, proxy=False)
     integration_context = CommonServerPython.get_integration_context()
 
     assert integration_context["expiration_time"] == \
-        (datetime.utcnow() + timedelta(seconds=(TOKEN_TTL - 60))).strftime(DATE_FORMAT_FOR_TOKEN)
+           (datetime.utcnow() + timedelta(seconds=TOKEN_TTL_S)).strftime(DATE_FORMAT_FOR_TOKEN)
 
 
 @freeze_time('2020-06-03T02:00:00Z')
@@ -69,7 +82,7 @@ def test_old_token_login_client(mocker: MockerFixture):
     credentials = {"identifier": 'UserName', "password": 'Password'}
     cache = {
         "Token": "TEST",
-        "expiration_time": (datetime.utcnow() + timedelta(seconds=TOKEN_TTL)).strftime(DATE_FORMAT_FOR_TOKEN)
+        "expiration_time": (datetime.utcnow() + timedelta(seconds=TOKEN_TTL_S)).strftime(DATE_FORMAT_FOR_TOKEN)
     }
     set_integration_context(cache)
 
