@@ -95,10 +95,13 @@ class DomainNameObject:
         for domain in domains_list:
             if 'http' in domain:
                 domain = domain.replace('https://', "").replace("http://", "")
-                results.append({
-                    'indicator': domain,
-                    'type': 'Domain'
-                })
+                if len(domain.split(".")) > 1:
+                    results.append({
+                        'indicator': domain,
+                        'type': 'Domain'
+                    })
+                else:
+                    demisto.debug(f"obj with value {domain} is not a domain, skipping.")
         return results
 
 
@@ -193,6 +196,8 @@ class URIObject:
                     'indicator': url,
                     'type': type_
                 })
+            else:
+                demisto.debug(f"obj with value {url} is not a url, skipping.")
 
         return results
 
