@@ -83,7 +83,7 @@ script:
       description: The indicator that was tested.
       type: String
     - contextPath: IP.Address
-      description: The IP Address.
+      description: The IP address.
       type: String
     - contextPath: IP.ASN
       description: The IP ASN.
@@ -101,16 +101,16 @@ script:
       description: The country where the IP is located.
       type: String
     - contextPath: ThreatVault.IP.release.first_release_version
-      description: The release version when the IP Feed was released.
+      description: The release version when the IP feed was released.
       type: String
     - contextPath: ThreatVault.IP.release.first_release_time
-      description: The release time when the IP Feed was released.
+      description: The release time when the IP feed was released.
       type: String
     - contextPath: ThreatVault.IP.name
-      description: The name of the IP Feed entry.
+      description: The name of the IP feed entry.
       type: String
     - contextPath: ThreatVault.IP.status
-      description: The status of the IP Feed entry.
+      description: The status of the IP feed entry.
       type: String
   - arguments:
     - default: true
@@ -1191,11 +1191,11 @@ script:
       description: The status of the threat (e.g., inactive, active, or released).
       type: String
   - arguments:
-    - description: Provides the ATP report by matching the report id.
+    - description: Provides the ATP report by matching the report ID.
       isArray: true
       name: report_id
       required: true
-    description: Retrieve the Advanced Threat Prevention (ATP) report by report id in batch mode. Batch limit is 100 entries. Get one or more ATP reports. Must provide one or more report IDs.
+    description: Retrieve the Advanced Threat Prevention (ATP) report by report ID in batch mode. Batch limit is 100 entries. Get one or more ATP reports. Must provide one or more report IDs.
     name: threatvault-atp-batch-report-get
     outputs:
     - contextPath: ThreatVault.ATP.Report
@@ -1293,7 +1293,7 @@ script:
       description: Threatvault ATP PCAP ID.
       type: string
     - contextPath: ThreatVault.ATP.PCAP.Name
-      description: Threatvault ATP PCAP Name.
+      description: Threatvault ATP PCAP name.
       type: string
   dockerimage: demisto/crypto:1.0.0.111961
   isfetch: true
