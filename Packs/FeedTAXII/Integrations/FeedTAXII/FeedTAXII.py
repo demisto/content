@@ -91,10 +91,15 @@ class DomainNameObject:
             return []
         raw_domain = raw_domain.string.encode('ascii', 'replace').decode()
         domains_list = raw_domain.split('##comma##')
-        return [{
-            'indicator': domain,
-            'type': 'Domain'
-        } for domain in domains_list]
+        results = []
+        for domain in domains_list:
+            if 'http' in domain:
+                domain = domain.replace('https://', "").replace("http://", "")
+                results.append({
+                    'indicator': domain,
+                    'type': 'Domain'
+                })
+        return results
 
 
 class FileObject:
@@ -181,10 +186,15 @@ class URIObject:
             return []
         raw_url = raw_url.string.encode('utf8', 'replace').decode()
         urls_list = raw_url.split('##comma##')
-        return [{
-            'indicator': url,
-            'type': type_
-        } for url in urls_list]
+        results = []
+        for url in urls_list:
+            if auto_detect_indicator_type(url) == 'URL':
+                results.append({
+                    'indicator': url,
+                    'type': type_
+                })
+
+        return results
 
 
 class SocketAddressObject:
