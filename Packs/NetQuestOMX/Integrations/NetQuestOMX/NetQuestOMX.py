@@ -45,7 +45,7 @@ class Client(BaseClient):
             )
 
             # if the token is still valid, continue using it. otherwise, generate a new one.
-            if (seconds_left := (expiration_time - now).total_seconds()) > 0:
+            if (seconds_left := (expiration_time - now).total_seconds()) > 60:  # decreasing 60s from token expiry for safety
                 demisto.debug(f"No need to regenerate the token, it is still valid for {seconds_left} more seconds")
                 return
 
@@ -57,7 +57,7 @@ class Client(BaseClient):
             {
                 "Token": self._headers["X-Auth-Token"],
                 "expiration_time": (
-                    now + timedelta(seconds=(TOKEN_TTL - 60))  # decreasing 60s from token expiry for safety
+                    now + timedelta(seconds=TOKEN_TTL_S)
                 ).strftime(DATE_FORMAT_FOR_TOKEN),
             }
         )
