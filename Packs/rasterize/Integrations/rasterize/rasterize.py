@@ -996,15 +996,21 @@ def rasterize_email_command():  # pragma: no cover
 
     navigation_timeout = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
 
-    with open('htmlBody.html', 'w', encoding='utf-8-sig') as f:
-        f.write(f'<html style="background:white";>{html_body}</html>')
+    try:
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.html', encoding='utf-8-sig') as tf:
+            demisto.debug(f'rasterize-email, {html_body=}')
+            tf.write(f'<html style="background:white";>{html_body}</html>')
+            tf.flush()
+            path = f'file://{os.path.realpath(tf.name)}'
+            demisto.debug(f'rasterize-email, rasterizing {path=}')
+            rasterize_output = perform_rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
+                                                 offline_mode=offline, navigation_timeout=navigation_timeout,
+                                                 full_screen=full_screen)
 
-    path = f'file://{os.path.realpath(f.name)}'
-
-    rasterize_output = perform_rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
-                                         offline_mode=offline, navigation_timeout=navigation_timeout, full_screen=full_screen)
-
-    res = fileResult(filename=file_name, data=rasterize_output[0][0])
+            res = fileResult(filename=file_name, data=rasterize_output[0][0])
+    except Exception as err:
+        demisto.error(str(err))
+        return_error(f'Failed to rasterize email: {err}')
 
     if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower() == RasterizeType.PNG.value:
         res['Type'] = entryTypes['image']
