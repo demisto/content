@@ -338,10 +338,9 @@ def add_time_to_events(events: list[dict]):
     Returns:
         list: The events with the _time key.
     """
-    if events:
-        for event in events:
-            create_time = arg_to_datetime(event["timestamp"])
-            event["_time"] = create_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
+    for event in events:
+        create_time = arg_to_datetime(event["timestamp"])
+        event["_time"] = create_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
 
 
 def fetch_events(client: Client, slot_number: str, port_number: str, statistic_types_to_fetch: list[str]):
