@@ -347,7 +347,7 @@ def add_time_to_events(events: list[dict]):
         event["_time"] = create_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
 
 
-def fetch_events(client: Client, slot_number: str, port_number: str, statistic_types_to_fetch: list[str]):
+def fetch_events(client: Client, slot_number: str, port_number: str, statistic_types_to_fetch: list[str]) -> list[dict]:
     """
     Args:
         client (Client): NetQuest client to use.
