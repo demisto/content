@@ -60,17 +60,19 @@ class Client(BaseClient):
         """
 
         try:
-            self._http_request(
-                method="POST", url_suffix="/api/SessionService/Sessions", data=self.credentials
+            response = self._http_request(
+                method="POST", url_suffix="/api/SessionService/Sessions", data=self.credentials, resp_type='response'
             )
         except Exception as e:
             raise DemistoException(
                 "An error was occurred when creating a new token. Please verify your credentials."
             ) from e
 
+        new_token = response.headers["X-Auth-Token"]
+        self._headers["X-Auth-Token"] = new_token
         set_integration_context(
             {
-                "Token": self._headers["X-Auth-Token"],
+                "Token": new_token,
                 "expiration_time": (
                     now + timedelta(seconds=TOKEN_TTL_S)
                 ).strftime(DATE_FORMAT_FOR_TOKEN),
