@@ -258,7 +258,7 @@ def address_list_create_command(client: Client, args: dict):
         client.address_list_create_request(name)
     except Exception as e:
         raise DemistoException(
-            f"An error was occurred when creating an IP's list with {name=}. Maybe a list with the name {name} already exists."
+            f"An error was occurred when creating an IP list with {name=}. This may indicate a list with this name already exists."
         ) from e
 
     return CommandResults(readable_output=f"Successfully created a new instance of {name}")
@@ -279,8 +279,8 @@ def address_list_rename_command(client: Client, args: dict):
         client.address_list_rename_request(new_name, existing_name)
     except Exception as e:
         raise DemistoException(
-            f"An error was occurred when renaming {existing_name} IP's list to {new_name}."
-            f" Maybe the {existing_name} list's name does not exist."
+            f"An error was occurred when renaming {existing_name} IPs list to {new_name}."
+            f" Make sure {existing_name} exists and that {new_name} doesn't."
         ) from e
 
     return CommandResults(readable_output=f"Successfully renamed {existing_name} to {new_name}")
@@ -299,8 +299,8 @@ def address_list_delete_command(client: Client, args: dict):
         client.address_list_delete_request(list_name_to_delete)
     except Exception as e:
         raise DemistoException(
-            f"An error was occurred when deleting the {list_name_to_delete} IP's list."
-            f" Maybe the {list_name_to_delete} list's name does not exist."
+            f"An error was occurred when deleting the {list_name_to_delete} IPs list."
+            f" Make sure {list_name_to_delete} exists."
         ) from e
 
     return CommandResults(readable_output=f"Successfully deleted {list_name_to_delete} list")
@@ -342,10 +342,9 @@ def add_time_to_events(events: list[dict]):
     Returns:
         list: The events with the _time key.
     """
-    if events:
-        for event in events:
-            create_time = arg_to_datetime(event["timestamp"])
-            event["_time"] = create_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
+    for event in events:
+        create_time = arg_to_datetime(event["timestamp"])
+        event["_time"] = create_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
 
 
 def fetch_events(client: Client, slot_number: str, port_number: str, statistic_types_to_fetch: list[str]):
