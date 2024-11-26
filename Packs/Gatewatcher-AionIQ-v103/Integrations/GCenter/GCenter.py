@@ -389,9 +389,15 @@ def fetch_incidents():
         # Network protocol and transport fields
         if 'protocol' in gwAlerts[i]['_source']['network'].keys():
             incident['details'] += "\nProtocol: "+str(gwAlerts[i]['_source']['network']['protocol']).upper()
+            incident['CustomFields']['gatewatcherprotocol'] = str(gwAlerts[i]['_source']['network']['protocol']).upper()
+
         if 'transport' in gwAlerts[i]['_source']['network'].keys():
             incident['details'] += "\nTransport: "+str(gwAlerts[i]['_source']['network']['transport']).upper()
-
+            incident['CustomFields']['gatewatchertransport'] = str(gwAlerts[i]['_source']['network']['transport']).upper()
+	
+        incident['type'] = "Gatewatcher alert"
+	
+        """
         # Incident type malicious powershell detect
         if gwAlerts[i]['_source']['event']['module'] == "malicious_powershell_detect":
             incident['type'] = "Review Indicators Manually"
@@ -425,7 +431,8 @@ def fetch_incidents():
                 incident['name'] = "Gatewatcher Alert: " + str(gwAlerts[i]['_source']['nba']['signature'])
                 if "C&C" in str(gwAlerts[i]['_source']['nba']['signature']):
                     incident['type'] = "C2Communication"
-
+        """
+	
         incidents.append(incident)
     
     # Metadata events
@@ -471,8 +478,11 @@ def fetch_incidents():
         # Network protocol and transport fields
         if 'protocol' in gwMeta[i]['_source']['network'].keys():
             incident['details'] += "\nProtocol: "+str(gwMeta[i]['_source']['network']['protocol']).upper()
+            incident['CustomFields']['gatewatcherprotocol'] = str(gwMeta[i]['_source']['network']['protocol']).upper()
+
         if 'transport' in gwMeta[i]['_source']['network'].keys():
             incident['details'] += "\nTransport: "+str(gwMeta[i]['_source']['network']['transport']).upper()
+            incident['CustomFields']['gatewatchertransport'] = str(gwMeta[i]['_source']['network']['transport']).upper()
 
         incidents.append(incident)
 
