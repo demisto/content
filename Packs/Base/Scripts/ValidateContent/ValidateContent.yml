@@ -41,8 +41,8 @@ outputs:
   type: String
 scripttarget: 0
 timeout: 600ns
-runas: DBotWeakRole
+runas: DBotWeakRole`
 fromversion: 5.5.0
-dockerimage: devdemisto/xsoar-tools:1.0.0.116782
+dockerimage: devdemisto/xsoar-tools:1.0.0.117638
 tests:
 - ValidateContent - Test

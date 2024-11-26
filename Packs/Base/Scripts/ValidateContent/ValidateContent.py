@@ -1,19 +1,15 @@
-import os
-
-# Skipping demisto_sdk's initial logger setup in order to set up manually later.
-os.environ['DEMISTO_SDK_SKIP_LOGGER_SETUP'] = 'True'
-import demisto_sdk
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import io
 import git
 import zipfile
+import sys
+from contextlib import contextmanager
 from base64 import b64decode
 from pkg_resources import get_distribution
 from pathlib import Path
 from shutil import copy
-from tempfile import TemporaryDirectory
+
 from typing import Dict, Optional, Tuple
 from demisto_sdk.commands.common.logger import DEFAULT_CONSOLE_THRESHOLD, logging_setup
 
@@ -22,8 +18,9 @@ from demisto_sdk.commands.common.tools import find_type
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, TYPE_TO_EXTENSION, FileType
 from ruamel.yaml import YAML
+import shutil
 
-CONTENT_DIR_NAME = 'content'
+CONTENT_DIR_PATH = '/tmp/content'
 PACKS_DIR_NAME = 'Packs'
 CONTENT_REPO_URL = 'https://github.com/demisto/content.git'
 CACHED_MODULES_DIR = '/tmp/cached_modules'
@@ -31,6 +28,30 @@ PRE_COMMIT_TEMPLATE_PATH = '.pre-commit-config_template.yaml'
 BRANCH_MASTER = 'master'
 
 pre_commit_template_path = None
+
+@contextmanager
+def ConstantTemporaryDirectory(path):
+    """ Creates a temporary directory with a constant name. """
+
+    def cleanup():
+        # Cleanup: Remove the directory if exists.
+        if os.path.exists(path):
+            shutil.rmtree(path)
+            demisto.debug(f"Temporary directory {path} cleaned up.")
+
+    try:
+        cleanup()
+        os.makedirs(path, exist_ok=True)
+        yield path
+    finally:
+        cleanup()
+
+
+def log_demisto_sdk_version():
+    try:
+        demisto.debug(f'Using demisto-sdk version {get_distribution("demisto-sdk").version}')
+    except Exception as e:
+        demisto.debug(f'Could not get demisto-sdk version. Error: {e}')
 
 
 def set_pre_commit_template_path(value):
@@ -40,14 +61,6 @@ def set_pre_commit_template_path(value):
 
 def get_pre_commit_template_path() -> Optional[str]:
     return pre_commit_template_path
-
-
-#
-def log_demisto_sdk_version():
-    try:
-        demisto.debug(f'Using demisto-sdk version {get_distribution("demisto-sdk").version}')
-    except Exception as e:
-        demisto.debug(f'Could not get demisto-sdk version. Error: {e}')
 
 
 def setup_proxy(_args: dict):
@@ -169,7 +182,7 @@ def prepare_content_pack_for_validation(filename: str, data: bytes, tmp_director
         fp.write(data)
 
     pack_name = get_pack_name(zip_path)
-    contrib_converter = ContributionConverter(name=pack_name, contribution=zip_path, base_dir=tmp_directory)
+    contrib_converter = ContributionConverter(name=pack_name, contribution=zip_path)
     code_fp_to_row_offset = convert_contribution_to_pack(contrib_converter)
 
     # Call the standalone function and get the raw response
@@ -177,15 +190,15 @@ def prepare_content_pack_for_validation(filename: str, data: bytes, tmp_director
     return contrib_converter.pack_dir_path, code_fp_to_row_offset
 
 
-def prepare_single_content_item_for_validation(file_name: str, data: bytes, content_path: str) -> Tuple[str, Dict]:
+def prepare_single_content_item_for_validation(file_name: str, data: bytes, packs_path: str) -> Tuple[str, Dict]:
     from demisto_sdk.commands.init.contribution_converter import ContributionConverter
 
     pack_name = 'TmpPack'
-    pack_dir = os.path.join(content_path, 'Packs', pack_name)
+    pack_dir = os.path.join(packs_path, pack_name)
     demisto.debug(f'Pack name: {pack_name}')
     # create pack_metadata.json file in TmpPack
     contrib_converter = ContributionConverter(
-        name=pack_name, base_dir=content_path, pack_dir_name=pack_name, contribution=pack_name
+        name=pack_name, pack_dir_name=pack_name, contribution=pack_name
     )
     contrib_converter.create_metadata_file({'description': 'Temporary Pack', 'author': 'xsoar'})
     # Determine entity type by filename prefix.
@@ -224,130 +237,6 @@ def prepare_single_content_item_for_validation(file_name: str, data: bytes, cont
     demisto.debug(f'prepare_single_content_item_for_validation {output_path=} | {code_fp_to_row_offset=}')
     return output_path, code_fp_to_row_offset
 
-
-# def copy_file_to_content_pack(file_name: str, data=None, file_path=None, content_path=None) -> str:
-#     """
-#     Copies or moves a file to a temporary content pack.
-#
-#     Args:
-#         file_name (str): The name of the file to copy or move.
-#         data (bytes, optional): The content to write into the new file if `file_path` is not provided.
-#         file_path (str, optional): The current path of the file to rename and move.
-#         content_path (str, optional): Path of Content directory to copy the file into.
-#
-#     Returns:
-#         str: The new file path.
-#
-#     Raises:
-#         DemistoException: If the file cannot be copied or moved.
-#     """
-#
-#     if not content_path:
-#         raise DemistoException(f'copy_file Could not copy file `{file_name}`. No content directory provided.')
-#
-#     if file_name.endswith('.zip'):
-#         # Write zipfile
-#         zip_path = os.path.join(content_path, file_name)
-#         with open(zip_path, 'wb') as f:
-#             f.write(data)
-#
-#         pack_name = get_pack_name(zip_path)
-#         contrib_converter = ContributionConverter(name=pack_name, contribution=zip_path, base_dir=content_path)
-#         code_fp_to_row_offset = convert_contribution_to_pack(contrib_converter)
-#
-#         os.remove(zip_path)
-#         return contrib_converter.pack_dir_path
-#
-#     pack_name = 'TmpPack'
-#     pack_dir = os.path.join(content_path, 'Packs', pack_name)
-#     contrib_converter = ContributionConverter(
-#         name=pack_name, base_dir=content_path, pack_dir_name=pack_name, contribution=pack_name
-#     )
-#     contrib_converter.create_metadata_file({'description': 'Temporary Pack', 'author': 'xsoar'})
-#     # Determine entity type by filename prefix.
-#     file_name_prefix = '-'.join(file_name.split('-')[:-1])
-#     containing_dir = os.path.join(pack_dir, ENTITY_TYPE_TO_DIR.get(file_name_prefix, 'Integrations'))
-#     os.makedirs(containing_dir, exist_ok=True)
-#     new_file_path: Path = Path(os.path.join(containing_dir, file_name))
-#     demisto.debug(f'copy_file_to_content_pack: {os.listdir(containing_dir)=}')
-#
-#     is_json = file_name.casefold().endswith('.json')
-#
-#     if data:
-#         data_as_string = data.decode()
-#         yaml = YAML()
-#         loaded_data = json.loads(data_as_string) if is_json else yaml.load(data_as_string)
-#         if is_json:
-#             data_as_string = json.dumps(loaded_data)
-#         else:
-#             buff = io.StringIO()
-#             yaml.dump(loaded_data, buff)
-#             data_as_string = buff.getvalue()
-#
-#         # Write content item file to file system
-#         new_file_path.write_text(data_as_string)
-#         file_type = find_type(str(new_file_path))
-#         if is_json or file_type in (FileType.PLAYBOOK.value, FileType.TEST_PLAYBOOK.value):
-#             return str(new_file_path)
-#
-#         extractor = YmlSplitter(
-#             input=str(file_path), file_type=file_type, output=containing_dir,
-#             no_logging=True, no_pipenv=True, no_basic_fmt=True
-#         )
-#         # validate the resulting package files, ergo set path_to_validate to the package directory that results
-#         # from extracting the unified yaml to a package format
-#         extractor.extract_to_package_format()
-#         code_fp_to_row_offset = {get_extracted_code_filepath(extractor): extractor.lines_inserted_at_code_start}
-#
-#         output_path = extractor.get_output_path()
-#         return output_path
-#
-#     elif file_path:
-#         copy(file_path, new_file_path)
-#         demisto.debug(f'copy_file Successfully moved `{file_path}` to `{new_file_path}`.')
-#
-#     # try:
-#     #     if file_path:
-#     #
-#     #     else:
-#     #         # Write the data to a new file in the filesystem if it doesn't already exist.
-#     #         with open(new_file_path, 'wb') as f:
-#     #             f.write(data.encode())
-#     #         demisto.debug(f'copy_file Successfully created file `{new_file_path}`.')
-#     #     return new_file_path
-#     # except FileNotFoundError as e:
-#     #     raise DemistoException(f'copy_file Could not copy file `{file_name}` to `{new_file_path}`. Error message: {str(e)}')
-#
-#
-# def copy_files_to_content_dir(file_name=None, data=None, entry_id=None, content_path=None) -> str:
-#     """
-#     Gets the files to be validated and copies them into the local content directory.
-#     Arguments:
-#         file_name: Name of the file to copy.
-#         data: File data.
-#         entry_id: Entry ID in XSOAR to copy file from.
-#         content_path: Destination directory path.
-#     Returns:
-#         str: path to copied files to be validated.
-#     """
-#     # TODO - Handle zips, and other file\'s collection structures.
-#
-#     if file_name and data:
-#         demisto.info(f'copy_files got {file_name=} & data.')
-#         demisto.debug('copy_files decoding data into base64.')
-#         return copy_file_to_content_pack(file_name=file_name, data=data, content_path=content_path)
-#
-#     elif entry_id:
-#         demisto.info(f'copy_files getting file with {entry_id=}')
-#         file_object = demisto.getFilePath(entry_id)
-#         demisto.debug(f'copy_files got file_object: {file_object=}')
-#
-#         file_path = file_object['path']
-#         file_name = file_object['name']
-#         return copy_file_to_content_pack(file_name=file_name, file_path=file_path, content_path=content_path)
-#
-#     return ''
-#
 
 def run_validate(path_to_validate: str, json_output_file: str) -> int:
     """
@@ -476,55 +365,55 @@ def get_content_modules(content_path: str, verify_ssl: bool = True) -> None:
             copy(fallback_path, module_path)
 
 
-#
-#
-# def run_pre_commit(path_to_validate: str, output_path: str, content_path: str) -> int:
-#     """
-#     <DOCSTRING>
-#     """
-#     # from demisto_sdk.commands.pre_commit.pre_commit_command import pre_commit_manager
-#     if not (_pre_commit_template_path := get_pre_commit_template_path()):
-#         demisto.debug(f'run_pre_commit `pre-commit-template-path` does not exist')
-#
-#     import argparse
-#     from pre_commit.commands.run import run
-#     from pre_commit.store import Store
-#
-#     # exit_code = pre_commit_manager(
-#     #     skip_hooks=['validate-deleted-files'],
-#     #     # TODO - Verify if it can be both a folder and files.
-#     #     input_files=[Path(path_to_validate)],
-#     #     run_docker_hooks=False,
-#     #     pre_commit_template_path=Path(get_pre_commit_template_path()),
-#     #     output_path=Path(output_path)
-#     # )
-#
-#     import subprocess
-#     # subprocess.run(["pre-commit", "install"], check=True)
-#     import shutil
-#
-#     # Path to your pre-commit configuration template
-#     template_config_path = get_pre_commit_template_path()
-#     repo_config_path = ".pre-commit-config.yaml"
-#
-#     # Step 1: Copy the template configuration to the repository root
-#     shutil.copy(template_config_path, repo_config_path)
-#
-#     # Step 2: Install pre-commit in the current repository
-#     subprocess.run(["pre-commit", "install"], check=True)
-#
-#     # Step 3: Run all pre-commit hooks programmatically
-#     result = subprocess.run(["pre-commit", "run", "--all-files"], capture_output=True, text=True)
-#
-#     # Print the output
-#     demisto.debug(result.stdout)
-#
-#     if result.returncode != 0:
-#         demisto.debug(result.stderr)
-#
-#     exit_code = result.returncode
-#     demisto.debug(f'run_pre_commit {exit_code=}')
-#     return exit_code
+
+
+def run_pre_commit(path_to_validate: str, output_path: str, content_path: str) -> int:
+    """
+    <DOCSTRING>
+    """
+    # from demisto_sdk.commands.pre_commit.pre_commit_command import pre_commit_manager
+    if not (_pre_commit_template_path := get_pre_commit_template_path()):
+        demisto.debug(f'run_pre_commit `pre-commit-template-path` does not exist')
+
+    import argparse
+    from pre_commit.commands.run import run
+    from pre_commit.store import Store
+
+    # exit_code = pre_commit_manager(
+    #     skip_hooks=['validate-deleted-files'],
+    #     # TODO - Verify if it can be both a folder and files.
+    #     input_files=[Path(path_to_validate)],
+    #     run_docker_hooks=False,
+    #     pre_commit_template_path=Path(get_pre_commit_template_path()),
+    #     output_path=Path(output_path)
+    # )
+
+    import subprocess
+    # subprocess.run(["pre-commit", "install"], check=True)
+    import shutil
+
+    # Path to your pre-commit configuration template
+    template_config_path = get_pre_commit_template_path()
+    repo_config_path = ".pre-commit-config.yaml"
+
+    # Step 1: Copy the template configuration to the repository root
+    shutil.copy(template_config_path, repo_config_path)
+
+    # Step 2: Install pre-commit in the current repository
+    subprocess.run(["pre-commit", "install"], check=True)
+
+    # Step 3: Run all pre-commit hooks programmatically
+    result = subprocess.run(["pre-commit", "run", "--all-files"], capture_output=True, text=True)
+
+    # Print the output
+    demisto.debug(result.stdout)
+
+    if result.returncode != 0:
+        demisto.debug(result.stderr)
+
+    exit_code = result.returncode
+    demisto.debug(f'run_pre_commit {exit_code=}')
+    return exit_code
 
 
 def reformat_validation_outputs(outputs):
@@ -540,14 +429,12 @@ def reformat_validation_outputs(outputs):
     return reformatted
 
 
-def validate_content(path_to_validate: str, content_path: str):
+def validate_content(path_to_validate: str):
     """
     Validate the content items in the given `path_to_validate`, using demisto-sdk's ValidateManager and PreCommitManager.
 
     Arguments:
         path_to_validate: Path to the file/directory to validate.
-        content_path: Path to content repo directory.
-
 
     Returns:
         CommandResults objects with validation's & pre-commit's results.
@@ -562,7 +449,7 @@ def validate_content(path_to_validate: str, content_path: str):
 
     validate_exit_code = run_validate(path_to_validate, validations_output_path)
     pre_commit_exit_code = 0
-    # pre_commit_exit_code = run_pre_commit(path_to_validate, pre_commit_output_path, content_path)
+    # pre_commit_exit_code = run_pre_commit(path_to_validate, pre_commit_output_path)
 
     if not (validate_exit_code or pre_commit_exit_code):
         return CommandResults(readable_output='All validations passed.')
@@ -628,42 +515,18 @@ def get_file_name_and_contents(
         return file_object['name'], file_contents
 
 
-def set_global_content_path(content_path: str):
-    import demisto_sdk.commands.common.content_constant_paths as content_constants
+def setup_content_dir(file_name: str, file_contents: str, entry_id: str, verify_ssl=False) -> Tuple[str, str]:
+    """ Sets up the content directory to validate the content items in it. """
+
+    content_path = CONTENT_DIR_PATH
+    # Set up the content directory path globally, required for demisto-sdk logic.
     os.environ['DEMISTO_SDK_CONTENT_PATH'] = content_path
-    # Monkey-patching CONTENT_PATH constant.
-    content_constants.CONTENT_PATH = Path(content_path)
 
-
-def reload_recursive(module):
-    """Recursively reload a module and its submodules."""
-    from importlib import reload
-
-    module_name = module.__name__
-    for name, mod in list(sys.modules.items()):
-        if name.startswith(module_name) and mod is not None:
-            reload(mod)
-
-def setup_content_path(content_path: str):
-    from demisto_sdk.commands.common.content_constant_paths import ContentPaths
-
-    """ Sets up the content directory path globally, required for demisto-sdk logic. """
-    os.environ['DEMISTO_SDK_CONTENT_PATH'] = content_path
-    ContentPaths.update_content_path(content_path)
-
-
-def setup_content_dir(base_dir: str, file_name: str, file_contents: str, entry_id: str, verify_ssl=False) -> Tuple[str, str]:
-    """ Sets up the content directory to validate the content items in. """
-
-    content_path = os.path.join(base_dir, CONTENT_DIR_NAME)
-    os.mkdir(content_path)
     packs_path = os.path.join(content_path, PACKS_DIR_NAME)
     os.mkdir(packs_path)
-    setup_content_path(content_path)
-    demisto.debug(f"created content directory in {content_path}")
+    demisto.debug(f"created packs directory in {packs_path}")
 
     content_repo = setup_content_repo(content_path)
-
     file_name, file_contents = get_file_name_and_contents(file_name, file_contents, entry_id)
 
     if file_name.endswith('.zip'):
@@ -672,11 +535,11 @@ def setup_content_dir(base_dir: str, file_name: str, file_contents: str, entry_i
         )
     else:
         path_to_validate, code_fp_to_row_offset = prepare_single_content_item_for_validation(
-            file_name, file_contents, content_path
+            file_name, file_contents, packs_path
         )
     demisto.debug(f'setup_content_dir {path_to_validate=}')
 
-    content_repo.index.add(os.path.join(content_path, 'Packs'))
+    content_repo.index.add(os.path.join(packs_path))
 
     if os.path.isdir(path_to_validate):
         demisto.debug(f'setup_content_dir {os.listdir(path_to_validate)=}')
@@ -688,7 +551,7 @@ def setup_content_dir(base_dir: str, file_name: str, file_contents: str, entry_i
 
 def main():
     cwd = os.getcwd()
-
+    demisto.debug(f'{cwd=}')
     os.environ['DEMISTO_SDK_IGNORE_CONTENT_WARNING'] = "false"
     os.environ['DEMISTO_SDK_OFFLINE_ENV'] = "true"
     os.environ['DEMISTO_SDK_MAX_CPU_CORES'] = "1"  # TODO - Consider not specifying and use as much as available
@@ -702,17 +565,20 @@ def main():
         filename: str = args.get('filename', '')
         data: bytes | str = args.get('data', bytes())
         entry_id: str = args.get('entry_id', '')
-        with TemporaryDirectory() as tmp_dir:
+        with ConstantTemporaryDirectory(CONTENT_DIR_PATH) as tmp_dir:
             demisto.debug(f"created {tmp_dir=}")
             # Setup Demisto SDK's logging.
             logging_setup(
                 calling_function='ValidateContent',
-                console_threshold='DEBUG' if args.get('debug-mode', False) else DEFAULT_CONSOLE_THRESHOLD,
+                # TODO: Enable console_threshold='DEBUG' if args.get('debug-mode', False) else DEFAULT_CONSOLE_THRESHOLD,
+                console_threshold='DEBUG',
                 propagate=True
             )
-            path_to_validate, content_path = setup_content_dir(tmp_dir, filename, data, entry_id, verify_ssl)
+
+            demisto.debug(f"Finished setting logger.")
+            path_to_validate, content_path = setup_content_dir(filename, data, entry_id, verify_ssl)
             os.chdir(content_path)
-            results, raw_outputs = validate_content(path_to_validate, content_path)
+            results, raw_outputs = validate_content(path_to_validate)
             os.chdir(cwd)
             return_results(CommandResults(
                 readable_output=tableToMarkdown(
@@ -722,13 +588,6 @@ def main():
                 outputs=results,
                 raw_response=raw_outputs,
             ))
-            # return_results(CommandResults(readable_output=f'shishi {cwd=} | {path_to_validate=} | {content_path=} | \n{os.environ}'))
-        # tmp_dir = TemporaryDirectory()
-        # tmp_dir.cleanup = lambda: None  # Disable automatic cleanup
-        #
-        # demisto.debug(f"created {tmp_dir.name=}")
-        #
-        # return_results(results)
 
         demisto.info('Finished validating content.')
     except Exception as e:
