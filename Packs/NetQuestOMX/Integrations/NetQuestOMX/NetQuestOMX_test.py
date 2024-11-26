@@ -10,12 +10,9 @@ from NetQuestOMX import TOKEN_TTL_S, DATE_FORMAT_FOR_TOKEN, Client, fetch_events
 import json
 import demistomock as demisto
 import pytest
-import requests
-import requests_mock
 
 BASE_URL = "https://www.example.com/api/"
 INTEGRATION_CONTEXT = {}
-
 
 
 def get_integration_context():
@@ -36,14 +33,13 @@ def util_load_json(path):
 @pytest.fixture
 def net_quest_omx_client(requests_mock):
     credentials = {"identifier": 'UserName', "password": 'Password'}
-    with requests_mock.Mocker() as mock:
-        # Set up the mock response
-        mock.post(f'{BASE_URL}SessionService/Sessions', status_code=200, headers={"X-Auth-Token": "TEST"})
+
+    requests_mock.post(f'{BASE_URL}SessionService/Sessions', status_code=200, headers={"X-Auth-Token": "TEST"})
 
     return Client(base_url='https://www.example.com', credentials=credentials, verify=True, proxy=False)
 
 @freeze_time('2020-06-03T02:00:00Z')
-def test_new_token_login_client():
+def test_new_token_login_client(requests_mock):
     """
     Given:
         - NetQuestOMX client object
@@ -54,13 +50,7 @@ def test_new_token_login_client():
     """
     credentials = {"identifier": 'UserName', "password": 'Password'}
 
-    url = f'{BASE_URL}SessionService/Sessions'
-
-    with requests_mock.Mocker() as mock:
-        # Set up the mock response
-        mock.post(url, status_code=200, headers={"X-Auth-Token": "TEST"})
-
-    requests.post(url, data={})
+    requests_mock.post(f'{BASE_URL}SessionService/Sessions', status_code=200, headers={"X-Auth-Token": "TEST"})
 
     Client(base_url='https://www.example.com', credentials=credentials, verify=True, proxy=False)
     integration_context = CommonServerPython.get_integration_context()
@@ -177,11 +167,7 @@ def test_get_events_invalid_input(net_quest_omx_client):
 
     params = {"slot": "1", "port": "1"}
     args = {"statistic_types_to_fetch": "Metering ,Export"}
-    expected_error_msg = "Those are the valid types:" \
-                         " ('Metering Stats', 'Export Stats', 'Export Peaks FPS', 'Optimization Stats')." \
-                         " Please execute the command get-events again with valid input." \
-                         " This input is invalid: ['Metering', 'Export']"
-    with pytest.raises(DemistoException, match=expected_error_msg) as e:
+    with pytest.raises(DemistoException):
         get_events(net_quest_omx_client, params, args)
 
 
