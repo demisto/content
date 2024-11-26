@@ -465,7 +465,6 @@ def main() -> None:
             demisto.debug(f'fetched {len(events)} events.')
 
         elif command == "get-events":
-
             events = get_events(client, params, args)
 
             return_results(
