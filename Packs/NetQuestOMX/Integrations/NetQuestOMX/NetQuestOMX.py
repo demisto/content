@@ -279,8 +279,8 @@ def address_list_rename_command(client: Client, args: dict):
         client.address_list_rename_request(new_name, existing_name)
     except Exception as e:
         raise DemistoException(
-            f"An error was occurred when renaming {existing_name} IP's list to {new_name}."
-            f" Maybe the {existing_name} list's name does not exist."
+            f"An error was occurred when renaming {existing_name} IPs list to {new_name}."
+            f" Make sure {existing_name} exists and that {new_name} doesn't."
         ) from e
 
     return CommandResults(readable_output=f"Successfully renamed {existing_name} to {new_name}")
