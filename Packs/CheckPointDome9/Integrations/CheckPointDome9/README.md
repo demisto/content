@@ -1,29 +1,25 @@
 Dome9 integration allows to easily manage the security and compliance of the public cloud.
 This integration was integrated and tested with version 2 of checkpointdome9
 
-## Configure Check Point Dome9 (CloudGuard) on Cortex XSOAR
+## Configure Check Point Dome9 (CloudGuard) in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Check Point Dome9 (CloudGuard).
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | API key ID |  | True |
-    | API key secret |  | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Maximum incidents for one fetch. | Maximum number of incidents per fetch. Default is 50. The maximum is 100. | False |
-    | Fetch incidents |  | False |
-    | Alert region (AWS) to fetch as incidents. |  | False |
-    | Alert severity to fetch as incidents. |  | False |
-    | First fetch time | First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago" | False |
-    | Incident type |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| API key ID |  | True |
+| API key secret |  | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Maximum incidents for one fetch. | Maximum number of incidents per fetch. Default is 50. The maximum is 100. | False |
+| Fetch incidents |  | False |
+| Alert region (AWS) to fetch as incidents. |  | False |
+| Alert severity to fetch as incidents. |  | False |
+| First fetch time | First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago" | False |
+| Incident type |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### dome9-access-lease-list
 ***
@@ -2319,4 +2315,3 @@ Get the findings for a specific rule in a bundle, for all of the user's accounts
 
 >### Findings Bundle
 >**No entries.**
-

@@ -17,6 +17,7 @@ from splunklib.binding import AuthenticationError, HTTPError, namespace
 
 INTEGRATION_LOG = "Splunk- "
 OUTPUT_MODE_JSON = 'json'  # type of response from splunk-sdk query (json/csv/xml)
+INDEXES_REGEX = r"""["'][\s]*index[\s]*["'][\s]*:[\s]*["']([^"']+)["']"""
 # Define utf8 as default encoding
 params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -2667,28 +2668,22 @@ def parse_fields(fields):
     return None
 
 
-def ensure_valid_json_format(events: str | dict):
-    """Converts a batch of events to a valid JSON format for processing.
+def extract_indexes(events: str | dict):
+    """
+    Extracts indexes from the provided events.
 
     Args:
-        events (str): The batch of events to be formatted as JSON.
-
-    Raises:
-        DemistoException: If the input cannot be converted to a valid JSON format, an exception is raised.
+        events (str | dict): The input events from which indexes will be extracted.
+        For example: "{"index": "index1", "event": "something happened1"} {"index": "index2", "event": "something happened2"}"
 
     Returns:
-        list: A list of JSON objects derived from the input events.
-    """
-    try:
-        events_str = str(events)
+        List[str]: A list of extracted indexes.
+        For example: ["index1", "index2"]
 
-        events_str = events_str.replace("'", '"')
-        rgx = re.compile(r"}[\s]*{")
-        valid_json_events = rgx.sub("},{", events_str)
-        valid_json_events = json.loads(f"[{valid_json_events}]")
-        return valid_json_events
-    except Exception as e:
-        raise DemistoException(f'{str(e)}\nMake sure that the events are in the correct format.')
+    """
+    events_str = str(events)
+    indexes = re.findall(INDEXES_REGEX, events_str)
+    return indexes
 
 
 def splunk_submit_event_hec(
@@ -2728,12 +2723,12 @@ def splunk_submit_event_hec(
             source=source,
             time=time_
         )
-    valid_json_events = ensure_valid_json_format(events)
-
-    indexes = [d.get('index') for d in valid_json_events if d.get('index')]
+    indexes = extract_indexes(events)
 
     if not validate_indexes(indexes, service):
         raise DemistoException('Index name does not exist in your splunk instance')
+
+    demisto.debug("All indexes are valid, sending events to Splunk.")
 
     headers = {
         'Authorization': f'Splunk {hec_token}',
@@ -2747,8 +2742,6 @@ def splunk_submit_event_hec(
         data = events
     else:
         data = json.dumps(events)
-
-    demisto.debug(f'{INTEGRATION_LOG} sending {len(valid_json_events)}')
 
     return requests.post(
         f'{baseurl}/services/collector/event',
