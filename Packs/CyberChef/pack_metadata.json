@@ -1,6 +1,6 @@
 {
-    "name": "CyberChef",
-    "description": "Integration with your CyberChef server or https://prod.apifor.io service for CyberChef.",
+    "name": "CyberChef (Deprecated)",
+    "description": "Deprecated. No available replacement.",
     "support": "community",
     "currentVersion": "1.0.8",
     "author": "Harri Ruuttila",

@@ -26,8 +26,8 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: 'CyberChef is a web-application developed by GCHQ that''s been called the “Cyber Swiss Army Knife”. '
-display: CyberChef
+description: 'Deprecated. No available replacement.'
+display: CyberChef (Deprecated)
 name: CyberChef
 script:
   commands:
@@ -46,6 +46,7 @@ script:
     - contextPath: CyberChef.Bake
       description: Output of the bake.
       type: string
+    deprecated: true
   - arguments:
     - description: The input data for the recipe. Currently accepts strings.
       name: input
@@ -58,6 +59,7 @@ script:
     - contextPath: CyberChef.Magic
       description: Output of the Magic operation.
       type: string
+    deprecated: true
   dockerimage: demisto/cyberchef:1.0.0.114638
   runonce: false
   script: ''
@@ -65,4 +67,5 @@ script:
   type: python
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- No tests (deprecated)
+deprecated: true
