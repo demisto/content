@@ -76,9 +76,10 @@ class ModuleManager:
 
 
 class CommandRunner:
-    def __init__(self, module_manager: ModuleManager, endpoint_args: dict[str, Any]):
+    def __init__(self, module_manager: ModuleManager, endpoint_args: dict[str, Any], arg_free_commands: list[str]) -> None:
         self.module_manager = module_manager
         self._endpoint_args = endpoint_args
+        self.arg_free_commands = arg_free_commands
 
     def run_command_if_available(self, command: MappedCommand) -> tuple[list, str, list[CommandResults]]:
         command_results = self._run_execute_command(command)
@@ -96,6 +97,9 @@ class CommandRunner:
         for command_arg_key, endpoint_arg_key in command.args_mapping.items():
             if self._endpoint_args[endpoint_arg_key]:
                 args[command_arg_key] = self._endpoint_args[endpoint_arg_key]
+
+        if not args and command.name not in self.arg_free_commands:
+            return {'command': command, 'results': []}
 
         demisto.debug(f'Running "{command=}" with {args=}')
         command_results = to_list(demisto.executeCommand(command.name, args))
@@ -615,7 +619,10 @@ def main():
             single_endpoint_outputs = []
             single_endpoint_readable_outputs = []
 
-            command_runner = CommandRunner(module_manager, {
+            command_runner = CommandRunner(
+                module_manager=module_manager,
+                arg_free_commands=['cylance-protect-get-devices', 'endpoint'],
+                endpoint_args={
                 'agent_id': agent_id,
                 'agent_ip': agent_ip,
                 'agent_hostname': agent_hostname
@@ -702,7 +709,10 @@ def main():
         multiple_endpoint_outputs = []
         multiple_endpoint_readable_outputs = []
 
-        command_runner = CommandRunner(module_manager, {
+        command_runner = CommandRunner(
+            module_manager=module_manager,
+            arg_free_commands=['cylance-protect-get-devices', 'endpoint'],
+            endpoint_args={
             'agent_id': agent_ids,
             'agent_ip': agent_ips,
             'agent_hostname': agent_hostnames
@@ -766,13 +776,20 @@ def main():
 
         for index in range(max(map(len, multiple_endpoint_outputs), default=0)):
             unmerged_endpoints = [safe_list_get(l, index, {}) for l in multiple_endpoint_outputs]
-            merged_endpoint = merge_endpoints(unmerged_endpoints)
+            demisto.debug(f'merging endoints {unmerged_endpoints=}, {index=}')
+            merged_endpoint = merge_endpoints(unmerged_endpoints) if unmerged_endpoints else None
             if merged_endpoint:
+                demisto.debug(f'appending {merged_endpoint=}')
                 endpoint_outputs_list.append(merged_endpoint)
             else:
-                endpoints_not_found_list.append(agent_ids[index] or agent_ips[index] or agent_hostnames[index])
+                demisto.debug(f'endpoint not found {merged_endpoint=} {agent_ids=} {agent_ips=} {agent_hostnames=}')
+                endpoints_not_found_list.append(
+                    safe_list_get(agent_ids,index, '') or
+                    safe_list_get(agent_ips,index, '') or
+                    safe_list_get(agent_hostnames, index, '')
+                )
 
-        if endpoints_not_found_list:
+        if endpoints_not_found_list and not endpoint_outputs_list:
             command_results_list.append(
                 CommandResults(
                     readable_output=tableToMarkdown(
