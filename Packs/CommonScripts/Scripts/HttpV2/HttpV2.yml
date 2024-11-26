@@ -127,7 +127,7 @@ tags:
 - basescript
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.10.113941
 tests:
 - HttpV2-test
 fromversion: 6.5.0

@@ -53,6 +53,7 @@
         },
         {
             "playbookID": "Endpoint Investigation Plan - Test",
+            "integrations": "Cortex Core - IR",
             "timeout": 600
         },
         {
@@ -114,7 +115,8 @@
             "timeout": 500,
             "integrations": [
                 "Active Directory Query v2",
-                "VirusTotal (API v3)"
+                "VirusTotal (API v3)",
+                "Cortex Core - IR"
             ],
             "instance_names": [
                 "active_directory_80k",
@@ -3348,14 +3350,58 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "ElasticsearchFeed",
+            "instance_names": "es_demisto_feed_elastic_v8",
+            "playbookID": "Elasticsearch_Fetch_Demisto_Indicators_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "ElasticsearchFeed",
+            "instance_names": "es_generic_feed_elastic_v8",
+            "playbookID": "Elasticsearch_Fetch_Custom_Indicators_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "ElasticsearchFeed",
+            "instance_names": "os_demisto_feed",
+            "playbookID": "Elasticsearch_Fetch_Demisto_Indicators_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "ElasticsearchFeed",
+            "instance_names": "os_generic_feed",
+            "playbookID": "Elasticsearch_Fetch_Custom_Indicators_Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Elasticsearch v2",
             "instance_names": "es_v6",
             "playbookID": "Elasticsearch_v2_test-v6"
         },
         {
             "integrations": "Elasticsearch v2",
+            "instance_names": "os_v6",
+            "playbookID": "Elasticsearch_v2_test-v6"
+        },
+        {
+            "integrations": "Elasticsearch v2",
             "instance_names": "es_v8",
             "playbookID": "Elasticsearch_v2_test-v8"
+        },
+        {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "es_v7",
+            "playbookID": "Elasticsearch_v2_test-v7-v8"
+        },
+        {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "es_v8",
+            "playbookID": "Elasticsearch_v2_test-v7-v8"
+        },
+        {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "os_v7",
+            "playbookID": "Elasticsearch_v2_test-v7-v8"
         },
         {
             "integrations": "PolySwarm",
@@ -5966,9 +6012,6 @@
         "SymantecEndpointProtection_Test": "Issue 30157",
         "TestCloudflareWAFPlaybook": "No instance",
         "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350",
-        "Elasticsearch_v2_test-v8": "CRTX-61980",
-        "Elasticsearch_Fetch_Custom_Indicators_Test": "CRTX-134283",
-        "Elasticsearch_Fetch_Demisto_Indicators_Test": "CRTX-134283", 
         "Carbon Black Enterprise Protection V2 Test": "No credentials",
         "TruSTAR v2-Test": "No credentials",
         "Archer v2 - Test": "Test doesn't pass in the builds because of the creds, but creds seems ok, need to debug further",
@@ -6102,7 +6145,6 @@
         "icebrg": "No instance - Issue 14312 - CIAC-2006",
         "Freshdesk": "No instance - Trial account expired",
         "Kafka V2": "No instance - Can not connect to instance from remote",
-        "KafkaV3": "No instance - Can not connect to instance from remote",
         "Check Point Sandblast": "No instance - Issue 15948",
         "Remedy AR": "No instance - getting 'Not Found' in test button",
         "Salesforce": "No instance - Issue 15901 - CIAC-1976",

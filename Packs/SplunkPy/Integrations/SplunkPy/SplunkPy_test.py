@@ -11,6 +11,8 @@ from splunklib import client
 from splunklib import results
 import SplunkPy as splunk
 from pytest_mock import MockerFixture
+from unittest.mock import MagicMock, patch
+
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
@@ -358,7 +360,7 @@ def test_splunk_submit_event_hec_command(mocker):
 
     mocker.patch.object(splunk, "splunk_submit_event_hec", return_value=MockRes(text))
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"}, args={})
+    splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"}, args={"entry_id": "some_entry"}, service=Service)
     err_msg = return_error_mock.call_args[0][0]
     assert err_msg == f"Could not send event to Splunk {text}"
 
@@ -390,13 +392,13 @@ def test_splunk_submit_event_hec_command_request_channel(mocker):
     Then
     - The return result object contains the correct message.
     """
-    args = {"request_channel": "11111111-1111-1111-1111-111111111111"}
+    args = {"request_channel": "11111111-1111-1111-1111-111111111111", "entry_id": "some_entry"}
     mocker.patch.object(splunk, "splunk_submit_event_hec", return_value=check_request_channel(args))
     moc = mocker.patch.object(demisto, 'results')
     splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"},
-                                           args=args)
+                                           args=args, service=Service)
     readable_output = moc.call_args[0][0]
-    assert readable_output == "The event was sent successfully to Splunk. AckID: 1"
+    assert readable_output == "The events were sent successfully to Splunk. AckID: 1"
 
 
 def test_splunk_submit_event_hec_command_without_request_channel(mocker):
@@ -408,12 +410,12 @@ def test_splunk_submit_event_hec_command_without_request_channel(mocker):
     Then
     - The return result object contains the correct message.
     """
-    args = {}
+    args = {"entry_id": "some_entry"}
     mocker.patch.object(splunk, "splunk_submit_event_hec", return_value=check_request_channel(args))
 
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"},
-                                           args=args)
+                                           args=args, service=Service)
     err_msg = return_error_mock.call_args[0][0]
     assert err_msg == 'Could not send event to Splunk {"text":"Data channel is missing","code":10}'
 
@@ -2534,6 +2536,28 @@ def test_empty_string_as_app_param_value(mocker):
     assert connection_args.get('app') == '-'
 
 
+@pytest.mark.parametrize(argnames='host, expected_host', argvalues=[
+    ('8.8.8.8', '8.8.8.8'),
+    ('8.8.8.8/', '8.8.8.8'),
+    ('https://www.test.com', 'www.test.com'),
+    ('https://www.test.com/', 'www.test.com'),
+])
+def test_host_param(host, expected_host):
+    """
+    Given:
+        - Different host values
+    When:
+        - Run get_connection_args() function
+    Then:
+        - Ensure the host is as expected
+    """
+    params = {'host': host, 'port': '111'}
+
+    actuall_host = splunk.get_connection_args(params)['host']
+
+    assert actuall_host == expected_host
+
+
 OWNER_MAPPING = [{'xsoar_user': 'test_xsoar', 'splunk_user': 'test_splunk', 'wait': True},
                  {'xsoar_user': 'test_not_full', 'splunk_user': '', 'wait': True},
                  {'xsoar_user': '', 'splunk_user': 'test_not_full', 'wait': True}, ]
@@ -2788,3 +2812,206 @@ def test_get_drilldown_searches(drilldown_data, expected):
     """
 
     assert splunk.get_drilldown_searches(drilldown_data) == expected
+
+
+@pytest.mark.parametrize('drilldown_search, expected_res',
+                         [('{"name":"test", "query":"|key="the value""}', 'key="the value"'),
+                          ('{"name":"test", "query":"|key in (line_1\nline_2)"}', 'key in (line_1,line_2)'),
+                          ('{"name":"test", "query":"search a=$a|s$ c=$c$ suffix"}', 'search a=$a|s$ c=$c$ suffix')])
+def test_escape_invalid_chars_in_drilldown_json(drilldown_search, expected_res):
+    """
+    Scenario: When extracting the drilldown search query which are a json string,
+    we should escape unescaped JSON special characters.
+
+    Given:
+    - A raw search query with text like 'key="a value"'.
+    - A raw search query with text like where 'key in (a\nb)' which it should be 'key in (a,b)'.
+    - A raw search query with normal json string, should not be changed by this function.
+
+    When:
+    - escape_invalid_chars_in_drilldown_json is called
+
+    Then:
+    - Return the expected result
+    """
+    import json
+
+    res = splunk.escape_invalid_chars_in_drilldown_json(drilldown_search)
+
+    assert expected_res in json.loads(res)['query']
+
+
+# Define minimal classes to simulate the service and index behavior
+class Index:
+    def __init__(self, name):
+        self.name = name
+
+
+class ServiceIndex:
+    def __init__(self, indexes):
+        self.indexes = [Index(name) for name in indexes]
+
+
+@pytest.mark.parametrize(
+    "given_indexes, service_indexes, expected",
+    [
+        # Test case: All indexes exist in the service
+        (["index1", "index2"], ["index1", "index2", "index3"], True),
+
+        # Test case: Some indexes do not exist in the service
+        (["index1", "index4"], ["index1", "index2", "index3"], False),
+
+        # Test case: Empty input indexes list
+        ([], ["index1", "index2", "index3"], True),
+    ]
+)
+def test_validate_indexes(given_indexes, service_indexes, expected):
+    """
+    Given: A list of indexes' names.
+    When: Calling validate_indexes function.
+    Then: The function returns `True` if all the given index names exist within the Splunk service instance;
+          otherwise, it returns `False`.
+    """
+    from SplunkPy import validate_indexes
+    service = ServiceIndex(service_indexes)
+    # Assert that the function returns the expected result
+    assert validate_indexes(given_indexes, service) == expected
+
+
+@pytest.mark.parametrize(
+    "fields, expected",
+    [
+        # Valid JSON input
+        ('{"key": "value"}', {"key": "value"}),
+
+        # Valid JSON with multiple key-value pairs
+        ('{"key1": "value1", "key2": 2}', {"key1": "value1", "key2": 2}),
+
+        # Invalid JSON input (non-JSON string)
+        ("not a json string", {"fields": "not a json string"}),
+
+        # Another invalid JSON input (partially structured JSON)
+        ("{'key': 'value'}", {"fields": "{'key': 'value'}"}),
+    ]
+)
+def test_parse_fields(fields, expected):
+    """
+    Given: A string representing fields, which may be a valid JSON string or a regular string.
+    When: The parse_fields function is called with the given string.
+    Then: If the string is valid JSON, the function returns a dictionary of the parsed fields. If the string is not valid JSON,
+    the function returns a dictionary with a single key-value pair, where the entire input string is the key.
+    """
+    from SplunkPy import parse_fields
+    result = parse_fields(fields)
+    assert result == expected
+
+
+@pytest.mark.parametrize("event, batch_event_data, entry_id, expected_data", [
+    ("Somthing happened", None, None, '{"event": "Somthing happened", "fields": {"field1": "value1"}, "index": "main"}'),
+    (None, "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}", None,
+     "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"),  # Batch event data
+    (None, None, "some entry_id",
+     "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"),
+    (None, """{'event': "some event's", 'index': 'some index'} {'event': 'some event', 'index': 'some index'}""", None,
+     """{'event': "some event's", 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"""),  # with '
+    (None, None, "some entry_id", "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}")
+])
+@patch("requests.post")
+@patch("SplunkPy.get_events_from_file")
+@patch("SplunkPy.extract_indexes")
+@patch("SplunkPy.validate_indexes")
+@patch("SplunkPy.parse_fields")
+def test_splunk_submit_event_hec(
+    mock_parse_fields,
+    mock_validate_indexes,
+    mock_extract_indexes,
+    mock_get_events_from_file,
+    mock_post,
+    event,
+    batch_event_data,
+    entry_id,
+    expected_data
+):
+    """
+    Given: Different types of event submission (single event, batch event, entry_id).
+    When: Calling splunk_submit_event_hec.
+    Then: Ensure a POST request is sent with the correct data and headers.
+    """
+    from SplunkPy import splunk_submit_event_hec
+    # Arrange
+    hec_token = "valid_token"
+    baseurl = "https://splunk.example.com"
+    fields = '{"field1": "value1"}'
+    parsed_fields = {"field1": "value1"}
+
+    # Mocks
+    mock_parse_fields.return_value = parsed_fields
+    mock_validate_indexes.return_value = True
+
+    if event:
+        # Single event
+        mock_extract_indexes.return_value = ['some index']
+    elif batch_event_data:
+        # Batch event data
+        mock_extract_indexes.return_value = ['some index1', 'some index2']
+    elif entry_id:
+        # Entry ID
+        mock_get_events_from_file.return_value =\
+            "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"
+        mock_extract_indexes.return_value = ['some index1', 'some index2']
+
+    # Act
+    splunk_submit_event_hec(
+        hec_token=hec_token,
+        baseurl=baseurl,
+        event=event,
+        fields=fields,
+        host=None,
+        index="main",
+        source_type=None,
+        source=None,
+        time_=None,
+        request_channel="test_channel",
+        batch_event_data=batch_event_data,
+        entry_id=entry_id,
+        service=MagicMock(),
+    )
+
+    mock_post.assert_called_once_with(
+        f"{baseurl}/services/collector/event",
+        data=expected_data,
+        headers={
+            "Authorization": f"Splunk {hec_token}",
+            "Content-Type": "application/json",
+            "X-Splunk-Request-Channel": "test_channel",
+        },
+        verify=True,
+    )
+
+
+def test_splunk_submit_event_hec_command_no_required_arguments():
+    """ Given: none of these arguments: 'entry_id', 'event', 'batch_event_data'
+        When: Runing splunk-submit-event-hec command
+        Then: An exception is thrown
+    """
+    from SplunkPy import splunk_submit_event_hec_command
+    with pytest.raises(DemistoException,
+                       match=r"Invalid input: Please specify one of the following arguments: `event`, "
+                       r"`batch_event_data`, or `entry_id`."):
+        splunk_submit_event_hec_command({'hec_url': 'hec_url'}, None, {})
+
+
+@pytest.mark.parametrize("events, expected_result", [
+    ("{'index': 'index1', 'event': 'Something happend '} {'index': 'index 2', 'event': 'Something's happend'}",
+     ['index1', 'index 2']),
+    ({'index': 'index1', 'value': '123'}, ['index1']),
+    ("{'event': 'value'}", []),
+    ('{"index": "index: 3", "event": "Something happend"}, {"index": "index: 3", "event": "Something happend"}',
+     ['index: 3', 'index: 3']),
+    ("{'key': 'value'}, {'key': 'value'}", []),
+    ("""{"index": "index_3", "event": "Something` happend"}, {"index": "index-4", "event": "Something' happend"}""",
+     ['index_3', 'index-4']),
+])
+def test_extract_indexes(events, expected_result):
+    from SplunkPy import extract_indexes
+    assert extract_indexes(events) == expected_result
