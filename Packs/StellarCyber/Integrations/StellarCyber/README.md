@@ -1,28 +1,24 @@
 Fetches and mirrors in Cases from Stellar Cyber to XSOAR. In addition, provides a command to update Case severity/status/assignee/tags, and a command to query an Alert.
 This integration was integrated and tested with version >= 4.3.7/5.0.4 of StellarCyber.
 
-## Configure Stellar Cyber on Cortex XSOAR
+## Configure Stellar Cyber in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Stellar Cyber.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Fetch incidents |  |  |
-    | Incident type |  |  |
-    | Mirroring Direction | If set to Incoming, will mirror Cases from Stellar Cyber to XSOAR. If set to None, will not mirror Cases from Stellar Cyber to XSOAR. Default is None. | False |
-    | Stellar Cyber Host (e.g. example.stellarcyber.cloud) | Your Stellar Cyber Host FQDN. | True |
-    | API User (Email Address) |  | True |
-    | API Key |  | True |
-    | First fetch time | The period of time to look back for initial pull of cases. \(&lt;number&gt; &lt;time unit&gt;, i.e. 1 day, 5 hours, 30 minutes, etc.\) | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings | If set to true, will use the system proxy settings. | False |
-    | Incidents Fetch Interval | The interval in minutes for fetching incidents from Stellar Cyber. | False |
-    | Optional - Tenant ID | Supply a Tenant ID to restrict Fetch and Mirror operations to a specific Tenant. If not supplied, all Tenants will be included. | False |
-    | Maximum number of incidents per fetch | The maximum number of incidents to fetch per fetch. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Fetch incidents |  |  |
+| Incident type |  |  |
+| Mirroring Direction | If set to Incoming, will mirror Cases from Stellar Cyber to XSOAR. If set to None, will not mirror Cases from Stellar Cyber to XSOAR. Default is None. | False |
+| Stellar Cyber Host (e.g. example.stellarcyber.cloud) | Your Stellar Cyber Host FQDN. | True |
+| API User (Email Address) |  | True |
+| API Key |  | True |
+| First fetch time | The period of time to look back for initial pull of cases. \(&lt;number&gt; &lt;time unit&gt;, i.e. 1 day, 5 hours, 30 minutes, etc.\) | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings | If set to true, will use the system proxy settings. | False |
+| Incidents Fetch Interval | The interval in minutes for fetching incidents from Stellar Cyber. | False |
+| Optional - Tenant ID | Supply a Tenant ID to restrict Fetch and Mirror operations to a specific Tenant. If not supplied, all Tenants will be included. | False |
+| Maximum number of incidents per fetch | The maximum number of incidents to fetch per fetch. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Incident Mirroring
 
@@ -43,7 +39,7 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### stellar-get-alert
