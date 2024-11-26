@@ -299,8 +299,8 @@ def address_list_delete_command(client: Client, args: dict):
         client.address_list_delete_request(list_name_to_delete)
     except Exception as e:
         raise DemistoException(
-            f"An error was occurred when deleting the {list_name_to_delete} IP's list."
-            f" Maybe the {list_name_to_delete} list's name does not exist."
+            f"An error was occurred when deleting the {list_name_to_delete} IPs list."
+            f" Make sure {list_name_to_delete} exists."
         ) from e
 
     return CommandResults(readable_output=f"Successfully deleted {list_name_to_delete} list")
