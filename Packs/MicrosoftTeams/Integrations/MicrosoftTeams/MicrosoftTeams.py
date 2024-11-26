@@ -2840,7 +2840,7 @@ def create_messaging_endpoint_command():
     xsoar_url = urls.get('server', '')
     engine_url = demisto.args().get('engine_url', '')
 
-    if is_using_engine():  # In case of an xsoar engine user - He must provide us with the engine address
+    if is_using_engine():  # In case of an XSOAR engine user - The user must provide the engine address.
         if not engine_url:
             raise ValueError("Your instance configuration involves a Cortex XSOAR engine.\nIn that case the messaging endpoint "
                              "that should be added to the Demisto bot configuration in Microsoft Teams is the engine's IP "
