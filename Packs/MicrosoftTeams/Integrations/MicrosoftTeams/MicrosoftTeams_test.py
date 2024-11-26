@@ -2498,7 +2498,7 @@ def test_add_data_to_actions_non_dict_data():
 def test_token_permissions_list_command(mocker, token, decoded_token, auth_type, expected_hr):
     """
     Tests the 'token_permissions_list_command' logic:
-    For client credentials auth flow, the api permissions are found under the 'roles' key in the decoded token data,
+    For client credentials auth flow, the API permissions are found under the 'roles' key in the decoded token data,
     while for the auth code flow they are found under the 'scp' key.
     This test checks that we extract the api permissions from the graph access token successfully for both auth types.
 
