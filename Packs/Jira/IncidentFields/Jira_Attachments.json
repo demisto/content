@@ -1,7 +1,7 @@
 {
     "id": "incident_jiraattachments",
     "version": -1,
-    "name": "Jira Attachments",
+    "name": "Jira Attachments Test Cortex XSOAR",
     "ownerOnly": false,
     "cliName": "jiraattachments",
     "type": "attachments",

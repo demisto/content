@@ -6,7 +6,7 @@ This is the default integration for this content pack when configured by the Dat
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.
 2. Search for Jira Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
+3. Click **Add instance** to create and configure a new integration instance Test Cortex XSOAR. 
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |

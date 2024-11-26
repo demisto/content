@@ -9,7 +9,7 @@ When creating Jira issues through XSOAR, using the mirroring function, make sure
 
 ## Dependencies
 
-This playbook uses the following sub-playbooks, integrations, and scripts.
+This playbook uses the following sub-playbooks, integrations, and scripts Test Cortex XSOAR.
 
 ### Sub-playbooks
 

@@ -168,7 +168,7 @@
                         "y": 0
                     },
                     {
-                        "description": "",
+                        "description": "Test Cortex XSOAR",
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
