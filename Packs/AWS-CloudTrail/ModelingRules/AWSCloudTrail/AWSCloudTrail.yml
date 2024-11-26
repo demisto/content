@@ -1,0 +1,6 @@
+fromversion: 8.7.0
+id: Amazon_AWS_CloudTrail_ModelingRule
+name: Amazon AWS CloudTrail Modeling Rule
+rules: ''
+schema: ''
+tags:

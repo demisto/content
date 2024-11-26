@@ -1,10 +1,9 @@
 Cyberint provides intelligence-driven digital risk protection. This integration will help your enterprise effectively consume actionable cyber alerts to increase your security posture.
-This integration was integrated and tested with version v1 of cyberint
 
-## Configure cyberint on Cortex XSOAR
+## Configure Cyberint on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for cyberint.
+2. Search for Cyberint.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter**                                                                    | **Description** | **Required** |
@@ -27,7 +26,7 @@ This integration was integrated and tested with version v1 of cyberint
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### cyberint-alerts-fetch

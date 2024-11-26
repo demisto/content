@@ -16,6 +16,9 @@ configuration:
   name: use_ssl
   type: 8
   required: false
+- display:  Use SASL PLAIN for connection (using SSL)
+  name: use_sasl
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -36,6 +39,11 @@ configuration:
   hiddenusername: true
   name: additional_password
   type: 9
+  required: false
+- display: SASL PLAIN Username
+  name: credentials
+  type: 9
+  displaypassword: SASL PLAIN Password
   required: false
 - display: Topic to fetch incidents from (Required for fetch incidents)
   name: topic
@@ -148,7 +156,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/vendors-sdk:1.0.0.87491
+  dockerimage: demisto/vendors-sdk:1.0.0.115493
 fromversion: 6.1.0
 tests:
 - KafkaV3 Test
