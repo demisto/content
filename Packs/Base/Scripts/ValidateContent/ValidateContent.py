@@ -449,7 +449,7 @@ def validate_content(path_to_validate: str):
 
     validate_exit_code = run_validate(path_to_validate, validations_output_path)
     pre_commit_exit_code = 0
-    # pre_commit_exit_code = run_pre_commit(path_to_validate, pre_commit_output_path)
+    pre_commit_exit_code = run_pre_commit(path_to_validate, pre_commit_output_path)
 
     if not (validate_exit_code or pre_commit_exit_code):
         return CommandResults(readable_output='All validations passed.')
