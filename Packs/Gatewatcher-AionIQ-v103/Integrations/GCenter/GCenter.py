@@ -364,6 +364,7 @@ def fetch_incidents():
                                {"value": str(gwAlerts[i]['_source']['destination']['ip']), "type": "IP"}],
                     'rawJSON': json.dumps(gwAlerts[i]['_source']),
                     'severity': gwAlerts[i]['_source']['event']['severity'],
+                    'type': "Gatewatcher Alert",
                     'CustomFields': {'gatewatcherflowid': gwAlerts[i]['_source']['network']['flow_id'],
                                      'gatewatchergcenter': str(gwAlerts[i]['_source']['observer']['hostname']),
                                      'gatewatchergcap': str(gwAlerts[i]['_source']['observer']['gcap']['hostname']),
@@ -395,43 +396,38 @@ def fetch_incidents():
             incident['details'] += "\nTransport: "+str(gwAlerts[i]['_source']['network']['transport']).upper()
             incident['CustomFields']['gatewatchertransport'] = str(gwAlerts[i]['_source']['network']['transport']).upper()
 	
-        incident['type'] = "Gatewatcher alert"
+        # Malcore alert
+        if 'malcore' in gwAlerts[i]['_source'].keys():
+            incident['type'] = "Gatewatcher Malcore engine alert"
+
+            incident['CustomFields']['gatewatchermalcoremagicdetails'] = str(gwAlerts[i]['_source']['malcore']['magic_details']) 
+            incident['CustomFields']['gatewatchermalcorestate'] = str(gwAlerts[i]['_source']['malcore']['state']) 
+            incident['CustomFields']['gatewatchermalcoretotalfound'] = str(gwAlerts[i]['_source']['malcore']['total_found']) 
+            incident['CustomFields']['gatewatchermalcoredetailthreatfound'] = str(gwAlerts[i]['_source']['malcore']['detail_threat_found']) 
+            incident['CustomFields']['gatewatchermalcoreengineslastupdatedate'] = str(gwAlerts[i]['_source']['malcore']['engines_last_update_date']) 
+
+        # Shellcode alert
+        if 'shellcode' in gwAlerts[i]['_source'].keys():
+            incident['type'] = "Gatewatcher Shellcode"
+
+            incident['CustomFields']['gatewatchershellcodesubtype'] = str(gwAlerts[i]['_source']['shellcode']['sub_type'])
+
+        # Malicious Powershell alert
+        if 'malicious_powershell' in gwAlerts[i]['_source'].keys():
+            incident['type'] = "Gatewatcher Malicious Powershell"
+
+            incident['CustomFields']['gatewatchermaliciouspowershellprobaobfuscated'] = str(gwAlerts[i]['_source']['malicious_powershell']['proba_obfuscated'])
+            incident['CustomFields']['gatewatchermaliciouspowershellscore'] = str(gwAlerts[i]['_source']['malicious_powershell']['score'])
 	
-        """
-        # Incident type malicious powershell detect
-        if gwAlerts[i]['_source']['event']['module'] == "malicious_powershell_detect":
-            incident['type'] = "Review Indicators Manually"
-
-        # Incident type shellcode detect
-        if gwAlerts[i]['_source']['event']['module'] == "shellcode_detect":
-            incident['type'] = "Exploit"
-
-        # Incident type sigflow_alert
-        if gwAlerts[i]['_source']['event']['module'] == "sigflow_alert":
-            incident['type'] = "Network"
-
-        # Incident type malcore
-        if gwAlerts[i]['_source']['event']['module'] == "malcore":
-            incident['type'] = "Malware"
-
-        # Incident type dga
-        if gwAlerts[i]['_source']['event']['module'] == "dga_detect":
-            incident['type'] = "C2Communication"
-        
         # Sigflow alert signature
         if 'sigflow' in gwAlerts[i]['_source'].keys():
             if 'signature' in gwAlerts[i]['_source']['sigflow'].keys():
                 incident['name'] = "Gatewatcher Alert: " + str(gwAlerts[i]['_source']['sigflow']['signature'])
-                if "CnC" in str(gwAlerts[i]['_source']['sigflow']['signature']):
-                    incident['type'] = "C2Communication"
 
         # NBA alert signature
         if 'nba' in gwAlerts[i]['_source'].keys():
             if 'signature' in gwAlerts[i]['_source']['nba'].keys():
                 incident['name'] = "Gatewatcher Alert: " + str(gwAlerts[i]['_source']['nba']['signature'])
-                if "C&C" in str(gwAlerts[i]['_source']['nba']['signature']):
-                    incident['type'] = "C2Communication"
-        """
 	
         incidents.append(incident)
     
@@ -452,7 +448,7 @@ def fetch_incidents():
                     'severity': 1,
                     'sourceBrand': "Gatewatcher",
                     'sourceInstance': str(gwMeta[i]['_source']['observer']['hostname'])+" | "+str(gwMeta[i]['_source']['observer']['gcap']['hostname']),
-                    'type': "Network",
+                    'type': "Gatewatcher Metadata",
                     'CustomFields': {'gatewatcherflowid': gwMeta[i]['_source']['network']['flow_id'],
                                      'gatewatchergcenter': str(gwMeta[i]['_source']['observer']['hostname']),
                                      'gatewatchergcap': str(gwMeta[i]['_source']['observer']['gcap']['hostname']),
