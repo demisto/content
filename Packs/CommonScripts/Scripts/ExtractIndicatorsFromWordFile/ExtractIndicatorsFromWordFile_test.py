@@ -30,7 +30,7 @@ def test_parse_word(file_name, file_path, request):
     parser.file_name = file_name
     parser.file_path = basename
     parser.parse_word()
-    assert (expected_partial_all_data in parser.all_data)
+    assert (expected_partial_all_data in parser.paragraphs)
 
 
 def test_getting_file_from_context(mocker):
