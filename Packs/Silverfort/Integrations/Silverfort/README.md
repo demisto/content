@@ -13,11 +13,8 @@ This integration was integrated and tested with Silverfort version 2.12.
 
 - Consume Silverfort user and server risk levels
 - Enrich the Silverfort risk engine and trigger MFA on risky entities
-## Configure Silverfort on Cortex XSOAR
+## Configure Silverfort in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Silverfort.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -26,7 +23,6 @@ This integration was integrated and tested with Silverfort version 2.12.
 | apikey | APIKEY | True |
 | insecure | Trust any certificate (not secure) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 - To generate an API token:
     1. On the Silverfort Admin Console, navigate to the **SETTINGS** page, and then select **Silverfort API**.
     2. Next to the Application **User ID** field, click **Create App User**.
@@ -35,7 +31,7 @@ This integration was integrated and tested with Silverfort version 2.12.
     5. The API KEY is "**App USer ID**:**App USer Secret**". (note the ":" between User ID and Secret)
     For more information, see the [Silverfort documentation](https://support.silverfort.com/hc/en-us/articles/360020891537-Silverfort-Risk-Engine-API-Reference).
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### silverfort-get-user-risk
 ***
