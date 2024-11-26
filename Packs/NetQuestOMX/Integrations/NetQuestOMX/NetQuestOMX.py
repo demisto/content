@@ -33,7 +33,7 @@ class Client(BaseClient):
 
     def login(self):
         """
-        If there's an existing token in context, its validity is checked. 
+        If there's an existing token in context, its validity is checked.
         Otherwise, logs in and stores token in the `Client` instance
         Refreshes the token as needed.
         """
