@@ -12386,7 +12386,7 @@ def xsoar_profiler(func):
         results = {}
         profiler = cProfile.Profile()
         signal_event = threading.Event()
-        profiler_thread = threading.Thread(target=function_runner, args=(func, profiler, signal_event, results, args),
+        profiler_thread = threading.Thread(target=function_runner, args=(func, profiler, signal_event, results) + args,
                                            kwargs=kwargs)
         profiler_thread.start()
 
