@@ -462,7 +462,7 @@ def main() -> None:
             add_time_to_events(events)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
-            demisto.debug(f'fetched {len(events or [])} events.')
+            demisto.debug(f'fetched {len(events)} events.')
 
         elif command == "get-events":
 
