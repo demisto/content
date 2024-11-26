@@ -10,7 +10,7 @@ from CommonServerUserPython import *  # noqa
 import urllib3
 
 # Disable insecure warnings
-TOKEN_TTL = 7200  # in seconds (120 minutes token's expiration time)
+TOKEN_TTL_S = 120 * 60  # tokens are valid for 120 minutes
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
