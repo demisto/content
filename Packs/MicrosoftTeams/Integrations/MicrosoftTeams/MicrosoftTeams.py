@@ -723,10 +723,11 @@ def get_graph_access_token() -> str:
     tenant_id = integration_context.get('tenant_id')
     if not tenant_id:
         raise ValueError(
-            'Did not receive a tenant ID from Microsoft Teams. Verify that the messaging endpoint in the Demisto bot configuration'
-            ' in Microsoft Teams is configured correctly.\n Use the `microsoft-teams-create-messaging-endpoint`command to get '
-            'the correct messaging endpoint based on the server URL, the server version, and the instance configurations.\n'
-            'For more information See - https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#troubleshooting.'
+            'Did not receive a tenant ID from Microsoft Teams. Verify that the messaging endpoint in the Demisto bot '
+            'configuration in Microsoft Teams is configured correctly.\nUse the `microsoft-teams-create-messaging-endpoint` '
+            'command to get the correct messaging endpoint based on the server URL, the server version, and the instance '
+            'configurations.\nFor more information See - '
+            'https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#troubleshooting.'
         )
     headers = None
     url: str = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
@@ -2649,10 +2650,11 @@ def ring_user():
     tenant_id: str = integration_context.get('tenant_id', '')
     if not tenant_id:
         raise ValueError(
-            'Did not receive a tenant ID from Microsoft Teams. Verify that the messaging endpoint in the Demisto bot configuration'
-            ' in Microsoft Teams is configured correctly.\nUse the `microsoft-teams-create-messaging-endpoint`command to get '
-            'the correct messaging endpoint based on the server URL, the server version, and the instance configurations.\n'
-            'For more information See - https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#troubleshooting.'
+            'Did not receive a tenant ID from Microsoft Teams. Verify that the messaging endpoint in the Demisto bot '
+            'configuration in Microsoft Teams is configured correctly.\nUse the `microsoft-teams-create-messaging-endpoint` '
+            'command to get the correct messaging endpoint based on the server URL, the server version, and the instance '
+            'configurations.\nFor more information See - '
+            'https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#troubleshooting.'
         )
     # get user to call name and id
     username_to_call = demisto.args().get('username')
