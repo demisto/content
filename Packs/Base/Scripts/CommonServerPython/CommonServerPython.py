@@ -8608,10 +8608,11 @@ def is_using_engine():
     """
     return demisto.demistoVersion().get("engine")
 
+
 def is_integration_instance_running_on_engine():
-    """Determines whether or not the current integration instance is running on an xsoar engine.
+    """Determines whether the current integration instance runs on an xsoar engine.
     If yes - returns the engine id.
-    
+
     :return: The engine id iff the instance is running on an xsaor engine.
     :rtype: ``str``
     """
@@ -8620,28 +8621,29 @@ def is_integration_instance_running_on_engine():
     )
     integrations_body_raw_response = integrations_raw_response.get('body')
     try:
-        integrations_body_response = json.loads(integrations_body_raw_response) # type: ignore
-    except json.JSONDecodeError:
-        demisto.debug(f'Unable to load response {integrations_body_raw_response}')
+        integrations_body_response = json.loads(integrations_body_raw_response)  # type: ignore
+    except json.JSONDecodeError:  # type: ignore[attr-defined]
+        demisto.debug('Unable to load response {}'.format(integrations_body_raw_response))
         integrations_body_response = {}
-        
+
     instances = integrations_body_response.get('instances', [])
     instance_name = demisto.integrationInstance()
-    demisto.debug(f"Search for the data of the {instance_name} instance.")
+    demisto.debug("Search for the data of the {} instance.".format(instance_name))
     for instance in instances:
         if instance_name == instance.get('name', ''):
             engine_id = instance.get('engine', '')
-            
-    if engine_id: # engine_id = '' for instances that don't run on engine
-        demisto.debug(f"The {instance_name} instance runs on an xsoar engine, engine ID is: {engine_id}")
+
+    if engine_id:  # engine_id = '' for instances that don't run on engine
+        demisto.debug("The {} instance runs on an xsoar engine, engine ID is: {}".format(instance_name, engine_id))
         return engine_id
     else:
-        demisto.debug(f"The {instance_name} instance does not run on an xsoar engine.")
+        demisto.debug("The {} instance does not run on an xsoar engine.".format(instance_name))
         return ''
-     
+
+
 def get_engine_base_url(engine_id):
     """Gets the xsoar engine id and returns it's base url. 
-    For example: for engine_id = '4c80ce87-5a73-401c-b6a7-f4f12f86ff32', base url = '10.180.188.186:8443'.
+    For example: for engine_id = '4c80ce87-5a73-401c-b6a7-f4f12f86ff32', base url = '11.180.111.111:1443'.
 
     :type engine_id: ``str``
     :param engine_id: The xsoar engine id.
@@ -8654,24 +8656,25 @@ def get_engine_base_url(engine_id):
         'GET', uri='/engines', body=json.dumps({})
     )
     engines_body_raw_response = engines_raw_response.get('body')
-    
+
     try:
-        engines_body_response = json.loads(engines_body_raw_response) # type: ignore
-    except json.JSONDecodeError:
-        demisto.debug(f'Unable to load response {engines_body_raw_response}')
+        engines_body_response = json.loads(engines_body_raw_response)  # type: ignore
+    except json.JSONDecodeError:  # type: ignore[attr-defined]
+        demisto.debug('Unable to load response {}'.format(engines_body_raw_response))
         engines_body_response = {}
-    
-    engines =  engines_body_response.get('engines', [])
-    demisto.debug(f"Search for the data of engine ID {engine_id}.")
+
+    engines = engines_body_response.get('engines', [])
+    demisto.debug("Search for the data of engine ID {}.".format(engine_id))
     for engine in engines:
         if engine.get('id') == engine_id:
             engine_base_url = engine.get('baseUrl', '')
-            demisto.debug(f"The base URL of engine ID {engine_id} is: {engine_base_url}.")
+            demisto.debug("The base URL of engine ID {} is: {}.".format(engine_id, engine_base_url))
             return engine_base_url
-        
-    demisto.debug(f"Couldn't find a base url for engine ID {engine_id}.")
+
+    demisto.debug("Couldn't find a base url for engine ID {}.".format(engine_id))
     return ''
-    
+
+
 class DemistoHandler(logging.Handler):
     """
         Handler to route logging messages to an IntegrationLogger or demisto.debug if not supplied
