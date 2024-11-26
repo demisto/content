@@ -8,6 +8,7 @@ import sys
 import urllib
 import uuid
 import warnings
+from unittest.mock import patch
 
 import dateparser
 from freezegun import freeze_time
@@ -31,7 +32,8 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics,
                                 response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar,
                                 is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
-                                censor_request_logs, censor_request_logs, safe_sleep, get_server_config
+                                censor_request_logs, censor_request_logs, safe_sleep, get_server_config, EntryFormat, EntryType,
+                                GetModifiedRemoteDataResponse, return_results
                                 )
 
 EVENTS_LOG_ERROR = \
@@ -237,66 +239,66 @@ DATA_WITH_URLS = [(
 COMPLEX_DATA_WITH_URLS = [(
     [
         {'data':
-         {'id': '1',
-          'result':
-          {'files':
-           [
+             {'id': '1',
+              'result':
+                  {'files':
+                      [
                           {
                               'filename': 'name',
                               'size': 0,
                               'url': 'url'
                           }
-                          ]
-           },
+                      ]
+                  },
               'links': ['link']
-          }
+              }
          },
         {'data':
-         {'id': '2',
-          'result':
-          {'files':
-           [
-               {
-                   'filename': 'name',
-                   'size': 0,
-                   'url': 'url'
-               }
-           ]
-           },
+             {'id': '2',
+              'result':
+                  {'files':
+                      [
+                          {
+                              'filename': 'name',
+                              'size': 0,
+                              'url': 'url'
+                          }
+                      ]
+                  },
               'links': ['link']
-          }
+              }
          }
     ],
     [
         {'data':
-         {'id': '1',
-          'result':
-          {'files':
-           [
-               {
-                   'filename': 'name',
-                   'size': 0,
-                   'url': '[url](url)'
-               }
-           ]
-           },
+             {'id': '1',
+              'result':
+                  {'files':
+                      [
+                          {
+                              'filename': 'name',
+                              'size': 0,
+                              'url': '[url](url)'
+                          }
+                      ]
+                  },
               'links': ['[link](link)']
-          }
+              }
          },
         {'data':
-         {'id': '2',
-          'result':
-          {'files':
-           [
-               {
-                   'filename': 'name',
-                   'size': 0,
-                   'url': '[url](url)'
-               }
-           ]
-           },
+             {'id': '2',
+              'result':
+                  {'files':
+                      [
+                          {
+                              'filename': 'name',
+                              'size': 0,
+                              'url': '[url](url)'
+                          }
+                      ]
+                  },
               'links': ['[link](link)']
-          }
+              }
          }
     ])]
 
@@ -1352,7 +1354,7 @@ def test_logger_replace_strs(mocker):
     assert ('' not in ilog.replace_strs)
     assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
     assert ilog.messages[1] == \
-        'special chars like <XX_REPLACED> should be replaced even when url-encoded like <XX_REPLACED>'
+           'special chars like <XX_REPLACED> should be replaced even when url-encoded like <XX_REPLACED>'
 
 
 TEST_SSH_KEY_ESC = '-----BEGIN OPENSSH PRIVATE KEY-----\\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
@@ -1587,7 +1589,7 @@ def test_return_error_truncated_message(mocker):
     mocker.patch.object(sys, 'exit')
     return_error(err_msg)
     assert len(results.call_args[0][0]["Contents"]) == MAX_ERROR_MESSAGE_LENGTH + \
-        len("...This error body was truncated...")
+           len("...This error body was truncated...")
     assert "This error body was truncated" in results.call_args[0][0]["Contents"]
 
 
@@ -2096,7 +2098,7 @@ class TestCommandResults:
         results = CommandResults(outputs_prefix='File', outputs_key_field=['sha1', 'sha256', 'md5'], outputs=files)
 
         assert list(results.to_context()['EntryContext'].keys())[0] == \
-            'File(val.sha1 && val.sha1 == obj.sha1 && val.sha256 && val.sha256 == obj.sha256 && val.md5 && val.md5 == obj.md5)'
+               'File(val.sha1 && val.sha1 == obj.sha1 && val.sha256 && val.sha256 == obj.sha256 && val.md5 && val.md5 == obj.md5)'
 
     def test_output_prefix_includes_dt(self):
         """
@@ -2117,7 +2119,7 @@ class TestCommandResults:
                                  outputs_key_field='', outputs=files)
 
         assert list(results.to_context()['EntryContext'].keys())[0] == \
-            'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
+               'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
 
     @pytest.mark.parametrize('score, expected_readable',
                              [(CommonServerPython.Common.DBotScore.NONE, 'Unknown'),
@@ -4845,6 +4847,116 @@ def test_return_results_mixed_results(mocker):
     assert demisto_results_mock.call_args_list[1][0][0] == mock_demisto_results_entry
 
 
+def test_return_results_get_modified_remote_data_response(mocker):
+    """
+    Given:
+      - A GetModifiedRemoteDataResponse object with modified_incidents_data and modified_incident_ids.
+    When:
+      - Calling return_results().
+    Then:
+      - Assert that demisto.results() is called the expected number of times.
+      - Assert that the calls to demisto.results() are made with the correct formatted entries.
+    """
+    from CommonServerPython import return_results, GetModifiedRemoteDataResponse
+
+    # Mock the demisto.results function
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+
+    # Create mock data
+    mock_modified_incidents_data = [
+        {"mirrorRemoteId": "1", "key1": "value1"},
+        {"mirrorRemoteId": "2", "key2": "value2"}
+    ]
+
+    # Create the response object
+    response = GetModifiedRemoteDataResponse(
+        modified_incidents_data=mock_modified_incidents_data,
+    )
+
+    # Call the function under test
+    return_results(response)
+
+    # Expected calls to demisto.results
+    expected_results = [
+        {
+            "Contents": {"key1": "value1"},
+            "Type": EntryType.NOTE,
+            "ContentsFormat": "json",
+            "EntryContext": {"mirrorRemoteId": "1"},
+        },
+        {
+            "Contents": {"key2": "value2"},
+            "Type": EntryType.NOTE,
+            "ContentsFormat": "json",
+            "EntryContext": {"mirrorRemoteId": "2"},
+        }
+    ]
+
+    # Assert the demisto.results was called correctly
+    assert demisto_results_mock.call_count == len(expected_results)
+    for call, expected in zip(demisto_results_mock.call_args_list, expected_results):
+        assert call[0][0] == expected
+
+
+@pytest.mark.parametrize(
+    "modified_incidents_data, modified_incident_ids, expected_output",
+    [
+        # Test case: With modified incidents data
+        (
+            [{"mirrorRemoteId": "1", "key1": "value1"}, {"mirrorRemoteId": "2", "key2": "value2"}],
+            None,
+            [
+                {
+                    "Contents": {"key1": "value1"},
+                    "Type": EntryType.NOTE,
+                    "ContentsFormat": EntryFormat.JSON,
+                    "EntryContext": {"mirrorRemoteId": "1"},
+                },
+                {
+                    "Contents": {"key2": "value2"},
+                    "Type": EntryType.NOTE,
+                    "ContentsFormat": EntryFormat.JSON,
+                    "EntryContext": {"mirrorRemoteId": "2"},
+                },
+            ]),
+        # Test case: With modified incident IDs
+        (
+            None,
+            ["id1", "id2", "id3"],
+            [
+                {
+                    "Contents": ["id1", "id2", "id3"],
+                    "Type": EntryType.NOTE,
+                    "ContentsFormat": EntryFormat.JSON,
+                }
+            ],
+        ),
+        # Test case: With no data
+        (
+            None,
+            None,
+            [
+                {
+                    "Contents": [],
+                    "Type": EntryType.NOTE,
+                    "ContentsFormat": EntryFormat.JSON,
+                }
+            ],
+        ),
+    ],
+)
+def test_to_entry(modified_incidents_data, modified_incident_ids, expected_output):
+    """Test to_entry with parameterized cases."""
+    response = GetModifiedRemoteDataResponse(
+        modified_incidents_data=modified_incidents_data,
+        modified_incident_ids=modified_incident_ids,
+    )
+
+    result = response.to_entry()
+
+    assert result == expected_output
+
+
 class TestExecuteCommand:
     @staticmethod
     def test_sanity(mocker):
@@ -6994,13 +7106,13 @@ class TestCommonTypes:
             traffic_light_protocol='traffic_light_protocol_test'
         )
         assert email_context.to_context()[email_context.CONTEXT_PATH] == \
-            {"Email": {'Address': 'user@example.com'},
-             'Domain': 'example.com',
-             'Description': 'test',
-             'Internal': True,
-             'STIXID': 'stix_id_test',
-             'Tags': ['tag1', 'tag2'],
-             'TrafficLightProtocol': 'traffic_light_protocol_test'}
+               {"Email": {'Address': 'user@example.com'},
+                'Domain': 'example.com',
+                'Description': 'test',
+                'Internal': True,
+                'STIXID': 'stix_id_test',
+                'Tags': ['tag1', 'tag2'],
+                'TrafficLightProtocol': 'traffic_light_protocol_test'}
 
     @pytest.mark.parametrize('item', [
         'CommunityNotes', 'Publications', 'ThreatTypes'

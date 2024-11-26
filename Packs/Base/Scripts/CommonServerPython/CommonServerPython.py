@@ -1,3 +1,4 @@
+
 """Common functions script
 This script will be appended to each server script before being executed.
 Please notice that to add custom common code, add it to the CommonServerUserPython script.
@@ -7194,6 +7195,7 @@ def return_results(results):
 
     elif isinstance(results, GetModifiedRemoteDataResponse):
         for entry in results.to_entry():
+            demisto.debug('returning entry: {}'.format(entry))
             demisto.results(entry)
 
     elif hasattr(results, 'to_entry'):
@@ -8442,7 +8444,7 @@ class DemistoHandler(logging.Handler):
 
 def censor_request_logs(request_log):
     """
-    Censors the request logs generated from the urllib library directly by replacing sensitive information such as tokens and cookies with a mask. 
+    Censors the request logs generated from the urllib library directly by replacing sensitive information such as tokens and cookies with a mask.
     In most cases, the sensitive value is the first word after the keyword, but in some cases, it is the second one.
     :param request_log: The request log to censor
     :type request_log: ``str``
