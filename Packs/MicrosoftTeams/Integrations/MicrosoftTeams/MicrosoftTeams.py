@@ -2649,7 +2649,7 @@ def ring_user():
     tenant_id: str = integration_context.get('tenant_id', '')
     if not tenant_id:
         raise ValueError(
-            'Did not receive tenant ID from Microsoft Teams, verify that the messaging endpoint in the Demisto bot configuration'
+            'Did not receive a tenant ID from Microsoft Teams. Verify that the messaging endpoint in the Demisto bot configuration'
             ' in Microsoft Teams is configured correctly.\n Use the `microsoft-teams-create-messaging-endpoint`command to get '
             'the correct messaging endpoint based on the server URL, the server version, and the instance configurations.\n'
             'For more information See - https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#troubleshooting.'
