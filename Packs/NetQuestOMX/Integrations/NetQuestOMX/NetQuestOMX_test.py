@@ -38,6 +38,7 @@ def net_quest_omx_client(requests_mock):
 
     return Client(base_url='https://www.example.com', credentials=credentials, verify=True, proxy=False)
 
+
 @freeze_time('2020-06-03T02:00:00Z')
 def test_new_token_login_client(requests_mock):
     """
@@ -56,7 +57,7 @@ def test_new_token_login_client(requests_mock):
     integration_context = CommonServerPython.get_integration_context()
 
     assert integration_context["expiration_time"] == \
-           (datetime.utcnow() + timedelta(seconds=TOKEN_TTL_S)).strftime(DATE_FORMAT_FOR_TOKEN)
+        (datetime.utcnow() + timedelta(seconds=TOKEN_TTL_S)).strftime(DATE_FORMAT_FOR_TOKEN)
 
 
 @freeze_time('2020-06-03T02:00:00Z')
