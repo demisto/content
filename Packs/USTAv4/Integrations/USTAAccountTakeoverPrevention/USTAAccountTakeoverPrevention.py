@@ -176,7 +176,10 @@ def compromised_credentials_search_command(client: Client, args: dict) -> Comman
             outputs=results,
             readable_output=readable_output
         )
-    return CommandResults(readable_output='No results found.')
+    return CommandResults(
+        readable_output='No results found.',
+        outputs={},
+    )
 
 
 def main() -> None:

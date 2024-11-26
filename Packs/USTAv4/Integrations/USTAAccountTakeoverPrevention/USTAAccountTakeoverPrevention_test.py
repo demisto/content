@@ -11,6 +11,7 @@ you are implementing with your integration
 """
 
 import json
+import pytest
 
 
 def util_load_json(path):
@@ -42,8 +43,14 @@ def test_test_module(mocker):
     response = test_module(client)
     assert response == 'ok'
 
-def test_compromised_credentials_search_command(mocker):
-    """Tests compromised_credentials_search command function.
+
+@pytest.mark.parametrize('username, mock_response_file, expected_output_file', [
+    ('user1', 'test_data/compromised_credentials_search_response.json', 'test_data/compromised_credentials_search_response.json'),
+    ('user2', 'test_data/compromised_credentials_search_empty_response.json',
+     'test_data/compromised_credentials_search_empty_response.json'),
+])
+def test_compromised_credentials_search_command(mocker, username, mock_response_file, expected_output_file):
+    """Tests compromised_credentials_search command function with multiple test cases.
 
     Checks the output of the command function with the expected output.
 
@@ -52,7 +59,9 @@ def test_compromised_credentials_search_command(mocker):
     """
     from USTAAccountTakeoverPrevention import Client, compromised_credentials_search_command
 
-    mock_response = util_load_json('test_data/compromised_credentials_search_response.json')
+    mock_response = util_load_json(mock_response_file)
+    expected_output = util_load_json(expected_output_file)
+    _count = len(mock_response.get('results', []))
 
     client = Client(
         base_url='',
@@ -61,30 +70,10 @@ def test_compromised_credentials_search_command(mocker):
         proxy=False
     )
     mocker.patch.object(client, 'compromised_credentials_search_api_request', return_value=mock_response)
-    response = compromised_credentials_search_command(client, {'username': 'user'})
-    assert response.outputs == mock_response
-    
+    response = compromised_credentials_search_command(client, {'username': username})
+    assert response.readable_output.startswith(f'Showing {_count} results')
+    assert response.outputs == expected_output
 
-def test_compromised_credentials_search_command_no_results(mocker):
-    """Tests compromised_credentials_search command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the compromised_credentials_search_command does not call
-    any external API.
-    """
-    from USTAAccountTakeoverPrevention import Client, compromised_credentials_search_command
-    mock_response = util_load_json('test_data/compromised_credentials_search_empty_response.json')
-
-    client = Client(
-        base_url='',
-        verify=False,
-        headers={},
-        proxy=False
-    )
-    mocker.patch.object(client, 'compromised_credentials_search_api_request', return_value=mock_response)
-    response = compromised_credentials_search_command(client, {'username': 'user'})
-    assert response.outputs == mock_response
 
 def test_fetch_incidents(mocker):
     """Tests fetch_incidents command function.
@@ -94,22 +83,15 @@ def test_fetch_incidents(mocker):
     No mock is needed here because the fetch_incidents_command does not call
     any external API.
     """
-    from USTAAccountTakeoverPrevention import Client, fetch_incidents, USTA_API_PREFIX
+    from USTAAccountTakeoverPrevention import Client, fetch_incidents
 
-    base_url = f'https://usta.prodaft.com/{USTA_API_PREFIX}'
-
-    mock_response = util_load_json('test_data/fetch_incidents_response.json')
-    expected_output = util_load_json('test_data/fetch_incidents_expected_output.json')
-
-    headers: dict = {
-        'Authorization': 'token test123',
-        'Content-Type': 'application/json'
-    }
+    mock_response = util_load_json('test_data/compromised_credentials_fetch_incidents_response.json')
+    expected_output = util_load_json('test_data/compromised_credentials_fetch_incidents_expected_output.json')
 
     client = Client(
-        base_url=base_url,
+        base_url='',
         verify=False,
-        headers=headers,
+        headers={},
         proxy=False
     )
 
@@ -122,3 +104,131 @@ def test_fetch_incidents(mocker):
         first_fetch_time='3 days'
     )
     assert incidents == expected_output
+    assert len(incidents) == 1
+    assert next_run['last_ids'] == [7668573]
+
+
+def test_subsequent_run(mocker):
+    """
+    Given:
+        - A last run with a last fetch time and list of last incident IDs
+    When:
+        - Fetch incidents is called with the last run
+        - First fetch time is provided
+    Then:
+        - Returned incidents should have occurred after last fetch
+        - Number of returned incidents should match max results
+        - Next run should have new updated last incident IDs
+    """
+    from USTAAccountTakeoverPrevention import Client, fetch_incidents
+
+    last_run = {'last_fetch': '2021-02-01T00:00:00Z', 'last_ids': [1, 2, 3]}
+    first_fetch = last_run.get('last_fetch')
+    mock_response = util_load_json('test_data/compromised_credentials_fetch_incidents_response.json')
+    expected_output = util_load_json('test_data/compromised_credentials_fetch_incidents_expected_output.json')
+
+    client = Client(
+        base_url='',
+        verify=False,
+        headers={},
+        proxy=False
+    )
+
+    mocker.patch.object(client, 'compromised_credentials_api_request', return_value=mock_response)
+
+    next_run, incidents = fetch_incidents(
+        client=client,
+        max_results=3,
+        last_run=last_run,
+        first_fetch_time=first_fetch
+    )
+    assert len(incidents) == 1
+    assert incidents[0]['occurred'] > first_fetch
+    assert incidents == expected_output
+    assert next_run['last_ids'] == [7668573]
+
+
+@pytest.mark.parametrize('hello_world_severity, expected_xsoar_severity', [
+    ('low', 1), ('medium', 2), ('high', 3), ('critical', 4), ('unknown', 0)
+])
+def test_convert_to_demisto_severity(hello_world_severity, expected_xsoar_severity):
+    """
+        Given:
+            - A string represents a HelloWorld severity.
+
+        When:
+            - Running the 'convert_to_demisto_severity' function.
+
+        Then:
+            - Verify that the severity was correctly translated to a Cortex XSOAR severity.
+    """
+    from USTAAccountTakeoverPrevention import convert_to_demisto_severity
+
+    assert convert_to_demisto_severity(hello_world_severity) == expected_xsoar_severity
+
+
+def test_convert_to_demisto_severity_invalid():
+    """
+        Given:
+            - An invalid HelloWorld severity.
+
+        When:
+            - Running the 'convert_to_demisto_severity' function.
+
+        Then:
+            - Verify that the function raises a ValueError.
+    """
+    from USTAAccountTakeoverPrevention import convert_to_demisto_severity
+
+    with pytest.raises(KeyError):
+        convert_to_demisto_severity('invalid')
+
+
+def test_create_paging_header():
+    """
+        Given:
+            - A number of results, page number and page size.
+
+        When:
+            - Running the 'create_paging_header' function.
+
+        Then:
+            - Verify that the function returns the correct paging header.
+    """
+    from USTAAccountTakeoverPrevention import create_paging_header
+
+    results_num = 10
+    page = 2
+    size = 5
+
+    expected_output = 'Showing 10 results, Size=5, from Page 2\n'
+    assert create_paging_header(results_num, page, size) == expected_output
+
+
+def test_compromised_credentials_search_api_request(mocker):
+    """
+        Given:
+            - A client and a status.
+
+        When:
+            - Running the 'compromised_credentials_search_api_request' function.
+
+        Then:
+            - Verify that the function returns the correct response.
+    """
+    from USTAAccountTakeoverPrevention import Client
+
+    mock_response = util_load_json('test_data/compromised_credentials_search_response.json')
+
+    client = Client(
+        base_url='',
+        verify=False,
+        headers={},
+        proxy=False
+    )
+
+    mocker.patch.object(client, '_http_request', return_value=mock_response)
+
+    response = client.compromised_credentials_search_api_request(status=1, start='2021-02-01T00:00:00Z', size=100)
+
+    assert response == mock_response
