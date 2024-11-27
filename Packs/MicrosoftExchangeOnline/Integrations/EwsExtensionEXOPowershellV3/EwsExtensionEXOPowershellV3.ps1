@@ -2310,6 +2310,8 @@ function ListMailFlowRulesCommand {
         [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
         [hashtable]$kwargs
     )
+    $extended_output = $kwargs.extended_output
+
     $raw_response = $client.ListMailFlowRules()
     if($raw_response -eq $null){
         Write-Output "No Mail Flow Rules were found."
