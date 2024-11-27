@@ -62,66 +62,66 @@ configuration:
 script:
   commands:
   - arguments:
-    - description: 'Username to search'
+    - description: 'Username to search.'
       name: username
       required: true
     - description: Number of result that should appear on each page.
       name: page_size
     - description: 1-indexed page number to get a particular page of results.
       name: page
-    description: 'Search for compromised credentials by username'
+    description: 'Search for compromised credentials by username.'
     name: usta-atp-search-username
     outputs:
     - contextPath: USTA.AccountTakeoverPrevention.id
-      description: The ID of the alert
+      description: The ID of the alert.
       type: Number
     - contextPath: USTA.AccountTakeoverPrevention.username
-      description: The username of the compromised credential
+      description: The username of the compromised credential.
       type: String
     - contextPath: USTA.AccountTakeoverPrevention.password
-      description: The password of the compromised credential
+      description: The password of the compromised credential.
       type: String
     - contextPath: USTA.AccountTakeoverPrevention.url
-      description: The URL of the compromised credential
+      description: The URL of the compromised credential.
       type: String
     - contextPath: USTA.AccountTakeoverPrevention.is_corporate
-      description: Whether the compromised credential is corporate
+      description: Whether the compromised credential is corporate.
       type: Boolean
     - contextPath: USTA.AccountTakeoverPrevention.created
-      description: The creation date of the compromised credential
+      description: The creation date of the compromised credential.
       type: String
     - contextPath: USTA.AccountTakeoverPrevention.victim_detail.ip
-      description: The IP address of the victim
+      description: The IP address of the victim.
       type: String
     - contextPath: USTA.AccountTakeoverPrevention.victim_detail.country
-      description: The country of the victim
+      description: The country of the victim.
       type: String
     - contextPath: USTA.AccountTakeoverPrevention.victim_detail.phone_number
-      description: The phone number of the victim
+      description: The phone number of the victim.
       type: String
     - contextPath: USTA.AccountTakeoverPrevention.victim_detail.computer_name
-      description: The computer name of the victim computer
+      description: The computer name of the victim computer.
       type: String
     - contextPath: USTA.AccountTakeoverPrevention.victim_detail.victim_os
-      description: The OS of the victim computer
+      description: The OS of the victim computer.
       type: String
     - contextPath: USTA.AccountTakeoverPrevention.victim_detail.language
-      description: The language of the victim computer
+      description: The language of the victim computer.
       type: String
     - contextPath: USTA.AccountTakeoverPrevention.victim_detail.memory
-      description: The memory of the victim computer
+      description: The memory of the victim computer.
       type: String
     - contextPath: USTA.AccountTakeoverPrevention.victim_detail.cpu
-      description: The CPU of the victim computer
+      description: The CPU of the victim computer.
       type: String
     - contextPath: USTA.AccountTakeoverPrevention.victim_detail.gpu
-      description: The GPU of the victim computer
+      description: The GPU of the victim computer.
       type: String
     - contextPath: USTA.AccountTakeoverPrevention.victim_detail.malware
-      description: The family of the malware that infected the victim computer
+      description: The family of the malware that infected the victim computer.
       type: String
     - contextPath: USTA.AccountTakeoverPrevention.victim_detail.infection_date
-      description: The infection date of the victim computer
+      description: The infection date of the victim computer.
       type: String
   isfetch: true
   runonce: false
@@ -129,6 +129,6 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.10.14.100715
-fromversion: 5.5.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

@@ -21,7 +21,7 @@ configuration:
   - Open
   - Closed
   type: 15
-  required: false 
+  required: false
   section: Collect
 - defaultvalue: '100'
   display: Maximum number of alerts per fetch
@@ -62,34 +62,34 @@ defaultmapperout: 'null'
 script:
   commands:
   - arguments:
-    - description: 'Credit card number to search'
+    - description: 'Credit card number to search.'
       name: card_number
       required: true
     - description: Number of vendors that should appear on each page. Each page of data will have at most this many vendors.
       name: page_size
     - description: 1-indexed page number to get a particular page of results.
       name: page
-    description: 'Search for stolen credit card number'
+    description: 'Search for stolen credit card number.'
     name: usta-scc-search
     outputs:
     - contextPath: USTA.StolenCreditCards.id
-      description: The alert ID of the alert
+      description: The alert ID of the alert.
       type: Number
     - contextPath: USTA.StolenCreditCards.card_number
-      description: The stolen credit card number
+      description: The stolen credit card number.
       type: String
     - contextPath: USTA.StolenCreditCards.expire
-      description: The expiration date of the stolen credit card
+      description: The expiration date of the stolen credit card.
       type: String
     - contextPath: USTA.StolenCreditCards.created
-      description: The creation date of the stolen credit card
-      type: String    
+      description: The creation date of the stolen credit card.
+      type: String
   isfetch: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.10.14.100715
-fromversion: 5.5.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
