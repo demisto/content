@@ -119,8 +119,6 @@ script:
     description: Gets events from NetQuestOMX. Actually each event is a report for the suitable type. Only for XSIAM.
     execution: false
     name: get-events
-    hidden:
-    - xsoar
   runonce: false
   script: '-'
   type: python
