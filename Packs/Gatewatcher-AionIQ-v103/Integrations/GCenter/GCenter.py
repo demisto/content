@@ -425,10 +425,14 @@ def fetch_incidents():
 
         # Sigflow field
         if 'sigflow' in gwAlerts[i]['_source'].keys():
-            incident['CustomFields']['gatewatchersigflowcategory'] = str(gwAlerts[i]['_source']['sigflow']['category'])
-            incident['CustomFields']['gatewatchersigflowpayloadprintable'] = str(gwAlerts[i]['_source']['sigflow']['payload_printable'])
-            incident['CustomFields']['gatewatchersigflowpayload'] = str(gwAlerts[i]['_source']['sigflow']['payload'])
-            incident['CustomFields']['gatewatchersigflowaction'] = str(gwAlerts[i]['_source']['sigflow']['action'])
+                if 'category' in gwAlerts[i]['_source']['sigflow'].keys():
+                    incident['CustomFields']['gatewatchersigflowcategory'] = str(gwAlerts[i]['_source']['sigflow']['category'])
+                if 'payload_printable' in gwAlerts[i]['_source']['sigflow'].keys():
+                    incident['CustomFields']['gatewatchersigflowpayloadprintable'] = str(gwAlerts[i]['_source']['sigflow']['payload_printable'])
+                if 'payload' in gwAlerts[i]['_source']['sigflow'].keys():
+                    incident['CustomFields']['gatewatchersigflowpayload'] = str(gwAlerts[i]['_source']['sigflow']['payload'])
+                if 'action' in gwAlerts[i]['_source']['sigflow'].keys():
+                    incident['CustomFields']['gatewatchersigflowaction'] = str(gwAlerts[i]['_source']['sigflow']['action'])
 
         # Malicious Powershell field
         if 'malicious_powershell' in gwAlerts[i]['_source'].keys():
