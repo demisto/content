@@ -1,5 +1,5 @@
 [INGEST:vendor="msft", product="azure", target_dataset="msft_azure_raw", no_hit=dorp]
-filter category not in ("ApplicationGatewayFirewallLog", "ApplicationGatewayAccessLog")
+filter category not in ("ApplicationGatewayFirewallLog", "ApplicationGatewayAccessLog", "AZFWApplicationRule", "AZFWApplicationRuleAggregation", "AZFWDnsQuery", "AZFWFatFlow", "AZFWFlowTrace", "AZFWFqdnResolveFailure", "AZFWInternalFqdnResolutionFailure", "AZFWIdpsSignature", "AZFWNatRule", "AZFWNatRuleAggregation", "AZFWNetworkRule", "AZFWNetworkRuleAggregation", "AZFWThreatIntel")
 | alter
         tmp_time_category = if(category in ("AuditLogs", "ProvisioningLogs", "UserRiskEvents", "ServicePrincipalRiskEvents"), json_extract_scalar(properties, "$.activityDateTime"), category in("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrincipalSignInLogs", "ManagedIdentitySignInLogs"), json_extract_scalar(properties, "$.createdDateTime"), category in ("RiskyUsers", "RiskyServicePrincipals"), json_extract_scalar(properties, "$.riskLastUpdatedDateTime"), null)
 | alter
