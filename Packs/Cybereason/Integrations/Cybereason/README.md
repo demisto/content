@@ -1717,4 +1717,3 @@ Get the results related to machines.
     ]
 }
 ```
-
