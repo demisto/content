@@ -31,8 +31,6 @@ configuration:
   required: false
   section: Collect
   additionalinfo: Whether to collect events.
-  hidden:
-    - xsoar
 - display: Statistic types to fetch
   name: statistic_types_to_fetch
   options:
@@ -43,8 +41,6 @@ configuration:
   type: 16
   section: Collect
   required: true
-  hidden:
-    - xsoar
 - name: proxy
   display: Use system proxy settings
   type: 8
@@ -67,69 +63,69 @@ script:
   - description: "Optimize Updated Address List - If the traffic elements are IP addresses, the integration should optimize the list by compressing IP addresses into CIDR groups."
     name: netquest-address-list-optimize
     outputs:
-      - contextPath: NetQuest.AddressList.OverlappingAddresses
-        description: Overlapping Addresses.
-        type: list
-      - contextPath: NetQuest.AddressList.OverlapsPresent
-        description: OverlapsPresent.
-        type: boolean
-      - contextPath: NetQuest.AddressList.MergedAddresses
-        description: MergedAddresses.
-        type: list
-      - contextPath: NetQuest.AddressList.MergesPresent
-        description: MergesPresent.
-        type: boolean
-      - contextPath: NetQuest.AddressList.CountsBefore
-        description: CountsBefore.
-        type: Dictionary
-      - contextPath: NetQuest.AddressList.CountsAfter
-        description: CountsAfter.
-        type: Dictionary
+    - contextPath: NetQuest.AddressList.OverlappingAddresses
+      description: Overlapping Addresses.
+      type: list
+    - contextPath: NetQuest.AddressList.OverlapsPresent
+      description: OverlapsPresent.
+      type: boolean
+    - contextPath: NetQuest.AddressList.MergedAddresses
+      description: MergedAddresses.
+      type: list
+    - contextPath: NetQuest.AddressList.MergesPresent
+      description: MergesPresent.
+      type: boolean
+    - contextPath: NetQuest.AddressList.CountsBefore
+      description: CountsBefore.
+      type: Dictionary
+    - contextPath: NetQuest.AddressList.CountsAfter
+      description: CountsAfter.
+      type: Dictionary
   - arguments:
-      - description: 'What to name the new address list'
-        name: name
-        required: true
+    - description: 'What to name the new address list.'
+      name: name
+      required: true
     description: "This replaces the old list entity and overrides it."
     name: netquest-address-list-create
   - arguments:
-      - description: 'The new name for an existing address list'
-        name: new_name
-        required: true
-      - description: 'The existing list name of the address list that we want to modify'
-        name: existing_name
-        required: true
+    - description: 'The new name for an existing address list.'
+      name: new_name
+      required: true
+    - description: 'The existing list name of the address list that we want to modify.'
+      name: existing_name
+      required: true
     description: "This is only meant to change the name of the list. Nothing else. If we try to give as a new_name, an existing list name, it will fail and we’ll get an error."
     name: netquest-address-list-rename
   - arguments:
-      - description: 'The name of the address list to delete'
-        name: name
-        required: true
+    - description: 'The name of the address list to delete.'
+      name: name
+      required: true
     description: "This command deletes the list by the given address."
     name: netquest-address-list-delete
   - arguments:
-      - auto: PREDEFINED
-        defaultValue: 'false'
-        description: When true, the integration creates Cortex XSIAM events. Otherwise, they will only be displayed.
-        name: should_push_events
-        predefined:
-          - 'true'
-          - 'false'
-        required: true
-      - name: statistic_types_to_fetch
-        description: Comma-separated list of statistic types to return.
-        isArray: true
-        defaultValue: "Metering Stats,Export Stats,Export Peaks FPS,Optimization Stats"
-        required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: When true, the integration creates Cortex XSIAM events. Otherwise, they will only be displayed.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - name: statistic_types_to_fetch
+      description: Comma-separated list of statistic types to return.
+      isArray: true
+      defaultValue: "Metering Stats,Export Stats,Export Peaks FPS,Optimization Stats"
+      required: true
     description: Gets events from NetQuestOMX. Actually each event is a report for the suitable type. Only for XSIAM.
     execution: false
     name: get-events
     hidden:
-      - xsoar
+    - xsoar
   runonce: false
   script: '-'
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.11.10.116949
-fromversion: 5.5.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
