@@ -172,13 +172,13 @@
                         ]
                     }
                 },
-                "Hox FT BodyLink": {
+                "Hox FT Body Link": {
                     "simple": "firstThreat.[0].email.sanitizedBody.signedUrl"
                 },
-                "Hox FT EmailFrom": {
+                "Hox FT Email From": {
                     "simple": "firstThreat.[0].email.from.[0].address"
                 },
-                "Hox FT EmailTo": {
+                "Hox FT Email To": {
                     "simple": "firstThreat.[0].email.to.[0].address"
                 },
                 "Hox FT ID": {
@@ -653,13 +653,13 @@
                         ]
                     }
                 },
-                "Hox FT BodyLink": {
+                "Hox FT Body Link": {
                     "simple": "firstThreat.[0].email.sanitizedBody.signedUrl"
                 },
-                "Hox FT EmailFrom": {
+                "Hox FT Email From": {
                     "simple": "firstThreat.[0].email.from.[0].address"
                 },
-                "Hox FT EmailTo": {
+                "Hox FT Email To": {
                     "simple": "firstThreat.[0].email.to.[0].address"
                 },
                 "Hox FT ID": {
@@ -1100,13 +1100,13 @@
                         ]
                     }
                 },
-                "Hox FT BodyLink": {
+                "Hox FT Body Link": {
                     "simple": "firstThreat.[0].email.sanitizedBody.signedUrl"
                 },
-                "Hox FT EmailFrom": {
+                "Hox FT Email From": {
                     "simple": "firstThreat.[0].email.from.[0].address"
                 },
-                "Hox FT EmailTo": {
+                "Hox FT Email To": {
                     "simple": "firstThreat.[0].email.to.[0].address"
                 },
                 "Hox FT ID": {

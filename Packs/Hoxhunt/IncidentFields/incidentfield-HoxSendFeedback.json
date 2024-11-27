@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-10-10T06:17:26.145505118Z",
     "fromVersion": "6.10.0",
-    "name": "Hox Threat Indicators",
+    "name": "Hox Send Feedback",
     "ownerOnly": true,
     "description": "Set to true if feedback should be sent to users when incident is resolved.",
     "cliName": "hoxsendfeedback",

@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-10-15T05:50:20.012721225Z",
     "fromVersion": "6.10.0",
-    "name": "Hox FT EmailTo",
+    "name": "Hox FT Email To",
     "ownerOnly": false,
     "description": "Who the first threat in incident was sent to?",
     "cliName": "hoxftemailto",
