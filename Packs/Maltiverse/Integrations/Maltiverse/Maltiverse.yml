@@ -366,7 +366,7 @@ script:
     - contextPath: File.Tags
       description: Attribute to label an IoC.
       type: String
-  dockerimage: demisto/python3:3.10.14.99865
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3
