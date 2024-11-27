@@ -63,7 +63,7 @@ There are no input arguments for this command.
 #### Context Example
 ```
 {
-    "CyberArkCCP": {
+    "CyberArkAIM": {
         "AccountCategory": "True",
         "AccountDescription": "Built-in account for administering the computer/domain",
         "AccountDiscoveryDate": "1573128798",
