@@ -3287,12 +3287,15 @@ def fetch_incidents(
     Returns:
         Tuple of next_run (millisecond timestamp) and the incidents list
     """
+    demisto.debug(f"Fetching incidents with last_run: {last_run}")
     last_fetch_timestamp = last_run.get("last_fetch", None)
 
     if last_fetch_timestamp:
+        demisto.debug(f"Last fetch time: {last_fetch_timestamp}")
         last_fetch_date = datetime.fromtimestamp(last_fetch_timestamp / 1000)
         last_fetch = last_fetch_date
     else:
+        demisto.debug(f"First fetch time: {first_fetch_time}")
         first_fetch_time_date = dateparser.parse(first_fetch_time)
         assert first_fetch_time_date is not None, f'could not parse {first_fetch_time}'
         first_fetch_date = first_fetch_time_date.replace(tzinfo=None)
@@ -3330,10 +3333,12 @@ def fetch_incidents(
         }
         incidents.append(incident)
     if incidents:
+        demisto.debug(f"Found {len(incidents)} incidents.")
         last_incident_time = incidents[-1].get("occurred", "")
         next_run = datetime.strptime(last_incident_time, DATE_FORMAT)
     next_run += timedelta(milliseconds=1)
     next_run_timestamp = int(datetime.timestamp(next_run) * 1000)
+    demisto.debug(f"Next run: {next_run_timestamp}")
     return {"last_fetch": next_run_timestamp}, incidents
 
 
