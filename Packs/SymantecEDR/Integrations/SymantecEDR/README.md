@@ -1,36 +1,32 @@
 Symantec EDR (On Prem) endpoints help to detect threats in your network by filter endpoints data to find Indicators of Compromise (IoCs) and take actions to remediate the threat(s). EDR on-premise capabilities allow incident responders to quickly search, identify, and contain all impacted endpoints while investigating threats using a choice of on-premises.
 This integration was integrated and tested with version 4.6 of SymantecEDR
 
-## Configure Symantec Endpoint Detection and Response (EDR) - On Prem on Cortex XSOAR
+## Configure Symantec Endpoint Detection and Response (EDR) - On Prem in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Symantec Endpoint Detection and Response (EDR) - On Prem.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (i.e., https://host:port) | Symantec EDR \(On Prem\) Appliance URL | True |
-    | Client ID | OAuth Client ID and Client Secret to authorize third-party applications to communicate with Symantec EDR. | True |
-    | Client Secret |  | True |
-    | Fetch incidents |  | False |
-    | Incident data source | Fetch incident type, e.g., 'incident', 'event'. If not selected, incident will be selected. | False |
-    | Fetch incidents alerts | Retrieve incident related events from EDR database. An additional API call will be made for each fetched incident. | False |
-    | Fetch incident comments | Retrieve incident comments for each fetched incident when checked. An additional API call will be made for each fetched incident. | False |
-    | Incidents "Status" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Open, In-Progress | If not selected, will fetch Open incidents. | False |
-    | Incidents "Priority" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Medium,High. | If not selected, will fetch High and Medium incidents. | False |
-    | Events "Status" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Unknown, Success | If not selected, will fetch Success events. | False |
-    | Events "Severity" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Info, Warning | If not selected, will fetch Info events. | False |
-    | Query string to fetch incidents/events. For example - log_time:[2017-01-01T00:00:00.000Z TO 2017-01-08T00:00:00.000Z]" |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 10 minutes, 12 hours, 7 days) | First Fetch timestamp, Default is 3 days. The maximum time range is 30 days. For example, if configured as 60 days based on the current datetime, then data will be fetched according to the time range using start_time=60 days and end_time=30 days. | False |
-    | Maximum number of incidents to fetch | Maximum Number of Incidents fetch limit. Maximum Default limit is 50. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Incident type |  | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (i.e., https://host:port) | Symantec EDR \(On Prem\) Appliance URL | True |
+| Client ID | OAuth Client ID and Client Secret to authorize third-party applications to communicate with Symantec EDR. | True |
+| Client Secret |  | True |
+| Fetch incidents |  | False |
+| Incident data source | Fetch incident type, e.g., 'incident', 'event'. If not selected, incident will be selected. | False |
+| Fetch incidents alerts | Retrieve incident related events from EDR database. An additional API call will be made for each fetched incident. | False |
+| Fetch incident comments | Retrieve incident comments for each fetched incident when checked. An additional API call will be made for each fetched incident. | False |
+| Incidents "Status" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Open, In-Progress | If not selected, will fetch Open incidents. | False |
+| Incidents "Priority" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Medium,High. | If not selected, will fetch High and Medium incidents. | False |
+| Events "Status" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Unknown, Success | If not selected, will fetch Success events. | False |
+| Events "Severity" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Info, Warning | If not selected, will fetch Info events. | False |
+| Query string to fetch incidents/events. For example - log_time:[2017-01-01T00:00:00.000Z TO 2017-01-08T00:00:00.000Z]" |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 10 minutes, 12 hours, 7 days) | First Fetch timestamp, Default is 3 days. The maximum time range is 30 days. For example, if configured as 60 days based on the current datetime, then data will be fetched according to the time range using start_time=60 days and end_time=30 days. | False |
+| Maximum number of incidents to fetch | Maximum Number of Incidents fetch limit. Maximum Default limit is 50. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Incident type |  | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### symantec-edr-endpoint-isolate
 ***
