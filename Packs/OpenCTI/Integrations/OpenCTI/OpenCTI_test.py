@@ -1,14 +1,17 @@
 import pytest
 
 from OpenCTI import *
-from test_data.data import RESPONSE_DATA, RESPONSE_DATA_WITHOUT_INDICATORS
+from test_data.data import RESPONSE_DATA_OBSERVABLES, RESPONSE_DATA_INDICATORS, RESPONSE_DATA_WITHOUT_OBSERVABLES
 from CommonServerPython import CommandResults
-from pycti import StixCyberObservable, MarkingDefinition, Label, ExternalReference, Indicator
+from pycti import StixCyberObservable, MarkingDefinition, Label, ExternalReference, Indicator, Incident, StixDomainObject
 
 
 class Client:
     temp = ''
+    query = lambda *args, **kwargs: None
+    incident = Incident
     indicator = Indicator
+    stix_domain_object = StixDomainObject
     stix_cyber_observable = StixCyberObservable
     identity = Identity
     label = Label
@@ -29,7 +32,7 @@ def test_get_observables(mocker):
             command.
     """
     client = Client
-    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
+    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA_OBSERVABLES)
     observables = get_observables(client, observable_types=['registry key', 'account'], limit=10)
     assert len(observables) == 2
 
@@ -70,7 +73,7 @@ def test_get_observables_command(mocker):
         'observable_types': 'registry key,account',
         'limit': 2
     }
-    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
+    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA_OBSERVABLES)
     results: CommandResults = get_observables_command(client, args)
     assert len(results.raw_response) == 2
     assert "Observables" in results.readable_output
@@ -86,7 +89,7 @@ def test_get_observables_command_no_parameters(mocker):
         Return all observables
     """
     client = Client
-    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
+    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA_OBSERVABLES)
     all_observables = get_observables_command(client, args={'observable_types': 'ALL'})
     default_observables = get_observables_command(client, {})
     assert len(all_observables.raw_response) == len(default_observables.raw_response)
@@ -102,7 +105,7 @@ def test_get_observables_command_with_just_score_end(mocker):
         Return all observables with score = 0 until score = 50
     """
     client = Client
-    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
+    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA_OBSERVABLES)
     observables_with_end = get_observables_command(client, args={'score_end': 50})
     observables_with_end_start = get_observables_command(client, args={'score_end': 50, 'score_start': 0})
     assert len(observables_with_end.raw_response) == len(observables_with_end_start.raw_response)
@@ -118,7 +121,7 @@ def test_get_observables_command_with_just_score_start(mocker):
         Return all observables with score = 50 until score = 100
     """
     client = Client
-    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
+    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA_OBSERVABLES)
     observables_with_end = get_observables_command(client, args={'score_start': 50})
     observables_with_end_start = get_observables_command(client, args={'score_start': 50, 'score_end': 100})
     assert len(observables_with_end.raw_response) == len(observables_with_end_start.raw_response)
@@ -138,7 +141,7 @@ def test_get_observables_command_with_score(mocker):
         'observable_types': 'registry key,account',
         'score': '50'
     }
-    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
+    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA_OBSERVABLES)
     results: CommandResults = get_observables_command(client, args)
     assert len(results.raw_response) == 2
     for observable in results.raw_response:
@@ -158,7 +161,7 @@ def test_get_observables_command_with_no_data_to_return(mocker):
     args = {
         'observable_types': ['registry key', 'account']
     }
-    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA_WITHOUT_INDICATORS)
+    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA_WITHOUT_OBSERVABLES)
     results: CommandResults = get_observables_command(client, args)
     assert "No observables" in results.readable_output
 
@@ -406,3 +409,198 @@ def test_marking_list_command(mocker):
     assert "Markings" in results.readable_output
     assert [{'id': '1', 'value': 'TLP:RED'}] \
         == results.outputs.get('OpenCTI.MarkingDefinitions.MarkingDefinitionsList(val.id === obj.id)')
+
+
+def test_incident_create_command(mocker):
+    """Tests incident_create_command function
+    Given
+        type of incident to create
+        name of incident to create
+        confidence of incident to create
+        description of incident to create
+    When
+        - Calling `incident_create_command`
+    Then
+        - validate the response to have a "Incident created successfully." string and context as expected
+    """
+    client = Client
+    args = {
+        'incident_type': 'Lorem',
+        'name': 'Lorem ipsum dolor',
+        'confidence': '100',
+        'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+    }
+    mocker.patch.object(client.incident, 'create', return_value={'id': '123456', 'name': 'Lorem ipsum dolor'})
+    results: CommandResults = incident_create_command(client, args)
+    assert "Incident was created successfully" in results.readable_output
+    assert 'id' in results.outputs
+    assert 'name' in results.outputs
+
+
+def test_incident_create_command_exception(mocker):
+    """Tests incident_create_command function
+    Given
+        type of incident to create
+        name of incident to create
+        confidence of incident to create
+        description of incident to create
+    When
+        - Calling `incident_create_command`
+    Then
+        - Ensure a DemistoException is raised with the correct error message.
+    """
+    client = Client
+    args = {
+        'incident_type': 'Lorem',
+        'name': 'Lorem ipsum dolor',
+        'confidence': '100',
+        'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+    }
+    mocker.patch.object(client.incident, 'create', side_effect=Exception("Test exception"))
+    with pytest.raises(DemistoException, match="Can't create incident."):
+        incident_create_command(client, args)
+
+
+def test_incident_create_command_exception_id_not_returned(mocker):
+    """Tests incident_create_command function
+    Given
+        type of incident to create
+        name of incident to create
+        confidence of incident to create
+        description of incident to create
+    When
+        - Calling `incident_create_command`
+    Then
+        - Ensure a DemistoException is raised with the correct error message.
+    """
+    client = Client
+    args = {
+        'incident_type': 'Lorem',
+        'name': 'Lorem ipsum dolor',
+        'confidence': '100',
+        'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+    }
+    mocker.patch.object(client.incident, 'create', return_value={})
+    with pytest.raises(DemistoException, match="Can't create incident."):
+        incident_create_command(client, args)
+
+
+def test_incident_delete_command(mocker):
+    """Tests incident_delete_command function
+    Given
+        id of incident to delete
+    When
+        - Calling `incident_delete_command`
+    Then
+        - validate the response to have a "Incident deleted." string
+    """
+    client = Client
+    args = {
+        'id': '123456'
+    }
+    mocker.patch.object(client.stix_domain_object, 'delete', return_value="Incident deleted")
+    results: CommandResults = incident_delete_command(client, args)
+    assert "Incident deleted" in results.readable_output
+
+
+def test_incident_delete_command_exception(mocker):
+    """Tests incident_delete_command function
+    Given
+        id of incident to delete
+    When
+        - Calling `incident_delete_command`
+    Then
+        - Ensure a DemistoException is raised with the correct error message.
+    """
+    client = Client
+    args = {
+        'id': '123456'
+    }
+    mocker.patch.object(client.stix_domain_object, 'delete', side_effect=Exception("Test exception"))
+    with pytest.raises(DemistoException, match="Can't delete incident."):
+        incident_delete_command(client, args)
+
+
+def test_incident_types_list_command(mocker):
+    """Tests incident_types_list_command function
+    Given
+
+    When
+        - Calling `incident_types_list_command`
+    Then
+        - validate the readable_output ,context
+    """
+    client = Client
+    mocker.patch.object(client, 'query',
+                        return_value={
+                            'data': {
+                                'vocabularies': {
+                                    'edges': [
+                                        {'node': {'id': '1', 'name': 'Phishing', 'description': 'Phishing incident type'}},
+                                    ]
+                                }
+                            }
+                        })
+    results: CommandResults = incident_types_list_command(client, {})
+    assert "Incident Types" in results.readable_output
+    assert [{'id': '1', 'name': 'Phishing', 'description': 'Phishing incident type'}] == \
+        results.outputs.get('OpenCTI.IncidentTypes.IncidentTypesList(val.id === obj.id)')
+
+
+def test_incident_types_list_command_with_no_data_to_return(mocker):
+    """Tests incident_types_list_command function
+    Given
+
+    When
+        - Calling `incident_types_list_command`
+    Then
+        - validate the response to have a "No observables" string
+    """
+    client = Client
+    mocker.patch.object(client, 'query',
+                        return_value={
+                            'data': {
+                                'vocabularies': {
+                                    'edges': []
+                                }
+                            }
+                        })
+    results: CommandResults = incident_types_list_command(client, {})
+    assert "No incident types" in results.readable_output
+
+
+def test_incident_types_list_command_exception(mocker):
+    """Tests incident_types_list_command function
+    Given
+
+    When
+        - Calling `incident_types_list_command`
+    Then
+        - Ensure a DemistoException is raised with the correct error message.
+    """
+    client = Client
+    mocker.patch.object(client, 'query', side_effect=Exception("Test exception"))
+    with pytest.raises(DemistoException, match="Can't list incident types."):
+        incident_types_list_command(client, {})
+
+
+def test_get_indicators(mocker):
+    """Tests get_indicators function
+    Given
+        The following indicator types: 'registry key', 'account' that were chosen by the user.
+    When
+        - `fetch_indicators_command` or `get_indicators_command` are calling the get_indicators function
+    Then
+        - convert the result to indicators list
+        - validate the length of the indicators list
+        - validate the new_last_id that is saved into the integration context is the same as the ID returned by the
+            command.
+    """
+    client = Client
+    mocker.patch.object(client.indicator, 'list', return_value=RESPONSE_DATA_INDICATORS)
+    indicators = get_indicators(client, indicator_types=['indicator_type_1', 'indicator_type_2'], limit=10)
+    assert len(indicators) == 2
+
+    """
+    FILL more
+    """

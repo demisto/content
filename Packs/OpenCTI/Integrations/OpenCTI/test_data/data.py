@@ -1,4 +1,4 @@
-RESPONSE_DATA = {
+RESPONSE_DATA_OBSERVABLES = {
     'entities': [
         {
             'id': '2ce2f8b4-796c-4c60-ba56-3e327bcaf250',
@@ -80,6 +80,85 @@ RESPONSE_DATA = {
         'globalCount': 198
     }
 }
+
+RESPONSE_DATA_INDICATORS = {
+    'entities': [
+        {
+            'id': '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+            'stix_id_key': 'indicator--85c940a6-b13c-40d7-8f8c-3444d452f3c3',
+            'entity_type': 'indicator',
+            'name': 'Malicious Domain',
+            'description': 'Indicator for malicious domain activity',
+            'pattern': "[domain-name:value = 'malicious.com']",
+            'valid_from': '2023-10-10T12:00:00.000Z',
+            'valid_until': '2024-10-10T12:00:00.000Z',
+            'created_at': '2023-09-01T10:30:00.000Z',
+            'updated_at': '2023-09-15T15:45:00.000Z',
+            'createdByRef': {
+                'id': '2a7b859e-5f6e-4c64-9c45-a9cd7899d816',
+                'entity_type': 'organization',
+                'stix_id_key': 'identity--d1c8459e-2f6e-4c4d-b9a3-a1d6592f30cf',
+                'name': 'ThreatIntelOrg',
+                'alias': ['TIO'],
+                'description': 'Threat intelligence organization',
+                'created': '2023-08-20T08:00:00.000Z',
+                'modified': '2023-09-01T12:00:00.000Z'
+            },
+            'objectLabel': [
+                {
+                    'id': '12b995f1-a944-4132-84d4-c5c87a310d1a',
+                    'tag_type': 'threat-type',
+                    'value': 'malware',
+                    'color': '#ff0000',
+                    'remote_relation_id': 'bd030e28-a659-5b41-a314-7866fe2cc3b1'
+                }
+            ],
+            'objectMarking': [],
+            'externalReferences': [],
+            'createdByRefId': '2a7b859e-5f6e-4c64-9c45-a9cd7899d816',
+            'markingDefinitionsIds': [],
+            'objectLabelIds': ['12b995f1-a944-4132-84d4-c5c87a310d1a'],
+            'externalReferencesIds': []
+        },
+        {
+            'id': '4da94d5b-98fc-4b9d-89ef-1234567abcdef',
+            'stix_id_key': 'indicator--45c80a2e-c7b9-4a21-839f-85e8e39d2b4a',
+            'entity_type': 'indicator',
+            'name': 'Suspicious IP',
+            'description': 'Indicator for suspicious IP address',
+            'pattern': "[ipv4-addr:value = '192.168.1.1']",
+            'valid_from': '2023-01-01T00:00:00.000Z',
+            'valid_until': '2023-12-31T23:59:59.000Z',
+            'created_at': '2023-01-15T14:30:00.000Z',
+            'updated_at': '2023-06-01T12:00:00.000Z',
+            'createdByRef': {
+                'id': '2b6f859e-1a6e-4c64-9f32-a9cd7899d817',
+                'entity_type': 'organization',
+                'stix_id_key': 'identity--d2c8469e-1f6e-4c4d-b9a3-b1d6592f30df',
+                'name': 'CyberSecOrg',
+                'alias': ['CSO'],
+                'description': 'Cybersecurity organization',
+                'created': '2022-12-01T08:00:00.000Z',
+                'modified': '2023-01-15T12:00:00.000Z'
+            },
+            'objectLabel': [],
+            'objectMarking': [],
+            'externalReferences': [],
+            'createdByRefId': '2b6f859e-1a6e-4c64-9f32-a9cd7899d817',
+            'markingDefinitionsIds': [],
+            'objectLabelIds': [],
+            'externalReferencesIds': []
+        }
+    ],
+    'pagination': {
+        'startCursor': 'YXJyYXljb25uZWN0aW9uOjE=',
+        'endCursor': 'YXJyYXljb25uZWN0aW9uOjI=',
+        'hasNextPage': True,
+        'hasPreviousPage': False,
+        'globalCount': 75
+    }
+}
+
 
 RESPONSE_DATA_WITHOUT_INDICATORS = {
     'entities': [],

@@ -159,7 +159,7 @@ def get_indicators(
     client: OpenCTIApiClient,
     label: str = None,
     created_by: str = None,
-    indicator_type: str = None,
+    indicator_types: list[str] = None,
     limit: int | None = 50,
     last_run_id: str = None,
     search: str = ""
@@ -170,7 +170,7 @@ def get_indicators(
         client: OpenCTI Client object.
         label: The label to filter by.
         created_by: The creator of the indicator.
-        indicator_type: The type of indicator to filter by.
+        indicator_types: The types of indicator to filter by.
         limit: The maximum number of indicators to fetch (default 50).
         last_run_id: The last ID from the previous call for pagination.
         search: Search string for the indicator value.
@@ -198,10 +198,10 @@ def get_indicators(
             'operator': 'eq',
             'mode': 'or'
         })
-    if indicator_type:
+    if indicator_types:
         filters["filters"].append({
             'key': 'indicator_types',
-            'values': [indicator_type],
+            'values': indicator_types,
             'operator': 'eq',
             'mode': 'or'
         })
@@ -220,7 +220,10 @@ def get_indicators(
         raise DemistoException(f"Failed to retrieve indicators. {e}")
 
 
-def build_stix_pattern(indicator, observable_type):
+def build_stix_pattern(
+        indicator: str,
+        observable_type: str 
+    ) -> str:
     """
     Build a STIX pattern for the given indicator and observable type.
     """
@@ -229,7 +232,7 @@ def build_stix_pattern(indicator, observable_type):
 
     pattern_template = OBSERVABLE_TYPE_TO_STIX_PATTERN_MAPPING[observable_type]
     if observable_type == "location":
-        latitude, longitude = [value.strip() for value in indicator.split(",", 1)]
+        latitude, longitude = (value.strip() for value in indicator.split(",", 1))
         pattern = pattern_template.replace("{{latitude}}", latitude).replace("{{longitude}}", longitude)
     else:
         pattern = pattern_template.replace("{{indicator}}", indicator)
@@ -282,7 +285,7 @@ def incident_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> C
         raise DemistoException("Can't create incident.")
 
     if incident_id := result.get('id'):
-        readable_output = f'Incident {name} was created successfully with id: {incident_id}.'
+        readable_output = f'Incident was created successfully with id: {incident_id}.'
         return CommandResults(outputs_prefix='OpenCTI.Incident',
                               outputs_key_field='id',
                               outputs={
@@ -311,7 +314,7 @@ def incident_delete_command(client: OpenCTIApiClient, args: Dict[str, str]) -> C
         )
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException(str(e))
+        raise DemistoException("Can't delete incident.")
 
     return CommandResults(readable_output='Incident deleted.')
 
@@ -366,7 +369,7 @@ def incident_types_list_command(client: OpenCTIApiClient, args: Dict[str, str]) 
             raw_response=result
         )
     else:
-        raise DemistoException("No incident types.")
+        return CommandResults(readable_output='No incident types')
 
 
 def indicator_types_list_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
@@ -927,7 +930,8 @@ def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> 
     """
     name = args.get("name")
     indicator = args.get("indicator")
-    main_observable_type = XSOAR_TYPES_TO_OPENCTI.get(args.get("main_observable_type").lower(), args.get("main_observable_type"))
+    main_observable_type = XSOAR_TYPES_TO_OPENCTI.get(
+        args.get("main_observable_type", "").lower(), args.get("main_observable_type"))
     pattern = build_stix_pattern(indicator, main_observable_type)
 
     description = args.get("description", None)
@@ -1083,13 +1087,13 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
     label = args.get('label')
     created_by = args.get('created_by')
     value = args.get('value', '')
-    indicator_type = args.get('indicator_type')
+    indicator_types = args.get('indicator_types')
 
     indicator_list = get_indicators(
         client=client,
         label=label,
         created_by=created_by,
-        indicator_type=indicator_type,
+        indicator_types=indicator_types,
         limit=limit,
         last_run_id=last_run_id,
         search=value
