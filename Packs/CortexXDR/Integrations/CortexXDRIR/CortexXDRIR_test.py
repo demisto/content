@@ -1712,6 +1712,16 @@ def test_get_modified_remote_data_two_minutes_xdr_delay(mocker):
 
 @freeze_time("2020-11-18T13:20:00.00000", tz_offset=0)
 def test_mirror_in_empty_last_update(mocker):
+    """
+        Given:
+            - an XDR client
+            - Empty mirror-in args - lastUpdate time = '' (e.g. {'lastUpdate': ''}) may happen the first mirror-in iteration
+            - raw incidents (result of client.get_incidents)
+        When
+            - Running get_modified_remote_data_command function
+        Then
+            - Make sure we set a default last_update time.
+    """
     from CortexXDRIR import get_modified_remote_data_command, Client
     from CommonServerPython import BaseClient
 
@@ -1730,6 +1740,16 @@ def test_mirror_in_empty_last_update(mocker):
 
 
 def test_mirror_in_wrong_last_update(mocker):
+    """
+        Given:
+            - an XDR client
+            - Wrong mirror-in args - lastUpdate time = 'abcdefg' (e.g. {'lastUpdate': 'abcdefg'})
+            - raw incidents (result of client.get_incidents)
+        When
+            - Running get_modified_remote_data_command function
+        Then
+            - Make sure we raise an exception with the expected message.
+    """
     from CortexXDRIR import get_modified_remote_data_command, Client
     from CommonServerPython import BaseClient
 
