@@ -642,7 +642,7 @@ Field must be either of type string (appending by using ',') or arrayd.
     "attachment": ""
   }
 }
-
+```
 
 ### jira-get-specific-field
 ***
