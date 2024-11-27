@@ -1,4 +1,4 @@
-import shutil
+import tempfile
 from collections.abc import Callable
 from pathlib import Path
 
@@ -79,17 +79,41 @@ class Client(BaseClient):
             }
         )
 
-    def address_list_upload_request(self, file_name: str):
+    def address_list_upload_request(self, file_name: str, file_path: str):
+        """
+        Sends a POST request to upload an address list file to the appliance.
+
+        The file is managed as a temporary file to ensure proper cleanup.
+
+        Args:
+            file_name (str): The name of the original file to be uploaded.
+            file_path (str): The path to the original file to be uploaded.
+
+        Raises:
+            DemistoException: If the HTTP request fails or other errors occur.
+        """
         try:
-            with open(file_name) as file:
+            # Create a temporary file
+            with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+                temp_file_name = temp_file.name
+
+                # Copy the contents of the original file to the temporary file
+                with open(file_path, 'rb') as source_file:
+                    temp_file.write(source_file.read())
+
+            # Use the temporary file for the upload request
+            with open(temp_file_name, 'rb') as upload_file:
                 self._http_request(
                     method="POST",
                     url_suffix="/api/v1/UpdateService/ImportList/Config",
-                    data={"UpdateFile": file},
+                    data={"UpdateFile": upload_file},
                     ok_codes=(200,)
                 )
+        except Exception as exc:
+            raise DemistoException(f"An error occurred while uploading the file {file_name}.") from exc
         finally:
-            Path(file_name).unlink()
+            # Ensure the temporary file is deleted
+            Path(temp_file_name).unlink(missing_ok=True)
 
     def address_list_optimize_request(self) -> dict:
         try:
@@ -219,10 +243,8 @@ def address_list_upload_command(client: Client, args: dict):
     file_path = file_info['path']
     file_name = file_info['name']
 
-    shutil.copy(file_path, file_name)
-
     try:
-        client.address_list_upload_request(file_name)
+        client.address_list_upload_request(file_name, file_path)
     except Exception as e:
         raise DemistoException(
             f"An error occurred when uploading {file_name}."
