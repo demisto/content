@@ -262,7 +262,7 @@ class GwClient(GwRequests):
             GwAPIException: If status_code != 200.
         """
         response = self._get(
-            endpoint="/api/status/healthchecks/"
+            endpoint="/api/v1/status/gcenter/"
         )
         if response.status_code == 200:
             demisto.info(
