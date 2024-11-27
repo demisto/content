@@ -4,3 +4,4 @@ name: Google Chrome Modeling Rule
 rules: ''
 schema: ''
 tags: Google Chrome
+toversion: 8.9.0

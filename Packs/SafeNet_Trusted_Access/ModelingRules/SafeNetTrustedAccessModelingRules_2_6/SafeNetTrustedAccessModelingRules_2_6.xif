@@ -1,0 +1,32 @@
+[MODEL: dataset="safenet_trusted_access_raw"]
+filter
+    json_extract_scalar(details, "$.type") in ("AUDIT")
+| alter
+    //_time = parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", timeStamp),
+    xdm.event.id = id,
+    xdm.source.ipv4 = json_extract_scalar(context, "$.originatingAddress"),
+    xdm.source.identity.username = json_extract_scalar(context, "$.principalId"),
+    xdm.event.type = json_extract_scalar(details, "$.type"),
+    xdm.event.description = json_extract_scalar(details, "$.description"),
+    xdm.event.operation_sub_type = json_extract_scalar(details, "$.operationType"),
+    xdm.target.resource.type = json_extract_scalar(details, "$.operationObjectType"),
+    xdm.target.resource.name = json_extract_scalar(details, "$.operationObjectName");
+
+filter
+    json_extract_scalar(details, "$.type") in ("AUTHENTICATION", "ACCESS_REQUEST")
+| alter
+    outcome_result = json_extract_scalar(details, "$.state")
+| alter
+    //_time = parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", timeStamp),
+    xdm.event.id = id,
+    xdm.network.session_id = json_extract_scalar(context, "$.sessionId"),
+    xdm.network.application_protocol = coalesce(json_extract_scalar(context, "$.applicationType"), json_extract_scalar(details, "$.credentialType")),
+    xdm.source.application.name = json_extract_scalar(context, "$.applicationName"),
+    xdm.event.type = json_extract_scalar(details, "$.type"),
+    xdm.event.outcome = if(outcome_result = "Denied", XDM_CONST.OUTCOME_FAILED, outcome_result = "Failed", XDM_CONST.OUTCOME_FAILED, outcome_result = "Accepted", XDM_CONST.OUTCOME_SUCCESS, outcome_result = "Warning", XDM_CONST.OUTCOME_PARTIAL, outcome_result = null, null, to_string(outcome_result)),
+    xdm.event.operation_sub_type = json_extract_scalar(details, "$.resultText"),
+    xdm.event.outcome_reason = json_extract_scalar(details, "$.reason"),
+    xdm.auth.auth_method = json_extract_scalar(details, "$.actionText"),
+    xdm.observer.unique_identifier = json_extract_scalar(details, "$.agentId"),
+    xdm.event.description = json_extract_scalar(details, "$.message"),
+    xdm.source.identity.username = json_extract_scalar(details, "$.usedName");

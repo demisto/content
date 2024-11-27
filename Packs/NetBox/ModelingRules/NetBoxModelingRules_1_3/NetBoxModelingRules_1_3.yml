@@ -4,3 +4,4 @@ name: NetBox IRM Modeling Rule
 rules: ''
 schema: ''
 tags: NetBox
+toversion: 8.9.0

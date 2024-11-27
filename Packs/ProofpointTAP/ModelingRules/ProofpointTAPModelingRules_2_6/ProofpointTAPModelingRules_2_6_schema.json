@@ -1,0 +1,56 @@
+ {
+    "proofpoint_tap_raw": {
+      "ccAddresses": {
+        "type": "string",
+        "is_array": false
+      },
+      "fromAddress": {
+        "type": "string",
+        "is_array": false
+      },
+      "GUID": {
+        "type": "string",
+        "is_array": false
+      },
+      "messageID": {
+        "type": "string",
+        "is_array": false
+      },
+      "messageParts": {
+        "type": "string",
+        "is_array": false
+      },
+      "messageTime": {
+        "type": "datetime",
+        "is_array": false
+      },
+      "recipient": {
+        "type": "string",
+        "is_array": false
+      },
+      "sender": {
+        "type": "string",
+        "is_array": false
+      },
+        "senderIP": {
+          "type": "string",
+          "is_array": false
+      },
+      "subject": {
+        "type": "string",
+        "is_array": false
+      },
+      "threatsInfoMap": {
+        "type": "string",
+        "is_array": false
+      },
+      "clickIP": {
+        "type": "string",
+        "is_array": false
+      },
+      "clickTime": {
+        "type": "datetime",
+        "is_array": false
+      }
+    }
+  }

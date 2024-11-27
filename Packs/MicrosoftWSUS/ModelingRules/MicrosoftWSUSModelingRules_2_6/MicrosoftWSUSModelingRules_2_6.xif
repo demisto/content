@@ -1,0 +1,20 @@
+    [MODEL: dataset=msft_wsus_raw]
+alter
+    columns = regextract(_raw_log,"\s(\S+)")
+| alter
+ //   time_zone = arrayindex(columns,1),
+    severity = arrayindex(columns,2),
+    service_name = arrayindex(split(arrayindex(columns,3),"."),0),
+    event_category = arrayindex(regextract(_raw_log,"\s([a-zA-Z]+)\.[a-zA-Z]+"),0),
+    action = arrayindex(regextract(_raw_log,"\s[a-zA-Z]+\.([a-zA-Z]+)"),0),
+    event_time = arrayindex(regextract(_raw_log,"\d{4}\-\d{2}\-\d{2}\s\d{2}:\d{2}:\d{2}\.\d{3}"),0),
+    EventId = arrayindex(regextract(_raw_log,"\s*EventId\=\s*([^\,]+)\,"),0),
+    Message = arraystring(regextract(_raw_log,"[a-zA-Z]+\.[a-zA-Z]+\s*(.*)"), " ")
+| alter
+//    _time = parse_timestamp("%Y-%m-%d %H:%M:%E3S",event_time),
+    xdm.alert.severity = severity,
+    xdm.event.id = EventId,
+    xdm.event.type = event_category,
+    xdm.event.outcome_reason = action,
+    xdm.target.process.name = service_name,
+    xdm.event.description = Message;

@@ -1,0 +1,750 @@
+[RULE: beyondtrust_rs_common_fields_modeling]
+/* BeyondTrust RS (Remote Support) Generic Base Modeling. 
+    The mappings in this rule apply to all BeyondTrust RS event types.
+    Message format documented at: 
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/message-format.htm
+*/
+alter  // extract message header fields 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)), 
+    syslog_hostname = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\s*\w+\s+\S+\s+(\S+)"), 0),
+    meta_sequence_id = arrayindex(regextract(_raw_log, "sequenceId=\"(\d+)"), 0), 
+    site_id = arrayindex(regextract(_raw_log, "(\d+)\:\d+\:\d+\:"), 0),
+    msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter // extract message payload fields 
+    pool_type = arrayindex(regextract(msg_payload, "license_type\=(\w[^;]+)"), 0), //the type of license in this pool - for license pool events
+    event_type = arrayindex(regextract(msg_payload, "event\=([^;]+)"), 0), // The name of the event that occurred.
+    site = arrayindex(regextract(msg_payload, "site\=(\S[^;]+)"), 0), // The hostname for which the BeyondTrust software was built.
+    syslog_facility = floor(divide(syslog_priority, 8)), 
+    who = arrayindex(regextract(msg_payload, "who\=(\S[^;]+)"), 0), // The username associated with this event.
+    who_ip = arrayindex(regextract(msg_payload, "who_ip\=([^;]+)"), 0) // The IP address of the system that caused the event.
+| alter // old/new nomenclature fields extractions: https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/oldnew-nomenclature.htm
+    properties_old_state = arraystring(regextract(msg_payload, "[^\=]*(old_\S[^;]+)"), ";"), // snapshot of current resource state before change
+    properties_new_state = arraystring(regextract(msg_payload, "[^\=]*(new_\S[^;]+)"), ";") // current state of modified resource properties 
+| alter // additional proccessing 
+    authentication_method = arrayindex(regextract(who, "\susing\s+(\S+)"), 0),
+    event_description = if(event_type="access_sponsor_group_added","A new access sponsor group has been defined and saved.",event_type="access_sponsor_group_changed","An existing access sponsor group’s name or description has been changed, and the change has been saved.",event_type="access_sponsor_group_member_added","A new member has been added to an access sponsor group, and the group has been saved.",event_type="access_sponsor_group_member_changed","An existing member has been assigned to a different role in an access sponsor group, and the group has been saved.",event_type="access_sponsor_group_member_removed","An existing member has been deleted from an access sponsor group, and the group has been saved.",event_type="access_sponsor_group_removed","An existing access sponsor group has been deleted.",event_type="account_added","A new account has been added and saved.",event_type="account_changed","An existing account has been modified and saved.",event_type="account_group_added","A new account group has been added and saved.",event_type="account_group_changed","An existing account group has been modified and saved.",event_type="account_group_removed","An existing account group has been deleted.",event_type="account_jump_item_association_added","An association with a Jump Item was added for the account.",event_type="account_jump_item_association_changed","An association with a Jump Item was changed for the account.",event_type="account_jump_item_direct_association_added","The account is allowed to be injected for the specific Jump Items.",event_type="account_jump_item_direct_association_removed","The account is removed from the allowed list to be injected for the specific Jump Items.",event_type="account_removed","An existing account has been deleted.",event_type="accounts_changed","A group of one or more accounts was modified.",event_type="admin_password_reset_to_factory_default","The Reset Admin Account button has been clicked, reverting a site’s administrative account to its default credentials.",event_type="api_account_added","A new API account has been added and saved.",event_type="api_account_changed","An existing API account has been modified and saved.",event_type="api_account_removed","An existing API account has been deleted.",event_type="backup_created","A backup of the current software configuration has been saved.",event_type="canned_message_added","A new canned message has been added and saved.",event_type="canned_message_category_added","A new canned message category has been added and saved.",event_type="canned_message_category_removed","An existing canned message category has been deleted.",event_type="canned_message_cateogry_changed","An existing canned message category has been modified and saved.",event_type="canned_message_changed","An existing canned message has been modified and saved.",event_type="canned_message_removed","An existing canned message has been deleted.",event_type="canned_message_team_added","A canned message has been newly assigned to a team, and the message has been saved.",event_type="canned_message_team_changed","A canned message has been edited, and this team has neither been added nor removed.",event_type="canned_message_team_removed","A previously assigned canned message has been unassigned from a team, and the message has been saved.",event_type="canned_script_added","A new canned script has been added and saved.",event_type="canned_script_category_added","A canned script has been newly assigned to a category, and the script has been saved.",event_type="canned_script_category_removed","A previously assigned canned message has been unassigned from a category, and the script has been saved.",event_type="canned_script_changed","An existing canned script’s name, description, or command sequence has been changed, and the change has been saved.",event_type="canned_script_file_added","A resource file has been newly associated with a canned script, and the script has been saved.",event_type="canned_script_file_removed","A previously associated resource file has been removed from a canned script, and the script has been saved.",event_type="canned_script_removed","An existing canned script has been deleted.",event_type="canned_script_team_added","A support team has been newly assigned to a canned script, and the script has been saved.",event_type="canned_script_team_removed","A previously assigned support team has been unassigned from a canned script, and the script has been saved.",event_type="canned_scripts_category_added","A new canned scripts category has been created.",event_type="canned_scripts_category_removed","An existing canned scripts category has been deleted.",event_type="canned_scripts_file_added","A new canned script resource file has been uploaded.",event_type="canned_scripts_file_removed","An existing canned script resource file has been deleted.",event_type="certificate_export","An SSL certificate has been exported from the BeyondTrust Appliance B Series.",event_type="change_display_name","A user has attempted to change their display name.",event_type="change_password","A user has attempted to change their password.",event_type="change_username","A user has attempted to change their username.",event_type="cust_exit_survey_question_added","A new customer exit survey question has been added and saved.",event_type="cust_exit_survey_question_changed","An existing customer exit survey question has been edited and saved.",event_type="cust_exit_survey_question_option_added","A new option, such as a radio button, check box, or menu item, has been added to a customer exit survey question, and the question has been saved.",event_type="cust_exit_survey_question_option_changed","An existing option for a customer exit survey question, such as a radio button, check box, or menu item, has been edited, and the question has been saved.",event_type="cust_exit_survey_question_option_removed","An existing option for a customer exit survey question, such as a radio button, check box, or menu item, has been removed, and the question has been saved.",event_type="cust_exit_survey_question_removed","An existing customer exit survey question has been deleted.",event_type="custom_rep_link_added","A new custom link has been added and saved.",event_type="custom_rep_link_changed","An existing custom link has been edited and saved.",event_type="custom_rep_link_removed","An existing custom link has been deleted.",event_type="custom_session_attribute_added","A new custom field for API integration has been added and saved.",event_type="custom_session_attribute_changed","An existing custom field for API integration has been edited and saved.",event_type="custom_session_attribute_removed","An existing custom field for API integration has been removed.",event_type="custom_session_policy_added","Custom session permissions have been added to a user account, and the user account has been saved.",event_type="custom_session_policy_changed","Existing custom session permissions have been edited, and the user account has been saved.",event_type="custom_session_policy_removed","Existing custom session permissions have been removed from a user account, and the user account has been saved.",event_type="custom_special_action_added","A new custom special action has been added and saved.",event_type="custom_special_action_changed","An existing custom special action has been edited and saved.",event_type="custom_special_action_removed","An existing custom special action has been removed.",event_type="customer_notice_added","A new customer notice has been added and saved.",event_type="customer_notice_changed","An existing customer notice has been edited and saved.",event_type="customer_notice_public_site_added","A customer notice has been enabled for a public site, and the customer notice has been saved.",event_type="customer_notice_public_site_removed","A customer notice has been disabled for a public site, and the customer notice has been saved.",event_type="customer_notice_removed","An existing customer notice has been removed.",event_type="customizable_text_changed","An existing customer greeting, on-hold message, or login agreement has been changed.",event_type="default_site_changed","The default support site for this B Series Appliance has been changed to another site, and the change has been saved.",event_type="discovery_error_added","A new Discovery job error has been added.",event_type="discovery_error_changed","A new Discovery job error has been changed.",event_type="discovery_error_removed","A new Discovery job error has been removed.",event_type="domain_added","A new Vault domain has been added and saved.",event_type="domain_changed","An existing Vault domain has been modified and saved.",event_type="domain_removed","An existing Vault domain has been deleted.",event_type="downloaded_rep_client","A user has clicked the link to download the representative console.",event_type="endpoint_changed","An existing endpoint has been modified and saved.",event_type="endpoint_removed","An existing endpoint has been deleted.",event_type="eula_accepted","The BeyondTrust Cloud end-user license agreement (EULA) has been accepted by a user, and the username has been recorded.",event_type="fido2_credential_added","A new FIDO2 Autheticator has been added and saved.",event_type="fido2_credential_changed","An existing FIDO2 Autheticator has been modified and saved.",event_type="fido2_credential_removed","An existing FIDO2 Autheticator has been deleted.",event_type="file_removed_from_file_store","A file has been deleted from the file store.",event_type="file_uploaded_to_file_store","A file has been added to the file store.",event_type="group_policy_added","A new group policy has been created and saved.",event_type="group_policy_changed","An existing group policy’s priority level has changed, and the change has been saved.",event_type="group_policy_member_added","A new member has been added to a group policy, and the policy has been saved.",event_type="group_policy_member_removed","An existing member has been removed from a group policy, and the policy has been saved.",event_type="group_policy_removed","An existing group policy has been deleted.",event_type="group_policy_setting_added","A group policy setting has been designated as defined in this policy, and the policy has been saved.",event_type="group_policy_setting_changed","An existing group policy setting or override status has been changed, and the policy has been saved.",event_type="group_policy_setting_removed","A group policy setting previously defined in this policy has been removed, and the policy has been saved.",event_type="ios_content_item_added","A new iOS configuration profile has been created and saved.",event_type="ios_content_item_changed","An existing iOS configuration profile has had a new file uploaded or has had its public availability changed, and the profile has been saved.",event_type="ios_content_item_removed","An existing iOS configuration profile has been deleted.",event_type="jump_item_role_added","A new Jump Item Role has been created and saved.",event_type="jump_item_role_changed","An existing Jump Item Role has been modified and saved.",event_type="jump_item_role_removed","An existing Jump Item Role has been deleted.",event_type="jump_policy_added","A new Jump Policy has been created and saved.",event_type="jump_policy_changed","An existing Jump Policy has been modified and saved.",event_type="jump_policy_removed","An existing Jump Policy has been deleted.",event_type="jump_policy:schedule_entry_added","A new schedule entry has been added to a Jump Policy, and the policy has been saved.",event_type="jump_policy:schedule_entry_removed","An existing schedule entry has been removed from a Jump Policy, and the policy has been saved.",event_type="jumpoint_cluster_added","A new Jumpoint or Jumpoint cluster has been created and saved.",event_type="jumpoint_cluster_changed","An existing Jumpoint or Jumpoint cluster has been changed.",event_type="jumpoint_cluster_removed","An existing Jumpoint or Jumpoint cluster has been deleted.",event_type="jumpoint_user_added","A new member has been added to a Jumpoint, and the Jumpoint has been saved.",event_type="jumpoint_user_removed","An existing member has been removed from a Jumpoint, and the Jumpoint has been saved.",event_type="kerberos_keytab_added","A new Kerberos keytab has been uploaded.",event_type="kerberos_keytab_removed","An existing Kerberos keytab has been deleted.",event_type="license_pool_added","A new license pool has been created and saved.",event_type="license_pool_changed","An existing license pool has been changed, and the license pool has been saved.",event_type="license_pool_removed","An existing license pool has been deleted.",event_type="license_usage_report_generated","A report of peak license usage has been run.",event_type="login","A login attempt has been made.",event_type="login_schedule_entry_added","A new login schedule entry has been added to a user's, or group policy's login schedule, and the user account or group policy has been saved.",event_type="login_schedule_entry_removed","An existing login schedule entry has been removed from a user's, or group policy's login schedule, and the user or group policy has been saved.",event_type="logout","A user has logged out of the representative console, whether by deliberate action, by an administrator, or as the result of a lost connection to the BeyondTrust Appliance B Series.",event_type="management_account_added","A new management account has been added and saved.",event_type="management_account_changed","An existing management account has been modified and saved.",event_type="management_account_removed","An existing management account has been deleted.",event_type="msgraph_http_recipient_added","A new service principal has been added and saved.",event_type="msgraph_http_recipient_changed","An existing service principal has been modified and saved.",event_type="msgraph_http_recipient_removed","An existing service principal has been deleted.",event_type="network_address_added","A new IP address has been added and saved.",event_type="network_address_changed","An existing IP address has been modified and saved.",event_type="network_address_removed","An existing IP address has been deleted",event_type="network_changed","The global network configuration has been changed, and the change has been saved.",event_type="network_route_changed","A static route has been added, modified, or removed.",event_type="network_tunnel_jump_item_added","A network tunnel Jump Item has been added.",event_type="network_tunnel_jump_item_changed","A network tunnel Jump Item has been changed and saved.",event_type="network_tunnel_jump_item_removed","A network tunnel Jump Item has been removed.",event_type="outbound_event_email_recipient_added","A new email outbound event has been added and saved.",event_type="outbound_event_email_recipient_changed","An existing email outbound event has been modified and saved.",event_type="outbound_event_email_recipient_removed","An existing email outbound event has been deleted.",event_type="outbound_event_email_trigger_added","A new trigger has been added for an email outbound event, and the event has been saved.",event_type="outbound_event_email_trigger_removed","An existing trigger for an email outbound event has been removed, and the event has been saved.",event_type="outbound_event_http_recipient_added","A new HTTP outbound event has been added and saved.",event_type="outbound_event_http_recipient_changed","An existing HTTP outbound event has been modified and saved.",event_type="outbound_event_http_recipient_removed","An existing HTTP outbound event has been deleted.",event_type="outbound_event_http_trigger_added","A new trigger has been added for an HTTP outbound event, and the event has been saved.",event_type="outbound_event_http_trigger_removed","An existing trigger for an HTTP outbound event has been removed, and the event has been saved.",event_type="pdcust_banner_reverted_to_factory_default","The banner image for the presentation attendee client has been reverted to the default image.",event_type="pdcust_banner_uploaded","A new banner image for the presentation attendee client has been uploaded to the site.",event_type="presentation_session_detail_generated","A detailed report has been run for a presentation session.",event_type="presentation_session_report_generated","A report of presentation sessions has been run.",event_type="public_site_added","A new public site has been created and saved.",event_type="public_site_address_added","A hostname has been added to a public site, and the site has been saved.",event_type="public_site_address_removed","A hostname has been removed from a public site, and the site has been saved.",event_type="public_site_changed","An existing public site has been changed.",event_type="public_site_customer_banner_reverted_to_factory_default","The banner image for the customer client has been reverted to the default image.",event_type="public_site_customer_banner_uploaded","A new banner image for the customer client has been uploaded to the site.",event_type="public_site_exit_survey_added","A question has been added to a public site’s customer or representative survey, and the site has been saved.",event_type="public_site_exit_survey_removed","A question has been removed from a public site’s customer or representative survey, and the site has been saved.",event_type="public_site_removed","An existing public site has been deleted.",event_type="public_site_session_attribute_added","A public site session attribute has been added.",event_type="public_site_session_attribute_changed","A public site session attribute has been changed.",event_type="public_site_session_attribute_removed","A public site session attribute has been removed.",event_type="public_site_setting_added","A public site setting has been defined for the first time, and the site has been saved.",event_type="public_site_setting_changed","A public site setting has been modified, and the site has been saved.",event_type="public_site_team_added","A support team’s issues have been added to a public site’s front-end survey, and the site has been saved.",event_type="public_site_team_removed","A support team’s issues have been removed from a public site’s front-end survey, and the site has been saved.",event_type="public_site_template_asset_reverted","An HTML template asset file has been reverted to the default.",event_type="public_site_template_asset_uploaded","A new HTML asset file has been uploaded to the site.",event_type="public_template_deleted","An HTML template has been removed.",event_type="public_template_written","An HTML template has been modified and saved.",event_type="reboot","The BeyondTrust Appliance B Series has been rebooted.",event_type="remote_rfb_jump_item_added","A Remote RFB Jump Item has been added.",event_type="remote_rfb_jump_item_removed","A Remote RFB Jump Item has been removed.",event_type="rep_client_connection_terminated","An administrator has terminated a representative’s connection.",event_type="rep_console_setting_added","A managed representative console setting has been defined for the first time, and the settings have been saved.",event_type="rep_console_setting_changed","A managed representative console setting has been changed, and the settings have been saved.",event_type="rep_console_setting_removed","A managed representative console setting has been marked as undefined, and the settings have been saved.",event_type="rep_exit_survey_question_added","A new representative survey question has been added and saved.",event_type="rep_exit_survey_question_changed","A representative survey question has been edited and saved.",event_type="rep_exit_survey_question_option_added","A new option, such as a radio button, check box, or menu item, has been added to a representative survey question, and the question has been saved.",event_type="rep_exit_survey_question_option_changed","An existing option for a representative survey question, such as a radio button, check box, or menu item, has been edited, and the question has been saved.",event_type="rep_exit_survey_question_option_removed","An existing option, such as a radio button, check box, or menu item, has been removed from a representative survey question, and the question has been saved.",event_type="rep_exit_survey_question_removed","An existing representative survey question has been deleted.",event_type="rep_invite_added","A session policy has been made available for rep invites, and the session policy has been saved.",event_type="rep_invite_removed","A session policy has been made unavailable for rep invites and has been saved, or a session policy available for rep invites has been deleted.",event_type="repinvite_setting_added","A rep invite setting has been added because a session policy has been made available for rep invites, and the session policy has been saved.",event_type="repinvite_setting_removed","A rep invite setting has been removed either because a session policy has been made unavailable for rep invites and has been saved, or because a session policy available for rep invites has been deleted.",event_type="reporting_erasure","Session reports have had representative or customer data anonymized.",event_type="restored_from_backup","The software configuration has been successfully restored from its backup file.",event_type="restoring_from_backup","The software configuration is in the process of restoring from its backup file.",event_type="scheduled_discovery_job_added","The domain scheduled discovery has been added.",event_type="scheduled_discovery_job_changed","The domain scheduled discovery has been changed.",event_type="sdcust_exit_survey_report_generated","A report of customer exit survey results has been run.",event_type="sdrep_exit_survey_report_generated","A report of representative survey results has been run.",event_type="security_provider_added","A new security provider configuration has been added and saved.",event_type="security_provider_changed","An existing security provider configuration’s priority level has changed, and the change has been saved.",event_type="security_provider_removed","An existing security provider configuration has been deleted.",event_type="security_provider_setting_added","A security provider setting has been added as part of the initial configuration, and the configuration has been saved.",event_type="security_provider_setting_changed","An existing security provider configuration has been modified and saved.",event_type="security_provider_setting_removed","A security provider setting has been removed as part of the deletion of a security provider configuration.",event_type="server_software_restarted","The BeyondTrust software has been restarted.",event_type="session_policy_added","A new session policy has been added and saved.",event_type="session_policy_changed","An existing session policy has been modified and saved.",event_type="session_policy_removed","An existing session policy has been deleted.",event_type="setting_added","A setting has been defined and saved for the first time.",event_type="setting_changed","A setting has been modified and saved.",event_type="skill_added","A new skill has been added and saved.",event_type="skill_changed","An existing skill has been modified and saved.",event_type="skill_removed","An existing skill has been deleted.",event_type="SNMP_changed","The SNMPv2 Server has been changed.",event_type="ssh_account_added","An SSH account has been added.",event_type="ssh_account_changed","An SSH account has been modified and saved.",event_type="ssh_account_removed","An SSH account has been removed.",event_type="starting_support_tunnel","A support tunnel has been initiated from the BeyondTrust Appliance B Series.",event_type="support_button_profile_added","A new Support Button profile has been added and saved.",event_type="support_button_profile_changed","An existing Support Button profile has been changed and saved.",event_type="support_button_profile_icon_uploaded","A new icon has been uploaded to a Support Button profile.",event_type="support_button_profile_removed","An existing Support Button profile has been deleted.",event_type="support_issue_added","A new support issue has been added and saved.",event_type="support_issue_changed","An existing support issue has been modified and saved.",event_type="support_issue_removed","An existing support issue has been deleted.",event_type="support_issue_skill_added","A new skill has been assigned to a support issue, and the issue has been saved.",event_type="support_issue_skill_removed","An existing skill has been removed from a support issue, and the issue has been saved.",event_type="support_session_detail_generated","A detailed report has been run for a support session.",event_type="support_session_report_generated","A report of support sessions has been run.",event_type="support_session_summary_report_generated","A summary report of support sessions has been run.",event_type="support_team_added","A support team has been added.",event_type="support_team_changed","A support team has been changed.",event_type="support_team_issue_added","A support team has added an issue.",event_type="support_team_issue_removed","A support team has removed an issue.",event_type="support_team_jump_access_added","A team has been granted access to another team's Jump Clients, and the change has been saved.",event_type="support_team_jump_access_removed","A team's access to another team's Jump Clients has been removed, and the change has been saved.",event_type="support_team_member_added","A new member has been added to a team, and the team has been saved.",event_type="support_team_member_changed","An existing member has been assigned a different role in a team, and the team has been saved.",event_type="support_team_member_removed","An existing member has been deleted from a team, and the team has been saved.",event_type="support_team_removed","An existing support team has been deleted.",event_type="syslog_server_changed","The remote syslog server setting has been changed and saved.",event_type="team_activity_report_generated","A team activity report has been run.",event_type="user_account_report_generated","A user account report has been generated.",event_type="user_added","A new local user has been created and saved. Event fields differ between /login users and /appliance users.",event_type="user_changed","An existing local user has been modified and saved. Event fields differ between /login users and /appliance users.",event_type="user_removed","An existing local user has been deleted. Event fields differ between /login users and /appliance users.",event_type="user_session_policy_added","A session policy has been applied to a user account, and the user account has been saved.",event_type="user_session_policy_removed","A session policy has been removed from a user account, and the user account has been saved.",event_type="user_skill_added","A new skill has been assigned to a user, and the user account has been saved.",event_type="user_skill_removed","An existing skill has been removed from a user, and the user account has been saved.",event_type="vault_account_password_rotation","Vault account password has been rotated.",event_type),
+    source_ipv4 = if(who_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", who_ip),
+    source_ipv6 = if(who_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", who_ip),
+    syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility, 8))),
+    user_name = arrayindex(regextract(who, "\(([^\)]+)"), 0),
+    user_first_name = arrayindex(regextract(who, "((?:\S+\.\s+){0,1}\S+)"), 0),
+    user_last_name = trim(arrayindex(regextract(who, "(?:\S+\.\s+){0,1}\S+\s(.+)\("), 0))
+| alter // xdm mapping 
+    xdm.alert.severity = syslog_severity,
+    xdm.auth.auth_method = authentication_method, 
+    xdm.auth.privilege_level = if(user_name = "admin", XDM_CONST.PRIVILEGE_LEVEL_ADMIN),
+    xdm.source.identity.first_name = user_first_name,
+    xdm.source.identity.last_name = user_last_name, 
+    xdm.source.identity.username = user_name, 
+    xdm.event.id = meta_sequence_id,
+    xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
+    xdm.event.original_event_type = event_type, 
+    xdm.event.description = event_description,
+    xdm.intermediate.host.hostname = site,
+    xdm.observer.name = syslog_hostname, 
+    xdm.observer.unique_identifier = site_id,
+    xdm.session_context_id = meta_sequence_id,
+    xdm.source.ipv4 = source_ipv4,
+    xdm.source.ipv6 = source_ipv6,
+    xdm.target.resource.value = if(pool_type ~= "\S", pool_type, properties_new_state), 
+    xdm.target.resource_before.value = properties_old_state;
+
+[MODEL: dataset = beyondtrust_remote_support_raw]
+/* Event Specific Modeling. 
+    The following mappings apply to specific event types, according to the conditional filters applied. 
+    The various fields for each event are described at: 
+   https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/events.htm
+    Access Sponsor Group Events:
+    These mapping apply to the following events: access_sponsor_group_added, access_sponsor_group_changed, access_sponsor_group_removed.
+        https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/access-sponsor-group-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("access_sponsor_group_added", "access_sponsor_group_changed", "access_sponsor_group_removed")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter // access_sponsor_group
+    sponsor_id = arrayindex(regextract(msg_payload,"id\=(\d+);"), 0),
+    sponsor_group_name = arrayindex(regextract(msg_payload,"name\=([^;]+);"), 0)
+| alter
+    xdm.target.identity.identifier = sponsor_id,
+    xdm.target.identity.groups = if(sponsor_group_name != null, arraycreate(sponsor_group_name));
+
+/* Access Sponsor Group Member Events:
+    These mapping apply to the following events: access_sponsor_group_member_added, access_sponsor_group_member_changed, access_sponsor_group_member_removed.
+        https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/access-sponsor-group-member-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("access_sponsor_group_member_*")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter // access_sponsor_group_member
+    sponsor_id = arrayindex(regextract(msg_payload,"user:id\=(\d+);"),0),
+    sponsor_group_name = arrayindex(regextract(msg_payload,"name\=([^;]+);"), 0),
+    sponser_group_user = arrayindex(regextract(msg_payload, "username\=([^;]+);"), 0)
+| alter
+    xdm.target.identity.identifier = sponsor_id,
+    xdm.target.identity.groups = if(sponsor_group_name != null, arraycreate(sponsor_group_name)),
+    xdm.target.identity.username = sponser_group_user;
+
+/* Account Modification, Group Modification & Group Membership Events Fields:
+    These mappings apply to the following event types: "account_added", "account_changed", "account_removed", "accounts_changed", "account_group_added", "account_group_changed", "account_group_removed", "accounts_changed" */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("account_added", "account_changed", "accounts_changed", "account_removed", "account_group_added", "account_group_changed", "account_group_removed")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter // Account Fields: https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/account-fields.htm
+    account_name = arrayindex(regextract(msg_payload, "name\=(\S[^;]+)"), 0), // The name of the account.
+    account_username = arrayindex(regextract(msg_payload, "username\=(\S[^;]+)"), 0), // The username of the account.
+    account_group_id1 = arrayindex(regextract(msg_payload, "group\=(\S[^;]+)"), 0) // The unique identifier of the account group.
+| alter // Account Group Fields: https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/account-group-fields.htm
+    account_group_id2 = arrayindex(regextract(msg_payload, "id\=(\w[^;]+)"), 0), // The unique identifier of the account group.
+    account_group_name = arrayindex(regextract(msg_payload, "name\=(\S[^;]+)"), 0) // The name of the account group.
+| alter // Account Group Membership Fields: https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/account-group-membership-fields.htm
+    accounts_id = arrayindex(regextract(msg_payload, "accounts_id\=(\S[^;]+)"), 0), // The unique identifier of the vault accounts.
+    new_account_group_id = arrayindex(regextract(msg_payload, "new_group\=(\S[^;]+)"), 0) // The unique identifier of the target account group.
+| alter target_group = coalesce(account_group_name, new_account_group_id, account_group_id1, account_group_id2)
+| alter 
+    xdm.target.resource.name = account_name, 
+    xdm.target.resource.type = if(account_name != null, "account name"),
+    xdm.target.identity.identifier = accounts_id,
+    xdm.target.identity.username = coalesce(account_username, account_name),
+    xdm.target.identity.groups = if(target_group != null, arraycreate(target_group));
+
+/* Account Jump Item Association Events: 
+    These mappings apply to the following events: account_jump_item_association_added, account_jump_item_association_removed. 
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/account-jump-item-association.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("aaccount_jump_item_association_added", "account_jump_item_association_removed")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter // "account_jump_item_association"
+    account_group_id = arrayindex(regextract(msg_payload, "account_group_id\=(\S[^;]+)"), 0), // The unique identifier of the account group.
+    account_id = arrayindex(regextract(msg_payload, "account_id\=(\S[^;]+)"), 0), // The unique identifier of the account.
+    jump_item_association_id = arrayindex(regextract(msg_payload, ";id\=(\w[^;]+)"), 0) // The unique identifier of the association.
+| alter 
+    xdm.target.identity.groups = if(account_group_id != null, arraycreate(account_group_id)),
+    xdm.target.identity.identifier = account_id,
+    xdm.target.resource.id = jump_item_association_id, 
+    xdm.target.resource.type = if(jump_item_association_id != null, "jump item association");
+
+
+/* API Account Events: 
+    These mappings apply to the following events: api_account_added, api_account_changed, api_account_removed. 
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/api-account-fields.htm */
+alter event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("api_account_added", "api_account_changed", "api_account_removed")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter 
+    api_account_name = arrayindex(regextract(msg_payload, "name\=(\S[^;]+)"), 0), // The name of the API account.
+    api_ip_addresses = arrayindex(regextract(msg_payload, "ip_addresses\=(\S[^;]+)"), 0), // Comma-delimited list of network address prefixes from which this account can authenticate.
+    api_account_id = arrayindex(regextract(msg_payload, ";id\=(\w[^;]+)"), 0), // The unique identifier of the API account.
+    is_enabled =  arrayindex(regextract(msg_payload, "enabled\=(0|1)"), 0)  // 1: This API account is enabled, 0: This API account is disable
+| alter 
+    is_api_account_disabled = if(is_enabled = "0", to_boolean("TRUE"), is_enabled = "1", to_boolean("FALSE")),
+    permitted_ip_addresses = arraymap(regextract(api_ip_addresses, "([^,]+)"), trim("@element"))
+| alter
+    permitted_ipv4_addresses = arrayfilter(permitted_ip_addresses, "@element" ~= "\."),
+    permitted_ipv6_addresses = arrayfilter(permitted_ip_addresses, "@element" ~= ":")
+| alter
+    xdm.target.host.ipv4_addresses = permitted_ipv4_addresses,
+    xdm.target.host.ipv6_addresses = permitted_ipv6_addresses,
+    xdm.target.subnet = api_ip_addresses,
+    xdm.target.identity.username = api_account_name, 
+    xdm.target.identity.identifier = api_account_id, 
+    xdm.target.identity.user_type = XDM_CONST.USER_TYPE_SERVICE_ACCOUNT, 
+    xdm.target.identity.is_disabled = is_api_account_disabled;
+
+/* Canned Message Category Events:
+    These mapping applay to the following events: canned_message_category_added, canned_message_category_changed, canned_message_category_removed, canned_message_added, canned_message_changed, canned_message_removed, canned_message_team_added, canned_message_team_changed, canned_message_team_removed.
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/canned-message-category-fields.htm
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/canned-message-fields.htm
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/canned-message-team-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("canned_message_*")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter //canned message category fields
+    canned_id = arrayindex(regextract(msg_payload, ";id\=(\w[^;]*);"), 0), //unique identifier of this canned message category
+    canned_category = arrayindex(regextract(msg_payload, "name\=(\S[^;]+)"), 0), //unique identifier of this canned message category
+    canned_parent_id1 = arrayindex(regextract(msg_payload, "parent\:id\=(\w[^;]*);"), 0),
+    canned_parent_id2 = arrayindex(regextract(msg_payload, "category\:id\=(\w[^;]*);"), 0),
+    canned_message = arrayindex(regextract(msg_payload,"message\=(\w[^;]*);"), 0),
+    canned_title = arrayindex(regextract(msg_payload,"title\=(\w[^;]*);"), 0)
+| alter // canned message team fields
+    canned_team_name = arrayindex(regextract(msg_payload,"team\:name\=(\w[^;]*);"), 0),
+    canned_team_id = arrayindex(regextract(msg_payload,"team\:id\=(\w[^;]*);"), 0)
+| alter
+    xdm.target.resource.id = canned_id,
+    xdm.target.resource.type = canned_category,
+    xdm.target.resource.parent_id = coalesce(canned_parent_id1,canned_parent_id2),
+    xdm.alert.description = canned_message,
+    xdm.target.resource.name = canned_title,
+    xdm.target.identity.groups = if(canned_team_id != null or canned_team_name != null, arrayconcat(arraycreate(canned_team_id), arraycreate(canned_team_name)));
+
+
+/* Canned Script Events: 
+    These mappings apply to the following events: "canned_script_category_added", "canned_script_category_removed", "canned_script_added", "canned_script_changed", "canned_script_removed", "canned_script_file_added", "canned_script_file_removed", "canned_script_team_added", "canned_script_team_removed", "canned_scripts_category_added", "canned_scripts_category_removed", "canned_scripts_file_added", "canned_scripts_file_removed"
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/canned-script-category-fields.htm
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/canned-script-fields.htm
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/canned-script-file-fields.htm
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/canned-script-team-fields.htm
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/canned-scripts-category-fields.htm
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/canned-scripts-file-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("canned_script_*","canned_scripts_*")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter 
+    canned_script_id1 = arrayindex(regextract(msg_payload, "canned_script\:id\=(\S[^;]+)"), 0),
+    canned_script_id2 = arrayindex(regextract(msg_payload, "id\=(\w[^;]*);"), 0),
+    canned_script_name1 = arrayindex(regextract(msg_payload, "canned_script\:name\=(\S[^;]+)"), 0),
+    canned_script_name2 = arrayindex(regextract(msg_payload, "name\=(\S[^;]+)"), 0),
+    canned_script_commands = arrayindex(regextract(msg_payload, "commands\=(\S.+?)\;\s*[\w\:]+\="), 0),
+    canned_script_filename = arrayindex(regextract(msg_payload, "filename\=(\S[^;]+)"), 0),
+    canned_script_team_id = arrayindex(regextract(msg_payload, "team\:id\=(\S[^;]+)"), 0),
+    canned_script_team_name = arrayindex(regextract(msg_payload, "team\:name\=(\S[^;]+)"), 0),
+    canned_script_category = arrayindex(regextract(msg_payload, "category\=(\S[^;]+)"), 0)
+| alter 
+    xdm.target.process.command_line = canned_script_commands,
+    xdm.target.file.filename = canned_script_filename, 
+    xdm.target.resource.id = coalesce(canned_script_id1, canned_script_id2),
+    xdm.target.resource.name = coalesce(canned_script_name1, canned_script_name2),
+    xdm.target.resource.type = canned_script_category,
+    xdm.target.identity.groups = if(canned_script_team_id != null or canned_script_team_name != null, arrayconcat(arraycreate(canned_script_team_id), arraycreate(canned_script_team_name)));
+
+/* Certificate Export Event: 
+    These mappings apply to the certificate_export event. 
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/certificate-export-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("certificate_export")
+| call beyondtrust_rs_common_fields_modeling
+| alter 
+    certificate_friendly_name = arrayindex(regextract(_raw_log, "friendly_name\=(\S[^;]+)"), 0), // The friendly name of the certificate being exported.
+    exported_with_private_key = arrayindex(regextract(_raw_log, "exported_with_private_key\=(0|1)"), 0) // 1: The private key is included in this export, 0: The private key is not included in this export.
+| alter operation = if(exported_with_private_key = "0", "Certificate exported, private key was not included.", exported_with_private_key="1", "Certificate exported, private key was included.")
+| alter 
+    xdm.event.operation_sub_type = operation,
+    xdm.target.resource.name = certificate_friendly_name, 
+    xdm.target.resource.type = "certificate";
+
+/* Custom Rep Link Events : 
+    These mappings apply to the following events: custom_rep_link_added, custom_rep_link_changed, custom_rep_link_removed. 
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/custom_rep_link.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("custom_rep_link_added", "custom_rep_link_changed", "custom_rep_link_removed")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter 
+    custom_link_id = arrayindex(regextract(msg_payload, "id\=(\w[^;]*)"), 0), // The unique identifier of the custom link.
+    custom_link_name = arrayindex(regextract(msg_payload, "name\=(\S[^;]+)"), 0), // The name of the custom link.
+    custom_link_url = arrayindex(regextract(msg_payload, "url\=(\S[^;]+)"), 0) // The URL of the custom link.
+| alter 
+    xdm.target.resource.id = custom_link_id, 
+    xdm.target.resource.name = custom_link_name,
+    xdm.target.resource.type = if(custom_link_id != null, "custom link URL"),
+    xdm.target.url = custom_link_url;
+
+/* Custom Session Attribute Events: 
+    These fields apply to the following events: custom_session_attribute_added, custom_session_attribute_changed, and custom_session_attribute_removed. 
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/custom-session-attribute-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("custom_session_attribute_added", "custom_session_attribute_changed", "custom_session_attribute_removed")
+| call beyondtrust_rs_common_fields_modeling
+| alter 
+    custom_session_attribute_id = arrayindex(regextract(_raw_log, "id\=(\w[^;]+)"), 0),  // The unique identifier of the custom session attribute.
+    custom_session_attribute_name = arrayindex(regextract(_raw_log, "display_name\=(\S[^;]+)"), 0) // The display name of the custom session attribute.
+| alter 
+    xdm.target.resource.id = custom_session_attribute_id, 
+    xdm.target.resource.name = custom_session_attribute_name,
+    xdm.target.resource.type = if(custom_session_attribute_id != null, "custom session attribute");
+
+
+/* Custom Special Action Events:
+    These mappings apply to the following events: custom_special_action_added, custom_special_action_changed, custom_special_action_removed. 
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/custom-special-action-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("custom_special_action_added", "custom_special_action_changed", "custom_special_action_removed")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter 
+    custom_special_action_id = arrayindex(regextract(msg_payload, "id\=(\w[^;]*)"), 0), // The unique identifier of this custom special action.
+    custom_special_action_name = arrayindex(regextract(msg_payload, "name\=(\S[^;]+)"), 0), // The name of this custom special action.
+    custom_special_action_command = arrayindex(regextract(msg_payload, "command\=(\S[^;]+)"), 0), // The full path of the application to run.
+    custom_special_action_arguments = arrayindex(regextract(msg_payload, "arguments\=([^;]+)"), 0) // Command line arguments to apply the command.  
+| alter 
+    xdm.target.resource.id = custom_special_action_id, 
+    xdm.target.resource.name = custom_special_action_name,
+    xdm.target.resource.type = if(custom_special_action_id != null, "custom special action"), 
+    xdm.target.process.command_line = concat(custom_special_action_command, " ", custom_special_action_arguments);
+
+/*  Custom & User Session Policy Events: 
+    These mappings apply to the following events: custom_session_policy_added, custom_session_policy_changed, custom_session_policy_removed, user_session_policy_added, user_session_policy_removed. 
+    Custom session policy events also include the Support Permissions Fields. */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("custom_session_policy_added", "custom_session_policy_changed", "custom_session_policy_removed", "user_session_policy_added", "user_session_policy_removed")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter // custom sessions policy: https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/custom-session-policy-fields.htm
+    object_description = arrayindex(regextract(msg_payload, "description\=(\S[^;]+)"), 0), // The description of the object to which this custom session policy is applied in the form of object(type):name. The object may be one of users or policies. A users object is followed by @ and the ID of its security provider. The type is either attended or unattended. The name is the name of the object.
+    custom_session_policy_id = arrayindex(regextract(msg_payload, "id\=(\w[^;]+)"), 0),  // The unique identifier of this custom session policy.
+    custom_session_policy_name = arrayindex(regextract(msg_payload, "name\=(\S[^;]+)"), 0), // The name of this custom session policy. This name is assigned by the B Series Appliance and cannot be modified.
+    custom_session_policy_code_name = arrayindex(regextract(msg_payload, "code_name\=(\S[^;]+)"), 0) // The code name of this custom session policy.
+| alter // user sessions policy: https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/user-session-policy-fields.htm
+    user_id = arrayindex(regextract(msg_payload, "user\:id\=([^;]+)"), 0), //The unique identifier of the user with whom the session policy is associated.
+    user_name = arrayindex(regextract(msg_payload, "user\:username\=(\S[^;]+)"), 0), // The username of the user with whom the session policy is associated.
+    user_session_policy_name = arrayindex(regextract(msg_payload, "session_policy\:name\=(\S[^;]+)"), 0) // The name of the session policy associated with this user.
+| alter 
+    user_object = arrayindex(regextract(object_description, "([^\@]+)\@"), 0)
+| alter 
+    xdm.network.rule = coalesce(custom_session_policy_code_name, user_session_policy_name),
+    xdm.target.resource.id = custom_session_policy_id, 
+    xdm.target.resource.name = custom_session_policy_name,
+    xdm.target.resource.type = if(custom_session_policy_id != null, "custom session policy"),
+    xdm.target.identity.identifier = user_id,
+    xdm.target.identity.username = coalesce(user_object, user_name);
+
+/* Customer Notice and Cutomer Notice Public Site Fields Events:
+    These mapping applay to the following events: customer_notice_added, customer_notice_changed, customer_notice_removed, customer_notice_public_site_added, customer_notice_public_site_removed.
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/customer-notice-fields.htm
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/customer-notice-public-site-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("dcustomer_notice_added", "customer_notice_changed", "customer_notice_removed", "customer_notice_public_site_added", "customer_notice_public_site_removed")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter //customer notice fields
+    notice_id = arrayindex(regextract(msg_payload, "id\=(\S[^;]+)"), 0),
+    notice_message = arrayindex(regextract(msg_payload, "message\=(\S[^;]+)"), 0), //Text message of the customer notice
+    notice_name1 = arrayindex(regextract(msg_payload, "name\=(\S[^;]+)"), 0) //Name of this customer notice
+| alter // customer notice public site fields
+    notice_name2 = arrayindex(regextract(msg_payload, "customer_notice\:name\=(\S[^;]+)"), 0), //Name of this customer notice
+    site_name = arrayindex(regextract(msg_payload, "public_site\:name\=(\S[^;]+)"), 0)
+| alter 
+    xdm.target.resource.id = notice_id, 
+    xdm.target.resource.type = if(notice_id != null, "customer notice"),
+    xdm.target.resource.name = coalesce(notice_name2, notice_name1),
+    xdm.target.interface = site_name,
+    xdm.alert.description = notice_message;
+
+/* Discovery Error Events : 
+    These mappings apply to the following events: discovery_error_added, discovery_error_changed, discovery_error_removed. 
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/discovery-error-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("discovery_error_added", "discovery_error_changed", "discovery_error_removed")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter 
+    system_name = arrayindex(regextract(msg_payload, "system_name\=(\w[^;]*)"), 0), // The hostname or computer name which this error belongs.
+    discovery_job_id = arrayindex(regextract(msg_payload, "discovery_job_id\=(\S[^;]+)"), 0), // The unique identifier of the Discovery job to which this error belongs.
+    error_type = arrayindex(regextract(msg_payload, "type\=(\d+)"), 0), // The type of error.
+    user_error_description = arrayindex(regextract(msg_payload, "user_error\=(\S[^;]+)"), 0) // The error description.
+| alter 
+    xdm.alert.subcategory = to_string(error_type), 
+    xdm.alert.description = user_error_description,
+    xdm.target.host.hostname = system_name, 
+    xdm.target.resource.id = discovery_job_id, 
+    xdm.target.resource.type = if(discovery_job_id != null, "discovery job");
+
+/* Endpoint Events: 
+    These fields apply to the following event types: endpoint_changed, endpoint_removed.
+    Full documentation: https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/endpoint-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("endpoint_changed", "endpoint_removed")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter 
+    endpoint_hostname = arrayindex(regextract(msg_payload, "hostname\=([^;]+)"), 0), // The hostname of the endpoint.
+    endpoint_fqdn = arrayindex(regextract(msg_payload, "distinguished_name\=([^;]+)"), 0), // The distinguished name of the endpoint.
+    endpoint_domain_id = arrayindex(regextract(msg_payload, "domain_id\=([^;]+)"), 0), // The unique identifier of the Domain to which this endpoint belongs.
+    endpoint_unique_id = arrayindex(regextract(msg_payload, "unique_id\=([^;]+)"), 0), // The unique identifier of the endpoint.
+    endpoint_name = arrayindex(regextract(msg_payload, "name\=([^;]+)"), 0), // The name of the endpoint.
+    endpoint_is_domain_controller = arrayindex(regextract(msg_payload, "is_domain_controller\=(0|1)"), 0), //1: The endpoint is a domain controller. 0: The endpoint is not a domain controller.
+    endpoint_os = arrayindex(regextract(msg_payload, "operating_system\=([^;]+)"), 0) // The operating system of the endpoint.
+| alter os = lowercase(endpoint_os)
+| alter 
+    xdm.target.domain = endpoint_domain_id,
+    xdm.target.host.hostname = endpoint_hostname, 
+    xdm.target.host.fqdn = endpoint_fqdn, 
+    xdm.target.host.device_id = endpoint_unique_id, 
+    xdm.target.host.device_category = if(endpoint_is_domain_controller = "1", "Domain Controller"),
+    xdm.target.host.os = endpoint_os,
+    xdm.target.host.os_family = if(os contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, os contains "mac", XDM_CONST.OS_FAMILY_MACOS, os contains "linux", XDM_CONST.OS_FAMILY_LINUX, os contains "android", XDM_CONST.OS_FAMILY_ANDROID, os contains "ios", XDM_CONST.OS_FAMILY_IOS, os contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, os contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, os contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, os contains "centos", XDM_CONST.OS_FAMILY_CENTOS, os contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, os contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, os contains "scada", XDM_CONST.OS_FAMILY_SCADA, to_string(endpoint_os)),
+    xdm.target.resource.name = endpoint_name,
+    xdm.target.resource.id = endpoint_unique_id,
+    xdm.target.resource.type = if(endpoint_unique_id != null, "endpoint machine");
+
+/* File Store Events : 
+    These mappings apply to the following events: file_removed_from_file_store, file_uploaded_to_file_store. 
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/file-store-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("file_removed_from_file_store", "file_uploaded_to_file_store")
+| call beyondtrust_rs_common_fields_modeling
+| alter 
+    file_name = arrayindex(regextract(_raw_log, "filename\=([^;]+)"), 0), // The name of the file being uploaded to or removed from the file store.
+    file_size = arrayindex(regextract(_raw_log, "size\*?\=(\d+)"), 0) // The size in bytes of the file being uploaded to the file store.
+| alter 
+    xdm.target.file.filename = file_name, 
+    xdm.target.file.size = to_integer(file_size);
+
+/* Group Policy Events: 
+    These mappings apply to the following events: 
+        group_policy_added, group_policy_changed, group_policy_removed,group_policy_member_added, group_policy_member_removed, group_policy_setting_added, group_policy_setting_changed, group_policy_setting_removed.
+            https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/group-policy-fields.htm
+            https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/group-policy-member-fields.htm
+            https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/group-policy-setting-fields.htm    
+            */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("group_policy_added", "group_policy_changed", "group_policy_removed", "group_policy_member_added", "group_policy_member_removed", "group_policy_setting_added", "group_policy_setting_changed", "group_policy_setting_removed"
+    , "group_policy_add_to_jump_group_removed", "group_policy_add_to_jumpoint_added", "group_policy_add_to_jumpoint_removed", "group_policy_add_to_support_teams_added", "group_policy_add_to_support_teams_removed", "group_policy_added", "group_policy_changed", "group_policy_removed", "group_policy_member_added", "group_policy_member_removed", "group_policy_remove_from_jump_group_added", "group_policy_remove_from_jump_group_removed", "group_policy_remove_from_jumpoint_added", "group_policy_remove_from_jumpoint_removed", "group_policy_remove_from_support_teams_added", "group_policy_remove_from_support_teams_removed")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter // Group Policy:
+    group_policy_id1 = arrayindex(regextract(msg_payload, "group_policy\:id\=(\w[^;]*)"), 0), // The unique identifier of this group policy.
+    is_account_disabled = arrayindex(regextract(msg_payload, "account\:disabled\=(0|1)"), 0), // 1: The accounts associated with this group policy are disabled. 0: The accounts associated with this group policy are active.
+    is_login_code_enabled = arrayindex(regextract(msg_payload, "login_code\:enabled\=(0|1)"), 0), // 1: Users must enter an emailed login code to log in. 0: Users may log in without an emailed login code.
+    group_policy_id2 = arrayindex(regextract(msg_payload, "id\=(\w[^;]*)"), 0), // The unique identifier of this group policy.
+    group_policy_name1 = arrayindex(regextract(msg_payload, "group_policy\:name\=([^;]+)"), 0), // The name of this group policy.
+    group_policy_name2 = arrayindex(regextract(msg_payload, "name\=([^;]+)"), 0), // The name of this group policy.
+    policy_id = arrayindex(regextract(msg_payload, "policy\:id\=([^;]+)"), 0), // The name of this group policy.
+    policy_name = arrayindex(regextract(msg_payload, "policy\:name\=([^;]+)"), 0), // The name of the group policy for which this setting is configured.
+    jumpoints = arrayindex(regextract(msg_payload, "jumpoints\=([^;]+)"), 0) //The group's Jumpoint access in the form of permission:id:name, where permission is one of added, removed, or unknown; id is the unique identifier of the Jumpoint; and name is the name of the Jumpoint.
+| alter // Group Policy Member Fields:
+    security_provider_id = arrayindex(regextract(msg_payload, "provider\:id\=([^;]*)"), 0), // The unique identifier of the security provider against which this member authenticates.
+    security_provider_name = arrayindex(regextract(msg_payload, "provider\:name\=([^;]*)"), 0), // The name of the security provider against which this member authenticates.
+    user_external_id = arrayindex(regextract(msg_payload, "user\:external_id\=(\w[^;]*)"), 0) // The unique identifier of this group policy member.
+| alter // additional proccessing 
+    group_policy_id = coalesce(group_policy_id1, group_policy_id2),
+    group_policy_name = coalesce(group_policy_name1, group_policy_name2),
+    groups_and_roles = arraycreate(jumpoints)
+| alter
+    policy = if(policy_id != null, concat(policy_id, "(", policy_name, ")")),
+    group_policy = if(group_policy_id != null, concat(group_policy_id, "(", group_policy_name, ")")),
+    security_provider = if(security_provider_id != null, concat(security_provider_id, "(", security_provider_name, ")"))
+| alter 
+    xdm.auth.mfa.provider = security_provider,
+    xdm.auth.is_mfa_needed = if(is_login_code_enabled = "1", to_boolean("TRUE"), is_login_code_enabled = "0",  to_boolean("FALSE")),
+    xdm.network.rule = coalesce(policy, group_policy),
+    xdm.target.resource.id = coalesce(policy_id, group_policy_id),
+    xdm.target.resource.name = coalesce(policy_name, group_policy_name),
+    xdm.target.resource.type = if(policy_id != null, "group policy", group_policy_id != null, "group policy"),
+    xdm.target.identity.is_disabled = if(is_account_disabled = "1", to_boolean("TRUE"), is_account_disabled = "0",  to_boolean("FALSE")),
+    xdm.target.identity.identifier = user_external_id,
+    xdm.target.identity.groups = groups_and_roles;
+
+/* iOS Content Item Events:
+    These mapping applay to the followinf events: ios_content_item_added, ios_content_item_changed, ios_content_item_removed.
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/ios-content-item-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("jios_content_item_added", "ios_content_item_changed", "ios_content_item_removed")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter 
+    profile_name =  arrayindex(regextract(msg_payload, "name\:\[languague\]\=(\S[^;]+)"), 0),
+    profile_id = arrayindex(regextract(msg_payload, "id\=(\S[^;]+)"), 0),
+    file_name = arrayindex(regextract(msg_payload, "file_name\=(\S[^;]+)"), 0)
+| alter
+    xdm.target.resource.name = profile_name,
+    xdm.target.resource.id = profile_id,
+    xdm.target.file.filename = file_name,
+    xdm.target.resource.type = if(profile_id != null, "iOS configuration profile");
+
+/* Jumpoint User & Domain Events : 
+    These mappings apply to the following events: jumpoint_user_added, jumpoint_user_removed, domain_added, domain_changed, domain_removed  
+    Docs: https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/jumpoint-user-fields.htm 
+          https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/domain-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("jumpoint_user_added", "jumpoint_user_removed", "domain_added", "domain_changed", "domain_removed")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter 
+    jumppoint_id = arrayindex(regextract(msg_payload, "jumpoint\:id\=(\w[^;]*)"), 0), // The unique identifier of the Jumpoint to which this user/domain is being added or removed.
+    jumppoint_name = arrayindex(regextract(msg_payload, "jumpoint\:name\=(\S[^;]+)"), 0), // The name of the Jumpoint to which this user is being added or removed.
+    jumppoint_associated_user_id = arrayindex(regextract(msg_payload, "user\:id\=(\S[^;]*)"), 0), // The unique identifier of the user being added or removed. 
+    jumppoint_associated_username = arrayindex(regextract(msg_payload, "user\:username\=(\S[^;]+)"), 0), // The name of the user being added or removed.
+    jumppoint_associated_vault_domain_name = arrayindex(regextract(msg_payload, "name\=(\S[^;]+)"), 0) // The name of the vault account domain added, changed or remvoed.
+| alter 
+    xdm.target.domain = jumppoint_associated_vault_domain_name,
+    xdm.target.resource.id = jumppoint_id, 
+    xdm.target.resource.name = jumppoint_name,
+    xdm.target.resource.type = if(jumppoint_id != null, "jumppoint"),
+    xdm.target.identity.identifier = jumppoint_associated_user_id,
+    xdm.target.identity.username = jumppoint_associated_username;
+
+/* Login, Logout, User Properties Modifications, & Vacult Account rotation Events:
+    These mappings appliy to the following event types: "login", "logout", "change_display_name", "change_password", "change_username", "vault_account_password_rotation". 
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/login-fields.htm    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/change-display-name.htm 
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/change-password-fields.htm
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/change-username-fields.htm
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/vault-account-password-rotation-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("login", "logout", "change_display_name", "change_password", "change_username", "vault_account_password_rotation")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter 
+    reason = arrayindex(regextract(msg_payload, "reason\=(\S[^;]+)"), 0), // Indicates the reason for failure / action
+    status = arrayindex(regextract(msg_payload, "status\=(\S[^;]+)"), 0), // Whether the login/change/rotation attempt succeeded or failed.
+    target_interface = arrayindex(regextract(msg_payload, "target\=(\S[^;]+)"), 0), // The authentication area from which the activity change attempt was made (web/api, web/appliance, web/login)
+    vault_rotated_account = arrayindex(regextract(msg_payload, "account\=(\S[^;]+)"), 0) // The account username rotated.
+| alter
+    xdm.source.identity.is_disabled = if(reason ~= "account disabled|account expired", to_boolean("TRUE")),
+    xdm.source.identity.is_password_expired = if(reason ~= "change password", to_boolean("TRUE")),
+    xdm.event.outcome = if(status = "success", XDM_CONST.OUTCOME_SUCCESS, status ~= "fail", XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = reason, 
+    xdm.logon.type = target_interface,
+    xdm.target.identity.username = vault_rotated_account;
+
+/* License Pool Events:
+    These mapping applay to the following events: license_pool_added, license_pool_changed, license_pool_removed.
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/license-pool-fields.htm */
+alter event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0) // Here is an error
+| filter event_type in("license_pool_added", "license_pool_changed", "license_pool_removed")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter
+    pool_id = arrayindex(regextract(msg_payload, "id\=(\w[^;]*)"), 0),
+    pool_name = arrayindex(regextract(msg_payload, "name\=(\w[^;]+)"), 0)
+| alter
+    xdm.target.resource.id = pool_id,
+    xdm.target.resource.name = pool_name,
+    xdm.target.resource.type = if(pool_id != null, "license pool");
+
+/*  Network Address Events:
+    These mappings apply to the following events: network_address_added, network_address_changed, network_address_removed, network_changed.
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/network-address-fields.htm
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/network-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("network_address_added", "network_address_changed", "network_address_removed", "network_changed")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter // Network Address:
+    interface = arrayindex(regextract(msg_payload, "interface=(\S[^;]+)"), 0), // The NIC to use as the interface.
+    ip = arrayindex(regextract(msg_payload, ";ip\=([^;]+)"), 0), // The IP address of the interface.
+    netmask = arrayindex(regextract(msg_payload, "netmask\=([^;]+)"), 0) // The netmask for this IP address.
+| alter // Network Fields: 
+    dns_server_ip_addresses = regextract(msg_payload, "dns\:\d=([^;]+)"), // The IP addresses of the DNS servers.
+    gateway_interface = arrayindex(regextract(msg_payload, "gateway\:interface\=([^;]+)"), 0), // The interface to use as the default gateway.
+    gateway_ip = arrayindex(regextract(msg_payload, "gateway\:ip\=([^;]+)"), 0), // The IP address of the default gateway.
+    ntp_server_ip = arrayindex(regextract(msg_payload, "ntp_server\=([^;]+)"), 0), // The IP address of the  NTP server.
+    hostname =  arrayindex(regextract(msg_payload, "hostname\=([^;]+)"), 0), // The hostname of the B Series Appliance.
+    ssl_ciphers = arrayindex(regextract(msg_payload, "ssl\:ciphers\=([^;]+)"), 0) // The set of ciphersuites supported by the B Series Appliance for HTTPS/SSL traffic.
+| alter 
+    ip_addresses = arrayconcat(dns_server_ip_addresses, arraycreate(ip), arraycreate(gateway_ip), arraycreate(ntp_server_ip)),
+    interface = coalesce(interface, gateway_interface),
+    ip_address = coalesce(ip, gateway_ip)
+| alter 
+    ipv4_address = if(ip_address ~= "\.", ip_address),
+    ipv6_address = if(ip_address ~= "\:", ip_address),
+    ipv4_addresses = arrayfilter(ip_addresses, "@element" ~= "\."),
+    ipv6_addresses = arrayfilter(ip_addresses, "@element" ~= "\:")
+| alter 
+    xdm.network.dhcp.dns_server = dns_server_ip_addresses,
+    xdm.network.tls.cipher = ssl_ciphers,
+    xdm.target.interface = interface,
+    xdm.target.ipv4 = ipv4_address,
+    xdm.target.ipv6 = ipv6_address,
+    xdm.target.host.ipv4_addresses = ipv4_addresses,
+    xdm.target.host.ipv6_addresses = ipv6_addresses,
+    xdm.target.host.hostname = hostname,
+    xdm.target.subnet = netmask;
+
+/* Management Account Events: 
+    These mappings apply to the following events: management_account_added, management_account_changed, management_account_removed. 
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/management-account-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("management_account_added", "management_account_changed", "management_account_removed")
+| call beyondtrust_rs_common_fields_modeling
+| alter 
+    domain_account_id = arrayindex(regextract(_raw_log, "domain_account\:id\=(\S[^;]+)"), 0), // The unique identifier of the domain account.
+    domain_id = arrayindex(regextract(_raw_log, "domain\:id\=(\w[^;]*)"), 0) // The unique identifier of the domain.
+| alter 
+    xdm.target.domain = domain_id,
+    xdm.target.identity.identifier = domain_account_id,
+    xdm.target.resource.id = domain_id, 
+    xdm.target.resource.type = if(domain_id != null, "domain");
+
+/* Public Site related Events: 
+    These fields applay to the following events: public_site_address_added, public_site_address_removed,
+    public_site_customer_banner_reverted_to_factory_default, public_site_customer_banner_uploaded,
+    public_site_added, public_site_changed, and public_site_removed, public_site_setting_added, public_site_setting_changed, public_site_team_added, public_site_team_removed, public_site_template_asset_uploaded, public_site_template_asset_reverted, public_site_template_asset_uploaded, public_template_deleted, public_template_written.
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/public-site-address-fields.htm
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/public-site-customer-banner-fields.htm
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/public-site-fields.htm
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/public-site-setting-fields.htm
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/public-site-team-fields.htm
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/public-site-template-asset-fields.htm
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/public-template-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("public_site_address_added", "public_site_address_removed", "public_site_customer_banner_reverted_to_factory_default", "public_site_customer_banner_uploaded", "public_site_setting_added", "public_site_setting_changed","public_site_team_added", "public_site_team_removed","public_site_template_asset_uploaded", "public_site_template_asset_reverted", "public_site_template_asset_uploaded", "public_template_deleted", "public_template_written")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter //
+    site_id = arrayindex(regextract(msg_payload, "site\:id\=(\w[^;]*)"), 0),
+    site_name = arrayindex(regextract(msg_payload, "site\:name\=(\w[^;]+)"), 0),
+    site_address = arrayindex(regextract(msg_payload, "address\=(\w[^;]+)"), 0)
+| alter //Public Site Fields
+    template_id1 =arrayindex(regextract(msg_payload, "template\:id\=(\w[^;]*)"), 0),
+    template_name = arrayindex(regextract(msg_payload, "template\:name\=(\w[^;]+)"), 0)
+| alter //Public Site Setting fields
+    email_sender = arrayindex(regextract(msg_payload, "support\:invite\:email\:from_address\=(\w[^;]+)"), 0),
+    url = arrayindex(regextract(msg_payload, "support\:landing_page\:chat\:download\=(\w[^;]+)"), 0)
+| alter //Public Site Team fields
+    team_name = arrayindex(regextract(msg_payload, "team\:name\=(\w[^;]+)"), 0)
+| alter //public site template asset
+    asset_id = arrayindex(regextract(msg_payload, "asset\:id\=(\w[^;]*)"), 0),
+    template_id2 = arrayindex(regextract(msg_payload, "template\:name\=(\w[^;]+)"), 0)
+
+| alter
+    xdm.target.resource.id = coalesce(site_id, asset_id),
+    xdm.target.resource.name = site_name,
+    xdm.target.resource.type = if(site_id != null, "Public site"),
+    xdm.target.url = coalesce(url,site_address),
+    xdm.target.process.name = coalesce(template_name,template_id2),
+    xdm.target.process.identifier = coalesce(asset_id, template_id1),
+    xdm.email.sender = if(email_sender != null, email_sender),
+    xdm.target.identity.groups = if(team_name != null, arraycreate(team_name));
+
+/* Report Events: 
+    These fields apply to the following event types: 
+    license_usage_report_generated, presentation_session_report_generated, presentation_session_detail_generated, sdcust_exit_survey_report_generated, sdrep_exit_survey_report_generated, support_session_report_generated, support_session_detail_generated, support_session_summary_report_generated, and team_activity_report_generated events. 
+    Full documentation: https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/report-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("license_usage_report_generated", "presentation_session_report_generated", "presentation_session_detail_generated", "sdcust_exit_survey_report_generated", "sdrep_exit_survey_report_generated","support_session_report_generated", "support_session_detail_generated", "support_session_summary_report_generated", "team_activity_report_generated")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter 
+    computer_name = arrayindex(regextract(msg_payload, "computer_name\=(\S[^;]+)"), 0), // The computer name filter used in the query, if specified.
+    lsid = arrayindex(regextract(msg_payload, "lsid\=(\S[^;]+)"), 0), // The unique session identifier used to query for a detailed session report, if specified.
+    lsids = arrayindex(regextract(msg_payload, "lsids\=(\S[^;]+)"), 0), // A comma-separated list of unique session identifiers used to query for multiple detailed session reports, if specified.
+    start_timestamp = arrayindex(regextract(msg_payload, "start_timestamp\=(\S[^;]+)"), 0), // The exact timestamp of the first date to be included in the report, if any date filters were used.
+    end_timestamp = arrayindex(regextract(msg_payload, "end_timestamp\=(\S[^;]+)"), 0), // The exact timestamp of the last date to be included in the report, if date filters were specified.
+    private_ip = arrayindex(regextract(msg_payload, "private_ip\=(\S[^;]+)"), 0), // The private IP address filter used in the query, if specified.
+    public_ip = arrayindex(regextract(msg_payload, "public_ip\=(\S[^;]+)"), 0), // The public IP address filter used in the query, if specified.
+    rep_id = arrayindex(regextract(msg_payload, "rep_id\=([^;]+)"), 0), // The user filter value, if specified. The value is either a unique user identifier, the string any, or the string none.
+    rep_name = arrayindex(regextract(msg_payload, "rep_name\=(\S[^;]+)"), 0) // The display name of the representative specified by rep_id, when applicable.
+| alter 
+    private_ipv4 = if(private_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", private_ip),
+    private_ipv6 = if(private_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", private_ip),
+    public_ipv4 = if(public_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", public_ip),
+    public_ipv6 = if(public_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", public_ip),
+    start = to_integer(start_timestamp),
+    end = to_integer(end_timestamp),
+    filtered_user = coalesce(arrayindex(regextract(rep_id, "\(([^\)]+)"), 0), arrayindex(regextract(rep_name, "\(([^\)]+)"), 0))
+| alter 
+    xdm.event.duration = to_integer(multiply(subtract(end, start), 1000)),
+    xdm.network.session_id = coalesce(lsids, lsid),
+    xdm.target.host.hostname = computer_name, 
+    xdm.target.ipv4 = coalesce(public_ipv4, private_ipv4),
+    xdm.target.ipv6 = coalesce(public_ipv6, private_ipv6),
+    xdm.target.host.ipv4_addresses = if(private_ipv4 != null and public_ipv4 != null, arrayconcat(arraycreate(private_ipv4), arraycreate(public_ipv4)), private_ipv4 != null, arraycreate(private_ipv4), public_ipv4 !=  null, arraycreate(public_ipv4)),
+    xdm.target.host.ipv6_addresses = if(private_ipv6 != null and public_ipv6 != null, arrayconcat(arraycreate(private_ipv6), arraycreate(public_ipv6)), private_ipv6 != null, arraycreate(private_ipv6), public_ipv6 !=  null, arraycreate(public_ipv6)),
+    xdm.target.resource.id = rep_id, 
+    xdm.target.resource.name = rep_name,
+    xdm.target.resource.type = if(rep_id != null, "rep id display name"), 
+    xdm.target.identity.username = filtered_user; 
+
+/* SSH Account Events: 
+    These mappings apply to the following events: ssh_account_added, ssh_account_changed, ssh_account_removed. 
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/ssh-account-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("ssh_account_added", "ssh_account_changed", "ssh_account_removed")
+| call beyondtrust_rs_common_fields_modeling
+| alter public_cert_signing_ca = arrayindex(regextract(_raw_log, "public_cert_signing_ca\=([^;]+)"), 0) // The public certificate signing ca.
+| alter xdm.network.tls.client_certificate.issuer = public_cert_signing_ca;
+
+/* Support Team Events: 
+    These mappings apply to the following events: support_team_added, support_team_changed, support_team_removed, support_team_member_added, support_team_member_changed. */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("support_team_added", "support_team_changed", "support_team_removed", "support_team_member_added", "support_team_member_changed", "support_team_member_changed")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter // Support Team: https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/support-team-fields.htm
+    support_team_id1 = arrayindex(regextract(msg_payload, "id\=(\w[^;]*)"), 0), // The unique identifier of the team.
+    support_team_name1 = arrayindex(regextract(msg_payload, "name\=(\w[^;]+)"), 0) // The name of the team.
+| alter // Support Team Member: https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/support-team-member-fields.htm 
+    support_team_id2 = arrayindex(regextract(msg_payload, "team\:id\=(\w[^;]*)"), 0), //The unique identifier of the team to which this user belongs.
+    support_team_name2 = arrayindex(regextract(msg_payload, "team\:name\=(\w[^;]+)"), 0), // The name of the team to which this user belongs.
+    support_user_id = arrayindex(regextract(msg_payload, "user\:id\=(\w[^;]+)"), 0), // The unique identifier of the user being added to or removed from this team.
+    support_user_name = arrayindex(regextract(msg_payload, "user\:name\=(\w[^;]+)"), 0) // The name of the user being added to or removed from this team.
+| alter 
+    support_team_id = coalesce(support_team_id1, support_team_id2),
+    support_team_name = coalesce(support_team_name1, support_team_name2)
+| alter
+    xdm.target.identity.username = support_user_name, 
+    xdm.target.identity.identifier = support_user_id, 
+    xdm.target.identity.groups = arrayconcat(arraycreate(support_team_id), arraycreate(support_team_name));
+
+/* Support Issue, Support Team Issue, Support Team Jump Access Events:
+    These mapping apply to the following events: support_issue_added, support_issue_changed, support_issue_removed, support_issue_skill_added, support_issue_skill_removed, support_team_issue_added, support_team_issue_removed,
+    support_team_jump_access_added, support_team_jump_access_removed.
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/support-issue-fields.htm
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/support-team-issue-fields.htm
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/support-team-jump-access-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("support_issue_added", "support_issue_changed", "support_issue_removed", "support_issue_skill_added", "support_issue_skill_removed","support_team_issue_added", "support_team_issue_removed","support_team_jump_access_added", "support_team_jump_access_removed")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter //Support Issue & Support team issue events
+    issue_id = arrayindex(regextract(msg_payload,"id\=(\d+);"),0),
+    team_name = arrayindex(regextract(msg_payload,"team\:name\=([^;]+);"), 0),
+    team_id = arrayindex(regextract(msg_payload,"team\:id\=(\d+);"),0),
+    issue_code_name = arrayindex(regextract(msg_payload,"code_name\=([^;]+);"), 0),
+    issue_description = arrayindex(regextract(msg_payload,"issue_desc\=([^;]+);"), 0)
+| alter //Support team jump access evetns: 
+    jump_id = arrayindex(regextract(msg_payload,"team_with_access\:id\=(\d+);"),0),
+    jump_name = arrayindex(regextract(msg_payload,"team_with_access\:name\=([^;]+);"), 0)
+| alter
+    xdm.target.resource.type = if(jump_id != null, "Support team jump access", issue_id != null, "Support issue"),
+    xdm.target.resource.id = coalesce(jump_id, issue_id),
+    xdm.target.resource.name = coalesce(jump_name,issue_code_name),
+    xdm.alert.description = issue_description,
+    xdm.target.identity.groups = if(team_name != null,arrayconcat(arraycreate(team_name), arraycreate(team_id)));
+
+/* /appliance & /login Local Users Events: 
+    These mappings apply to the following events: user_added, user_changed, user_removed. 
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/user-fields.htm
+    https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/fields/user-fields-appliance.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("user_added", "user_changed", "user_removed")
+| call beyondtrust_rs_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter 
+    is_account_disabled = arrayindex(regextract(msg_payload, "account\:disabled\=(0|1)"), 0), // 1: This local user account is disabled, 0: This local user account is active.
+    is_mfa_required = arrayindex(regextract(msg_payload, "two_factor_auth\:required\=(0|1)"), 0), // 1: This user is required to use two-factor authentication. 0: This user is not required to use two-factor authentication.
+    security_provider = arrayindex(regextract(msg_payload, "provider\:name\=([^;]*)"), 0), // The name of the security provider against which this user last authenticated.
+    user_id = arrayindex(regextract(msg_payload, "id\=(\w[^;]*)"), 0), // The unique identifier for this user.
+    user_external_id = arrayindex(regextract(msg_payload, "external_id\=(\S[^;]+)"), 0), // An internal representation of a remote user's identifying information, such as an LDAP attribute, RADIUS username, or Kerberos principal name.
+    username = arrayindex(regextract(msg_payload, "username\=([^;]+)"), 0), // The username the user last used to authenticate to BeyondTrust. Not necessarily unique.
+    user_displayname = split(arrayindex(regextract(msg_payload, "displayname\=([^;]+)"), 0)), // The display name of this user.
+    pool_id = arrayindex(regextract(msg_payload, "license_pool\:id\=(\w[^;]*)"), 0), //The name of the license pool to which the user belongs.
+    pool_name = arrayindex(regextract(msg_payload, "license_pool\:name\=([^;]*)"), 0) //The name of the license pool to which the user belongs.
+| alter 
+    xdm.auth.is_mfa_needed = if(is_mfa_required = "1", to_boolean("TRUE"), is_mfa_required = "0", to_boolean("FALSE")),
+    xdm.auth.mfa.provider = security_provider,
+    xdm.target.identity.identifier = user_id,
+    xdm.target.identity.is_disabled = if(is_account_disabled = "1", to_boolean("TRUE"), is_account_disabled = "0", to_boolean("FALSE")),
+    xdm.target.identity.upn = user_external_id,
+    xdm.target.identity.first_name = arrayindex(user_displayname, 0),
+    xdm.target.identity.last_name = arrayindex(user_displayname, 1),
+    xdm.target.identity.username = username,
+    xdm.target.resource.id = pool_id,
+    xdm.target.resource.name = pool_name;
+
+/* General Fallback Mapping: 
+    This filter applies to all other events which weren't mapped explicitly by any other filter. */
+alter event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type not in("access_sponsor_group_added","access_sponsor_group_changed","access_sponsor_group_member_added","access_sponsor_group_member_changed","access_sponsor_group_member_removed","access_sponsor_group_removed","account_added","account_changed","account_group_added","account_group_changed","account_group_removed","account_jump_item_association_added","account_jump_item_association_changed","account_removed","accounts_changed","api_account_added","api_account_changed","api_account_removed","canned_message_added","canned_message_category_added","canned_message_category_removed","canned_message_cateogry_changed","canned_message_changed","canned_message_removed","canned_message_team_added","canned_message_team_changed","canned_message_team_removed","canned_script_added","canned_script_category_added","canned_script_category_removed","canned_script_changed","canned_script_file_added","canned_script_file_removed","canned_script_removed","canned_script_team_added","canned_script_team_removed","canned_scripts_category_added","canned_scripts_category_removed","canned_scripts_file_added","canned_scripts_file_removed","certificate_export","change_display_name","change_password","change_username","custom_rep_link_added","custom_rep_link_changed","custom_rep_link_removed","custom_session_attribute_added","custom_session_attribute_changed","custom_session_attribute_removed","custom_session_policy_added","custom_session_policy_changed","custom_session_policy_removed","custom_special_action_added","custom_special_action_changed","custom_special_action_removed","customer_notice_added","customer_notice_changed","customer_notice_public_site_added","customer_notice_public_site_removed","customer_notice_removed","discovery_error_added","discovery_error_changed","discovery_error_removed","domain_added","domain_changed","domain_removed","endpoint_changed","endpoint_removed","file_removed_from_file_store","file_uploaded_to_file_store","group_policy_added","group_policy_changed","group_policy_member_added","group_policy_member_removed","group_policy_removed","group_policy_setting_added","group_policy_setting_changed","group_policy_setting_removed","ios_content_item_added","ios_content_item_changed","ios_content_item_removed","jumpoint_user_added","jumpoint_user_removed","license_pool_added","license_pool_changed","license_pool_removed","license_usage_report_generated","login","logout","management_account_added","management_account_changed","management_account_removed","network_address_added","network_address_changed","network_address_removed","network_changed","presentation_session_detail_generated","presentation_session_report_generated","public_site_added","public_site_address_added","public_site_address_removed","public_site_changed","public_site_customer_banner_reverted_to_factory_default","public_site_customer_banner_uploaded","public_site_removed","public_site_setting_added","public_site_setting_changed","public_site_team_added","public_site_team_removed","public_site_template_asset_reverted","public_site_template_asset_uploaded","public_template_deleted","public_template_written","sdcust_exit_survey_report_generated","sdrep_exit_survey_report_generated","ssh_account_added","ssh_account_changed","ssh_account_removed","support_issue_added","support_issue_changed","support_issue_removed","support_session_detail_generated","support_session_report_generated","support_session_summary_report_generated","support_team_added","support_team_changed","support_team_issue_added","support_team_issue_removed","support_team_jump_access_added","support_team_jump_access_removed","support_team_member_added","support_team_member_changed","support_team_member_removed","support_team_removed","team_activity_report_generated","user_added","user_changed","user_removed","user_session_policy_added","user_session_policy_removed","vault_account_password_rotation")
+| call beyondtrust_rs_common_fields_modeling
+| alter 
+    policy_id = arrayindex(regextract(_raw_log, "policy_id\=(\w[^;]*)"), 0),
+    target_user_id = arrayindex(regextract(_raw_log, "user\:id\=(\w[^;]*)"), 0),
+    target_username = arrayindex(regextract(_raw_log, "user[_]*name\=([^;]+)"), 0),
+    target_computer_name = arrayindex(regextract(_raw_log, "computer_name\=([^;]+)"), 0),
+    target_resource_owner = arrayindex(regextract(_raw_log, "credential_owner_id\=([^;]+)"), 0),
+    target_resource_id = arrayindex(regextract(_raw_log, "[\;\:]id\=(\w[^;]*)"), 0),
+    target_resource_name = arrayindex(regextract(_raw_log, "[\:\;]name\=([^;]+)"), 0)
+| alter 
+    xdm.network.rule = policy_id,
+    xdm.target.host.hostname = target_computer_name,
+    xdm.target.resource.id = target_resource_id,
+    xdm.target.resource.name = target_resource_name,
+    xdm.target.resource.parent_id = target_resource_owner,
+    xdm.target.identity.identifier = target_user_id,
+    xdm.target.identity.username = target_username;

@@ -1,0 +1,54 @@
+[MODEL:dataset="fortinet_fortimanager_raw"]
+alter event_id = arrayindex(regextract(_raw_log, "log_id=(\d{10})" ), 0),
+// extract subtype
+    original_event_type = arrayindex(regextract(_raw_log, "subtype=(\w+)" ), 0),
+// extract pri
+    alert_severity = arrayindex(regextract(_raw_log, "pri=(\w+)" ), 0),
+// extract desc
+    event_type = arrayindex(regextract(_raw_log, "\Wdesc=\"([^\"]+)" ), 0),
+// extract msg
+    event_description = arrayindex(regextract(_raw_log, "msg=\"([^\"]+)" ), 0),
+// extract user
+    source_user_username = arrayindex(regextract(_raw_log, "user=\"([^\"]+)" ), 0),
+// extract device
+    source_host_hostname = arrayindex(regextract(_raw_log, "device=\"([^\"]+)" ), 0),
+// extract adminprof
+    source_user_groups = regextract(_raw_log, "adminprof=\"([^\"]+)" ),
+// extract operation
+    event_operation_sub_type = arrayindex(regextract(_raw_log, "operation=\"([^\"]+)" ), 0),
+// extract session id
+    session_context_id = arrayindex(regextract(_raw_log, "session_id=(\d{1,10})" ), 0),
+// extract version
+    target_resource_type = arrayindex(regextract(_raw_log, "version=\"([^\"]+)" ), 0)
+
+// extract userfrom ->  extract IP 
+| alter userfrom_ipv4 = arrayindex(regextract(_raw_log, "userfrom=\"\w+[(](\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3})[)]" ), 0)
+|alter userfrom_ipv6 = arrayindex(regextract(_raw_log , "userfrom=\"\w+[(]([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})[)]" ), 0)
+
+| alter source_ipv4 = if( userfrom_ipv4 ~= "\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}", userfrom_ipv4)
+| alter source_ipv6 = if( userfrom_ipv6 ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", userfrom_ipv6)
+
+// extract user type
+|alter tmp_user_type = arrayindex(regextract(_raw_log, "user_type=\"(?i)(super|restrict)" ), 0)
+|alter auth_privilege_level = if(tmp_user_type = "super", XDM_CONST.PRIVILEGE_LEVEL_ADMIN, tmp_user_type = "restrict", XDM_CONST.PRIVILEGE_LEVEL_USER)
+
+// Subtype full name
+| alter long_event_type = if(original_event_type = "system", "System Manager", original_event_type = "fgfm", "FortiGate-FortiManager Protocol", original_event_type = "devcfg", "Device Configuration", original_event_type = "scply","Security Console", original_event_type = "glbcfg", "Global Database", original_event_type = "scrmgr", "Script Manager", original_event_type = "webport", "Web Portal", original_event_type = "scfw", "Firewall objects", original_event_type = "scvpn", "VPN Console", original_event_type = "epmgr", "Endpoint Manager", original_event_type = "rev", "Revision History", original_event_type = "dm", "Deployment Manager", original_event_type = "rtmon", "Real-Time Monitor", original_event_type = "lrmgr", "Log And Report Manager", original_event_type = "ha", "High Availability", original_event_type = "fmwmgr", "Firmware Manager", original_event_type = "fgd", "FortiGuard Service", original_event_type = "fctmgr", "FortiClient Manager", original_event_type = "fmlmgr", "FortiMail manager", original_event_type = "iolog", "Debug IO log", original_event_type = "objcfg", "Object Changes", original_event_type = "devmgr", "Device Manager", original_event_type = "fmgws", "FortiManager Web Service", original_event_type = "logd", "Log Daemon", original_event_type = "fips", "FIPS-CC", original_event_type = "devops", "Managed Device Operations", original_event_type = "docker", "Management extension applications", original_event_type )
+
+
+|alter
+    xdm.event.id = event_id,
+    xdm.event.original_event_type = long_event_type,
+    xdm.alert.severity = alert_severity,
+    xdm.event.log_level = if (alert_severity = "alert", XDM_CONST.LOG_LEVEL_ALERT, alert_severity = "error", XDM_CONST.LOG_LEVEL_ERROR, alert_severity = "warning", XDM_CONST.LOG_LEVEL_WARNING, alert_severity = "notice", XDM_CONST.LOG_LEVEL_NOTICE, alert_severity = "information", XDM_CONST.LOG_LEVEL_INFORMATIONAL, alert_severity = " emergency", XDM_CONST.LOG_LEVEL_EMERGENCY , alert_severity = "critical", XDM_CONST.LOG_LEVEL_CRITICAL, alert_severity = "debug", XDM_CONST.LOG_LEVEL_DEBUG),
+    xdm.event.type = event_type,
+    xdm.event.description = event_description,
+    xdm.source.identity.username = source_user_username,
+    xdm.source.host.hostname = source_host_hostname,
+    xdm.source.identity.groups = source_user_groups,
+    xdm.event.operation_sub_type = event_operation_sub_type,
+    xdm.session_context_id = session_context_id,
+    xdm.auth.privilege_level = auth_privilege_level,
+    xdm.target.resource.type = target_resource_type,
+    xdm.source.ipv4 = source_ipv4,
+    xdm.source.ipv6 = source_ipv6;

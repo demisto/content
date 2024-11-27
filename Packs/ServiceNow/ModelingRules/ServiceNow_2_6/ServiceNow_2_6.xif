@@ -1,0 +1,13 @@
+[MODEL: dataset = servicenow_servicenow_raw]
+alter // sys_audit: https://docs.servicenow.com/bundle/vancouver-platform-security/page/administer/time/concept/exploring-auditing.html#d227507e148
+    xdm.database.tables = arraycreate(tablename), // Table that the audit record is for (for example, "incident")
+    xdm.event.type = "AUDIT", 
+    xdm.event.id = sys_id, // the record id of the audit record in sys_audit
+    xdm.event.outcome_reason = reason, // Reason for the change (if any reason is associated with the change)
+    xdm.session_context_id = documentkey, // the record id of the audited record in <tablename>
+    xdm.source.identity.username = user, // Name of the user who created the change. 
+    xdm.target.resource_before.value = oldvalue, // Old value of the field change represented by this sys_audit record.
+    xdm.target.resource.id = documentkey, // the record id of the audited record in <tablename>
+    xdm.target.resource.name = fieldname, // Field that changed
+    xdm.target.resource.type = tablename, // Table that the audit record is for (for example, "incident")
+    xdm.target.resource.value = newvalue; // New value of the field change represented by this sys_audit record.

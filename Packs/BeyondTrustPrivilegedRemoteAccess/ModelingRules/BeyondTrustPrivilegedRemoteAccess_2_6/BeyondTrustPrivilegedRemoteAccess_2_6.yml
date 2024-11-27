@@ -1,0 +1,6 @@
+fromversion: 9.0.0
+id: BeyondTrust_PRA_ModelingRule
+name: BeyondTrust Privileged Remote Access Modeling Rule
+rules: ''
+schema: ''
+tags: BeyondTrust

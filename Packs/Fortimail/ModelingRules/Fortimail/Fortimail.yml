@@ -4,3 +4,4 @@ name: Fortimail Modeling Rule
 rules: ''
 schema: ''
 tags: Fortimail
+toversion: 8.9.0

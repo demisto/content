@@ -3,3 +3,4 @@ id: Trend_Micro_Email_Security_ModelingRule
 name: Trend Micro Email Security Modeling Rule
 rules: ''
 schema: ''
+toversion: 8.9.0

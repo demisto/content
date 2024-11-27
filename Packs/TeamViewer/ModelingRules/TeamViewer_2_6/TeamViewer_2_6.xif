@@ -1,0 +1,46 @@
+[MODEL: dataset="teamviewer_tensor_raw"]
+// Mapping for "Policy", "User role", "User profile", "Company administration" and "Group management" event type logs.
+filter EventType in ("Policy", "User role", "User profile", "Company administration", "Group management")
+| alter
+    xdm.event.type = EventType,
+    xdm.event.description = EventName,
+    xdm.source.identity.username = Author,
+    xdm.target.resource.name = AffectedItem,
+    Entities = json_extract_array(EventDetails,"$.")
+| alter
+    OldValue = arraymap(Entities, json_extract_scalar("@element", "$.OldValue")),
+    NewValue = arraymap(Entities, json_extract_scalar("@element", "$.NewValue")),
+    PropertyName = arraymap(Entities, json_extract_scalar("@element", "$.PropertyName")),
+    PropertyCategory = arraymap(Entities, json_extract_scalar("@element", "$.PropertyCategory"))
+| alter
+    xdm.target.resource_before.value = if(OldValue = "", NULL, arraystring(OldValue, ", ")),
+    xdm.target.resource.value = if(NewValue = "", NULL, arraystring( NewValue, ", ")),
+    xdm.target.resource.type = if(PropertyName = "", NULL, arraystring(PropertyName, ", ")),
+    xdm.event.operation_sub_type = if(PropertyCategory = "", NULL, arraystring(PropertyCategory, ", "));
+// Mapping for "Session" event type log.
+filter EventType in ("Session")
+// Map session changes
+| alter
+        Changes = arrayfilter(EventDetails  -> [], (json_extract_scalar("@element","$.PropertyCategory") contains "change" or json_extract_scalar("@element","$.PropertyCategory") contains "modify" or json_extract_scalar("@element","$.PropertyCategory") contains "affect" or json_extract_scalar("@element","$.PropertyCategory") contains "update") and json_extract_scalar("@element","$.OldValue") != "")
+| alter operation_type_change = arraystring(arraymap(Changes, json_extract_scalar("@element", "$.PropertyCategory")), ", ")
+| alter operation_type_change = if(operation_type_change = "", null, operation_type_change)
+| alter
+        xdm.target.resource_before.value = arraystring(arraymap(Changes, json_extract_scalar("@element", "$.OldValue")), ", "),
+        xdm.target.resource.value = arraystring(arraymap(Changes, json_extract_scalar("@element", "$.NewValue")), ", "),
+        xdm.target.resource.type = arraystring(arraymap(Changes, json_extract_scalar("@element", "$.PropertyName")), ", ")
+// Map session info
+| alter
+        sessionType = arraystring(arraymap(arrayfilter(EventDetails  -> [], json_extract_scalar("@element","$.PropertyName") contains "Session type"),json_extract_scalar("@element","$.NewValue")), ", ")
+| alter
+        xdm.network.session_id = AffectedItem,
+        xdm.source.identity.identifier = arraystring(arraymap(arrayfilter(EventDetails  -> [], json_extract_scalar("@element","$.PropertyName") contains "ID of presenter"),json_extract_scalar("@element","$.NewValue")), ", "),
+        xdm.source.identity.username = arraystring(arraymap(arrayfilter(EventDetails  -> [], json_extract_scalar("@element","$.PropertyName") contains "Name of presenter"),json_extract_scalar("@element","$.NewValue")), ", "),
+        xdm.target.identity.identifier = arraystring(arraymap(arrayfilter(EventDetails  -> [], json_extract_scalar("@element","$.PropertyName") contains "ID of participant" or json_extract_scalar("@element","$.PropertyName") contains "ID of affected participant"), json_extract_scalar("@element","$.NewValue")), ", "),
+        xdm.target.identity.username = arraystring(arraymap(arrayfilter(EventDetails  -> [], json_extract_scalar("@element","$.PropertyName") contains "Name of participant" or json_extract_scalar("@element","$.PropertyName") contains "Name of affected participant"), json_extract_scalar("@element","$.NewValue")), ", "),
+        xdm.target.file_before.filename = arraystring(arraymap(arrayfilter(EventDetails  -> [], json_extract_scalar("@element","$.PropertyName") contains "Source file"), json_extract_scalar("@element","$.NewValue")), ", "),
+        xdm.target.file.filename = arraystring(arraymap(arrayfilter(EventDetails  -> [], json_extract_scalar("@element","$.PropertyName") contains "Target file"), json_extract_scalar("@element","$.NewValue")), ", ")
+// Map general fields
+| alter
+        xdm.event.operation_sub_type = coalesce(operation_type_change, sessionType),
+        xdm.event.type = EventType,
+        xdm.event.description = EventName;

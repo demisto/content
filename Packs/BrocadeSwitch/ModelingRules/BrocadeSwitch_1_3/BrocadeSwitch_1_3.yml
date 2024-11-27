@@ -4,3 +4,4 @@ name: Brocade Switch Modeling Rule
 rules: ''
 schema: ''
 tags: Brocade Switch
+toversion: 8.9.0

@@ -1,0 +1,40 @@
+[MODEL: dataset="barracuda_cgfw_raw"]
+filter _raw_log ~= "Allow|Detect"
+| alter
+    xdm.network.application_protocol = arraystring(regextract(_raw_log, "\|proto\=([a-zA-Z0-9]+)\|"), ""),
+    xdm.event.type = arraystring(regextract(_raw_log , "type\=([a-zA-Z0-9]+)\|"), ""),
+    xdm.source.interface = arraystring(regextract(_raw_log , "\|srcIF\=([a-zA-Z0-9]+)\|"), ""),
+    xdm.source.ipv4 = arraystring(regextract(_raw_log , "\|srcIP\=([a-zA-Z0-9.]+)\|"), ""),
+    xdm.source.port = to_number(arraystring(regextract(_raw_log , "\|srcPort\=([0-9]+)\|"), "")),
+    xdm.source.host.mac_addresses = regextract(_raw_log , "\|srcMAC\=([a-zA-Z0-9:]+)\|"),
+    xdm.target.interface = arraystring(regextract(_raw_log , "\|dstIF\=([a-zA-Z0-9]+)\|"), ""),
+    xdm.target.ipv4 = arraystring(regextract(_raw_log , "\|dstIP\=([a-zA-Z0-9.]+)\|"), ""),
+    xdm.target.port = to_number(arraystring(regextract(_raw_log , "\|dstPort\=([0-9]+)\|"), "")),
+    //dest_service = arraystring(regextract(_raw_log , "\|dstService\=([a-zA-Z0-9]+)\|"), ""),
+    xdm.network.rule = arraystring(regextract(_raw_log , "\|rule\=([a-zA-Z0-9:]+)\|"), ""),
+    xdm.event.description = arraystring(regextract(_raw_log , "\|info\=([a-zA-Z0-9ֿֿֿֿ ]+)\|"), ""),
+    //src_NAT = arraystring(regextract(_raw_log , "\|srcNAT\=([a-zA-Z0-9ֿֿֿֿ.]+)\|"), ""),
+    //dst_NAT = arraystring(regextract(_raw_log , "\|dstNAT\=([a-zA-Z0-9ֿֿֿֿ.]+)\|"), ""),
+    xdm.event.duration = to_number(arraystring(regextract(_raw_log , "\|duration\=([a-zA-Z0-9ֿֿֿֿ]+)\|"), "")),
+    //count_bar = arraystring(regextract(_raw_log , "\|count\=([a-zA-Z0-9ֿֿֿֿ]+)\|"), ""),
+    xdm.target.sent_bytes = to_number(arraystring(regextract(_raw_log , "\|receivedBytes\=([a-zA-Z0-9ֿֿֿֿ]+)\|"), "")),
+    xdm.source.sent_bytes = to_number(arraystring(regextract(_raw_log , "\|sentBytes\=([a-zA-Z0-9ֿֿֿֿ]+)\|"), "")),
+    xdm.target.sent_packets = to_number(arraystring(regextract(_raw_log , "\|receivedPackets\=([a-zA-Z0-9ֿֿֿֿ]+)\|"), "")),
+    xdm.source.sent_packets = to_number(arraystring(regextract(_raw_log , "\|sentPackets\=([a-zA-Z0-9ֿֿֿ]+)\|"), "")),
+    xdm.source.identity.username = arraystring(regextract(_raw_log , "\|user\=([a-zA-Z0-9ֿֿֿ]+)\|"), ""),
+    //bar_protocol = arraystring(regextract(_raw_log , "\|protocol\=([a-zA-Z0-9ֿֿֿ]+)\|"), ""),
+    //bar_application = arraystring(regextract(_raw_log , "\|application\=([a-zA-Z0-9ֿֿֿ]+)\|"), ""),
+    //bar_target = arraystring(regextract(_raw_log , "\|target\=([a-zA-Z0-9ֿֿֿ]+)\|"), ""),
+    //bar_content = arraystring(regextract(_raw_log , "\|content\=([a-zA-Z0-9ֿֿֿ]+)\|"), ""),
+    xdm.network.http.url_category = arraystring(regextract(_raw_log , "\|urlcat\=([a-zA-Z0-9ֿֿֿ]+)\|"), "");
+
+filter _raw_log contains "BYF"
+| alter
+    xdm.source.ipv4 = arraystring(regextract(_raw_log, ".*:(?:\s\S+){2}\s(\S+)"), ""),
+    xdm.target.ipv4 = arraystring(regextract(_raw_log, ".*:(?:\s\S+){3}\s(\S+)"), ""),
+    xdm.network.http.content_type = arraystring(regextract(_raw_log, ".*:(?:\s\S+){4}\s(\S+)"), ""),
+    xdm.network.http.url = arraystring(regextract(_raw_log, ".*:(?:\s\S+){6}\s(\S+)"), ""),
+    xdm.observer.action = arraystring(regextract(_raw_log, ".*:(?:\s\S+){11}\s+(?:\S\s){3}(\S)"), ""), //1 is blocked, 0 is allowed
+    xdm.network.http.url_category = arraystring(regextract(_raw_log, ".*:(?:\s\S+){11}\s+(?:\S\s){5}\S+\s\S\s+(\S)"), ""),
+    xdm.target.host.hostname = arraystring(regextract(_raw_log, ".*:(?:\s\S+){11}\s+(?:\S\s){5}\S+\s\S\s+\S\s\S+\s\S\s(\S+)"), ""),
+    xdm.target.identity.username = arraystring(regextract(_raw_log, ".*:(?:\s\S+){11}\s+(?:\S\s){5}\S+\s\S\s+\S\s\S+\s\S\s\S+\s+\[([^\[]+)\]"), "");

@@ -1,0 +1,5 @@
+fromversion: 9.0.0
+id: fireeye_etp_ModelingRule
+name: FireEye ETP Modeling Rule
+rules: ''
+schema: ''

@@ -4,3 +4,4 @@ name: McAfee NSM Modeling Rule
 rules: ''
 schema: ''
 tags: McAfee NSM Modeling Rule
+toversion: 8.9.0

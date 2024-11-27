@@ -1,0 +1,68 @@
+[MODEL: dataset ="dell_emc_unity_raw"]
+alter // extract message parts
+    category = arrayindex(regextract(_raw_log, "Category\=(\w+)"), 0), // Log category
+    component = arrayindex(regextract(_raw_log, "Component=(\w+)"), 0), // Source of the event software component that recorded the event. Intended for service personnel.
+    event_headers = trim(arrayindex(regextract(_raw_log, "\w+\[\d+\]:\s*(.+?)\:\:"), 0)), // Constant fields that appear for every event message
+    msg = trim(trim(arrayindex(regextract(_raw_log, "::\s*(.+)\s*::"), 0)), "\"") // Brief description of the event.
+| alter // collect msg header fields into a list 
+    header_fields = arraymap(regextract(event_headers, "(\S+)"), trim("@element", "\"")) // clean header fields from redundant quotes
+| alter // extract the individual msg header fields 
+    sp_hostname = arrayindex(header_fields, 1), // the SP(Storage Processor) node name 
+    process_name = arrayindex(header_fields, 2), // Name of the system process that generated the event.
+    process_id = arrayindex(header_fields, 3), // ID of the system process that generated the event.
+    account = arrayindex(header_fields, 4), // User account of the user that caused the event. N/A appears if a user did not cause the event or the account is unavailable.
+    severity = arrayindex(header_fields, 5), // Severity level 
+    message_id = arrayindex(header_fields, 6) // Event ID that is a unique identifier for each type of event
+| alter // extract msg payload fields 
+    client_ip = arrayindex(regextract(msg, "ClientIP:\s*([a-fA-F\d\.\:]+[\da-fA-F])"), 0),
+    connection_step = arrayindex(regextract(msg, "Step\=\'?([^']+)"), 0),
+    dns_server_name = arrayindex(regextract(msg, "name\s+server\s+(\S+)"), 0),
+    dns_connection_failure_reason = trim(arrayindex(regextract(msg, "unable\s+to\s+connect\s+to\s+name\s+server\s+\S+\s*\:\s*(.+)"), 0)),
+    domain_controller = arrayindex(regextract(msg, "[\s\W]DC[\s\W]+([\w\-]+)"), 0),
+    nas_server = arrayindex(regextract(msg, "NAS[\s\W]+server[\s\W]+([\w\-]+)"), 0),
+    replication_host = arrayindex(regextract(msg, "replication[\s\W]+host[\s\W]+([\w\-]+)[\s\W]+is"), 0),
+    server_domain = arrayindex(regextract(msg, "in[\W\s]the[\W\s]domain[\W\s]([^,]+),"), 0),
+    server_status = arrayindex(regextract(msg, "(?:status|Status)\=\'?([^\']+)"), 0),
+    session_id = arrayindex(regextract(msg, "session[\W]{1,2}(\w+)"), 0),
+    snapshot_id = arrayindex(regextract(msg, "snapshot[\W\s]+([\w\-\:]+)"), 0),
+    snapshot_resource_type = arrayindex(regextract(msg, "Created[\W\s]+snapshot[\W\s]+\S+[\W\s]+of[\W\s]+(\w+)[\W\s]+resource"), 0),
+    snapshot_resource_name = arrayindex(regextract(msg, "Created[\W\s]+snapshot[\W\s]+\S+[\W\s]+of[\W\s]+\w+[\W\s]+resource[\W\s]+([\w\-]+)"), 0),
+    user = arrayindex(regextract(msg, "(?:User|Username:)\s+([\w\-]+)"), 0),
+    user_domain = coalesce(arrayindex(regextract(msg, "(?:Principal\s+User\s+\S+|authenticated\s+in\s+authority)\s+(\S+)"), 0), arrayindex(regextract(msg, "User\s+(\w+)\/\w+\s"), 0))
+| alter // post extractions processing
+    client_ipv4 = if(client_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", client_ip),
+    client_ipv6 = if(client_ip ~= "((?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4})", client_ip),
+    target_server = coalesce(dns_server_name, domain_controller, replication_host)
+| alter
+    target_server_ipv4 = if(target_server ~= "(?:\d{1,3}\.){3}\d{1,3}", target_server),
+    target_server_ipv6 = if(target_server ~= "((?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4})", target_server),
+    target_server_name = if(target_server !~= "(?:\d{1,3}\.){3}\d{1,3}" and target_server !~= "((?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4})", target_server)
+| alter // XDM mappings 
+    xdm.alert.severity = severity, 
+    xdm.event.id = message_id, 
+    xdm.event.description = msg, 
+    xdm.event.log_level = if(severity ~= "EMERGENCY", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "ALERT", XDM_CONST.LOG_LEVEL_ALERT , severity = "CRITICAL", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "ERROR", XDM_CONST.LOG_LEVEL_ERROR, severity = "WARN", XDM_CONST.LOG_LEVEL_WARNING, severity = "NOTICE", XDM_CONST.LOG_LEVEL_NOTICE, severity = "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "DEBUG", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.event.outcome = if(msg ~= "succeeded|successful|properly|normally|created", XDM_CONST.OUTCOME_SUCCESS, msg ~= "fail|error|cannot|not reachable|unable", XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = coalesce(server_status, dns_connection_failure_reason),
+    xdm.event.type = category,
+    xdm.event.operation_sub_type = connection_step,
+    xdm.network.dhcp.dns_server = if(dns_server_name != null, arraycreate(dns_server_name)),
+    xdm.network.session_id = session_id,
+    xdm.observer.name = sp_hostname,
+    xdm.observer.type = component,
+    xdm.source.ipv4 = client_ipv4,
+    xdm.source.ipv6 = client_ipv6,
+    xdm.source.host.hostname = nas_server,
+    xdm.source.process.name = process_name,
+    xdm.source.process.pid = to_integer(process_id),
+    xdm.source.identity.username = if(user != null, user, account),
+    xdm.source.identity.domain = user_domain,
+    xdm.source.identity.ou = if(user != "N/A" and user != account, account),
+    xdm.target.domain = server_domain,
+    xdm.target.ipv4 = target_server_ipv4,
+    xdm.target.ipv6 = target_server_ipv6,
+    xdm.target.host.hostname = target_server_name,
+    xdm.target.resource.id = snapshot_id,
+    xdm.target.resource.name = snapshot_resource_name,
+    xdm.target.resource.type = snapshot_resource_type;
+    

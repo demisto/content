@@ -4,3 +4,4 @@ name: Workday Modeling Rule
 rules: ''
 schema: ''
 tags: workday
+toversion: 8.9.0

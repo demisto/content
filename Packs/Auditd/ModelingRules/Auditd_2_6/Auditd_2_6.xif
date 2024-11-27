@@ -1,0 +1,30 @@
+[MODEL:dataset="unix_auditd_raw"]
+alter eventid = arrayindex(regextract(_raw_log, "audit\([^\:]+\:([^\)]+)"),0),
+hostname = arrayindex(regextract(_raw_log ,"\w+\s\d+\s\d+\:\d+\:\d+\s(\w+)\s"),0),
+type = arrayindex(regextract(_raw_log , "type\=([^\s]+)"),0),
+ses = arrayindex(regextract(_raw_log ,"\sses\=(\S+)\s"),0),
+res = arrayindex(regextract(_raw_log ,"\sres\=([a-zA-Z0-9\-\_]+)"),0),
+success = arrayindex(regextract(_raw_log ,"\ssuccess\=(\S+)\s"),0),
+key = arrayindex(regextract(_raw_log ,"\skey\=\"([^\"]+)\""),0),
+op = arrayindex(regextract(_raw_log ,"\sop\=PAM\:(\S+)\s"),0),
+acct = arrayindex(regextract(_raw_log ,"\sacct\=\"*([^\"]+)\"*\s"),0),
+uid = arrayindex(regextract(_raw_log ,"\suid\=(\S+)\s"),0),
+addr = arrayindex(regextract(_raw_log ,"\saddr\=(\d+\.\d+\.\d+\.\d+)\s"),0),
+pid = arrayindex(regextract(_raw_log ,"\spid\=(\S+)\s"),0),
+comm = arrayindex(regextract(_raw_log ,"\scomm\=\"*([^\"]+)\"*\s"),0),
+exe = arrayindex(regextract(_raw_log ,"\sexe\=\"*([^\"]+)\"*\s"),0)
+| alter
+    outcome_result = coalesce(res,success)
+| alter
+    xdm.event.id = eventid,
+	xdm.event.type = type,
+    xdm.session_context_id = ses,
+    xdm.event.outcome = if(outcome_result = "failed", XDM_CONST.OUTCOME_FAILED, outcome_result = "no", XDM_CONST.OUTCOME_FAILED, outcome_result = "success", XDM_CONST.OUTCOME_SUCCESS, outcome_result = "yes", XDM_CONST.OUTCOME_SUCCESS, outcome_result = null, null, to_string(outcome_result)),
+    xdm.event.operation = coalesce(op,key),
+	xdm.source.identity.username = acct,
+	xdm.source.identity.identifier = uid,
+	xdm.source.ipv4 = addr,
+    xdm.source.process.pid = to_number(pid),
+    xdm.source.host.hostname = hostname,
+    xdm.source.process.command_line = comm,
+    xdm.source.process.executable.path = exe;

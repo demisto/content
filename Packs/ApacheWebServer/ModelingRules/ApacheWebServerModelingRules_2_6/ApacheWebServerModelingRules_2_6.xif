@@ -1,0 +1,62 @@
+[MODEL: dataset="apache_httpd_raw"]
+filter _raw_log contains "[info]" or _raw_log contains "[alert]" or _raw_log contains "[crit]" or _raw_log contains "[error]" or _raw_log contains "[warn]" or _raw_log contains "[notice]" or _raw_log contains "[debug]" or _raw_log contains "[core:info]"
+| alter Tid = arrayindex(regextract(_raw_log,"tid\s(\d+)"),0),
+    sourceipv4 = arrayindex(regextract(_raw_log,"client\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    sourceipv6 = arrayindex(regextract(_raw_log,"client\s(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"),0),
+    pid = arrayindex(regextract(_raw_log,"\[\w+\s(\d+)\:"),0),
+    error_status_code = arrayindex(regextract(_raw_log,"\:\d+\]\s+(\S+)\:"),0),
+    Source_code_file_line = arrayindex(regextract(_raw_log,"tid\s\d+\]\s([^\:|\[]+)"),0),
+    message1 = arrayindex(regextract(_raw_log ,"\[msg\s\"*([^\"]+)\""),0),
+    message2 = arrayindex(regextract(_raw_log,"httpd\[\d+\]\:\s\[\w+\]\s(.*)"),0),
+    severity1 = arrayindex(regextract(_raw_log, "]:\s*\[([^\]]+)\]"),0),
+    severity2 = arrayindex(regextract(_raw_log ,"\[severity\s\"*([^\"]+)\""),0),
+    uri = arrayindex(regextract(_raw_log ,"\[uri\s\"*([^\"]+)\""),0),
+    dest_domain = arrayindex(regextract(_raw_log ,"\(server\s([^\d]+)\:\d+"),0),
+    dest_port = arrayindex(regextract(_raw_log ,"\(server\s[^\d]+\:(\d+)"),0),
+    source_hostname = arrayindex(regextract(_raw_log ,"\[hostname\s\"*([^\"]+)\""),0),
+    observer_name =  arrayindex(regextract(_raw_log, "\s\d+:\d+:\d+\s([\S]+)\s"),0),
+    dest_file_path = arrayindex(regextract(_raw_log ,"File\sdoes\snot\sexist\:\s(\S+)"),0)
+| alter dest_file_name = arrayindex(regextract(dest_file_path ,"\/([\w+\_\-\.]+)$"),0)
+| alter
+    severity = coalesce(severity1, severity2),
+    message = coalesce(message1 , message2)
+| alter
+    xdm.source.process.pid = to_number(pid),
+    xdm.event.log_level = if(severity in ("core:info","info"), XDM_CONST.LOG_LEVEL_INFORMATIONAL ,severity = "debug",XDM_CONST.LOG_LEVEL_DEBUG, severity = "alert",XDM_CONST.LOG_LEVEL_ALERT,severity = "crit",XDM_CONST.LOG_LEVEL_CRITICAL, severity = "error", XDM_CONST.LOG_LEVEL_ERROR , severity ="warn",XDM_CONST.LOG_LEVEL_WARNING ,severity ="notice", XDM_CONST.LOG_LEVEL_NOTICE ,to_string(severity)),
+    xdm.source.process.thread_id = to_number(tid),
+    xdm.source.ipv4 = sourceipv4,
+    xdm.source.ipv6 = sourceipv6,
+    xdm.source.identity.identifier = error_status_code,
+    xdm.target.resource.id = Source_code_file_line,
+    xdm.event.description = message,
+    xdm.target.module.path = uri,
+    xdm.target.domain = dest_domain,
+    xdm.target.port = to_integer(dest_port),
+    xdm.source.host.hostname = source_hostname,
+    xdm.observer.name = observer_name,
+    xdm.target.file.path = dest_file_path,
+    xdm.target.file.filename = dest_file_name,
+    xdm.event.type = "Error Logs";
+filter _raw_log contains "\"ACL" or _raw_log contains "\"BASELINE_CONTROL" or _raw_log contains "\"BIND" or _raw_log contains "\"CHECKIN" or _raw_log contains "\"CHECKOUT" or _raw_log contains "\"CONNECT" or _raw_log contains "\"COPY" or _raw_log contains "\"DELETE" or _raw_log contains "\"GET" or _raw_log contains "\"HEAD" or _raw_log contains "\"LABEL" or _raw_log contains "\"LINK" or _raw_log contains "\"LOCK" or _raw_log contains "\"MERGE" or _raw_log contains "\"MKACTIVITY" or _raw_log contains "\"MKCALENDAR" or _raw_log contains "\"MKCOL" or _raw_log contains "\"MKREDIRECTREF" or _raw_log contains "\"MKWORKSPACE" or _raw_log contains "\"MOVE" or _raw_log contains "\"OPTIONS" or _raw_log contains "\"ORDERPATCH" or _raw_log contains "\"PATCH" or _raw_log contains "\"POST" or _raw_log contains "\"PRI" or _raw_log contains "\"PROPFIND" or _raw_log contains "\"PROPPATCH" or _raw_log contains "\"PUT" or _raw_log contains "\"REBIND" or _raw_log contains "\"REPORT" or _raw_log contains "\"SEARCH" or _raw_log contains "\"TRACE" or _raw_log contains "\"UNBIND" or _raw_log contains "\"UNCHECKOUT" or _raw_log contains "\"UNLINK" or _raw_log contains "\"UNLOCK" or _raw_log contains "\"UPDATE" or _raw_log contains "\"UPDATEREDIRECTREF" or _raw_log contains "\"VERSION_CONTROL"
+// Extract fields
+| alter Username = arrayindex(regextract(_raw_log,"(\S+)\s\[\d+\/"),0),
+    http_method = arrayindex(regextract(_raw_log,"]\s*\"([A-Z]+)\s*"),0),
+    http_url = arrayindex(regextract(_raw_log,"]\s*\"[A-Z]+\s*([^\s^\"]+)\s*"),0),
+    http_response_code = arrayindex(regextract(_raw_log,"]\s*\"[^\"]+\"\s*(\d+)"),0),
+    bytes_size = arrayindex(regextract(_raw_log,"]\s*\"[^\"]+\"\s*[\d|-]+\s(\d+)"),0),
+    Referrer = arrayindex(regextract(_raw_log,"]\s*\"[^\"]+\"\s*[\d|-]+\s[\d|-]+\s\"(http[^\"]+)\""),0),
+    User_agent = arrayindex(regextract(_raw_log,"]\s*\"[^\"]+\"\s*[\d|-]+\s[\d|-]+\s\"[^\"]*\"\s\"([^\"]+)\""),0),
+    sourceipv4 = arrayindex(regextract(_raw_log, "]:\s*(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s"),0),
+    sourceipv6 = arrayindex(regextract(_raw_log, "]:\s*(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"),0),
+    observer_name =  arrayindex(regextract(_raw_log, "\s\d+:\d+:\d+\s([\S]+)\s"),0)
+| alter xdm.source.identity.username = if(Username = "-", null, Username),
+    xdm.network.http.url = http_url,
+    xdm.network.http.referrer = Referrer,
+    xdm.target.sent_bytes = to_number(bytes_size),
+    xdm.source.ipv4 = sourceipv4,
+    xdm.source.ipv6 = sourceipv6,
+    xdm.network.http.method = http_method,
+    xdm.network.http.response_code = http_response_code,
+    xdm.source.user_agent = if(User_agent = "-", null, User_agent),
+    xdm.observer.name = observer_name,
+    xdm.event.type = "Access Logs";

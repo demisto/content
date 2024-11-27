@@ -1,0 +1,216 @@
+[RULE: f5_waf_generic_fields]
+alter
+    get_log_level = arrayindex(regextract(_raw_log, "\<\d+\>[^\>]+\s+\S+\s+(\S+)\s+\S+\[\d+\]\:"), 0),
+    get_description = arrayindex(regextract(_raw_log, "\<\d+\>[^\>]+\s+\S+\s+\S+\s+\S+\[\d+\]\:\s+(.*)"), 0)
+| alter    
+    get_event_id = arrayindex(regextract(get_description, "^\s*(\d+):\d+:"), 0)
+| alter
+    xdm.source.host.hostname = arrayindex(regextract(_raw_log, "\<\d+\>[^\>]+\s+(\S+)\s+\S+\s+\S+\[\d+\]\:"), 0),
+    xdm.event.log_level = if(get_log_level = "notice", XDM_CONST.LOG_LEVEL_NOTICE, get_log_level = "warning", XDM_CONST.LOG_LEVEL_WARNING, get_log_level = "err", XDM_CONST.LOG_LEVEL_ERROR, get_log_level = "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, get_log_level = "emerg", XDM_CONST.LOG_LEVEL_EMERGENCY, get_log_level = "emerg", XDM_CONST.LOG_LEVEL_EMERGENCY, get_log_level = "debug", XDM_CONST.LOG_LEVEL_DEBUG, get_log_level ~= "ale", XDM_CONST.LOG_LEVEL_ALERT, get_log_level ~= "crit", XDM_CONST.LOG_LEVEL_CRITICAL),
+    xdm.source.process.name = arrayindex(regextract(_raw_log, "\<\d+\>[^\>]+\s+\S+\s+\S+\s+(\S+)\[\d+\]\:"), 0),
+    xdm.source.process.pid = to_integer(arrayindex(regextract(_raw_log, "\<\d+\>[^\>]+\s+\S+\s+\S+\s+\S+\[(\d+)\]\:"), 0)),    
+    xdm.event.description = get_description,
+    xdm.event.id = get_event_id;
+
+
+
+[MODEL: dataset="f5_waf_raw"]
+call f5_waf_generic_fields
+// Event ID 01420002
+| filter _raw_log ~= "01420002"
+| alter
+    get_01420002_user = arrayindex(regextract(_raw_log, "user=([^\=]+)\s+\S+="), 0),
+    get_01420002_folder = arrayindex(regextract(_raw_log, "folder=([^\=]+)\s+\S+="), 0),
+    get_01420002_module = arrayindex(regextract(_raw_log, "module=\(([^\)]+)\)\#\s+\S+="), 0),
+    get_01420002_status = arrayindex(regextract(_raw_log, "status=\s*\[([^\]]+)\]"), 0),
+    get_01420002_cmd_data = arrayindex(regextract(_raw_log, "cmd_data=\s*([^\;]+)"), 0)
+| alter
+    xdm.source.identity.username = get_01420002_user,
+    xdm.source.process.executable.directory = get_01420002_folder,
+    xdm.observer.type = get_01420002_module,
+    xdm.source.process.command_line = get_01420002_cmd_data,
+    xdm.event.outcome = if(get_01420002_status = "Command OK", XDM_CONST.OUTCOME_SUCCESS, get_01420002_status = null, null, to_string(get_01420002_status));
+
+
+call f5_waf_generic_fields    
+// Event ID 01260009
+| filter _raw_log ~= "01260009"
+| alter
+    get_01260009_source_ip = arrayindex(regextract(_raw_log, "01260009\:\d+\:\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):\d+\s+\-\>\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+"), 0),
+    get_01260009_source_port = to_integer(arrayindex(regextract(_raw_log, "01260009\:\d+\:\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:(\d+)\s+\-\>\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+"), 0)),
+    get_01260009_target_ip =  arrayindex(regextract(_raw_log, "01260009\:\d+\:\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+\s+\-\>\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):\d+"), 0),
+    get_01260009_target_port = to_integer(arrayindex(regextract(_raw_log, "01260009\:\d+\:\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+\s+\-\>\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:(\d+)"), 0)),
+    get_01260009_alert_des = arrayindex(regextract(_raw_log, "01260009\:\d+\:.*Connection\s+error:\s+(.*)"), 0)
+| alter
+    xdm.source.ipv4 = get_01260009_source_ip,
+    xdm.source.port = get_01260009_source_port,
+    xdm.target.ipv4 = get_01260009_target_ip,
+    xdm.target.port = get_01260009_target_port,
+    xdm.alert.description = get_01260009_alert_des;
+
+call f5_waf_generic_fields   
+// Event ID 0107142f
+| filter _raw_log ~= "0107142f"
+| alter
+    get_0107142f_source_ip = arrayindex(regextract(_raw_log, "0107142f\:\d+\:.*\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"), 0)
+| alter
+    xdm.source.ipv4 = get_0107142f_source_ip;
+
+call f5_waf_generic_fields
+// Event ID 0107143c
+| filter _raw_log ~= "0107143c"
+| alter    
+    get_0107143c_source_ip = arrayindex(regextract(_raw_log, "0107143c:\d+\:.*\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"), 0)
+| alter
+    xdm.source.ipv4 = get_0107143c_source_ip;
+
+call f5_waf_generic_fields
+// Event ID 01230140
+| filter _raw_log ~= "01230140"
+| alter
+    get_01230140_source_ip = arrayindex(regextract(_raw_log, "01230140\:\d+\:.*from\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\:\d+\s+to\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d+\,\s+.*"), 0),
+    get_01230140_source_port = to_integer(arrayindex(regextract(_raw_log, "01230140\:\d+\:.*from\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)\s+to\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d+\,\s+.*"), 0)),
+    get_01230140_target_ip =  arrayindex(regextract(_raw_log, "01230140\:\d+\:.*from\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d+\s+to\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\:\d+\,\s+.*"), 0),
+    get_01230140_target_port = to_integer(arrayindex(regextract(_raw_log, "01230140\:\d+\:.*from\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d+\s+to\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)\,\s+.*"), 0)),
+    get_01230140_alert_des = arrayindex(regextract(_raw_log, "01230140\:\d+\:.*from\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d+\s+to\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d+\,\s+(.*)"), 0)
+| alter
+    xdm.source.ipv4 = get_01230140_source_ip,
+    xdm.source.port = get_01230140_source_port,
+    xdm.target.ipv4 = get_01230140_target_ip,
+    xdm.target.port = get_01230140_target_port,
+    xdm.alert.description = get_01230140_alert_des;
+
+call f5_waf_generic_fields
+// Event ID 01260013
+| filter _raw_log ~= "01260013"
+| alter
+    get_01260013_source_ip = arrayindex(regextract(_raw_log, "01260013\:\d+\:.*\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\:\d+\s+\-\>\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d+"), 0),
+    get_01260013_source_port = to_integer(arrayindex(regextract(_raw_log, "01260013\:\d+\:.*\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)\s+\-\>\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d+"), 0)),
+    get_01260013_target_ip =  arrayindex(regextract(_raw_log, "01260013\:\d+\:.*\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d+\s+\-\>\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\:\d+"), 0),
+    get_01260013_target_port = to_integer(arrayindex(regextract(_raw_log, "01260013\:\d+\:.*\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d+\s+\-\>\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)"), 0))
+| alter
+    xdm.source.ipv4 = get_01260013_source_ip,
+    xdm.source.port = get_01260013_source_port,
+    xdm.target.ipv4 = get_01260013_target_ip,
+    xdm.target.port = get_01260013_target_port;    
+
+call f5_waf_generic_fields
+// Event ID 01071681, 01071682
+| filter _raw_log ~= "01071681|01071682"
+| alter
+    get_01071681_01071682_virtualHost = arrayindex(regextract(_raw_log, "SNMP_TRAP\:\s+Virtual\s+(\S+)\s+has\s+become\s+\S+"), 0)
+| alter
+    xdm.source.agent.identifier = get_01071681_01071682_virtualHost;
+
+call f5_waf_generic_fields
+// Event ID 014f0005
+| filter _raw_log ~= "014f0005"
+| alter
+    get_014f0005_user = arrayindex(regextract(_raw_log, "014f0005\:\d+\:.*\s+user=(\S+)"), 0),
+    get_014f0005_action = arrayindex(regextract(_raw_log, "014f0005\:\d+\:.*\suser=\S+\s+action=\"+([^\"]+)"), 0),
+    get_014f0005_status = arrayindex(regextract(_raw_log, "014f0005\:\d+\:.*\suser=\S+\s+action=\"+[^\"]+\"+\s+status=\"+([^\"]+)"), 0)
+| alter
+    xdm.source.identity.username = get_014f0005_user,
+    xdm.event.operation_sub_type = get_014f0005_action,
+    xdm.event.outcome_reason = get_014f0005_status;
+
+call f5_waf_generic_fields
+// Event ID 01071432
+| filter _raw_log ~= "01071432"
+| alter
+    get_01071432_target_ip =  arrayindex(regextract(_raw_log, "01071432\:\d+\:.*\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+port\s+\d+"), 0),
+    get_01071432_target_port = to_integer(arrayindex(regextract(_raw_log, "01071432\:\d+\:.*\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s+port\s+(\d+)"), 0))
+| alter
+    xdm.target.ipv4 = get_01071432_target_ip,
+    xdm.target.port = get_01071432_target_port;
+
+call f5_waf_generic_fields
+// Event ID 01260006
+| filter _raw_log ~= "01260006"
+| alter
+    get_01260006_alert_des = arrayindex(regextract(_raw_log, "01260006\:\d+\:\s+Peer\s+cert\s+verify\s+error\:\s+(.*)"), 0),
+    get_01260006_cert_O = arrayindex(regextract(_raw_log, "01260006\:\d+\:\s+Peer\s+cert\s+verify\s+error\:\s+.*\/O\=([^\/]+)"), 0),
+    get_01260006_cert_CN = arrayindex(regextract(_raw_log, "01260006\:\d+\:\s+Peer\s+cert\s+verify\s+error\:\s+.*\/CN\=([^\/]+)\)"), 0)
+| alter
+    xdm.alert.description = get_01260006_alert_des,
+    xdm.network.tls.server_certificate.issuer = get_01260006_cert_O,
+    xdm.network.tls.server_certificate.subject = get_01260006_cert_CN;
+
+call f5_waf_generic_fields
+// ssl_req
+| filter _raw_log ~= "\[ssl_req\]"
+| alter
+    ssl_req_target_ip = arrayindex(regextract(_raw_log, "\[ssl_req\]\[[^\]]+\]\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"), 0),
+    ssl_req_tls_version = arrayindex(regextract(_raw_log, "\[ssl_req\]\[[^\]]+\]\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s+(\S+)\s\S+\s"), 0),
+    ssl_req_tls_alg = arrayindex(regextract(_raw_log, "\[ssl_req\]\[[^\]]+\]\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s+\S+\s(\S+)\s"), 0),
+    ssl_req_path = arrayindex(regextract(_raw_log, "\[ssl_req\]\[[^\]]+\]\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s+\S+\s\S+\s+\"+([^\"]+)"), 0),
+    ssl_req_port = to_integer(arrayindex(regextract(_raw_log, "\[ssl_req\]\[[^\]]+\]\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s+\S+\s\S+\s+\"+[^\"]+\"+\s+(\d+)"), 0))
+| alter
+    xdm.target.ipv4 = ssl_req_target_ip,
+    xdm.network.tls.client_certificate.version = ssl_req_tls_version,
+    xdm.network.tls.client_certificate.algorithm = ssl_req_tls_alg,    
+    xdm.target.file.path = ssl_req_path,
+    xdm.target.port = ssl_req_port;
+
+call f5_waf_generic_fields
+// ssl_acc
+| filter _raw_log ~= "\[ssl_acc\]"
+| alter
+    ssl_acc_target_ip = arrayindex(regextract(_raw_log, "\[ssl_acc\]\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"), 0),
+    ssl_acc_user = arrayindex(regextract(_raw_log, "\[ssl_acc\]\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s+\S+\s+(\S+)"), 0),
+    ssl_acc_path = arrayindex(regextract(_raw_log, "\[ssl_acc\]\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s+\S+\s+\S+\s+[^\]]+\]\s+\"+([^\"]+)"), 0),
+    ssl_acc_port = to_integer(arrayindex(regextract(_raw_log, "\[ssl_acc\]\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s+\S+\s+\S+\s+[^\]]+\]\s+\"+[^\"]+\"+\s+\d+\s+(\d+)"), 0)),
+    ssl_acc_response_code = arrayindex(regextract(_raw_log, "\[ssl_acc\]\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s+\S+\s+\S+\s+[^\]]+\]\s+\"+[^\"]+\"+\s+(\d+)"), 0)
+| alter
+    xdm.target.ipv4 = ssl_acc_target_ip,
+    xdm.target.identity.username = ssl_acc_user,
+    xdm.target.file.path = ssl_acc_path,
+    xdm.target.port = ssl_acc_port,
+    xdm.network.http.response_code = if(ssl_acc_response_code = "100", HTTP_RSP_CODE_CONTINUE, ssl_acc_response_code = "101", HTTP_RSP_CODE_SWITCHING_PROTOCOLS, ssl_acc_response_code = "102", HTTP_RSP_CODE_PROCESSING, ssl_acc_response_code = "103", HTTP_RSP_CODE_EARLY_HINTS, ssl_acc_response_code = "200", HTTP_RSP_CODE_OK, ssl_acc_response_code = "201", HTTP_RSP_CODE_CREATED, ssl_acc_response_code = "202", HTTP_RSP_CODE_ACCEPTED, ssl_acc_response_code = "203", HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, ssl_acc_response_code = "204", HTTP_RSP_CODE_NO_CONTENT, ssl_acc_response_code = "205", HTTP_RSP_CODE_RESET_CONTENT, ssl_acc_response_code = "206", HTTP_RSP_CODE_PARTIAL_CONTENT, ssl_acc_response_code = "207", HTTP_RSP_CODE_MULTI__STATUS, ssl_acc_response_code = "208", HTTP_RSP_CODE_ALREADY_REPORTED, ssl_acc_response_code = "226", HTTP_RSP_CODE_IM_USED, ssl_acc_response_code = "300", HTTP_RSP_CODE_MULTIPLE_CHOICES, ssl_acc_response_code = "301", HTTP_RSP_CODE_MOVED_PERMANENTLY, ssl_acc_response_code = "302", HTTP_RSP_CODE_FOUND, ssl_acc_response_code = "303", HTTP_RSP_CODE_SEE_OTHER, ssl_acc_response_code = "304", HTTP_RSP_CODE_NOT_MODIFIED, ssl_acc_response_code = "305", HTTP_RSP_CODE_USE_PROXY, ssl_acc_response_code = "307", HTTP_RSP_CODE_TEMPORARY_REDIRECT, ssl_acc_response_code = "308", HTTP_RSP_CODE_PERMANENT_REDIRECT, ssl_acc_response_code = "400", HTTP_RSP_CODE_BAD_REQUEST, ssl_acc_response_code = "401", HTTP_RSP_CODE_UNAUTHORIZED, ssl_acc_response_code = "402", HTTP_RSP_CODE_PAYMENT_REQUIRED, ssl_acc_response_code = "403", HTTP_RSP_CODE_FORBIDDEN, ssl_acc_response_code = "404", HTTP_RSP_CODE_NOT_FOUND, ssl_acc_response_code = "405", HTTP_RSP_CODE_METHOD_NOT_ALLOWED, ssl_acc_response_code = "406", HTTP_RSP_CODE_NOT_ACCEPTABLE, ssl_acc_response_code = "407", HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, ssl_acc_response_code = "408", HTTP_RSP_CODE_REQUEST_TIMEOUT, ssl_acc_response_code = "409", HTTP_RSP_CODE_CONFLICT, ssl_acc_response_code = "410", HTTP_RSP_CODE_GONE, ssl_acc_response_code = "411", HTTP_RSP_CODE_LENGTH_REQUIRED, ssl_acc_response_code = "412", HTTP_RSP_CODE_PRECONDITION_FAILED, ssl_acc_response_code = "413", HTTP_RSP_CODE_CONTENT_TOO_LARGE, ssl_acc_response_code = "414", HTTP_RSP_CODE_URI_TOO_LONG, ssl_acc_response_code = "415", HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, ssl_acc_response_code = "416", HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, ssl_acc_response_code = "417", HTTP_RSP_CODE_EXPECTATION_FAILED, ssl_acc_response_code = "421", HTTP_RSP_CODE_MISDIRECTED_REQUEST, ssl_acc_response_code = "422", HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, ssl_acc_response_code = "423", HTTP_RSP_CODE_LOCKED, ssl_acc_response_code = "424", HTTP_RSP_CODE_FAILED_DEPENDENCY, ssl_acc_response_code = "425", HTTP_RSP_CODE_TOO_EARLY, ssl_acc_response_code = "426", HTTP_RSP_CODE_UPGRADE_REQUIRED, ssl_acc_response_code = "428", HTTP_RSP_CODE_PRECONDITION_REQUIRED, ssl_acc_response_code = "429", HTTP_RSP_CODE_TOO_MANY_REQUESTS, ssl_acc_response_code = "431", HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, ssl_acc_response_code = "451", HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, ssl_acc_response_code = "500", HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, ssl_acc_response_code = "501", HTTP_RSP_CODE_NOT_IMPLEMENTED, ssl_acc_response_code = "502", HTTP_RSP_CODE_BAD_GATEWAY, ssl_acc_response_code = "503", HTTP_RSP_CODE_SERVICE_UNAVAILABLE, ssl_acc_response_code = "504", HTTP_RSP_CODE_GATEWAY_TIMEOUT, ssl_acc_response_code = "505", HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, ssl_acc_response_code = "506", HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, ssl_acc_response_code = "507", HTTP_RSP_CODE_INSUFFICIENT_STORAGE, ssl_acc_response_code = "508", HTTP_RSP_CODE_LOOP_DETECTED, ssl_acc_response_code = "511", HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, ssl_acc_response_code = null, null, to_string(ssl_acc_response_code));
+
+call f5_waf_generic_fields
+// Rule
+| filter _raw_log ~= "Rule"
+| alter
+    // General Rule info
+    rule_name = arrayindex(regextract(_raw_log, "Rule\s+(\S+)\s+\<\S+\>:"), 0),
+    rule_operation = arrayindex(regextract(_raw_log, "Rule\s+\S+\s+\<(\S+)\>:"), 0),
+    // CLIENTSSL_HANDSHAKE
+    rule_clientSSLhandshake_source_ip = arrayindex(regextract(_raw_log, "Rule\s+\S+\s+\<\S+\>\:\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\:\S+\:\S+"), 0),
+    rule_clientSSLhandshake_tls_alg = arrayindex(regextract(_raw_log, "Rule\s+\S+\s+\<\S+\>\:\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\S+)\:\S+"), 0),
+    rule_clientSSLhandshake_tls_version = arrayindex(regextract(_raw_log, "Rule\s+\S+\s+\<\S+\>\:\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\S+\:(\S+)"), 0),
+    // HTTP_REQUEST
+    rule_httpRequest_target_host = arrayindex(regextract(_raw_log, "Rule\s+\S+\s+\<\S+\>\:.*Requested\s+Host\s+=\s+(\S+)"), 0),
+    rule_httpRequest_uri = arrayindex(regextract(_raw_log, "Rule\s+\S+\s+\<\S+\>\:.*Request\s+URI\s+\=\s+(\S+)"), 0)
+| alter
+    rule_httpRequest_target_host_ip = if(rule_httpRequest_target_host ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d+", arrayindex(regextract(rule_httpRequest_target_host, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\:\d+"), 0), null),
+    rule_httpRequest_target_host_port = if(rule_httpRequest_target_host ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d+", to_integer(arrayindex(regextract(rule_httpRequest_target_host, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)"), 0)), null),
+    rule_httpRequest_target_host_name = if(rule_httpRequest_target_host !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d+", rule_httpRequest_target_host, null)
+| alter
+    xdm.network.rule = rule_name,
+    xdm.event.operation_sub_type = rule_operation,
+    xdm.source.ipv4 = rule_clientSSLhandshake_source_ip,
+    xdm.network.tls.client_certificate.algorithm = rule_clientSSLhandshake_tls_alg,
+    xdm.network.tls.client_certificate.version = rule_clientSSLhandshake_tls_version,
+    xdm.target.ipv4 = rule_httpRequest_target_host_ip,
+    xdm.target.port = rule_httpRequest_target_host_port,
+    xdm.target.url = rule_httpRequest_uri,
+    xdm.target.host.hostname = rule_httpRequest_target_host_name;
+
+
+call f5_waf_generic_fields
+// General OR Not mentioned Event IDs Logs
+| filter _raw_log !~= "Rule|\[ssl_acc\]|\[ssl_req\]|01260006|01071432|014f0005|01071681|01071682|01260013|01230140|0107143c|0107142f|01260009|01420002"
+| alter
+    get_description_session = arrayindex(regextract(_raw_log, "Start\S+\s+Session\s+(\d+)\s+of\s+user\s\S+\."), 0),
+    get_description_user_session = arrayindex(regextract(_raw_log, "Start\S+\s+Session\s+\d+\s+of\s+user\s(\S+)\."), 0),
+    get_description_user_cmd = arrayindex(regextract(_raw_log, "\((\S+)\)\sCMD\s\([^\)]+"), 0),
+    get_description_cmd_command = arrayindex(regextract(_raw_log, "\(\S+\)\sCMD\s\(([^\)]+)"), 0),
+    get_description_error_source_ip = arrayindex(regextract(_raw_log, "Did\s+not\s+receive\s+identification\s+string\s+from\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+port\s+\d+"), 0),
+    get_description_error_source_port = to_integer(arrayindex(regextract(_raw_log, "Did\s+not\s+receive\s+identification\s+string\s+from\s+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s+port\s+(\d+)"), 0))
+| alter
+    xdm.session_context_id = get_description_session,
+    xdm.source.identity.username = coalesce(get_description_user_session, get_description_user_cmd),
+    xdm.source.process.command_line = get_description_cmd_command,
+    xdm.source.ipv4 = get_description_error_source_ip,
+    xdm.source.port = get_description_error_source_port;

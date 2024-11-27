@@ -4,3 +4,4 @@ name: Microsoft Intune
 rules: ''
 schema: ''
 tags: Microsoft Intune
+toversion: 8.9.0

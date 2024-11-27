@@ -1,0 +1,138 @@
+[MODEL: dataset = jamf_protect_raw]
+config case_sensitive = true
+
+// Jamf computers logs mapping
+|filter source_log_type = "computers"
+| alter 
+event_type = source_log_type,
+check_in = checkin,
+computer_created = created,
+host_name = hostName ,
+memory_size = to_integer(memorySize) , // Already in bytes
+model_name = modelName ,
+operating_system = osString ,
+serial_number = serial,
+universally_unique_identifier = uuid ,
+agent_version = version ,
+signatures_version = concat("Threat Version ",to_string(signaturesVersion)) ,
+// plan
+computer_plan = to_string(plan)
+// insights
+| alter tmp_failed = to_string(insightsStatsFail),
+        tmp_success = to_string(insightsStatsPass),
+        tmp_unknown = to_string(insightsStatsUnknown)
+| alter insights_status = object_create("Rules Status Failed", tmp_failed , "Rules Status Passed", tmp_success , "Rules Status Unknown", tmp_unknown )
+// discard all rules that passed and keep the failed rules that can be a risk to the asset
+| alter tmp_computer_risks = arrayfilter(scorecard ->[], "@element"->pass="false")
+// Create new array with the relevant information
+| alter computer_risks = arraymap(tmp_computer_risks, object_create("Section", "@element"->section, "Rule Name", "@element"-> label, "Benchmark Level", replex(arraystring("@element"->tags[], ""), "\"", "")))
+// Check if the last connection IP is v4 or v6
+|alter last_connection_ipv4 = arrayindex(regextract(lastConnectionIp, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0) 
+| alter last_connection_ipv6 = arrayindex(regextract(lastConnectionIp , "(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"), 0)
+
+// XDM mapping
+| alter xdm.event.type = event_type,
+xdm.source.host.boot_time = check_in,
+xdm.source.agent.installation_time = computer_created, 
+xdm.source.host.hostname = host_name , 
+xdm.event.description = insights_status, 
+xdm.source.host.memory = memory_size,
+xdm.source.host.device_model = model_name , 
+xdm.source.host.os = operating_system , 
+xdm.source.host.device_id = serial_number, 
+xdm.source.host.hardware_uuid = universally_unique_identifier ,
+xdm.source.agent.version = agent_version, 
+xdm.observer.version = signatures_version ,
+xdm.network.rule = computer_plan , 
+xdm.alert.risks = computer_risks ,
+xdm.source.ipv4 = last_connection_ipv4 ,
+xdm.source.ipv6 = last_connection_ipv6 ;
+
+
+// Jamf audit logs mapping
+config case_sensitive = true
+|filter source_log_type = "audit"
+| alter
+        host_ipv4_addresses = arrayfilter(arraymap(split(ips, ","), trim("@element")), "@element" ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"),
+        host_ipv6_addresses = arrayfilter(arraymap(split(ips, ","), trim("@element")), "@element" ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}"),
+        tmp_operation = arrayindex(regextract(op, "(?:create|delete|update|send|Prevented)"), 0),
+        tmp_operation_target = arrayindex(regextract(op, "(?:[A-Z]+[a-z]+)+"), 0)
+
+// XDM mapping
+| alter
+        xdm.event.type = source_log_type,
+        xdm.event.description = args -> input.description,
+        xdm.event.original_event_type = op,
+        xdm.event.operation_sub_type = tmp_operation,
+        xdm.target.resource.type  = tmp_operation_target,
+        xdm.target.resource.id = resourceId,
+        xdm.target.resource.name = coalesce (args -> input.name, args -> input.email),
+        xdm.target.resource.sub_type = args -> input.type,
+        xdm.source.identity.username = arrayindex(regextract(user, "([^#]+)#?"), 0),
+        xdm.target.identity.username = args -> input.email,
+        xdm.auth.service = arrayindex(regextract(user, "#([^\|]+)\|"), 0),
+        xdm.event.outcome_reason = error,
+        xdm.source.host.ipv4_addresses = host_ipv4_addresses,
+        xdm.source.host.ipv6_addresses = host_ipv6_addresses,
+        xdm.source.ipv4 = arrayindex(host_ipv4_addresses, 0),
+        xdm.source.ipv6 = arrayindex(host_ipv6_addresses, 0);
+
+// Jamf alert logs mapping
+config case_sensitive = true
+|filter source_log_type = "alert"
+| alter
+        facts = json_extract_array(json, "$.match.facts"),
+        actions = json_extract_array(json, "$.match.actions"),
+        users = json_extract_array(json, "$.related.users"),
+        first_process = arrayindex(json_extract_array(json, "$.related.processes"), 0),
+        first_file = arrayindex(json_extract_array(json, "$.related.files"), 0)
+| alter
+        host_ipv4_addresses = arrayfilter(json_extract_scalar_array(json, "$.host.ips"), "@element" ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"),
+        host_ipv6_addresses = arrayfilter(json_extract_scalar_array(json, "$.host.ips"), "@element" ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}"),
+        os = lowercase(json -> host.os),
+        blocked = if(json -> match.event.blocked = "true", "blocked", json -> match.event.blocked = "false", "not blocked", null),
+        facts_human = arraystring(arraymap(facts, "@element" -> human), ", "),
+        actions_parameters_title = arraystring(arraymap(actions, "@element" -> parameters.title), ", "),
+        actions_parameters_message = arraystring(arraymap(actions, "@element" -> parameters.message), ", "),
+        action_by_alertname = if(lowercase(arraystring(arraymap(facts, "@element" -> name), ", ")) contains "block", "blocked", null)
+| alter
+        human_title = if(actions_parameters_title != null, concat(facts_human, ", ", actions_parameters_title), facts_human)
+| alter
+        human_title_message = if(actions_parameters_message != null, concat(human_title, ", ", actions_parameters_message), human_title)
+// XDM mapping
+| alter
+        xdm.event.type = source_log_type,
+        xdm.event.original_event_type = json -> eventType,
+        xdm.event.description = to_string(json),
+        xdm.observer.action = coalesce(blocked, action_by_alertname, arraystring(arraymap(actions, "@element" -> name), ", ")),
+        xdm.alert.severity = severity,
+        xdm.source.host.hostname = computer -> hostName,
+        xdm.source.host.os = json -> host.os,
+        xdm.source.host.os_family = if(os contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, os contains "mac", XDM_CONST.OS_FAMILY_MACOS, os contains "linux", XDM_CONST.OS_FAMILY_LINUX, os contains "android", XDM_CONST.OS_FAMILY_ANDROID, os contains "ios", XDM_CONST.OS_FAMILY_IOS, os contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, os contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, os contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, os contains "centos", XDM_CONST.OS_FAMILY_CENTOS, os contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, os contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, os contains "scada", XDM_CONST.OS_FAMILY_SCADA, null),
+        xdm.source.host.device_id = json -> host.serial,
+        xdm.source.host.hardware_uuid = json -> host.provisioningUDID,
+        xdm.source.host.ipv4_addresses = host_ipv4_addresses,
+        xdm.source.host.ipv6_addresses = host_ipv6_addresses,
+        xdm.source.ipv4 = arrayindex(host_ipv4_addresses, 0),
+        xdm.source.ipv6 = arrayindex(host_ipv6_addresses, 0),
+        xdm.alert.original_alert_id = json -> match.uuid,
+        xdm.alert.name = arraystring(arraymap(facts, "@element" -> name), ", "),
+        xdm.alert.description = human_title_message,
+        xdm.source.process.name = first_process -> name,
+        xdm.source.process.pid = to_integer(first_process -> pid),
+        xdm.source.process.parent_id = to_string(first_process -> ppid),
+        xdm.source.process.executable.path = first_process -> path,
+        xdm.source.process.command_line = arraystring(json_extract_scalar_array(first_process, "$.args"), " "),
+        xdm.source.process.executable.is_signed = if(to_string(first_process -> signingInfo.signerType) = "4", to_boolean("false"), first_process -> signingInfo.signerType != null, to_boolean("true"), null),
+        xdm.source.process.executable.signature_status = if(to_string(first_process  -> signingInfo.signerType) = "4", XDM_CONST.SIGNATURE_STATUS_UNSIGNED, first_process -> signingInfo.signerType != null, XDM_CONST.SIGNATURE_STATUS_SIGNED_VERIFIED, null),
+        xdm.source.process.executable.signer = arraystring(json_extract_scalar_array(first_process, "$.signingInfo.authorities"), ", "),
+        xdm.source.identity.username = arraystring(arraymap(users, "@element" -> name), ", "),
+        xdm.source.identity.identifier = arraystring(arraymap(users, "@element" -> uuid), ", "),
+        xdm.source.identity.groups = json_extract_array(json, "$.related.groups"),
+        xdm.target.process.pid = to_integer(json -> match.event.destinationPID),
+        xdm.target.file.path = first_file -> path,
+        xdm.target.file.size = to_integer(first_file -> size),
+        xdm.target.file.sha256 = first_file -> sha256hex,
+        xdm.target.file.signer = arraystring(json_extract_array(first_file, "$.signingInfo.authorities"), ", "),
+        xdm.target.file.is_signed = if(to_string(first_file  -> signingInfo.signerType) = "4", to_boolean("false"), first_file  -> signingInfo.signerType != null, to_boolean("true"), null),
+        xdm.target.file.signature_status = if(to_string(first_file  -> signingInfo.signerType) = "4", XDM_CONST.SIGNATURE_STATUS_UNSIGNED, first_file  -> signingInfo.signerType != null, XDM_CONST.SIGNATURE_STATUS_SIGNED_VERIFIED, null);

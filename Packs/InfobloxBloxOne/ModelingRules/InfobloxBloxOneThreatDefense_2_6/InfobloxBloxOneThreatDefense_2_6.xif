@@ -1,0 +1,31 @@
+[MODEL:dataset="infoblox_bloxone_threat_defense_raw"]
+alter 
+xdm.source.ipv4 = if(qip ~= "(\d{1,3}\.){3}\d{1,3}", qip),
+xdm.target.ipv4 = if(rip ~= "(\d{1,3}\.){3}\d{1,3}", rip),
+xdm.source.host.ipv4_addresses = arraymap(split(private_ip, ","), if("@element" ~= "(\d{1,3}\.){3}\d{1,3}", "@element")) |
+
+alter
+xdm.source.ipv6 = if(xdm.source.ipv4 = null and qip ~= "([a-fA-F0-9]{1,4}\:){7}[a-fA-F0-9]{1,4}", qip),
+xdm.target.ipv6 = if(xdm.target.ipv4 = null and rip ~= "([a-fA-F0-9]{1,4}\:){7}[a-fA-F0-9]{1,4}", rip),
+xdm.source.host.ipv6_addresses = if(array_length(xdm.source.host.ipv4_addresses) = 0, arraymap(split(private_ip, ","), if("@element" ~= "([a-fA-F0-9]{1,4}\:){7}[a-fA-F0-9]{1,4}", "@element"))),
+
+xdm.source.identity.groups = split(user_groups, ","),
+xdm.source.host.mac_addresses = split(mac_address, ","),
+xdm.network.dns.dns_question.name = rtrim(qname, "."),
+
+xdm.network.dns.dns_question.type = qtype,
+xdm.network.dns.response_code = rcode,
+xdm.source.identity.username = user,
+xdm.network.dns.dns_resource_record.value = rdata,
+xdm.source.host.hostname = device,
+xdm.alert.subcategory = tclass,
+xdm.target.location.country = country,
+xdm.source.zone = network,
+xdm.source.application.name = app_name,
+xdm.event.description = category,
+xdm.alert.severity = severity,
+xdm.alert.name = feed_name,
+xdm.alert.description = feed_type,
+xdm.source.host.os = os_version,
+xdm.network.rule = policy_name,
+xdm.observer.action = policy_action;

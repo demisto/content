@@ -4,3 +4,4 @@ name: RunZero RunZero Modeling Rule
 rules: ''
 schema: ''
 tags: RunZero
+toversion: 8.9.0

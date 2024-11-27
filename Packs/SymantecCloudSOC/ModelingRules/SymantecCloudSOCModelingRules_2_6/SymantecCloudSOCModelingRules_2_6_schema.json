@@ -1,0 +1,68 @@
+{
+    "symantec_cloud_soc_raw": {
+      "severity": {
+        "type": "string",
+        "is_array": false
+      },
+      "locations": {
+        "type": "string",
+        "is_array": false
+      },
+      "city": {
+        "type": "string",
+        "is_array": false
+      },
+      "country": {
+        "type": "string",
+        "is_array": false
+      },
+      "latitude": {
+        "type": "string",
+        "is_array": false
+      },
+      "longitude": {
+        "type": "string",
+        "is_array": false
+      },
+      "activity_type": {
+        "type": "string",
+        "is_array": false
+      },
+      "object_type": {
+        "type": "string",
+        "is_array": false
+      },
+      "service": {
+        "type": "string",
+        "is_array": false
+      },
+      "user_name": {
+        "type": "string",
+        "is_array": false
+      },
+      "user": {
+        "type": "string",
+        "is_array": false
+      },
+      "type": {
+        "type": "string",
+        "is_array": false
+      },
+      "browsers": {
+        "type": "string",
+        "is_array": false
+      },
+      "devices": {
+        "type": "string",
+        "is_array": false
+      },
+      "host": {
+        "type": "string",
+        "is_array": false
+      },
+      "hosts": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

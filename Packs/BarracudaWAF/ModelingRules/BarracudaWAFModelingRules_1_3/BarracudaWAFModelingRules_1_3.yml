@@ -4,3 +4,4 @@ name: Barracuda WAF
 rules: ''
 schema: ''
 tags: ''
+toversion: 8.9.0

@@ -1,0 +1,7 @@
+[MODEL: dataset=hello_world_raw]
+alter
+    xdm.event.id = to_string(id),
+    xdm.event.description = description,
+    xdm.source.identity.identifier = json_extract_scalar(custom_details, "$.triggered_by_uuid"),
+    xdm.target.port = t_port,
+    xdm.network.protocol_layers = arraycreate(protocol);

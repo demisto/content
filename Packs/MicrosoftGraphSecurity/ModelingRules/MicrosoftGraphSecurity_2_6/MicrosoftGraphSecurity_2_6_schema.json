@@ -1,0 +1,80 @@
+{
+    "msft_graph_security_alerts_raw": {
+      "_reporting_device_name": {
+        "type": "string",
+        "is_array": false
+      },
+      "id": {
+        "type": "string",
+        "is_array": false
+      },
+      "title": {
+        "type": "string",
+        "is_array": false
+      },
+      "status": {
+        "type": "string",
+        "is_array": false
+      },
+      "category": {
+        "type": "string",
+        "is_array": false
+      },
+      "severity": {
+        "type": "string",
+        "is_array": false
+      },
+      "tenantId": {
+        "type": "string",
+        "is_array": false
+      },
+      "description": {
+        "type": "string",
+        "is_array": false
+      },
+      "detectorId": {
+        "type": "string",
+        "is_array": false
+      },
+      "incidentId": {
+        "type": "string",
+        "is_array": false
+      },
+      "alertWebUrl": {
+        "type": "string",
+        "is_array": false
+      },
+      "providerAlertId": {
+        "type": "string",
+        "is_array": false
+      },
+      "incidentWebUrl": {
+        "type": "string",
+        "is_array": false
+      },
+      "determination": {
+        "type": "string",
+        "is_array": false
+      },
+      "serviceSource": {
+        "type": "string",
+        "is_array": false
+      },
+      "detectionSource": {
+        "type": "string",
+        "is_array": false
+      },
+      "mitreTechniques": {
+        "type": "string",
+        "is_array": false
+      },
+      "evidence": {
+        "type": "string",
+        "is_array": false
+      },
+      "classification": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

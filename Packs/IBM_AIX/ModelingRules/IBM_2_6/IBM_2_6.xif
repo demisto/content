@@ -1,0 +1,81 @@
+[MODEL: dataset="ibm_aix_raw"]
+filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+syslog:"
+| alter
+    xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+(\S+)\:"), ""),
+    xdm.source.process.name = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+(\S+):"), ""),
+    xdm.source.process.command_line = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+syslog:\s+(.*)"), "");
+
+filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+sshd\["
+| alter
+    get_description = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+\S+\[[^\]]+\]:\s+(.*)"), ""),
+    get_error = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+\S+\[[^\]]+\]:\s+(error):"), ""),
+    get_ssh_ip = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+\S+\[[^\]]+\]:\s+Accepted\s+publickey\s+for\s+aging\s+from\s+(\S+)"), "")
+| alter    
+    src_ip_v4 = if(get_ssh_ip !~= ":", get_ssh_ip, null),
+    src_ip_v6 = if(get_ssh_ip ~= ":", get_ssh_ip, null)
+| alter
+    xdm.source.ipv4 = src_ip_v4,
+    xdm.source.ipv6 = src_ip_v6,
+    xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+(\S+)\:"), ""),
+    xdm.source.process.name = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+(\S+)\["), ""),
+    xdm.source.process.pid = to_integer(arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+\S+\[([^\]]+)\]"), "")),
+    xdm.event.log_level = if(get_error = "error", XDM_CONST.LOG_LEVEL_ERROR, null),
+    xdm.event.description = if(get_error = "error", arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+\S+\[[^\]]+\]:\s+error:\s+(.*)"), ""), get_description),
+    xdm.source.port = to_integer(arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+\S+\[[^\]]+\]:\s+Accepted\s+publickey\s+for\s+aging\s+from\s+\S+\s+port\s+(\d+)"), "")),
+    xdm.source.process.executable.sha256 = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+\S+\[[^\]]+\]:\s+Accepted\s+publickey\s+for\s+aging\s+from\s+\S+\s+port\s+\d+[\s\S]+SHA256:([^\s]+)"), "");
+
+filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+unix:"
+| alter
+    xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+(\S+)\:"), ""),
+    xdm.source.process.name = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+(\S+):"), ""),
+    xdm.event.description = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+\S+:\s+(.*)"), ""),
+    xdm.source.process.command_line = arraystring(regextract(_raw_log, "The\s+privilege\s+command\s+([^\,]+)\,"), ""),
+    xdm.source.identity.identifier = arraystring(regextract(_raw_log, "executed\s+by\s+user\s+with\s+id\s+(\d+)"), "");
+
+filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+iib\["
+| alter
+    xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+(\S+)\:"), ""),
+    xdm.source.process.name = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+(\S+)\["), ""),
+    xdm.source.process.pid = to_integer(arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+\S+\[([^\]]+)\]"), "")),
+    xdm.event.description = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+\S+\[[^\]]+\]:\s+(.*)"), "");
+
+filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+rmsock:"
+| alter
+    xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+(\S+)\:"), ""),
+    xdm.source.process.name = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+(\S+):"), ""),
+    xdm.event.description = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+\S+:\s+(.*)"), ""),
+    xdm.target.process.pid = to_integer(arraystring(regextract(_raw_log, "held\s+by\s+process\s+(\d+)\s+\([^\)]+\)"), "")),
+    xdm.target.process.name = rtrim(ltrim(arraystring(regextract(_raw_log, "held\s+by\s+process\s+\d+\s+([^\s]+)"), ""), "("), ")");
+
+filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+Oracle\s+Audit\["
+| alter
+    get_client_ip = arraystring(regextract(_raw_log, "CLIENT\sADDRESS\:\[\d+\]\s+\'([^\']+)\'"), "")
+| alter    
+    src_ip_v4 = if(get_client_ip !~= ":", get_client_ip, null),
+    src_ip_v6 = if(get_client_ip ~= ":", get_client_ip, null)
+| alter
+    xdm.source.ipv4 = src_ip_v4,
+    xdm.source.ipv6 = src_ip_v6,
+    xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+(\S+)\:"), ""),
+    xdm.source.process.name = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+([^\[]+)"), ""),
+    xdm.source.process.pid = to_integer(arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+[^\[]+\[(\d+)\]"), "")),
+    xdm.event.description = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+[^\[]+\[\d+\]:\s+(.*)"), ""),
+    xdm.source.sent_bytes = to_integer(arraystring(regextract(_raw_log, "LENGTH\s+:\s+\'(\d+)\'"), "")),
+    xdm.event.operation = arraystring(regextract(_raw_log, "ACTION\s+:\[\d+\]\s+\'([^\']+)\'"), ""),
+    xdm.auth.privilege_level = arraystring(regextract(_raw_log, "PRIVILEGE\s+\:\[\d+\]\s+\'([^\']+)\'"), ""),
+    xdm.source.identity.username = arraystring(regextract(_raw_log, "CLIENT\s+USER\:\[\d+\]\s+\'([^\']+)\'"), ""),
+    xdm.source.agent.identifier = arraystring(regextract(_raw_log, "CLIENT\s+TERMINAL\:\[\d+\]\s+\'[^\']\'"), ""),
+    xdm.session_context_id = arraystring(regextract(_raw_log, "SESSIONID\:\[\d+\]\s+\'([^\']+)\'"), "");
+
+filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+bootpd\["
+| alter
+    xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+(\S+)\:"), ""),
+    xdm.source.process.name = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+(\S+)\["), ""),
+    xdm.source.process.pid = to_integer(arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+\S+\[([^\]]+)\]"), "")),
+    xdm.event.description = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+\S+\[[^\]]+\]:\s+(.*)"), ""),
+    xdm.target.host.mac_addresses =regextract(_raw_log, "hardware\s+address\s+not\s+found:\s+(\S+)");
+
+filter _raw_log ~= ":\s+last\s+message\s+repeated.*"
+| alter
+    xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+(\S+)\:"), ""),
+    xdm.event.description = arraystring(regextract(_raw_log, "last\s+message\s+repeated.*"), "");

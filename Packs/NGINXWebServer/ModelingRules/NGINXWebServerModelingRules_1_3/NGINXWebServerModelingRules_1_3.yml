@@ -4,3 +4,4 @@ name: NGINX Web Server
 rules: ''
 schema: ''
 tags: NGINX Web Server
+toversion: 8.9.0

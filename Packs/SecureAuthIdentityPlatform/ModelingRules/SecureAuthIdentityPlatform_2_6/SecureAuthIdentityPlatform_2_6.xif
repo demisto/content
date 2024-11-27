@@ -1,0 +1,118 @@
+[MODEL: dataset="secureauth_idp_raw"]
+alter // Extract the RFC 5424 Syslog Components: https://docs.secureauth.com/0903/en/how-to-read-a-syslog-message.html#idm45832346187408
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>"), 0)),
+    syslog_headers = split(arrayindex(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}\S+\s+((?:\S+\s+){4})\["), 0), " "),
+    syslog_structured_data = arrayindex(regextract(_raw_log, "\[([^\]]+)"), 0),    
+    syslog_msg = arrayindex(regextract(_raw_log, "\]\s*(.+)"), 0)
+| alter facility_code = floor(divide(syslog_priority, 8))
+| alter syslog_severity = to_string(subtract(syslog_priority, multiply(facility_code, 8)))
+
+| alter // Extract Syslog Header Fields 
+    syslog_client_machine = arrayindex(syslog_headers, 0), // Machine that originally sent the syslog message.
+    syslog_app_name = arrayindex(syslog_headers, 1), // Device or application that originated the message. SecureAuth IdP uses the realm name here.
+    syslog_process_id = arrayindex(syslog_headers, 2), // Indicates any discontinuity/disruption in syslog reporting when this value changes. Typically, the process name or ID of the syslog system is used.
+    syslog_msg_id = arrayindex(syslog_headers, 3) // Identifies the type of message. SecureAuth IdP uses the Event ID here.
+
+| alter // Extract Syslog Structured Data Fields
+    allowed_tokens = arrayindex(regextract(syslog_structured_data, "AllowedTokens=\"(\S[^\"]+)"), 0), // For some authentication methods, this property may tell which method of 2FA was used.
+    appliance_id = arrayindex(regextract(syslog_structured_data, "ApplianceID=\"(\S[^\"]+)"), 0),
+    appliance_machine_name = arrayindex(regextract(syslog_structured_data, "ApplianceMachineName=\"(\S[^\"]+)"), 0),
+    appliance_name = arrayindex(regextract(syslog_structured_data, "Appliance=\"(\S[^\"]+)"), 0),
+    api_response_http_status_code = arrayindex(regextract(syslog_structured_data, "ApiResponseHTTPStatusCode=\"(\S[^\"]+)"), 0),
+    auth_reg_method = arrayindex(regextract(syslog_structured_data, "AuthRegMethod=\"(\S[^\"]+)"), 0),
+    auth_reg_method_info = arrayindex(regextract(syslog_structured_data, "AuthRegMethodInfo=\"(\S[^\"]+)"), 0),
+    browser_session_id = arrayindex(regextract(syslog_structured_data, "BrowserSession=\"(\S[^\"]+)"), 0),
+    comment = arrayindex(regextract(syslog_structured_data, "Comment=\"(\S[^\"]+)"), 0), // The comment includes an entry for each type of end-user failed login event, and includes the count and decimal percentage for each instance
+    destination_site_url = arrayindex(regextract(syslog_structured_data, "DestinationSiteUrl=\"(\S[^\"]+)"), 0),
+    event_id = arrayindex(regextract(syslog_structured_data, "EventID=\"(\S[^\"]+)"), 0),
+    hashed_user_id = arrayindex(regextract(syslog_structured_data, "HashedUserID=\"(\S[^\"]+)"), 0),
+    hashed_unique_user_id = arrayindex(regextract(syslog_structured_data, "HashedUniqueUserID=\"(\S[^\"]+)"), 0),
+    hostname = arrayindex(regextract(syslog_structured_data, "HostName=\"(\S[^\"]+)"), 0),
+    product_type = arrayindex(regextract(syslog_structured_data, "ProductType=\"(\S[^\"]+)"), 0), // The value corresponds to the Integration Method configured in the Device Recognition Method section on the Workflow tab
+    realm = arrayindex(regextract(syslog_structured_data, "Realm=\"(\S[^\"]+)"), 0),
+    request_duration = arrayindex(regextract(syslog_structured_data, "RequestDuration=\"(\S[^\"]+)"), 0), // Displays the response time of an application request. Applicable only to log entries with event ID9004x; also logged in the message element.
+    request_id = arrayindex(regextract(syslog_structured_data, "RequestID=\"(\S[^\"]+)"), 0), // Displays a unique identifier that shows the workflow for a specific request. An "Application End" log entry marks the end of a request and its corresponding RequestID.
+    saml_consumer_site_url = arrayindex(regextract(syslog_structured_data, "SAMLConsumerSiteUrl=\"(\S[^\"]+)"), 0),
+    saml_target_url = arrayindex(regextract(syslog_structured_data, "SAMLTargetUrl=\"(\S[^\"]+)"), 0),
+    is_successful = arrayindex(regextract(syslog_structured_data, "Succeed=\"(\S[^\"]+)"), 0),
+    target_url = arrayindex(regextract(syslog_structured_data, "TargetUrl=\"(\S[^\"]+)"), 0), // Authentication request target URL
+    trx_result = arrayindex(regextract(syslog_structured_data, "TrxResult=\"(\S[^\"]+)"), 0), // Displays result of an authentication attempt
+    user_agent = arrayindex(regextract(syslog_structured_data, "UserAgent=\"(\S[^\"]+)"), 0),
+    user_host_address = arrayindex(regextract(syslog_structured_data, "UserHostAddress=\"(\S[^\"]+)"), 0),
+    user_id = arrayindex(regextract(syslog_structured_data, "UserID=\"(\S[^\"]+)"), 0),
+    version = arrayindex(regextract(syslog_structured_data, "Version=\"(\S[^\"]+)"), 0),
+    ws_trust_username = arrayindex(regextract(syslog_structured_data, "ws-trust-username=\"(\S[^\"]+)"), 0),
+    x_ms_client_application = arrayindex(regextract(syslog_structured_data, "X-MS-Client-Application=\"(\S[^\"]+)"), 0)
+
+| alter // Extract Syslog Message Fields  
+    is_status_code_successful = arrayindex(regextract(syslog_msg, "IsSuccessStatusCode\s*\-\s*(true|false)"), 0), 
+    checked_ip = arrayindex(regextract(syslog_msg, "Check if IP \'([^\']+)\'"), 0),
+    reported_ip = arrayindex(regextract(syslog_msg, "Reported IP (\S+) to"), 0),
+    response_time = arrayindex(regextract(syslog_msg, "ResponseTime=\'(\d+)"), 0),
+    status_code = arrayindex(regextract(syslog_msg, "StatusCode:\s*(\w+)"), 0),
+    xff_ip = coalesce(
+        arrayindex(regextract(syslog_msg, "X-Forwarded-For:\s*([\d\.\:a-fA-F]+)"), 0),
+        arrayindex(regextract(syslog_msg, "X-Forwarded-For\.? With value\s*([\d\.\:a-fA-F]+)"), 0)),
+    xff_port = arrayindex(regextract(syslog_msg, "X-Forwarded-Port:\s*(\d+)"), 0),
+    x_real_ip = arrayindex(regextract(syslog_msg, "X-Real-IP:\s*([\d\.\:a-fA-F]+)"), 0)
+
+// Post-Extraction Processing 
+| alter src_ip_addresses = arraydistinct(arraycreate(x_real_ip, xff_ip, reported_ip, checked_ip, user_host_address))
+| alter 
+    src_ipv4_addresses = arrayfilter(src_ip_addresses, "@element" ~= "(?:\d{1,3}\.){3}\d{1,3}"),
+    src_ipv6_addresses = arrayfilter(src_ip_addresses, "@element" ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}")
+| alter 
+    auth_reg_method = if(auth_reg_method != "NONE", auth_reg_method),
+    duration_components = if(request_duration != null, split(request_duration, ".")),
+    event_id = coalesce(event_id, ltrim(syslog_msg_id, "ID")),
+    http_response_code = uppercase(coalesce(api_response_http_status_code, status_code)),
+    user_domain = arrayindex(regextract(user_id, "[\w\-]+\@(\S+)") , 0)
+
+// Set Event Type: https://docs.secureauth.com/2202/en/secureauth-idp---identity-platform-appliance-audit-trail-event-id-list.html
+| alter event_type = if(event_id ~= "^11\d{3}", "Workflow", event_id ~= "^12\d{3}", "Data", event_id ~= "^13\d{3}", "RegCode", event_id ~= "^14\d{3}", "IPsec", event_id ~= "^15\d{3}", "Access", event_id ~= "^16\d{3}", "Password", event_id ~= "^17\d{3}", "License", event_id ~= "^18\d{3}", "Postauth", event_id ~= "^19\d{3}", "Other", event_id ~= "^24\d{3}", "YubiKey MFA", event_id = "20990", "Transaction Log", event_id ~= "^2\d{4}", "Workflow Page State Process", event_id ~= "^333\d{2}", "Password Throttling Multi-Factor Authentication", event_id ~= "^3\d{4}", "Pre-Authentication", event_id ~= "^406\d{2}", "Adaptive Authentication with Office 365", event_id ~= "^4\d{4}", "Post-Authentication", event_id ~= "^514\d{2}", "SQL Membership Provider", event_id ~= "^524\d{2}", "SQL Profile Provider", event_id ~= "^51\d{3}", "Membership Provider", event_id ~= "^52\d{3}", "Profile Provider", event_id ~= "^53\d{3}", "OTP Provider", event_id ~= "^54\d{3}", "Certificate Provider", event_id ~= "^55\d{3}", "Link-to-Accept Provider", event_id ~= "^5\d{4}", "Provider", event_id ~= "^606\d{2}", "Device Recognition", event_id ~= "^60\d{3}", "DFP Controller", event_id = "6000", "API Layer", event_id ~= "^9\d{4}", "System")
+| alter event_type = if(event_id ~= "^1\d{4}", concat("Web Admin Page UI: ", event_type), event_type)
+
+| alter // Calculate Duration (Format HH:MM:SS.sssssss)
+    ms = if(request_duration != null, to_integer(arrayindex(regextract(arrayindex(duration_components, 1), "(\d{3})"), 0))), 
+    hours_minutes_seconds = if(request_duration != null, split(arrayindex(duration_components, 0), ":"))
+| alter 
+    hour_part_seconds = if(request_duration != null, multiply(to_integer(arrayindex(hours_minutes_seconds, 0)), 3600)),
+    minute_part_seconds = if(request_duration != null, multiply(to_integer(arrayindex(hours_minutes_seconds, 1)), 60)),
+    seconds = if(request_duration != null, to_integer(arrayindex(hours_minutes_seconds, 2)))
+| alter total_request_duration_ms = add(ms, multiply(1000, add(seconds, add(minute_part_seconds, hour_part_seconds))))
+
+| alter // XDM Mapping
+    xdm.alert.severity = syslog_severity,
+    xdm.auth.auth_method = if(product_type = "1", "Certificate Enrollment and Validation", product_type = "2", "Certificate Enrollment Only", product_type = "3", "Mobile Enrollment and Validation", product_type),
+    xdm.auth.mfa.client_details = auth_reg_method_info,
+    xdm.auth.mfa.method = coalesce(auth_reg_method, allowed_tokens), 
+    xdm.event.description = syslog_msg,
+    xdm.event.duration = coalesce(to_integer(total_request_duration_ms), to_integer(response_time)),
+    xdm.event.id = event_id,
+    xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
+    xdm.event.outcome = if(is_successful = "True" or trx_result ~= "(?i)success" or syslog_msg ~= "Success|validation passed" or is_status_code_successful = "true", XDM_CONST.OUTCOME_SUCCESS, is_successful = "False" or is_status_code_successful = "false" or trx_result ~= "Incorrect|SecurityViolation", XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = comment,
+    xdm.event.type = event_type,
+    xdm.intermediate.agent.version = version,
+    xdm.intermediate.host.hostname = if(appliance_name != null and appliance_machine_name != null, concat(appliance_name, " (", appliance_machine_name, ")"), coalesce(appliance_name, appliance_machine_name)),
+    xdm.intermediate.host.device_id = appliance_id,
+    xdm.intermediate.process.pid = to_integer(syslog_process_id),
+    xdm.network.http.http_header.header = if(x_ms_client_application != null, "X-MS-Client-Application", xff_ip != null, "X-Forwarded-For", x_real_ip != null, "X-Real-IP"),
+    xdm.network.http.http_header.value = coalesce(x_ms_client_application, xff_ip, x_real_ip),
+    xdm.network.http.response_code = if(http_response_code = "OK", XDM_CONST.HTTP_RSP_CODE_OK, http_response_code = "NOTFOUND", XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, http_response_code = "UNAUTHORIZED", XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, http_response_code = "FORBIDDEN", XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, http_response_code = "INTERNALSERVERERROR", XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, http_response_code = "BADGATEWAY", XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, http_response_code = "SERVICEUNAVAILABLE", XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, http_response_code = "GATEWAYTIMEOUT", XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, http_response_code),
+    xdm.network.session_id = browser_session_id,
+    xdm.observer.name = coalesce(hostname, syslog_client_machine),
+    xdm.observer.version = version,
+    xdm.session_context_id = request_id,
+    xdm.source.application.name = x_ms_client_application,
+    xdm.source.ipv4 = arrayindex(src_ipv4_addresses, 0),
+    xdm.source.ipv6 = arrayindex(src_ipv6_addresses, 0),
+    xdm.source.host.ipv4_addresses = src_ipv4_addresses, 
+    xdm.source.host.ipv6_addresses = src_ipv6_addresses, 
+    xdm.source.user_agent = user_agent,
+    xdm.source.identity.domain = user_domain,
+    xdm.source.identity.identifier = coalesce(hashed_unique_user_id, hashed_user_id, user_id, ws_trust_username),
+    xdm.source.identity.username = coalesce(user_id, ws_trust_username),
+    xdm.target.domain = if(realm != null, realm, syslog_app_name != "-", syslog_app_name),
+    xdm.target.port = to_integer(xff_port),
+    xdm.target.url = coalesce(target_url, saml_target_url, saml_consumer_site_url, destination_site_url);

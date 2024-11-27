@@ -1,0 +1,21 @@
+[MODEL: dataset="netbox_irm_raw"]
+filter
+    user = null
+| alter
+    xdm.event.description = comments,
+    xdm.alert.subcategory = json_extract_scalar(kind, "$.value"),
+    xdm.target.resource.id = to_string(json_extract(assigned_object, "$.id")),
+    xdm.target.resource.name = json_extract_scalar(assigned_object, "$.name"),
+    xdm.target.resource.type = assigned_object_type;
+
+filter
+    user != null
+| alter
+    xdm.event.id = request_id,
+    xdm.event.description = display,
+    xdm.event.operation = json_extract_scalar(action, "$.value"),
+    xdm.target.resource.id = to_string(changed_object_id),
+    xdm.target.resource.name = json_extract_scalar(changed_object, "$.display"),
+    xdm.target.resource.type = changed_object_type,
+    xdm.target.resource_before.name = json_extract_scalar(prechange_data, "$.name"),
+    xdm.source.identity.username = user_name;

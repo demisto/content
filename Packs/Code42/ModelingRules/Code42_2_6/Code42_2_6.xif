@@ -1,0 +1,175 @@
+[MODEL: dataset="code42_code42_raw"]
+//--------------------------------------------------------------------//
+// Audit Log Events - https://developer.code42.com/api/#tag/Audit-Log //
+//--------------------------------------------------------------------//
+filter eventType = "audit"
+| alter // pre-mapping extractions & formatting 
+     actor_domain = arrayindex(regextract(actorName, "@(\S+)"), 0),
+     audit_event_type = arrayindex(regextract(type_, "audit_log::(\w+)"), 0), 
+     actor_ipv4_addresses = regextract(actorIpAddress, "((?:\d{1,3}\.){3}\d{1,3})"),
+     actor_ipv6_addresses = coalesce(
+        arrayindex(regextract(actorIpAddress, "((?:[a-fA-F\d]{0,4}\:){2,6}\:?(?:\d{1,3}\.){3}\d{1,3})"), 0), // dual notation (ipv6 + ipv4)
+        arrayindex(regextract(actorIpAddress, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0)) // normal pure ipv6 format
+| alter // XDM Mapping
+     xdm.event.operation_sub_type = type,
+     xdm.event.original_event_type = audit_event_type,
+     xdm.event.outcome = if(to_boolean(success), XDM_CONST.OUTCOME_SUCCESS),
+     xdm.event.type = eventType,
+     xdm.source.ipv4 = arrayindex(actor_ipv4_addresses, 0),
+     xdm.source.ipv6 = actor_ipv6_addresses,
+     xdm.source.host.ipv4_addresses = actor_ipv4_addresses,
+     xdm.source.host.ipv6_addresses = arraycreate(actor_ipv6_addresses),
+     xdm.source.user_agent = actorAgent,
+     xdm.source.identity.domain = actor_domain,
+     xdm.source.identity.identifier = actorId,
+     xdm.source.identity.user_type = if(actorType in ("USER", "SUPPORT_USER"), XDM_CONST.USER_TYPE_REGULAR, actorType in ("API_CLIENT", "SYSTEM"), XDM_CONST.USER_TYPE_SERVICE_ACCOUNT),
+     xdm.source.identity.username = actorName;
+
+//-----------------------------------------------------------------//
+// File Events - https://developer.code42.com/api/#tag/File-Events //
+//-----------------------------------------------------------------//
+filter eventType = "file"
+| alter
+     // extract event fields (summary information about the event)
+     event_action = event -> action, // The type of file event observed. For example: file-modified, application-read, removable-media-created.
+     event_id = event -> id, // The unique identifier for the event.
+     event_observer = event -> observer, // The data source that captured the file event. For example: GoogleDrive, Office365, Salesforce.
+     event_vector = event -> vector, // The method of file movement. For example: UPLOADED, DOWNLOADED, EMAILED.
+     event_detectorDisplayName = event -> detectorDisplayName, // Indicates the name you provided when the cloud data connection was initially configured in the Code42 console.
+     
+     // extract user fields (attributes of the the Code42 username signed in to the Code42 app on the device)
+     user_email = user -> email, // The Code42 username used to sign in to the Code42 app on the device. Null if the file event occurred on a cloud provider.
+     user_id = user -> id, // Unique identifier for the user of the Code42 app on the device. Null if the file event occurred on a cloud provider.
+     user_deviceUid = user -> deviceUid, // Unique identifier for the device. Null if the file event occurred on a cloud provider.
+
+     // extract source fields (metadata about the source of the file event)
+     source_accountName = source -> accountName, // For cloud sync apps installed on user devices, the name of the cloud account where the event was observed. This can help identify if the activity occurred in a business or personal account.
+     source_category = source -> category, // General category of where the file originated. For example: Cloud Storage, Email, Social Media.
+     source_ip = source -> ip, // The external IP address of the user's device.
+     source_name = source -> name, // The name reported by the device's operating system. This may be different than the device name in the Code42 console.
+     source_os = source -> operatingSystem, // The operating system of the source device.
+     source_email_sender = source -> email.sender, // The address of the entity responsible for transmitting the message. In many cases, this is the same as source.email.from, but it can be different if the message is sent by a server or other mail agent on behalf of someone else.
+     source_domain = source -> domain, // Fully qualified domain name (FQDN) for the user's device at the time the event is recorded. If the device is unable to resolve the domain name of the host, it reports the IP address of the host.
+     source_private_ip = json_extract_scalar_array(source, "$.privateIp"), // he IP address of the user's device on your internal network, including Network interfaces, Virtual Network Interface controllers (NICs), and Loopback/non-routable addresses.
+     source_remoteHostname = source -> remoteHostname, // For events where a file transfer tool was used, the source hostname.
+     source_user_email =  arraystring(json_extract_scalar_array(source, "$.user.email"), ";"), // For endpoint events where a file in cloud storage is synced to a device, the email address of the user logged in to the cloud storage provider.
+
+     // extract destination fields (metadata about the destination of the file event)
+     destination_category = destination -> category, // General category of where the file originated. For example: Cloud Storage, Email, Social Media.)
+     destination_accountName = destination -> accountName, // For cloud sync apps installed on user devices, the name of the cloud account where the event was observed. This can help identify if the activity occurred in a business or personal account.
+     destination_domains = arraystring(json_extract_scalar_array(destination, "$.domains"), ";"), // The domain section of the URLs reported in destination.tabs.url.
+     destination_ip = destination -> ip, // The external IP address of the user's device.
+     destination_private_ip = json_extract_scalar_array(destination, "$.privateIp"), // The IP address of the user's device on your internal network, including Network interfaces, Virtual Network Interface controllers (NICs), and Loopback/non-routable addresses.
+     destination_name = destination -> name, // The name reported by the device's operating system. This may be different than the device name in the Code42 console.
+     destination_os = destination -> operatingSystem, // The operating system of the destination device.
+     destination_email_recipients = json_extract_scalar_array(destination, "$.email.recipients"), 
+     destination_email_subject = destination -> email.subject, // The subject of the email message.
+     destination_remoteHostname = destination -> remoteHostname, // For events where a file transfer tool was used, the destination hostname.
+     destination_user_email = arraystring(json_extract_scalar_array(destination, "$.user.email"), ";"),  // For endpoint events where a file in cloud storage is synced to a device, the email address of the user logged in to the cloud storage provider. For cloud events, the email addresses of users added as sharing recipients. In some case, OneDrive events may return multiple values, but this is often the same username formatted in different ways.
+     destination_printerName = destination -> printerName, // For print events, the name of the printer the job was sent to.
+
+     // extract file fields (metadata about the file for this event)
+     file_id = file -> id, // Unique identifier reported by the cloud provider for the file associated with the event.
+     file_archiveId = file -> archiveId, // Unique identifier for files identified as an archive, such as .zip files.
+     file_name = file -> name, // The name of the file, including the file extension.
+     file_directory = file -> directory, // The file location on the user's device; a forward or backslash must be included at the end of the filepath. Possibly null if the file event occurred on a cloud provider.
+     file_origin_directory = file -> originalDirectory, // The original file location on the user's device or cloud service location; a forward or backslash must be included at the end of the filepath. Possibly null if the file event occurred on a cloud provider.
+     file_hash_md5 = file -> hash.md5, // The MD5 hash of the file contents.
+     file_hash_sha256 = file -> hash.sha256, // The SHA-256 hash of the file contents.
+     file_sizeInBytes = to_integer(file -> sizeInBytes), // Size of the file in bytes (type int64).
+     file_originalName = file -> originalName, // The original name of the file, including the file extension.
+     file_category = file -> category, // A categorization of the file that is inferred from MIME type.
+     file_categoryByExtension = file -> categoryByExtension, // A categorization of the file based on its extension.
+     file_categoryByBytes = file -> categoryByBytes, // A categorization of the file based on its contents
+     file_owner = file -> owner, // The name of the user who owns the file as reported by the device's file system.
+     file_url = file -> url, // URL reported by the cloud provider at the time the event occurred.
+
+     // extract process fields (metadata about the process associated with the event)
+     process_executable = process -> executable, // The name of the process that accessed the file, as reported by the device's operating system. Depending on your Code42 product plan, this value may be null for some event types.
+     process_owner = process -> owner, // The username of the process owner, as reported by the device's operating system. Depending on your Code42 product plan, this value may be null for some event types
+
+     // extract process extension fields (metadata about the Code42 browser extension to facilitate troubleshooting)
+     process_extension_browser = process -> extension.browser,  // The web browser in which the event occurred.
+     process_extension_loggedInUser = process -> extension.loggedInUser, // The user logged in to the web browser when the event occurred.
+
+     // extract risk fields (risk factor metadata)
+     risk_severity = risk -> severity,
+     risk_indicators = risk -> indicators[],
+
+     // extract responseControls fields (Metadata about preventative actions applied to file activity. Only applies to events for users on a preventative watchlist)
+     responseControls_preventativeControl = responseControls -> preventativeControl, // The preventative action applied to this event. For example, "ALLOWED_TRUSTED_ACTIVITY" or "BLOCKED".
+     responseControls_userJustification_reason = responseControls -> userJustification.reason, // User-selected justification for temporarily allowing this action
+     responseControls_userJustification_text = responseControls -> userJustification.text // User-entered justification for temporarily allowing this action. Only applies when reason is "Other"
+
+| alter // post extraction processing 
+     source_os_upper = uppercase(source_os),
+     destination_os_upper = uppercase(destination_os),
+     file_extension = arrayindex(regextract(file_name, "\.([^\.]+)$"), 0),
+     original_file_extension = arrayindex(regextract(file_originalName, "\.([^\.]+)$"), 0),
+     source_public_ipv4 = if(source_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", source_ip),
+     source_public_ipv6 = if(source_ip ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}\:?", source_ip),
+     source_private_ipv4_addresses = arrayfilter(source_private_ip, "@element" ~= "(?:\d{1,3}\.){3}\d{1,3}"),
+     source_private_ipv6_addresses = arrayfilter(source_private_ip, "@element" ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}\:?"),
+     target_public_ipv4 = if(destination_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", destination_ip),
+     target_public_ipv6 = if(destination_ip ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}\:?", destination_ip),
+     target_private_ipv4_addresses = arrayfilter(destination_private_ip, "@element" ~= "(?:\d{1,3}\.){3}\d{1,3}"),
+     target_private_ipv6_addresses = arrayfilter(destination_private_ip, "@element" ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}\:?"),
+     outcome_reason = arraystring(arraycreate(responseControls_userJustification_reason, responseControls_userJustification_text), ". ")
+
+| alter // XDM Mappings
+     xdm.alert.risks = risk_indicators,
+     xdm.alert.severity = risk_severity,
+     xdm.email.recipients = destination_email_recipients,
+     xdm.email.sender = source_email_sender,
+     xdm.email.subject = destination_email_subject,
+     xdm.event.id = event_id,
+     xdm.event.operation = if(event_action = "file-created", XDM_CONST.OPERATION_TYPE_FILE_CREATE, event_action = "file-modified", XDM_CONST.OPERATION_TYPE_FILE_WRITE, event_action = "file-deleted", XDM_CONST.OPERATION_TYPE_FILE_REMOVE, event_action),
+     xdm.event.operation_sub_type = event_vector,
+     xdm.event.outcome = responseControls_preventativeControl,
+     xdm.event.outcome_reason = outcome_reason,
+     xdm.event.type = eventType,
+     xdm.network.http.browser = process_extension_browser,
+     xdm.observer.action = responseControls_preventativeControl,
+     xdm.observer.name = event_detectorDisplayName,
+     xdm.observer.type = event_observer,
+     xdm.source.host.device_category = source_category,
+     xdm.source.host.device_id = user_deviceUid,
+     xdm.source.host.hostname = coalesce(source_name, source_remoteHostname),
+     xdm.source.host.ipv4_addresses = arrayconcat(arraycreate(source_public_ipv4), source_private_ipv4_addresses),
+     xdm.source.host.ipv4_public_addresses = arraycreate(source_public_ipv4),
+     xdm.source.host.ipv6_addresses = arrayconcat(arraycreate(source_public_ipv6), source_private_ipv6_addresses),
+     xdm.source.host.ipv6_public_addresses = arraycreate(source_public_ipv6),
+     xdm.source.host.fqdn = source_domain,
+     xdm.source.host.os = source_os,
+     xdm.source.host.os_family = if(source_os_upper contains "WINDOWS", XDM_CONST.OS_FAMILY_WINDOWS, source_os_upper contains "MAC", XDM_CONST.OS_FAMILY_MACOS, source_os_upper contains "LINUX", XDM_CONST.OS_FAMILY_LINUX, source_os_upper contains "ANDROID", XDM_CONST.OS_FAMILY_ANDROID, source_os_upper contains "IOS", XDM_CONST.OS_FAMILY_IOS, source_os_upper contains "UBUNTU", XDM_CONST.OS_FAMILY_UBUNTU, source_os_upper contains "DEBIAN", XDM_CONST.OS_FAMILY_DEBIAN, source_os_upper contains "FEDORA", XDM_CONST.OS_FAMILY_FEDORA, source_os_upper contains "CENTOS", XDM_CONST.OS_FAMILY_CENTOS, source_os_upper contains "CHROME", XDM_CONST.OS_FAMILY_CHROMEOS, source_os_upper contains "SOLARIS", XDM_CONST.OS_FAMILY_SOLARIS, source_os_upper contains "SCADA", XDM_CONST.OS_FAMILY_SCADA, source_os_upper),
+     xdm.source.ipv4 = source_public_ipv4,
+     xdm.source.ipv6 = source_public_ipv6,
+     xdm.source.process.executable.filename = process_executable,
+     xdm.source.identity.identifier = user_id,
+     xdm.source.identity.username = coalesce(user_email, source_user_email, source_accountName, process_extension_loggedInUser, process_owner),
+     xdm.target.domain = destination_domains,
+     xdm.target.file_before.directory = file_origin_directory,
+     xdm.target.file_before.extension = original_file_extension,
+     xdm.target.file_before.filename = file_originalName,
+     xdm.target.file.directory = file_directory,
+     xdm.target.file.extension = file_extension,
+     xdm.target.file.file_type = coalesce(file_category, file_categoryByBytes, file_categoryByExtension),
+     xdm.target.file.filename = file_name,
+     xdm.target.file.md5 = file_hash_md5,
+     xdm.target.file.path = file_directory,
+     xdm.target.file.sha256 = file_hash_sha256,
+     xdm.target.file.size = file_sizeInBytes,
+     xdm.target.host.device_category = destination_category,
+     xdm.target.host.hostname = coalesce(destination_name, destination_remoteHostname, destination_printerName),
+     xdm.target.host.ipv4_addresses = arrayconcat(arraycreate(target_public_ipv4), target_private_ipv4_addresses),
+     xdm.target.host.ipv4_public_addresses = arraycreate(target_public_ipv4),
+     xdm.target.host.ipv6_addresses = arrayconcat(arraycreate(target_public_ipv6), target_private_ipv6_addresses),
+     xdm.target.host.ipv6_public_addresses = arraycreate(target_public_ipv6),
+     xdm.target.host.os = destination_os,
+     xdm.target.host.os_family = if(destination_os_upper contains "WINDOWS", XDM_CONST.OS_FAMILY_WINDOWS, destination_os_upper contains "MAC", XDM_CONST.OS_FAMILY_MACOS, destination_os_upper contains "LINUX", XDM_CONST.OS_FAMILY_LINUX, destination_os_upper contains "ANDROID", XDM_CONST.OS_FAMILY_ANDROID, destination_os_upper contains "IOS", XDM_CONST.OS_FAMILY_IOS, destination_os_upper contains "UBUNTU", XDM_CONST.OS_FAMILY_UBUNTU, destination_os_upper contains "DEBIAN", XDM_CONST.OS_FAMILY_DEBIAN, destination_os_upper contains "FEDORA", XDM_CONST.OS_FAMILY_FEDORA, destination_os_upper contains "CENTOS", XDM_CONST.OS_FAMILY_CENTOS, destination_os_upper contains "CHROME", XDM_CONST.OS_FAMILY_CHROMEOS, destination_os_upper contains "SOLARIS", XDM_CONST.OS_FAMILY_SOLARIS, destination_os_upper contains "SCADA", XDM_CONST.OS_FAMILY_SCADA, destination_os_upper),
+     xdm.target.ipv4 = target_public_ipv4,
+     xdm.target.ipv6 = target_public_ipv6,
+     xdm.target.resource.id = coalesce(file_id, file_archiveId),
+     xdm.target.resource.parent_id = file_owner,
+     xdm.target.url = file_url,
+     xdm.target.identity.username = coalesce(destination_accountName, destination_user_email);

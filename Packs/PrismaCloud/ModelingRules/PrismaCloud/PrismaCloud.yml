@@ -4,3 +4,4 @@ name: Palo Alto Prisma Cloud Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+toversion: 8.9.0

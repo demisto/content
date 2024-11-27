@@ -4,3 +4,4 @@ name: Tanium Threat Response Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+toversion: 8.9.0

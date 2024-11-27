@@ -1,0 +1,172 @@
+{
+    "armis_security_raw": {
+        "activityUUIDs": {
+            "type": "string",
+            "is_array": false
+        },
+        "alertId": {
+            "type": "int",
+            "is_array": false
+        },
+        "classification": {
+            "type": "string",
+            "is_array": false
+        },
+        "connectionIds": {
+            "type": "string",
+            "is_array": false
+        },
+        "description": {
+            "type": "string",
+            "is_array": false
+        },
+        "deviceIds": {
+            "type": "string",
+            "is_array": false
+        },
+        "policyId": {
+            "type": "int",
+            "is_array": false
+        },
+        "policyLabels": {
+            "type": "string",
+            "is_array": false
+        },
+        "policyTitle": {
+            "type": "string",
+            "is_array": false
+        },
+        "severity": {
+            "type": "string",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": false
+        },
+        "title": {
+            "type": "string",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        }
+    },
+    "armis_security_activities_raw": {
+        "activityUUID": {
+            "type": "string",
+            "is_array": false
+        },
+        "connectionIds": {
+            "type": "string",
+            "is_array": false
+        },
+        "content": {
+            "type": "string",
+            "is_array": false
+        },
+        "deviceIds": {
+            "type": "string",
+            "is_array": false
+        },
+        "protocol": {
+            "type": "string",
+            "is_array": false
+        },
+        "sensor": {
+            "type": "string",
+            "is_array": false
+        },
+        "site": {
+            "type": "string",
+            "is_array": false
+        },
+        "title": {
+            "type": "string",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        }
+    },
+    "armis_security_devices_raw": {
+        "accessSwitch": {
+            "type": "string",
+            "is_array": false
+        },
+        "boundaries": {
+            "type": "string",
+            "is_array": false
+        },
+        "category": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "int",
+            "is_array": false
+        },
+        "ipAddress": {
+            "type": "string",
+            "is_array": false
+        },
+        "ipv6": {
+            "type": "string",
+            "is_array": false
+        },
+        "macAddress": {
+            "type": "string",
+            "is_array": false
+        },
+        "manufacturer": {
+            "type": "string",
+            "is_array": false
+        },
+        "model": {
+            "type": "string",
+            "is_array": false
+        },
+        "name": {
+            "type": "string",
+            "is_array": false
+        },
+        "names": {
+            "type": "string",
+            "is_array": false
+        },
+        "operatingSystem": {
+            "type": "string",
+            "is_array": false
+        },
+        "operatingSystemVersion": {
+            "type": "string",
+            "is_array": false
+        },
+        "riskLevel": {
+            "type": "int",
+            "is_array": false
+        },
+        "sensor": {
+            "type": "string",
+            "is_array": false
+        },
+        "site": {
+            "type": "string",
+            "is_array": false
+        },
+        "tags": {
+            "type": "string",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "userIds": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

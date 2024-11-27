@@ -4,3 +4,4 @@ name: AWS Security Hub Modeling Rule
 rules: ''
 schema: ''
 tags: AWS
+toversion: 8.9.0

@@ -1,0 +1,33 @@
+[MODEL: dataset=box_box_raw]
+filter
+    event_type in ("ACCESS_GRANTED","ACCESS_REVOKED","ADD_DEVICE_ASSOCIATION","ADD_DEVICE_ASSOCIATION","ANNOTATIONV2_CREATE","ANNOTATIONV2_DELETE","ANNOTATIONV2_EDIT","APPLICATION_CREATED","APPLICATION_PUBLIC_KEY_ADDED","APPLICATION_PUBLIC_KEY_DELETED","CHANGE_ADMIN_ROLE","CHANGE_FOLDER_PERMISSION","COLLAB_ADD_COLLABORATOR","COLLAB_INVITE_COLLABORATOR","COLLAB_REMOVE_COLLABORATOR","COLLAB_ROLE_CHANGE","COLLABORATION_ACCEPT","COLLABORATION_EXPIRATION","COLLABORATION_INVITE","COLLABORATION_REMOVE","COLLABORATION_ROLE_CHANGE","COLLECTION_CREATE","COLLECTION_DELETE","COLLECTION_ITEM_CREATE","COLLECTION_ITEM_DELETE","COLLECTION_ITEM_UPDATE","COLLECTION_UPDATE","COMMENT_CREATE","COMMENT_DELETE","CONTENT_ACCESS","CONTENT_WORKFLOW_AUTOMATION_ADD","CONTENT_WORKFLOW_AUTOMATION_DELETE","CONTENT_WORKFLOW_POLICY_ADD","COPY","DATA_RETENTION_CREATE_RETENTION","DATA_RETENTION_REMOVE_RETENTION","DELETE","DELETE_USER","DOWNLOAD","EDIT","EDIT_USER","EMAIL_ALIAS_CONFIRM","EMAIL_ALIAS_REMOVE","FILE_MARKED_MALICIOUS","FILE_WATERMARKED_DOWNLOAD","GROUP_ADD_ITEM","GROUP_ADD_USER","GROUP_CREATION","GROUP_DELETION","GROUP_EDITED","GROUP_REMOVE_ITEM","GROUP_REMOVE_USER","ITEM_COPY","ITEM_CREATE","ITEM_DOWNLOAD","ITEM_MAKE_CURRENT_VERSION","ITEM_MODIFY","ITEM_MOVE","ITEM_OPEN","ITEM_PREVIEW","ITEM_RENAME","ITEM_SHARED","ITEM_SHARED_CREATE","ITEM_SHARED_UNSHARE","ITEM_SHARED_UPDATE","ITEM_SYNC","ITEM_TRASH","ITEM_UNDELETE_VIA_TRASH","ITEM_UNSYNC","ITEM_UPLOAD","LEGAL_HOLD_ASSIGNMENT_CREATE","LEGAL_HOLD_ASSIGNMENT_DELETE","LEGAL_HOLD_POLICY_CREATE","LEGAL_HOLD_POLICY_DELETE","LEGAL_HOLD_POLICY_UPDATE","LOCK","LOCK_CREATE","LOCK_DESTROY","METADATA_INSTANCE_CREATE","METADATA_INSTANCE_DELETE","METADATA_INSTANCE_UPDATE","METADATA_TEMPLATE_CREATE","METADATA_TEMPLATE_DELETE","METADATA_TEMPLATE_UPDATE","MOVE","NEW_USER","PREVIEW","REMOVE_DEVICE_ASSOCIATION","RENAME","RETENTION_POLICY_ASSIGNMENT_ADD","SHARE","SHARE_EXPIRATION","SIGN_DOCUMENT_ASSIGNED","SIGN_DOCUMENT_CANCELLED","SIGN_DOCUMENT_COMPLETED","SIGN_DOCUMENT_CONVERTED","SIGN_DOCUMENT_CREATED","SIGN_DOCUMENT_DECLINED","SIGN_DOCUMENT_EXPIRED","SIGN_DOCUMENT_SIGNED","SIGN_DOCUMENT_VIEWED_BY_SIGNER","SIGNER_DOWNLOADED","SIGNER_FORWARDED","STORAGE_EXPIRATION","TAG_ITEM_CREATE","TASK_ASSIGNMENT_CREATE","TASK_ASSIGNMENT_CREATE","TASK_ASSIGNMENT_DELETE","TASK_ASSIGNMENT_UPDATE","TASK_CREATE","TASK_CREATE","TASK_UPDATE","UNDELETE","UNLOCK","UNSHARE","UPDATE_COLLABORATION_EXPIRATION","UPDATE_SHARE_EXPIRATION","UPLOAD","WATERMARK_LABEL_CREATE","WATERMARK_LABEL_DELETE","RETENTION_POLICY_ASSIGNMENT_ADD","SHARE_EXPIRATION","TERMS_OF_SERVICE_ACCEPT","TERMS_OF_SERVICE_REJECT","CHANGE_ADMIN_ROLE","ADD_LOGIN_ACTIVITY_DEVICE","APPLICATION_CREATED","APPLICATION_PUBLIC_KEY_ADDED","APPLICATION_PUBLIC_KEY_DELETED","CONTENT_WORKFLOW_ABNORMAL_DOWNLOAD_ACTIVITY","CONTENT_WORKFLOW_SHARING_POLICY_VIOLATION","CONTENT_WORKFLOW_UPLOAD_POLICY_VIOLATION","DEVICE_TRUST_CHECK_FAILED","MULTI_FACTOR_AUTH_DISBLE","MULTI_FACTOR_AUTH_ENABLE","ENTERPRISE_APP_AUTHORIZATION_UPDATE","EXTERNAL_COLLAB_SECURITY_SETTINGS","MASTER_INVITE_ACCEPT","MASTER_INVITE_REJECT","ACCESS_GRANTED","ACCESS_REVOKED","OAUTH2_ACCESS_TOKEN_REVOKE","REMOVE_DEVICE_ASSOCIATION","REMOVE_LOGIN_ACTIVITY_DEVICE","USER_AUTHENTICATE_OAUTH2_ACCESS_TOKEN_CREATE")
+| alter
+    xdm.target.resource.type = coalesce(json_extract_scalar(source, "$.type"), json_extract_scalar(source, "$.item_type")),
+    xdm.target.resource.id = coalesce(json_extract_scalar(source, "$.id"), json_extract_scalar(source, "$.item_id")),
+    xdm.target.resource.name = coalesce(json_extract_scalar(source,"$.name"),
+        json_extract_scalar(source,"$.item_name"),
+        json_extract_scalar(additional_details,"$.shield_alert.alert_summary.alert_activities.item_name"),
+        json_extract_scalar(additional_details,"$.shield_alert.alert_summary.upload_activity.item_name"),
+        json_extract_scalar(additional_details,"$.shield_download_enforcment.item.name"),
+        json_extract_scalar(additional_details,"$.shield_external_collab_enforcment.item.name")),
+    xdm.target.resource.parent_id = json_extract_scalar(source, "$.parent.id"),
+    xdm.target.identity.groups = arraycreate( coalesce(json_extract_scalar(source, "$.owned_by.type"),"")),
+    xdm.target.identity.identifier = json_extract_scalar(source, "$.owned_by.id"),
+    xdm.target.identity.username = json_extract_scalar(source, "$.owned_by.login"),
+    xdm.source.identity.groups = arraycreate( coalesce(json_extract_scalar(created_by, "$.type"),"")),
+    xdm.source.identity.identifier = json_extract_scalar(created_by, "$.id"),
+    xdm.source.identity.username = json_extract_scalar(created_by, "$.login"),
+    xdm.event.id = event_id,
+    xdm.event.type = event_type,
+    xdm.source.ipv4 = ip_address;
+
+filter
+    event_type in ("ADMIN_LOGIN","FAILED_LOGIN","LOGIN")
+| alter
+    xdm.source.identity.identifier = json_extract_scalar(source, "$.id"),
+    xdm.source.identity.first_name = arrayindex(split(json_extract_scalar(source, "$.name")), 0),
+    xdm.source.identity.last_name = arrayindex(split(json_extract_scalar(source, "$.name")), 1),
+    xdm.source.identity.username = json_extract_scalar(source, "$.login"),
+    xdm.event.id = event_id,
+    xdm.event.type = event_type,
+    xdm.source.ipv4 = ip_address;

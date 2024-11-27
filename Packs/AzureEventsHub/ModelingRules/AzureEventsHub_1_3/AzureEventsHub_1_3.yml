@@ -4,3 +4,4 @@ name: Azure Events Hub Modeling Rule
 rules: ''
 schema: ''
 tags: Azure Events Hub
+toversion: 8.9.0

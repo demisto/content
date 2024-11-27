@@ -1,0 +1,15 @@
+[MODEL: dataset ="siemens_sipass_raw"]
+alter log_array = split(_raw_log,"    ")
+| alter id_num = split(arrayindex(log_array,0)," ")
+| alter
+    xdm.event.id = ltrim(arrayindex(id_num,1)," "),
+    xdm.target.host.hostname = arrayindex(log_array,1),
+    xdm.source.host.device_id = to_string(arrayindex(log_array,3)),
+    xdm.source.host.device_model = arrayindex(log_array,5),
+    xdm.event.description = arrayindex(log_array,11),
+    xdm.source.identity.last_name = arrayindex(log_array,13),
+    xdm.source.identity.first_name = arrayindex(log_array,14),
+    xdm.source.identity.badge_id = arrayindex(log_array,16),
+    xdm.source.zone = to_string(arrayindex(log_array,32)),
+    xdm.database.name = to_string(arrayindex(log_array,37)),
+    xdm.source.identity.employee_id = to_string(arrayindex(log_array,43));

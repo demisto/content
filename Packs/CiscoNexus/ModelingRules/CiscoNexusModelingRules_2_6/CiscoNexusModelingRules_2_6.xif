@@ -1,0 +1,12 @@
+[MODEL: dataset="cisco_nexus_raw"]
+alter severity=arrayindex(regextract(_raw_log ,"%[\-\_\w]+[\-\_\w]*\-(\d+)\-"),0),
+xdm.observer.type=arrayindex(regextract(_raw_log, "%([\-\_\w]+[\-\_\w]*)\-\d+"),0),
+xdm.event.type=arrayindex(regextract(_raw_log, "[\-\_\w]+[\-\_\w]*\-\d+\-([\w\-\_]+)"),0),
+xdm.event.description=arrayindex(regextract(_raw_log, "[\-\_\w]+[\-\_\w]*\-\d+\-[\w\-\_]+\:\s(.+)$"),0),
+xdm.source.ipv4=arrayindex(regextract(_raw_log, "from\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s"),0),
+xdm.source.process.name=arrayindex(regextract(_raw_log, "\s(\w+\[\d+\])"),0),
+xdm.source.interface=arrayindex(regextract(_raw_log, "Interface\s([A-Za-z\-\d\/]+)"),0),
+xdm.event.outcome=if(_raw_log in ("*down*", "*failure*", "*fail*"), XDM_CONST.OUTCOME_FAILED , XDM_CONST.OUTCOME_SUCCESS),
+xdm.source.identity.username=arrayindex(regextract(_raw_log, "user\s(\w+)\s"),0)
+| alter xdm.event.log_level=if(severity="0",XDM_CONST.LOG_LEVEL_EMERGENCY,severity="1",XDM_CONST.LOG_LEVEL_ALERT, severity="2", XDM_CONST.LOG_LEVEL_CRITICAL, severity="3", XDM_CONST.LOG_LEVEL_ERROR, severity="4", XDM_CONST.LOG_LEVEL_WARNING, severity="5", XDM_CONST.LOG_LEVEL_NOTICE, severity="6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity="7", XDM_CONST.LOG_LEVEL_DEBUG, to_string(severity)),
+xdm.intermediate.ipv4=arrayindex(regextract(_raw_log, "\w{3}\s+\d{1,2}\s\d{2}\:\d{2}\:\d{2}\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0);

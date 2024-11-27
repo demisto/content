@@ -4,3 +4,4 @@ name: Qualys Modeling Rule
 rules: ''
 schema: ''
 tags: Qualys
+toversion: 8.9.0

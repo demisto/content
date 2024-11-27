@@ -1,0 +1,104 @@
+{
+    "mimecast_mimecast_raw": {
+      "category": {
+        "type": "string",
+        "is_array": false
+      },
+       "eventInfo": {
+        "type": "string",
+        "is_array": false
+      },
+      "auditType": {
+        "type": "string",
+        "is_array": false
+      },
+      "user": {
+        "type": "string",
+        "is_array": false
+      },
+      "id": {
+        "type": "string",
+        "is_array": false
+      },
+      "acc": {
+        "type": "string",
+        "is_array": false
+      },
+      "aCode": {
+        "type": "string",
+        "is_array": false
+      },
+      "Act": {
+        "type": "string",
+        "is_array": false
+      },
+      "AttNames": {
+        "type": "string",
+        "is_array": false
+      },
+      "datetime": {
+        "type": "datetime",
+        "is_array": false
+      },
+      "IP": {
+        "type": "string",
+        "is_array": false
+      },
+      "MsgId": {
+        "type": "string",
+        "is_array": false
+      },
+      "Sender": {
+        "type": "string",
+        "is_array": false
+      },
+      "Subject": {
+        "type": "string",
+        "is_array": false
+      },
+      "Virus": {
+        "type": "string",
+        "is_array": false
+      },
+      "fileExt": {
+        "type": "string",
+        "is_array": false
+      },
+      "fileMime": {
+        "type": "string",
+        "is_array": false
+      },
+      "md5": {
+        "type": "string",
+        "is_array": false
+      },
+      "sha256": {
+        "type": "string",
+        "is_array": false
+      },
+      "SourceIP": {
+        "type": "string",
+        "is_array": false
+      },
+      "ScanResultInfo": {
+        "type": "string",
+        "is_array": false
+      },
+      "Action": {
+        "type": "string",
+        "is_array": false
+      },
+      "Rcpt": {
+        "type": "string",
+        "is_array": false
+      },
+      "Recipient": {
+        "type": "string",
+        "is_array": false
+      },
+      "xsiem_classifier": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

@@ -4,3 +4,4 @@ name: Slack Modeling Rule
 rules: ''
 schema: ''
 tags: slack
+toversion: 8.9.0

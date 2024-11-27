@@ -1,0 +1,91 @@
+[MODEL: dataset="prisma_cloud_raw"]
+alter /* extract alert data (schema docs: https://pan.dev/prisma-cloud/api/cspm/get-alerts-v-2/) */
+    alert_scanner_version = alertAdditionalInfo -> scannerVersion,
+    policy_description = policy -> description,
+    policy_labels = arraymap(policy -> labels[], trim("@element", "\"")),
+    policy_name = policy -> name, 
+    policy_cloudType = policy -> cloudType, 
+    policy_policyId = policy -> policyId, 
+    policy_policyType = policy -> policyType,  
+    policy_severity = policy -> severity,
+    policy_lastModifiedBy = policy -> lastModifiedBy, 
+    policy_recommendation = policy -> recommendation,
+    policy_mitre_compliance_metadata = arrayfilter(policy -> complianceMetadata[], "@element" -> sectionLabel = "MITRE ATT&CK"),
+    resource_account = resource -> account, 
+    resource_accountId = resource -> accountId, 
+    resource_cloudaccountgroups = arraymap(resource -> cloudAccountGroups[], trim("@element", "\"")),
+    resource_cloudaccountowners = trim(arraystring(resource -> cloudAccountOwners[], ","), "\""),
+    resource_cloudType = resource -> cloudType, 
+    resource_cloudServiceName = resource -> cloudServiceName,
+    resource_data_zone = resource -> data.zone,
+    resource_data_placement_availabilityZone = resource -> data.placement.availabilityZone,
+    resource_data_snapshot_availabilityZone = resource -> data.snapshot.availabilityZone, // DB_SNAPSHOT resource type
+    resource_data_availabilityZones_zoneName = arraystring(arraymap(resource -> data.availabilityZones[], "@element" -> zoneName), ","),
+    resource_data_cidrBlock = resource -> data.cidrBlock,
+    resource_data_ipCidrRange = resource -> data.ipCidrRange, // SUBNET resource type
+    resource_data_association_publicIp = resource -> data.association.publicIp, // IFACE resource type
+    resource_data_mac_address = resource -> data.macAddress, // IFACE resource type
+    resource_data_dbname = resource -> data.dbname, // MANAGED_DBMS resource type 
+    resource_data_snapshot_port = resource -> data.snapshot.port, // DB_SNAPSHOT resource type 
+    resource_data_endpoint_port = resource -> data.endpoint.port, // MANAGED_DBMS resource type
+    resource_data_endpoint = resource -> data.endpoint,
+    resource_data_gatewayAddress = resource -> data.gatewayAddress, // SUBNET resource type
+    resource_data_user = resource -> data.user, // IAM_CREDENTIAL_REPORT & IAM_USER resource types
+    resource_data_host = resource -> data.host, // INSTANCE resource type
+    resource_id = resource -> id, 
+    resource_name = resource -> name, 
+    resource_region = resource -> region, 
+    resource_regionId = resource -> regionId, 
+    resource_resourceType = resource -> resourceType, 
+    resource_rrn = resource -> rrn,  
+    resource_url = resource -> url
+| alter // post extraction processing 
+    cloud_type = uppercase(coalesce(policy_cloudType, resource_cloudType)), 
+    cloud_region = coalesce(resource_regionId, resource_region),
+    cloud_zone = coalesce(arrayindex(regextract(resource_data_zone, "zones\/([\w\-]+)"), 0), resource_data_zone, resource_data_placement_availabilityZone, resource_data_snapshot_availabilityZone, resource_data_availabilityZones_zoneName),
+    hostname = if(resource_resourceType = "INSTANCE", resource_name),
+    ip_address = if(resource_resourceType = "GCP_KUBERNETES_CLUSTER", resource_data_endpoint, coalesce(resource_data_host, resource_data_gatewayAddress, resource_data_association_publicIp)),
+    port = to_integer(coalesce(resource_data_endpoint_port, resource_data_snapshot_port)),
+    subnet_cidr_range = coalesce(resource_data_cidrBlock, resource_data_ipCidrRange), 
+    mac_address = if(resource_data_mac_address != null, arraycreate(resource_data_mac_address)),
+    mitre_tactics = arraydistinct(arraymap(policy_mitre_compliance_metadata, "@element" -> requirementId)),
+    mitre_techniques = arraydistinct(arraymap(policy_mitre_compliance_metadata, "@element" -> sectionId))
+| alter cloud_provider = if(cloud_type ~= "ALIBABA", XDM_CONST.CLOUD_PROVIDER_ALIBABA, cloud_type ~= "AWS|AMAZON", XDM_CONST.CLOUD_PROVIDER_AWS, cloud_type ~= "AZURE|MS|MICROSOFT", XDM_CONST.CLOUD_PROVIDER_AZURE, cloud_type ~= "GOOGLE|GCP", XDM_CONST.CLOUD_PROVIDER_GCP, cloud_type)
+| alter // mappings 
+    xdm.alert.name = policy_name, 
+    xdm.alert.description = policy_description,
+    xdm.alert.mitre_tactics = mitre_tactics, 
+    xdm.alert.mitre_techniques = mitre_techniques,
+    xdm.alert.original_alert_id = id,
+    xdm.alert.original_threat_id = coalesce(policy_policyId, policyId), 
+    xdm.alert.severity = policy_severity,
+    xdm.database.name = resource_data_dbname,
+    xdm.event.id = id,
+    xdm.event.tags = policy_labels,
+    xdm.event.original_event_type = policy_policyType,
+    xdm.event.description = policy_recommendation, 
+    xdm.event.outcome = status,
+    xdm.event.outcome_reason = reason, 
+    xdm.event.is_completed = if(status in ("resolved", "dismissed"), to_boolean("TRUE"), status in ("open", "snoozed"), to_boolean("FALSE")),
+    xdm.intermediate.identity.username = policy_lastModifiedBy, 
+    xdm.network.rule = policy_name, 
+    xdm.observer.version = alert_scanner_version,
+    xdm.target.application.name = resource_cloudServiceName, 
+    xdm.target.cloud.project = resource_account,
+    xdm.target.cloud.provider = cloud_provider,
+    xdm.target.cloud.region = cloud_region,
+    xdm.target.cloud.zone = cloud_zone, 
+    xdm.target.host.hostname = hostname,
+    xdm.target.host.mac_addresses = mac_address,
+    xdm.target.ipv4 = ip_address,
+    xdm.target.port = port,
+    xdm.target.resource.id = resource_id,
+    xdm.target.resource.name = resource_rrn, 
+    xdm.target.resource.type = resource_resourceType, 
+    xdm.target.resource.value = resource_name, 
+    xdm.target.resource.parent_id = resource_cloudaccountowners,
+    xdm.target.subnet = subnet_cidr_range,
+    xdm.target.url = resource_url,
+    xdm.target.identity.ou = resource_accountId,
+    xdm.target.identity.username = resource_data_user,
+    xdm.target.identity.groups = resource_cloudaccountgroups; 

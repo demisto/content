@@ -4,3 +4,4 @@ name: MySQL Enterprise Modeling Rules
 rules: ''
 schema: ''
 tags: MySQL Enterprise
+toversion: 8.9.0

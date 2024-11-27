@@ -4,3 +4,4 @@ name: Microsoft 365 Defender Event Collector Modeling Rule
 rules: ''
 schema: ''
 tags: Microsoft 365 Defender
+toversion: 8.9.0

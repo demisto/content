@@ -1,0 +1,126 @@
+[MODEL: dataset="barracuda_waf_raw"]
+filter _raw_log ~= "\s(WF)\s"
+| alter
+    xdm.event.type = "Web Firewall Log",
+    xdm.observer.name = arraystring(regextract(_raw_log, "(\S+)\sWF\s"), ""),
+    xdm.alert.severity = arraystring(regextract(_raw_log, "WF\s(\S+)"), ""),
+    xdm.alert.original_threat_name = arraystring(regextract(_raw_log, "WF\s\S+\s(\S+)"), ""),
+    extract_source_ip = arraystring(regextract(_raw_log, "WF\s\S+\s\S+\s(\S+)"), ""),
+    extract_intermediate_ip = arraystring(regextract(_raw_log, "WF(?:\s\S+){4}\s(\S+)"), "")
+| alter
+    src_ip_v4 = if(extract_source_ip !~= ":", extract_source_ip, null),
+    src_ip_v6 = if(extract_source_ip ~= ":", extract_source_ip, null),
+    inter_ip_v4 = if(extract_intermediate_ip !~= ":", extract_intermediate_ip, null),
+    inter_ip_v6 = if(extract_intermediate_ip ~= ":", extract_intermediate_ip, null)
+| alter
+    xdm.source.ipv4 = src_ip_v4,
+    xdm.source.ipv6 = src_ip_v6,
+    xdm.source.port = to_integer(arraystring(regextract(_raw_log, "WF(?:\s\S+){3}\s(\S+)"), "")),
+    xdm.intermediate.ipv4 = inter_ip_v4,
+    xdm.intermediate.ipv6 = inter_ip_v6,
+    xdm.intermediate.port = to_integer(arraystring(regextract(_raw_log, "WF(?:\s\S+){5}\s(\S+)"), "")),
+    xdm.network.rule = arraystring(regextract(_raw_log, "WF(?:\s\S+){6}\s(\S+)"), ""),
+    xdm.observer.action = arraystring(regextract(_raw_log, "WF(?:\s\S+){8}\s(\S+)"), ""),
+    xdm.alert.description = arraystring(regextract(_raw_log, "\[([^]]+)\]"), ""),
+    method = arraystring(regextract(_raw_log, "\[[^]]+\]\s(\S+)"), ""),
+    xdm.target.url = arraystring(regextract(_raw_log, "\[[^]]+\]\s\S+\s(\S+)"), ""),
+    xdm.network.application_protocol =  arraystring(regextract(_raw_log, "\[[^]]+\]\s\S+\s\S+\s(\S+)"), "")
+| alter
+    xdm.network.http.method = if(method = "ACL", XDM_CONST.HTTP_METHOD_ACL, method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL , method = "BIND", XDM_CONST.HTTP_METHOD_BIND, method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, method = "COPY", XDM_CONST.HTTP_METHOD_COPY, method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, method = "GET", XDM_CONST.HTTP_METHOD_GET, method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, method = "LINK", XDM_CONST.HTTP_METHOD_LINK, method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, method = "POST", XDM_CONST.HTTP_METHOD_POST, method = "PRI", XDM_CONST.HTTP_METHOD_PRI, method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, method = "PUT", XDM_CONST.HTTP_METHOD_PUT, method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, method = null, null, to_string(method));
+
+filter _raw_log ~= "\s(TR)\s"
+| alter
+    xdm.event.type = "Access Log",
+    xdm.observer.name = arraystring(regextract(_raw_log, "(\S+)\sTR\s"), ""),
+    extract_intermediate_ip = arraystring(regextract(_raw_log, "TR\s(\S+)"), ""),
+    extract_source_ip = arraystring(regextract(_raw_log, "TR\s\S+\s\S+\s(\S+)"), ""),
+    extract_target_host_ip = arraystring(regextract(_raw_log, "TR(?:\s\S+){8}\s(\S+)"), ""),
+    extract_target_ip = arraystring(regextract(_raw_log, "TR(?:\s\S+){15}\s(\S+)"), "")
+| alter
+    trg_ip_v4 = if(extract_target_ip !~= ":", extract_target_ip, null),
+    trg_ip_v6 = if(extract_target_ip ~= ":", extract_target_ip, null),
+    src_ip_v4 = if(extract_source_ip !~= ":", extract_source_ip, null),
+    src_ip_v6 = if(extract_source_ip ~= ":", extract_source_ip, null),
+    trg_host_ip_v4 = if(extract_target_host_ip !~= ":", extract_target_host_ip, null),
+    trg_host_ip_v6 = if(extract_target_host_ip ~= ":", extract_target_host_ip, null),
+    inter_ip_v4 = if(extract_intermediate_ip !~= ":", extract_intermediate_ip, null),
+    inter_ip_v6 = if(extract_intermediate_ip ~= ":", extract_intermediate_ip, null)
+| alter
+    xdm.target.ipv4 = trg_ip_v4,
+    xdm.target.ipv6 = trg_ip_v6,
+    xdm.source.ipv4 = src_ip_v4,
+    xdm.source.ipv6 = src_ip_v6,
+    xdm.target.host.ipv4_addresses = arraycreate(trg_host_ip_v4),
+    xdm.target.host.ipv6_addresses = arraycreate(trg_host_ip_v6),
+    xdm.intermediate.ipv4 = inter_ip_v4,
+    xdm.intermediate.ipv6 = inter_ip_v6
+| alter
+    xdm.intermediate.port = to_integer(arraystring(regextract(_raw_log, "TR\s\S+\s(\S+)"), "")),
+    xdm.source.port = to_integer(arraystring(regextract(_raw_log, "TR(?:\s\S+){3}\s(\S+)"), "")),
+    xdm.source.identity.username = arraystring(regextract(_raw_log, "TR(?:\s\S+){4}\s(\S+)"), ""),
+    method = arraystring(regextract(_raw_log, "TR(?:\s\S+){6}\s(\S+)"), ""),
+    xdm.network.application_protocol = arraystring(regextract(_raw_log, "TR(?:\s\S+){7}\s(\S+)"), ""),
+    status_code = arraystring(regextract(_raw_log, "TR(?:\s\S+){10}\s(\S+)"), ""),
+    xdm.source.sent_bytes = to_integer(arraystring(regextract(_raw_log, "TR(?:\s\S+){11}\s(\S+)"), "")),
+    xdm.target.sent_bytes = to_integer(arraystring(regextract(_raw_log, "TR(?:\s\S+){12}\s(\S+)"), "")),
+    xdm.event.duration = to_integer(arraystring(regextract(_raw_log, "TR(?:\s\S+){14}\s(\S+)"), "")),
+    xdm.target.port = to_integer(arraystring(regextract(_raw_log, "TR(?:\s\S+){16}\s(\S+)"), "")),
+    xdm.observer.action = arraystring(regextract(_raw_log, "TR(?:\s\S+){21}\s(\S+)"), ""),
+    xdm.target.url = arraystring(regextract(_raw_log, "TR(?:\s\S+){23}\s(\S+)"), ""),
+    xdm.network.http.referrer = arraystring(regextract(_raw_log, "TR(?:\s\S+){25}\s(\S+)"), "")
+| alter
+    xdm.network.http.method = if(method = "ACL", XDM_CONST.HTTP_METHOD_ACL, method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL , method = "BIND", XDM_CONST.HTTP_METHOD_BIND, method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, method = "COPY", XDM_CONST.HTTP_METHOD_COPY, method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, method = "GET", XDM_CONST.HTTP_METHOD_GET, method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, method = "LINK", XDM_CONST.HTTP_METHOD_LINK, method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, method = "POST", XDM_CONST.HTTP_METHOD_POST, method = "PRI", XDM_CONST.HTTP_METHOD_PRI, method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, method = "PUT", XDM_CONST.HTTP_METHOD_PUT, method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, method = null, null, to_string(method)),
+    xdm.network.http.response_code = if(status_code = "100", XDM_CONST.HTTP_RSP_CODE_CONTINUE, status_code = "101", XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, status_code = "102", XDM_CONST.HTTP_RSP_CODE_PROCESSING, status_code = "103", XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, status_code = "200", XDM_CONST.HTTP_RSP_CODE_OK, status_code = "201", XDM_CONST.HTTP_RSP_CODE_CREATED, status_code = "202", XDM_CONST.HTTP_RSP_CODE_ACCEPTED, status_code = "203", XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, status_code = "204", XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, status_code = "205", XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, status_code = "206", XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, status_code = "207", XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, status_code = "208", XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, status_code = "226", XDM_CONST.HTTP_RSP_CODE_IM_USED, status_code = "300", XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, status_code = "301", XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, status_code = "302", XDM_CONST.HTTP_RSP_CODE_FOUND, status_code = "303", XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, status_code = "304", XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, status_code = "305", XDM_CONST.HTTP_RSP_CODE_USE_PROXY, status_code = "307", XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, status_code = "308", XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, status_code = "400", XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, status_code = "401", XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, status_code = "402", XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, status_code = "403", XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, status_code = "404", XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, status_code = "405", XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, status_code = "406", XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, status_code = "407", XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, status_code = "408", XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, status_code = "409", XDM_CONST.HTTP_RSP_CODE_CONFLICT, status_code = "410", XDM_CONST.HTTP_RSP_CODE_GONE, status_code = "411", XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, status_code = "412", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, status_code = "413", XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, status_code = "414", XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, status_code = "415", XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, status_code = "416", XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, status_code = "417", XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, status_code = "421", XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, status_code = "422", XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, status_code = "423", XDM_CONST.HTTP_RSP_CODE_LOCKED, status_code = "424", XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, status_code = "425", XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, status_code = "426", XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, status_code = "428", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, status_code = "429", XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, status_code = "431", XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, status_code = "451", XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, status_code = "500", XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, status_code = "501", XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, status_code = "502", XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, status_code = "503", XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, status_code = "504", XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, status_code = "505", XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, status_code = "506", XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, status_code = "507", XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, status_code = "508", XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, status_code = "511", XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, status_code = null, null, to_string(status_code));
+
+filter _raw_log ~= "\s(SYS)\s"
+| alter
+    xdm.event.type = "System Log",
+    xdm.observer.name = arraystring(regextract(_raw_log, "(\S+)\sSYS\s"), ""),
+    xdm.alert.severity = arraystring(regextract(_raw_log, "SYS\s\S+\s(\S+)"), ""),
+    xdm.alert.original_alert_id = arraystring(regextract(_raw_log, "SYS\s\S+\s\S+\s(\S+)"), ""),
+    xdm.alert.description = arraystring(regextract(_raw_log, "SYS\s\S+\s\S+\s\S+\s(.*)$"), "");
+
+filter _raw_log ~= "\s(AUDIT)\s"
+| alter
+    xdm.event.type = "Audit Log",
+    xdm.observer.name = arraystring(regextract(_raw_log, "(\S+)\sAUDIT\s"), ""),
+    xdm.source.identity.username = arraystring(regextract(_raw_log, "AUDIT\s(\S+)"), ""),
+    extract_source_ip = arraystring(regextract(_raw_log, "AUDIT\s\S+\s\S+\s(\S+)"), "")
+| alter
+    src_ip_v4 = if(extract_source_ip !~= ":", extract_source_ip, null),
+    src_ip_v6 = if(extract_source_ip ~= ":", extract_source_ip, null)
+| alter
+    xdm.source.ipv4 = src_ip_v4,
+    xdm.source.ipv6 = src_ip_v6
+| alter
+    xdm.source.port = to_integer(arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){3}\s(\S+)"), "")),
+    xdm.event.operation = arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){4}\s(\S+)"), ""),
+    xdm.source.process.name = arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){6}\s(\S+)"), ""),
+    xdm.target.resource.type = arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){8}\s(\S+)"), ""),
+    xdm.target.resource.name = arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){9}\s(\S+)"), ""),
+    xdm.target.resource_before.value = arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){11}\s(\S+)"), ""),
+    xdm.target.resource.value = arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){12}\s(\S+)"), "");
+
+filter _raw_log ~= "\s(NF)\s"
+| alter
+    xdm.event.type = "Network Firewall Log",
+    xdm.observer.name = arraystring(regextract(_raw_log, "(\S+)\sNF\s"), ""),
+    xdm.alert.severity = arraystring(regextract(_raw_log, "NF\s(\S+)"), ""),
+    xdm.network.application_protocol = arraystring(regextract(_raw_log, "NF\s\S+\s(\S+)"), ""),
+    extract_source_ip = arraystring(regextract(_raw_log, "NF\s\S+\s\S+\s(\S+)"), ""),
+    extract_target_ip = arraystring(regextract(_raw_log, "NF(?:\s\S+){4}\s(\S+)"), "")
+| alter
+    src_ip_v4 = if(extract_source_ip !~= ":", extract_source_ip, null),
+    src_ip_v6 = if(extract_source_ip ~= ":", extract_source_ip, null),
+    trg_ip_v4 = if(extract_target_ip !~= ":", extract_target_ip, null),
+    trg_ip_v6 = if(extract_target_ip ~= ":", extract_target_ip, null)
+| alter
+    xdm.source.ipv4 = src_ip_v4,
+    xdm.source.ipv6 = src_ip_v6,
+    xdm.target.ipv4 = trg_ip_v4,
+    xdm.target.ipv6 = trg_ip_v6
+| alter
+    xdm.source.port = to_integer(arraystring(regextract(_raw_log, "NF(?:\s\S+){3}\s(\S+)"), "")),
+    xdm.target.port = to_integer(arraystring(regextract(_raw_log, "NF(?:\s\S+){5}\s(\S+)"), "")),
+    xdm.observer.action = arraystring(regextract(_raw_log, "NF(?:\s\S+){6}\s(\S+)"), ""),
+    xdm.network.rule = arraystring(regextract(_raw_log, "NF(?:\s\S+){7}\s(\S+)"), "");

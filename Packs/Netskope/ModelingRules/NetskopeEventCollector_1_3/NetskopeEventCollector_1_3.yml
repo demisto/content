@@ -4,3 +4,4 @@ name: Netskope Modeling Rule
 rules: ''
 schema: ''
 tags: netskope
+toversion: 8.9.0

@@ -1,0 +1,14 @@
+{
+    "radware_access_logs_raw": {
+        "_raw_log": {
+            "type": "string",
+            "is_array": false
+        }
+    },
+    "radware_appwall_raw": {
+        "_raw_log": {
+          "type": "string",
+          "is_array": false
+        }
+      }
+}

@@ -1,0 +1,30 @@
+[MODEL: dataset="tableau_log_raw"]
+alter tokenPayload = arrayindex(regextract(_raw_log, "\(([^\)]*)\)"),0),
+    requestPayload = arrayindex(regextract(_raw_log, "Request\s([^\$]*)"),0)
+| alter
+    logLevel = arrayindex(regextract(_raw_log, ":\s([^\s][A-Z]{1,8})\s"),0),
+    serviceName = arrayindex(regextract(_raw_log, "^(?:[^:\n]*:){6}\s+\w+\s+([^ ]+)"),0),
+    requestStatus = arrayindex(regextract(_raw_log, "^(?:[^\.\n]*\.){5}\w+\s+\-\s+(\w+\s+\w+)"),0),
+    message = arrayindex(regextract(_raw_log, "\s\-\s(.*)"),0),
+    messageID = arrayindex(regextract(_raw_log, "^[^=\n]*=([^ ]+)"),0),
+    hostname = arrayindex(regextract(_raw_log, "\([^\)]+\)\s*([\w\-]+)\s"),0),
+    tokenPayload1 = arrayindex(split(tokenPayload,","),0),
+    tokenPayload2 = arrayindex(split(tokenPayload,","),1),
+    sessionID = arrayindex(split(tokenPayload,","),2),
+    RequestID = arrayindex(split(tokenPayload,","),3),
+    //tokenPayload5 = arrayindex(split(tokenPayload,","),4),
+    //tokenPayload6 = arrayindex(split(tokenPayload,","),5),
+    requestType = arrayindex(regextract(requestPayload, "([^\s]\S+):"),0),
+    requestStatusCode = arrayindex(regextract(requestPayload, "status\s([^\$][\d]{1,3})"),0)
+| alter
+    xdm.alert.severity = logLevel,
+    xdm.event.description = message,
+    xdm.event.outcome = if(requestStatus ~= "fail", XDM_CONST.OUTCOME_FAILED, requestStatus = "Request completed", XDM_CONST.OUTCOME_SUCCESS, requestStatus ~= "success", XDM_CONST.OUTCOME_SUCCESS, requestStatus = null, null, to_string(requestStatus)),
+    xdm.event.operation_sub_type = requestType,
+    xdm.session_context_id = coalesce(sessionID,requestPayload),
+    xdm.target.resource.name = serviceName,
+    xdm.event.id = coalesce(RequestID,messageID),
+    xdm.source.host.hostname = hostname,
+    xdm.event.operation = requestStatusCode,
+    xdm.target.identity.username = tokenPayload2,
+    xdm.target.identity.ou = tokenPayload1;

@@ -1,0 +1,45 @@
+[MODEL: dataset = gitguardian_enterprise_raw]
+// Mapping incident logs
+filter source_log_type = "incident"
+| alter
+        description = arraymap(tags -> [], to_json_string(json_extract_array("@element", "$.long_description"))),
+        github_logins = arraymap(who -> [], "@element" -> github_login),
+        user_names = arraymap(who -> [], "@element" -> name),
+        user_ids = arraymap(who -> [], "@element" -> id),
+        github_ids = arraymap(who -> [], "@element" -> github_id),
+        emails = arraymap(who -> [], "@element" -> email)
+
+| alter
+        description = arraystring(arraymap(description, trim("@element", "[]")), ","),
+        first_names = arraystring(arraymap(user_names, arrayindex(regextract("@element", "(\S+)\s?"), 0)), "; "),
+        last_names = arraystring(arraymap(user_names, arrayindex(regextract("@element", "\S+\s(\S+)"), 0)), "; ")
+| alter
+        xdm.alert.original_alert_id = to_string(id),
+        xdm.alert.name = display_name,
+        xdm.alert.severity = to_string(severity),
+        xdm.alert.subcategory = category,
+        xdm.alert.description = arraystring(arraymap(split(replex(description, "\\\"", ""), ","), trim("@element", "\"")), ", "),
+        xdm.event.description = concat("Status = ", status, ", ", "Assignee = ", assignee, ", ", "Repo_name = ", repo_name, ", ", "Commit_sha = ", commit_sha),
+        xdm.event.type = source_log_type,
+        xdm.event.operation_sub_type = arrayindex(regextract(type, "\.([^\.]+)"), 0),
+        xdm.target.file.path = file_path,
+        xdm.source.identity.username = arraystring(github_logins, "; "),
+        xdm.source.identity.first_name = if(first_names != "", first_names, null),
+        xdm.source.identity.last_name = if(last_names != "", last_names, null),
+        xdm.source.identity.identifier = arraystring(github_ids, "; "),
+        xdm.source.identity.employee_id = arraystring(user_ids, "; "),
+        xdm.source.identity.upn = arraystring(emails, "; "),
+        xdm.network.http.url = url;
+
+// Mapping audit logs
+filter source_log_type = "audit_log"
+| alter
+        xdm.source.identity.upn = actor_email,
+        xdm.source.identity.username = actor_name,
+        xdm.source.ipv4 = if(actor_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", actor_ip, null),
+        xdm.source.ipv6 = if(actor_ip ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", actor_ip, null),
+        xdm.event.id = to_string(id),
+        xdm.event.original_event_type = type,
+        xdm.event.type = source_log_type,
+        xdm.event.description = to_string(payload),
+        xdm.target.identity.upn = target_user_email;
