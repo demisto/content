@@ -5,7 +5,7 @@
     "associatedTypes": [
         "Hello World Alert"
     ],
-    "breachScript": "Test Cortex XSOAR",
+    "breachScript": "",
     "caseInsensitive": true,
     "cliName": "helloworldid",
     "closeForm": false,

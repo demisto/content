@@ -1,7 +1,7 @@
 This is playbook that will handle the alerts coming from Hello World service
 
 ## Dependencies
-This playbook uses the following sub-playbooks, integrations, and scripts Test Cortex XSOAR.
+This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 This playbook does not use any sub-playbooks.

@@ -12,7 +12,7 @@
     "id": "Hello World Alert",
     "locked": false,
     "name": "Hello World Alert",
-    "playbookId": "Handle Hello World Alert Test Cortex XSOAR",
+    "playbookId": "Handle Hello World Alert",
     "preProcessingScript": "",
     "readonly": false,
     "reputationCalc": 0,

@@ -1,5 +1,5 @@
 args:
-- description: 'Hello command - prints hello to anyone. Test Cortex XSOAR'
+- description: 'Hello command - prints hello to anyone.'
   name: name
 comment: Hello World Script.
 commonfields:

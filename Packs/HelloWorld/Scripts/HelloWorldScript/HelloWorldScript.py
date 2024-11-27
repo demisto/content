@@ -40,7 +40,7 @@ def say_hello(name: str) -> str:
         dict: string containing 'Hello {name}'
     """
 
-    return f'Hello {name} Test Cortex XSOAR'
+    return f'Hello {name}'
 
 
 ''' COMMAND FUNCTION '''

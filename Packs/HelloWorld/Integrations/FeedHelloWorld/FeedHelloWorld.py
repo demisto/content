@@ -416,7 +416,7 @@ def main():
                 demisto.createIndicators(iter_)
 
         else:
-            raise NotImplementedError(f'Command {command} is not implemented. Test Cortex XSOAR')
+            raise NotImplementedError(f'Command {command} is not implemented.')
 
     # Log exceptions and return errors
     except Exception as e:

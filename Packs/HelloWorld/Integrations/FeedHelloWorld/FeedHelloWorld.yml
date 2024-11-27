@@ -10,7 +10,7 @@ configuration:
   required: false
 - defaultvalue: https://openphish.com/feed.txt
   display: Server's URL
-  additionalinfo: Should be feed of type .txt. For using other types of feed, modify the parsing in the python file Test Cortex XSOAR.
+  additionalinfo: Should be feed of type .txt. For using other types of feed, modify the parsing in the python file.
   name: url
   required: true
   type: 0

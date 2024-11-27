@@ -1,7 +1,7 @@
 id: Handle Hello World Alert
 version: -1
 name: Handle Hello World Alert
-description: This is a playbook which will handle the alerts coming from the Hello World Test Cortex XSOAR
+description: This is a playbook which will handle the alerts coming from the Hello World
   service
 starttaskid: "0"
 fromversion: 6.8.0
