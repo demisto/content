@@ -1,4 +1,3 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)"""
 from typing import (
     Any,
     Dict
@@ -364,14 +363,17 @@ def fetch_incidents():
                                {"value": str(gwAlerts[i]['_source']['destination']['ip']), "type": "IP"}],
                     'rawJSON': json.dumps(gwAlerts[i]['_source']),
                     'severity': gwAlerts[i]['_source']['event']['severity'],
-                    'type': "Gatewatcher Alert",
+                    'type': "Gatewatcher Incident",
                     'CustomFields': {'gatewatcherflowid': gwAlerts[i]['_source']['network']['flow_id'],
                                      'gatewatchergcenter': str(gwAlerts[i]['_source']['observer']['hostname']),
                                      'gatewatchergcap': str(gwAlerts[i]['_source']['observer']['gcap']['hostname']),
-                                     'gatewatchergcapinterface': str(gwAlerts[i]['_source']['observer']['gcap']['ingress']['interface']),
                                      'gatewatcherrawevent': json.dumps(gwAlerts[i]['_source'])
                                      }
                     }
+
+        # GCap interface
+        if 'ingress' in gwAlerts[i]['_source']['observer']['gcap'].keys():
+            incident['CustomFields']['gatewatchergcapinterface'] = str(gwAlerts[i]['_source']['observer']['gcap']['ingress']['interface'])
 
         # IP and port fields
         if 'port' in gwAlerts[i]['_source']['source'].keys() and gwAlerts[i]['_source']['destination'].keys():
@@ -399,8 +401,6 @@ def fetch_incidents():
 	
         # Malcore alert
         if 'malcore' in gwAlerts[i]['_source'].keys():
-            incident['type'] = "Gatewatcher Malcore engine alert"
-
             incident['CustomFields']['gatewatchermalcoremagicdetails'] = str(gwAlerts[i]['_source']['malcore']['magic_details']) 
             incident['CustomFields']['gatewatchermalcorestate'] = str(gwAlerts[i]['_source']['malcore']['state']) 
             incident['CustomFields']['gatewatchermalcoretotalfound'] = str(gwAlerts[i]['_source']['malcore']['total_found']) 
@@ -409,14 +409,10 @@ def fetch_incidents():
 
         # Shellcode alert
         if 'shellcode' in gwAlerts[i]['_source'].keys():
-            incident['type'] = "Gatewatcher Shellcode detect engine alert"
-
             incident['CustomFields']['gatewatchershellcodesubtype'] = str(gwAlerts[i]['_source']['shellcode']['sub_type'])
 
         # Malicious Powershell alert
         if 'malicious_powershell' in gwAlerts[i]['_source'].keys():
-            incident['type'] = "Gatewatcher Malicious Powershell engine alert"
-
             incident['CustomFields']['gatewatchermaliciouspowershellprobaobfuscated'] = str(gwAlerts[i]['_source']['malicious_powershell']['proba_obfuscated'])
             incident['CustomFields']['gatewatchermaliciouspowershellscore'] = str(gwAlerts[i]['_source']['malicious_powershell']['score'])
 	
@@ -449,14 +445,17 @@ def fetch_incidents():
                     'severity': 1,
                     'sourceBrand': "Gatewatcher",
                     'sourceInstance': str(gwMeta[i]['_source']['observer']['hostname'])+" | "+str(gwMeta[i]['_source']['observer']['gcap']['hostname']),
-                    'type': "Gatewatcher Metadata",
+                    'type': "Gatewatcher Incident",
                     'CustomFields': {'gatewatcherflowid': gwMeta[i]['_source']['network']['flow_id'],
                                      'gatewatchergcenter': str(gwMeta[i]['_source']['observer']['hostname']),
                                      'gatewatchergcap': str(gwMeta[i]['_source']['observer']['gcap']['hostname']),
-                                     'gatewatchergcapinterface': str(gwAlerts[i]['_source']['observer']['gcap']['ingress']['interface']),
                                      'gatewatcherrawevent': json.dumps(gwMeta[i]['_source'])
                                      }
                     }
+
+        # GCap interface
+        if 'ingress' in gwMeta[i]['_source']['observer']['gcap'].keys():
+            incident['CustomFields']['gatewatchergcapinterface'] = str(gwMeta[i]['_source']['observer']['gcap']['ingress']['interface'])
 
         # IP and port fields
         if 'port' in gwMeta[i]['_source']['source'].keys() and gwMeta[i]['_source']['destination'].keys():
