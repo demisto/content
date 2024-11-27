@@ -2421,6 +2421,11 @@ script:
         required: true
     description: Enable an existing inbox rule in a given mailbox.
   - name: ews-mail-flow-rules-list
+    arguments:
+      - name: extended_output
+        description: Determine whether the output will be in verbose format or not.
+        required: no
+        defaultValue: false
     outputs:
       - contextPath: EWS.MailFlowRule.Name
         description: The rule name.
@@ -2446,6 +2451,10 @@ script:
       - name: identity
         description: The rule that you want to view.
         required: true
+      - name: extended_output
+        description: Determine whether the output will be in verbose format or not.
+        required: no
+        defaultValue: false
     outputs:
       - contextPath: EWS.MailFlowRule.Name
         description: The rule name.

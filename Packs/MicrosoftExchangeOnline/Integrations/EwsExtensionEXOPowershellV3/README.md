@@ -1893,6 +1893,8 @@ Get a mail flow rule (transport rules) in the organization.
 | **Argument Name** | **Description**                                                | **Possible Values** | **Is Array** | **Required** | **Note** |
 | --- |----------------------------------------------------------------|---------------------| --- | --- | --- |
 | extended_output | Determine whether the output will be in verbose format or not. | Boolean             | No | No | Default = False |
+| identity | Specifies the rule that you want to view.                      | string             | No | No |  |
+
 
 #### Context Output
 | **Path** | **Type** | **Description** |
