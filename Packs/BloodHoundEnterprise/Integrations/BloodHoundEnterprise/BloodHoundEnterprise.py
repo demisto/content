@@ -78,7 +78,7 @@ class Client(BaseClient):
         digester = hmac.new(self._credentials.token_key.encode(), None, hashlib.sha256)
         digester.update(f"{method}{uri_with_params}".encode())
         digester = hmac.new(digester.digest(), None, hashlib.sha256)
-        datetime_formatted = datetime.now().astimezone().isoformat("T")
+        datetime_formatted = datetime.now().astimezone().isoformat()
         digester.update(datetime_formatted[:13].encode())
         digester = hmac.new(digester.digest(), None, hashlib.sha256)
 
@@ -120,6 +120,7 @@ class Client(BaseClient):
             "before": until_date,
             "skip": skip,
         }
+        demisto.log(f"Got the follow parameters to the query {query_params}")
         remove_nulls_from_dictionary(query_params)
         response = self._request(query_params=query_params)
         return response.get("data", {}).get("logs", [])
@@ -163,7 +164,7 @@ def get_events_command(client: Client, args: dict) -> tuple[List[Dict], CommandR
     """
     limit = arg_to_number(args.get("limit", 250))
     from_date = args.get("start")
-    until_date = args.get("end") or datetime.now().astimezone().isoformat("T")
+    until_date = args.get("end") or datetime.now().astimezone().isoformat()
     events, _ = get_events_with_pagination(
         client, start_date=from_date, end_date=until_date, max_events=limit
     )
@@ -192,18 +193,16 @@ def fetch_events(
             - A dictionary containing the next run details (e.g., last event timestamp and ID).
             - A list of fetched events.
     """
-    first_fetch_time = (datetime.now().astimezone() - timedelta(minutes=1)).isoformat(
-        "T"
-    )
-    now = datetime.now().astimezone().isoformat("T")
+    first_fetch_time = (datetime.now().astimezone() - timedelta(minutes=1)).isoformat()
+    now = datetime.now().astimezone().isoformat()
+
     last_run = demisto.getLastRun()
+    demisto.log(f"Got the follow last run: {last_run}.")
+
     from_date = last_run.get("last_event_created_at", first_fetch_time)
     from_event = int(last_run.get("last_event_id", 0))
     last_run_skip = int(last_run.get("skip", 0))
     fetch_limit = arg_to_number(params.get("max_events_per_fetch")) or FETCH_LIMIT
-
-    prev_fetch_id = int(last_run.get("prev_fetch_id", 0))
-    fetch_id = prev_fetch_id + 1
 
     events, skip = get_events_with_pagination(
         client,
@@ -213,6 +212,9 @@ def fetch_events(
         last_event_id=from_event,
         initial_skip=last_run_skip,
     )
+
+    prev_fetch_id = int(last_run.get("prev_fetch_id", 0))
+    fetch_id = prev_fetch_id + 1
 
     demisto.debug(f"Fetched event id: {fetch_id}.")
     demisto.debug(f"Fetched {len(events)} events in fetch No: {fetch_id}")
@@ -224,6 +226,9 @@ def fetch_events(
     if skip:
         next_run["skip"] = last_run_skip + len(events)
         next_run["last_event_created_at"] = from_date
+    demisto.log(
+        f"returning {len(events)} events. and the follow details to the setLastRun function {next_run}."
+    )
     return next_run, events
 
 
@@ -267,9 +272,12 @@ def get_events_with_pagination(
             skip=pagination_skip,
         )
         if not response:
+            demisto.log("Got 0 events from the API")
             break
+        demisto.log(f"Got {len(response)} events before deduplication")
         pagination_skip += len(response)
         new_events = [item for item in response if item.get("id", 0) > last_event_id]
+        demisto.log(f"Got {len(new_events)} events after deduplication")
         fetched_events.extend(new_events)
     next_skip = (
         initial_skip + len(fetched_events) if len(fetched_events) == max_events else 0
