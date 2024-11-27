@@ -238,7 +238,7 @@ class StatType(Enum):
     OPTIMIZATION_STATS = "Optimization Stats"
 
 
-def address_list_upload_command(client: Client, args: dict):
+def address_list_upload_command(client: Client, args: dict) -> CommandResults:
     """
     This function uploads a .txt file with address list to the appliance.
     The appliance temporarily stores the file until it is saved to the Library and replaces any previously loaded list file.
@@ -261,7 +261,7 @@ def address_list_upload_command(client: Client, args: dict):
     return CommandResults(readable_output="Address list was successfully uploaded")
 
 
-def address_list_optimize_command(client: Client):
+def address_list_optimize_command(client: Client) -> CommandResults:
     """
     If the traffic elements are IP addresses,
     the integration should optimize the list by compressing IP addresses into CIDR groups.
@@ -276,7 +276,7 @@ def address_list_optimize_command(client: Client):
                           outputs=response_json)
 
 
-def address_list_create_command(client: Client, args: dict):
+def address_list_create_command(client: Client, args: dict) -> CommandResults:
     """
     This function replaces the old list entity and overrides it.
 
@@ -295,7 +295,7 @@ def address_list_create_command(client: Client, args: dict):
     return CommandResults(readable_output=f"Successfully created a new instance of {name}")
 
 
-def address_list_rename_command(client: Client, args: dict):
+def address_list_rename_command(client: Client, args: dict) -> CommandResults:
     """
     This function only meant to change the name of the list.
     Nothing else. If we try to give as a new_name, an existing list name, it will fail, and we’ll get an error.
@@ -317,7 +317,7 @@ def address_list_rename_command(client: Client, args: dict):
     return CommandResults(readable_output=f"Successfully renamed {existing_name} to {new_name}")
 
 
-def address_list_delete_command(client: Client, args: dict):
+def address_list_delete_command(client: Client, args: dict) -> CommandResults:
     """
     This function deletes the list by the given list's name.
 
