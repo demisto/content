@@ -1,3 +1,5 @@
+import os
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import io
@@ -24,10 +26,8 @@ CONTENT_DIR_PATH = '/tmp/content'
 PACKS_DIR_NAME = 'Packs'
 CONTENT_REPO_URL = 'https://github.com/demisto/content.git'
 CACHED_MODULES_DIR = '/tmp/cached_modules'
-PRE_COMMIT_TEMPLATE_PATH = '.pre-commit-config_template.yaml'
+PRE_COMMIT_TEMPLATE_PATH = os.path.join(CONTENT_DIR_PATH, '.pre-commit-config_template.yaml')
 BRANCH_MASTER = 'master'
-
-pre_commit_template_path = None
 
 @contextmanager
 def ConstantTemporaryDirectory(path):
@@ -44,7 +44,8 @@ def ConstantTemporaryDirectory(path):
         os.makedirs(path, exist_ok=True)
         yield path
     finally:
-        cleanup()
+        demisto.debug('NOT CLEANUPSSS')
+        # cleanup()
 
 
 def log_demisto_sdk_version():
@@ -272,8 +273,9 @@ def run_validate(path_to_validate: str, json_output_file: str) -> int:
 
 
 def get_content_modules(content_path: str, verify_ssl: bool = True) -> None:
-    """Copies the required content modules for linting from the cached dir
-    The cached dir is updated once a day
+    """
+    TODO - Update docstring.
+    Copies the required content modules for linting from the cached dir. The cached dir is updated once a day
 
     Args:
         content_path (str): Path to Content directory
@@ -358,6 +360,7 @@ def get_content_modules(content_path: str, verify_ssl: bool = True) -> None:
             # Check if '.pre-commit-config_template.yaml' exists.
             if module['file'] == PRE_COMMIT_TEMPLATE_PATH:
                 set_pre_commit_template_path(str(os.path.join(module_path, module["file"])))
+                demisto.debug(f'PRE_COMMIT {get_pre_commit_template_path()=}')
         except Exception as e:
             fallback_path = f'/home/demisto/{module["file"]}'
             demisto.debug(f'Failed downloading content module {module["github_url"]} - {e}. '
@@ -365,53 +368,21 @@ def get_content_modules(content_path: str, verify_ssl: bool = True) -> None:
             copy(fallback_path, module_path)
 
 
-
-
-def run_pre_commit(path_to_validate: str, output_path: str, content_path: str) -> int:
+def run_pre_commit(path_to_validate: str, output_path: str) -> int:
     """
     <DOCSTRING>
     """
-    # from demisto_sdk.commands.pre_commit.pre_commit_command import pre_commit_manager
-    if not (_pre_commit_template_path := get_pre_commit_template_path()):
-        demisto.debug(f'run_pre_commit `pre-commit-template-path` does not exist')
-
-    import argparse
-    from pre_commit.commands.run import run
-    from pre_commit.store import Store
-
-    # exit_code = pre_commit_manager(
-    #     skip_hooks=['validate-deleted-files'],
-    #     # TODO - Verify if it can be both a folder and files.
-    #     input_files=[Path(path_to_validate)],
-    #     run_docker_hooks=False,
-    #     pre_commit_template_path=Path(get_pre_commit_template_path()),
-    #     output_path=Path(output_path)
-    # )
-
-    import subprocess
-    # subprocess.run(["pre-commit", "install"], check=True)
-    import shutil
-
-    # Path to your pre-commit configuration template
-    template_config_path = get_pre_commit_template_path()
-    repo_config_path = ".pre-commit-config.yaml"
-
-    # Step 1: Copy the template configuration to the repository root
-    shutil.copy(template_config_path, repo_config_path)
-
-    # Step 2: Install pre-commit in the current repository
-    subprocess.run(["pre-commit", "install"], check=True)
-
-    # Step 3: Run all pre-commit hooks programmatically
-    result = subprocess.run(["pre-commit", "run", "--all-files"], capture_output=True, text=True)
-
-    # Print the output
-    demisto.debug(result.stdout)
-
-    if result.returncode != 0:
-        demisto.debug(result.stderr)
-
-    exit_code = result.returncode
+    from demisto_sdk.commands.pre_commit.pre_commit_command import pre_commit_manager
+    demisto.debug(f"£££ {os.getenv('DEMISTO_SDK_OFFLINE_ENV')=}")
+    os.environ['DEMISTO_SDK_OFFLINE_ENV'] = 'False'
+    exit_code = pre_commit_manager(
+        skip_hooks=['validate-deleted-files'],
+        # TODO - Verify if it can be both a folder and files.
+        input_files=[Path(path_to_validate)],
+        run_docker_hooks=False,
+        pre_commit_template_path=Path(PRE_COMMIT_TEMPLATE_PATH),
+        # output_path=Path(output_path)
+    )
     demisto.debug(f'run_pre_commit {exit_code=}')
     return exit_code
 
@@ -442,13 +413,14 @@ def validate_content(path_to_validate: str):
     """
 
     pre_commit_output_path = 'pre-commit-output/'
-    validations_output_path = 'validation_res.json'
 
+    validations_output_path = 'validation_res.json'
     os.environ['DEMISTO_SDK_LOG_NO_COLORS'] = 'true'
     os.environ['LOGURU_DIAGNOSE'] = 'true'
 
-    validate_exit_code = run_validate(path_to_validate, validations_output_path)
-    pre_commit_exit_code = 0
+    validate_exit_code = 0
+    # validate_exit_code = run_validate(path_to_validate, validations_output_path)
+    # pre_commit_exit_code = 0
     pre_commit_exit_code = run_pre_commit(path_to_validate, pre_commit_output_path)
 
     if not (validate_exit_code or pre_commit_exit_code):
@@ -577,6 +549,7 @@ def main():
 
             demisto.debug(f"Finished setting logger.")
             path_to_validate, content_path = setup_content_dir(filename, data, entry_id, verify_ssl)
+            # os.listdir(f'BABABAB TODO REMOVE - {os.listdir(content_path)=}')
             os.chdir(content_path)
             results, raw_outputs = validate_content(path_to_validate)
             os.chdir(cwd)
