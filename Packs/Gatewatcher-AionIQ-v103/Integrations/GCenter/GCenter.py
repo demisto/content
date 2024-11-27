@@ -364,7 +364,8 @@ def fetch_incidents():
                     'rawJSON': json.dumps(gwAlerts[i]['_source']),
                     'severity': gwAlerts[i]['_source']['event']['severity'],
                     'type': "Gatewatcher Incident",
-                    'CustomFields': {'gatewatcherflowid': gwAlerts[i]['_source']['network']['flow_id'],
+                    'CustomFields': {'gatewatchereventmodule': str(gwAlerts[i]['_source']['event']['module']),
+                                     'gatewatcherflowid': gwAlerts[i]['_source']['network']['flow_id'],
                                      'gatewatchergcenter': str(gwAlerts[i]['_source']['observer']['hostname']),
                                      'gatewatchergcap': str(gwAlerts[i]['_source']['observer']['gcap']['hostname']),
                                      'gatewatcherrawevent': json.dumps(gwAlerts[i]['_source'])
@@ -374,6 +375,17 @@ def fetch_incidents():
         # GCap interface
         if 'ingress' in gwAlerts[i]['_source']['observer']['gcap'].keys():
             incident['CustomFields']['gatewatchergcapinterface'] = str(gwAlerts[i]['_source']['observer']['gcap']['ingress']['interface'])
+
+        # File field
+        if 'file' in gwAlerts[i]['_source'].keys():
+            if 'name' in gwAlerts[i]['_source']['file'].keys():
+                incident['CustomFields']['gatewatcherfilename'] = str(gwAlerts[i]['_source']['file']['name'])
+
+            if 'magic' in gwAlerts[i]['_source']['file'].keys():
+                incident['CustomFields']['gatewatcherfilemagic'] = str(gwAlerts[i]['_source']['file']['magic'])
+
+            if 'hash' in gwAlerts[i]['_source']['file'].keys():
+                incident['CustomFields']['gatewatcherfilehash'] = str(gwAlerts[i]['_source']['file']['hash'])
 
         # IP and port fields
         if 'port' in gwAlerts[i]['_source']['source'].keys() and gwAlerts[i]['_source']['destination'].keys():
@@ -399,7 +411,7 @@ def fetch_incidents():
             incident['details'] += "\nTransport: "+str(gwAlerts[i]['_source']['network']['transport']).upper()
             incident['CustomFields']['gatewatchertransport'] = str(gwAlerts[i]['_source']['network']['transport']).upper()
 	
-        # Malcore alert
+        # Malcore field
         if 'malcore' in gwAlerts[i]['_source'].keys():
             incident['CustomFields']['gatewatchermalcoremagicdetails'] = str(gwAlerts[i]['_source']['malcore']['magic_details']) 
             incident['CustomFields']['gatewatchermalcorestate'] = str(gwAlerts[i]['_source']['malcore']['state']) 
@@ -407,11 +419,18 @@ def fetch_incidents():
             incident['CustomFields']['gatewatchermalcoredetailthreatfound'] = str(gwAlerts[i]['_source']['malcore']['detail_threat_found']) 
             incident['CustomFields']['gatewatchermalcoreengineslastupdatedate'] = str(gwAlerts[i]['_source']['malcore']['engines_last_update_date']) 
 
-        # Shellcode alert
+        # Shellcode field
         if 'shellcode' in gwAlerts[i]['_source'].keys():
             incident['CustomFields']['gatewatchershellcodesubtype'] = str(gwAlerts[i]['_source']['shellcode']['sub_type'])
 
-        # Malicious Powershell alert
+        # Sigflow field
+        if 'sigflow' in gwAlerts[i]['_source'].keys():
+            incident['CustomFields']['gatewatchersigflowcategory'] = str(gwAlerts[i]['_source']['sigflow']['category'])
+            incident['CustomFields']['gatewatchersigflowpayloadprintable'] = str(gwAlerts[i]['_source']['sigflow']['payload_printable'])
+            incident['CustomFields']['gatewatchersigflowpayload'] = str(gwAlerts[i]['_source']['sigflow']['payload'])
+            incident['CustomFields']['gatewatchersigflowaction'] = str(gwAlerts[i]['_source']['sigflow']['action'])
+
+        # Malicious Powershell field
         if 'malicious_powershell' in gwAlerts[i]['_source'].keys():
             incident['CustomFields']['gatewatchermaliciouspowershellprobaobfuscated'] = str(gwAlerts[i]['_source']['malicious_powershell']['proba_obfuscated'])
             incident['CustomFields']['gatewatchermaliciouspowershellscore'] = str(gwAlerts[i]['_source']['malicious_powershell']['score'])
@@ -446,7 +465,8 @@ def fetch_incidents():
                     'sourceBrand': "Gatewatcher",
                     'sourceInstance': str(gwMeta[i]['_source']['observer']['hostname'])+" | "+str(gwMeta[i]['_source']['observer']['gcap']['hostname']),
                     'type': "Gatewatcher Incident",
-                    'CustomFields': {'gatewatcherflowid': gwMeta[i]['_source']['network']['flow_id'],
+                    'CustomFields': {'gatewatchereventmodule': str(gwMeta[i]['_source']['event']['module']),
+                                     'gatewatcherflowid': gwMeta[i]['_source']['network']['flow_id'],
                                      'gatewatchergcenter': str(gwMeta[i]['_source']['observer']['hostname']),
                                      'gatewatchergcap': str(gwMeta[i]['_source']['observer']['gcap']['hostname']),
                                      'gatewatcherrawevent': json.dumps(gwMeta[i]['_source'])
@@ -456,6 +476,17 @@ def fetch_incidents():
         # GCap interface
         if 'ingress' in gwMeta[i]['_source']['observer']['gcap'].keys():
             incident['CustomFields']['gatewatchergcapinterface'] = str(gwMeta[i]['_source']['observer']['gcap']['ingress']['interface'])
+
+        # File field
+        if 'file' in gwMeta[i]['_source'].keys():
+            if 'name' in gwMeta[i]['_source']['file'].keys():
+                incident['CustomFields']['gatewatcherfilename'] = str(gwMeta[i]['_source']['file']['name'])
+
+            if 'magic' in gwMeta[i]['_source']['file'].keys():
+                incident['CustomFields']['gatewatcherfilemagic'] = str(gwMeta[i]['_source']['file']['magic'])
+
+            if 'hash' in gwMeta[i]['_source']['file'].keys():
+                incident['CustomFields']['gatewatcherfilehash'] = str(gwMeta[i]['_source']['file']['hash'])
 
         # IP and port fields
         if 'port' in gwMeta[i]['_source']['source'].keys() and gwMeta[i]['_source']['destination'].keys():

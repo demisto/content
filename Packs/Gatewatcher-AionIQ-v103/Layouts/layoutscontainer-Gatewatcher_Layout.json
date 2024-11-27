@@ -32,12 +32,21 @@
 								"startCol": 0
 							},
 							{
+								"endCol": 2,
+								"fieldId": "gatewatchereventmodule",
+								"height": 53,
+								"id": "c30110e0-acc0-11ef-9202-89fa98701c99",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
 								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "severity",
 								"height": 53,
 								"id": "incident-severity-field",
-								"index": 1,
+								"index": 2,
 								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -47,7 +56,7 @@
 								"fieldId": "gatewatcherflowid",
 								"height": 53,
 								"id": "255ad3c0-ac08-11ef-9ad9-09a766893e47",
-								"index": 2,
+								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -57,7 +66,7 @@
 								"fieldId": "gatewatchersourceip",
 								"height": 53,
 								"id": "50f2d410-abe0-11ef-ad0a-79f77443cdb4",
-								"index": 3,
+								"index": 4,
 								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -67,7 +76,7 @@
 								"fieldId": "gatewatchersourceport",
 								"height": 53,
 								"id": "4e76d790-abe0-11ef-ad0a-79f77443cdb4",
-								"index": 4,
+								"index": 5,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -77,7 +86,7 @@
 								"fieldId": "gatewatcherdestinationip",
 								"height": 53,
 								"id": "53cc32d0-abe0-11ef-ad0a-79f77443cdb4",
-								"index": 5,
+								"index": 6,
 								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -87,7 +96,7 @@
 								"fieldId": "gatewatcherdestinationport",
 								"height": 53,
 								"id": "52e1f9e0-abe0-11ef-ad0a-79f77443cdb4",
-								"index": 6,
+								"index": 7,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -96,7 +105,7 @@
 								"fieldId": "gatewatcherprotocol",
 								"height": 53,
 								"id": "14eca890-aca5-11ef-9202-89fa98701c99",
-								"index": 7,
+								"index": 8,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -105,7 +114,7 @@
 								"fieldId": "gatewatchertransport",
 								"height": 53,
 								"id": "1fe90180-aca5-11ef-9202-89fa98701c99",
-								"index": 8,
+								"index": 9,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -115,7 +124,7 @@
 								"fieldId": "sourcebrand",
 								"height": 53,
 								"id": "incident-sourceBrand-field",
-								"index": 9,
+								"index": 10,
 								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -126,7 +135,7 @@
 								"fieldId": "sourceinstance",
 								"height": 53,
 								"id": "incident-sourceInstance-field",
-								"index": 10,
+								"index": 11,
 								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -198,8 +207,8 @@
 						"name": "Timeline Information",
 						"static": false,
 						"w": 1,
-						"x": 1,
-						"y": 2
+						"x": 2,
+						"y": 0
 					},
 					{
 						"displayType": "ROW",
@@ -242,7 +251,7 @@
 						"static": false,
 						"w": 1,
 						"x": 1,
-						"y": 4
+						"y": 2
 					},
 					{
 						"displayType": "CARD",
@@ -349,11 +358,11 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "Malcore",
+						"name": "Malcore engine",
 						"static": false,
 						"w": 1,
 						"x": 2,
-						"y": 3
+						"y": 5
 					},
 					{
 						"displayType": "CARD",
@@ -378,7 +387,7 @@
 						"static": false,
 						"w": 1,
 						"x": 2,
-						"y": 0
+						"y": 2
 					},
 					{
 						"displayType": "CARD",
@@ -408,7 +417,7 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "Malicious Powershell detect",
+						"name": "Malicious Powershell detect engine",
 						"static": false,
 						"w": 1,
 						"x": 0,
@@ -423,7 +432,7 @@
 							{
 								"endCol": 2,
 								"fieldId": "gatewatchershellcodesubtype",
-								"height": 22,
+								"height": 53,
 								"id": "235a0300-acbe-11ef-9202-89fa98701c99",
 								"index": 0,
 								"sectionItemType": "field",
@@ -433,11 +442,120 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "Shellcode",
+						"name": "Shellcode detect engine",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 4
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-233ac8f0-acc3-11ef-9202-89fa98701c99",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherfilename",
+								"height": 53,
+								"id": "346ca3f0-acc3-11ef-9202-89fa98701c99",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherfilemagic",
+								"height": 53,
+								"id": "3670d860-acc3-11ef-9202-89fa98701c99",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherfilehash",
+								"height": 22,
+								"id": "3772b800-acc3-11ef-9202-89fa98701c99",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "File field",
 						"static": false,
 						"w": 1,
 						"x": 1,
 						"y": 6
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideItemTitleOnlyOne": false,
+						"hideName": false,
+						"i": "caseinfoid-acee1c10-acc7-11ef-9202-89fa98701c99",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "signature",
+								"height": 53,
+								"id": "cb0ed130-acc7-11ef-9202-89fa98701c99",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gatewatchersigflowaction",
+								"height": 53,
+								"id": "b7e50150-acc8-11ef-9202-89fa98701c99",
+								"index": 1,
+								"listId": "caseinfoid-acee1c10-acc7-11ef-9202-89fa98701c99",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersigflowcategory",
+								"height": 53,
+								"id": "d12643f0-acc7-11ef-9202-89fa98701c99",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersigflowpayloadprintable",
+								"height": 53,
+								"id": "d382d190-acc7-11ef-9202-89fa98701c99",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gatewatchersigflowpayload",
+								"height": 53,
+								"id": "d471c570-acc7-11ef-9202-89fa98701c99",
+								"index": 4,
+								"listId": "caseinfoid-acee1c10-acc7-11ef-9202-89fa98701c99",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Sigflow engine",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 7
 					}
 				],
 				"type": "custom"
