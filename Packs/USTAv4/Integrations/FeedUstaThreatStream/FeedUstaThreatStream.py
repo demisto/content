@@ -105,12 +105,12 @@ def parse_malicious_urls(indicator: dict):
         'type': _type,
         'rawJSON': indicator,
         'fields': {
-            'tags': indicator.get("tags", []),
             'ip_addresses': indicator.get("ip_addresses", []),
             'host': indicator.get("host", ''),
+            'tags': indicator.get("tags", [])
         }
     }
-    parsed_indicator['fields']['tags'].append('usta-malicious-urls')
+    parsed_indicator['fields']['tags'].append('usta-malicious-urls')  # type: ignore
     return parsed_indicator
 
 
@@ -129,11 +129,11 @@ def parse_phishing_sites(indicator: dict):
         'fields': {
             'country': indicator.get("country", ''),
             'ip_addresses': indicator.get("ip_addresses", []),
-            'tags': indicator.get("tags", []),
             'host': indicator.get("host", ''),
+            'tags': indicator.get("tags", [])
         }
     }
-    parsed_indicator['fields']['tags'].append('usta-phishing-sites')
+    parsed_indicator['fields']['tags'].append('usta-phishing-sites')  # type: ignore
     return parsed_indicator
 
 
