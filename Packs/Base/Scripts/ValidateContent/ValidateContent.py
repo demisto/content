@@ -377,6 +377,7 @@ def run_pre_commit(path_to_validate: str, output_path: str) -> int:
     os.environ['DEMISTO_SDK_OFFLINE_ENV'] = 'False'
     exit_code = pre_commit_manager(
         skip_hooks=['validate-deleted-files'],
+        
         # TODO - Verify if it can be both a folder and files.
         input_files=[Path(path_to_validate)],
         run_docker_hooks=False,
