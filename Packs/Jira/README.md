@@ -2,7 +2,7 @@ This pack enables you to manage issues in Jira and exchange information between 
 
 ## What does this pack do?
 
-This pack enables you to Test Cortex XSOAR
+This pack enables you to
 
 - Create, edit, delete, and query Jira issues.
 - Add information to Jira issues in the form of links, comments, and attachments.

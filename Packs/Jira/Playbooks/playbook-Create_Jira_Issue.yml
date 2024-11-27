@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Create Jira Issue
-description: "Create Jira Test Cortex XSOAR issue allows you to open new issues.\nWhen creating the issue, you can decide to update based on on the issue's state, which will wait for the issue to resolve or close with StatePolling.\nAlternatively, you can select to mirror the Jira issue and incident fields.  To apply either of these options, set the SyncTicket value in the playbook inputs to one of the following options: \n1. StatePolling\n2. Mirror\n3. Leave Blank to use none\n\nWhen creating Jira issues through XSOAR, using the mirroring function, make sure that you exclude those issues when fetching incidents. To exclude these issues, tag the relevant issues with a dedicated label and exclude that label from the JQL query (Labels!=)."
+description: "Create Jira issue allows you to open new issues.\nWhen creating the issue, you can decide to update based on on the issue's state, which will wait for the issue to resolve or close with StatePolling.\nAlternatively, you can select to mirror the Jira issue and incident fields.  To apply either of these options, set the SyncTicket value in the playbook inputs to one of the following options: \n1. StatePolling\n2. Mirror\n3. Leave Blank to use none\n\nWhen creating Jira issues through XSOAR, using the mirroring function, make sure that you exclude those issues when fetching incidents. To exclude these issues, tag the relevant issues with a dedicated label and exclude that label from the JQL query (Labels!=)."
 starttaskid: "0"
 tasks:
   "0":

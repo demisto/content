@@ -1,5 +1,5 @@
 {
-    "description": "Test Cortex XSOAR",
+    "description": "",
     "feed": false,
     "id": "JiraV3 Outgoing Mapper",
     "mapping": {

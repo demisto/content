@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 urllib3.disable_warnings()
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
-VENDOR = "atlassian Test Cortex XSOAR"
+VENDOR = "atlassian"
 PRODUCT = "jira"
 
 

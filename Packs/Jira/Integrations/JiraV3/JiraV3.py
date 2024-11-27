@@ -13,7 +13,7 @@ from mimetypes import guess_type
 # Source: https://docs.python.org/3/library/time.html#time.time_ns
 
 """ CONSTANTS """
-JIRA_INCIDENT_TYPE_NAME = 'JiraV3 Incident Test Cortex XSOAR'
+JIRA_INCIDENT_TYPE_NAME = 'JiraV3 Incident'
 ISSUE_INCIDENT_FIELDS = {'issue_id': 'The ID of the issue to edit',
                          'summary': 'The summary of the issue.',
                          'description': 'The description of the issue.',

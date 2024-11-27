@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://<your-domain>.atlassian.net
-  display: Server URL 
+  display: Server URL
   name: url
   required: true
   type: 0
@@ -32,7 +32,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: 'Jira logs event collector integration for Cortex XSIAM. Test Cortex XSOAR'
+description: 'Jira logs event collector integration for Cortex XSIAM.'
 display: Jira Event Collector
 name: Jira Event Collector
 script:

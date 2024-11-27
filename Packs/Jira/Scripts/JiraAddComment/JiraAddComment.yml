@@ -1,5 +1,5 @@
 args:
-- description: Comment to be added to the Jira issue Test Cortex XSOAR.
+- description: Comment to be added to the Jira issue.
   name: comment
   required: true
 - auto: PREDEFINED

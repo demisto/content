@@ -9,7 +9,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Atlassian Jira V3.
 3. **Authentication**: Basic Authentication and OAuth 2.0 are used for both Jira Cloud, and OnPrem. Read the [Authentication](#authentication) process in order to configure your instance
-4. Click **Add instance** to create and configure a new integration instance Test Cortex XSOAR.
+4. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |

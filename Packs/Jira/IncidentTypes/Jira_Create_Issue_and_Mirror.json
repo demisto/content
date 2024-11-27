@@ -6,7 +6,7 @@
     "name": "Jira Create Issue and Mirror",
     "prevName": "Jira Create Issue and Mirror",
     "color": "#2A4AA8",
-    "playbookId": "Test Cortex XSOAR",
+    "playbookId": "Create Jira Issue",
     "hours": 0,
     "days": 0,
     "weeks": 0,
