@@ -1,5 +1,6 @@
 import tempfile
 from collections.abc import Callable
+from enum import Enum
 from pathlib import Path
 
 import demistomock as demisto  # noqa: F401
@@ -230,6 +231,13 @@ class Client(BaseClient):
 ''' COMMAND FUNCTIONS '''
 
 
+class StatType(Enum):
+    METERING_STATS = "Metering Stats"
+    EXPORT_STATS = "Export Stats"
+    EXPORT_PEAKS_FPS = "Export Peaks FPS"
+    OPTIMIZATION_STATS = "Optimization Stats"
+
+
 def address_list_upload_command(client: Client, args: dict):
     """
     This function uploads a .txt file with address list to the appliance.
@@ -414,11 +422,9 @@ def get_events(client: Client, params: dict, args: dict) -> list[dict]:
     statistic_types_to_fetch = argToList(args.get("statistic_types_to_fetch", [])
                                          or params.get("statistic_types_to_fetch", []))  # arg overrides the param
 
-    valid_types = ("Metering Stats", "Export Stats", "Export Peaks FPS", "Optimization Stats")
-
     for statistic_type in statistic_types_to_fetch:
-        if statistic_type not in valid_types:
-            raise DemistoException(f"Those are the valid types: {valid_types}."
+        if statistic_type not in StatType._value2member_map_:
+            raise DemistoException(f"Those are the valid types: {list(StatType._value2member_map_.keys())}."
                                    f" Please execute the command get-events again with valid input."
                                    f" This input is invalid: {statistic_types_to_fetch}")
 
