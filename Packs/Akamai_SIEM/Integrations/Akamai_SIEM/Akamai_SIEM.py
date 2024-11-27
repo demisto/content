@@ -610,8 +610,10 @@ def main():  # pragma: no cover
                 page_size=page_size
             )):
                 if events:
-                    demisto.info(f"Sending events to xsiam with latest event time is: {events[-1]['_time']}")
+                    demisto.info(f"Sending {len(events)} events to xsiam with latest event time is: {events[-1]['_time']}")
                     send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
+                    demisto.info(f"Done sending {len(events)} events to xsiam." \
+                                 f"sent {total_events_count} events to xsiam in total during this interval.")
                 set_integration_context({"offset": offset,
                                          "hashed_events_from_previous_run": list(hashed_events_from_current_run)})
             demisto.updateModuleHealth({'eventsPulled': (total_events_count or 0)})
