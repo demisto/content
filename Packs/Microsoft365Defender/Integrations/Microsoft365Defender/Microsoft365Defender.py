@@ -747,12 +747,15 @@ def get_remote_data_command(client: Client, args: dict[str, Any], close_incident
     try:
         mirrored_object: Dict = fetch_modified_incident(client, remote_args.remote_incident_id)
         demisto.debug(f"microsoft365::Fetched incident {str(mirrored_object)}")
-        entries: List[dict] = [{
-            'Type': EntryType.NOTE,
-            'Contents': get_modified_incidents_entries_content([mirrored_object], close_incident=close_incident)[0],
-            'ContentsFormat': EntryFormat.JSON,
+        closing_entry_content = get_modified_incidents_entries_content([mirrored_object], close_incident=close_incident)
+        entries =[]
+        if len(closing_entry_content) > 0:
+            entries: List[dict] = [{
+                'Type': EntryType.NOTE,
+                'Contents': closing_entry_content[0],
+                'ContentsFormat': EntryFormat.JSON,
 
-        }]
+            }]
         return GetRemoteDataResponse(mirrored_object, entries)
     except Exception as e:
         demisto.debug(f"Error in Microsoft incoming mirror for incident: {remote_args.remote_incident_id}\n"
