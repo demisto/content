@@ -1,11 +1,8 @@
 THF Polygon is a Malware Detonation & Research platform designed for deep dynamic analysis and enhanced indicators extraction. THF Polygon analyzes submitted files and urls and extracts deep IOCs that appear when malicious code is triggered and executed. Polygon could be used either for application-level tasks (like smtp-based mail filtering) and analytical purposes (files/urls analysis for verdict, report and indicators).
 This integration was integrated and tested with version 3.1 of Group-IB THF Polygon
 
-## Configure Group-IB THF Polygon on Cortex XSOAR
+## Configure Group-IB THF Polygon in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Group-IB THF Polygon.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |f
 | --- | --- | --- |
@@ -15,11 +12,10 @@ This integration was integrated and tested with version 3.1 of Group-IB THF Poly
 | insecure | Trust any certificate \(insecure\) | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### polygon-upload-file
