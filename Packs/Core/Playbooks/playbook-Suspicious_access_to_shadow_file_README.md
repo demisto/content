@@ -7,26 +7,15 @@ Playbook Stages:
   
 Triage: 
  
-- <Action description>
- 
-Early Containment:
- 
-- <Action description>
+- Verify if the Causality Generating Object (CGO) is signed and analyze its image name
  
 Investigation:
  
-- <Action description>
+- Examine process details, prevalence, and historical data for similar alerts
  
 Containment:
  
-- <Action description>
- 
-Requirements: 
- 
-For any response action, you need one of the following integrations:
- 
-- <Pack X>
-- <Pack Y>.
+- Terminate suspicious processes
 
 ## Dependencies
 
