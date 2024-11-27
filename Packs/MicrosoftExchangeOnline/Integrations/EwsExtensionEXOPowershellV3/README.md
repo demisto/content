@@ -1846,7 +1846,9 @@ List all mail flow rules (transport rules) in the organization.
 
 `ews-mail-flow-rules-list`
 #### Input
-No inputs
+| **Argument Name** | **Description**                                                | **Possible Values** | **Is Array** | **Required** | **Note** |
+| --- |----------------------------------------------------------------|---------------------| --- | --- | --- |
+| extended_output | Determine whether the output will be in verbose format or not. | Boolean             | No | No | Default = False |
 
 #### Context Output
 | **Path** | **Type** | **Description** |
@@ -1888,9 +1890,9 @@ Get a mail flow rule (transport rules) in the organization.
 `ews-mail-flow-rule-get`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| identity | The rule that you want to view. | Required | 
+| **Argument Name** | **Description**                                                | **Possible Values** | **Is Array** | **Required** | **Note** |
+| --- |----------------------------------------------------------------|---------------------| --- | --- | --- |
+| extended_output | Determine whether the output will be in verbose format or not. | Boolean             | No | No | Default = False |
 
 #### Context Output
 | **Path** | **Type** | **Description** |
