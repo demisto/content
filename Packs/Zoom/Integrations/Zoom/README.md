@@ -51,15 +51,14 @@ XSOAR endpoint URL-
 Enter your Cortex XSOAR endpoint URL in all Redirect URLS.
 
 
-1. Click **Feature**> **Team Chat**.
-In the Team Chat Subscription section under BOT endpoint URL add:
+1. Click **Feature** > **Team Chat**.
+In the Team Chat Subscription section under BOT endpoint URL, add:
    - For Cortex XSOAR 6.x: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://my.demisto.live/instance/execute/zoom`. Note that the string `instance` does not refer to the name of your Cortex XSOAR instance, but rather is part of the URL.
-   - For Cortex XSOAR 8.x / XSAIM you need to run using extrnal engine: `https://<Engine Url>:<port>`. For example, https://my-engine-url:7001. 
-
+   - For Cortex XSOAR 8.x / XSIAM you need to run using external engine: `https://<Engine Url>:<port>`. For example, https://my-engine-url:7001. 
 
 ![enter image description here](https://github.com/demisto/content-assets/raw/master/Assets/Zoom/bot_endpoint_url.gif)
 
-1. Click **Scopes** > **+ Add Scopes** to add the following scope permissions.
+2. Click **Scopes** > **+ Add Scopes** to add the following scope permissions.
 
    | Scope Type | Scope Name | 
    | --- |  --- | 
@@ -69,33 +68,34 @@ In the Team Chat Subscription section under BOT endpoint URL add:
    | User |   View all user information /user:read:admin |
 ![enter image description here](../../doc_files/scope-premissions.png)
 
-1. Click **Local Test** >**Add** to test your app and authorize your Cortex XSOAR app.
+3. Click **Local Test** > **Add** to test your app and authorize your Cortex XSOAR app.
+   
  ![enter image description here](../../doc_files/test-zoom-app.gif)
 
- 1. **If mirroring is enabled in the integration configuration or using ZoomAsk**:
-**Endpoint URL Requirements-**
-    To receive webhooks, the Event notification endpoint URL that you specify for each event subscription must:
-   *  Be a publicly accessible https endpoint url that supports TLSv1.2+ with a valid certificate chain issued by a Certificate Authority (CA).
-   *   Be able to accept HTTP POST requests.
-   *   Be able to respond with a 200 or 204 HTTP Status Code.
-    <a name="secret-token"></a>
-      1. Copy the **secret token** from the "Feature" page under the "Token" section and add it
-    to the instance configuration.
+4. **If mirroring is enabled in the integration configuration or using ZoomAsk**:
+
+    **Endpoint URL Requirements:**
+   
+      To receive webhooks, the Event notification endpoint URL that you specify for each event subscription must:   
+      * Be a publicly accessible https endpoint url that supports TLSv1.2+ with a valid certificate chain issued by a Certificate Authority (CA).
+      * Be able to accept HTTP POST requests.
+      * Be able to respond with a 200 or 204 HTTP Status Code.
+    ##
+    1. Copy the **secret token** from the "Feature" page under the "Token" section and add it to the instance configuration.
     ![enter image description here](../../doc_files/zoom-token.png)
-      2. Configure Event Subscriptions. 
-         1. In the "Feature" page
-   under the "General Features" section, enable "Event Subscriptions".
-         2. Click **+Add New Event Subscription**.
-         3. Enter the following information:
-         - Subscription name: Enter a name for this Event Subscription (e.g., "Send Message Sent").
-         - Authentication Header Option - 
-             1. **Default Header Provided by Zoom option**- This option allows you to use a verification token provided by Zoom. Copy the **verification token** from the "Feature" page under the "Token" section and add it to the instance configuration.
+    2. Configure Event Subscriptions. 
+        1. In the "Feature" page under the "General Features" section, enable "Event Subscriptions".
+        2. Click **+Add New Event Subscription**.
+        3. Enter the following information:
+            - Subscription name: Enter a name for this Event Subscription (e.g., "Send Message Sent").
+            - Authentication Header Option - 
+              1. **Default Header Provided by Zoom option**- This option allows you to use a verification token provided by Zoom. Copy the **verification token** from the "Feature" page under the "Token" section and add it to the instance configuration.
               ![enter image description here](../../doc_files/verification.png)
-              2. **Basic Authentication Option (must in XSOAR8)** you can use Basic Authentication by providing your Zoom Client ID (OAuth) and Secret ID (OAuth) as configured in the instance configuration. 
+              2. **Basic Authentication Option** you can use Basic Authentication by providing your Zoom Client ID (OAuth) and Secret ID (OAuth) as configured in the instance configuration. 
               ![enter image description here](../../doc_files/authentication_header.png)
-         - Event notification endpoint URL: Enter the Cortex XSOAR URL of your server (`CORTEX-XSOAR-URL`/instance/execute/`INTEGRATION-INSTANCE-NAME`) where you want to receive event notifications. This URL should handle incoming event data from Zoom. Make sure it's publicly accessible.
-         - Validate the URL: Just after setting up/configuration of the Cortex XSOAR side you can validate the URL.
-         - Add Events: Click **+Add Events**. Under Event types, select **Chat Message** and then select **Chat message sent**.
+            - Event notification endpoint URL: Enter the Cortex XSOAR URL of your server (`CORTEX-XSOAR-URL`/instance/execute/`INTEGRATION-INSTANCE-NAME`) where you want to receive event notifications. This URL should handle incoming event data from Zoom. Make sure it's publicly accessible.
+            - Validate the URL: Just after setting up/configuration of the Cortex XSOAR side you can validate the URL.
+            - Add Events: Click **+Add Events**. Under Event types, select **Chat Message** and then select **Chat message sent**.
 ![enter image description here](../../doc_files/add-event.gif)
 
 
