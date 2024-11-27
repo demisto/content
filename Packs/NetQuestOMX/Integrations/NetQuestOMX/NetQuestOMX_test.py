@@ -1,27 +1,11 @@
-from datetime import datetime
-from datetime import timedelta
 import CommonServerPython
-from CommonServerPython import DemistoException
 from freezegun import freeze_time
 from pytest_mock import MockerFixture
-from NetQuestOMX import TOKEN_TTL_S, DATE_FORMAT_FOR_TOKEN, Client, fetch_events, address_list_upload_command, \
-    address_list_optimize_command, address_list_create_command, address_list_rename_command, address_list_delete_command, \
-    get_events
+from NetQuestOMX import *
 import json
-import demistomock as demisto
 import pytest
 
 BASE_URL = "https://www.example.com/api/"
-INTEGRATION_CONTEXT = {}
-
-
-def get_integration_context():
-    return INTEGRATION_CONTEXT
-
-
-def set_integration_context(integration_context):
-    global INTEGRATION_CONTEXT
-    INTEGRATION_CONTEXT = integration_context
 
 
 def util_load_json(path):
@@ -71,16 +55,13 @@ def test_old_token_login_client(mocker: MockerFixture):
         - Ensure that no new token is generated (since the existing token is not expired)
     """
     credentials = {"identifier": 'UserName', "password": 'Password'}
-    cache = {
+    context = {
         "Token": "TEST",
         "expiration_time": (datetime.utcnow() + timedelta(seconds=TOKEN_TTL_S)).strftime(DATE_FORMAT_FOR_TOKEN)
     }
-    set_integration_context(cache)
 
-    assert get_integration_context() == cache  # sanity check
-
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
-    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=context)
+    mocker.patch.object(demisto, 'setIntegrationContext')
     mock_refresh_access_token = mocker.patch.object(Client, '_refresh_access_token')
 
     Client(base_url='https://www.example.com', credentials=credentials, verify=True, proxy=False)
