@@ -15,7 +15,10 @@ import pytest
 import demistomock as demisto  # noqa: F401
 
 
-from USTAAccountTakeoverPrevention import Client, main, check_module, compromised_credentials_search_command, fetch_incidents, convert_to_demisto_severity, create_paging_header
+from USTAAccountTakeoverPrevention import (
+    Client, main, check_module, compromised_credentials_search_command,
+    fetch_incidents, convert_to_demisto_severity, create_paging_header
+)
 
 
 def util_load_json(path):
