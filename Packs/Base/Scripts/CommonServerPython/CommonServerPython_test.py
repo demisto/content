@@ -9919,8 +9919,11 @@ def test_get_server_config_fail(mocker):
 
 @pytest.mark.parametrize('instance_name, expected_result',
                          [('instance_name1', 'engine_id'),
-                          ('instance_name1', '')
-                          ])
+                          ('instance_name2', '')
+                          ], ids=[
+                              "Test-instanec-with-xsoar-engine-configures",
+                              "Test-instanec-without-xsoar-engine-configures"
+                         ])
 def test_is_integration_instance_running_on_engine(mocker, instance_name, expected_result):
     """ Tests the 'is_integration_instance_running_on_engine' function's logic. 
 
@@ -9937,9 +9940,9 @@ def test_is_integration_instance_running_on_engine(mocker, instance_name, expect
                 2. The result is an empty string.
     """
     mock_response = {
-        'body': """{'instances': [
-            {'id': '1111', 'name': 'instance_name1', 'engine': 'engine_id'},
-            {'id': '2222', 'name': 'instance_name2', 'engine': ''}
+        'body': """{"instances": [
+            {"id": "1111", "name": "instance_name1", "engine": "engine_id"},
+            {"id": "2222", "name": "instance_name2", "engine": ""}
         ]}""",
     }
     mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
@@ -9963,9 +9966,9 @@ def test_get_engine_base_url(mocker):
 
     """
     mock_response = {
-        'body': """{'engines': [
-            {'id': '1111', 'baseUrl': '11.111.111.33:443'},
-            {'id': '2222', 'baseUrl': '11.111.111.44:443'}
+        'body': """{"engines": [
+            {"id": "1111", "baseUrl": "11.111.111.33:443"},
+            {"id": "2222", "baseUrl": "11.111.111.44:443"}
         ]}""",
     }
     mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
