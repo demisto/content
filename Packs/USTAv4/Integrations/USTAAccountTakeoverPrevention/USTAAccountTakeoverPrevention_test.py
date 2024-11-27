@@ -15,6 +15,9 @@ import pytest
 import demistomock as demisto  # noqa: F401
 
 
+from USTAAccountTakeoverPrevention import Client, main, check_module, compromised_credentials_search_command, fetch_incidents, convert_to_demisto_severity, create_paging_header
+
+
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
@@ -25,7 +28,6 @@ def test_check_module(mocker):
 
     Checks the output of the command function with the expected output.
     """
-    from USTAAccountTakeoverPrevention import Client, check_module
     mock_response = util_load_json('test_data/auth_success_response.json')
 
     client = Client(
@@ -54,7 +56,6 @@ def test_compromised_credentials_search_command(mocker, username, mock_response_
     No mock is needed here because the compromised_credentials_search_command does not call
     any external API.
     """
-    from USTAAccountTakeoverPrevention import Client, compromised_credentials_search_command
 
     mock_response = util_load_json(mock_response_file)
     expected_output = util_load_json(expected_output_file)
@@ -80,7 +81,6 @@ def test_fetch_incidents(mocker):
     No mock is needed here because the fetch_incidents_command does not call
     any external API.
     """
-    from USTAAccountTakeoverPrevention import Client, fetch_incidents
 
     mock_response = util_load_json('test_data/compromised_credentials_fetch_incidents_response.json')
     expected_output = util_load_json('test_data/compromised_credentials_fetch_incidents_expected_output.json')
@@ -100,6 +100,7 @@ def test_fetch_incidents(mocker):
         last_run={},
         first_fetch_time='3 days'
     )
+
     assert incidents == expected_output
     assert len(incidents) == 1
     assert next_run['last_ids'] == [7668573]
@@ -117,8 +118,6 @@ def test_subsequent_run(mocker):
         - Number of returned incidents should match max results
         - Next run should have new updated last incident IDs
     """
-    from USTAAccountTakeoverPrevention import Client, fetch_incidents
-
     last_run = {'last_fetch': '2021-02-01T00:00:00Z', 'last_ids': [1, 2, 3]}
     first_fetch = last_run.get('last_fetch')
     mock_response = util_load_json('test_data/compromised_credentials_fetch_incidents_response.json')
@@ -139,6 +138,7 @@ def test_subsequent_run(mocker):
         last_run=last_run,
         first_fetch_time=first_fetch
     )
+
     assert len(incidents) == 1
     assert incidents[0]['occurred'] > first_fetch
     assert incidents == expected_output
@@ -159,8 +159,6 @@ def test_convert_to_demisto_severity(hello_world_severity, expected_xsoar_severi
         Then:
             - Verify that the severity was correctly translated to a Cortex XSOAR severity.
     """
-    from USTAAccountTakeoverPrevention import convert_to_demisto_severity
-
     assert convert_to_demisto_severity(hello_world_severity) == expected_xsoar_severity
 
 
@@ -175,8 +173,6 @@ def test_convert_to_demisto_severity_invalid():
         Then:
             - Verify that the function raises a ValueError.
     """
-    from USTAAccountTakeoverPrevention import convert_to_demisto_severity
-
     with pytest.raises(KeyError):
         convert_to_demisto_severity('invalid')
 
@@ -192,8 +188,6 @@ def test_create_paging_header():
         Then:
             - Verify that the function returns the correct paging header.
     """
-    from USTAAccountTakeoverPrevention import create_paging_header
-
     results_num = 10
     page = 2
     size = 5
@@ -213,8 +207,6 @@ def test_compromised_credentials_search_api_request(mocker):
         Then:
             - Verify that the function returns the correct response.
     """
-    from USTAAccountTakeoverPrevention import Client
-
     mock_response = util_load_json('test_data/compromised_credentials_search_response.json')
 
     client = Client(
@@ -240,8 +232,6 @@ def test_main_search_cmd(mocker):
     Then:
         - Verify that the correct command function is called with the correct arguments.
     """
-    from USTAAccountTakeoverPrevention import Client, main
-
     mocker.patch.object(demisto, 'params', return_value={
         'url': 'https://example.com',
         'api_key': 'API_KEY',
@@ -275,7 +265,6 @@ def test_main_search_cmd(mocker):
 
 
 def test_main_fetch_incidents_cmd(mocker):
-    from USTAAccountTakeoverPrevention import Client, main
     mocker.patch.object(demisto, 'params', return_value={
         'url': 'https://example.com',
         'api_key': 'API_KEY',

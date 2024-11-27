@@ -133,7 +133,6 @@ def fetch_incidents(
 
         severity = 'medium'
         ticket_id = alert.get('id')
-        alert['alert_type'] = 'stolen_credit_cards'  # use it later for mapping to the incident type
 
         incident = {
             'name': f'USTA Stolen Credit Card: USTA Ticket ID : {ticket_id}',

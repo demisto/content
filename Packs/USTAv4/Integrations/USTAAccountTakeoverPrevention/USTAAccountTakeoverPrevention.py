@@ -105,7 +105,7 @@ def fetch_incidents(
     max_results: int,
     last_run: dict,
     first_fetch_time: str,
-    status: Union[int, None] = None
+    status: Union[str, None] = None
 ) -> tuple[dict, list[dict]]:
     """Fetches the account takeover prevention module incidents using the USTA API. If the last_run is empty, fetch incidents
     from the given first_fetch_time. Otherwise, fetch incidents from the last run.
@@ -148,9 +148,6 @@ def fetch_incidents(
         alert_corporate_type = 'Employee' if alert.get('is_corporate') else 'End-User'
         severity = 'critical' if alert_corporate_type == 'Employee' else 'medium'
         ticket_id = alert.get('id')
-
-        # Add alert_type to use them later at the mapping.
-        alert['alert_type'] = 'compromised_credentials'
 
         incident = {
             'name': f'[{alert_corporate_type}] Compromised Credentials: USTA Ticket ID : {ticket_id}',
