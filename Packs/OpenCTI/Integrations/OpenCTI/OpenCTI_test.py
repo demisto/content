@@ -8,6 +8,7 @@ from pycti import StixCyberObservable, MarkingDefinition, Label, ExternalReferen
 
 class Client:
     temp = ''
+    query = lambda self, *args, **kwargs: None
     incident = Incident
     indicator = Indicator
     stix_domain_object = StixDomainObject
@@ -227,10 +228,11 @@ def test_observable_create_command(mocker):
         'type': 'Domain',
         'value': 'devtest.com'
     }
-    mocker.patch.object(client.stix_cyber_observable, 'create', return_value={'id': '123456'})
+    mocker.patch.object(client.stix_cyber_observable, 'create', return_value={
+                        'id': '123456', 'value': 'devtest.com', 'type': 'Domain'})
     results: CommandResults = observable_create_command(client, args)
     assert "Observable created successfully" in results.readable_output
-    assert {'id': '123456'} == results.outputs
+    assert {'id': '123456', 'value': 'devtest.com', 'type': 'Domain'} == results.outputs
 
 
 @pytest.mark.parametrize(argnames="field, value, function_name",
@@ -436,7 +438,7 @@ def test_incident_create_command(mocker):
     assert {'id': '123456', 'name': 'Lorem ipsum dolor'} == results.outputs
 
 
-def test_incident_create_command_exception(mocker):
+def test_incident_create_command_exception(mocker, capfd):
     """Tests incident_create_command function
     Given
         type of incident to create
@@ -458,6 +460,8 @@ def test_incident_create_command_exception(mocker):
     mocker.patch.object(client.incident, 'create', side_effect=Exception("Test exception"))
     with pytest.raises(DemistoException, match="Can't create incident."):
         incident_create_command(client, args)
+    captured = capfd.readouterr()
+    assert captured.out.strip() == "Test exception"
 
 
 def test_incident_create_command_exception_id_not_returned(mocker):
@@ -502,7 +506,7 @@ def test_incident_delete_command(mocker):
     assert "Incident deleted" in results.readable_output
 
 
-def test_incident_delete_command_exception(mocker):
+def test_incident_delete_command_exception(mocker, capfd):
     """Tests incident_delete_command function
     Given
         id of incident to delete
@@ -518,6 +522,8 @@ def test_incident_delete_command_exception(mocker):
     mocker.patch.object(client.stix_domain_object, 'delete', side_effect=Exception("Test exception"))
     with pytest.raises(DemistoException, match="Can't delete incident."):
         incident_delete_command(client, args)
+    captured = capfd.readouterr()
+    assert captured.out.strip() == "Test exception"
 
 
 def test_incident_types_list_command(mocker):
@@ -568,7 +574,7 @@ def test_incident_types_list_command_with_no_data_to_return(mocker):
     assert "No incident types" in results.readable_output
 
 
-def test_incident_types_list_command_exception(mocker):
+def test_incident_types_list_command_exception(mocker, capfd):
     """Tests incident_types_list_command function
     Given
 
@@ -581,6 +587,8 @@ def test_incident_types_list_command_exception(mocker):
     mocker.patch.object(client, 'query', side_effect=Exception("Test exception"))
     with pytest.raises(DemistoException, match="Can't list incident types."):
         incident_types_list_command(client, {})
+    captured = capfd.readouterr()
+    assert captured.out.strip() == "Test exception"
 
 
 def test_relationship_create_command(mocker):
@@ -600,11 +608,10 @@ def test_relationship_create_command(mocker):
         'to_id': '123457',
         'relationship_type': 'related-to'
     }
-    mocker.patch.object(client.stix_core_relationship, 'create', return_value=mocker.patch.object(
-        client.incident, 'create', return_value={'id': '123456'}))
+    mocker.patch.object(client.stix_core_relationship, 'create', return_value={'id': '123456', 'relationship_type': 'related-to'})
     results: CommandResults = relationship_create_command(client, args)
     assert "Relationship created successfully" in results.readable_output
-    assert {'id': '123456'} == results.outputs
+    assert {'id': '123456', 'relationshipType': 'related-to'} == results.outputs
 
 
 def test_relationship_create_command_with_no_data_to_return(mocker):
@@ -624,13 +631,12 @@ def test_relationship_create_command_with_no_data_to_return(mocker):
         'to_id': '123457',
         'relationship_type': 'related-to'
     }
-    mocker.patch.object(client.stix_core_relationship, 'create',
-                        return_value=mocker.patch.object(client.incident, 'create', return_value={}))
+    mocker.patch.object(client.stix_core_relationship, 'create', return_value={})
     with pytest.raises(DemistoException, match="Can't create relationship."):
         relationship_create_command(client, args)
 
 
-def test_relationship_create_command_exception(mocker):
+def test_relationship_create_command_exception(mocker, capfd):
     """Tests relationship_create_command function
     Given
         from_id entity
@@ -650,6 +656,74 @@ def test_relationship_create_command_exception(mocker):
     mocker.patch.object(client.stix_core_relationship, 'create', side_effect=Exception("Test exception"))
     with pytest.raises(DemistoException, match="Can't create relationship."):
         relationship_create_command(client, args)
+    captured = capfd.readouterr()
+    assert captured.out.strip() == "Test exception"
+
+# def test_indicator_create_command(mocker):
+#     """Tests indicator_create_command function
+#     Given
+#         name of indicator to create
+#         indicator value to create
+#         main_observable_type of indicator to create
+#     When
+#         - Calling `indicator_create_command`
+#     Then
+#         - validate the readable_output, context
+#     """
+#     client = Client
+#     args = {
+#         'name': 'Lorem ipsum dolor',
+#         'indicator': '192.168.1.1',
+#         'main_observable_type': 'ip'
+#     }
+#     mocker.patch.object(client.indicator, 'create', return_value={'id': '123456', 'name': 'Lorem ipsum dolor'})
+#     results: CommandResults = indicator_create_command(client, args)
+#     assert "Indicator created successfully" in results.readable_output
+#     assert {'id': '123456', 'name': 'Lorem ipsum dolor'} == results.outputs
+
+
+# def test_indicator_create_command_exception(mocker):
+#     """Tests indicator_create_command function
+#     Given
+#         name of indicator to create
+#         indicator value to create
+#         main_observable_type of indicator to create
+#     When
+#         - Calling `indicator_create_command`
+#     Then
+#         - Ensure a DemistoException is raised with the correct error message.
+#     """
+#     client = Client
+#     args = {
+#         'name': 'Lorem ipsum dolor',
+#         'indicator': '192.168.1.1',
+#         'main_observable_type': 'ip'
+#     }
+#     mocker.patch.object(client.indicator, 'create', side_effect=Exception("Test exception"))
+#     with pytest.raises(DemistoException, match="Can't create indicator."):
+#         indicator_create_command(client, args)
+
+
+# def test_indicator_create_command_exception_id_not_returned(mocker):
+#     """Tests indicator_create_command function
+#     Given
+#         name of indicator to create
+#         indicator value to create
+#         main_observable_type of indicator to create
+#     When
+#         - Calling `indicator_create_command`
+#     Then
+#         - Ensure a DemistoException is raised with the correct error message.
+#     """
+#     client = Client
+#     args = {
+#         'name': 'Lorem ipsum dolor',
+#         'indicator': '192.168.1.1',
+#         'main_observable_type': 'ip'
+#     }
+#     mocker.patch.object(client.indicator, 'create', return_value={})
+#     with pytest.raises(DemistoException, match="Can't create indicator."):
+#         indicator_create_command(client, args)
 
 
 def test_get_indicators(mocker):
