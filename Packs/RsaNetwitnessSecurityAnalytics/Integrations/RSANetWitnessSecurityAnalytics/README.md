@@ -1,11 +1,8 @@
 RSA Security Analytics is a distributed and modular system that enables highly flexible deployment architectures that scale with the needs of the organization. Security Analytics allows administrators to collect two types of data from the network infrastructure, packet data and log data.
 This integraitons should work with RSA Netwitness older than v11. For versions v11 and above use the integration RSA NetWitness v11.1.
 
-## Configure RSA NetWitness Security Analytics on Cortex XSOAR
+## Configure RSA NetWitness Security Analytics in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for RSA NetWitness Security Analytics.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -16,9 +13,8 @@ This integraitons should work with RSA Netwitness older than v11. For versions v
 | incidentType | Incident type | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### nw-login
 ***

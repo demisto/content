@@ -1,6 +1,6 @@
 from http import HTTPStatus
 from typing import cast
-
+from dateutil.parser import parse
 from CommonServerPython import *
 
 VENDOR = "okta"
@@ -131,7 +131,14 @@ def get_last_run(events: List[dict], last_run_after, next_link) -> dict:
         if event.get('published') != last_time:
             break
         ids.append(event.get('uuid'))
-    last_time = datetime.strptime(str(last_time).lower().replace('z', ''), '%Y-%m-%dt%H:%M:%S.%f')
+    try:
+        last_time = datetime.strptime(str(last_time).lower().replace('z', ''), '%Y-%m-%dt%H:%M:%S.%f')
+    except ValueError:
+        last_time = parse(str(last_time).lower().replace('z', ''))
+    except Exception as e:  # General exception
+        demisto.error(f'Unexpected error parsing published date from event: {e}')
+        return {}
+
     return {'after': last_time.isoformat(), 'ids': ids, 'next_link': next_link}
 
 
@@ -160,7 +167,7 @@ def fetch_events(client: Client,
     return events, next_link
 
 
-def main():  # pragma: no cover
+def main():
     try:
         start_time_epoch = int(time.time())
         demisto_params = demisto.params()
@@ -179,7 +186,7 @@ def main():  # pragma: no cover
             get_events_command(client, events_limit, since=after.isoformat())
             demisto.results('ok')
 
-        if command == 'okta-get-events':
+        elif command == 'okta-get-events':
             after = cast(datetime, dateparser.parse(demisto_args.get('from_date').strip()))
             events, _, _ = get_events_command(client, events_limit, since=after.isoformat())
             command_results = CommandResults(
@@ -205,10 +212,14 @@ def main():  # pragma: no cover
                                              last_run_after=last_run_after, last_object_ids=last_object_ids, next_link=next_link)
             demisto.debug(f'sending_events_to_xsiam: {len(events)}')
             send_events_to_xsiam(events[:events_limit], vendor=VENDOR, product=PRODUCT)
-            demisto.setLastRun(get_last_run(events, last_run_after, next_link))
+            last_run = get_last_run(events, last_run_after, next_link)
+            if last_run:
+                demisto.setLastRun(get_last_run(events, last_run_after, next_link))
+        else:
+            return_error('Unrecognized command: ' + demisto.command())
 
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command. Error: {e}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
