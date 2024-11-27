@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-USTA_API_PREFIX = 'api/threat-stream/v4/'
+USTA_API_PREFIX = 'api/threat-stream/v4/security-intelligence/ioc/'
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
@@ -261,7 +261,7 @@ def main():
 
     try:
         headers: dict = {
-            'Authorization': f'token {api_key}',
+            'Authorization': f'Bearer {api_key}',
             'Content-Type': 'application/json'
         }
 
