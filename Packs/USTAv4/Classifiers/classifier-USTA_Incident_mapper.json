@@ -1,20 +1,10 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
 	"defaultIncidentType": "",
 	"definitionId": "",
 	"description": "",
 	"feed": false,
-	"fromServerVersion": "",
     "fromVersion": "6.0.0",
 	"id": "USTA Incident Mapper",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 1,
 	"mapping": {
 		"USTA Account Takeover Prevention": {
 			"dontMapEventToLabels": true,
@@ -39,13 +29,6 @@
 				},
 				"USTA Account Takeover Prevention Username": {
 					"simple": "content.username"
-				},
-				"USTA Account Takeover Prevention Victim Details": {
-					"complex": {
-						"filters": [],
-						"root": "victim_detail",
-						"transformers": []
-					}
 				},
 				"USTA Account Takeover Prevention Victim Details CPU": {
 					"simple": "content.victim_detail.cpu"
@@ -104,17 +87,6 @@
         }
 	},
 	"name": "USTA Incident Mapper",
-	"nameRaw": "USTA Incident Mapper",
-	"packID": "",
-	"packName": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
 	"type": "mapping-incoming",
-	"unclassifiedCases": null,
 	"version": -1
 }

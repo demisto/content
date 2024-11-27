@@ -1,34 +1,15 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
 	"defaultIncidentType": "",
 	"definitionId": "",
 	"description": "",
 	"feed": false,
-	"fromServerVersion": "",
     "fromVersion": "6.0.0",
 	"id": "USTA Incident Classifier",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
 	"keyTypeMap": {
 		"compromised-credentials": "USTA Account Takeover Prevention",
         "credit-card": "USTA Stolen Credit Card"
 	},
-	"locked": false,
-	"logicalVersion": 3,
-	"mapping": null,
 	"name": "USTA Incident Classifier",
-	"nameRaw": "USTA Incident Classifier",
-	"packID": "",
-	"packName": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
 	"transformer": {
 		"simple": "content_type"
 	},
