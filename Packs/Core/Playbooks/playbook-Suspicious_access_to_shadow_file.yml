@@ -776,7 +776,7 @@ tasks:
       name: Check if Previous Similar Alerts
       description: |
         Finds past similar alerts based on alert fields' similarity.
-      scriptName: SearchAlertsV2
+      scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
       brand: ""
