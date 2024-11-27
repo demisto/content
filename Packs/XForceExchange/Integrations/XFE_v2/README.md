@@ -1,10 +1,7 @@
 IBM X-Force Exchange lets you receive threat intelligence about applications, IP addresses, URls and hashes
 
-## Configure XFE v2 on Cortex XSOAR
+## Configure XFE v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for XFE v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -17,9 +14,8 @@ IBM X-Force Exchange lets you receive threat intelligence about applications, IP
 | url_threshold | URL Threshold. Minimum risk score for the URL to be consodered malicious (ranges from 1 to 10). | False |
 | cve_threshold | CVE Threshold. Minimum risk score for the URL to be consodered malicious (ranges from 1 to 10). | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ip
 ***

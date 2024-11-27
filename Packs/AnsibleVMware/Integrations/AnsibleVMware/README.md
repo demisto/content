@@ -8,21 +8,17 @@ This integration enables the management of VMware vCenter and ESXi hosts directl
 By default, TCP port 443 will be used to initiate a REST API connection to the vSphere host.
 
 The connection will be initiated from the XSOAR engine/server specified in the instance settings.
-## Configure Ansible VMware on Cortex XSOAR
+## Configure Ansible VMware in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Ansible VMware.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Hostname | The hostname or IP address of the vSphere vCenter or ESXi server. | True |
-    | Port | The port of the vSphere vCenter or ESXi server. | True |
-    | Username | The username to access the vSphere vCenter or ESXi server. | True |
-    | Password | The password to access the vSphere vCenter or ESXi server. | True |
-    | Validate Certs | Allows connection when SSL certificates are not valid. Set to \`false\` when certificates are not trusted. | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Hostname | The hostname or IP address of the vSphere vCenter or ESXi server. | True |
+| Port | The port of the vSphere vCenter or ESXi server. | True |
+| Username | The username to access the vSphere vCenter or ESXi server. | True |
+| Password | The password to access the vSphere vCenter or ESXi server. | True |
+| Validate Certs | Allows connection when SSL certificates are not valid. Set to \`false\` when certificates are not trusted. | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Idempotence
 The action commands in this integration are idempotent. This means that the result of performing it once is exactly the same as the result of performing it repeatedly without any intervening actions.
@@ -42,7 +38,7 @@ Some commands may require structured input arguments such as `lists` or `diction
 
 Other more advanced data manipulation tools such as [Ansible](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html)/[Jinja2 filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters) can also be used in-line. For example to get a [random number](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#random-number-filter) between 0 and 60 you can use `{{ 60 | random }}`.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### vmware-about-info
 ***

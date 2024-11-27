@@ -458,6 +458,8 @@ def extract_urls_and_emails_from_annot_objects(annot_objects: list | Any):
         extracted_object = extract_url_from_annot_object(annot_object)
         # Separates URLs and Emails:
         if extracted_object:
+            if isinstance(extracted_object, bytes):
+                extracted_object = extracted_object.decode()
             if url := extract_url(extracted_object):
                 urls.add(url)
             if email := extract_email(extracted_object):

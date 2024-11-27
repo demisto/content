@@ -1,23 +1,19 @@
 Trustwave SEG is a secure messaging solution that protects businesses and users from email-borne threats, including phishing, blended threats, and spam. Trustwave Secure Email Gateway also delivers improved policy enforcement and data leakage prevention.
 This integration was integrated and tested with version 10 of trustwave secure email gateway.
-## Configure trustwave secure email gateway on Cortex XSOAR
+## Configure trustwave secure email gateway in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for trustwave secure email gateway.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Hostname or IP | Hostname or IP address \(localhost or 127.0.0.1\). | True |
-    | SEG Configuration Service Port | Used for retrieving a token for the commands. | True |
-    | SEG API Port | Used for accessing the API console. | True |
-    | User Credentials |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Hostname or IP | Hostname or IP address \(localhost or 127.0.0.1\). | True |
+| SEG Configuration Service Port | Used for retrieving a token for the commands. | True |
+| SEG API Port | Used for accessing the API console. | True |
+| User Credentials |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### trustwave-seg-get-version
 ***

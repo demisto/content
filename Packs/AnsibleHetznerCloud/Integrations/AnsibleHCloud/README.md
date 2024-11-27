@@ -11,18 +11,14 @@ To use this integration you must generate an API token for your HCloud project.
 
 **NOTE**: If using 6.0.2 or lower version, put your API Token in the **Password** field, leave the **Username** field empty.
 
-## Configure Ansible HCloud on Cortex XSOAR
+## Configure Ansible HCloud in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Ansible HCloud.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API Token | This is the API Token for the Hetzner Cloud. | True |
-    | Endpoint | This is the API Endpoint for the Hetzner Cloud. | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API Token | This is the API Token for the Hetzner Cloud. | True |
+| Endpoint | This is the API Endpoint for the Hetzner Cloud. | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 # Idempotence
@@ -44,7 +40,7 @@ Some commands may require structured input arguments such as `lists` or `diction
 Other more advanced data manipulation tools such as [Ansible](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html)/[Jinja2 filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters) can also be used in-line. For example to get a [random number](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#random-number-filter) between 0 and 60 you can use `{{ 60 | random }}`.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### hcloud-datacenter-info
 ***
