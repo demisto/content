@@ -1,7 +1,11 @@
+from datetime import datetime, timedelta
+
 import CommonServerPython
 from freezegun import freeze_time
 from pytest_mock import MockerFixture
-from NetQuestOMX import *
+from NetQuestOMX import Client, TOKEN_TTL_S, DATE_FORMAT_FOR_TOKEN, demisto, fetch_events, get_events, \
+    address_list_upload_command, address_list_optimize_command, address_list_create_command, address_list_rename_command, \
+    address_list_delete_command
 import json
 import pytest
 
@@ -149,7 +153,7 @@ def test_get_events_invalid_input(net_quest_omx_client):
 
     params = {"slot": "1", "port": "1"}
     args = {"statistic_types_to_fetch": "Metering ,Export"}
-    with pytest.raises(DemistoException):
+    with pytest.raises(CommonServerPython.DemistoException):
         get_events(net_quest_omx_client, params, args)
 
 
