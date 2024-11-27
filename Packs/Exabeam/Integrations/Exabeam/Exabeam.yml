@@ -1740,7 +1740,7 @@ script:
     - contextPath: Exabeam.incidents.fields.description
       description: The incident description.
       type: String
-  dockerimage: demisto/python3:3.11.9.101916
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: '-'
