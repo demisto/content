@@ -734,7 +734,7 @@ class TestParsingIndicators:
 
         xsoar_expected_response_with_update_custom_fields = [
             {
-                'value': 15139,
+                'value': "15139",
                 'score': Common.DBotScore.NONE,
                 'rawJSON': autonomous_system_obj,
                 'type': 'ASN',
@@ -751,7 +751,7 @@ class TestParsingIndicators:
         ]
         xsoar_expected_response = [
             {
-                'value': 15139,
+                'value': "15139",
                 'score': Common.DBotScore.NONE,
                 'rawJSON': autonomous_system_obj,
                 'type': 'ASN',

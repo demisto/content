@@ -13,7 +13,7 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-dockerimage: demisto/taxii2:1.0.0.107875
+dockerimage: demisto/taxii2:1.0.0.117543
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
