@@ -621,7 +621,7 @@ def fetch_modified_incident_ids(client: Client, last_update_time) -> List[str]:
         demisto.debug(f"microsoft365::fetch_modified_incidents - fetched {len(raw_incidents)} incidents")
         demisto.debug(f"microsoft365::{str(raw_incidents)}")
         for incident in raw_incidents:
-            incidents.append(incident.get('incidentId'))
+            incidents.append(str(incident.get('incidentId')))
         # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
         if len(raw_incidents) < int(
             MAX_ENTRIES):  #todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
