@@ -53,7 +53,7 @@ call msft_azure_resourcelogs_commonfields
 	xdm.source.ipv6	= coalesce(get_properties_clientip_ipv6, get_callerIpAddress_ipv6),
 	xdm.source.host.ipv4_addresses = arraycreate(get_properties_host_ipv4, get_properties_hostname_ipv4, get_properties_originalHost_ipv4),
 	xdm.source.host.ipv6_addresses = arraycreate(get_properties_host_ipv6, get_properties_hostname_ipv6, get_properties_originalHost_ipv6),
-	xdm.source.host.hostname = if(array_length(array_length) > 1, arrayindex(check_hostname, 0)),
+	xdm.source.host.hostname = if(array_length(check_hostname) > 1, arrayindex(check_hostname, 0)),
 	xdm.source.cloud.project = Tenant,
 	xdm.intermediate.host.hostname = properties -> instanceId,
 	xdm.target.url = coalesce(get_properties_originalRequestUriWithArgs, get_properties_requestUri),
