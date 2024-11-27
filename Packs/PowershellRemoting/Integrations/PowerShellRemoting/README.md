@@ -4,26 +4,22 @@ The integration includes out-of-the-box commands which supports agentless forens
 
 For more information about setting up PowerShell Remoting, see the [PowerShell Remoting - Configuration guide](https://xsoar.pan.dev/docs/reference/articles/Powershell_Remoting_-_Configuration).
 
-## Configure PowerShell Remoting on Cortex XSOAR
+## Configure PowerShell Remoting in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for PowerShell Remoting.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Domain | Fully Qualified Domain Name suffix to be added to the hostname. For example mydomain.local | False |
-    | DNS | The IP address of the DNS server the integration will use to resolve your hosts. | False | 
-    | Username | Username in the target machine. This can be a local or domain user with administrative privileges | True |
-    | Password |  | True |
-    | Test Host | Hostname or IP address to use as a test for the integration connectivity. | False |
-    | Authentication Method |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use SSL (HTTPS) |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Domain | Fully Qualified Domain Name suffix to be added to the hostname. For example mydomain.local | False |
+| DNS | The IP address of the DNS server the integration will use to resolve your hosts. | False | 
+| Username | Username in the target machine. This can be a local or domain user with administrative privileges | True |
+| Password |  | True |
+| Test Host | Hostname or IP address to use as a test for the integration connectivity. | False |
+| Authentication Method |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use SSL (HTTPS) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ps-remote-command
 ***

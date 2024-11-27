@@ -510,7 +510,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "280"
+              simple: "338"   # Note: If this value is changed, it is recommended to set it to greater than 250 or something similar, rather than hardcoding it.
     continueonerrortype: ""
     view: |-
       {
