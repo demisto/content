@@ -160,7 +160,7 @@ RESPONSE_DATA_INDICATORS = {
 }
 
 
-RESPONSE_DATA_WITHOUT_INDICATORS = {
+RESPONSE_DATA_WITHOUT_OBSERVABLES = {
     'entities': [],
     'pagination': {
         'startCursor': '',

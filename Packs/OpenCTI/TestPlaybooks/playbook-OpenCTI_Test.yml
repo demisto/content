@@ -1,7 +1,7 @@
 id: OpenCTI Test
 version: -1
 name: OpenCTI Test
-description: test playbook
+description: test playbook.
 starttaskid: "0"
 tasks:
   "0":
@@ -370,8 +370,7 @@ tasks:
       id: 35b1d239-88c8-473c-814a-565158a1283f
       version: -1
       name: opencti-indicator-field-remove
-      description: Remove field from indicator. Avalible fields to remove - marking
-        defenition, label.
+      description: Remove field from indicator. Avalible fields to remove - marking defenition, label.
       script: '|||opencti-indicator-field-remove'
       type: regular
       iscommand: true
@@ -407,8 +406,7 @@ tasks:
       id: d605456e-ce31-4f76-8383-52a134992c9e
       version: -1
       name: opencti-indicator-field-add
-      description: Add field to indicator. Avalible fields to add - marking defenition,
-        label.
+      description: Add field to indicator. Avalible fields to add - marking defenition, label.
       script: '|||opencti-indicator-field-add'
       type: regular
       iscommand: true
@@ -877,6 +875,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "29"

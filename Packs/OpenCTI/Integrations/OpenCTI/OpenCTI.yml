@@ -9,23 +9,23 @@ configuration:
   type: 0
 - display: API Key (leave empty. Fill in the API key in the password field.)
   displaypassword: API Key
-  hiddenusername: true
   name: credentials
-  required: false
   type: 9
+  hiddenusername: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-- additionalinfo: Used for troubleshooting purposes.
+  required: false
+- name: redirect_std_out
   display: Redirect stdout
-  name: redirect_std_out
-  required: false
   type: 8
+  additionalinfo: Used for troubleshooting purposes.
+  required: false
 description: Manages OpenCTI platform. Compatible with OpenCTI 4.X API and OpenCTI 5.X API versions.
 display: OpenCTI
 name: OpenCTI
@@ -38,7 +38,7 @@ script:
       name: score_start
     - description: 'Score maximum value to filter by. Values range is 0-100. '
       name: score_end
-    - description: A specific score. Values range is 0-100 or Unknown.
+    - description: 'A specific score. Values range is 0-100 or Unknown.'
       name: score
     - auto: PREDEFINED
       defaultValue: ALL
@@ -152,7 +152,7 @@ script:
       name: value
     - auto: PREDEFINED
       defaultValue: "false"
-      description: Create indicator related with the observable created
+      description: Create indicator related with the observable created.
       name: create_indicator
       predefined:
       - "true"
@@ -180,7 +180,7 @@ script:
       - marking
       - label
       required: true
-    - description: Value of the field to add. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI.
+    - description: "Value of the field to add. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI."
       name: value
       required: true
     description: Add a field to the observable. Fields that can be added are marking definition and label.
@@ -196,13 +196,13 @@ script:
       - marking
       - label
       required: true
-    - description: Value of the field to remove. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI or opencti-marking-definition-list to find all marking definition IDs in OpenCTI.
+    - description: "Value of the field to remove. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI or opencti-marking-definition-list to find all marking definition IDs in OpenCTI."
       name: value
       required: true
     description: Remove observable field value. Fields which values can be removed are marking definition and label.
     name: opencti-observable-field-remove
   - arguments:
-    - defaultValue: "50"
+    - defaultValue: '50'
       description: The maximum number of organizations to return per fetch. Default value is 50. Maximum value is 200.
       name: limit
     - description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.Organizations.organizationsLastRun context path.
@@ -242,7 +242,7 @@ script:
       description: New organization ID.
       type: String
   - arguments:
-    - defaultValue: "50"
+    - defaultValue: '50'
       description: The maximum number of labels to return per fetch.
       name: limit
     - description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.Labels.labelsLastRun context path.
@@ -283,7 +283,7 @@ script:
       description: New external reference ID.
       type: String
   - arguments:
-    - defaultValue: "50"
+    - defaultValue: '50'
       description: The maximum number of marking definitions to return per fetch.
       name: limit
     - description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.MarkingDefinitions.markingsLastRun context path.
@@ -301,7 +301,7 @@ script:
       description: The last ID of the previous fetch to use for pagination.
       type: String
   - arguments:
-    - description: Incident name
+    - description: Incident name.
       name: name
       required: true
     - description: Incident Type name. Use opencti-incident-types-list to find all incident types in OpenCTI.
@@ -309,7 +309,7 @@ script:
     - description: Incident Confidence Number. Values range is 0 - 100. Default value is 50.
       name: confidence
     - auto: PREDEFINED
-      description: Incident severity
+      description: Incident severity.
       name: severity
       predefined:
       - low
@@ -318,9 +318,9 @@ script:
       - critical
     - description: Incident description.
       name: description
-    - description: Incident Source
+    - description: Incident Source.
       name: source
-    - description: Incident objective
+    - description: Incident objective.
       name: objective
     - description: Organization ID. Use opencti-organization-list to find all organization IDs in OpenCTI, or use opencti-organization-create to create a new organization ID.
       name: created_by
@@ -344,21 +344,21 @@ script:
       description: New Incident name.
       type: String
   - arguments:
-    - description: Incident ID
+    - description: Incident ID.
       name: id
       required: true
     description: Delete incident.
     name: opencti-incident-delete
   - arguments: []
-    description: Get a list of all incident types
+    description: Get a list of all incident types.
     name: opencti-incident-types-list
     outputs:
     - contextPath: OpenCTI.IncidentTypes.IncidentTypesList.id
-      description: Incident type ID
+      description: Incident type ID.
     - contextPath: OpenCTI.IncidentTypes.IncidentTypesList.name
-      description: Incident type name
+      description: Incident type name.
     - contextPath: OpenCTI.IncidentTypes.IncidentTypesList.description
-      description: Incident type description
+      description: Incident type description.
   - arguments:
     - description: Name of the indicator.
       name: name
@@ -417,7 +417,7 @@ script:
       type: string
     - auto: PREDEFINED
       defaultValue: "false"
-      description: Create observable related with the indicator created
+      description: Create observable related with the indicator created.
       name: create_observables
       predefined:
       - "true"
@@ -606,7 +606,7 @@ script:
       name: description
     - description: Confidence Number. Values range is 0 - 100.
       name: confidence
-    description: Create new relationship
+    description: Create new relationship.
     name: opencti-relationship-create
     outputs:
     - contextPath: OpenCTI.Relationship.id
@@ -614,15 +614,15 @@ script:
     - contextPath: OpenCTI.Relationship.entityType
       description: New Relationship Entity Type.
   - arguments: []
-    description: Get a list of all indicator types
+    description: Get a list of all indicator types.
     name: opencti-indicator-types-list
     outputs:
     - contextPath: OpenCTI.IndicatorTypes.IndicatorTypesList.id
-      description: Indicator type ID
+      description: Indicator type ID.
     - contextPath: OpenCTI.IndicatorTypes.IndicatorTypesList.name
-      description: Indicator type name
+      description: Indicator type name.
     - contextPath: OpenCTI.IndicatorTypes.ndicatorTypesList.description
-      description: Indicator type description
+      description: Indicator type description.
   dockerimage: demisto/vendors-sdk:1.0.0.110574
   runonce: false
   script: '-'
@@ -631,4 +631,4 @@ script:
 tests:
 - OpenCTI Test
 fromversion: 5.0.0
-autoUpdateDockerImage : false
+autoUpdateDockerImage: false
