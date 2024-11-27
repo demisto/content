@@ -11,9 +11,9 @@ def get_guid_from_system_incident(incident: dict[str, Any]) -> str:
     return malop_guid
 
 
-res = True
 incident = demisto.incidents()
 for inc in incident:
+    res = True
     malop_guid = get_guid_from_system_incident(inc)
     response = execute_command(
         'getIncidents',
@@ -34,4 +34,4 @@ for inc in incident:
         malop_incident_status = inc['status']
         demisto.debug(f"Updating incident status to : {malop_incident_status}")
         execute_command('setIncident', {'id': malop_incident_id, 'status': malop_incident_status})
-    demisto.results(res)
+    CommandResults(raw_response=res)

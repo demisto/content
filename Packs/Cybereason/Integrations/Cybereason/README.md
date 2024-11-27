@@ -41,16 +41,12 @@ This involves the mapping of response fields to XSOAR incidents, enhancing the a
 
 These custom fields provide flexibility and enhance the granularity of the incident information.
 
-### Fetchin MalOps
-
-The functionality for fetching MalOps is implemented through the `fetch_incidents` function. This function is responsible for retrieving MalOps and subsequently converting them into XSOAR incidents.
-
-* **Conversion Process:** The conversion from MalOps to incidents is handled by the `malop_to_incident` function. This function processes MalOps one by one, ensuring each is correctly mapped to its corresponding incident structure.
+### Fetch MalOps
 
 ### Usage
 
 1. **Configure Custom Fields:** Ensure that all custom fields are properly set up in XSOAR before running the fetch function.
-2. **Run Fetch Incidents:** Execute the `fetch_incidents` function to initiate the retrieval and conversion process.
+2. **Enable Fetch Incidents:**  Functionality responsible to fetch Malops.
 3. **Monitor Incidents:** Once the MalOps are converted, they will appear as incidents in XSOAR, allowing for effective incident management.
 
 ## Commands
