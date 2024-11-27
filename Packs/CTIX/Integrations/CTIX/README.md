@@ -3,23 +3,19 @@ This integration was integrated and tested with version 2.4 and 2.7 of CTIX.
 This integration is NOT COMPATIBLE with CTIX version 3.0 and above. Use the CTIX V3 Integration for CTIX version 3 and above. 
 Supported Cortex XSOAR versions: 5.0.0 and later.
 
-## Configure CTIX on Cortex XSOAR
+## Configure CTIX in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CTIX.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | base_url | Endpoint URL | True |
-    | access_id | Access Key | True |
-    | secret_key | Secret Key | True |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| base_url | Endpoint URL | True |
+| access_id | Access Key | True |
+| secret_key | Secret Key | True |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ip
 ***

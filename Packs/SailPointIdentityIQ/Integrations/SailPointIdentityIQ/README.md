@@ -2,27 +2,23 @@ SailPoint IdentityIQ context pack enables XSOAR customers to utilize the deep, e
 This integration was integrated and tested with version 8.1 of SailPoint IdentityIQ.
 Supported Cortex XSOAR versions: 6.0.0 and later.
 
-## Configure SailPointIdentityIQ on Cortex XSOAR
+## Configure SailPointIdentityIQ in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SailPointIdentityIQ.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | identityiq_url | IdentityIQ Server URL \(e.g. https://identityiq-server.com/identityiq) | True |
-    | client_id | Client Id \(for OAuth 2.0\) | True |
-    | client_secret | Client Secret \(for OAuth 2.0\) | True |
-    | isFetch | Fetch incidents | False |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
-    | incidentType | Incident type | False |
-    | max_fetch | Maximum number of incidents per fetch | False |
-    | first_fetch | First fetch time | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| identityiq_url | IdentityIQ Server URL \(e.g. https://identityiq-server.com/identityiq) | True |
+| client_id | Client Id \(for OAuth 2.0\) | True |
+| client_secret | Client Secret \(for OAuth 2.0\) | True |
+| isFetch | Fetch incidents | False |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
+| incidentType | Incident type | False |
+| max_fetch | Maximum number of incidents per fetch | False |
+| first_fetch | First fetch time | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### identityiq-search-identities
 ***
@@ -570,4 +566,3 @@ Create an alert using IdentityIQ SCIM API's.
 |id|name|displayName|type|targetId|targetDisplayName|targetType|alertInput|actions|application|attributes|lastProcessed|
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 0a000001764519c981767209e7491c04 | 0000000016 | XSOAR-Alert | PAN XSOAR |  |  |  | input: <br/>processorTaskInput: <br/>aggregationTaskInput:  |  |  |  | 2020-12-17T12:50:20.369-06:00 |
-
