@@ -8,7 +8,7 @@ configuration:
   required: true
   section: Connect
   type: 0
-  additionalinfo: The IP of the device, formatted as https://X.X.X.X
+  additionalinfo: The IP of the 5G device which using NetQuestOMX , formatted as https://X.X.X.X
 - display: Username
   name: credentials
   type: 9
