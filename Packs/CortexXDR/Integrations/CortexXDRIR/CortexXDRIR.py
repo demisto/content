@@ -1376,9 +1376,10 @@ def main():  # pragma: no cover
 
         elif command == 'fetch-incidents':
             integration_instance = demisto.integrationInstance()
-            last_run = demisto.getLastRun().get('next_run')
+            full_last_run = demisto.getLastRun()
             demisto.debug(
-                f"Before starting a new cycle of fetch incidents\n{last_run=}\n{integration_instance=}")
+                f"Before fetch incidents\n{full_last_run=}\n{integration_instance=}")
+            last_run = full_last_run.get('next_run')
             next_run, incidents = fetch_incidents(client=client,
                                                   first_fetch_time=first_fetch_time,
                                                   integration_instance=integration_instance,
