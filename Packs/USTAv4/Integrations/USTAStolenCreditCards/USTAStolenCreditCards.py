@@ -22,6 +22,8 @@ USTA_TICKET_STATUSES = {
     "passive": "passive",
 }
 
+MAX_ALERTS_TO_FETCH = 100
+
 
 class Client(BaseClient):
     def __init__(self, base_url, verify, proxy, headers):
@@ -65,7 +67,7 @@ class Client(BaseClient):
             raise DemistoException('Rate limit exceeded. Please try again later..!')
 
 
-def test_module(client: Client) -> str:
+def check_module(client: Client) -> str:
     try:
         client.check_auth()
     except DemistoException as e:
@@ -211,9 +213,16 @@ def main() -> None:
         }
 
         if cmd == 'test-module':
-            return_results(test_module(client))
+            return_results(check_module(client))
         elif cmd == 'fetch-incidents':
             status = USTA_TICKET_STATUSES.get(params.get('status', 'Open').lower(), 'None')
+            max_results = arg_to_number(
+                arg=params.get('max_fetch'),
+                arg_name='max_fetch',
+                required=False
+            )
+            if not max_results or max_results > MAX_ALERTS_TO_FETCH:
+                max_results = MAX_ALERTS_TO_FETCH
             next_run, incidents = fetch_incidents(
                 client=client,
                 max_results=100,

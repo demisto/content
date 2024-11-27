@@ -48,8 +48,8 @@ def test_check_module(mocker):
 
 @pytest.mark.parametrize('username, mock_response_file, expected_output_file', [
     ('user1', 'test_data/compromised_credentials_search_response.json', 'test_data/compromised_credentials_search_response.json'),
-    ('user2', 'test_data/compromised_credentials_search_empty_response.json',
-     'test_data/compromised_credentials_search_empty_response.json'),
+    ('user2', 'test_data/search_empty_response.json',
+     'test_data/search_empty_response.json'),
 ])
 def test_compromised_credentials_search_command(mocker, username, mock_response_file, expected_output_file):
     """Tests compromised_credentials_search command function with multiple test cases.

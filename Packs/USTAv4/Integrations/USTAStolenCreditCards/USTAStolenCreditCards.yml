@@ -22,6 +22,13 @@ configuration:
   - Closed
   type: 15
   required: false 
+  section: Collect
+- defaultvalue: '100'
+  display: Maximum number of alerts per fetch
+  name: max_fetch
+  type: 0
+  section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -34,12 +41,18 @@ configuration:
   name: isFetch
   type: 8
   required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Connect
+  required: false
 - display: First Fetch Time
   additionalinfo: 'The time range to consider for the initial data fetch. Warning: Fetching a large time range may cause performance issues!'
   defaultvalue: 3 days
   name: first_fetch
   type: 0
   required: true
+  section: Collect
 description: 'This integration offers organizations the ability to track stolen credit card data across the web, providing comprehensive insight into compromised card information sourced from underground markets, dark web forums, and other malicious platforms.'
 display: USTA Stolen Credit Cards
 name: USTA Stolen Credit Cards
