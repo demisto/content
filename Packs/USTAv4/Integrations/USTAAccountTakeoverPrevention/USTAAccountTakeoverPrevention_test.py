@@ -12,6 +12,7 @@ you are implementing with your integration
 
 import json
 import pytest
+import demistomock as demisto  # noqa: F401
 
 
 def util_load_json(path):
@@ -19,16 +20,12 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_test_module(mocker):
+def test_check_module(mocker):
     """Tests test_module command function.
 
     Checks the output of the command function with the expected output.
-
-    No mock is needed here because the test_module_command does not call
-    any external API.
     """
-    from USTAAccountTakeoverPrevention import Client, test_module
-
+    from USTAAccountTakeoverPrevention import Client, check_module
     mock_response = util_load_json('test_data/auth_success_response.json')
 
     client = Client(
@@ -40,7 +37,7 @@ def test_test_module(mocker):
 
     mocker.patch.object(client, 'check_auth', return_value=mock_response)
 
-    response = test_module(client)
+    response = check_module(client)
     assert response == 'ok'
 
 
@@ -232,3 +229,77 @@ def test_compromised_credentials_search_api_request(mocker):
     response = client.compromised_credentials_search_api_request(status=1, start='2021-02-01T00:00:00Z', size=100)
 
     assert response == mock_response
+
+
+def test_main_search_cmd(mocker):
+    """
+    Given:
+        - A command to execute.
+    When:
+        - Running the main function.
+    Then:
+        - Verify that the correct command function is called with the correct arguments.
+    """
+    from USTAAccountTakeoverPrevention import Client, main
+
+    mocker.patch.object(demisto, 'params', return_value={
+        'url': 'https://example.com',
+        'api_key': 'API_KEY',
+        'insecure': True,
+        'proxy': False,
+        'first_fetch': '3 days',
+        'status': 'open',
+        'max_fetch': 50
+    })
+
+    Client(
+        base_url='',
+        verify=False,
+        headers={},
+        proxy=False
+    )
+    mocker.patch.object(demisto, 'args', return_value={'username': 'user1'})
+    mocker.patch.object(demisto, 'command', return_value='usta-atp-search-username')
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(Client, 'check_auth')
+    mocker.patch.object(Client, 'compromised_credentials_search_api_request',
+                        return_value=util_load_json('test_data/compromised_credentials_search_response.json'))
+
+    main()
+
+    demisto.results.assert_called_once()
+    demisto.setLastRun.assert_not_called()
+    demisto.incidents.assert_not_called()
+
+
+def test_main_fetch_incidents_cmd(mocker):
+    from USTAAccountTakeoverPrevention import Client, main
+    mocker.patch.object(demisto, 'params', return_value={
+        'url': 'https://example.com',
+        'api_key': 'API_KEY',
+        'insecure': True,
+        'proxy': False,
+        'first_fetch': '3 days',
+        'status': 'open',
+        'max_fetch': 50
+    })
+
+    Client(
+        base_url='',
+        verify=False,
+        headers={},
+        proxy=False
+    )
+    mock_response = util_load_json('test_data/compromised_credentials_fetch_incidents_response.json')
+    mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+    mocker.patch.object(Client, 'compromised_credentials_api_request', return_value=mock_response)
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'incidents')
+    main()
+
+    demisto.incidents.assert_called_once()
+    demisto.results.assert_not_called()
+    demisto.setLastRun.assert_called_once()

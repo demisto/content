@@ -66,7 +66,7 @@ class Client(BaseClient):
             raise DemistoException('Rate limit exceeded. Please try again later..!')
 
 
-def test_module(client: Client) -> str:
+def check_module(client: Client) -> str:
     try:
         client.check_auth()
     except DemistoException as e:
@@ -222,7 +222,7 @@ def main() -> None:
         }
 
         if cmd == 'test-module':
-            return_results(test_module(client))
+            return_results(check_module(client))
         elif cmd == 'fetch-incidents':
             status = USTA_TICKET_STATUSES.get(params.get('status', 'Open').lower())
             max_results = arg_to_number(
@@ -235,7 +235,7 @@ def main() -> None:
 
             next_run, incidents = fetch_incidents(
                 client=client,
-                max_results=100,
+                max_results=max_results,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=datetime.strftime(first_fetch_time, DATE_FORMAT),
                 status=status

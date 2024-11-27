@@ -29,7 +29,7 @@ configuration:
   type: 15
   required: false
   section: Collect
-- defaultvalue: '10'
+- defaultvalue: '100'
   display: Maximum number of alerts per fetch
   name: max_fetch
   type: 0
