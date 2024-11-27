@@ -468,7 +468,7 @@ def relationship_create_command(client: OpenCTIApiClient, args: Dict[str, Any]) 
             raw_response=result
         )
     else:
-        raise DemistoException("Can't create the relationship.")
+        raise DemistoException("Can't create relationship.")
 
 
 def get_observables_command(client: OpenCTIApiClient, args: dict) -> CommandResults:

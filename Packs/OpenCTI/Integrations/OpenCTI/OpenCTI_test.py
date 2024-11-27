@@ -3,16 +3,16 @@ import pytest
 from OpenCTI import *
 from test_data.data import RESPONSE_DATA_OBSERVABLES, RESPONSE_DATA_INDICATORS, RESPONSE_DATA_WITHOUT_OBSERVABLES
 from CommonServerPython import CommandResults
-from pycti import StixCyberObservable, MarkingDefinition, Label, ExternalReference, Indicator, Incident, StixDomainObject
+from pycti import StixCyberObservable, MarkingDefinition, Label, ExternalReference, Indicator, Incident, StixDomainObject, StixCoreRelationship
 
 
 class Client:
     temp = ''
-    query = lambda *args, **kwargs: None
     incident = Incident
     indicator = Indicator
     stix_domain_object = StixDomainObject
     stix_cyber_observable = StixCyberObservable
+    stix_core_relationship = StixCoreRelationship
     identity = Identity
     label = Label
     marking_definition = MarkingDefinition
@@ -219,7 +219,7 @@ def test_observable_create_command(mocker):
     When
         - Calling `observable_create_command`
     Then
-        - validate the response to have a "Observable created successfully." string and context as expected
+        - validate the readable_output, context
     """
     client = Client
     args = {
@@ -230,7 +230,7 @@ def test_observable_create_command(mocker):
     mocker.patch.object(client.stix_cyber_observable, 'create', return_value={'id': '123456'})
     results: CommandResults = observable_create_command(client, args)
     assert "Observable created successfully" in results.readable_output
-    assert 'id' in results.outputs
+    assert {'id': '123456'} == results.outputs
 
 
 @pytest.mark.parametrize(argnames="field, value, function_name",
@@ -297,7 +297,7 @@ def test_organization_list_command(mocker):
     When
         - Calling `organization_list_command`
     Then
-        - validate the readable_output ,context
+        - validate the readable_output, context
     """
     client = Client
     mocker.patch.object(client.identity, 'list',
@@ -318,7 +318,7 @@ def test_organization_create_command(mocker):
     When
         - Calling `organization_create_command`
     Then
-        - validate the readable_output ,context
+        - validate the readable_output, context
     """
     client = Client
     args = {
@@ -337,7 +337,7 @@ def test_label_list_command(mocker):
     When
         - Calling `label_list_command`
     Then
-        - validate the readable_output ,context
+        - validate the readable_output, context
     """
     client = Client
     mocker.patch.object(client.label, 'list',
@@ -357,7 +357,7 @@ def test_label_create_command(mocker):
     When
         - Calling `label_create_command`
     Then
-        - validate the readable_output ,context
+        - validate the readable_output, context
     """
     client = Client
     args = {
@@ -377,7 +377,7 @@ def test_external_reference_create_command(mocker):
     When
         - Calling `external_reference_create_command`
     Then
-        - validate the readable_output ,context
+        - validate the readable_output, context
     """
     client = Client
     args = {
@@ -397,7 +397,7 @@ def test_marking_list_command(mocker):
     When
         - Calling `marking_list_command`
     Then
-        - validate the readable_output ,context
+        - validate the readable_output, context
     """
     client = Client
     mocker.patch.object(client.marking_definition, 'list',
@@ -421,7 +421,7 @@ def test_incident_create_command(mocker):
     When
         - Calling `incident_create_command`
     Then
-        - validate the response to have a "Incident created successfully." string and context as expected
+        - validate the readable_output, context
     """
     client = Client
     args = {
@@ -433,8 +433,7 @@ def test_incident_create_command(mocker):
     mocker.patch.object(client.incident, 'create', return_value={'id': '123456', 'name': 'Lorem ipsum dolor'})
     results: CommandResults = incident_create_command(client, args)
     assert "Incident created successfully" in results.readable_output
-    assert 'id' in results.outputs
-    assert 'name' in results.outputs
+    assert {'id': '123456', 'name': 'Lorem ipsum dolor'} == results.outputs
 
 
 def test_incident_create_command_exception(mocker):
@@ -528,7 +527,7 @@ def test_incident_types_list_command(mocker):
     When
         - Calling `incident_types_list_command`
     Then
-        - validate the readable_output ,context
+        - validate the readable_output, context
     """
     client = Client
     mocker.patch.object(client, 'query',
@@ -582,6 +581,75 @@ def test_incident_types_list_command_exception(mocker):
     mocker.patch.object(client, 'query', side_effect=Exception("Test exception"))
     with pytest.raises(DemistoException, match="Can't list incident types."):
         incident_types_list_command(client, {})
+
+
+def test_relationship_create_command(mocker):
+    """Tests relationship_create_command function
+    Given
+        from_id entity
+        to_id entity
+        relationship_type
+    When
+        - Calling `relationship_create_command`
+    Then
+        - validate the readable_output, context
+    """
+    client = Client
+    args = {
+        'from_id': '123456',
+        'to_id': '123457',
+        'relationship_type': 'related-to'
+    }
+    mocker.patch.object(client.stix_core_relationship, 'create', return_value=mocker.patch.object(
+        client.incident, 'create', return_value={'id': '123456'}))
+    results: CommandResults = relationship_create_command(client, args)
+    assert "Relationship created successfully" in results.readable_output
+    assert {'id': '123456'} == results.outputs
+
+
+def test_relationship_create_command_with_no_data_to_return(mocker):
+    """Tests relationship_create_command function
+    Given
+        from_id entity
+        to_id entity
+        relationship_type
+    When
+        - Calling `relationship_create_command`
+    Then
+        - Ensure a DemistoException is raised with the correct error message.
+    """
+    client = Client
+    args = {
+        'from_id': '123456',
+        'to_id': '123457',
+        'relationship_type': 'related-to'
+    }
+    mocker.patch.object(client.stix_core_relationship, 'create',
+                        return_value=mocker.patch.object(client.incident, 'create', return_value={}))
+    with pytest.raises(DemistoException, match="Can't create relationship."):
+        relationship_create_command(client, args)
+
+
+def test_relationship_create_command_exception(mocker):
+    """Tests relationship_create_command function
+    Given
+        from_id entity
+        to_id entity
+        relationship_type
+    When
+        - Calling `relationship_create_command`
+    Then
+        - Ensure a DemistoException is raised with the correct error message.
+    """
+    client = Client
+    args = {
+        'from_id': '123456',
+        'to_id': '123457',
+        'relationship_type': 'related-to'
+    }
+    mocker.patch.object(client.stix_core_relationship, 'create', side_effect=Exception("Test exception"))
+    with pytest.raises(DemistoException, match="Can't create relationship."):
+        relationship_create_command(client, args)
 
 
 def test_get_indicators(mocker):
