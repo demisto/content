@@ -597,9 +597,37 @@ def microsoft_365_defender_advanced_hunting_command(client: Client, args: dict) 
                           readable_output=human_readable_table)
 
 
-def get_remote_data_command(client: Client, args: dict):
-    # todo - try not implemneting it and see what happens.
-    pass
+''' MIRRORING COMMANDS '''
+
+
+def fetch_modified_incident_ids(client: Client, last_update_time) -> List[str]:
+    demisto.debug("microsoft365::Starting fetch_modified_incidents")
+    test_context_for_token(client)  #todo: how to go aabout this in mirroring?
+    incidents = []
+
+    # The API is limited to MAX_ENTRIES incidents for each requests, if we are trying to get more than MAX_ENTRIES
+    # incident we skip (offset) the number of incidents we already fetched.
+    offset = 0
+
+    # This loop fetches all the incidents that had been created after last_run, due to API limitations the fetching
+    # occurs in batches. If timeout was given, exceeding the time will result an error.
+
+    while True:
+        # HTTP request
+        demisto.debug(f"microsoft365::fetch_modified_incidents - fetching incidents with offset {offset}")
+        response = client.incidents_list(timeout=50, last_update_time=last_update_time,
+                                         skip=offset)  #todo: should include timeout?
+        raw_incidents = response.get('value')
+        demisto.debug(f"microsoft365::fetch_modified_incidents - fetched {len(raw_incidents)} incidents")
+        demisto.debug(f"microsoft365::{str(raw_incidents)}")
+        for incident in raw_incidents:
+            incidents.append(incident.get('incidentId'))
+        # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
+        if len(raw_incidents) < int(
+            MAX_ENTRIES):  #todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
+            break
+        offset += int(MAX_ENTRIES)
+    return incidents
 
 
 def fetch_modified_incidents(client: Client, last_update_time) -> List[dict]:
@@ -617,7 +645,8 @@ def fetch_modified_incidents(client: Client, last_update_time) -> List[dict]:
     while True:
         # HTTP request
         demisto.debug(f"microsoft365::fetch_modified_incidents - fetching incidents with offset {offset}")
-        response = client.incidents_list(timeout=50, last_update_time=last_update_time, skip=offset)  #todo: should include timeout?
+        response = client.incidents_list(timeout=50, last_update_time=last_update_time,
+                                         skip=offset)  # todo: should include timeout?
         raw_incidents = response.get('value')
         demisto.debug(f"microsoft365::fetch_modified_incidents - fetched {len(raw_incidents)} incidents")
         demisto.debug(f"microsoft365::{str(raw_incidents)}")
@@ -626,39 +655,48 @@ def fetch_modified_incidents(client: Client, last_update_time) -> List[dict]:
             incident['mirrorRemoteId'] = incident.get('incidentId')
             incidents.append(incident)
         # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
-        if len(raw_incidents) < int(MAX_ENTRIES):  #todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
+        if len(raw_incidents) < int(
+            MAX_ENTRIES):  # todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
             break
         offset += int(MAX_ENTRIES)
     return incidents
 
 
 MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON = {
-    'Unknown': 'Resolved',
+    'Unknown': 'Other',
     'TruePositive': 'Resolved',
     'FalsePositive': 'False Positive',
     'InformationalExpectedActivity': 'Resolved',
 }
 
 
-def handle_incoming_closing_incidents(incidents: List[dict]) -> List[dict]:
-    #todo: check what will happen if runs on already closed incident -> in terms of the server
-    demisto.debug("microsoft365::Starting handle_incoming_closing_incidents")
-    closing_incidents_data = []
-    for incident in incidents:
-        if incident.get('status') == 'Resolved':
-            demisto.debug(
-                f"handle_incoming_closing_incidents for incident {incident.get('incidentId')}"
-            )
-            classification = incident.get('classification')
-            closing_incidents_data.append({
-                "dbotIncidentClose": True,
-                "closeReason": MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON.get(classification, 'Resolved'),
-                'mirrorRemoteId': incident.get('incidentId')
-            })
-    return closing_incidents_data
+def get_modified_incidents_entries_content(modified_incidents: List[dict], close_incident: bool) -> List[dict]:
+    demisto.debug("microsoft365::Starting get_modified_incidents_entries_content")
+    entries_content = []
+    if close_incident:
+        for incident in modified_incidents:
+            if incident.get('status') == 'Resolved':
+                demisto.debug(
+                    f"handle_incoming_closing_incidents for incident {incident.get('incidentId')}"
+                )
+                classification = incident.get('classification', 'Unknown')
+                entries_content.append({
+                    'dbotIncidentClose': True,
+                    'closeReason': MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON.get(classification, 'Other'),
+                })
+            #todo: how to reopen?
+            # if incident.get('status') == 'Active':
+            #     demisto.debug(
+            #         f"handle_incoming_reopen_incidents for incident {incident.get('incidentId')}"
+            #     )
+            #     entries_content.append({
+            #         'dbotIncidentReopen': True
+            #     })
+    return entries_content
 
 
-def get_modified_remote_data_command(client: Client, args, close_incident: bool):
+def get_modified_remote_data_command(client: Client, args, close_incident: bool,
+                                     return_entire_data=False) -> GetModifiedRemoteDataResponse:
     #todo - do we want to sync assignedto like in xdr?
     demisto.debug("microsoft365::Starting get_modified_remote_data_command")
     remote_args = GetModifiedRemoteDataArgs(args)
@@ -667,21 +705,63 @@ def get_modified_remote_data_command(client: Client, args, close_incident: bool)
     last_update = parsed_date.strftime(DATE_FORMAT)
     demisto.debug(f"microsoft365::Last update: {last_update}")
     try:
-        modified_incidents = fetch_modified_incidents(client, last_update)
-        demisto.debug(f"microsoft365::Found {len(modified_incidents)} modified incidents")
-        demisto.debug(f"microsoft365::{str(modified_incidents)}")
-        closing_incidents_data = []
-        if close_incident:
-            closing_incidents_data = handle_incoming_closing_incidents(modified_incidents)
-        #todo - handle incident reopen and closing
-        #skip update: In case of a failure. In order to notify the server that the command failed and prevent execution of the get-remote-data commands, returns an error that contains the string "skip update".?
-        return GetModifiedRemoteDataResponse(modified_incidents_data=modified_incidents + closing_incidents_data)
+        if return_entire_data:
+            modified_incidents = fetch_modified_incidents(client, last_update)
+            demisto.debug(f"microsoft365::Found {len(modified_incidents)} modified incidents")
+            demisto.debug(f"microsoft365::{str(modified_incidents)}")
+            modified_incidents_entries_content = get_modified_incidents_entries_content(modified_incidents, close_incident)
+
+            # todo - handle incident reopen and closing
+            # skip update: In case of a failure. In order to notify the server that the command failed and prevent execution of the get-remote-data commands, returns an error that contains the string "skip update".?
+            return GetModifiedRemoteDataResponse(modified_incidents_data=modified_incidents + modified_incidents_entries_content)
+        else:
+            modified_incident_ids = fetch_modified_incident_ids(client, last_update)
+            demisto.debug(f"microsoft365::Found {len(modified_incident_ids)} modified incidents")
+            demisto.debug(f"microsoft365::{str(modified_incident_ids)}")
+
+            #skip update: In case of a failure. In order to notify the server that the command failed and prevent execution of the get-remote-data commands, returns an error that contains the string "skip update".?
+            return GetModifiedRemoteDataResponse(modified_incident_ids=modified_incident_ids)
     except Exception as e:
         demisto.debug(f"Error in Microsoft 365 defender incoming mirror \n"
                       f"Error message: {str(e)}")
         if "Rate limit exceeded" in str(
             e):  #todo - check if this is the correct error message + on the server side what does is expect to ger
             return_error("API rate limit")
+
+
+def fetch_modified_incident(client: Client, incident_id: str) -> dict:
+    demisto.debug(f"microsoft365::Fetching incident {incident_id}")
+    incident = client.get_incident(incident_id=arg_to_number(incident_id), timeout=50)
+    demisto.debug(f"microsoft365::raw incident {str(incident)}")
+    if incident.get('@odata.context'):
+        del incident['@odata.context']
+    incident.update(_get_meta_data_for_incident(incident))
+    return incident
+
+
+def get_remote_data_command(client: Client, args: dict[str, Any], close_incident: bool, ) -> GetRemoteDataResponse:
+    remote_args = GetRemoteDataArgs(args)
+    mirrored_object = {}
+    demisto.debug(
+        f'Performing get-remote-data command with incident id: {remote_args.remote_incident_id} and last_update: {remote_args.last_update}')
+    try:
+        mirrored_object: Dict = fetch_modified_incident(client, remote_args.remote_incident_id)
+        demisto.debug(f"microsoft365::Fetched incident {str(mirrored_object)}")
+        entries: List[dict] = [{
+            'Type': EntryType.NOTE,
+            'Contents': get_modified_incidents_entries_content([mirrored_object], close_incident=close_incident)[0],
+            'ContentsFormat': EntryFormat.JSON,
+
+        }]
+        return GetRemoteDataResponse(mirrored_object, entries)
+    except Exception as e:
+        demisto.debug(f"Error in Microsoft incoming mirror for incident: {remote_args.remote_incident_id}\n"
+                      f"Error message: {str(e)} \n {traceback.format_exc()}")
+
+        if not mirrored_object:
+            mirrored_object = {'id': remote_args.remote_incident_id}
+        mirrored_object['in_mirror_error'] = str(e)
+        return GetRemoteDataResponse(mirrored_object, entries=[])
 
 
 def update_remote_system_command(client: Client, args: dict):
@@ -796,11 +876,12 @@ def main() -> None:
             demisto.incidents(incidents)
 
         elif command == 'get-remote-data':
-            return_results(get_remote_data_command(client, args))
+            return_results(get_remote_data_command(client, args, close_incident))
 
         elif command == 'get-modified-remote-data':
             modified_incidents = get_modified_remote_data_command(client, demisto.args(), close_incident)
-            demisto.debug(f"microsoft365::returning {len(modified_incidents.modified_incidents_data)} incidents to the server. {str(modified_incidents.modified_incidents_data)}")
+            demisto.debug(
+                f"microsoft365::returning {len(modified_incidents.modified_incidents_data)} incidents to the server. {str(modified_incidents.modified_incidents_data)}")
             return_results(modified_incidents)
 
         elif command == 'update-remote-system':
