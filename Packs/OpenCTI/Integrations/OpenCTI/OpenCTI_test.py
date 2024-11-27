@@ -432,7 +432,7 @@ def test_incident_create_command(mocker):
     }
     mocker.patch.object(client.incident, 'create', return_value={'id': '123456', 'name': 'Lorem ipsum dolor'})
     results: CommandResults = incident_create_command(client, args)
-    assert "Incident was created successfully" in results.readable_output
+    assert "Incident created successfully" in results.readable_output
     assert 'id' in results.outputs
     assert 'name' in results.outputs
 

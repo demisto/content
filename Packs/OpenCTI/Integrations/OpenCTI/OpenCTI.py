@@ -221,9 +221,9 @@ def get_indicators(
 
 
 def build_stix_pattern(
-        indicator: str,
-        observable_type: str 
-    ) -> str:
+    indicator: str,
+    observable_type: str
+) -> str:
     """
     Build a STIX pattern for the given indicator and observable type.
     """
@@ -285,7 +285,7 @@ def incident_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> C
         raise DemistoException("Can't create incident.")
 
     if incident_id := result.get('id'):
-        readable_output = f'Incident was created successfully with id: {incident_id}.'
+        readable_output = f'Incident created successfully. New Incident id: {incident_id}.'
         return CommandResults(outputs_prefix='OpenCTI.Incident',
                               outputs_key_field='id',
                               outputs={
@@ -456,7 +456,7 @@ def relationship_create_command(client: OpenCTIApiClient, args: Dict[str, Any]) 
         raise DemistoException("Can't create relationship.")
 
     if relationship_id := result.get('id'):
-        readable_output = f'Relationship "{relationship_type}" successfully created with ID: {relationship_id}.'
+        readable_output = f'Relationship created successfully. New Relationship id: {relationship_id}.'
         return CommandResults(
             outputs_prefix='OpenCTI.Relationship',
             outputs_key_field='id',
@@ -969,7 +969,7 @@ def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> 
         raise DemistoException(f"Can't create indicator. {e}")
 
     if indicator_id := result.get('id'):
-        readable_output = f'Indicator "{name}" was created successfully with id: {indicator_id}.'
+        readable_output = f'Indicator created successfully. New Indicator id: {indicator_id}.'
         return CommandResults(
             outputs_prefix='OpenCTI.Indicator',
             outputs_key_field='id',
