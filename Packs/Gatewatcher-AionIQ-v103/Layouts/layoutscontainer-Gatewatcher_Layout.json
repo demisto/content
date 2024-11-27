@@ -1,0 +1,491 @@
+{
+	"close": null,
+	"definitionId": "",
+	"description": "",
+	"detached": false,
+	"details": null,
+	"detailsV2": {
+		"TypeName": "",
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "CARD",
+						"h": 5,
+						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 53,
+								"id": "incident-type-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 53,
+								"id": "incident-severity-field",
+								"index": 1,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherflowid",
+								"height": 53,
+								"id": "255ad3c0-ac08-11ef-9ad9-09a766893e47",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gatewatchersourceip",
+								"height": 53,
+								"id": "50f2d410-abe0-11ef-ad0a-79f77443cdb4",
+								"index": 3,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersourceport",
+								"height": 53,
+								"id": "4e76d790-abe0-11ef-ad0a-79f77443cdb4",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gatewatcherdestinationip",
+								"height": 53,
+								"id": "53cc32d0-abe0-11ef-ad0a-79f77443cdb4",
+								"index": 5,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdestinationport",
+								"height": 53,
+								"id": "52e1f9e0-abe0-11ef-ad0a-79f77443cdb4",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherprotocol",
+								"height": 53,
+								"id": "14eca890-aca5-11ef-9202-89fa98701c99",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchertransport",
+								"height": 53,
+								"id": "1fe90180-aca5-11ef-9202-89fa98701c99",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "sourcebrand",
+								"height": 53,
+								"id": "incident-sourceBrand-field",
+								"index": 9,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "sourceinstance",
+								"height": 53,
+								"id": "incident-sourceInstance-field",
+								"index": 10,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Quick info",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+						"items": [
+							{
+								"endCol": 1,
+								"fieldId": "occurred",
+								"height": 53,
+								"id": "incident-occurred-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "dbotmodified",
+								"height": 53,
+								"id": "incident-modified-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotduedate",
+								"height": 53,
+								"id": "incident-dueDate-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotcreated",
+								"height": 53,
+								"id": "incident-created-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 53,
+								"id": "incident-closed-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Timeline Information",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 22,
+								"id": "incident-dbotClosed-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closereason",
+								"height": 22,
+								"id": "incident-closeReason-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 44,
+								"id": "incident-closeNotes-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Closing Information",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 4
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-be07dc40-abf8-11ef-ad0a-79f77443cdb4",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchergcap",
+								"height": 53,
+								"id": "cb7fbc80-abf8-11ef-ad0a-79f77443cdb4",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchergcapinterface",
+								"height": 53,
+								"id": "713a75e0-aca6-11ef-9202-89fa98701c99",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchergcenter",
+								"height": 53,
+								"id": "ce715e30-abf8-11ef-ad0a-79f77443cdb4",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Gatewatcher equipment",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"description": "",
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-3d374550-abfe-11ef-ad0a-79f77443cdb4",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchermalcoredetailthreatfound",
+								"height": 53,
+								"id": "5c11b0b0-ac02-11ef-83f4-298a82dc7d0c",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gatewatchermalcorestate",
+								"height": 53,
+								"id": "6032f8c0-ac02-11ef-83f4-298a82dc7d0c",
+								"index": 1,
+								"listId": "caseinfoid-3d374550-abfe-11ef-ad0a-79f77443cdb4",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchermalcoremagicdetails",
+								"height": 53,
+								"id": "5ec2ee00-ac02-11ef-83f4-298a82dc7d0c",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gatewatchermalcoretotalfound",
+								"height": 53,
+								"id": "6122fe10-ac02-11ef-83f4-298a82dc7d0c",
+								"index": 3,
+								"listId": "caseinfoid-3d374550-abfe-11ef-ad0a-79f77443cdb4",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gatewatchermalcoreengineslastupdatedate",
+								"height": 53,
+								"id": "5d736390-ac02-11ef-83f4-298a82dc7d0c",
+								"index": 4,
+								"listId": "caseinfoid-3d374550-abfe-11ef-ad0a-79f77443cdb4",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Malcore",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 3
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-42f62c40-ac08-11ef-9ad9-09a766893e47",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherrawevent",
+								"height": 22,
+								"id": "5603a510-ac08-11ef-9ad9-09a766893e47",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Raw Event",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-7bb942f0-acbd-11ef-9202-89fa98701c99",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchermaliciouspowershellprobaobfuscated",
+								"height": 53,
+								"id": "acfa0e80-acbd-11ef-9202-89fa98701c99",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchermaliciouspowershellscore",
+								"height": 53,
+								"id": "b18a1df0-acbd-11ef-9202-89fa98701c99",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Malicious Powershell detect",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 5
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-d01c3280-acbd-11ef-9202-89fa98701c99",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchershellcodesubtype",
+								"height": 22,
+								"id": "235a0300-acbe-11ef-9202-89fa98701c99",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Shellcode",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 6
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			}
+		]
+	},
+	"edit": null,
+	"fromServerVersion": "",
+	"group": "incident",
+	"id": "3fdbb020-65c6-4134-8f7a-9865c0f786ec",
+	"indicatorsDetails": null,
+	"indicatorsQuickView": null,
+	"itemVersion": "",
+	"locked": false,
+	"mobile": null,
+	"name": "Gatewatcher Layout",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"quickView": null,
+	"quickViewV2": null,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1
+}
