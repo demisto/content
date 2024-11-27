@@ -892,11 +892,15 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
         last_update = remote_args.last_update
         demisto.debug(f"using {remote_args.last_update=} for last_update")
 
+    if not last_update:
+        default_last_update = datetime_to_string(datetime.utcnow() - timedelta(minutes=xdr_delay + 1))
+        demisto.debug(f'Mirror last update is: {last_update=} will set it to {default_last_update=}')
+        last_update = default_last_update
+
     last_update_utc = dateparser.parse(last_update,
                                        settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
     if not last_update_utc:
-        last_update_utc = datetime.utcnow() - timedelta(minutes=xdr_delay + 1)
-        demisto.debug(f'Failed to parse {last_update=} will search for modified incidents since {last_update_utc=}')
+        raise DemistoException(f'Failed to parse {last_update=} got {last_update_utc=}')
 
     gte_modification_time_milliseconds = last_update_utc
     lte_modification_time_milliseconds = datetime.utcnow() - timedelta(minutes=xdr_delay)

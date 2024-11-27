@@ -1708,3 +1708,38 @@ def test_get_modified_remote_data_two_minutes_xdr_delay(mocker):
 
     assert new_last_time_stamp == "2020-11-18 13:18:00.001"
     assert incidents_response.modified_incident_ids == ['1', '2']
+
+
+@freeze_time("2020-11-18T13:20:00.00000", tz_offset=0)
+def test_mirror_in_empty_last_update(mocker):
+    from CortexXDRIR import get_modified_remote_data_command, Client
+    from CommonServerPython import BaseClient
+
+    mocker.patch.object(demisto, 'getIntegrationContext')
+    mocker.patch.object(BaseClient, "_http_request", return_value=load_test_data('./test_data/get_incidents_list.json'))
+    mock_debug = mocker.patch.object(demisto, 'debug')
+
+    client = Client(base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
+    _, _ = get_modified_remote_data_command(
+        client, {'lastUpdate': ''}
+    )
+
+    expected_log = "Mirror last update is: last_update='' will set it to default_last_update='2020-11-18 13:18:00'"
+    assert mock_debug.call_args_list[1].args[0] == expected_log
+    assert "last_update='2020-11-18 13:18:00'" in mock_debug.call_args_list[2].args[0]
+
+
+def test_mirror_in_wrong_last_update(mocker):
+    from CortexXDRIR import get_modified_remote_data_command, Client
+    from CommonServerPython import BaseClient
+
+    mocker.patch.object(demisto, 'getIntegrationContext')
+    mocker.patch.object(BaseClient, '_http_request', return_value=load_test_data('./test_data/get_incidents_list.json'))
+
+    client = Client(base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
+    with pytest.raises(DemistoException) as e:
+        _, _ = get_modified_remote_data_command(
+            client, {'lastUpdate': 'abcdefg'}
+        )
+
+    assert e.value.message == "Failed to parse last_update='abcdefg' got last_update_utc=None"
