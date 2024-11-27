@@ -3094,6 +3094,24 @@ script:
     - contextPath: Core.TerminateCausality.action_id
       description: The action id.
       type: String 
+  - arguments:
+    - description: asset UUID
+      name: asset_id
+      isArray: false
+      required: true  
+    name: core-get-asset-details
+    description: Get UAI asset info
+    outputs: 
+    - contextPath: Core.CoreAsset
+      description: Asset additional information.
+      type: String 
+  - arguments:
+    - description: filter for assets table.
+      name: filter
+      isArray: false
+      required: false  
+    name: core-get-assets-list
+    description: Returns a list of assets by filter.
   runonce: false
   script: '-'
   subtype: python3
