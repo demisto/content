@@ -1,5 +1,5 @@
 [RULE: msft_azure_resourcelogs_commonfields]
-| alter
+alter
 	xdm.target.resource.id = resourceId,
 	xdm.source.cloud.project_id = tenantId,
 	xdm.event.original_event_type = category,
@@ -7,7 +7,7 @@
 	xdm.event.outcome_reason = if(resultType !~= "\d+", resultType, resultType ~= "\d+" and resultDescription != null, concat(resultDescription, " Error Code: ", resultType), concat("Error Code: ", resultType)),
 	xdm.session_context_id = correlationId,
 	xdm.source.user.username = to_string(identity),
-	xdm.event.log_level = if(level = "Informational", XDM_CONST.LOG_LEVEL_INFORMATIONAL, level = "Warning", XDM_CONST.LOG_LEVEL_WARNING, level = "Error", XDM_CONST.LOG_LEVEL_ERROR, level = "Critical", XDM_CONST.LOG_LEVEL_CRITICAL level = null, null, to_string(level)),
+	xdm.event.log_level = if(level = "Informational", XDM_CONST.LOG_LEVEL_INFORMATIONAL, level = "Warning", XDM_CONST.LOG_LEVEL_WARNING, level = "Error", XDM_CONST.LOG_LEVEL_ERROR, level = "Critical", XDM_CONST.LOG_LEVEL_CRITICAL, level = null, null, to_string(level)),
 	xdm.source.cloud.region = location,
 	xdm.source.cloud.provider = if(1=1, XDM_CONST.CLOUD_PROVIDER_AZURE);
 
@@ -37,7 +37,7 @@ call msft_azure_resourcelogs_commonfields
 	get_properties_hostname_name = if(get_properties_hostname ~= "[a-zA-Z0-9]", get_properties_hostname),
 	get_properties_originalHost_ipv4 = if(get_properties_originalHost ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", get_properties_originalHost),
 	get_properties_originalHost_ipv6 = if(get_properties_originalHost ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", get_properties_originalHost),
-	get_properties_originalHost_name = if(get_properties_originalHost ~= "[a-zA-Z0-9]", get_properties_originalHost),
+	get_properties_originalHost_name = if(get_properties_originalHost ~= "[a-zA-Z0-9]", get_properties_originalHost)
 | alter
 	check_response_code = coalesce(get_properties_httpStatus, get_resultSignature_resCode),
 	check_duration = coalesce(to_integer(timeTaken), to_integer(durationMs)),
