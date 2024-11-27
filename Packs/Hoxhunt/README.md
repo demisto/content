@@ -41,14 +41,6 @@ Run for incidents fetched from Hoxhunt into XSOAR
 Enrich Incident's main function is to provide a visual reference for the first threat in the Hoxhunt incident, adding additional context to the incident within XSOAR. The screenshot can be used for further review or as part of an investigation report.
 
 ### Summary of playbook features
+
 - Automated Screenshot: Takes a screenshot of the first threat URL.
 - Simple Workflow: Completes automatically with minimal manual intervention, enriching the incident with visual content.
-
-### Pack Contributors:
-
----
-
-- Harri Ruuttila
-- Sam U Chan
-
-Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
