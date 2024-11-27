@@ -462,7 +462,7 @@ def relationship_create_command(client: OpenCTIApiClient, args: Dict[str, Any]) 
             outputs_key_field='id',
             outputs={
                 'id': relationship_id,
-                'entityType': result.get('entity_type'),
+                'relationshipType': result.get('relationship_type'),
             },
             readable_output=readable_output,
             raw_response=result

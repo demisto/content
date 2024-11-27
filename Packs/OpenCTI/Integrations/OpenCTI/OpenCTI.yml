@@ -611,8 +611,8 @@ script:
     outputs:
     - contextPath: OpenCTI.Relationship.id
       description: New Relationship ID.
-    - contextPath: OpenCTI.Relationship.entityType
-      description: New Relationship Entity Type.
+    - contextPath: OpenCTI.Relationship.relationshipType
+      description: New Relationship Type.
   - arguments: []
     description: Get a list of all indicator types.
     name: opencti-indicator-types-list
