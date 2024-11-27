@@ -688,7 +688,7 @@ script:
       description: The actual score.
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3
