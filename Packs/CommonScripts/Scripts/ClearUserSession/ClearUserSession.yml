@@ -11,7 +11,7 @@ args:
   predefined:
   - 'Okta v2'
   - 'Microsoft Graph User'
-- description: Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to human readable only for the final result.
+- description: Set to true to display human-readable output for each step of the command. Set to false (default) to only display the final result.
   name: verbose
   auto: PREDEFINED
   predefined:
@@ -23,8 +23,9 @@ commonfields:
   version: -1
 name: clear-user-session
 outputs:
-
-
+- contextPath: SessionClearResults
+  description: A dictionary containing session clearance results, where each key is a username and the value is an object with the session clearance status, message, and source.
+  type: unknown
 script: '-'
 timeout: '0'
 type: python
