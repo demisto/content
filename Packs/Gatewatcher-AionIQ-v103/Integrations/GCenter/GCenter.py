@@ -368,6 +368,7 @@ def fetch_incidents():
                     'CustomFields': {'gatewatcherflowid': gwAlerts[i]['_source']['network']['flow_id'],
                                      'gatewatchergcenter': str(gwAlerts[i]['_source']['observer']['hostname']),
                                      'gatewatchergcap': str(gwAlerts[i]['_source']['observer']['gcap']['hostname']),
+                                     'gatewatchergcapinterface': str(gwAlerts[i]['_source']['observer']['gcap']['ingress']['interface']),
                                      'gatewatcherrawevent': json.dumps(gwAlerts[i]['_source'])
                                      }
                     }
@@ -452,6 +453,7 @@ def fetch_incidents():
                     'CustomFields': {'gatewatcherflowid': gwMeta[i]['_source']['network']['flow_id'],
                                      'gatewatchergcenter': str(gwMeta[i]['_source']['observer']['hostname']),
                                      'gatewatchergcap': str(gwMeta[i]['_source']['observer']['gcap']['hostname']),
+                                     'gatewatchergcapinterface': str(gwAlerts[i]['_source']['observer']['gcap']['ingress']['interface']),
                                      'gatewatcherrawevent': json.dumps(gwMeta[i]['_source'])
                                      }
                     }
