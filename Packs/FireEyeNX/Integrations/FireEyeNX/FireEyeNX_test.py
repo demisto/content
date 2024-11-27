@@ -2,7 +2,7 @@ from unittest import mock
 from unittest.mock import patch
 from datetime import UTC
 
- import pytest
+import pytest
 from requests.exceptions import (
     MissingSchema,
     InvalidSchema,
