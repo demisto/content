@@ -1284,10 +1284,10 @@ def test_update_start_time_older_than_last_forty_eight_hours():
         Then:
             - Should update the start time to be in the last 48 hours (should return the updated start time).
     """
-    from FireEyeNX import update_start_time, DATE_FORMAT, TIME_BACK_IN_SECONDS
+    from FireEyeNX import update_start_time, DATE_FORMAT, FORTY_EIGHT_HOURS_IN_SECOND
 
     current_time = datetime.utcnow()
     old_start_time = date_to_timestamp(current_time - timedelta(hours=72), DATE_FORMAT) / 1000.0
     result = update_start_time(old_start_time)
-    expected_start_time = date_to_timestamp(current_time, DATE_FORMAT) / 1000.0 - TIME_BACK_IN_SECONDS
+    expected_start_time = date_to_timestamp(current_time, DATE_FORMAT) / 1000.0 - FORTY_EIGHT_HOURS_IN_SECOND
     assert result == expected_start_time

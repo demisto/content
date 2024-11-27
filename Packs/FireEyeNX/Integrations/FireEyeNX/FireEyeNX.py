@@ -25,7 +25,7 @@ API_VERSION = 'v2.0.0'
 
 DEFAULT_SESSION_TIMEOUT = 15 * 60  # In Seconds
 DEFAULT_FETCH_LIMIT = '50'
-TIME_BACK_IN_SECONDS = 172000.0  # Due to API limitations we can retrieve events only from the last 48 hours.
+FORTY_EIGHT_HOURS_IN_SECOND = 172000.0  # Due to API limitations we can retrieve events only from the last 48 hours.
 CONTENT_TYPE_JSON = 'application/json'
 CONTENT_TYPE_ZIP = 'application/zip'
 DATE_FORMAT_OF_YEAR_MONTH_DAY = '%Y-%m-%d'
@@ -1107,8 +1107,8 @@ def update_start_time(start_time: float) -> float:
         The return value. The time we use for start fetching. Validated it's not less (earlier) than current time - ~48 hours.
     """
     current_timestamp = date_to_timestamp(datetime.utcnow(), DATE_FORMAT) / 1000.0
-    if current_timestamp - TIME_BACK_IN_SECONDS > start_time:
-        updated_start_time = current_timestamp - TIME_BACK_IN_SECONDS
+    if current_timestamp - FORTY_EIGHT_HOURS_IN_SECOND > start_time:
+        updated_start_time = current_timestamp - FORTY_EIGHT_HOURS_IN_SECOND
         demisto.debug(f'Start time {start_time=} is earlier than [current time {current_timestamp=} - ~ 48 hours], '
                       f'Start time updated to: {updated_start_time=}')
         return updated_start_time
