@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 import urllib3
-from CommonServerUserPython import *  # noqa: F401 #todo: revert
+from CommonServerPython import *  # noqa: F401 #todo: revert
 from MicrosoftApiModule import *  # noqa: E402
 
 # Disable insecure warnings
@@ -705,22 +705,22 @@ def get_modified_remote_data_command(client: Client, args, close_incident: bool,
     last_update = parsed_date.strftime(DATE_FORMAT)
     demisto.debug(f"microsoft365::Last update: {last_update}")
     try:
-        if return_entire_data:
-            modified_incidents = fetch_modified_incidents(client, last_update)
-            demisto.debug(f"microsoft365::Found {len(modified_incidents)} modified incidents")
-            demisto.debug(f"microsoft365::{str(modified_incidents)}")
-            modified_incidents_entries_content = get_modified_incidents_entries_content(modified_incidents, close_incident)
+        # if return_entire_data:
+        #     modified_incidents = fetch_modified_incidents(client, last_update)
+        #     demisto.debug(f"microsoft365::Found {len(modified_incidents)} modified incidents")
+        #     demisto.debug(f"microsoft365::{str(modified_incidents)}")
+        #     modified_incidents_entries_content = get_modified_incidents_entries_content(modified_incidents, close_incident)
+        #
+        #     # todo - handle incident reopen and closing
+        #     # skip update: In case of a failure. In order to notify the server that the command failed and prevent execution of the get-remote-data commands, returns an error that contains the string "skip update".?
+        #     return GetModifiedRemoteDataResponse(modified_incidents_data=modified_incidents + modified_incidents_entries_content)
+        # else:
+        modified_incident_ids = fetch_modified_incident_ids(client, last_update)
+        demisto.debug(f"microsoft365::Found {len(modified_incident_ids)} modified incidents")
+        demisto.debug(f"microsoft365::{str(modified_incident_ids)}")
 
-            # todo - handle incident reopen and closing
-            # skip update: In case of a failure. In order to notify the server that the command failed and prevent execution of the get-remote-data commands, returns an error that contains the string "skip update".?
-            return GetModifiedRemoteDataResponse(modified_incidents_data=modified_incidents + modified_incidents_entries_content)
-        else:
-            modified_incident_ids = fetch_modified_incident_ids(client, last_update)
-            demisto.debug(f"microsoft365::Found {len(modified_incident_ids)} modified incidents")
-            demisto.debug(f"microsoft365::{str(modified_incident_ids)}")
-
-            #skip update: In case of a failure. In order to notify the server that the command failed and prevent execution of the get-remote-data commands, returns an error that contains the string "skip update".?
-            return GetModifiedRemoteDataResponse(modified_incident_ids=modified_incident_ids)
+        #skip update: In case of a failure. In order to notify the server that the command failed and prevent execution of the get-remote-data commands, returns an error that contains the string "skip update".?
+        return GetModifiedRemoteDataResponse(modified_incident_ids=modified_incident_ids)
     except Exception as e:
         demisto.debug(f"Error in Microsoft 365 defender incoming mirror \n"
                       f"Error message: {str(e)}")
@@ -881,7 +881,7 @@ def main() -> None:
         elif command == 'get-modified-remote-data':
             modified_incidents = get_modified_remote_data_command(client, demisto.args(), close_incident)
             demisto.debug(
-                f"microsoft365::returning {len(modified_incidents.modified_incidents_data)} incidents to the server. {str(modified_incidents.modified_incidents_data)}")
+                f"microsoft365::returning {len(modified_incidents.modified_incident_ids)} incidents to the server. {str(modified_incidents.modified_incident_ids)}")
             return_results(modified_incidents)
 
         elif command == 'update-remote-system':

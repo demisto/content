@@ -448,11 +448,11 @@ script:
       name: lastUpdate
       required: false
       secret: false
-  deprecated: false
-  description: Get remote data from a remote incident. This method does not update
-    the current incident, and should be used for debugging purposes only.
-  execution: false
-  name: get-remote-data
+    deprecated: false
+    description: Get remote data from a remote incident. This method does not update
+      the current incident, and should be used for debugging purposes only.
+    execution: false
+    name: get-remote-data
   dockerimage: demisto/crypto:1.0.0.114611
   isfetch: true
   script: ''
