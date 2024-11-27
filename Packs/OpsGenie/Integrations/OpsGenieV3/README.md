@@ -4,31 +4,27 @@ This integration was integrated and tested with OpsGenie.
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-opsgenie-v3).
 
-## Configure OpsGenie v3 on Cortex XSOAR
+## Configure OpsGenie v3 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for OpsGenie v3.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g., https://api.opsgenie.com) |  | True |
-    | API Token |  | False |
-    | Fetch incidents |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Max Fetch |  | False |
-    | Event types | Fetch only events with selected event types. | False |
-    | Status | Fetch only events with selected status. If query is used, this parameter will be overridden. | False |
-    | Priority | Fetch only events with selected priority. If query is used, this parameter will be overridden. | False |
-    | Tags | Fetch only events with selected tags. If query is used, this parameter will be overridden. | False |
-    | Query | Query parameters will be used as URL encoded values for “query” key. i.e. 'https://api.opsgenie.com/v2/alerts?query=status%3Aopenor%20acknowledged%3Atrue&amp;amp;limit=10&amp;amp;sort=createdAt' | False |
-    | Incident type |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g., https://api.opsgenie.com) |  | True |
+| API Token |  | False |
+| Fetch incidents |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Max Fetch |  | False |
+| Event types | Fetch only events with selected event types. | False |
+| Status | Fetch only events with selected status. If query is used, this parameter will be overridden. | False |
+| Priority | Fetch only events with selected priority. If query is used, this parameter will be overridden. | False |
+| Tags | Fetch only events with selected tags. If query is used, this parameter will be overridden. | False |
+| Query | Query parameters will be used as URL encoded values for “query” key. i.e. 'https://api.opsgenie.com/v2/alerts?query=status%3Aopenor%20acknowledged%3Atrue&amp;amp;limit=10&amp;amp;sort=createdAt' | False |
+| Incident type |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### opsgenie-create-alert
 ***

@@ -1,10 +1,7 @@
 SailPoint IdentityNow
 This integration was integrated and tested with SailPoint IdentityNow.
-## Configure SailPointIdentityNow on Cortex XSOAR
+## Configure SailPointIdentityNow in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SailPointIdentityNow.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -18,7 +15,6 @@ This integration was integrated and tested with SailPoint IdentityNow.
 | max_fetch | Maximum number of incidents per fetch | False |
 | first_fetch | First fetch time | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Important Note
 This integration pack does not fetch incidents from IdentityNow. It rather utilizes "Generic Webhook" to create incidents on event triggers published by IdentityNow. One can achieve this by following the steps below:
@@ -43,7 +39,7 @@ Once you have configured all the above steps, whenever an event trigger will occ
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### identitynow-search-identities
 ***
@@ -491,4 +487,3 @@ There is no context output for this command.
 
 #### Human Readable Output
 Access request was successful!
-
