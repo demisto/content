@@ -1047,29 +1047,27 @@ def indicator_update_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> 
     }
 
     try:
-        # Send the GraphQL mutation
         result = client.query(mutation, variables)
-        updated_indicator = result.get("data", {}).get("indicatorFieldPatch")
-
-        if updated_indicator:
-            readable_output = f'Indicator with id "{indicator_id}" was updated successfully.'
-            return CommandResults(
-                outputs_prefix='OpenCTI.Indicator',
-                outputs_key_field='id',
-                outputs={
-                    "id": updated_indicator.get("id"),
-                    "name": updated_indicator.get("name"),
-                    "validFrom": updated_indicator.get("valid_from"),
-                    "validUntil": updated_indicator.get("valid_until")
-                },
-                readable_output=readable_output,
-                raw_response=result
-            )
-        else:
-            raise DemistoException("Indicator update failed: no valid response.")
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException(f"Can't update indicator. {e}")
+        raise DemistoException("Can't update indicator.")
+    
+    if updated_indicator := result.get("data", {}).get("indicatorFieldPatch", None):
+        readable_output = f'Indicator updated successfully.'
+        return CommandResults(
+            outputs_prefix='OpenCTI.Indicator',
+            outputs_key_field='id',
+            outputs={
+                "id": updated_indicator.get("id"),
+                "name": updated_indicator.get("name"),
+                "validFrom": updated_indicator.get("valid_from"),
+                "validUntil": updated_indicator.get("valid_until")
+            },
+            readable_output=readable_output,
+            raw_response=result
+        )
+    else:
+        raise DemistoException("Can't update indicator.")
 
 
 def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> CommandResults:

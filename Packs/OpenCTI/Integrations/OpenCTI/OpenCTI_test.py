@@ -464,7 +464,7 @@ def test_incident_create_command_exception(mocker, capfd):
     assert captured.out.strip() == "Test exception"
 
 
-def test_incident_create_command_exception_id_not_returned(mocker):
+def test_incident_create_command_exception_data_not_returned(mocker):
     """Tests incident_create_command function
     Given
         type of incident to create
@@ -659,71 +659,142 @@ def test_relationship_create_command_exception(mocker, capfd):
     captured = capfd.readouterr()
     assert captured.out.strip() == "Test exception"
 
-# def test_indicator_create_command(mocker):
-#     """Tests indicator_create_command function
-#     Given
-#         name of indicator to create
-#         indicator value to create
-#         main_observable_type of indicator to create
-#     When
-#         - Calling `indicator_create_command`
-#     Then
-#         - validate the readable_output, context
-#     """
-#     client = Client
-#     args = {
-#         'name': 'Lorem ipsum dolor',
-#         'indicator': '192.168.1.1',
-#         'main_observable_type': 'ip'
-#     }
-#     mocker.patch.object(client.indicator, 'create', return_value={'id': '123456', 'name': 'Lorem ipsum dolor'})
-#     results: CommandResults = indicator_create_command(client, args)
-#     assert "Indicator created successfully" in results.readable_output
-#     assert {'id': '123456', 'name': 'Lorem ipsum dolor'} == results.outputs
+def test_indicator_create_command(mocker):
+    """Tests indicator_create_command function
+    Given
+        name of indicator to create
+        indicator value to create
+        main_observable_type of indicator to create
+    When
+        - Calling `indicator_create_command`
+    Then
+        - validate the readable_output, context
+    """
+    client = Client
+    args = {
+        'name': 'Lorem ipsum dolor',
+        'indicator': '192.168.1.1',
+        'main_observable_type': 'ip'
+    }
+    mocker.patch.object(client.indicator, 'create', return_value={'id': '123456'})
+    results: CommandResults = indicator_create_command(client, args)
+    assert "Indicator created successfully" in results.readable_output
+    assert {'id': '123456'} == results.outputs
 
 
-# def test_indicator_create_command_exception(mocker):
-#     """Tests indicator_create_command function
-#     Given
-#         name of indicator to create
-#         indicator value to create
-#         main_observable_type of indicator to create
-#     When
-#         - Calling `indicator_create_command`
-#     Then
-#         - Ensure a DemistoException is raised with the correct error message.
-#     """
-#     client = Client
-#     args = {
-#         'name': 'Lorem ipsum dolor',
-#         'indicator': '192.168.1.1',
-#         'main_observable_type': 'ip'
-#     }
-#     mocker.patch.object(client.indicator, 'create', side_effect=Exception("Test exception"))
-#     with pytest.raises(DemistoException, match="Can't create indicator."):
-#         indicator_create_command(client, args)
+def test_indicator_create_command_exception(mocker, capfd):
+    """Tests indicator_create_command function
+    Given
+        name of indicator to create
+        indicator value to create
+        main_observable_type of indicator to create
+    When
+        - Calling `indicator_create_command`
+    Then
+        - Ensure a DemistoException is raised with the correct error message.
+    """
+    client = Client
+    args = {
+        'name': 'Lorem ipsum dolor',
+        'indicator': '192.168.1.1',
+        'main_observable_type': 'ip'
+    }
+    mocker.patch.object(client.indicator, 'create', side_effect=Exception("Test exception"))
+    with pytest.raises(DemistoException, match="Can't create indicator."):
+        indicator_create_command(client, args)
+    captured = capfd.readouterr()
+    assert captured.out.strip() == "Test exception"
 
 
-# def test_indicator_create_command_exception_id_not_returned(mocker):
-#     """Tests indicator_create_command function
-#     Given
-#         name of indicator to create
-#         indicator value to create
-#         main_observable_type of indicator to create
-#     When
-#         - Calling `indicator_create_command`
-#     Then
-#         - Ensure a DemistoException is raised with the correct error message.
-#     """
-#     client = Client
-#     args = {
-#         'name': 'Lorem ipsum dolor',
-#         'indicator': '192.168.1.1',
-#         'main_observable_type': 'ip'
-#     }
-#     mocker.patch.object(client.indicator, 'create', return_value={})
-#     with pytest.raises(DemistoException, match="Can't create indicator."):
-#         indicator_create_command(client, args)
+def test_indicator_create_command_exception_data_not_returned(mocker):
+    """Tests indicator_create_command function
+    Given
+        name of indicator to create
+        indicator value to create
+        main_observable_type of indicator to create
+    When
+        - Calling `indicator_create_command`
+    Then
+        - Ensure a DemistoException is raised with the correct error message.
+    """
+    client = Client
+    args = {
+        'name': 'Lorem ipsum dolor',
+        'indicator': '192.168.1.1',
+        'main_observable_type': 'ip'
+    }
+    mocker.patch.object(client.indicator, 'create', return_value={})
+    with pytest.raises(DemistoException, match="Can't create indicator."):
+        indicator_create_command(client, args)
+
+
+def test_indicator_update_command(mocker):
+    """Tests indicator_update_command function
+    Given
+        id of indicator to update
+        description to update
+        valid_until to update
+    When
+        - Calling `indicator_update_command`
+    Then
+        - validate the readable_output, context
+    """
+    client = Client
+    args = {
+        'id': '123456',
+        'description': 'Lorem ipsum dolor',
+        'valid_until': '2023-12-31T23:59:59.000Z'
+    }
+    mocker.patch.object(client, 'query', return_value={'data': {'indicatorFieldPatch': {'id': '123456', 'name': 'Lorem ipsum dolor', 'valid_from': '2023-01-01T00:00:00.000Z', 'valid_until': '2023-12-31T23:59:59.000Z'}}})
+    results: CommandResults = indicator_update_command(client, args)
+    assert "Indicator updated successfully" in results.readable_output
+    assert {'id': '123456', 'name': 'Lorem ipsum dolor', 'validFrom': '2023-01-01T00:00:00.000Z', 'validUntil': '2023-12-31T23:59:59.000Z'} == results.outputs
+
+
+def test_indicator_update_command_exception(mocker, capfd):
+    """Tests indicator_update_command function
+    Given
+        id of indicator to update
+        description to update
+        valid_until to update
+    When
+        - Calling `indicator_update_command`
+    Then
+        - Ensure a DemistoException is raised with the correct error message.
+    """
+    client = Client
+    args = {
+        'id': '123456',
+        'description': 'Lorem ipsum dolor',
+        'valid_until': '2023-12-31T23:59:59.000Z'
+    }
+    mocker.patch.object(client, 'query', side_effect=Exception("Test exception"))
+    with pytest.raises(DemistoException, match="Can't update indicator."):
+        indicator_update_command(client, args)
+    captured = capfd.readouterr()
+    assert captured.out.strip() == "Test exception"
+
+
+def test_indicator_update_command_exception_data_not_returned(mocker):
+    """Tests indicator_update_command function
+    Given
+        id of indicator to update
+        description to update
+        valid_until to update
+    When
+        - Calling `indicator_update_command`
+    Then
+        - Ensure a DemistoException is raised with the correct error message.
+    """
+    client = Client
+    args = {
+        'id': '123456',
+        'description': 'Lorem ipsum dolor',
+        'valid_until': '2023-12-31T23:59:59.000Z'
+    }
+    mocker.patch.object(client, 'query', return_value={'data': {'indicatorFieldPatch': {}}})
+    with pytest.raises(DemistoException, match="Can't update indicator."):
+        indicator_update_command(client, args)
 
 
 def test_get_indicators(mocker):
