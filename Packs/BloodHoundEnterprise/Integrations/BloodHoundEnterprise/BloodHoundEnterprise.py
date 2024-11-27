@@ -120,7 +120,7 @@ class Client(BaseClient):
             "before": until_date,
             "skip": skip,
         }
-        demisto.log(f"Got the follow parameters to the query {query_params}")
+        demisto.info(f"Got the follow parameters to the query {query_params}")
         remove_nulls_from_dictionary(query_params)
         response = self._request(query_params=query_params)
         return response.get("data", {}).get("logs", [])
@@ -197,7 +197,7 @@ def fetch_events(
     now = datetime.now().astimezone().isoformat()
 
     last_run = demisto.getLastRun()
-    demisto.log(f"Got the follow last run: {last_run}.")
+    demisto.info(f"Got the follow last run: {last_run}.")
 
     from_date = last_run.get("last_event_created_at", first_fetch_time)
     from_event = int(last_run.get("last_event_id", 0))
@@ -226,7 +226,7 @@ def fetch_events(
     if skip:
         next_run["skip"] = last_run_skip + len(events)
         next_run["last_event_created_at"] = from_date
-    demisto.log(
+    demisto.info(
         f"returning {len(events)} events. and the follow details to the setLastRun function {next_run}."
     )
     return next_run, events
@@ -272,12 +272,12 @@ def get_events_with_pagination(
             skip=pagination_skip,
         )
         if not response:
-            demisto.log("Got 0 events from the API")
+            demisto.info("Got 0 events from the API")
             break
-        demisto.log(f"Got {len(response)} events before deduplication")
+        demisto.info(f"Got {len(response)} events before deduplication")
         pagination_skip += len(response)
         new_events = [item for item in response if item.get("id", 0) > last_event_id]
-        demisto.log(f"Got {len(new_events)} events after deduplication")
+        demisto.info(f"Got {len(new_events)} events after deduplication")
         fetched_events.extend(new_events)
     next_skip = (
         initial_skip + len(fetched_events) if len(fetched_events) == max_events else 0
