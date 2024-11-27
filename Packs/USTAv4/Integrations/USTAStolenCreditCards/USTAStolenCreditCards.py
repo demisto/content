@@ -28,7 +28,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
     def check_auth(self):
-        self._http_request('GET', 'malicious-urls', error_handler=self._http_error_handler)
+        self._http_request('GET', 'company/me', error_handler=self._http_error_handler)
 
     def stolen_credit_cards_incidents(self, **kwargs) -> list:
         params = assign_params(**kwargs)
@@ -36,7 +36,7 @@ class Client(BaseClient):
 
         demisto.debug(f'stolen_credit_cards_incidents: {params}')
 
-        response = self._http_request('GET', 'credit-cards', params=params, headers=headers)
+        response = self._http_request('GET', 'fraud-intelligence/credit-card-tickets', params=params, headers=headers)
         count = response.get('count', 0)
         next_url = response.get('next', None)
         results = response.get('results', [])
@@ -54,7 +54,7 @@ class Client(BaseClient):
         params = assign_params(**kwargs)
         headers = self._headers
         demisto.debug(f'stolen_credit_cards_search_api_request: {params}')
-        return self._http_request('GET', 'credit-cards', params=params, headers=headers)
+        return self._http_request('GET', 'fraud-intelligence/credit-card-tickets', params=params, headers=headers)
 
     @staticmethod
     def _http_error_handler(response):
@@ -125,14 +125,14 @@ def fetch_incidents(
 
         # skip the alerts which are already fetched and it is always sorted by created field.
         if alert['created'] == last_fetched_time:
-            new_last_ids.append(alert['ticket_id'])
+            new_last_ids.append(alert['id'])
 
-        if alert['ticket_id'] in last_ids:
-            demisto.debug(f"Skipping already fetched alert: {alert['ticket_id']}")
+        if alert['id'] in last_ids:
+            demisto.debug(f"Skipping already fetched alert: {alert['id']}")
             continue
 
         severity = 'medium'
-        ticket_id = alert.get('ticket_id')
+        ticket_id = alert.get('id')
         alert['alert_type'] = 'stolen_credit_cards'  # use it later for mapping to the incident type
 
         incident = {
@@ -165,7 +165,7 @@ def stolen_credit_cards_search_command(client: Client, args: dict) -> CommandRes
         ) + tableToMarkdown('Stolen Credit Cards', results.get('results', []))
         return CommandResults(
             outputs_prefix='USTA.StolenCreditCards',
-            outputs_key_field='ticket_id',
+            outputs_key_field='id',
             outputs=results,
             readable_output=readable_output
         )
@@ -196,7 +196,7 @@ def main() -> None:
     try:
 
         headers: dict = {
-            'Authorization': f'token {api_key}',
+            'Authorization': f'Bearer {api_key}',
             'Content-Type': 'application/json'
         }
 

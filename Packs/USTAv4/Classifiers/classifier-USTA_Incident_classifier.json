@@ -13,8 +13,8 @@
 	"instanceIds": null,
 	"itemVersion": "",
 	"keyTypeMap": {
-		"compromised_credentials": "USTA Account Takeover Prevention",
-        "stolen_credit_cards": "USTA Stolen Credit Card"
+		"compromised-credentials": "USTA Account Takeover Prevention",
+        "credit-card": "USTA Stolen Credit Card"
 	},
 	"locked": false,
 	"logicalVersion": 3,
@@ -30,7 +30,7 @@
 	"system": false,
 	"toServerVersion": "",
 	"transformer": {
-		"simple": "alert_type"
+		"simple": "content_type"
 	},
 	"type": "classification",
 	"unclassifiedCases": null,

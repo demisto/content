@@ -23,22 +23,22 @@
 					"simple": "created"
 				},
 				"USTA Account Takeover Prevention ID": {
-					"simple": "ticket_id"
+					"simple": "id"
 				},
 				"USTA Account Takeover Prevention Is Corporate": {
-					"simple": "is_corporate"
+					"simple": "content.is_corporate"
 				},
 				"USTA Account Takeover Prevention Password": {
-					"simple": "password"
+					"simple": "content.password"
 				},
 				"USTA Account Takeover Prevention Source": {
-					"simple": "source"
+					"simple": "content.source"
 				},
 				"USTA Account Takeover Prevention URL": {
-					"simple": "url"
+					"simple": "content.url"
 				},
 				"USTA Account Takeover Prevention Username": {
-					"simple": "username"
+					"simple": "content.username"
 				},
 				"USTA Account Takeover Prevention Victim Details": {
 					"complex": {
@@ -48,37 +48,40 @@
 					}
 				},
 				"USTA Account Takeover Prevention Victim Details CPU": {
-					"simple": "victim_detail.cpu"
+					"simple": "content.victim_detail.cpu"
 				},
 				"USTA Account Takeover Prevention Victim Details Computer Name": {
-					"simple": "victim_detail.computer_name"
+					"simple": "content.victim_detail.computer_name"
 				},
+                "ustaaccounttakeoverpreventionvictimdetailscomputerusername": {
+                    "simple": "content.victim_detail.username"
+                },
 				"USTA Account Takeover Prevention Victim Details Country": {
-					"simple": "victim_detail.country"
+					"simple": "content.victim_detail.country"
 				},
 				"USTA Account Takeover Prevention Victim Details GPU": {
-					"simple": "victim_detail.gpu"
+					"simple": "content.victim_detail.gpu"
 				},
 				"USTA Account Takeover Prevention Victim Details IP Adress": {
-					"simple": "victim_detail.ip"
+					"simple": "content.victim_detail.ip"
 				},
 				"USTA Account Takeover Prevention Victim Details Infection Date": {
-					"simple": "victim_detail.infection_date"
+					"simple": "content.victim_detail.infection_date"
 				},
 				"USTA Account Takeover Prevention Victim Details Language": {
-					"simple": "victim_detail.language"
+					"simple": "content.victim_detail.language"
 				},
 				"USTA Account Takeover Prevention Victim Details Malware": {
-					"simple": "victim_detail.malware"
+					"simple": "content.victim_detail.malware"
 				},
 				"USTA Account Takeover Prevention Victim Details Memory": {
-					"simple": "victim_detail.memory"
+					"simple": "content.victim_detail.memory"
 				},
 				"USTA Account Takeover Prevention Victim Details Phone Number": {
-					"simple": "victim_detail.phone_number"
+					"simple": "content.victim_detail.phone_number"
 				},
 				"USTA Account Takeover Prevention Victim Details Victim OS": {
-					"simple": "victim_detail.victim_os"
+					"simple": "content.victim_detail.victim_os"
 				}
 			}
 		},
@@ -89,13 +92,13 @@
                     "simple": "created"
                 },
                 "ustastolencreditcardsexpiredate": {
-                    "simple": "expire"
+                    "simple": "content.expiration_date"
                 },
                 "ustastolencreditcardscardnumber": {
-                    "simple": "card_number"
+                    "simple": "content.number"
                 },
                 "ustastolencreditcardsid": {
-                    "simple": "ticket_id"
+                    "simple": "id"
                 }
             }
         }

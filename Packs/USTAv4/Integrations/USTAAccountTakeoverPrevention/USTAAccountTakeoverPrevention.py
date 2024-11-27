@@ -14,11 +14,11 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 USTA_TICKET_STATUSES = {
     "all": None,
-    "in_progress": 0,
-    "open": 1,
-    "closed": 2,
-    "out_of_scope": 3,
-    "passive": 4,
+    "in_progress": "in_progress",
+    "open": "open",
+    "closed": "closed",
+    "out of scope": "out_of_scope",
+    "passive": "passive",
 }
 
 MAX_ALERTS_TO_FETCH = 100
@@ -37,7 +37,12 @@ class Client(BaseClient):
 
         demisto.debug(f'compromised_credentials_api_request: {params}')
 
-        response = self._http_request('GET', 'compromised-credentials', params=params, headers=headers)
+        response = self._http_request(
+            'GET',
+            'security-intelligence/account-takeover-prevention/compromised-credentials-tickets',
+            params=params,
+            headers=headers
+        )
         count = response.get('count', 0)
         next_url = response.get('next', None)
         results = response.get('results', [])
@@ -55,7 +60,12 @@ class Client(BaseClient):
         params = assign_params(**kwargs)
         headers = self._headers
         demisto.debug(f'compromised_credentials_search_api_request: {params}')
-        return self._http_request('GET', 'compromised-credentials', params=params, headers=headers)
+        return self._http_request(
+            'GET',
+            'security-intelligence/account-takeover-prevention/compromised-credentials-tickets',
+            params=params,
+            headers=headers
+        )
 
     @staticmethod
     def _http_error_handler(response):
@@ -126,10 +136,10 @@ def fetch_incidents(
 
         # skip the alerts which are already fetched and it is always sorted by created field.
         if alert['created'] == last_fetched_time:
-            new_last_ids.append(alert['ticket_id'])
+            new_last_ids.append(alert['id'])
 
-        if alert['ticket_id'] in last_ids:
-            demisto.debug(f"Skipping already fetched alert: {alert['ticket_id']}")
+        if alert['id'] in last_ids:
+            demisto.debug(f"Skipping already fetched alert: {alert['id']}")
             continue
 
         # if "is_corporate" is True, then the alert is Compromised Employee Credentials
@@ -137,7 +147,7 @@ def fetch_incidents(
 
         alert_corporate_type = 'Employee' if alert.get('is_corporate') else 'End-User'
         severity = 'critical' if alert_corporate_type == 'Employee' else 'medium'
-        ticket_id = alert.get('ticket_id')
+        ticket_id = alert.get('id')
 
         # Add alert_type to use them later at the mapping.
         alert['alert_type'] = 'compromised_credentials'
@@ -172,7 +182,7 @@ def compromised_credentials_search_command(client: Client, args: dict) -> Comman
         ) + tableToMarkdown('Account Takeover Prevention', results.get('results', []))
         return CommandResults(
             outputs_prefix='USTA.AccountTakeoverPrevention',
-            outputs_key_field='ticket_id',
+            outputs_key_field='id',
             outputs=results,
             readable_output=readable_output
         )
@@ -206,7 +216,7 @@ def main() -> None:
     try:
 
         headers: dict = {
-            'Authorization': f'token {api_key}',
+            'Authorization': f'Bearer {api_key}',
             'Content-Type': 'application/json'
         }
 

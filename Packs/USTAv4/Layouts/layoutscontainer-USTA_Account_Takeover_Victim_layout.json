@@ -415,6 +415,15 @@
 								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 2
+							},
+                            {
+								"endCol": 4,
+								"fieldId": "ustaaccounttakeoverpreventionvictimdetailscomputerusername",
+								"height": 26,
+								"id": "03795853-4b0c-4223-8cc5-e22ea523cec9",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 2
 							}
 						],
 						"maxW": 3,
