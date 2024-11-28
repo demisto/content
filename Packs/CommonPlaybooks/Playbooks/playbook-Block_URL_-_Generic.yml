@@ -555,6 +555,7 @@ inputs:
   playbookInputQuery:
 outputs: []
 fromversion: 5.0.0
+isSilent: True
 tests:
 - block_indicators_-_generic_-_test
 marketplaces:
