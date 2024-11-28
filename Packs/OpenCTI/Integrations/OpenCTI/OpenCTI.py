@@ -77,7 +77,7 @@ def label_create(client: OpenCTIApiClient, label_name: str | None):
         label = client.label.create(value=label_name)
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't create label.")
+        raise DemistoException(f"Can't create label. {e}")
     return label
 
 
@@ -282,7 +282,7 @@ def incident_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> C
         )
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't create incident.")
+        raise DemistoException(f"Can't create incident. {e}")
 
     if incident_id := result.get('id'):
         readable_output = f'Incident created successfully. New Incident id: {incident_id}.'
@@ -314,7 +314,7 @@ def incident_delete_command(client: OpenCTIApiClient, args: Dict[str, str]) -> C
         )
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't delete incident.")
+        raise DemistoException(f"Can't delete incident. {e}")
 
     return CommandResults(readable_output='Incident deleted.')
 
@@ -350,7 +350,7 @@ def incident_types_list_command(client: OpenCTIApiClient, args: Dict[str, str]) 
         incident_types_list = result['data']['vocabularies']['edges']
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't list incident types.")
+        raise DemistoException(f"Can't list incident types. {e}")
 
     if incident_types_list:
         incident_types = [
@@ -403,7 +403,7 @@ def indicator_types_list_command(client: OpenCTIApiClient, args: Dict[str, str])
         indicator_types_list = result['data']['vocabularies']['edges']
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't list indicator types.")
+        raise DemistoException(f"Can't list indicator types. {e}")
 
     if indicator_types_list:
         indicator_types = [
@@ -453,7 +453,7 @@ def relationship_create_command(client: OpenCTIApiClient, args: Dict[str, Any]) 
         )
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't create relationship.")
+        raise DemistoException(f"Can't create relationship. {e}")
 
     if relationship_id := result.get('id'):
         readable_output = f'Relationship created successfully. New Relationship id: {relationship_id}.'
@@ -557,7 +557,7 @@ def observable_delete_command(client: OpenCTIApiClient, args: dict) -> CommandRe
         client.stix_cyber_observable.delete(id=observable_id)
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't delete observable.")
+        raise DemistoException(f"Can't delete observable. {e}")
     return CommandResults(readable_output='Observable deleted.')
 
 
@@ -579,7 +579,7 @@ def observable_field_update_command(client: OpenCTIApiClient, args: dict) -> Com
         result = client.stix_cyber_observable.update_field(id=observable_id, key=key, value=value)
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException(f"Can't update observable with field: {key}.")
+        raise DemistoException(f"Can't update observable. {e}")
 
     return CommandResults(
         outputs_prefix='OpenCTI.Observable',
@@ -674,7 +674,7 @@ def observable_add_marking(client: OpenCTIApiClient, id: str | None, value: str 
         result = client.stix_cyber_observable.add_marking_definition(id=id, marking_definition_id=value)
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't add marking to observable.")
+        raise DemistoException(f"Can't add marking to observable. {e}")
     return result
 
 
@@ -692,7 +692,7 @@ def observable_add_label(client: OpenCTIApiClient, id: str | None, value: str | 
         result = client.stix_cyber_observable.add_label(id=id, label_id=value)
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't add label to observable.")
+        raise DemistoException(f"Can't add label to observable. {e}")
     return result
 
 
@@ -737,7 +737,7 @@ def observable_remove_label(client: OpenCTIApiClient, id: str | None, value: str
         result = client.stix_cyber_observable.remove_label(id=id, label_id=value)
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't remove label from observable.")
+        raise DemistoException(f"Can't remove label from observable. {e}")
     return result
 
 
@@ -756,7 +756,7 @@ def observable_remove_marking(client: OpenCTIApiClient, id: str | None, value: s
         result = client.stix_cyber_observable.remove_marking_definition(id=id, marking_definition_id=value)
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't remove marking from observable.")
+        raise DemistoException(f"Can't remove marking from observable. {e}")
     return result
 
 
@@ -803,7 +803,7 @@ def indicator_add_marking(client: OpenCTIApiClient, id: str | None, value: str |
         result = client.stix_domain_object.add_marking_definition(id=id, marking_definition_id=value)
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't add marking to indicator.")
+        raise DemistoException(f"Can't add marking to indicator. {e}")
     return result
 
 
@@ -821,7 +821,7 @@ def indicator_add_label(client: OpenCTIApiClient, id: str | None, value: str | N
         result = client.stix_domain_object.add_label(id=id, label_id=value)
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't add label to indicator.")
+        raise DemistoException(f"Can't add label to indicator. {e}")
     return result
 
 
@@ -866,7 +866,7 @@ def indicator_remove_label(client: OpenCTIApiClient, id: str | None, value: str 
         result = client.stix_domain_object.remove_label(id=id, label_id=value)
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't remove label from indicator.")
+        raise DemistoException(f"Can't remove label from indicator. {e}")
     return result
 
 
@@ -885,7 +885,7 @@ def indicator_remove_marking(client: OpenCTIApiClient, id: str | None, value: st
         result = client.stix_domain_object.remove_marking_definition(id=id, marking_definition_id=value)
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't remove marking from indicator.")
+        raise DemistoException(f"Can't remove marking from indicator. {e}")
     return result
 
 
@@ -1050,8 +1050,8 @@ def indicator_update_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> 
         result = client.query(mutation, variables)
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't update indicator.")
-    
+        raise DemistoException(f"Can't update indicator. {e}")
+
     if updated_indicator := result.get("data", {}).get("indicatorFieldPatch", None):
         readable_output = f'Indicator updated successfully.'
         return CommandResults(
@@ -1191,7 +1191,7 @@ def organization_create_command(client: OpenCTIApiClient, args: Dict[str, str]) 
                                  description=description)
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't create organization.")
+        raise DemistoException(f"Can't create organization. {e}")
 
     if organization_id := result.get('id'):
         readable_output = f'Organization {name} was created successfully with id: {organization_id}.'
