@@ -29,6 +29,7 @@ configuration:
 - display: Fetch indicators
   name: feed
   type: 8
+  defaultvalue: 'true'
   required: false
 - display: Indicator Verdict
   name: feedReputation
@@ -103,6 +104,13 @@ configuration:
   - panw-highrisk-ip-list
   - panw-torexit-ip-list
   - panw-bulletproof-ip-list
+- display: Response Format
+  name: list_format
+  type: 15
+  required: true
+  options:
+  - Array
+  defaultvalue: 'Array'
 script:
   script: ''
   type: python

@@ -7,19 +7,12 @@ from typing import Any
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-SCORE_TABLE_FILE = {
-    "unknown": Common.DBotScore.NONE,
-    "benign": Common.DBotScore.GOOD,
-    "grayware": Common.DBotScore.SUSPICIOUS,
-    "malicious": Common.DBotScore.BAD,
-}
 
 VERSION = 'latest'
 LIMIT = 1000
-LISTFORMAT = 'array'
 CONTEXT_KEY = 'EDL'
 INTEGRATION_ENTRY_CONTEXT = 'ThreatVault'
-LOG_LINE = INTEGRATION_ENTRY_CONTEXT+"_"+CONTEXT_KEY+" -"
+LOG_LINE = INTEGRATION_ENTRY_CONTEXT + "_" + CONTEXT_KEY + " -"
 
 
 class Client(BaseClient):
@@ -40,7 +33,7 @@ class Client(BaseClient):
         self.name = "ThreatVault"
         self.reliability = reliability
 
-    def get_indicators_request(self, args: dict) -> dict:
+    def get_indicators_request(self, args: dict) -> dict:   # pragma: no cover
         """Get indicators with proper URL API prefix
 
         Returns the http response.
@@ -52,9 +45,12 @@ class Client(BaseClient):
         :rtype: ``dict``
         """
         suffix = 'edl'
+
+        demisto.debug(f"{LOG_LINE} Sending GET request with params: {args}")
+
         return self._http_request(method="GET", url_suffix=suffix, params=args)
 
-    def test_module(self) -> str:
+    def test_module(self) -> str:   # pragma: no cover
         """Tests API connectivity and authentication'
 
         Returning 'ok' indicates that the integration works like it is supposed to.
@@ -67,17 +63,19 @@ class Client(BaseClient):
         :return: 'ok' if test passed, anything else will fail the test.
         :rtype: ``str``
         """
+
+        command_results_list = []
+
         query = assign_params(
-            name = 'panw-known-ip-list',
-            version = VERSION,
-            listformat = LISTFORMAT,
-            )
+            name='panw-known-ip-list',
+            version=VERSION,
+            listformat='array',
+        )
         try:
             self.get_indicators_request(args=query)
 
         except DemistoException as err:
             if err.res is not None and err.res.status_code == 404:
-                response = {}
                 readable_output = "There is no information for your search."
                 command_results_list.append(CommandResults(readable_output=readable_output))
             else:
@@ -89,6 +87,8 @@ class Client(BaseClient):
 """
 HELP FUNCTIONS
 """
+
+
 def parse_indicator_for_fetch(indicator: dict, tags: str, tlp_color: str, feed_tag_name: str) -> dict[str, Any]:
     """Parses the indicator given from the api to an indicator that can be sent to TIM XSOAR.
 
@@ -101,7 +101,7 @@ def parse_indicator_for_fetch(indicator: dict, tags: str, tlp_color: str, feed_t
     Returns:
         dict[str, Any]: An indicator that can be sent to TIM.
     """
-    #print(tags)
+    # print(tags)
     all_tags = argToList(tags)
     all_tags.append(feed_tag_name)
 
@@ -114,8 +114,7 @@ def parse_indicator_for_fetch(indicator: dict, tags: str, tlp_color: str, feed_t
     return assign_params(
         value=indicator,
         type=FeedIndicatorType.IP,
-        fields=fields,
-        #rawJSON=indicator,
+        fields=fields
     )
 
 
@@ -123,7 +122,8 @@ def parse_indicator_for_fetch(indicator: dict, tags: str, tlp_color: str, feed_t
 COMMANDS
 """
 
-def threatvault_get_indicators_command(client: Client, args: Dict) -> CommandResults:
+
+def threatvault_get_indicators_command(client: Client, list_format: str, args: Dict) -> CommandResults:
     """Threatvault get indicators query main command.
 
     Args:
@@ -135,16 +135,15 @@ def threatvault_get_indicators_command(client: Client, args: Dict) -> CommandRes
     """
     name = args.get("name")
     version = args.get("version")
-    listformat = LISTFORMAT
     offset = LIMIT
     ipaddr_list = []
 
     query = assign_params(
-            name = name,
-            version = version,
-            listformat = listformat,
-            limit = LIMIT,
-            )
+        name=name,
+        version=version,
+        listformat=list_format,
+        limit=LIMIT,
+    )
 
     try:
         response = client.get_indicators_request(args=query)
@@ -157,58 +156,61 @@ def threatvault_get_indicators_command(client: Client, args: Dict) -> CommandRes
         else:
             raise
 
-    if response.get('success') == True:
-        count = response.get("count")
-        content_version_number = response.get("data",{}).get("version")
+    if response.get('success'):
+        count = response.get("count", 0)
+        content_version_number = response.get("data", {}).get("version")
+        ipaddr_list.extend(response.get("data", {}).get("ipaddr", []))
 
         # get next page of data until there is none left
-        while count > offset :
+        while count > offset:
 
             query = assign_params(
-                name = name,
-                version = version,
-                listformat = listformat,
-                offset = offset,
-                )
+                name=name,
+                version=version,
+                listformat=list_format,
+                offset=offset,
+            )
 
             response = client.get_indicators_request(args=query)
-            ipaddr_list.extend(response.get("data",{}).get("ipaddr"))
+            ipaddr_list.extend(response.get("data", {}).get("ipaddr", []))
             offset += LIMIT
-            print(offset)
 
         # create the table based on the response
         table = {
-                    'Name': args.get("name"),
-                    'Count': int(count),
-                    'Content_Version': int(content_version_number),
-                }
+            'Name': args.get("name"),
+            'Count': int(count),
+            'Content_Version': int(content_version_number),
+        }
 
-        markdown = tableToMarkdown(f'ThreatVault EDL Results for: {name}\n'
-                                           , table, removeNull=True)
+        markdown = tableToMarkdown(f'ThreatVault EDL Results for: {name}\n', table, removeNull=True)
 
         table_full = table
-        table_full['ipaddr'] = ipaddr_list
+        table_full['Addresses'] = ipaddr_list
 
-        command_results = CommandResults(
-                outputs_prefix=f'{INTEGRATION_ENTRY_CONTEXT}.{CONTEXT_KEY}',
-                # outputs_key_field='ipaddr',
-                outputs=table_full,
-                readable_output=markdown,
-                # raw_response=ipaddr
-            )
-        return_results(command_results)
+        return CommandResults(
+            outputs_prefix=f'{INTEGRATION_ENTRY_CONTEXT}.{CONTEXT_KEY}',
+            outputs_key_field='',
+            outputs=table_full,
+            readable_output=markdown,
+            raw_response=response
+        )
 
     else:
         raise DemistoException(f"couldn't fetch, {response.get('success')}, response.get('message')")
 
 
-def fetch_indicators_command(client: Client, interval: int, predefined_edl_name: str, tlp_color: str, feed_tags: str, last_run: dict):
+def fetch_indicators_command(client: Client,
+                             predefined_edl_name: str,
+                             list_format: str,
+                             tlp_color: str,
+                             feed_tags: str):
     """Threatvault fetch indicators query main command.
 
     Args:
         client (Client): client.
         interval (int): interval to request new feed content.
         predefined_edl_name (str):  predefined EDL name to fetch.
+        list_format (str): format of the list to be returned (e.g., "array").
         tlp_color (str): TLP color provided in the integration instance.
         feed_tags (str): tags to apply to the feed contents.
         last_run (dict): last time the feed fetch executed.
@@ -216,19 +218,10 @@ def fetch_indicators_command(client: Client, interval: int, predefined_edl_name:
     Returns:
         CommandResults: Command results response.
     """
+
     now = datetime.now(timezone.utc)
-
-    if last_run:
-        last_successful_run = dateparser.parse(last_run["last_successful_run"], settings={
-                                               'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
-        if last_successful_run:
-            time_delta = now - last_successful_run
-        else:
-            raise DemistoException('failed to fetch indicators')  # not supposed to happen
-
     name = predefined_edl_name
     version = VERSION
-    listformat = LISTFORMAT
     offset = LIMIT
     ipaddr_list = []
     # automatically add a tag for the feed name by stripping leading panw-* and trailing *-list
@@ -237,14 +230,12 @@ def fetch_indicators_command(client: Client, interval: int, predefined_edl_name:
     # split on the last - and keep the left match
     feed_tag_name = feed_tag_name.rsplit('-', 1)[0]
 
-
-
     query = assign_params(
-            name = name,
-            version = version,
-            listformat = listformat,
-            limit = LIMIT,
-            )
+        name=name,
+        version=version,
+        listformat=list_format,
+        limit=LIMIT,
+    )
 
     try:
         response = client.get_indicators_request(args=query)
@@ -257,25 +248,23 @@ def fetch_indicators_command(client: Client, interval: int, predefined_edl_name:
         else:
             raise
 
-    if response.get('success') == True:
-        count = response.get("count")
-        content_version_number = response.get("data",{}).get("version")
-        ipaddr_list.extend(response.get("data",{}).get("ipaddr"))
+    if response.get('success'):
+        count = response.get("count", 0)
+        ipaddr_list.extend(response.get("data", {}).get("ipaddr"))
 
         # get next page of data until there is none left
-        while count > offset :
+        while count > offset:
 
             query = assign_params(
-                name = name,
-                version = version,
-                listformat = listformat,
-                offset = offset,
-                )
+                name=name,
+                version=version,
+                listformat=list_format,
+                offset=offset,
+            )
 
             response = client.get_indicators_request(args=query)
-            ipaddr_list.extend(response.get("data",{}).get("ipaddr"))
+            ipaddr_list.extend(response.get("data", {}).get("ipaddr"))
             offset += LIMIT
-            print(offset)
 
     else:
         raise DemistoException(f"couldn't fetch, {response.get('success')}, response.get('message')")
@@ -287,7 +276,7 @@ def fetch_indicators_command(client: Client, interval: int, predefined_edl_name:
 
     for indicator in indicators:
 
-        results.append(parse_indicator_for_fetch(indicator,feed_tags,tlp_color,feed_tag_name))
+        results.append(parse_indicator_for_fetch(indicator, feed_tags, tlp_color, feed_tag_name))
 
     return now.strftime('%Y-%m-%dT%H:%M:%SZ'), results
 
@@ -296,25 +285,21 @@ def fetch_indicators_command(client: Client, interval: int, predefined_edl_name:
 MAIN
 """
 
+
 def main():
 
     params = demisto.params()
     """PARAMS"""
-    base_url = params.get("url", "") + "service/v1/"
+    base_url = urljoin(params["url"], "service/v1/")
     api_key = params.get("credentials", {}).get("password")
     verify = not params.get("insecure", False)
-    proxy = params.get("proxy")
+    proxy = params.get("proxy", "")
     reliability = params.get("integrationReliability", "B - Usually reliable")
     # TLP 2.0 - CLEAR == WHITE, ++ TLP:AMBER+STRICT
     tlp_color = params.get('tlp_color') or 'WHITE'
-    feed_tags = params.get('feedTags')
-    predefined_edl_name = params.get('name')
-    interval = params.get('feedFetchInterval')
-
-    if not interval:
-        raise Exception(
-            "Please provide a valid interval parameter."
-        )
+    feed_tags = params.get('feedTags', '')
+    predefined_edl_name = params['name']
+    list_format = params['list_format'].lower()
 
     if not DBotScoreReliability.is_valid_type(reliability):
         raise Exception(
@@ -323,7 +308,6 @@ def main():
 
     try:
         command = demisto.command()
-        demisto.debug(f"Command being called is {demisto.command()}")
         client = Client(
             base_url=base_url,
             api_key=api_key,
@@ -341,24 +325,29 @@ def main():
             return_results(result)
 
         elif command == 'fetch-indicators':
-            next_run, res = fetch_indicators_command(client=client, predefined_edl_name=predefined_edl_name,
-                                                     interval=interval, feed_tags=feed_tags,
-                                                     tlp_color=tlp_color, last_run=demisto.getLastRun())
+            run_datetime, res = fetch_indicators_command(
+                client=client,
+                predefined_edl_name=predefined_edl_name,
+                list_format=list_format,
+                feed_tags=feed_tags,
+                tlp_color=tlp_color,
+            )
+
             for iter_ in batch(res, batch_size=2000):
                 demisto.debug(f"{LOG_LINE} {iter_=}")
                 demisto.createIndicators(iter_)
-            demisto.setLastRun({"last_successful_run": next_run})
+
+            demisto.setLastRun({"last_successful_run": run_datetime})
 
         elif command in commands:
-            return_results(commands[command](client, demisto.args()))
+            return_results(commands[command](client, list_format, demisto.args()))
         else:
             raise NotImplementedError(f'Command "{command}" was not implemented.')
 
-    except Exception as err:
+    except Exception:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {command} command." f"\nError:\n{str(err)}")
+        return_error(f"Failed to execute {command} command. The command not implemented")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-

@@ -6,12 +6,5 @@
    
 See [this documentation](https://support.paloaltonetworks.com/Support) for information about the API key.
 
-
-### Fetch-incidents
--  Fetch-incidents imports the daily release notes.
--  Set the fetch-interval parameter to once a day. If there is no release notes, the fetch command will try to fetch the next day again.
-- When setting the command for the first time, you can set the first-fetch parameter to fetch the release messages at a specified previous time.
-
-
 ---
 [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/palo-alto-networks-threat-vault-v2)
