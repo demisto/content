@@ -40,6 +40,7 @@ TIME_TO_RUN_BUFFER = 30  # When calculating time left to run, will use this as a
 EXECUTION_START_TIME = datetime.now()
 ALLOWED_PAGE_SIZE_DELTA_RATIO = 0.95  # uses this delta to overcome differences from Akamai When calculating latest request size.
 MAX_ALLOWED_FETCH_LIMIT = 45000
+SEND_EVENTS_TO_XSIAM_CHUNK_SIZE = 4 * (10 ** 6)  # 4 MB
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -509,6 +510,7 @@ def fetch_events_command(
         if not events:
             demisto.info("Didn't receive any events, breaking.")
             break
+        demisto.info(f"got {len(events)} events, moving to processing events data.")
         hashed_events_mapping = {}
         for event in events:
             try:
@@ -611,7 +613,8 @@ def main():  # pragma: no cover
             )):
                 if events:
                     demisto.info(f"Sending {len(events)} events to xsiam with latest event time is: {events[-1]['_time']}")
-                    send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
+                    send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
+                                         chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE)
                     demisto.info(f"Done sending {len(events)} events to xsiam." \
                                  f"sent {total_events_count} events to xsiam in total during this interval.")
                 set_integration_context({"offset": offset,
