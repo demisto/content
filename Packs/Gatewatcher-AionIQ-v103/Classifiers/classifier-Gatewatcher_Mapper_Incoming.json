@@ -1,0 +1,145 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "17a7dc70-6fbe-4a95-8a0a-8104e2e368bf",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 9,
+	"mapping": {
+		"Gatewatcher Incident": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Gatewatcher Destination IP": {
+					"simple": "destination.ip"
+				},
+				"Gatewatcher Destination Port": {
+					"simple": "destination.port"
+				},
+				"Gatewatcher Flow ID": {
+					"simple": "network.flow_id"
+				},
+				"Gatewatcher GCap": {
+					"simple": "observer.gcap.hostname"
+				},
+				"Gatewatcher GCap interface": {
+					"simple": "observer.gcap.ingress.interface"
+				},
+				"Gatewatcher GCenter": {
+					"simple": "observer.hostname"
+				},
+				"Gatewatcher Raw Event": {
+					"simple": "."
+				},
+				"Gatewatcher Source IP": {
+					"simple": "source.ip"
+				},
+				"Gatewatcher Source Port": {
+					"simple": "source.port"
+				},
+				"Gatewatcher dns.response_code": {
+					"simple": "dns.response_code"
+				},
+				"Gatewatcher ecs.version": {
+					"simple": "ecs.version"
+				},
+				"Gatewatcher event.module": {
+					"simple": "event.module"
+				},
+				"Gatewatcher file.hash": {
+					"simple": "file.hash"
+				},
+				"Gatewatcher file.magic": {
+					"simple": "file.magic"
+				},
+				"Gatewatcher file.name": {
+					"simple": "file.name"
+				},
+				"Gatewatcher http.http_refer": {
+					"simple": "http.http_refer"
+				},
+				"Gatewatcher http.request.method": {
+					"simple": "http.request.method"
+				},
+				"Gatewatcher http.response.mime_type": {
+					"simple": "http.response.mime_type"
+				},
+				"Gatewatcher http.response.status": {
+					"simple": "http.response.status"
+				},
+				"Gatewatcher http.version": {
+					"simple": "http.version"
+				},
+				"Gatewatcher malcore.detail_threat_found": {
+					"simple": "malcore.detail_threat_found"
+				},
+				"Gatewatcher malcore.engines_last_update_date": {
+					"simple": "malcore.engines_last_update_date"
+				},
+				"Gatewatcher malcore.magic_details": {
+					"simple": "malcore.magic_details"
+				},
+				"Gatewatcher malcore.state": {
+					"simple": "malcore.state"
+				},
+				"Gatewatcher malcore.total_found": {
+					"simple": "malcore.total_found"
+				},
+				"Gatewatcher malicious_powershell.proba_obfuscated": {
+					"simple": "malicious_powershell.proba_obfuscated"
+				},
+				"Gatewatcher malicious_powershell.score": {
+					"simple": "malicious_powershell.score"
+				},
+				"Gatewatcher network.protocol": {
+					"simple": "network.protocol"
+				},
+				"Gatewatcher network.transport": {
+					"simple": "network.transport"
+				},
+				"Gatewatcher shellcode.sub_type": {
+					"simple": "shellcode.sub_type"
+				},
+				"Gatewatcher sigflow.action": {
+					"simple": "sigflow.action"
+				},
+				"Gatewatcher sigflow.category": {
+					"simple": "sigflow.category"
+				},
+				"Gatewatcher sigflow.payload": {
+					"simple": "sigflow.payload"
+				},
+				"Gatewatcher sigflow.payload_printable": {
+					"simple": "sigflow.payload_printable"
+				},
+				"severity": {
+					"simple": "event.severity"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {}
+		}
+	},
+	"name": "Gatewatcher Mapper Incoming",
+	"nameRaw": "Gatewatcher Mapper Incoming",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}

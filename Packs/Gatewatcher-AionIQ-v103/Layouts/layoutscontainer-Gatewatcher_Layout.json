@@ -475,7 +475,7 @@
 							{
 								"endCol": 2,
 								"fieldId": "gatewatcherfilehash",
-								"height": 22,
+								"height": 53,
 								"id": "3772b800-acc3-11ef-9202-89fa98701c99",
 								"index": 2,
 								"sectionItemType": "field",
@@ -556,6 +556,78 @@
 						"w": 1,
 						"x": 0,
 						"y": 7
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-2fdf5590-ad71-11ef-a64e-e91401017d2c",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherhttprequestmethod",
+								"height": 53,
+								"id": "41977790-ad71-11ef-a64e-e91401017d2c",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherhttpresponsestatus",
+								"height": 53,
+								"id": "622de7a0-ad71-11ef-a64e-e91401017d2c",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherhttphttprefer",
+								"height": 53,
+								"id": "466fb390-ad71-11ef-a64e-e91401017d2c",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gatrewatcherhttphostname",
+								"height": 53,
+								"id": "48be5e80-ad71-11ef-a64e-e91401017d2c",
+								"index": 3,
+								"listId": "caseinfoid-2fdf5590-ad71-11ef-a64e-e91401017d2c",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherhttpresponsemimetype",
+								"height": 53,
+								"id": "7d51fe90-ad71-11ef-a64e-e91401017d2c",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherhttpversion",
+								"height": 53,
+								"id": "7e904af0-ad71-11ef-a64e-e91401017d2c",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "HTTP Field",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 8
 					}
 				],
 				"type": "custom"
