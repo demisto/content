@@ -11,7 +11,7 @@ import demistomock as demisto
 
 from GoogleChronicleBackstoryStreamingAPI import DATE_FORMAT, MAX_CONSECUTIVE_FAILURES, MAX_DELTA_TIME_FOR_STREAMING_DETECTIONS, \
     fetch_samples, service_account, auth_requests, validate_configuration_parameters, stream_detection_alerts_in_retry_loop, \
-    validate_response, test_module as main_test_module, timezone, timedelta, MESSAGES, Client, parse_error_message
+    validate_response, test_module as main_test_module, timezone, timedelta, MESSAGES, Client, parse_error_message, main
 
 
 GENERIC_INTEGRATION_PARAMS = {
@@ -213,6 +213,40 @@ def test_test_module(mocker, mock_client, capfd):
         mock_client.http_client = mock_response
         capfd.close()
         assert main_test_module(mock_client, {}) == 'ok'
+
+
+def test_test_module_using_main(mocker, mock_client, capfd):
+    """
+    Test case scenario for successful execution of test_module using main function.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `test_module` function.
+    Then:
+       - Assert for the continuation time and incidents.
+    """
+    mock_response = MockResponse()
+    param = {
+        'credentials': {'password': '{"key":"value"}'},
+    }
+
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                           'test_data/stream_detections.txt'), 'r') as f:
+
+        mock_response.iter_lines = lambda **_: f.readlines()
+
+        stream_response = StreamResponse
+        stream_response.mock_response = mock_response
+        mock_response.post = StreamResponse
+        mock_response.encoding = None
+        mocker.patch.object(time, 'sleep', return_value=lambda **_: None)
+        mock_client.http_client = mock_response
+        capfd.close()
+        mocker.patch.object(demisto, 'params', return_value=param)
+        mocker.patch.object(demisto, 'command', return_value="test-module")
+        mocker.patch.object(auth_requests, 'AuthorizedSession', return_value=mock_response)
+        main()
 
 
 def test_test_module_for_error(mocker, mock_client, capfd):
