@@ -2494,7 +2494,12 @@ def test_add_data_to_actions_non_dict_data():
      {'roles': []},
      'Client Credentials',
      'Graph access token is not set.')
-])
+], ids=["Test token permissions list command - client credentials auth flow",
+        "Test token permissions list command - client credentials auth flow - no permissions set",
+        "Test token permissions list command - auth code auth flow",
+        "Test token permissions list command - client auth code flow - no permissions set",
+        "Test token permissions list command - missing token"
+        ])
 def test_token_permissions_list_command(mocker, token, decoded_token, auth_type, expected_hr):
     """
     Tests the 'token_permissions_list_command' logic:

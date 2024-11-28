@@ -60,6 +60,12 @@ MESSAGE_TYPES: dict = {
 }
 
 NEW_INCIDENT_WELCOME_MESSAGE: str = "Successfully created incident <incident_name>.\nView it on: <incident_link>"
+MISS_CONFIGURATION_ERROR_MESSAGE = "Did not receive a tenant ID from Microsoft Teams. Verify that the messaging endpoint in the "\
+                                   "Demisto bot configuration in Microsoft Teams is configured correctly.\nUse the "\
+                                   "`microsoft-teams-create-messaging-endpoint` command to get the correct messaging endpoint "\
+                                   "based on the server URL, the server version, and the instance configurations.\n"\
+                                   "For more information See - "\
+                                   "https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#troubleshooting."
 
 CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
 AUTHORIZATION_CODE_FLOW = 'Authorization Code'
@@ -722,13 +728,7 @@ def get_graph_access_token() -> str:
         return access_token
     tenant_id = integration_context.get('tenant_id')
     if not tenant_id:
-        raise ValueError(
-            'Did not receive a tenant ID from Microsoft Teams. Verify that the messaging endpoint in the Demisto bot '
-            'configuration in Microsoft Teams is configured correctly.\nUse the `microsoft-teams-create-messaging-endpoint` '
-            'command to get the correct messaging endpoint based on the server URL, the server version, and the instance '
-            'configurations.\nFor more information See - '
-            'https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#troubleshooting.'
-        )
+        raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
     headers = None
     url: str = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
     data: dict = {
@@ -2649,13 +2649,7 @@ def ring_user():
     integration_context: dict = get_integration_context()
     tenant_id: str = integration_context.get('tenant_id', '')
     if not tenant_id:
-        raise ValueError(
-            'Did not receive a tenant ID from Microsoft Teams. Verify that the messaging endpoint in the Demisto bot '
-            'configuration in Microsoft Teams is configured correctly.\nUse the `microsoft-teams-create-messaging-endpoint` '
-            'command to get the correct messaging endpoint based on the server URL, the server version, and the instance '
-            'configurations.\nFor more information See - '
-            'https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#troubleshooting.'
-        )
+        raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
     # get user to call name and id
     username_to_call = demisto.args().get('username')
     user: list = get_user(username_to_call)
@@ -2807,16 +2801,15 @@ def token_permissions_list_command():
             roles = roles.split()
 
         if roles:
-            roles = sorted(roles)
             hr = tableToMarkdown(f'The current API permissions in the Teams application are: ({len(roles)})',
-                                 roles, headers=['Permission'])
+                                 sorted(roles), headers=['Permission'])
         else:
             hr = 'No permissions obtained for the used graph access token.'
 
     else:
         hr = 'Graph access token is not set.'
 
-    demisto.debug(f"'microsoft-teams-token-permissions-list' command result is: {hr}")
+    demisto.debug(f"'microsoft-teams-token-permissions-list' command result is: {hr}. Authorization type is: {AUTH_TYPE}.")
 
     result = CommandResults(
         readable_output=hr
@@ -2875,6 +2868,7 @@ def create_messaging_endpoint_command():
 
         if is_xsiam():
             # Replace the '.xdr-' with '.crtx-' for XSIAM tenants
+            # This substitution is related to this platform ticket: https://jira-dc.paloaltonetworks.com/browse/CIAC-12256.
             messaging_endpoint = messaging_endpoint.replace('.xdr-', '.crtx-', 1)
 
     hr = f"The messaging endpoint is:\n `{messaging_endpoint}`\n\n The messaging endpoint should be added to the Demisto bot"\
