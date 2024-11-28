@@ -386,7 +386,7 @@ class Client(CoreClient):
 
     def get_multiple_incidents_extra_data(self, exclude_artifacts, incident_id_list=[], gte_creation_time_milliseconds=0,
                                           statuses=[], starred=None, starred_incidents_fetch_window=None,
-                                          page_number=0, limit=100, offset=0, incident_wait=0):
+                                          page_number=0, limit=100):
         """
         Returns incident by id
         :param incident_id_list: The list ids of incidents
@@ -395,20 +395,13 @@ class Client(CoreClient):
         """
         global ALERTS_LIMIT_PER_INCIDENTS
         request_data = {
-            'search_from': offset,
-            'search_to': offset + limit,
+            'search_to': limit,
             'sort': {
                 'field': 'creation_time',
                 'keyword': 'asc',
             }
         }
         filters: list[dict] = []
-        if incident_wait:
-            filters.append({
-                'field': 'creation_time',
-                'operator': 'lte',
-                'value': int((datetime.now() - timedelta(seconds=incident_wait)).timestamp() * 1000)
-            })
         if incident_id_list:
             incident_id_list = argToList(incident_id_list, transform=str)
             filters.append({"field": "incident_id_list", "operator": "in", "value": incident_id_list})
@@ -446,7 +439,7 @@ class Client(CoreClient):
         if len(filters) > 0:
             request_data['filters'] = filters
 
-        demisto.debug(f'before fetch: {request_data=}')
+        demisto.debug(f'Fetching incidents with {request_data=}')
         reply = self._http_request(
             method='POST',
             url_suffix='/incidents/get_multiple_incidents_extra_data/',
@@ -454,7 +447,6 @@ class Client(CoreClient):
             headers=self.headers,
             timeout=self.timeout,
         )
-        demisto.debug(f'after fetch: {reply=}')
         if ALERTS_LIMIT_PER_INCIDENTS < 0:
             ALERTS_LIMIT_PER_INCIDENTS = arg_to_number(reply.get('reply', {}).get('alerts_limit_per_incident')) or 50
             demisto.debug(f'Setting alerts limit per incident to {ALERTS_LIMIT_PER_INCIDENTS}')
@@ -1092,14 +1084,11 @@ def update_related_alerts(client: Client, args: dict):
 
 def fetch_incidents(client: Client, first_fetch_time, integration_instance, exclude_artifacts: bool, last_run: dict,
                     max_fetch: int = 10, statuses: list = [], starred: Optional[bool] = None,
-                    starred_incidents_fetch_window: str = None, incident_wait: int = 5):
-    demisto.debug(f'{last_run=}')
+                    starred_incidents_fetch_window: str = None):
     global ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time')
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', [])
-
-    offset = int(last_run.get('offset', 0))
 
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
@@ -1109,18 +1098,14 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
         starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
 
     if incidents_from_previous_run:
-        demisto.debug('Using incidents from last run')
         raw_incidents = incidents_from_previous_run
         ALERTS_LIMIT_PER_INCIDENTS = last_run.get('alerts_limit_per_incident', -1)
-        demisto.debug(f'{ALERTS_LIMIT_PER_INCIDENTS=}')
     else:
-        demisto.debug('Fetching incidents')
         raw_incidents = client.get_multiple_incidents_extra_data(
             gte_creation_time_milliseconds=last_fetch,
             statuses=statuses, limit=max_fetch, starred=starred,
             starred_incidents_fetch_window=starred_incidents_fetch_window,
             exclude_artifacts=exclude_artifacts, offset=offset,
-            incident_wait=incident_wait
         )
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
@@ -1128,6 +1113,7 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
 
     # maintain a list of non created incidents in a case of a rate limit exception
     non_created_incidents: list = raw_incidents.copy()
+    next_run = {}
     try:
         incidents = []
         for raw_incident in raw_incidents:
@@ -1140,50 +1126,40 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
                 raw_incident_ = client.get_incident_extra_data(incident_id=incident_id)
                 incident_data = sort_incident_data(raw_incident_)
             sort_all_list_incident_fields(incident_data)
-            incident_data |= {
-                'mirror_direction': MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None')),
-                'mirror_instance': integration_instance,
-                'last_mirrored_in': int(datetime.now().timestamp() * 1000),
-            }
+            incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
+                                                                     None)
+            incident_data['mirror_instance'] = integration_instance
+            incident_data['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
             description = incident_data.get('description')
             occurred = timestamp_to_datestring(incident_data['creation_time'], TIME_FORMAT + 'Z')
-            incident: dict[str, Any] = {
+            incident: Dict[str, Any] = {
                 'name': f'XDR Incident {incident_id} - {description}',
                 'occurred': occurred,
                 'rawJSON': json.dumps(incident_data),
             }
             if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
-                incident['owner'] = demisto.findUser(email=incident_data['assigned_user_mail']).get('username')
+                incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
             # Update last run and add incident if the incident is newer than last fetch
             if incident_data.get('creation_time', 0) > last_fetch:
-                demisto.debug(f'updating last_fetch, setting offset = 1; {incident_id=}')
                 last_fetch = incident_data['creation_time']
-                offset = 1
-            elif incident_data.get('creation_time') == last_fetch:
-                demisto.debug(f'updating offset += 1; {incident_id=}')
-                offset += 1
-            else:
-                demisto.debug(f"{incident_data['creation_time']=} < last_fetch; {incident_id=}")
-
             incidents.append(incident)
             non_created_incidents.remove(raw_incident)
 
     except Exception as e:
         if "Rate limit exceeded" in str(e):
             demisto.info(f"Cortex XDR - rate limit exceeded, number of non created incidents is: "
-                         f"{len(non_created_incidents)!r}.\n The incidents will be created in the next fetch")
+                         f"'{len(non_created_incidents)}'.\n The incidents will be created in the next fetch")
         else:
             raise
 
-    next_run = {
-        'incidents_from_previous_run': non_created_incidents,
-        'time': last_fetch,
-        'offset': str(offset),
-    }
-
     if non_created_incidents:
+        next_run['incidents_from_previous_run'] = non_created_incidents
         next_run['alerts_limit_per_incident'] = ALERTS_LIMIT_PER_INCIDENTS  # type: ignore[assignment]
-    demisto.debug(f'{next_run=}')
+    else:
+        next_run['incidents_from_previous_run'] = []
+
+    next_run['time'] = last_fetch + 1
+
     return next_run, incidents
 
 
@@ -1326,7 +1302,6 @@ def main():  # pragma: no cover
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
     exclude_artifacts = argToBoolean(params.get('exclude_fields', True))
     xdr_delay = arg_to_number(params.get('xdr_delay')) or 1
-    incident_wait = arg_to_number(params.get('incident_wait') or 5)
     try:
         timeout = int(params.get('timeout', 120))
     except ValueError as e:
@@ -1365,7 +1340,6 @@ def main():  # pragma: no cover
                                                   statuses=statuses,
                                                   starred=starred,
                                                   starred_incidents_fetch_window=starred_incidents_fetch_window,
-                                                  incident_wait=incident_wait
                                                   )
             last_run_obj = demisto.getLastRun()
             last_run_obj['next_run'] = next_run
