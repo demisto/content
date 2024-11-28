@@ -1127,6 +1127,7 @@ def add_filename_suffix(file_names: list, file_extension: str):
 
 def rasterize_command():  # pragma: no cover
     urls = demisto.getArg('url')
+    urls = [urls] if isinstance(urls, str) else urls
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
     rasterize_type = RasterizeType(demisto.args().get('type', 'png').lower())
