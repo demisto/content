@@ -8,7 +8,7 @@ from pycti import StixCyberObservable, MarkingDefinition, Label, ExternalReferen
 
 class Client:
     temp = ''
-    query = lambda self, *args, **kwargs: None
+    query = lambda self, *args, **kwargs: None  # pylint: disable=E731
     incident = Incident
     indicator = Indicator
     stix_domain_object = StixDomainObject
@@ -659,6 +659,7 @@ def test_relationship_create_command_exception(mocker, capfd):
     captured = capfd.readouterr()
     assert captured.out.strip() == "Test exception"
 
+
 def test_indicator_create_command(mocker):
     """Tests indicator_create_command function
     Given
@@ -745,10 +746,12 @@ def test_indicator_update_command(mocker):
         'description': 'Lorem ipsum dolor',
         'valid_until': '2023-12-31T23:59:59.000Z'
     }
-    mocker.patch.object(client, 'query', return_value={'data': {'indicatorFieldPatch': {'id': '123456', 'name': 'Lorem ipsum dolor', 'valid_from': '2023-01-01T00:00:00.000Z', 'valid_until': '2023-12-31T23:59:59.000Z'}}})
+    mocker.patch.object(client, 'query', return_value={'data': {'indicatorFieldPatch': {
+                        'id': '123456', 'name': 'Lorem ipsum dolor', 'valid_from': '2023-01-01T00:00:00.000Z', 'valid_until': '2023-12-31T23:59:59.000Z'}}})
     results: CommandResults = indicator_update_command(client, args)
     assert "Indicator updated successfully" in results.readable_output
-    assert {'id': '123456', 'name': 'Lorem ipsum dolor', 'validFrom': '2023-01-01T00:00:00.000Z', 'validUntil': '2023-12-31T23:59:59.000Z'} == results.outputs
+    assert {'id': '123456', 'name': 'Lorem ipsum dolor', 'validFrom': '2023-01-01T00:00:00.000Z',
+            'validUntil': '2023-12-31T23:59:59.000Z'} == results.outputs
 
 
 def test_indicator_update_command_exception(mocker, capfd):
@@ -795,6 +798,133 @@ def test_indicator_update_command_exception_data_not_returned(mocker):
     mocker.patch.object(client, 'query', return_value={'data': {'indicatorFieldPatch': {}}})
     with pytest.raises(DemistoException, match="Can't update indicator."):
         indicator_update_command(client, args)
+
+
+@pytest.mark.parametrize(argnames="field, value, function_name,",
+                         argvalues=[('marking', 'TLP:RED', 'add_marking_definition'),
+                                    ('label', 'new-label', 'add_label')])
+def test_indicator_field_add_command(mocker, field, value, function_name):
+    """Tests indicator_field_add_command function
+        Given
+            id of indicator to add
+            field to add
+            value to add
+        When
+            - Calling `indicator_field_add_command`
+        Then
+            - validate the response to have a "added successfully." string at human readable
+        """
+    client = Client
+    args = {
+        'id': '123456',
+        'field': field,
+        'value': value
+    }
+    mocker.patch.object(client.stix_domain_object, function_name, return_value=True)
+    results: CommandResults = indicator_field_add_command(client, args)
+    assert f'Added {field} successfully.' in results.readable_output
+
+
+@pytest.mark.parametrize(argnames="field, value, function_name,",
+                         argvalues=[('marking', 'TLP:RED', 'add_marking_definition'),
+                                    ('label', 'new-label', 'add_label')])
+def test_indicator_field_add_command_field_not_added(mocker, field, value, function_name):
+    """Tests indicator_field_add_command function
+        Given
+            id of indicator to add
+            field to add
+            value to add
+        When
+            - Calling `indicator_field_add_command`
+        Then
+            - validate the response to have a "added successfully." string at human readable
+        """
+    client = Client
+    args = {
+        'id': '123456',
+        'field': field,
+        'value': value
+    }
+    mocker.patch.object(client.stix_domain_object, function_name, return_value=False)
+    with pytest.raises(DemistoException, match=f"Can't add {field}."):
+        indicator_field_add_command(client, args)
+
+
+@pytest.mark.parametrize(argnames="field, value, function_name",
+                         argvalues=[('marking', 'TLP:RED', 'remove_marking_definition'),
+                                    ('label', 'new-label', 'remove_label')])
+def test_indicator_field_remove_command(mocker, field, value, function_name):
+    """Tests indicator_field_remove_command function
+    Given
+        id of indicator to remove
+        field to remove
+        value to remove
+    When
+        - Calling `indicator_field_remove_command`
+    Then
+        - validate the response to have a "removed successfully." string at human readable
+    """
+    client = Client
+    args = {
+        'id': '123456',
+        'field': field,
+        'value': value
+    }
+    mocker.patch.object(client.stix_domain_object, function_name, return_value=True)
+    results: CommandResults = indicator_field_remove_command(client, args)
+    assert f'{field}: {value} was removed successfully from indicator: 123456.' in results.readable_output
+
+
+@pytest.mark.parametrize(argnames="field, value, function_name",
+                         argvalues=[('marking', 'TLP:RED', 'remove_marking_definition'),
+                                    ('label', 'new-label', 'remove_label')])
+def test_indicator_field_remove_command_field_not_removed(mocker, field, value, function_name):
+    """Tests indicator_field_remove_command function
+    Given
+        id of indicator to remove
+        field to remove
+        value to remove
+    When
+        - Calling `indicator_field_remove_command`
+    Then
+        - validate the response to have a "removed successfully." string at human readable
+    """
+    client = Client
+    args = {
+        'id': '123456',
+        'field': field,
+        'value': value
+    }
+    mocker.patch.object(client.stix_domain_object, function_name, return_value=False)
+    with pytest.raises(DemistoException, match=f"Can't remove {field}."):
+        indicator_field_remove_command(client, args)
+
+
+@pytest.mark.parametrize(argnames="field, value, function_name",
+                         argvalues=[('marking', 'TLP:RED', 'remove_marking_definition'),
+                                    ('label', 'new-label', 'remove_label')])
+def test_indicator_field_remove_command_exception(mocker, capfd, field, value, function_name):
+    """Tests indicator_field_remove_command function
+    Given
+        id of indicator to remove
+        field to remove
+        value to remove
+    When
+        - Calling `indicator_field_remove_command`
+    Then
+        - validate the response to have a "removed successfully." string at human readable
+    """
+    client = Client
+    args = {
+        'id': '123456',
+        'field': field,
+        'value': value
+    }
+    mocker.patch.object(client.stix_domain_object, function_name, side_effect=Exception("Test exception"))
+    with pytest.raises(DemistoException, match=f"Can't remove {field} from indicator."):
+        indicator_field_remove_command(client, args)
+    captured = capfd.readouterr()
+    assert captured.out.strip() == "Test exception"
 
 
 def test_get_indicators(mocker):
