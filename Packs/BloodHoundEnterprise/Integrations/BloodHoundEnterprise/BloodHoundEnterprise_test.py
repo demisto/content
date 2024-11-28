@@ -12,7 +12,6 @@ def load_test_events():
 def create_mock_client(test_events):
     client = Mock()
 
-    # Mock the search_events method to return slices of the test_events
     def mock_search_events(limit, from_date, until_date, skip):
         return test_events[skip: skip + limit]
 
