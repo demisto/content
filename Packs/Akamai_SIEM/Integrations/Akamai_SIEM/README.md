@@ -268,10 +268,10 @@ Get security events from Akamai WAF.
 This may be due to not querying for enough events per interval / request.
 The proposed solution in that case is to use the two parameters **Fetch limit** and **Akamai Page size**.
 **Fetch limit** is the number of total events we want to retrieve each fetch interval. Note that the maximum allowed value is 80k.
-**Akamai Page size** is the number of events we want to retrieve each request. Note that the maximum allowed value is 80k.
-Meaning that an interval may execute multiple requests and therefore you should configure **Akamai Page size** < **Fetch limit**
-You should work to find the balance between them in a way that both the command, and the request won't get any timeout.
-Note that in cases your the ingestion rate from the Akamai API is higher, the integration will detect it and immediately starts the next run.
+Note that in cases where the ingestion rate from the Akamai API is higher, the integration will detect it and trigger the next fetch immediately.
+
+**Akamai Page size** configures the number of events to retrieve per request. Note that the maximum allowed value is 80k.
+A single fetch interval may execute multiple requests, so configure **Akamai Page size** < **Fetch limit**
 
 ### Known limitations
 
