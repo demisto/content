@@ -13,7 +13,7 @@ name: CherwellIncidentUnlinkTask
 script: '-'
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.10.115186
 subtype: python3
 tags: [Cherwell]
 dependson:
