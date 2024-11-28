@@ -21,22 +21,16 @@ class Command:
             args (dict): A dictionary containing the command arguments.
             brand (str, optional): The brand associated with the command. Default is None.
         """
-        self.brand = brand
+        self.brand = argToList(brand) or DEFAULT_BRANDS
         self.name = name
         self.args = args
 
     def is_valid_args(self) -> bool:
         """
-        Validate if the command has valid arguments.
-
-        Args:
-            command (Command): The command object to validate.
+        Validate if the command has valid arguments. If the command has no arguments, it is considered valid.
 
         Returns:
             bool: True if the command has valid arguments, False otherwise.
-
-        Note:
-            If the command has no arguments, it is considered valid.
         """
         is_valid = any(self.args.values()) if self.args else True
         if not is_valid:
@@ -162,7 +156,7 @@ def run_execute_command(
     return entry_context_list, human_readable, errors_command_results
 
 
-def remove_system_user(users_names: list[str]) -> tuple[list, dict]:
+def remove_system_user(users_names: list[str]) -> tuple[list, list]:
     """
     Filters out system users from the provided list of user names and returns the remaining users along with status details.
 
@@ -175,16 +169,17 @@ def remove_system_user(users_names: list[str]) -> tuple[list, dict]:
             - dict: A dictionary containing information about users that were identified as system users,
             including their status and messages.
     """
-    outputs = {}
+    outputs = []
     filtered_users = []
     for user in users_names:
         if user in SYSTEM_USERS:
             demisto.debug(f"Skipping user: '{user}' is a system user.")
-            outputs[user] = {
+            outputs.append({
+                "UserName": user,
                 "Result": "Failed",
                 "Message": "Skipping session clearing: User is a system user.",
                 "Source": [],
-            }
+            })
         else:
             filtered_users.append(user)
 
@@ -296,7 +291,7 @@ def clear_user_sessions(command: Command) -> tuple[list[CommandResults], str, Op
     return readable_outputs_list, human_readable, error_message
 
 
-def create_readable_output(outputs):
+def create_readable_output(outputs: list):
     """
     Generates a markdown table summarizing user session status.
 
@@ -316,18 +311,18 @@ def create_readable_output(outputs):
     """
     data_users_list = [
         {
-            "Entity": username,
+            "User Name": details["UserName"],
             "Result": details["Result"],
             "Source": ", ".join(details.get("Source", [])),
             "Message": details["Message"],
         }
-        for username, details in outputs.items()
+        for details in outputs
     ]
 
     readable_output = tableToMarkdown(
         name="User(s) Session Status",
         t=data_users_list,
-        headers=["Entity", "Result", "Source", "Message"],
+        headers=["User Name", "Result", "Source", "Message"],
         removeNull=True,
     )
     return readable_output
@@ -341,19 +336,20 @@ def main():
         args = demisto.args()
         users_names = argToList(args.get("user_name", ""))
         verbose = argToBoolean(args.get("verbose", False))
-        brands = argToList(args.get("brands", "")) or DEFAULT_BRANDS
+        brands = args.get("brands", "")
 
+        outputs: list = []
         results_for_verbose: list[CommandResults] = []
 
         filtered_users_names, outputs = remove_system_user(users_names)
 
-        # if filtered_users_names:
         # get ID for users
         get_user_data_command = Command(
             name="get-user-data",
             args={"user_name": filtered_users_names, "brands": brands},
         )
-        if get_user_data_command.is_valid_args():
+
+        if filtered_users_names:
             readable_outputs, users_ids = get_user_data(get_user_data_command)
             results_for_verbose.extend(readable_outputs)
 
@@ -365,6 +361,7 @@ def main():
             demisto.debug(f"Start getting user account data for user: {user_name=}")
 
             user_output = {
+                "UserName": "",
                 "Result": "",
                 "Source": [],
                 "Message": "",
@@ -372,7 +369,8 @@ def main():
             if user_name not in users_ids:
                 user_output["Result"] = "Failed"
                 user_output["Message"] = "Username not found or no integration configured."
-                outputs[user_name] = user_output
+                user_output["UserName"] = user_name
+                outputs.append(user_output)
                 continue
 
             brands_succeeded: list = []
@@ -424,7 +422,8 @@ def main():
                 user_output["Source"] = brands_failed
                 user_output["Message"] = failed_message
 
-            outputs[user_name] = user_output
+            user_output["UserName"] = user_name
+            outputs.append(user_output)
 
         ##############################
         ### Complete for all users ###

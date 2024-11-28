@@ -487,18 +487,20 @@ def test_remove_system_user_with_system_users():
 
     # Expected filtered users and data for system users
     expected_filtered_users = ["user1", "user2"]
-    expected_data_user = {
-        "administrator": {
+    expected_data_user = [
+        {
+            "UserName": "administrator",
             "Result": "Failed",
             "Message": "Skipping session clearing: User is a system user.",
             "Source": [],
         },
-        "system": {
+        {
+            "UserName": "system",
             "Result": "Failed",
             "Message": "Skipping session clearing: User is a system user.",
             "Source": [],
         }
-    }
+    ]
 
     filtered_users, data_user = remove_system_user(users)
 
@@ -512,7 +514,7 @@ def test_remove_system_user_no_system_users():
 
     # When there are no system users, the output should be the same
     expected_filtered_users = ["user1", "user2"]
-    expected_data_user = {}
+    expected_data_user = []
 
     filtered_users, data_user = remove_system_user(users)
 

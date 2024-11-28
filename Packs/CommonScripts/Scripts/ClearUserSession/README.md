@@ -25,6 +25,7 @@ This script clears user sessions across multiple integrations for a list of user
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
+| SessionClearingResults.UserName | The username for which the session clearing process was executed. | `string` |
 | SessionClearingResults.Entity | The username for which the session clearing process was executed.| `string`     |
 | SessionClearingResults.Result | The result of the session clearing process for the user (*Success* or *Failed*). | `string` |
 | SessionClearingResults.Brands | The integrations (e.g., *Microsoft Graph*, *Okta v2*) where the session clearing succeeded. | `string` |
