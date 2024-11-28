@@ -168,8 +168,8 @@ def get_events_command(client: Client, args: dict) -> tuple[List[Dict], CommandR
     events, _ = get_events_with_pagination(
         client, start_date=from_date, end_date=until_date, max_events=limit
     )
-    hr = tableToMarkdown(name="Test Event", t=events)
-    return events, CommandResults(readable_output=hr)
+    hr = tableToMarkdown(name="Test Event", t=events, removeNull=True)
+    return events, CommandResults(readable_output=hr, raw_response=events)
 
 
 def fetch_events(
