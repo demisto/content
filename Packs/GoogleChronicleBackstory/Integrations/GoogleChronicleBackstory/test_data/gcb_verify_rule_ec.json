@@ -1,0 +1,7 @@
+{
+    "GoogleChronicleBackstory.VerifyRule(val.command_name == obj.command_name)": {
+        "success": true,
+        "context": "identified no known errors",
+        "command_name": "gcb-verify-rule"
+    }
+}

@@ -21,6 +21,19 @@ GENERIC_INTEGRATION_PARAMS = {
     'first_fetch': '1 days'
 }
 
+FILTER_PARAMS = {
+    "credentials": {
+        "password": "{}",
+    },
+    "first_fetch": "1 days",
+    "alert_type": ["Rule Detection Alerts"],
+    "detection_severity": ["low"],
+    "rule_names": ["SampleRule"],
+    "exclude_rule_names": False,
+    "rule_ids": ["ru_e6abfcb5-1b85-41b0-b64c-695b3250436f"],
+    "exclude_rule_ids": False
+}
+
 
 class MockResponse:
     status_code = 200
@@ -46,6 +59,16 @@ def util_load_json(path):
     """Load a JSON file to python dictionary."""
     with open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+@pytest.fixture()
+def mock_client_for_filter_params(mocker):
+    """Fixture for the http client."""
+    credentials = {"type": "service_account"}
+    mocker.patch.object(service_account.Credentials, 'from_service_account_info', return_value=credentials)
+    mocker.patch.object(auth_requests, 'AuthorizedSession', return_value=MockResponse)
+    client = Client(params=FILTER_PARAMS, proxy=False, disable_ssl=True)
+    return client
 
 
 @pytest.fixture
@@ -235,6 +258,36 @@ def test_fetch_samples(mocker):
     mocker.patch.object(demisto, 'getIntegrationContext',
                         return_value={'sample_events': '[{}]'})
     assert fetch_samples() == [{}]
+
+
+def test_stream_detection_alerts_with_filter(mocker, mock_client_for_filter_params, capfd):
+    """
+    Test case scenario for successful execution of stream_detection_alerts with filter.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `stream_detection_alerts` function.
+    Then:
+       - Assert for the continuation time and incidents.
+    """
+    mock_response = MockResponse()
+
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                           'test_data/stream_detections.txt'), 'r') as f:
+
+        mock_response.iter_lines = lambda **_: f.readlines()
+        stream_response = StreamResponse
+        stream_response.mock_response = mock_response
+        mock_response.post = StreamResponse
+        mock_response.encoding = None
+        mocker.patch.object(auth_requests, 'AuthorizedSession', return_value=mock_response)
+        mocker.patch.object(time, 'sleep', return_value=lambda **_: None)
+
+        capfd.close()
+        assert stream_detection_alerts_in_retry_loop(
+            mock_client_for_filter_params, arg_to_datetime('now'),
+            test_mode=True) == {"continuation_time": "2024-03-21T09:44:04.877670709Z", }
 
 
 def test_stream_detection_alerts_in_retry_loop(mocker, mock_client, capfd):
