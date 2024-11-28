@@ -35,11 +35,11 @@ INTEGRATION_CONTEXT_NAME = 'Akamai'
 
 VENDOR = "Akamai"
 PRODUCT = "WAF"
-FETCH_EVENTS_MAX_PAGE_SIZE = 15000  # Allowed events limit per request.
+FETCH_EVENTS_MAX_PAGE_SIZE = 20000  # Allowed events limit per request.
 TIME_TO_RUN_BUFFER = 30  # When calculating time left to run, will use this as a safe zone delta.
 EXECUTION_START_TIME = datetime.now()
 ALLOWED_PAGE_SIZE_DELTA_RATIO = 0.95  # uses this delta to overcome differences from Akamai When calculating latest request size.
-MAX_ALLOWED_FETCH_LIMIT = 45000
+MAX_ALLOWED_FETCH_LIMIT = 80000
 SEND_EVENTS_TO_XSIAM_CHUNK_SIZE = 4 * (10 ** 6)  # 4 MB
 
 # Disable insecure warnings
