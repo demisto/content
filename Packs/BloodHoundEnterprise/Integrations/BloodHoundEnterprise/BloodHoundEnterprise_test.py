@@ -195,7 +195,7 @@ def test_client_request(mocker):
 
     mocker.patch.object(client, "_http_request")
     log = mocker.patch.object(demisto, "debug")
-    client._request("GET", "/api/v2/audit" ,query_params=query_params)
+    client._request("GET", "/api/v2/audit", query_params=query_params)
     found = any(
         "/api/v2/audit?limit=50&sort_by=created_at&after=2024-11-18T11%3A16%3A09.076711Z&before=2024-11-18T14%3A00%3A20.303699Z,"
         in call.args[0]
