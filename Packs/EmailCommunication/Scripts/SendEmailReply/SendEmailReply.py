@@ -686,7 +686,7 @@ def handle_image_type(base64_string):
     return 'png'
 
 
-def convert_internal_url_to_base64(match):
+def convert_internal_url_to_base64(match: re.Match[str]) -> str:
     """
     - When an inline image is attached through the Email layout, we need to download the image data.
     - Then, we replace the URL inside XSOAR with the base64-encoded version of the image.
@@ -698,7 +698,12 @@ def convert_internal_url_to_base64(match):
         str: The src attribute with the base64-encoded image.
     """
     original_src = match.group(1)
+    demisto.debug(f"Processing internal URL: {original_src}")
+
     result = demisto.executeCommand("core-api-download", {"uri": original_src})
+    if is_error(result):
+        raise Exception(f"Error downloading image from {original_src}:\n {get_error(result)}")
+
     with open(demisto.getFilePath(result[0]['FileID']).get("path"), 'rb') as f:
         base64_data_image = base64.b64encode(f.read()).decode('utf-8')
     image_type = handle_image_type(base64_data_image)
@@ -721,8 +726,15 @@ def format_body(new_email_body):
                                      'nl2br',
                                      DemistoExtension(),
                                  ])
-    saas_xsiam_prefix = "/xsoar" if is_xsiam_or_xsoar_saas() else ""
-    html_body = re.sub(rf'src="({saas_xsiam_prefix}/markdown/[^"]+)"', convert_internal_url_to_base64, context_html_body)
+    prefix = ""
+    if is_xsiam_or_xsoar_saas():
+        prefix = "/xsoar"
+    if acc_name := get_tenant_account_name():
+        prefix = f"/{acc_name}{prefix}"
+
+    demisto.debug(f"Account name: {acc_name}, prefix: {prefix}")
+    demisto.debug(f"Original context_html_body: {context_html_body}")
+    html_body = re.sub(rf'src="({prefix}/markdown/[^"]+)"', convert_internal_url_to_base64, context_html_body)
     return context_html_body, html_body
 
 
