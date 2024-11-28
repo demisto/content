@@ -615,7 +615,7 @@ def main():  # pragma: no cover
                     demisto.info(f"Sending {len(events)} events to xsiam with latest event time is: {events[-1]['_time']}")
                     send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
                                          chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE)
-                    demisto.info(f"Done sending {len(events)} events to xsiam." \
+                    demisto.info(f"Done sending {len(events)} events to xsiam."
                                  f"sent {total_events_count} events to xsiam in total during this interval.")
                 set_integration_context({"offset": offset,
                                          "hashed_events_from_previous_run": list(hashed_events_from_current_run)})
