@@ -735,6 +735,7 @@ def format_body(new_email_body):
     demisto.debug(f"Account name: {acc_name}, prefix: {prefix}")
     demisto.debug(f"Original context_html_body: {context_html_body}")
     html_body = re.sub(rf'src="({prefix}/markdown/[^"]+)"', convert_internal_url_to_base64, context_html_body)
+    demisto.debug(f"Final HTML body: {html_body}")
     return context_html_body, html_body
 
 
