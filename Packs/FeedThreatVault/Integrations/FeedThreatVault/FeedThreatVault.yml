@@ -161,7 +161,7 @@ script:
     - contextPath: ThreatVault.EDL.count
       description: Count of entries.
       type: number
-    description: Gets the indicators.
+    description: Retrieves indicators from Threat Vault.
   dockerimage: demisto/python3:3.10.14.96411
   feed: true
   runonce: false
