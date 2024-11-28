@@ -4,7 +4,7 @@ args:
 commonfields:
   id: MS365DefenderUserListToTable
   version: -1
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: MS365DefenderUserListToTable
 runas: DBotWeakRole
