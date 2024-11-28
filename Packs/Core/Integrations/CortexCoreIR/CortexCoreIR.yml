@@ -3097,8 +3097,7 @@ script:
   - arguments:
     - description: asset UUID
       name: asset_id
-      isArray: false
-      required: true  
+      required: true
     name: core-get-asset-details
     description: Get UAI asset info
     outputs: 
@@ -3110,26 +3109,65 @@ script:
       name: filter
       isArray: false
       required: false  
+    - description: A comma-separated list of asset names. Supports '=', '!=', 'contains', 'not contains'. For example, 'contains xcloud'.  
+      name: name_filter
+      isArray: true
     - description: A comma-separated list of cloud providers. Supports '=', '!='. For example, '= AWS,= GCP'.  
-      name: provider  
+      name: provider_filter
+      isArray: true
     - description: A comma-separated list of unique identifiers for the asset. Supports '=', '!=', 'contains', 'not contains'. For example, 'contains abc123, not contains xyz789'.  
-      name: id
+      name: id_filter
+      isArray: true
     - description: A comma-separated list of asset type categories. Supports '=', '!='. For example, '= compute, != storage'.  
-      name: type_category  
+      name: type_category_filter
+      isArray: true  
     - description: A comma-separated list of cloud regions for the asset. Supports '=', '!=', 'contains', 'not contains'. For example, '= us-east-1, not contains us-west'.  
-      name: region
+      name: region_filter
+      isArray: true
     - description: A comma-separated list of specific names for the asset type. Supports '=', '!='. For example, '= VM, != bucket'.  
-      name: type_name
+      name: type_name_filter
+      isArray: true
     - description: A comma-separated list of environments or realms for the asset. Supports '=', '!=', 'contains', 'not contains'. For example, 'contains prod, != staging'.  
-      name: realm
-    - description: "A timestamp when the asset was first observed. Supports '=' with 'from' and 'to'. For example, '= {from: 2023-11-27T10:30:00, to: 2023-11-27T18:00:00}'."  
-      name: first_observed 
+      name: realm_filter
+      isArray: true
     - description: A comma-separated list of sources of the asset's data. Supports '=', '!='. For example, '= system, != manual'.
-      name: source
-    - description: "A timestamp when the asset was last observed. Supports '=' with 'from' and 'to'. For example, '= {from: 2023-11-27T10:30:00, to: 2023-11-27T18:00:00}'."
-      name: last_observed
+      name: source_filter
+      isArray: true
+    - description: "A timestamp when the asset was first observed. Supports 'from' and 'to'. For example, 'from: 2023-11-27T10:30:00, to: 2023-11-27T18:00:00'."  
+      name: first_observed_filter
+    - description: "A timestamp when the asset was last observed. Supports 'from' and 'to'. For example, 'from: 2023-11-27T10:30:00, to: 2023-11-27T18:00:00'."
+      name: last_observed_filter
+    - auto: PREDEFINED
+      description: Specifies the field by which to sort the results. By default the sort is defined as xdm__asset__name.
+      name: sort_by
+      defaultValue: xdm__asset__name
+      predefined:
+      - xdm__asset__name
+      - xdm__asset__provider
+      - xdm__asset__id
+      - xdm__asset__type__category
+      - xdm__cloud__region
+      - xdm__asset__type__name
+      - xdm__asset__realm
+      - xdm__asset__source
+      - xdm__asset__first_observed
+      - xdm__asset__last_observed
+    - auto: PREDEFINED
+      description: The order by which to sort results. Can be "ASC" (ascending) or "DESC" (descending). Default set to DESC.
+      name: sort_order
+      predefined:
+      - ASC
+      - DESC
+      defaultValue: DESC
+    - description: Limit of results number. Default set to 50.
+      name: limit
+      defaultValue: 50
     name: core-get-assets-list
     description: Returns a list of assets by filter.
+    outputs: 
+      - contextPath: Core.CoreAssetList
+        description: Assets list.
+        type: List 
   runonce: false
   script: '-'
   subtype: python3

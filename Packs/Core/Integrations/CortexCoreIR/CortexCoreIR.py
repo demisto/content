@@ -180,13 +180,85 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     response = client.get_asset_details(asset_id)
     parsed = response.get("reply") if response else "An empty response was returned."
     return CommandResults(
-        readable_output=tableToMarkdown("Asset Information", parsed),
+        readable_output=tableToMarkdown("Asset Details", parsed),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CoreAsset",
         outputs=parsed,
         raw_response=parsed,
     )
 
-def get_filter(args: dict):
+
+def parse_date_range_to_timestamp(date_range_str: str) -> dict:
+    """
+    Parses a date range string and converts it into a dictionary with 'from' and 'to' timestamps.
+    
+    Args:
+        date_range_str (str): Date range in the format "from: YYYY:MM:DDTHH:MM:SS, to: YYYY:MM:DDTHH:MM:SS".
+    
+    Returns:
+        dict: Dictionary with 'from' and 'to' keys, each holding the corresponding timestamp.
+    """
+    try:
+        from_str, to_str = date_range_str.split(",")
+        
+        from_date_str = from_str.split(":", 1)[1].strip()
+        to_date_str = to_str.split(":", 1)[1].strip()
+
+        from_timestamp = date_to_timestamp(from_date_str)
+        to_timestamp = date_to_timestamp(to_date_str)
+
+        return {"from": from_timestamp, "to": to_timestamp}
+    
+    except Exception as e:
+        raise DemistoException(f"Error parsing date range: {e}")
+
+def get_filter_config(args: dict) -> tuple:
+    """
+    Initializes filter configuration for supported operators, fields, and operator mappings.
+
+    Args:
+        args (dict): Arguments containing field conditions.
+
+    Returns:
+        tuple: A tuple containing:
+            - field_supported_operators (dict): Mapping of fields to supported operators.
+            - fields (dict): Parsed field conditions from args.
+            - operator_mapping (dict): Mapping of client-facing operators to API search types.
+    """
+    field_supported_operators = {
+        "xdm__asset__name": {"=", "!=", "contains", "not contains"},
+        "xdm__asset__provider": {"=", "!="},
+        "xdm__asset__id": {"=", "!=", "contains", "not contains"},
+        "xdm__asset__type__category": {"=", "!="},
+        "xdm__cloud__region": {"=", "!=", "contains", "not contains"},
+        "xdm__asset__type__name": {"=", "!="},
+        "xdm__asset__realm": {"=", "!=", "contains", "not contains"},
+        "xdm__asset__source": {"=", "!="}
+    }
+
+    fields = {
+        "xdm__asset__name": argToList(args.get("name_filter")),
+        "xdm__asset__provider": argToList(args.get("provider_filter")),
+        "xdm__asset__id": argToList(args.get("id_filter")),
+        "xdm__asset__type__category": argToList(args.get("type_category_filter")),
+        "xdm__cloud__region": argToList(args.get("cloud_region_filter")),
+        "xdm__asset__type__name": argToList(args.get("type_name_filter")),
+        "xdm__asset__realm": argToList(args.get("realm_filter")),
+        "xdm__asset__source": argToList(args.get("source_filter")),
+        "xdm__asset__first_observed": args.get("first_observed_filter"),
+        "xdm__asset__last_observed": args.get("last_observed_filter")
+    }
+
+    operator_mapping = {
+        "=": "WILDCARD",
+        "!=": "WILDCARD_NOT",
+        "contains": "CONTAINS",
+        "not contains": "NCONTAINS"
+    }
+
+    return field_supported_operators, fields, operator_mapping
+
+
+def build_filter(args: dict):
     """
     Builds a filter dictionary in the required format.
 
@@ -197,58 +269,89 @@ def get_filter(args: dict):
     Returns:
         dict: A filter dictionary with the structure {"AND": [{"SEARCH_FIELD": ..., "SEARCH_TYPE": ..., "SEARCH_VALUE": ...}]}.
     """
-    fields: dict = {
-        "xdm__asset__provider": args.get("provider"),
-        "xdm__asset__id": args.get("id"),
-        "xdm__asset__type__category": args.get("type_category"),
-        "xdm__cloud__region": args.get("type_category"),
-        "xdm__asset__type__name": args.get("type_name"),
-        "xdm__asset__realm": args.get("realm"),
-        "xdm__asset__first_observed": args.get("first_observed"),
-        "xdm__asset__source": args.get("source"),
-        "xdm__asset__last_observed": args.get("last_observed")
-    }
-    
-    operator_mapping = {
-        "=": "WILDCARD",
-        "!=": "WILDCARD_NOT",
-        "contains": "CONTAINS",
-        "not contains": "NCONTAINS"
-    }
-    
+    field_supported_operators, fields, operator_mapping = get_filter_config(args)
     filter_conditions = []
     for field, conditions in fields.items():
         if not conditions:
             continue
         
-            
-    
-    return
+        if field in ["xdm__asset__first_observed", "xdm__asset__last_observed"]:
+            if "from:" in conditions and "to:" in conditions:
+                date_range = parse_date_range_to_timestamp(conditions)
+                filter_conditions.append({
+                    "SEARCH_FIELD": field,
+                    "SEARCH_TYPE": "RANGE",
+                    "SEARCH_VALUE": date_range
+                })
+            else:
+                raise DemistoException(
+                    f"Invalid date range condition for field '{field}'. "
+                    "Condition must include both 'from:' and 'to:' in the format 'from: YYYY-MM-DDTHH:MM:SS, to: YYYY-MM-DDTHH:MM:SS'."
+                )
+            continue
+        
+        for condition in conditions:
+            condition = condition.strip()
+            valid_operator_found = False
+            for operator, search_type in operator_mapping.items():
+                if condition.startswith(operator):
+                    valid_operator_found = True
+                    value = condition[len(operator):].strip()
+                    if operator not in field_supported_operators[field]:
+                        raise DemistoException(
+                            f"Unsupported operator '{operator}' for field '{field}'. "
+                            f"Supported operators are: {field_supported_operators[field]}"
+                        )
+                        
+                    filter_conditions.append({
+                        "SEARCH_FIELD": field,
+                        "SEARCH_TYPE": search_type,
+                        "SEARCH_VALUE": value
+                    })
+                    break
+                
+            if not valid_operator_found:
+                raise DemistoException(
+                    f"Condition '{condition}' for field '{field}' must start with a valid operator: "
+                    f"{field_supported_operators[field]}."
+                )
+                
+    print({"AND": filter_conditions})
+    return {"AND": filter_conditions}
+
 
 def get_assets_list_command(client: Client, args: dict) -> CommandResults:
     client._base_url = "/api/webapp/get_data"
-    filter = get_filter(args)
+    filter = build_filter(args)
     payload = {
         "type": "grid",
         "table_name": "UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS",
         "data_id": None,
         "extraData": None,
         "filter_data": {
-            "sort": [{"FIELD": "xdm__asset__name", "ORDER": "DESC"}],
-            "filter": {"AND": [{"SEARCH_FIELD": "xdm__asset__id", "SEARCH_TYPE": "WILDCARD","SEARCH_VALUE":"fe271281f05a8ac22e0a00322b6d4e46b5a3b9f54749ee70d3792bf1191f467f"}]},
+            "sort": [{"FIELD": args.get("sort_by"), "ORDER": args.get("sort_order")}],
+            "filter": filter,
             "free_text": "",
             "visible_columns": None,
             "locked": {},
-            "paging": {"from": 0, "to": 50},
+            "paging": {"from": 0, "to": arg_to_number(args.get("limit"))},
         },
         "jsons": [],
     }
+    print(payload)
     response = client.get_assets_list(payload)
+    if not response:
+        return CommandResults(readable_output="An empty response was returned.")
+    
     response = response.get("reply") if response else "An empty response was returned."
+    filter_count = response.get("FILTER_COUNT")
+    total_count = response.get("TOTAL_COUNT")
+    assets_list = response.get("DATA")
+    print(response)
     return CommandResults(
-        readable_output=tableToMarkdown("Assets list", response),
+        readable_output=tableToMarkdown(f"Assets list - Found {filter_count} out of {total_count} results", assets_list),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CoreAssetList",
-        outputs=response,
+        outputs=assets_list,
         raw_response=response
     )
 
