@@ -21,9 +21,6 @@
     ],
     "dependencies": {
     },
-    "displayedImages": [
-        "ThreatVaultLogo.png"
-    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

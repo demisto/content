@@ -1,7 +1,6 @@
 commonfields:
   id: Palo Alto Networks Threat Vault v2 Feed
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Palo Alto Networks Threat Vault v2 Feed
 display: Palo Alto Networks Threat Vault v2 Feed
 category: Data Enrichment & Threat Intelligence
@@ -31,7 +30,7 @@ configuration:
   type: 8
   defaultvalue: 'true'
   required: false
-- display: Indicator Verdict
+- display: Indicator Reputation
   name: feedReputation
   type: 18
   required: false
@@ -40,7 +39,7 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this verdict
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
 - display: Source Reliability
   name: feedReliability
   defaultvalue: B - Usually reliable
@@ -79,22 +78,20 @@ configuration:
   type: 8
   required: false
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
-- display: Traffic Light Protocol
-  name: tlp_color
+- display: Traffic Light Protocol Color
   type: 15
-  required: false
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  name: tlp_color
   options:
   - RED
   - AMBER
   - GREEN
   - WHITE
-  - AMBER+STRICT
-  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
 - display: Tags
   name: feedTags
   type: 0
   required: false
-  additionalinfo: Supports CSV values
+  additionalinfo: Supports CSV values.
 - display: Predefined EDL Name
   name: name
   type: 15
@@ -118,6 +115,7 @@ script:
   - name: threatvault-get-indicators
     arguments:
     - name: name
+      description: The name of the predefined EDL to retrieve.
       required: true
       auto: PREDEFINED
       predefined:
@@ -126,6 +124,7 @@ script:
       - panw-torexit-ip-list
       - panw-bulletproof-ip-list
     - name: version
+      description: The version of the EDL to retrieve.
       required: true
       auto: PREDEFINED
       predefined:
@@ -150,4 +149,6 @@ script:
   runonce: false
   subtype: python3
   isFetchSamples: true
-sourcemoduleid: Palo Alto Networks Threat Vault v2
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
