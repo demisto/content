@@ -1,0 +1,120 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: CiscoThousandEyesEventCollector
+  version: -1
+configuration:
+- defaultvalue: https://api.thousandeyes.com
+  display: Server URL
+  name: url
+  required: false
+  type: 0
+  section: Connect
+- displaypassword: User API Token
+  name: api_token
+  required: true
+  hiddenusername: true
+  type: 9
+  section: Connect
+- defaultvalue: 10000
+  section: Collect
+  display: Max number of events per fetch
+  name: max_events_per_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+description: This is the Cisco ThousandEyes event collector integration for Cortex XSIAM.
+display: CiscoThousandEyesEventCollector
+name: CiscoThousandEyesEventCollector
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      isArray: false
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - auto: PREDEFINED
+      default: false
+      description: Filter by alert status.
+      isArray: false
+      name: status
+      predefined:
+      - ACTIVE
+      - CLOSED
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of results to return.
+      isArray: false
+      name: limit
+      required: true
+      secret: false
+    - default: false
+      description: Date from which to get events.
+      name: from_date
+      required: false
+    deprecated: false
+    description: Gets events from Cisco ThousandEyes.
+    execution: false
+    name: cisco-thousandeyes-get-events
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      isArray: false
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - auto: PREDEFINED
+      default: false
+      description: Filter by alert status.
+      isArray: false
+      name: status
+      predefined:
+      - ACTIVE
+      - CLOSED
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of results to return.
+      isArray: false
+      name: limit
+      required: true
+      secret: false
+    - default: false
+      description: Date from which to get events.
+      name: from_date
+      required: false
+    deprecated: false
+    description: Gets events from Cisco ThousandEyes.
+    execution: false
+    name: cisco-thousandeyes-get-alerts
+  dockerimage: demisto/python3:3.11.10.116949
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+fromversion: 8.4.0
+tests:
+- No tests (auto formatted)
