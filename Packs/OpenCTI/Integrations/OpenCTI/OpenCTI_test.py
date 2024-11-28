@@ -1,7 +1,7 @@
 import pytest
 
 from OpenCTI import *
-from test_data.data import RESPONSE_DATA_OBSERVABLES, RESPONSE_DATA_INDICATORS, RESPONSE_DATA_WITHOUT_OBSERVABLES
+from test_data.data import RESPONSE_DATA_OBSERVABLES, RESPONSE_DATA_INDICATORS, RESPONSE_DATA_EMPTY
 from CommonServerPython import CommandResults
 from pycti import StixCyberObservable, MarkingDefinition, Label, ExternalReference, Indicator, Incident, StixDomainObject, StixCoreRelationship
 
@@ -162,7 +162,7 @@ def test_get_observables_command_with_no_data_to_return(mocker):
     args = {
         'observable_types': ['registry key', 'account']
     }
-    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA_WITHOUT_OBSERVABLES)
+    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA_EMPTY)
     results: CommandResults = get_observables_command(client, args)
     assert "No observables" in results.readable_output
 
@@ -932,7 +932,7 @@ def test_get_indicators(mocker):
     Given
         The following indicator types: 'registry key', 'account' that were chosen by the user.
     When
-        - `fetch_indicators_command` or `get_indicators_command` are calling the get_indicators function
+        - `get_indicators_command` is calling the get_indicators function
     Then
         - convert the result to indicators list
         - validate the length of the indicators list
@@ -943,6 +943,65 @@ def test_get_indicators(mocker):
     mocker.patch.object(client.indicator, 'list', return_value=RESPONSE_DATA_INDICATORS)
     indicators = get_indicators(client, indicator_types=['indicator_type_1', 'indicator_type_2'], limit=10)
     assert len(indicators) == 2
+
+
+def test_get_indicators_exception(mocker, capfd):
+    """Tests get_indicators function
+    Given
+        The following indicator types: 'registry key', 'account' that were chosen by the user.
+    When
+        - `get_indicators_command` is calling the get_indicators function
+    Then
+         Ensure a DemistoException is raised with the correct error message.
+    """
+    client = Client
+    mocker.patch.object(client.indicator, 'list', side_effect=Exception("Test exception"))
+    with pytest.raises(DemistoException, match="Failed to retrieve indicators."):
+        get_indicators(client, indicator_types=['indicator_type_1', 'indicator_type_2'], limit=10)
+    captured = capfd.readouterr()
+    assert captured.out.strip() == "Test exception"
+
+
+def test_get_indicators_command(mocker):
+    """Tests get_indicators_command function
+    Given
+        The following indicator types: 'compromised' that were chosen by the user and 'limit': 2
+    When
+        - Calling `get_indicators_command`
+    Then
+        - convert the result to human readable table
+        - validate the readable_output, raw_response.
+    """
+    client = Client
+    args = {
+        'indicator_types': 'compromised',
+        'limit': 2
+    }
+    mocker.patch.object(client.indicator, 'list', return_value=RESPONSE_DATA_INDICATORS)
+    results: CommandResults = get_indicators_command(client, args)
+    assert len(results.raw_response) == 2
+    assert "Indicators" in results.readable_output
+    assert RESPONSE_DATA_INDICATORS.get('pagination', {}).get('endCursor') == \
+        results.outputs.get('OpenCTI.Indicators(val.lastRunID)').get('lastRunID')
+
+
+def test_get_indicators_command_with_no_data_to_return(mocker):
+    """Tests get_indicators_command function with no data to return
+    Given
+        The following indicator types: 'compromised' that were chosen by the user.
+    When
+        - Calling `get_indicators_command`
+    Then
+        - validate the response to have a "No indicators" string
+    """
+    client = Client
+    args = {
+        'indicator_types': 'compromised'
+    }
+    mocker.patch.object(client.indicator, 'list', return_value=RESPONSE_DATA_EMPTY)
+    results: CommandResults = get_indicators_command(client, args)
+    assert "No indicators" in results.readable_output
+
 
 def test_indicator_types_list_command(mocker):
     """Tests indicator_types_list_command function
@@ -1007,4 +1066,3 @@ def test_indicator_types_list_command_exception(mocker, capfd):
         indicator_types_list_command(client, {})
     captured = capfd.readouterr()
     assert captured.out.strip() == "Test exception"
-

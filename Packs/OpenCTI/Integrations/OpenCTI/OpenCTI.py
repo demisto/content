@@ -543,7 +543,7 @@ def get_observables_command(client: OpenCTIApiClient, args: dict) -> CommandResu
             raw_response=observables_list
         )
     else:
-        return CommandResults(readable_output='No observables')
+        return CommandResults(readable_output='No observables.')
 
 
 def observable_delete_command(client: OpenCTIApiClient, args: dict) -> CommandResults:
@@ -1089,7 +1089,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
     value = args.get('value', '')
     indicator_types = args.get('indicator_types')
 
-    indicator_list = get_indicators(
+    raw_response = get_indicators(
         client=client,
         label=label,
         created_by=created_by,
@@ -1099,8 +1099,8 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
         search=value
     )
 
-    if indicator_list:
-        new_last_run = indicator_list.get('pagination', {}).get('endCursor')
+    last_run = raw_response.get('pagination', {}).get('endCursor')
+    if indicators_list := copy.deepcopy(raw_response.get('entities')):
         indicators = [
             {
                 "id": indicator.get("id"),
@@ -1116,7 +1116,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
                 "created": indicator.get("created"),
                 "updatedAt": indicator.get("updated_at")
             }
-            for indicator in indicator_list.get('entities', [])
+            for indicator in indicators_list
         ]
 
         readable_output = tableToMarkdown(
@@ -1127,17 +1127,17 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
             headerTransform=pascalToSpace
         )
         outputs = {
-            'OpenCTI.Indicators(val.indicatorsLastRun)': {'indicatorsLastRun': new_last_run},
+            'OpenCTI.Indicators(val.lastRunID)': {'lastRunID': last_run},
             'OpenCTI.Indicators.IndicatorList(val.ID === obj.ID)': indicators
         }
 
         return CommandResults(
             outputs=outputs,
             readable_output=readable_output,
-            raw_response=indicator_list
+            raw_response=indicators_list
         )
     else:
-        return CommandResults(readable_output="No indicators found.")
+        return CommandResults(readable_output="No indicators.")
 
 
 def organization_list_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
