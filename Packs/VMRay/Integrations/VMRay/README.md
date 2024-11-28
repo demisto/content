@@ -5,23 +5,19 @@ This integration enables users to design playbooks that involve analyzing a file
 
 The Playbooks accelerate incident response and make security operations more scalable and efficient.
 
-## Configure VMRay on Cortex XSOAR
+## Configure VMRay in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for VMRay.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Source Reliability | Reliability of the source providing the intelligence data. | False |
-    | Server URL (e.g., <https://cloud.vmray.com>) |  | True |
-    | API Key (Recommended) |  | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Retry requests when API is rate limited |  | False |
-    | API Key (Deprecated) | Use the "API Key \(Recommended\)" parameter instead. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
+| Server URL (e.g., <https://cloud.vmray.com>) |  | True |
+| API Key (Recommended) |  | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Retry requests when API is rate limited |  | False |
+| API Key (Deprecated) | Use the "API Key \(Recommended\)" parameter instead. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Known Limitations
 
@@ -30,7 +26,7 @@ The Playbooks accelerate incident response and make security operations more sca
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 - [vmray-upload-sample](#vmray-upload-sample): Submit a sample for analysis

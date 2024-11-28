@@ -2,7 +2,7 @@
     "name": "Infoblox BloxOne",
     "description": "Infoblox BloxOne",
     "support": "xsoar",
-    "currentVersion": "1.1.11",
+    "currentVersion": "1.1.12",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
