@@ -50,6 +50,11 @@ configuration:
   type: 0
   additionalinfo: Deprecated.
   defaultvalue:
+- name: blocked_urls
+  display: List of domains to block
+  required: false
+  defaultvalue: "cloudflare.com"
+  type: 0
 - name: proxy
   display: Use system proxy settings
   required: false
@@ -334,7 +339,7 @@ script:
     - contextPath: InfoFile.Type
       description: The type of the image/pdf file.
       type: string
-  dockerimage: demisto/chromium:127.0.6533.105883
+  dockerimage: demisto/chromium:131.0.6778.116585
   runonce: false
   script: "-"
   subtype: python3

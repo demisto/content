@@ -2047,3 +2047,5 @@ tests:
 - Microsoft Defender - ATP - Indicators SC Test
 fromversion: 6.5.0
 system: true
+marketplaces:
+- xsoar

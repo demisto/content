@@ -10,18 +10,14 @@ To use this integration you must generate an Access/Secret token for your Aliyun
 4. Navigate to [Permmions > Grants](https://ram.console.aliyun.com/permissions)
 4. Grant the service account principal either `AliyunECSFullAccess` or `AliyunECSReadOnlyAccess` permissions. 
 
-## Configure Ansible Alibaba Cloud on Cortex XSOAR
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Ansible Alibaba Cloud.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure Ansible Alibaba Cloud in Cortex
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Access Key | Aliyun Cloud access key | True |
-    | Access Secret Key | Aliyun Cloud secret key | True |
-    | Region | Aliyun Cloud region | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Access Key | Aliyun Cloud access key | True |
+| Access Secret Key | Aliyun Cloud secret key | True |
+| Region | Aliyun Cloud region | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Idempotence
 The action commands in this integration are idempotent. This means that the result of performing it once is exactly the same as the result of performing it repeatedly without any intervening actions.
@@ -43,7 +39,7 @@ Some commands may require structured input arguments such as `lists` or `diction
 Other more advanced data manipulation tools such as [Ansible](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html)/[Jinja2 filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters) can also be used in-line. For example to get a [random number](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#random-number-filter) between 0 and 60 you can use `{{ 60 | random }}`.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ali-instance
 ***

@@ -34,22 +34,18 @@ Ansible can use existing privilege escalation systems to allow a user to execute
 This integration is powered by Ansible 2.9. Further information can be found on that the following locations:
 * [The Let’s Encrypt documentation](https://letsencrypt.org/docs/)
 * [Automatic Certificate Management Environment (ACME)](https://tools.ietf.org/html/rfc8555)
-## Configure Ansible ACME on Cortex XSOAR
+## Configure Ansible ACME in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Ansible ACME.
-3. Click **Add instance** to create and configure a new integration instance.
-
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Username | The credentials to associate with the instance. SSH keys can be configured using the credential manager. | True |
-    | Password |  | True |
-    | Default SSH Port | The default port to use if one is not specified in the commands \`host\` argument. | True |
-    | Concurrency Factor | If multiple hosts are specified in a command, how many hosts should be interacted with concurrently. | True |
-    | Escalate Privileges | Ansible allows you to ‘become’ another user, different from the user that<br/>logged into the machine \(remote user\).<br/> | True |
-    | Privilege Escalation Method | Which privilege escalation method should be used. | True |
-    | Privilege Escalation User | Set the user you become through privilege escalation | False |
-    | Privilege Escalation Password | Set the privilege escalation password. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Username | The credentials to associate with the instance. SSH keys can be configured using the credential manager. | True |
+| Password |  | True |
+| Default SSH Port | The default port to use if one is not specified in the commands \`host\` argument. | True |
+| Concurrency Factor | If multiple hosts are specified in a command, how many hosts should be interacted with concurrently. | True |
+| Escalate Privileges | Ansible allows you to ‘become’ another user, different from the user that<br/>logged into the machine \(remote user\).<br/> | True |
+| Privilege Escalation Method | Which privilege escalation method should be used. | True |
+| Privilege Escalation User | Set the user you become through privilege escalation | False |
+| Privilege Escalation Password | Set the privilege escalation password. | False |
 
 ## Testing
 This integration does not support testing from the integration management screen. Instead it is recommended to use the `!acme-inspect`command providing an example `host` as the command argument to connect to a ACME provider like Let's Encrypt. Eg. `!acme-inspect host="123.123.123.123" acme_directory="https://acme-staging-v02.api.letsencrypt.org/directory" acme_version="2" method="directory-only" ` This command will connect to the specified host with the configured credentials in the integration, and if successful output information about the Let's Encrypt ACME directory.
@@ -72,7 +68,7 @@ Some commands may require structured input arguments such as `lists` or `diction
 
 Other more advanced data manipulation tools such as [Ansible](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html)/[Jinja2 filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters) can also be used in-line. For example to get a [random number](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#random-number-filter) between 0 and 60 you can use `{{ 60 | random }}`.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### acme-account
 ***
