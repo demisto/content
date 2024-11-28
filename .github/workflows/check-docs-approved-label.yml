@@ -1,0 +1,21 @@
+name: Docs Approved Check
+on:
+  pull_request:
+    types: [opened, labeled, synchronize, unlabeled]
+jobs:
+  docs-review-check:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Check if the PR has a docs-approved label
+      id: docs_approved
+      run: |
+        LABELS=$(jq --raw-output '.pull_request.labels | map(.name) | join(",")' "$GITHUB_EVENT_PATH")
+        if [[ "$LABELS" != *"docs-approved"* ]]; then
+          echo "docs-approved label is missing. The PR still requires a review from the docs team."
+          exit 1
+        else
+          echo "docs-approved label is present."
+        fi
+          
