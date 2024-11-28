@@ -1,4 +1,4 @@
-Checks if the Docker container running this script has been hardened according to the recommended settings located [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide).
+Checks if the Docker container running this script has been hardened according to the recommended settings located [here (XSOAR 6.12)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) or [here (XSOAR 8)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide)
 
 ## Script Data
 ---
