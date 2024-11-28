@@ -162,7 +162,7 @@ script:
       description: Count of entries.
       type: number
     description: Retrieves indicators from Threat Vault.
-  dockerimage: demisto/python3:3.10.14.96411
+  dockerimage: demisto/python3:3.11.10.116949
   feed: true
   runonce: false
   subtype: python3
