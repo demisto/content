@@ -1,6 +1,6 @@
 Deprecated. Use the Generic Export Indicators Service integration instead. This integration is still supported however, for customers with over 1000 Firewalls.
 This integration requires root access in order to execute ssh commands. 
-If you've configured the server to run Docker images with a non-root internal user make sure to exclude the demisto/openssh Docker image as documented For XSOAR 6 [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users). and for XSOAR 8 [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script).
+If you've configured the server to run Docker images with a non-root internal user make sure to exclude the demisto/openssh Docker image as documented For XSOAR 6 [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users). and for XSOAR 8 [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users).
 
 ## Configure Palo Alto Networks PAN-OS EDL Management on Cortex XSOAR
 

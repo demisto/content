@@ -6159,4 +6159,4 @@ This is a limitation of the Ansible-Runner software itself https://github.com/an
 
 A workaround is to use the `docker.run.internal.asuser.ignore` server setting and to configure Cortex XSOAR to ignore the Ansible container image by setting the value of `demisto/ansible-runner` and afterwards running /reset_containers to reload any containers that might be running to ensure they receive the configuration.
 
-See step 2 of this [XSOAR 6.12 guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users), Or for XSOAR 8 use the [XSOAR 8 guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script) for complete instructions.
+See step 2 of this [XSOAR 6.12 guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users), Or for XSOAR 8 use the [XSOAR 8 guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users) for complete instructions.
