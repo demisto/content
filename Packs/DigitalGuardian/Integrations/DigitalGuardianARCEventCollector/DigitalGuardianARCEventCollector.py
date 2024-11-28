@@ -1,8 +1,8 @@
 from CommonServerPython import *
 import urllib3
-from datetime import datetime, timedelta
 import time
-from typing import Any, Tuple
+from typing import Any
+from collections.abc import Generator, Iterable
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -13,6 +13,8 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'Digital Guardian'
 PRODUCT = 'ARC'
 
+EventsGenerator = Generator[dict[str, Any], None, None]
+
 ''' CLIENT CLASS '''
 
 
@@ -22,227 +24,228 @@ class Client(BaseClient):
     implements get_token and get_events functions
     """
 
-    def __init__(self, verify, proxy, auth_url, gateway_url, base_url, client_id, client_secret, export_profile, headers=None):
-        self.auth_url = auth_url
-        self.gateway_url = gateway_url
-        self.client_id = client_id
-        self.client_secret = client_secret
+    def __init__(
+        self,
+        verify: bool,
+        proxy: bool,
+        auth_url: str,
+        base_url: str,
+        client_id: str,
+        client_secret: str,
+        export_profile: str,
+    ) -> None:
+        self.__auth_url = auth_url
+        self.__client_id = client_id
+        self.__client_secret = client_secret
         self.export_profile = export_profile
 
-        super().__init__(base_url=base_url, headers=headers, verify=verify, proxy=proxy)
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self._headers = {'Authorization': f'Bearer {self._get_access_token()}'}
 
-    def get_token(self):
+    def _get_access_token(self) -> str:
+        """
+        Tries to find a valid token in integration context. If not found or expired, generates a new token
+        and sets it in the integration context.
+
+        Returns:
+            str: Access token.
+        """
         integration_context = get_integration_context()
         token = integration_context.get('token')
         valid_until = integration_context.get('valid_until')
         time_now = int(time.time())
-        if token and valid_until:
-            if time_now < valid_until:
-                # Token is still valid - did not expire yet
-                demisto.debug('Using cached token which is still valid')
-                demisto.debug(f'time-now: {time_now}\n valid token until: {valid_until}')
-                return token
-        sec = self.client_secret
+
+        if token and valid_until and time_now < valid_until:
+            # Token is still valid - did not expire yet
+            demisto.debug('Using cached token which is still valid')
+            demisto.debug(f'time-now: {time_now}\n valid token until: {valid_until}')
+            return token
+
         response = self._http_request(
             method='POST',
-            full_url=f'{self.auth_url}/as/token.oauth2',
+            full_url=urljoin(self.__auth_url, '/as/token.oauth2'),
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
-            data=f'client_id={self.client_id}&client_secret={sec}&grant_type=client_credentials',
+            data={
+                'client_id': self.__client_id,
+                'client_secret': self.__client_secret,
+                'grant_type': 'client_credentials'
+            },
+            raise_on_status=True,
         )
-        demisto.debug('Using new token which was just received from DG')
+        demisto.debug(f'Requested new token from {VENDOR}')
+
         integration_context = {
-            'token': response.get("access_token"),
-            'valid_until': time_now + int(response.get("expires_in")) - 100
+            'token': response['access_token'],
+            'valid_until': time_now + int(response['expires_in']) - 100
         }
         set_integration_context(integration_context)
-        return response.get("access_token")
 
-    def get_events(self, time_of_last_event_str, current_time):
-        token = self.get_token()
-        time_param = f'dg_time:{time_of_last_event_str},{current_time}'
-        headers = {
-            'Authorization': 'Bearer ' + token
-        }
-        response = self._http_request(
-            method='GET',
-            headers=headers,
-            params={'q': time_param}
+        return response['access_token']
+
+    def get_watchlists(self) -> list[dict]:
+        """Returns all watchlists (used for test module to check connection and authentication).
+
+        Returns:
+            list: List of watchlists.
+        """
+        return self._http_request(method='GET', url_suffix='rest/1.0/watchlists', raise_on_status=True)
+
+    def export_events(self) -> dict:
+        """
+        Exports events for the export profile that arrived after setting the internal bookmark.
+
+        Returns:
+            dict: Response JSON.
+        """
+        return self._http_request(
+            method='POST',
+            url_suffix=f'/rest/2.0/export_profiles/{self.export_profile}/export',
+            raise_on_status=True,
         )
-        return response
+
+    def set_export_bookmark(self) -> str:
+        """
+        Advances the internal bookmark / pointer for the export profile based on the last export events.
+        This is effectively an API-side implementation of `demisto.getLastRun` and `demisto.setLastRun`.
+
+        *Only call after successfully exporting events and sending them to XSIAM!*
+
+        Returns:
+            str: Response text.
+        """
+        return self._http_request(
+            method='POST',
+            url_suffix=f'/rest/2.0/export_profiles/{self.export_profile}/acknowledge',
+            raise_on_status=True,
+            resp_type='text',
+        )
 
 
-def test_module(client: Client, params: Dict[str, Any]) -> str:
+def test_module(client: Client, params: dict[str, Any]) -> str:
     """
-    Tests API connectivity and authentication'
-    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
-    successful.
-    Raises exceptions if something goes wrong.
+    Tests API connectivity and authentication.
     Args:
         client (Client): Digital Guardian client to use.
-        params (Dict): Integration parameters.
+        params (dict): Integration parameters.
     Returns:
-        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
+        str: 'ok' connection to the service is successful.
+    Raises:
+        DemistoException | HTTPError: If request failed.
     """
     try:
-        limit = arg_to_number(params.get('number_of_events')) or 1000
-        fetch_events(
-            client=client,
-            last_run={},
-            limit=limit,
-        )
+        client.get_watchlists()
+        return 'ok'
 
     except Exception as e:
         if 'Forbidden' in str(e):
-            raise DemistoException('Authorization Error: make sure API Key is correctly set')
-        else:
-            raise e
-    return "ok"
+            raise DemistoException('Authorization Error: Make sure client credentials are correctly set') from e
+        raise
 
 
-def get_raw_events(client: Client, time_of_last_event: str) -> list:
+def fetch_events(client: Client, limit: int | None = None) -> tuple[EventsGenerator, dict]:
     """
-       helper function that is used in get-events and fetch-events to get the actual events and sort them
-       Args:
-           client (Client): DG client
-           time_of_last_event: time of last ingested event
-       Returns:
-           list: list of events
+    Args:
+        client (Client): Digital Guardian client.
+        limit (int | None): Optional value to limit the number of yielded events.
+    Returns:
+        tuple[EventsGenerator, dict]: Events and last run dictionary.
     """
-    outcome = []
-    event_list = []
-    if not time_of_last_event:
-        time_of_last_event_datetime = datetime.now() - timedelta(hours=1)
-        time_of_last_event_str = datetime_to_string(time_of_last_event_datetime)
-    else:
-        temp_time: datetime = arg_to_datetime(arg=time_of_last_event, required=True)  # type: ignore[assignment]
-        time_of_last_event_str = temp_time.isoformat(sep=' ', timespec='milliseconds')
-    current_time = datetime_to_string(datetime.now())
-    events = client.get_events(time_of_last_event_str, current_time)
-    events = {} if events is None else events
-    for field_names in events.get("fields"):
-        outcome.append(field_names.get('name'))
-    for event in events.get("data"):
-        result = dict(zip(outcome, event))
-        event_list.append(result)
-    event_list.sort(key=lambda item: (item.get("inc_mtime"), item.get("dg_guid")))
-    return event_list
+    demisto.debug('Fetching events')
+    raw_response = client.export_events()
+
+    demisto.info(f"Pulled {raw_response['total_hits']} events from {VENDOR}")
+    events = create_events_for_push(raw_response, limit)
+
+    last_run = {key: value for key, value in raw_response.items() if key in ('bookmark_values', 'search_after_values')}
+
+    return events, last_run
 
 
-def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults]:
+def create_events_for_push(raw_response: dict, limit: int | None = None) -> EventsGenerator:
     """
-        Implement the get_events command
-        Args:
-            client (Client): DG client
-            args (dict): Command arguments
-        Returns:
-            list: list of events
-            commandresults: readable output
+    Yields key-value dictionaries of distinct events from the raw API response and adds the _time key to the events.
+    Args:
+        raw_response (dict): Export profile events raw API response.
+        limit (int | None): Optional value to limit the number of yielded events.
+    Yields:
+        dict: Event from raw response.
     """
-    event_list = get_raw_events(client, "")
-    limit = int(args.get("limit", 1000))
-    if limit:
-        event_list = event_list[:limit]
-    if not event_list:
-        hr = "No events found."
-    else:
-        hr = tableToMarkdown(name='Test Event', t=event_list)
-    demisto.debug(f'get events command that ran with the limit: {limit}')
-    return event_list, CommandResults(readable_output=hr)
+    event_fields = [field['name'] for field in raw_response['fields']]
+    events_data = raw_response['data']
 
-
-def create_events_for_push(event_list: list, last_time: str, id_list: list, limit: int) -> Tuple[list, str, list]:
-    """
-       Create events for pushing them and prepares the values for next_run save
-       Args:
-           event_list (list): list of events
-           last_time (str): time of last event from previous run
-           id_list (list): list of id's ingested
-           limit (int): max_fetch
-       Returns:
-           list: list of events
-           last_time: updates time of last event
-           id_list: list of id's
-    """
+    ids = set()
     index = 0
-    event_list_for_push = []
-    demisto.debug('Checking duplications and creating events for pushing to XSIAM')
-    for event in event_list:
-        inc_time = event.get("inc_mtime")
-        if last_time:
-            last_time_date = arg_to_datetime(arg=last_time, required=True).date()   # type: ignore[union-attr]
-            event_date = arg_to_datetime(arg=inc_time, required=True).date() if inc_time else None   # type: ignore[union-attr]
-            if (inc_time and inc_time < last_time) or event.get("dg_guid") in id_list:
-                continue
-            if last_time_date == event_date and event.get("dg_guid"):
-                id_list.append(event.get("dg_guid"))
-            elif event.get("dg_guid"):
-                id_list = [event.get("dg_guid")]
-        else:
-            if event.get("dg_guid"):
-                id_list.append(event.get("dg_guid"))
-        event_list_for_push.append(event)
-        last_time = inc_time if inc_time else last_time
-        index += 1
-        if index == limit:
+
+    for event_data in events_data:
+        if limit is not None and index == limit:  # No API-side limit param (needs to be managed on our end)
             break
-    return event_list_for_push, last_time, id_list
+
+        event = dict(zip(event_fields, event_data, strict=True))
+        event_id = event['dg_guid']
+
+        if event_id in ids:
+            continue  # Skip duplicate event
+
+        event_time = arg_to_datetime(arg=event.get('dg_time')) if event.get('dg_time') else None
+        event['_time'] = event_time.strftime(DATE_FORMAT) if event_time else None
+
+        ids.add(event_id)
+        index += 1
+
+        yield event
 
 
-def fetch_events(client: Client, last_run: dict[str, list], limit: int) -> Tuple[dict, list]:
+def get_events_command(client: Client, args: dict) -> tuple[list, dict, CommandResults]:
     """
+    Fetches a limited number of events and returns it in the CommandResults as a human readable markdown table.
     Args:
-        client (Client): DG client to use.
-        last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
-        limit (int):
-
+        client (Client): Digital Guardian client.
+        args (dict): Command arguments.
     Returns:
-        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch and list of ID's
-              of ingested id's
-        list: List of events that will be created in XSIAM.
+        tuple[list, dict, CommandResults]: List of events, last run dictionary, CommandResults with human readable output.
     """
-    id_list = last_run.get('id_list', [])
-    last_time = str(last_run.get('start_time') or "")
-    demisto.debug('fetching events')
-    event_list = get_raw_events(client, last_time)
-    event_list_for_push, time_of_event, id_list = create_events_for_push(event_list, last_time, id_list, limit)
+    limit = arg_to_number(args.get('limit')) or 1000
+    events, last_run = fetch_events(client, limit=limit)
 
-    # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'start_time': time_of_event, 'id_list': id_list}
-    demisto.debug(f'Setting next run {next_run}.')
-    return next_run, event_list_for_push
+    event_list = list(events)
+    human_readable = tableToMarkdown(name='Test Events', t=event_list) if event_list else 'No events found.'
+
+    demisto.debug(f'Displayed limit of {limit} events from response')
+
+    return event_list, last_run, CommandResults(readable_output=human_readable)
 
 
-def add_time_to_events(events: list[dict]) -> None:
+def push_and_set_last_run(client: Client, events: Iterable, last_run: dict) -> None:
     """
-    Adds the _time key to the events.
+    Saves last run and moves internal bookmark in the API for the time fetch-events is invoked.
+
     Args:
-        events: List[Dict] - list of events to add the _time key to.
-    Returns:
-        list: The events with the _time key.
+        client (Client): Digital Guardian client.
+        events (Iterable): Events (A generator object if internal fetch or list of from get-events command).
+        last_run (dict): Dictionary with 'bookmark_values' and 'search_after_values' from raw API response.
     """
-    if events:
-        for event in events:
-            create_time = arg_to_datetime(arg=event.get('inc_mtime')) if event.get('inc_mtime') else None
-            event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
+    send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+
+    demisto.debug(f'Setting export bookmark after run: {last_run}.')
+    client.set_export_bookmark()  # API-managed bookmark / pointer removes the need for setting and getting last run on our end
 
 
 def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    auth_url = params.get('auth_server_url')
-    gateway_url = params.get('gateway_base_url')
+
+    auth_url = params.get('auth_server_url', '')
+    base_url = params.get('gateway_base_url', '')
     client_id = params.get('credentials', {}).get('identifier', '')
     client_secret = params.get('credentials', {}).get('password', '')
-    export_profile = params.get('export_profile')
+    export_profile = params.get('export_profile', '')
     verify_certificate = not params.get('insecure', False)
-    base_url = urljoin(gateway_url, f'/rest/2.0/export_profiles/{export_profile}/export')
-    demisto.debug(f'the base url is:{base_url}')
-    next_run = None
+
+    demisto.debug(f'Running {VENDOR} event collector with base url: {base_url}')
 
     # How much time before the first fetch to retrieve events
     proxy = params.get('proxy', False)
-    limit = arg_to_number(params.get('number_of_events')) or 1000
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -250,11 +253,10 @@ def main() -> None:  # pragma: no cover
             verify=verify_certificate,
             proxy=proxy,
             auth_url=auth_url,
-            gateway_url=gateway_url,
             base_url=base_url,
             client_id=client_id,
             client_secret=client_secret,
-            export_profile=export_profile
+            export_profile=export_profile,
         )
 
         if command == 'test-module':
@@ -263,31 +265,16 @@ def main() -> None:  # pragma: no cover
             return_results(result)
 
         elif command == 'digital-guardian-get-events':
+            events, last_run, command_results = get_events_command(client, args)
+            return_results(command_results)
+
             should_push_events = argToBoolean(args.pop('should_push_events'))
-            events, results = get_events_command(client, args)
-            return_results(results)
             if should_push_events:
-                add_time_to_events(events)
-                send_events_to_xsiam(
-                    events,
-                    vendor=VENDOR,
-                    product=PRODUCT
-                )
+                push_and_set_last_run(client, events, last_run)
+
         elif command == 'fetch-events':
-            last_run = demisto.getLastRun()
-            next_run, events = fetch_events(
-                client=client,
-                last_run=last_run,
-                limit=limit
-            )
-            add_time_to_events(events)
-            send_events_to_xsiam(
-                events,
-                vendor=VENDOR,
-                product=PRODUCT
-            )
-            # saves next_run for the time fetch-events is invoked
-            demisto.setLastRun(next_run)
+            events, last_run = fetch_events(client)  # type: ignore
+            push_and_set_last_run(client, events, last_run)
 
     # Log exceptions and return errors
     except Exception as e:

@@ -1,123 +1,151 @@
 import json
-import io
+from urllib.parse import urljoin
+import pytest
+from pytest_mock.plugin import MockerFixture
+from requests_mock.mocker import Mocker as RequestsMock
+from DigitalGuardianARCEventCollector import Client
+
+
+CLIENT_KWARGS = {
+    'verify': False,
+    'proxy': False,
+    'auth_url': 'https://example.com',
+    'base_url': 'https://example.com',
+    'client_id': '11',
+    'client_secret': '22',
+    'export_profile': '33',
+}
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
-def test_add_time_key_to_events():
-    """
-       Given:
-           - list of events
-       When:
-           - Calling add_time_key_to_events
-       Then:
-           - Ensure the _time key is added to the events
-       """
-    from DigitalGuardianARCEventCollector import add_time_to_events
+@pytest.fixture
+def authenticated_client(requests_mock: RequestsMock) -> Client:
+    """Fixture to create a Digital Guardian Client instance."""
+    token_url = urljoin(CLIENT_KWARGS['auth_url'], '/as/token.oauth2')
+    requests_mock.post(token_url, json={'access_token': '123', 'expires_in': 10000})
 
-    events = util_load_json('test_data/events.json')
-    add_time_to_events(events)
-
-    assert events[0]['_time'] is None
-    assert events[1]['_time'] == "2023-05-23T11:53:11Z"
+    return Client(**CLIENT_KWARGS)
 
 
-def test_get_raw_events_command(mocker):
+def test_get_access_token(mocker: MockerFixture):
     """
     Given:
-        - Digital Guardian ARC client and number of days to get events
+        - A valid access token in the integration context
     When:
-        - Calling get_raw_events command, this command is called by get_events and fetch_incidents to get the raw
-          events before they are parsed
+        - Calling Client._get_access_token
     Then:
-        - Ensure the events are returned as expected
+        - Ensure the token in the integration context is returned and no new token is requested.
     """
-    from DigitalGuardianARCEventCollector import Client, get_raw_events
+    integration_context_token = {'token': '123', 'valid_until': 2022222222}
+    mocker.patch('DigitalGuardianARCEventCollector.get_integration_context', return_value=integration_context_token)
+    mocker.patch('time.time', return_value=1022222222)
+    get_new_token_request = mocker.patch.object(Client, '_http_request')
 
-    raw_events = util_load_json('test_data/events_mock_request.json')
-    mocker.patch.object(Client, 'get_token', return_value='token')
-    mocker.patch.object(Client, 'get_events', return_value=raw_events)
-    client = Client(verify=False, proxy=False, auth_url="example.com", gateway_url="test.com", base_url="exmpt.com",
-                    client_id="11", client_secret="22", export_profile="33")
-    events = get_raw_events(client, None)
+    client = Client(**CLIENT_KWARGS)
+    access_token = client._get_access_token()
 
-    mock_events = util_load_json('test_data/events.json')
-
-    assert events == mock_events
-
-
-def test_get_events_command(mocker):
-    """
-    Given:
-        - Digital Guardian ARC client and limit of events to get
-    When:
-        - Calling get_events command, which will run after the get_raw_events and will return results according to the
-          limit that was provided
-    Then:
-        - Ensure the events are returned as expected
-    """
-    from DigitalGuardianARCEventCollector import Client, get_events_command
-
-    raw_events = util_load_json('test_data/events_mock_request.json')
-    mocker.patch.object(Client, 'get_token', return_value='aaa')
-    mocker.patch.object(Client, 'get_events', return_value=raw_events)
-
-    args = {"limit": 1}
-    client = Client(verify=False, proxy=False, auth_url="example.com", gateway_url="test.com", base_url="exmpt.com",
-                    client_id="11", client_secret="22", export_profile="33")
-    events, _ = get_events_command(client, args)
-
-    expected_events = util_load_json('test_data/events_mock_1_response.json')
-
-    assert events == expected_events
+    assert access_token == integration_context_token['token']
+    assert get_new_token_request.called is False
 
 
 def test_create_events_for_push():
     """
-        Given:
-            - Digital Guardian events list from API response, last_time, list of id's and limit
-        When:
-            - Calling create_events_for_push command, which will run after the get_raw_events in fetch events function
-              and will return results according to the limit that was provided
-        Then:
-            - Ensure the events, id_list and last_time are returned as expected
+    Given:
+        - list of events and a limit value
+    When:
+        - Calling create_events_for_push
+    Then:
+        - Ensure the _time key is added to the events
     """
     from DigitalGuardianARCEventCollector import create_events_for_push
 
-    events = util_load_json('test_data/events_for_create_and_push.json')
-    events_result = util_load_json('test_data/results_for_create_and_push.json')
+    limit = 2
+    raw_response = util_load_json('test_data/mock_response.json')
 
-    last_time = None
-    id_list = []
-    limit = 3
-    event_list, l_time, ids = create_events_for_push(events, last_time, id_list, limit)
+    outputted_events = list(create_events_for_push(raw_response, limit))
 
-    assert ids == ['c742c377-b429-428a-b0c9-515cbbf143ae']
-    assert l_time == '2023-04-23 11:53:11'
-    assert event_list == events_result
+    assert outputted_events[0]['_time'] is None
+    assert outputted_events[1]['_time'] == "2023-05-23T11:53:11Z"
+    assert len(outputted_events) == limit
 
 
-def test_fetch_events_command(mocker):
+def test_get_fetch_events(mocker: MockerFixture, authenticated_client: Client):
     """
-        Given:
-            - DigitalGuardianARC client and max_fetch, last_run and first_fetch_time
-        When:
-            - Calling fetch_events_command
-        Then:
-            - Ensure the events are returned as expected and the next_run is as expected
+    Given:
+        - Digital Guardian ARC client and number of days to get events
+    When:
+        - Calling fetch_events
+    Then:
+        - Ensure the events and last run are returned as expected
     """
-    from DigitalGuardianARCEventCollector import Client, fetch_events
-    events = util_load_json('test_data/events.json')
-    mocker.patch("DigitalGuardianARCEventCollector.get_raw_events", return_value=events)
+    from DigitalGuardianARCEventCollector import fetch_events
 
-    client = Client(verify=False, proxy=False, auth_url="example.com", gateway_url="test.com", base_url="exmpt.com",
-                    client_id="11", client_secret="22", export_profile="33")
-    next_run, events = fetch_events(client, limit=2, last_run={})
+    raw_response = util_load_json('test_data/mock_response.json')  # contains duplicate events
+    mocker.patch.object(authenticated_client, 'export_events', return_value=raw_response)
+    expected_events = util_load_json('test_data/expected_events.json')
 
-    mock_events = util_load_json('test_data/events.json')
-    assert events == mock_events
-    assert next_run == {'start_time': '2023-05-23 11:53:11',
-                        'id_list': ['1dc3c1fa-5474-4fc0-a7c3-74ff42d28e5e']}
+    events, last_run = fetch_events(authenticated_client)
+    outputted_events = list(events)
+
+    assert len(raw_response['data']) >= len(outputted_events)  # sanity check (duplicates should be removed)
+    assert outputted_events == expected_events
+    assert last_run['bookmark_values'] == raw_response['bookmark_values']
+    assert last_run['search_after_values'] == raw_response['search_after_values']
+
+
+def test_get_events_command(mocker: MockerFixture, authenticated_client: Client):
+    """
+    Given:
+        - Digital Guardian ARC client and limit of events to get
+    When:
+        - Calling get_events_command
+    Then:
+        - Ensure the events are returned as expected and correct arguments are passed to tableToMarkdown
+    """
+    from DigitalGuardianARCEventCollector import get_events_command
+
+    limit = 1
+    raw_response = util_load_json('test_data/mock_response.json')
+    mocker.patch.object(authenticated_client, 'export_events', return_value=raw_response)
+    table_to_markdown = mocker.patch('DigitalGuardianARCEventCollector.tableToMarkdown')
+
+    outputted_events, *_ = get_events_command(authenticated_client, args={'limit': limit})
+
+    expected_events = util_load_json('test_data/expected_events.json')[:limit]  # slice list to length = limit
+    table_to_markdown_kwargs: dict = table_to_markdown.call_args.kwargs
+
+    assert outputted_events == expected_events
+    assert table_to_markdown_kwargs['name'] == 'Test Events'
+    assert table_to_markdown_kwargs['t'] == expected_events
+
+
+def test_push_and_set_last_run(mocker: MockerFixture, authenticated_client: Client):
+    """
+    Given:
+        - Digital Guardian ARC client and parsed events
+    When:
+        - Calling push_and_set_last_run
+    Assert:
+        - Ensure events are sent to XSIAM and export bookmark is set via the API client.
+    """
+    from DigitalGuardianARCEventCollector import push_and_set_last_run, VENDOR, PRODUCT
+
+    last_run = {'bookmark_values': [], 'search_after_values': []}
+    events = util_load_json('test_data/expected_events.json')
+
+    send_events_to_xsiam = mocker.patch('DigitalGuardianARCEventCollector.send_events_to_xsiam')
+    set_export_bookmark = mocker.patch.object(authenticated_client, 'set_export_bookmark')
+
+    push_and_set_last_run(authenticated_client, events, last_run)
+    send_events_to_xsiam_kwargs: dict = send_events_to_xsiam.call_args.kwargs
+
+    assert send_events_to_xsiam.call_count == 1
+    assert set_export_bookmark.call_count == 1
+
+    assert send_events_to_xsiam_kwargs['events'] == events
+    assert send_events_to_xsiam_kwargs['vendor'] == VENDOR
+    assert send_events_to_xsiam_kwargs['product'] == PRODUCT
