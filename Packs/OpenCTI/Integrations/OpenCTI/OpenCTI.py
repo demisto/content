@@ -109,7 +109,7 @@ def reset_last_run():
 def get_observables(
     client: OpenCTIApiClient,
     observable_types: list[str],
-    score: int | None = None,
+    score: list | None = None,
     limit: int | None = 500,
     last_run_id: str | None = None,
     search: str = ""
