@@ -944,6 +944,67 @@ def test_get_indicators(mocker):
     indicators = get_indicators(client, indicator_types=['indicator_type_1', 'indicator_type_2'], limit=10)
     assert len(indicators) == 2
 
+def test_indicator_types_list_command(mocker):
+    """Tests indicator_types_list_command function
+    Given
+
+    When
+        - Calling `indicator_types_list_command`
+    Then
+        - validate the readable_output, context
     """
-    FILL more
+    client = Client
+    mocker.patch.object(client, 'query',
+                        return_value={
+                            'data': {
+                                'vocabularies': {
+                                    'edges': [
+                                        {'node': {'id': '1', 'name': 'compromised', 'description': 'compromised'}},
+                                    ]
+                                }
+                            }
+                        })
+    results: CommandResults = indicator_types_list_command(client, {})
+    assert "Indicator Types" in results.readable_output
+    assert [{'id': '1', 'name': 'compromised', 'description': 'compromised'}] == \
+        results.outputs.get('OpenCTI.IndicatorTypes.IndicatorTypesList(val.id === obj.id)')
+
+
+def test_indicator_types_list_command_with_no_data_to_return(mocker):
+    """Tests indicator_types_list_command function
+    Given
+
+    When
+        - Calling `indicator_types_list_command`
+    Then
+        - validate the response to have a "No observables" string
     """
+    client = Client
+    mocker.patch.object(client, 'query',
+                        return_value={
+                            'data': {
+                                'vocabularies': {
+                                    'edges': []
+                                }
+                            }
+                        })
+    results: CommandResults = indicator_types_list_command(client, {})
+    assert "No indicator types" in results.readable_output
+
+
+def test_indicator_types_list_command_exception(mocker, capfd):
+    """Tests indicator_types_list_command function
+    Given
+
+    When
+        - Calling `indicator_types_list_command`
+    Then
+        - Ensure a DemistoException is raised with the correct error message.
+    """
+    client = Client
+    mocker.patch.object(client, 'query', side_effect=Exception("Test exception"))
+    with pytest.raises(DemistoException, match="Can't list indicator types."):
+        indicator_types_list_command(client, {})
+    captured = capfd.readouterr()
+    assert captured.out.strip() == "Test exception"
+
