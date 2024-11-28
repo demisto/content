@@ -331,7 +331,7 @@ def incident_types_list_command(client: OpenCTIApiClient, args: Dict[str, str]) 
     """
     try:
         """
-        This GraphQL query retrieves a list of incident types from OpenCTI's vocabulary, categorized under 
+        This GraphQL query retrieves a list of incident types from OpenCTI's vocabulary, categorized under
         'incident_type_ov'. The query fetches the following fields of each incident type: ID, name, and description.
         """
         query = """
@@ -388,7 +388,7 @@ def indicator_types_list_command(client: OpenCTIApiClient, args: Dict[str, str])
     """
     try:
         """
-        This GraphQL query retrieves a list of indicator types from OpenCTI's vocabulary, categorized under 
+        This GraphQL query retrieves a list of indicator types from OpenCTI's vocabulary, categorized under
         'indicator_type_ov'. The query fetches the following fields of each indicator type: ID, name, and description.
         """
         query = """
@@ -728,7 +728,7 @@ def observable_field_add_command(client: OpenCTIApiClient, args: Dict[str, str])
     if result:
         return CommandResults(readable_output=f'Added {key} successfully.')
     else:
-        return CommandResults(readable_output=f'Cant add {key} to observable.')
+        raise DemistoException(f"Can't add {key}.")
 
 
 def observable_remove_label(client: OpenCTIApiClient, id: str | None, value: str | None):
@@ -791,10 +791,9 @@ def observable_field_remove_command(client: OpenCTIApiClient, args: Dict[str, st
         result = observable_remove_label(client=client, id=observable_id, value=value)
 
     if result:
-        readable_output = f'{key}: {value} was removed successfully from observable: {observable_id}.'
+        return CommandResults(readable_output=f'{key}: {value} was removed successfully from observable: {observable_id}.')
     else:
         raise DemistoException(f"Can't remove {key}.")
-    return CommandResults(readable_output=readable_output)
 
 
 def indicator_add_marking(client: OpenCTIApiClient, id: str | None, value: str | None):
@@ -857,7 +856,7 @@ def indicator_field_add_command(client: OpenCTIApiClient, args: Dict[str, str]) 
     if result:
         return CommandResults(readable_output=f'Added {key} successfully.')
     else:
-        return CommandResults(readable_output=f'Cant add {key} to indicator.')
+        raise DemistoException(f"Can't add {key}.")
 
 
 def indicator_remove_label(client: OpenCTIApiClient, id: str | None, value: str | None):
@@ -920,10 +919,9 @@ def indicator_field_remove_command(client: OpenCTIApiClient, args: Dict[str, str
         result = indicator_remove_label(client=client, id=indicator_id, value=value)
 
     if result:
-        readable_output = f'{key}: {value} was removed successfully from indicator: {indicator_id}.'
+        return CommandResults(readable_output=f'{key}: {value} was removed successfully from indicator: {indicator_id}.')
     else:
         raise DemistoException(f"Can't remove {key}.")
-    return CommandResults(readable_output=readable_output)
 
 
 def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
@@ -1061,7 +1059,7 @@ def indicator_update_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> 
         raise DemistoException(f"Can't update indicator. {e}")
 
     if updated_indicator := result.get("data", {}).get("indicatorFieldPatch", None):
-        readable_output = f'Indicator updated successfully.'
+        readable_output = 'Indicator updated successfully.'
         return CommandResults(
             outputs_prefix='OpenCTI.Indicator',
             outputs_key_field='id',
