@@ -21,6 +21,14 @@ MIRROR_DIRECTION = {
     'Incoming And Outgoing': 'Both'
 }
 
+OUTGOING_MIRRORED_FIELDS = {
+    'status': 'Specifies the current status of the incident.',
+    'assignedTo': 'Owner of the incident.',
+    'classification': 'Specification of the incident.',
+    'determination': 'Specifies the determination of the incident.',
+    'tags': 'List of Incident tags.',
+    'comment': 'Comment to be added to the incident.'
+}
 ''' CLIENT CLASS '''
 
 
@@ -748,11 +756,11 @@ def get_remote_data_command(client: Client, args: dict[str, Any], close_incident
         demisto.debug(f"microsoft365::Fetched incident {str(mirrored_object)}")
         entry_contents = get_modified_incidents_entries_content([mirrored_object], close_incident=close_incident)
         entries = [{
-                'Type': EntryType.NOTE,
-                'Contents': entry_content,
-                'ContentsFormat': EntryFormat.JSON,
+            'Type': EntryType.NOTE,
+            'Contents': entry_content,
+            'ContentsFormat': EntryFormat.JSON,
 
-            } for entry_content in entry_contents]
+        } for entry_content in entry_contents]
         return GetRemoteDataResponse(mirrored_object, entries)
     except Exception as e:
         demisto.debug(f"Error in Microsoft incoming mirror for incident: {remote_args.remote_incident_id}\n"
@@ -764,11 +772,14 @@ def get_remote_data_command(client: Client, args: dict[str, Any], close_incident
         return GetRemoteDataResponse(mirrored_object, entries=[])
 
 
-def update_remote_system_command(client: Client, args: dict):
-    pass
-
-
 def get_mapping_fields_command():
+    incident_type_scheme = SchemeTypeMapping(type_name='Microsoft 365 Defender Incident')
+    for field in OUTGOING_MIRRORED_FIELDS:
+        incident_type_scheme.add_field(name=field, description=OUTGOING_MIRRORED_FIELDS.get(field))
+    return GetMappingFieldsResponse(incident_type_scheme)
+
+
+def update_remote_system_command(client: Client, args: dict):
     pass
 
 

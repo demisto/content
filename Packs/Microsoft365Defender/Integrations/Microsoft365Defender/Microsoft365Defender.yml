@@ -453,6 +453,12 @@ script:
       the current incident, and should be used for debugging purposes only.
     execution: false
     name: get-remote-data
+  - arguments: []
+    deprecated: false
+    description: Returns the list of fields to map in outgoing mirroring.
+      This command is only used for debugging purposes.
+    execution: false
+    name: get-mapping-fields
   dockerimage: demisto/crypto:1.0.0.114611
   isfetch: true
   script: ''
