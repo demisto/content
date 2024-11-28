@@ -24,12 +24,18 @@ configuration:
   additionalinfo: This project ID will be overridden by command project ID if one is provided within a command.
   type: 0
   required: false
+  deprecated: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
 script:
   commands:
+  - name: new-tal
+    description: array.
+    arguments:
+    - name: aaa
+      description: aaa
   - name: redmine-issue-create
     description: |-
       - Create a new issue.
@@ -59,8 +65,6 @@ script:
       description: A description for this issue.
     - name: category_id
       description: The category ID for this issue.
-    - name: fixed_version_id
-      description: The target version ID for this issue.
     - name: assigned_to_id
       description: The ID of the user to assign the issue to.
     - name: parent_issue_id
@@ -101,7 +105,7 @@ script:
     outputs:
     - contextPath: Redmine.Issue.id
       description: The ID of the new issue.
-    - contextPath: Redmine.Issue.priority.id
+    - contextPath: Redmine.Issue.priority.aa
       description: The ID of the priority of the issue.
     - contextPath: Redmine.Issue.tracker.id
       description: The ID of the tracker of the issue.
@@ -392,7 +396,7 @@ script:
       description: ID of the tracker field.
     - contextPath: Redmine.trackers.Name
       description: Name of the tracker field.
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.10.14.111
   isfetch: false
   runonce: false
   script: '-'
