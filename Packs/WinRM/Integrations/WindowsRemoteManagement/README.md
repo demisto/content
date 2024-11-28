@@ -1,22 +1,18 @@
 Uses the Python pywinrm library and commands to execute either a process or using Powershell scripts.
 This integration was integrated and tested with Windows Remote Management
-## Configure Windows Remote Management on Cortex XSOAR
+## Configure Windows Remote Management in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Windows Remote Management.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Credentials |  | True |
-    | Default Host |  | True |
-    | Authentication Type |  | True |
-    | Realm | Default realm to use for Kerberos based authentication | False |
-    | Decode codec (default is utf_8) | Decode codec to use when decoding command outputs \(defaults to 'utf_8'\) | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Credentials |  | True |
+| Default Host |  | True |
+| Authentication Type |  | True |
+| Realm | Default realm to use for Kerberos based authentication | False |
+| Decode codec (default is utf_8) | Decode codec to use when decoding command outputs \(defaults to 'utf_8'\) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### winrm-run-process
 ***
@@ -112,4 +108,3 @@ Executes a Powershell script on the endpoint
 
 #### Human Readable Output
 Hello, World!
-
