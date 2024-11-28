@@ -109,7 +109,7 @@ def reset_last_run():
 def get_observables(
     client: OpenCTIApiClient,
     observable_types: list[str],
-    score=None,
+    score: int | None = None,
     limit: int | None = 500,
     last_run_id: str | None = None,
     search: str = ""
@@ -930,10 +930,12 @@ def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> 
         Returns:
             CommandResults object with readable_output, raw_response
     """
-    name = args.get("name")
-    indicator = args.get("indicator")
+    name = args["name"]
+    indicator = args["indicator"]
     main_observable_type = XSOAR_TYPES_TO_OPENCTI.get(
-        args.get("main_observable_type", "").lower(), args.get("main_observable_type"))
+        args["main_observable_type"].lower(),
+        args["main_observable_type"]
+    )
     pattern = build_stix_pattern(indicator, main_observable_type)
 
     description = args.get("description", None)

@@ -1,14 +1,27 @@
 import pytest
 
 from OpenCTI import *
-from test_data.data import RESPONSE_DATA_OBSERVABLES, RESPONSE_DATA_INDICATORS, RESPONSE_DATA_EMPTY
+from test_data.data import (
+    RESPONSE_DATA_OBSERVABLES,
+    RESPONSE_DATA_INDICATORS,
+    RESPONSE_DATA_EMPTY,
+)
 from CommonServerPython import CommandResults
-from pycti import StixCyberObservable, MarkingDefinition, Label, ExternalReference, Indicator, Incident, StixDomainObject, StixCoreRelationship
+from pycti import (
+    StixCyberObservable,
+    MarkingDefinition,
+    Label,
+    ExternalReference,
+    Indicator,
+    Incident,
+    StixDomainObject,
+    StixCoreRelationship,
+)
 
 
 class Client:
     temp = ''
-    query = lambda self, *args, **kwargs: None  # pylint: disable=E731
+    query = None
     incident = Incident
     indicator = Indicator
     stix_domain_object = StixDomainObject
@@ -746,8 +759,16 @@ def test_indicator_update_command(mocker):
         'description': 'Lorem ipsum dolor',
         'valid_until': '2023-12-31T23:59:59.000Z'
     }
-    mocker.patch.object(client, 'query', return_value={'data': {'indicatorFieldPatch': {
-                        'id': '123456', 'name': 'Lorem ipsum dolor', 'valid_from': '2023-01-01T00:00:00.000Z', 'valid_until': '2023-12-31T23:59:59.000Z'}}})
+    mocker.patch.object(client, 'query', return_value={
+        'data': {
+            'indicatorFieldPatch': {
+                'id': '123456',
+                'name': 'Lorem ipsum dolor',
+                'valid_from': '2023-01-01T00:00:00.000Z',
+                'valid_until': '2023-12-31T23:59:59.000Z'
+            }
+        }
+    })
     results: CommandResults = indicator_update_command(client, args)
     assert "Indicator updated successfully" in results.readable_output
     assert {'id': '123456', 'name': 'Lorem ipsum dolor', 'validFrom': '2023-01-01T00:00:00.000Z',
