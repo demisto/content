@@ -330,10 +330,8 @@ def incident_types_list_command(client: OpenCTIApiClient, args: Dict[str, str]) 
             readable_output, raw_response
     """
     try:
-        """
-        This GraphQL query retrieves a list of incident types from OpenCTI's vocabulary, categorized under
-        'incident_type_ov'. The query fetches the following fields of each incident type: ID, name, and description.
-        """
+        # This GraphQL query retrieves a list of incident types from OpenCTI's vocabulary, categorized under
+        # 'incident_type_ov'. The query fetches the following fields of each incident type: ID, name, and description.
         query = """
             query OpenVocabFieldQuery($category: VocabularyCategory!, $orderBy: VocabularyOrdering, $orderMode: OrderingMode) {
             vocabularies(category: $category, orderBy: $orderBy, orderMode: $orderMode) {
@@ -387,10 +385,8 @@ def indicator_types_list_command(client: OpenCTIApiClient, args: Dict[str, str])
             readable_output, raw_response
     """
     try:
-        """
-        This GraphQL query retrieves a list of indicator types from OpenCTI's vocabulary, categorized under
-        'indicator_type_ov'. The query fetches the following fields of each indicator type: ID, name, and description.
-        """
+        # This GraphQL query retrieves a list of indicator types from OpenCTI's vocabulary, categorized under
+        # 'indicator_type_ov'. The query fetches the following fields of each indicator type: ID, name, and description.
         query = """
             query OpenVocabFieldQuery($category: VocabularyCategory!, $orderBy: VocabularyOrdering, $orderMode: OrderingMode) {
             vocabularies(category: $category, orderBy: $orderBy, orderMode: $orderMode) {
@@ -430,7 +426,7 @@ def indicator_types_list_command(client: OpenCTIApiClient, args: Dict[str, str])
             raw_response=result
         )
     else:
-        raise DemistoException("No indicator types.")
+        return CommandResults(readable_output="No indicator types.")
 
 
 def relationship_create_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> CommandResults:
