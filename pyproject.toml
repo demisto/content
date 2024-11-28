@@ -54,6 +54,22 @@ types-PyYAML = "6.0.12.20240311"
 types-emoji = "2.1.0.3"
 
 [tool.ruff]
+fix = true
+extend-exclude = [
+    "CommonServerPython",
+    "test_data",
+    "conftest.py",
+    "demistomock.py",
+]
+line-length = 130
+target-version = "py310"
+src = [
+    "Packs/Base/Scripts/CommonServerPython",
+    "Tests/demistomock",
+    "Packs/ApiModules/Scripts/*",
+]
+
+[tool.ruff.lint]
 select = [
     "B002", # unary-prefix-increment
     "B003", # assignment-to-os-environ
