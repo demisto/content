@@ -95,10 +95,14 @@ CONNECTION_FIELDS = [element['field'] for element in CONNECTION_INFO]
 
 CONNECTION_HEADERS = [element['header'] for element in CONNECTION_INFO]
 
+JSESSIONID = ''
+
 HEADERS = {
     'Content-Type': 'application/json',
-    'Connection': 'close'
+    'Connection': 'close',
+    'Cookie': f"JSESSIONID={JSESSIONID}"
 }
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -129,7 +133,7 @@ class Client(BaseClient):
         self, method: str, url_suffix: str, data: dict = None, json_body: Any = None, headers: dict = HEADERS,
             return_json: bool = True, custom_response: bool = False,
             retries: int = 0, backoff_factor: int = 5) -> Any:
-        demisto.info(f'running request with url={SERVER + url_suffix}')
+        demisto.info(f'running request with url={SERVER + url_suffix}. API Query: {json_body}')
 
         try:
             res = self._http_request(
@@ -1629,9 +1633,9 @@ def fetch_incidents(client: Client):
             if malop_update_time > max_update_time:
                 max_update_time = malop_update_time
 
-            guid_string = malop.get('guidString', '')
+            guid_string = non_edr_malops.get('guidString', '')
             if not guid_string:
-                guid_string = malop.get('guid', '')
+                guid_string = non_edr_malops.get('guid', '')
 
             try:
                 incident = malop_to_incident(non_edr_malops)
@@ -1651,14 +1655,36 @@ def fetch_incidents(client: Client):
 def login(client: Client):
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Connection': 'close'
+        'Connection': 'close',
     }
     data = {
         'username': USERNAME,
         'password': PASSWORD
     }
-    client.cybereason_api_call('POST', '/login.html', data=data, headers=headers, return_json=False)
+    response = client.cybereason_api_call('POST', '/login.html', data=data, headers=headers, custom_response=True, return_json=False)
+    JSESSIONID = client._session.cookies.get("JSESSIONID")
+    creation_time = int(time.time())
+    return JSESSIONID, creation_time
 
+def validate_jsession(client: Client):
+    creation_time = int(time.time())
+    integration_context = get_integration_context()
+    token = integration_context.get('jsession_id')
+    valid_until = integration_context.get('valid_until')
+    demisto.debug(f"token: {token} and valid until: {valid_until}")
+    if token and valid_until:
+        if creation_time < valid_until:
+            demisto.debug(f"Token is still valid - did not expire. token: {token}")
+            HEADERS["Cookie"] =  f"JSESSIONID={token}"
+            return
+    token, creation_time = login(client)
+    integration_context = {
+        'jsession_id': token,
+        'valid_until': creation_time + 28000
+    }
+    set_integration_context(integration_context)
+    HEADERS["Cookie"] =  f"JSESSIONID={token}"
+ 
 
 def client_certificate():
     cert = CERTIFICATE
@@ -1698,6 +1724,7 @@ def client_certificate():
 
 
 def logout(client: Client):
+    demisto.debug("Logout function is getting called")
     client.cybereason_api_call('GET', '/logout', return_json=False)
 
 
@@ -2163,7 +2190,7 @@ def main():
             client_certificate()
             auth = 'CERT'
         elif USERNAME and PASSWORD:
-            login(client)
+            validate_jsession(client)
             auth = 'BASIC'
         else:
             raise Exception('No credentials were provided')
@@ -2290,7 +2317,6 @@ def main():
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
     finally:
-        logout(client)
         if auth and auth == 'CERT':
             os.remove(os.path.abspath('client.pem'))
             os.remove(os.path.abspath('client.cert'))
