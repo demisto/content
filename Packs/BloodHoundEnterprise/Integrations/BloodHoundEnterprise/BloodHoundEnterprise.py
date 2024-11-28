@@ -15,7 +15,6 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "BloodHound"
 PRODUCT = "Enterprise"
 FETCH_LIMIT = 250
-BASE_URL = "https://{server_url}"
 PAGE_LIMIT = 50
 
 
@@ -56,14 +55,14 @@ class Client(BaseClient):
         self._credentials = credentials
 
     def _request(
-        self, method: str = "GET", uri: str = "/api/v2/audit", query_params: dict = {}
+        self, method: str, url_suffix: str, query_params: dict = {}
     ) -> dict:
         """
         Makes an authenticated HTTP request to the API.
 
         Args:
-            method (str): The HTTP method to use (e.g., 'GET', 'POST'). Defaults to 'GET'.
-            uri (str): The API endpoint to send the request to. Defaults to '/api/v2/audit'.
+            method (str): The HTTP method to use (e.g., 'GET', 'POST').
+            url_suffix (str): The API endpoint to send the request to.
             query_params (Optional[Dict]): The query parameters to include in the request.
 
         Returns:
@@ -71,12 +70,11 @@ class Client(BaseClient):
         """
         if query_params:
             encoded_params = urllib.parse.urlencode(query_params)
-            uri_with_params = f"{uri}?{encoded_params}"
-        else:
-            uri_with_params = uri
+            url_suffix = f"{url_suffix}?{encoded_params}"
 
+        # This code snippet (of the encryption form) is taken directly from the BloodHound documentation.
         digester = hmac.new(self._credentials.token_key.encode(), None, hashlib.sha256)
-        digester.update(f"{method}{uri_with_params}".encode())
+        digester.update(f"{method}{url_suffix}".encode())
         digester = hmac.new(digester.digest(), None, hashlib.sha256)
         datetime_formatted = datetime.now().astimezone().isoformat()
         digester.update(datetime_formatted[:13].encode())
@@ -88,10 +86,10 @@ class Client(BaseClient):
             "Signature": base64.b64encode(digester.digest()),
             "Content-Type": "application/json",
         }
-        demisto.debug(f"exeuting API call with encrypt url: {uri_with_params},")
+        demisto.debug(f"executing API call with encrypted url: {url_suffix},")
 
         return self._http_request(
-            method=method, url_suffix=uri_with_params, headers=headers
+            method=method, url_suffix=url_suffix, headers=headers
         )
 
     def search_events(
@@ -113,6 +111,8 @@ class Client(BaseClient):
         Returns:
             List[Dict]: A list of events retrieved from the API.
         """
+        method = "GET"
+        uri = "/api/v2/audit"
         query_params = {
             "limit": limit,
             "sort_by": "created_at",
@@ -120,9 +120,9 @@ class Client(BaseClient):
             "before": until_date,
             "skip": skip,
         }
-        demisto.info(f"Got the follow parameters to the query {query_params}")
+        demisto.debug(f"Got the follow parameters to the query {query_params}")
         remove_nulls_from_dictionary(query_params)
-        response = self._request(query_params=query_params)
+        response = self._request(method=method, url_suffix=uri, query_params=query_params)
         return response.get("data", {}).get("logs", [])
 
 
@@ -137,7 +137,7 @@ def test_module(client: Client) -> str:
         str: "ok" if the connection is successful, or an authorization error message.
     """
     try:
-        client._request(query_params={"limit": "1", "sort_by": "created_at"})
+        client.search_events(limit=1)
 
     except Exception as e:
         if "Unauthorized" in str(e):
@@ -162,9 +162,9 @@ def get_events_command(client: Client, args: dict) -> tuple[List[Dict], CommandR
     Returns:
         tuple[List[Dict], CommandResults]: A list of events and the command results with readable output.
     """
-    limit = arg_to_number(args.get("limit", 250))
-    from_date = args.get("start")
-    until_date = args.get("end") or datetime.now().astimezone().isoformat()
+    limit = arg_to_number(args.get("limit", 10))
+    from_date = args.get("start_date") or (datetime.now().astimezone() - timedelta(minutes=1)).isoformat()
+    until_date = args.get("end_date") or datetime.now().astimezone().isoformat()
     events, _ = get_events_with_pagination(
         client, start_date=from_date, end_date=until_date, max_events=limit
     )
@@ -197,11 +197,11 @@ def fetch_events(
     now = datetime.now().astimezone().isoformat()
 
     last_run = demisto.getLastRun()
-    demisto.info(f"Got the follow last run: {last_run}.")
+    demisto.debug(f"Got the follow last run: {last_run}.")
 
-    from_date = last_run.get("last_event_created_at", first_fetch_time)
+    from_date = last_run.get("last_event_date", first_fetch_time)
     from_event = int(last_run.get("last_event_id", 0))
-    last_run_skip = int(last_run.get("skip", 0))
+    last_run_skip = int(last_run.get("offset", 0))
     fetch_limit = arg_to_number(params.get("max_events_per_fetch")) or FETCH_LIMIT
 
     events, skip = get_events_with_pagination(
@@ -210,7 +210,7 @@ def fetch_events(
         end_date=now,
         max_events=fetch_limit,
         last_event_id=from_event,
-        initial_skip=last_run_skip,
+        offset=last_run_skip,
     )
 
     prev_fetch_id = int(last_run.get("prev_fetch_id", 0))
@@ -219,14 +219,14 @@ def fetch_events(
     demisto.debug(f"Fetched event id: {fetch_id}.")
     demisto.debug(f"Fetched {len(events)} events in fetch No: {fetch_id}")
     next_run = {
-        "last_event_created_at": events[-1].get("created_at") if events else from_date,
+        "last_event_date": events[-1].get("created_at") if events else from_date,
         "last_event_id": events[-1].get("id") if events else from_event,
         "prev_fetch_id": fetch_id,
+        "offset": skip
     }
     if skip:
-        next_run["skip"] = last_run_skip + len(events)
-        next_run["last_event_created_at"] = from_date
-    demisto.info(
+        next_run["last_event_date"] = from_date
+    demisto.debug(
         f"returning {len(events)} events. and the follow details to the setLastRun function {next_run}."
     )
     return next_run, events
@@ -238,7 +238,7 @@ def get_events_with_pagination(
     end_date,
     max_events,
     last_event_id: int = 0,
-    initial_skip: int = 0,
+    offset: int = 0,
 ) -> tuple[list, int]:
     """
     Retrieves a paginated list of events from the BloodHound Enterprise API.
@@ -261,7 +261,7 @@ def get_events_with_pagination(
             - An integer indicating the number of events to skip in the next fetch if applicable.
     """
     fetched_events: list = []
-    pagination_skip = initial_skip
+    pagination_skip = offset
 
     while len(fetched_events) < max_events:
         page_size = min(PAGE_LIMIT, max_events - len(fetched_events))
@@ -272,15 +272,15 @@ def get_events_with_pagination(
             skip=pagination_skip,
         )
         if not response:
-            demisto.info("Got 0 events from the API")
+            demisto.debug("No new events received from the API")
             break
-        demisto.info(f"Got {len(response)} events before deduplication")
+        demisto.debug(f"Got {len(response)} events before deduplication")
         pagination_skip += len(response)
-        new_events = [item for item in response if item.get("id", 0) > last_event_id]
-        demisto.info(f"Got {len(new_events)} events after deduplication")
-        fetched_events.extend(new_events)
+        filtered_events = [item for item in response if item.get("id", 0) > last_event_id]
+        demisto.debug(f"Got {len(filtered_events)} events after deduplication")
+        fetched_events.extend(filtered_events)
     next_skip = (
-        initial_skip + len(fetched_events) if len(fetched_events) == max_events else 0
+        offset + len(fetched_events) if len(fetched_events) == max_events else 0
     )
     return fetched_events, next_skip
 
@@ -298,8 +298,8 @@ def add_time_to_events(events: List[Dict] | None):
     """
     if events:
         for event in events:
-            create_time = arg_to_datetime(arg=event.get("created_at"))
-            event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
+            if create_time := arg_to_datetime(arg=event.get("created_at")):
+                event["_time"] = create_time.strftime(DATE_FORMAT)
 
 
 def main() -> None:  # pragma: no cover
@@ -315,7 +315,7 @@ def main() -> None:  # pragma: no cover
         token_key=(params.get("api_token_key") or {}).get("password", ""),
     )
     server_url = params.get("server_url")
-    base_url = BASE_URL.format(server_url=server_url)
+    base_url = f"https://{server_url}"
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
@@ -328,13 +328,12 @@ def main() -> None:  # pragma: no cover
         )
 
         if command == "test-module":
-            result = test_module(client)
-            return_results(result)
+            return_results(test_module(client))
 
         elif command == "bloodhound-get-events":
-            should_push_events = argToBoolean(args.pop("should_push_events"))
+            should_push_events = argToBoolean(args.get("should_push_events"))
             events, results = get_events_command(client, args)
-            return_results(results)
+            should_push_events = argToBoolean(args.get("should_push_events"))
             if should_push_events:
                 add_time_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)

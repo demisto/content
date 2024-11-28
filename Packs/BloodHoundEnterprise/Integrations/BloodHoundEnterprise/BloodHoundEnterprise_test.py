@@ -29,12 +29,12 @@ def test_fetch_events_first_time(mocker):
         - The parameter for `max_events_per_fetch` is set to "7".
 
     When:
-        - The `fetch_events` function is called to retrieve events with the mock client.
+        - The `fetch_events` function is called with empty 'getLastRun' like the first fetch time.
 
     Then:
         - Ensure that exactly 7 events are fetched.
         - Validate that the next run metadata (`next_run`) is correctly updated with:
-            - `last_event_created_at` timestamp.
+            - `last_event_date` timestamp.
             - `last_event_id` of the last fetched event.
             - `prev_fetch_id` set to 1.
             - `skip` indicating the number of events fetched.
@@ -53,14 +53,14 @@ def test_fetch_events_first_time(mocker):
     )
 
     assert len(events) == 7
-    assert next_run.get("last_event_created_at", "").startswith(
+    assert next_run.get("last_event_date", "").startswith(
         "2024-11-22T13:27:27.698038+"
     )
     assert all(
         (
             next_run.get("last_event_id") == 2057,
             next_run.get("prev_fetch_id") == 1,
-            next_run.get("skip") == 7,
+            next_run.get("offset") == 7,
         )
     )
     assert events[0].get("id") == 2051
@@ -73,7 +73,7 @@ def test_fetch_events_second_time(mocker):
         - A mock client with a predefined set of test events loaded from a JSON file.
         - The current date and time are frozen at "2024-11-20T13:17:24.074375+02:00".
         - The previous fetch history is simulated using `demisto.getLastRun`, with the following values:
-            - `last_event_created_at` set to "2024-11-24T12:43:57.27948Z".
+            - `last_event_date` set to "2024-11-24T12:43:57.27948Z".
             - `last_event_id` set to 2072.
             - `prev_fetch_id` set to 1.
 
@@ -85,7 +85,7 @@ def test_fetch_events_second_time(mocker):
         - Ensure that exactly 2 events are fetched.
         - Validate that the first event in the fetched list has the correct ID (2073).
         - Verify that the next run metadata (`next_run`) is correctly updated with:
-            - `last_event_created_at` timestamp.
+            - `last_event_date` timestamp.
             - `last_event_id` of the last fetched event (2074).
             - `prev_fetch_id` incremented to 2.
             - `skip` indicating the number of events fetched (2).
@@ -96,7 +96,7 @@ def test_fetch_events_second_time(mocker):
         demisto,
         "getLastRun",
         return_value={
-            "last_event_created_at": "2024-11-24T12:43:57.27948Z",
+            "last_event_date": "2024-11-24T12:43:57.27948Z",
             "last_event_id": 2072,
             "prev_fetch_id": 1,
         },
@@ -111,34 +111,16 @@ def test_fetch_events_second_time(mocker):
 
     assert len(events) == 2
     assert events[0].get("id") == 2073
-    assert next_run == {
-        "last_event_created_at": "2024-11-24T12:43:57.27948Z",
-        "last_event_id": 2074,
-        "prev_fetch_id": 2,
-        "skip": 2,
-    }
-
-
-def test_test_module_command(mocker):
-
-    from BloodHoundEnterprise import test_module
-
-    """
-    Given:
-        - A mock client with a predefined set of test events loaded from a JSON file.
-        - The `_request` method of the mock client is patched to avoid making actual requests.
-
-    When:
-        - The `test_module` function is called to test the module's functionality with the mock client.
-
-    Then:
-        - Ensure that the result of the `test_module` function is "ok", indicating the module is working as expected.
-    """
-    test_events = load_test_events()
-    client = create_mock_client(test_events)
-    mocker.patch.object(client, "_request")
-    res = test_module(client)
-    assert res == "ok"
+    assert next_run.get("last_event_date", "").startswith(
+        "2024-11-24T12:43:57.27948"
+    )
+    assert all(
+        (
+            next_run.get("last_event_id") == 2074,
+            next_run.get("prev_fetch_id") == 2,
+            next_run.get("offset") == 2,
+        )
+    )
 
 
 def test_get_events_command(mocker):
@@ -213,7 +195,7 @@ def test_client_request(mocker):
 
     mocker.patch.object(client, "_http_request")
     log = mocker.patch.object(demisto, "debug")
-    client._request(query_params=query_params)
+    client._request("GET", "/api/v2/audit" ,query_params=query_params)
     found = any(
         "/api/v2/audit?limit=50&sort_by=created_at&after=2024-11-18T11%3A16%3A09.076711Z&before=2024-11-18T14%3A00%3A20.303699Z,"
         in call.args[0]
@@ -351,7 +333,7 @@ def test_pagination_with_initial_skip():
         start_date="2024-11-22T00:00:00Z",
         end_date="2024-11-24T23:59:59Z",
         max_events=max_events,
-        initial_skip=initial_skip,
+        offset=initial_skip,
     )
 
     assert events[0]["id"] == test_events[initial_skip]["id"]

@@ -7,6 +7,7 @@ commonfields:
   version: -1
 configuration:
 - display: Server URL
+  additionalinfo: Example format "example.bloodhoundenterprise.io"
   name: server_url
   required: true
   type: 0
@@ -22,11 +23,7 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
-  section: Connect
-- display: Fetch events
-  name: isFetchEvents
-  required: false
-  type: 8
+
   section: Collect
 - defaultvalue: 250
   section: Collect
@@ -52,17 +49,18 @@ script:
   commands:
   - arguments:
     - description: The start date from which to filter events. (e.g., 2024-07-10T08:08:46.76).
-      name: start
+      name: start_date
       required: false
     - description: The end date from which to filter events. (e.g., 2024-07-11T08:09:47.08).
-      name: end
+      name: end_date
       required: false
-    - description: Set this argument to True in order to create events, otherwise the command will only display them.
-      name: should_push_events
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
+    - description: Set this argument to True in order to create events, otherwise the command will only display them.  
+      name: should_push_events  
+      predefined:  
+      - 'true'  
+      - 'false'  
+      required: false  
+      auto: PREDEFINED  
     - description: The number of events to return. Default is 250.
       name: limit
       required: false
