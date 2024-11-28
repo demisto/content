@@ -42,7 +42,7 @@ call msft_azure_resourcelogs_commonfields
 	get_properties_originalHost_name = if(get_properties_originalHost ~= "[a-zA-Z0-9]", get_properties_originalHost)
 | alter
 	check_response_code = coalesce(get_properties_httpStatus, get_resultSignature_resCode),
-	check_duration = coalesce(to_integer(timeTaken), to_integer(durationMs)),
+	check_duration = coalesce(to_integer(properties -> timeTaken), to_integer(durationMs)),
 	check_hostname = arraydistinct(arraycreate(get_properties_host_name, get_properties_hostname_name, get_properties_originalHost_name))
 | alter
 	xdm.observer.action = get_properties_action,
