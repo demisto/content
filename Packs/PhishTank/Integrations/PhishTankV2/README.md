@@ -1,11 +1,8 @@
 PhishTank is a free community site where anyone can submit, verify, track and share phishing data.
 This integration was integrated and tested with version 1.0.1 of PhishTank.
 
-## Configure PhishTankV2 on Cortex XSOAR
+## Configure PhishTankV2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for PhishTankV2.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -16,7 +13,6 @@ This integration was integrated and tested with version 1.0.1 of PhishTank.
 | fetchIntervalHours | Database refresh interval \(hours\) | False |
 
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Best Practice
 
@@ -26,7 +22,7 @@ You should open a platform feature request (FR) to request separate egress IPs f
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### url
@@ -134,5 +130,4 @@ There is no context output for this command.
 >PhishTankV2 Database Status
 ><br/>Total **13181** URLs loaded
 ><br/>Last Load time **Sun Oct 04 2020 09:43:01 (UTC)**
-
 
