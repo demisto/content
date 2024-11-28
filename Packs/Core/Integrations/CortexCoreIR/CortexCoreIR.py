@@ -186,8 +186,48 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
         raw_response=parsed,
     )
 
-def get_assets_list_command(client: Client, args) -> CommandResults:
+def get_filter(args: dict):
+    """
+    Builds a filter dictionary in the required format.
+
+    Args:
+        fields (dict): A dictionary where keys are field names and values are strings with conditions
+                       (e.g., "contains AWS, not contains GCP").
+
+    Returns:
+        dict: A filter dictionary with the structure {"AND": [{"SEARCH_FIELD": ..., "SEARCH_TYPE": ..., "SEARCH_VALUE": ...}]}.
+    """
+    fields: dict = {
+        "xdm__asset__provider": args.get("provider"),
+        "xdm__asset__id": args.get("id"),
+        "xdm__asset__type__category": args.get("type_category"),
+        "xdm__cloud__region": args.get("type_category"),
+        "xdm__asset__type__name": args.get("type_name"),
+        "xdm__asset__realm": args.get("realm"),
+        "xdm__asset__first_observed": args.get("first_observed"),
+        "xdm__asset__source": args.get("source"),
+        "xdm__asset__last_observed": args.get("last_observed")
+    }
+    
+    operator_mapping = {
+        "=": "WILDCARD",
+        "!=": "WILDCARD_NOT",
+        "contains": "CONTAINS",
+        "not contains": "NCONTAINS"
+    }
+    
+    filter_conditions = []
+    for field, conditions in fields.items():
+        if not conditions:
+            continue
+        
+            
+    
+    return
+
+def get_assets_list_command(client: Client, args: dict) -> CommandResults:
     client._base_url = "/api/webapp/get_data"
+    filter = get_filter(args)
     payload = {
         "type": "grid",
         "table_name": "UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS",
@@ -195,7 +235,7 @@ def get_assets_list_command(client: Client, args) -> CommandResults:
         "extraData": None,
         "filter_data": {
             "sort": [{"FIELD": "xdm__asset__name", "ORDER": "DESC"}],
-            "filter": {},
+            "filter": {"AND": [{"SEARCH_FIELD": "xdm__asset__id", "SEARCH_TYPE": "WILDCARD","SEARCH_VALUE":"fe271281f05a8ac22e0a00322b6d4e46b5a3b9f54749ee70d3792bf1191f467f"}]},
             "free_text": "",
             "visible_columns": None,
             "locked": {},

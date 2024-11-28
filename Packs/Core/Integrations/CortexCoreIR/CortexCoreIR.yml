@@ -3110,6 +3110,24 @@ script:
       name: filter
       isArray: false
       required: false  
+    - description: A comma-separated list of cloud providers. Supports '=', '!='. For example, '= AWS,= GCP'.  
+      name: provider  
+    - description: A comma-separated list of unique identifiers for the asset. Supports '=', '!=', 'contains', 'not contains'. For example, 'contains abc123, not contains xyz789'.  
+      name: id
+    - description: A comma-separated list of asset type categories. Supports '=', '!='. For example, '= compute, != storage'.  
+      name: type_category  
+    - description: A comma-separated list of cloud regions for the asset. Supports '=', '!=', 'contains', 'not contains'. For example, '= us-east-1, not contains us-west'.  
+      name: region
+    - description: A comma-separated list of specific names for the asset type. Supports '=', '!='. For example, '= VM, != bucket'.  
+      name: type_name
+    - description: A comma-separated list of environments or realms for the asset. Supports '=', '!=', 'contains', 'not contains'. For example, 'contains prod, != staging'.  
+      name: realm
+    - description: "A timestamp when the asset was first observed. Supports '=' with 'from' and 'to'. For example, '= {from: 2023-11-27T10:30:00, to: 2023-11-27T18:00:00}'."  
+      name: first_observed 
+    - description: A comma-separated list of sources of the asset's data. Supports '=', '!='. For example, '= system, != manual'.
+      name: source
+    - description: "A timestamp when the asset was last observed. Supports '=' with 'from' and 'to'. For example, '= {from: 2023-11-27T10:30:00, to: 2023-11-27T18:00:00}'."
+      name: last_observed
     name: core-get-assets-list
     description: Returns a list of assets by filter.
   runonce: false
