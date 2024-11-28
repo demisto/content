@@ -621,7 +621,7 @@ script:
       description: Indicator type ID.
     - contextPath: OpenCTI.IndicatorTypes.IndicatorTypesList.name
       description: Indicator type name.
-    - contextPath: OpenCTI.IndicatorTypes.ndicatorTypesList.description
+    - contextPath: OpenCTI.IndicatorTypes.IndicatorTypesList.description
       description: Indicator type description.
   dockerimage: demisto/vendors-sdk:1.0.0.110574
   runonce: false
