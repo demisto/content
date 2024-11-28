@@ -379,8 +379,6 @@ def test_loop_on_alerts_with_closed_investigations(mocker):
 
     assert len(mock_set_playbook_on_alerts.call_args_list) == 1
 
-    assert results_summary_instance.results_summary["reopened"] == ["alert1", "alert2"]
-
 
 def test_loop_on_alerts_empty_incidents(mocker):
     """

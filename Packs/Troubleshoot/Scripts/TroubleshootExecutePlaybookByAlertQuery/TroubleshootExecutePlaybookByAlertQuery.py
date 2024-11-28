@@ -187,7 +187,7 @@ def handle_results(command_results: dict, playbook_id: str, alert_ids: list, res
         return f"Unexpected error occurred: {str(e)}. Response: {command_results[0]}"
 
 
-def open_investigation(alert_ids: list) -> None:
+def open_investigation(results_summary: ResultsSummary, alert_ids: list) -> None:
     """
     Reopens investigations for the given alert IDs.
 
@@ -198,6 +198,8 @@ def open_investigation(alert_ids: list) -> None:
         results = demisto.executeCommand("core-api-post", {"uri": "/investigation/:id/reopen", "body": {"id": alert,
                                                                                                         "version": -1}})
         demisto.debug(f"Reopened alert {alert} with the following results: {results}.")
+        
+    results_summary.update_reopened(alert_ids)
 
 
 def set_playbook_on_alerts(playbook_id: str, alert_ids: list, playbooks_dict: dict, results_summary: ResultsSummary):
@@ -221,6 +223,31 @@ def set_playbook_on_alerts(playbook_id: str, alert_ids: list, playbooks_dict: di
 
     demisto.debug(f"Results of setting playbook {playbook_id} on alerts {alert_ids}:\n{command_results}")
     handle_results(command_results, playbook_id, alert_ids, results_summary)
+
+def split_alert_ids_into_bulks(alert_inv_status: dict[str, list]) -> tuple[list, list, list]:
+    """
+    Splits alert IDs into bulks based on the maximum allowed size.
+
+    Args:
+        alert_inv_status (dict[str, list]): Dictionary containing 'close_ids', 'open_ids', and 'all_ids'.
+        max_bulk_size (int): Maximum allowed size for each bulk.
+
+    Returns:
+        tuple[list, list, list]: Bulked lists for closed, open, and all alert IDs.
+    """
+    alert_closed_bulks = [
+        alert_inv_status["close_ids"][i:i + MAX_BULK_SIZE_ALLOWED]
+        for i in range(0, len(alert_inv_status["close_ids"]), MAX_BULK_SIZE_ALLOWED)
+    ]
+    alert_open_bulks = [
+        alert_inv_status["open_ids"][i:i + MAX_BULK_SIZE_ALLOWED]
+        for i in range(0, len(alert_inv_status["open_ids"]), MAX_BULK_SIZE_ALLOWED)
+    ]
+    alert_all_ids_bulks = [
+        alert_inv_status["all_ids"][i:i + MAX_BULK_SIZE_ALLOWED]
+        for i in range(0, len(alert_inv_status["all_ids"]), MAX_BULK_SIZE_ALLOWED)
+    ]
+    return alert_closed_bulks, alert_open_bulks, alert_all_ids_bulks
 
 
 def loop_on_alerts(incidents: list[dict], playbook_id: str, limit: int, reopen_closed_inv: bool, playbooks_dict: dict,
@@ -252,45 +279,29 @@ def loop_on_alerts(incidents: list[dict], playbook_id: str, limit: int, reopen_c
         else:
             alert_inv_status["open_ids"].append(inc["id"])
 
-    alert_closed_bulks = [
-        alert_inv_status["close_ids"][i:i + MAX_BULK_SIZE_ALLOWED]
-        for i in range(0, len(alert_inv_status["close_ids"]), MAX_BULK_SIZE_ALLOWED)
-    ]
-    alert_open_bulks = [
-        alert_inv_status["open_ids"][i:i + MAX_BULK_SIZE_ALLOWED]
-        for i in range(0, len(alert_inv_status["open_ids"]), MAX_BULK_SIZE_ALLOWED)
-    ]
-    alert_all_ids_bulks = [
-        alert_inv_status["all_ids"][i:i + MAX_BULK_SIZE_ALLOWED]
-        for i in range(0, len(alert_inv_status["all_ids"]), MAX_BULK_SIZE_ALLOWED)
-    ]
+    alert_closed_bulks, alert_open_bulks, alert_all_ids_bulks = split_alert_ids_into_bulks(
+        alert_inv_status
+    )
+    
     demisto.debug(
         f'{MAX_BULK_SIZE_ALLOWED=}, all ids: {len(alert_inv_status["all_ids"])}, closed ids:{len(alert_inv_status["close_ids"])},'
         f' open_ids: {len(alert_inv_status["open_ids"])}')
 
-    reopened_alerts = []
     if reopen_closed_inv and alert_closed_bulks:
-        if reopened_alerts := alert_inv_status['close_ids']:
-            results_summary.update_reopened(reopened_alerts)
-
+        alert_bulks_to_set = alert_all_ids_bulks
         for bulk in alert_closed_bulks:
-            open_investigation(alert_ids=bulk)
-
-        for bulk in alert_all_ids_bulks:
-            set_playbook_on_alerts(
-                playbook_id=playbook_id,
-                alert_ids=bulk,
-                playbooks_dict=playbooks_dict,
-                results_summary=results_summary
-            )
+            open_investigation(results_summary=results_summary, alert_ids=bulk)
+            
     else:
-        for bulk in alert_open_bulks:
-            set_playbook_on_alerts(
-                playbook_id=playbook_id,
-                alert_ids=bulk,
-                playbooks_dict=playbooks_dict,
-                results_summary=results_summary
-            )
+        alert_bulks_to_set = alert_open_bulks
+        
+    for bulk in alert_bulks_to_set:
+        set_playbook_on_alerts(
+            playbook_id=playbook_id,
+            alert_ids=bulk,
+            playbooks_dict=playbooks_dict,
+            results_summary=results_summary
+        )
 
 
 def split_by_playbooks(incidents: list[dict], limit: int, reopen_closed_inv: bool, playbooks_dict: dict,
