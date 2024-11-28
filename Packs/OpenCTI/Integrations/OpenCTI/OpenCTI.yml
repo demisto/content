@@ -152,7 +152,7 @@ script:
       name: value
     - auto: PREDEFINED
       defaultValue: "false"
-      description: Create indicator related with the observable created.
+      description: Create OpenCTI indicator related with the OpenCTI observable created.
       name: create_indicator
       predefined:
       - "true"
@@ -417,7 +417,7 @@ script:
       type: string
     - auto: PREDEFINED
       defaultValue: "false"
-      description: Create observable related with the indicator created.
+      description: Create OpenCTI observable related with the OpenCTI indicator created.
       name: create_observables
       predefined:
       - "true"
