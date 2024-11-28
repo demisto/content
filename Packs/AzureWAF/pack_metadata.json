@@ -10,9 +10,22 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Azure",
+        "WAF",
+        "Web Application Firewall"
+    ],
+    "dependencies": {
+        "MicrosoftEntraID": {
+            "mandatory": true,
+            "display_name": "Azure Logs"
+        }
+    },
     "marketplaces": [
         "xsoar",
         "marketplacev2"
