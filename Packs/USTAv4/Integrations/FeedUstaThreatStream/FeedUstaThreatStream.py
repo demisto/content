@@ -30,7 +30,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
     def check_auth(self):
-        self._http_request('GET', 'malicious-urls', error_handler=self._http_error_handler)
+        self._http_request('GET', 'company/me', error_handler=self._http_error_handler)
 
     def build_iterator(self, ioc_feed_type: str, start_time: str, limit: int = 0) -> list:
         params = assign_params(start=start_time, size=limit)
@@ -63,7 +63,7 @@ class Client(BaseClient):
             raise DemistoException('Rate limit exceeded. Please try again later..!')
 
 
-def test_module(client: Client) -> str:
+def check_module(client: Client) -> str:
     try:
         client.check_auth()
     except DemistoException as e:
@@ -89,6 +89,7 @@ def parse_malware_hashes(indicator: dict) -> dict:
         }
     }
     parsed_indicator['fields']['tags'].append('usta-malware-hashes')
+
     return parsed_indicator
 
 
@@ -218,6 +219,9 @@ def fetch_indicators_command(client: Client, last_run: dict, params: Dict[str, A
             # Adding name of the service supplying this feed.
             indicator_obj['service'] = SERVICE_NAME
 
+            # make sure tags are unique
+            indicator_obj['fields']['tags'] = list(set(indicator_obj['fields']['tags']))
+
             parsed_indicators.append(indicator_obj)
 
     # Update last_run with the latest indicator for each feed type
@@ -279,7 +283,7 @@ def main():
         }
 
         if cmd == "test-module":
-            return_results(test_module(client))
+            return_results(check_module(client))
 
         elif cmd == "fetch-indicators":
             next_run, indicators = fetch_indicators_command(

@@ -1,0 +1,140 @@
+[
+    {
+        "value": "http://vakfkatilimbnksi.com",
+        "type": "URL",
+        "rawJSON": {
+            "id": 280375,
+            "url": "http://vakfkatilimbnksi.com",
+            "host": "vakfkatilimbnksi.com",
+            "is_domain": true,
+            "ip_addresses": [
+                "172.67.190.37",
+                "104.21.10.124"
+            ],
+            "country": null,
+            "created": "2024-11-21T07:14:10.125079Z"
+        },
+        "fields": {
+            "country": null,
+            "ip_addresses": [
+                "172.67.190.37",
+                "104.21.10.124"
+            ],
+            "host": "vakfkatilimbnksi.com",
+            "tags": [
+                "usta-phishing-sites"
+            ]
+        },
+        "service": "FeedUstaThreatStream"
+    },
+    {
+        "value": "https://trentyolcilginkasim.com",
+        "type": "URL",
+        "rawJSON": {
+            "id": 280368,
+            "url": "https://trentyolcilginkasim.com",
+            "host": "trentyolcilginkasim.com",
+            "is_domain": true,
+            "ip_addresses": [
+                "95.0.217.244"
+            ],
+            "country": "T\\u00fcrkiye",
+            "created": "2024-11-21T07:07:52.813297Z"
+        },
+        "fields": {
+            "country": "T\\u00fcrkiye",
+            "ip_addresses": [
+                "95.0.217.244"
+            ],
+            "host": "trentyolcilginkasim.com",
+            "tags": [
+                "usta-phishing-sites"
+            ]
+        },
+        "service": "FeedUstaThreatStream"
+    },
+    {
+        "value": "https://paparachargeback.onrender.com",
+        "type": "URL",
+        "rawJSON": {
+            "id": 280366,
+            "url": "https://paparachargeback.onrender.com",
+            "host": "paparachargeback.onrender.com",
+            "is_domain": true,
+            "ip_addresses": [
+                "216.24.57.252",
+                "216.24.57.4"
+            ],
+            "country": "United States",
+            "created": "2024-11-21T06:57:57.716927Z"
+        },
+        "fields": {
+            "country": "United States",
+            "ip_addresses": [
+                "216.24.57.252",
+                "216.24.57.4"
+            ],
+            "host": "paparachargeback.onrender.com",
+            "tags": [
+                "usta-phishing-sites"
+            ]
+        },
+        "service": "FeedUstaThreatStream"
+    },
+    {
+        "value": "https://iscep-onaylibasvurum.vercel.app/",
+        "type": "URL",
+        "rawJSON": {
+            "id": 280365,
+            "url": "https://iscep-onaylibasvurum.vercel.app/",
+            "host": "iscep-onaylibasvurum.vercel.app",
+            "is_domain": true,
+            "ip_addresses": [
+                "76.76.21.123",
+                "76.76.21.241"
+            ],
+            "country": "United States",
+            "created": "2024-11-21T06:52:39.615442Z"
+        },
+        "fields": {
+            "country": "United States",
+            "ip_addresses": [
+                "76.76.21.123",
+                "76.76.21.241"
+            ],
+            "host": "iscep-onaylibasvurum.vercel.app",
+            "tags": [
+                "usta-phishing-sites"
+            ]
+        },
+        "service": "FeedUstaThreatStream"
+    },
+    {
+        "value": "https://isbnksiianlkkonay.vercel.app/",
+        "type": "URL",
+        "rawJSON": {
+            "id": 280354,
+            "url": "https://isbnksiianlkkonay.vercel.app/",
+            "host": "isbnksiianlkkonay.vercel.app",
+            "is_domain": true,
+            "ip_addresses": [
+                "76.76.21.93",
+                "76.76.21.98"
+            ],
+            "country": "United States",
+            "created": "2024-11-21T06:42:18.242043Z"
+        },
+        "fields": {
+            "country": "United States",
+            "ip_addresses": [
+                "76.76.21.93",
+                "76.76.21.98"
+            ],
+            "host": "isbnksiianlkkonay.vercel.app",
+            "tags": [
+                "usta-phishing-sites"
+            ]
+        },
+        "service": "FeedUstaThreatStream"
+    }
+]

@@ -1,65 +1,22 @@
-"""HelloWorld Feed Integration for Cortex XSOAR - Unit Tests file
-
-This file contains the Unit Tests for the HelloWorld Integration based
-on pytest. Cortex XSOAR contribution requirements mandate that every
-integration, as well as a feed integration, should have a proper set of unit
-tests to automatically verify that the integration is behaving as expected
-during CI/CD pipeline.
-
-Test Execution
---------------
-
-Unit tests can be checked in 3 ways:
-- Using the command `lint` of demisto-sdk. The command will build a dedicated
-  docker instance for your feed integration locally and use the docker instance to
-  execute your tests in a dedicated docker instance.
-- From the command line using `pytest -v` or `pytest -vv`
-- From PyCharm
-
-Example with demisto-sdk (from the content root directory):
-demisto-sdk lint -i Packs/HelloWorld/Integrations/FeedHelloWorld
-
-Coverage
---------
-
-There should be at least one unit test per command function. In each unit
-test, the target command function is executed with specific parameters and the
-output of the command function is checked against an expected output.
-
-Unit tests should be self contained and should not interact with external
-resources like (API, devices, ...). To isolate the code from external resources
-you need to mock the API of the external resource using pytest-mock:
-https://github.com/pytest-dev/pytest-mock/
-
-In the following code we configure requests-mock (a mock of Python requests)
-before each test to simulate the API calls to the FeedHelloWorld API (which is
-OpenPhish). This way we can have full control of the API behavior and focus only
-on testing the logic inside the integration code.
-
-We recommend to use outputs from the API calls and use them to compare the
-results when possible. See the ``test_data`` directory that contains the data
-we use for comparison, in order to reduce the complexity of the unit tests and
-avoding to manually mock all the fields.
-
-NOTE: we do not have to import or build a requests-mock instance explicitly.
-requests-mock library uses a pytest specific mechanism to provide a
-requests_mock instance to any function with an argument named requests_mock.
-
-More Details
-------------
-
-More information about Unit Tests in Cortex XSOAR:
-https://xsoar.pan.dev/docs/integrations/unit-testing
-
-"""
-
-from FeedHelloWorld import Client, fetch_indicators_command, get_indicators_command
-from CommonServerPython import string_to_table_header, tableToMarkdown
+from FeedUstaThreatStream import (
+    Client,
+    fetch_indicators_command,
+    parse_phishing_sites,
+    parse_malicious_urls,
+    parse_malware_hashes,
+    check_module,
+    search_malware_hashes_command,
+    search_malicious_urls_command,
+    search_phishing_site_command,
+)
+from CommonServerPython import tableToMarkdown
 
 import json
+import pytest
+import demistomock as demisto  # noqa: F401
 
 
-URL = "https://openphish.com/feed.txt"
+client = Client(base_url="", verify=False, headers={}, proxy=False)
 
 
 def util_load_json(path):
@@ -67,76 +24,149 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_build_iterator(requests_mock):
-    """
+def test_check_module(mocker):
+    mock_response = util_load_json("test_data/auth_success_response.json")
+    mocker.patch.object(client, "check_auth", return_value=mock_response)
+    response = check_module(client)
+    assert response == "ok"
 
-    Given:
-        - Output of the feed API
-    When:
-        - When calling fetch_indicators or get_indicators
-    Then:
-        - Returns a list of the indicators parsed from the API's response
 
-    """
-    with open("test_data/FeedHelloWorld_mock.txt") as file:
-        response = file.read()
-    requests_mock.get(URL, text=response)
-    expected_url = "https://url1.com"
-    client = Client(
-        base_url=URL,
-        verify=False,
-        proxy=False,
+def test_search_phishing_site_command(mocker):
+    mock_response = json.loads(
+        """
+    {
+        "count": 1,
+        "next": null,
+        "previous": null,
+        "results": [
+            {
+                "id": 219286,
+                "url": "https://phishingwebsite.org",
+                "host": "phishingwebsite.org",
+                "is_domain": true,
+                "ip_addresses": [
+                    "127.0.0.1"
+                ],
+                "country": null,
+                "created": "2024-02-05T15:23:11.646011Z"
+            }
+        ]
+    }"""
     )
-    indicators = client.build_iterator()
-    url_indicators = {
-        indicator["value"] for indicator in indicators if indicator["type"] == "URL"
+
+    mocker.patch.object(client, "search_iterator_without_pagination", return_value=mock_response)
+    args = {"limit": "10", "offset": "0", "indicator": "example.com"}
+    response = search_phishing_site_command(client, args)
+    human_readable = tableToMarkdown("Indicators from USTA Feed (phishing-sites):", mock_response["results"])
+    assert response.raw_response == mock_response["results"]
+    assert response.readable_output == human_readable
+    assert len(response.raw_response) == 1
+
+
+@pytest.mark.parametrize(
+    "command, expected_output",
+    [
+        (search_phishing_site_command, "No entries."),
+        (search_malware_hashes_command, "No entries."),
+        (search_malicious_urls_command, "No entries."),
+    ],
+)
+def test_search_commands_no_results_found(mocker, command, expected_output):
+    mock_response = json.loads(
+        """
+        {
+            "count": 0,
+            "next": null,
+            "previous": null,
+            "results": []
+        }"""
+    )
+    mocker.patch.object(client, "search_iterator_without_pagination", return_value=mock_response)
+    args = {"limit": "10", "offset": "0", "indicator": "exampleurl.com"}
+    response = command(client, args)
+    assert response.raw_response == mock_response["results"]
+    assert len(response.raw_response) == 0
+    assert expected_output in response.readable_output
+
+
+@pytest.mark.parametrize(
+    "command, expected_output",
+    [
+        (search_phishing_site_command, "Indicators from USTA Feed (phishing-sites):"),
+        (search_malware_hashes_command, "Indicators from USTA Feed (malware-hashes):"),
+        (search_malicious_urls_command, "Indicators from USTA Feed (malicious-urls):"),
+    ],
+)
+def test_search_commands_with_results(mocker, command, expected_output):
+    mock_response = json.loads(
+        """
+        {
+            "count": 1,
+            "next": null,
+            "previous": null,
+            "results": [
+                {
+                    "id": 219286,
+                    "url": "https://example.com",
+                    "host": "example.com",
+                    "is_domain": true,
+                    "ip_addresses": [
+                        "127.0.0.1"
+                    ],
+                    "country": null,
+                    "created": "2024-02-05T15:23:11.646011Z"
+                }
+            ]
+        }"""
+    )
+    mocker.patch.object(client, "search_iterator_without_pagination", return_value=mock_response)
+    args = {"limit": "10", "offset": "0", "indicator": "example.com"}
+    response = command(client, args)
+    assert response.raw_response == mock_response["results"]
+    assert len(response.raw_response) == 1
+    assert expected_output in response.readable_output
+
+
+@pytest.mark.parametrize(
+    "parser_function, indicator_json",
+    [
+        (parse_phishing_sites, "test_data/fetch_indicators_phishing_sites.json"),
+        (parse_malicious_urls, "test_data/fetch_indicators_malicious_urls.json"),
+        (parse_malware_hashes, "test_data/fetch_indicators_malware_hashes.json"),
+    ],
+)
+def test_parse_functions(mocker, parser_function, indicator_json):
+    mock_response = util_load_json(indicator_json)
+    for each in mock_response:
+        expected_result = parser_function(each["rawJSON"])
+        assert expected_result["rawJSON"] == each["rawJSON"]
+        assert expected_result["value"] == each["value"]
+
+
+@pytest.mark.parametrize(
+    "ioc_type, indicator_json",
+    [
+        ('phishing-sites', "test_data/fetch_indicators_phishing_sites.json"),
+        ('malicious-urls', "test_data/fetch_indicators_malicious_urls.json"),
+        ('malware-hashes', "test_data/fetch_indicators_malware_hashes.json"),
+    ],
+)
+def test_fetch_indicators_command(mocker, ioc_type, indicator_json):
+
+    all_indicators = []
+    for each in util_load_json(indicator_json):
+        all_indicators.append(each["rawJSON"])
+
+    mocker.patch.object(Client, "build_iterator", return_value=all_indicators)
+    params = {
+        'ioc_feed_type': ioc_type,
     }
-    assert expected_url in url_indicators
-
-
-def test_fetch_indicators(mocker):
-    """
-
-    Given:
-        - Output of the feed API as list
-    When:
-        - Fetching indicators from the API
-    Then:
-        - Create indicator objects list
-
-    """
-    client = Client(base_url=URL)
-    mocker.patch.object(
-        Client,
-        "build_iterator",
-        return_value=util_load_json("./test_data/build_iterator_results.json"),
+    next_run, indicators = fetch_indicators_command(
+        client=Client,
+        last_run={
+        },
+        params=params
     )
-    results = fetch_indicators_command(client, params={"tlp_color": "RED"})
-    assert results == util_load_json("./test_data/get_indicators_command_results.json")
 
-
-def test_get_indicators_command(mocker):
-    """
-
-    Given:
-        - Output of the feed API as list
-    When:
-        - Getting a limited number of indicators from the API
-    Then:
-        - Return results as war-room entry
-
-    """
-    client = Client(base_url=URL)
-    indicators_list = util_load_json("./test_data/build_iterator_results.json")[:10]
-    mocker.patch.object(Client, "build_iterator", return_value=indicators_list)
-    results = get_indicators_command(
-        client, params={"tlp_color": "RED"}, args={"limit": "10"}
-    )
-    human_readable = tableToMarkdown(
-        "Indicators from HelloWorld Feed:",
-        indicators_list,
-        headers=["value", "type"],
-        headerTransform=string_to_table_header,
-        removeNull=True,
-    )
-    assert results.readable_output == human_readable
+    assert len(indicators) == len(all_indicators)
+    assert next_run[ioc_type]['created'] == all_indicators[0]["created"]
