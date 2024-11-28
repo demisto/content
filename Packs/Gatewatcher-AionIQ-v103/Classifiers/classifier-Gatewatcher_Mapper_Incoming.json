@@ -12,7 +12,7 @@
 	"itemVersion": "",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 9,
+	"logicalVersion": 15,
 	"mapping": {
 		"Gatewatcher Incident": {
 			"dontMapEventToLabels": true,
@@ -43,6 +43,45 @@
 				},
 				"Gatewatcher Source Port": {
 					"simple": "source.port"
+				},
+				"Gatewatcher beacon.active": {
+					"simple": "beacon.active"
+				},
+				"Gatewatcher beacon.hostname_resolution": {
+					"simple": "beacon.hostname_resolution"
+				},
+				"Gatewatcher beacon.id": {
+					"simple": "beacon.id"
+				},
+				"Gatewatcher beacon.mean_time_interval": {
+					"simple": "beacon.mean_time_interval"
+				},
+				"Gatewatcher beacon.possible_cnc": {
+					"simple": "beacon.possible_cnc"
+				},
+				"Gatewatcher beacon.session_count": {
+					"simple": "beacon.session_count"
+				},
+				"Gatewatcher beacon.type": {
+					"simple": "beacon.type"
+				},
+				"Gatewatcher dga.dga_count": {
+					"simple": "dga.dga_count"
+				},
+				"Gatewatcher dga.dga_ratio": {
+					"simple": "dga.dga_ratio"
+				},
+				"Gatewatcher dga.malware_behavior_confidence": {
+					"simple": "dga.malware_behavior_confidence"
+				},
+				"Gatewatcher dga.nx_domain_count": {
+					"simple": "dga.nx_domain_count"
+				},
+				"Gatewatcher dga.top_DGA": {
+					"simple": "dga.top_DGA"
+				},
+				"Gatewatcher dns": {
+					"simple": "dns"
 				},
 				"Gatewatcher dns.response_code": {
 					"simple": "dns.response_code"
@@ -104,6 +143,18 @@
 				"Gatewatcher network.transport": {
 					"simple": "network.transport"
 				},
+				"Gatewatcher ransomware.alert_threshold": {
+					"simple": "ransomware.alert_threshold"
+				},
+				"Gatewatcher ransomware.malicious_behavior_confidence": {
+					"simple": "ransomware.malicious_behavior_confidence"
+				},
+				"Gatewatcher ransomware.session_score": {
+					"simple": "ransomware.session_score"
+				},
+				"Gatewatcher shellcode.encodings": {
+					"simple": "shellcode.encodings"
+				},
 				"Gatewatcher shellcode.sub_type": {
 					"simple": "shellcode.sub_type"
 				},
@@ -118,6 +169,9 @@
 				},
 				"Gatewatcher sigflow.payload_printable": {
 					"simple": "sigflow.payload_printable"
+				},
+				"Gatewatcher smb": {
+					"simple": "smb"
 				},
 				"severity": {
 					"simple": "event.severity"

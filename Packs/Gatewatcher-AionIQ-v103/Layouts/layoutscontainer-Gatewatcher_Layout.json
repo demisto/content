@@ -114,7 +114,7 @@
 								"fieldId": "gatewatchertransport",
 								"height": 53,
 								"id": "1fe90180-aca5-11ef-9202-89fa98701c99",
-								"index": 9,
+								"index": 8,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -124,7 +124,7 @@
 								"fieldId": "sourcebrand",
 								"height": 53,
 								"id": "incident-sourceBrand-field",
-								"index": 10,
+								"index": 8,
 								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -135,7 +135,7 @@
 								"fieldId": "sourceinstance",
 								"height": 53,
 								"id": "incident-sourceInstance-field",
-								"index": 11,
+								"index": 9,
 								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -361,8 +361,8 @@
 						"name": "Malcore engine",
 						"static": false,
 						"w": 1,
-						"x": 2,
-						"y": 5
+						"x": 1,
+						"y": 6
 					},
 					{
 						"displayType": "CARD",
@@ -437,6 +437,15 @@
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchershellcodeencodings",
+								"height": 53,
+								"id": "0dda5600-ada0-11ef-9be1-5d2604062cce",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
 							}
 						],
 						"maxW": 3,
@@ -489,7 +498,7 @@
 						"static": false,
 						"w": 1,
 						"x": 1,
-						"y": 6
+						"y": 11
 					},
 					{
 						"displayType": "CARD",
@@ -565,15 +574,6 @@
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "gatewatcherhttprequestmethod",
-								"height": 53,
-								"id": "41977790-ad71-11ef-a64e-e91401017d2c",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
 								"fieldId": "gatewatcherhttpresponsestatus",
 								"height": 53,
 								"id": "622de7a0-ad71-11ef-a64e-e91401017d2c",
@@ -623,11 +623,248 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "HTTP Field",
+						"name": "HTTP field",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 14
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-adedd390-ad9d-11ef-9be1-5d2604062cce",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdgadgacount",
+								"height": 53,
+								"id": "cbce9980-ad9d-11ef-9be1-5d2604062cce",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdgadgaratio",
+								"height": 53,
+								"id": "ce126f00-ad9d-11ef-9be1-5d2604062cce",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdgamalwarebehaviorconfidence",
+								"height": 53,
+								"id": "d490e0f0-ad9d-11ef-9be1-5d2604062cce",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gatewatcherdganxdomaincount",
+								"height": 53,
+								"id": "d88f85d0-ad9d-11ef-9be1-5d2604062cce",
+								"index": 3,
+								"listId": "caseinfoid-adedd390-ad9d-11ef-9be1-5d2604062cce",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdgatopdga",
+								"height": 22,
+								"id": "ddd15910-ad9d-11ef-9be1-5d2604062cce",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "DGA engine",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 5
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-e28432c0-ad9d-11ef-9be1-5d2604062cce",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherransomwarealertthreshold",
+								"height": 53,
+								"id": "87a5c200-ad9e-11ef-9be1-5d2604062cce",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherransomwaremaliciousbehaviorconfidence",
+								"height": 53,
+								"id": "89510100-ad9e-11ef-9be1-5d2604062cce",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherhttprequestmethod",
+								"height": 53,
+								"id": "41977790-ad71-11ef-a64e-e91401017d2c",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Ransomware detect engine",
 						"static": false,
 						"w": 1,
 						"x": 1,
+						"y": 9
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-6f0f1740-ad9f-11ef-9be1-5d2604062cce",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherbeaconactive",
+								"height": 53,
+								"id": "7bcea400-ad9f-11ef-9be1-5d2604062cce",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherbeaconhostnameresolution",
+								"height": 53,
+								"id": "7df18400-ad9f-11ef-9be1-5d2604062cce",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherbeaconid",
+								"height": 53,
+								"id": "7f4c3200-ad9f-11ef-9be1-5d2604062cce",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gatewatcherbeaconmeantimeinterval",
+								"height": 53,
+								"id": "8488ae10-ad9f-11ef-9be1-5d2604062cce",
+								"index": 3,
+								"listId": "caseinfoid-6f0f1740-ad9f-11ef-9be1-5d2604062cce",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherbeaconpossiblecnc",
+								"height": 53,
+								"id": "890c8880-ad9f-11ef-9be1-5d2604062cce",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherbeaconsessioncount",
+								"height": 53,
+								"id": "8b601570-ad9f-11ef-9be1-5d2604062cce",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherbeacontype",
+								"height": 53,
+								"id": "8d722c90-ad9f-11ef-9be1-5d2604062cce",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Beacon detect engine",
+						"static": false,
+						"w": 1,
+						"x": 2,
 						"y": 8
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-218e3610-ada2-11ef-9be1-5d2604062cce",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdns",
+								"height": 22,
+								"id": "328b4570-ada2-11ef-9be1-5d2604062cce",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Dns field",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 10
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-d890c4b0-ada5-11ef-9be1-5d2604062cce",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersmb",
+								"height": 22,
+								"id": "e91e9780-ada5-11ef-9be1-5d2604062cce",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Smb field",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 12
 					}
 				],
 				"type": "custom"
