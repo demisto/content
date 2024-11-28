@@ -1,8 +1,5 @@
-## Configure Prisma Cloud (RedLock) on Cortex XSOAR
+## Configure Prisma Cloud (RedLock) in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Prisma Cloud (RedLock).
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -19,13 +16,12 @@
 | proxy | Use system proxy settings | False |
 | unsecure | Trust any certificate \(not secure\) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 **Note:** Further info on creating access keys for Prisma Cloud is available [here](https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-admin/manage-prisma-cloud-administrators/create-access-keys.html).
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### redlock-search-alerts
 ***
