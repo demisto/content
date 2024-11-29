@@ -595,6 +595,7 @@ def query_malops(
     # First request - "MalopProcess"
     json_body['queryPath'][0]['requestedType'] = "MalopProcess"  # type: ignore
     malop_process_type = client.cybereason_api_call('POST', '/rest/crimes/unified', json_body=json_body)
+    demisto.info(f"malop_process response: {malop_process_type}")
     # Second request - "MalopLogonSession"
     json_body['queryPath'][0]['requestedType'] = "MalopLogonSession"  # type: ignore
     malop_loggon_session_type = client.cybereason_api_call('POST', '/rest/crimes/unified', json_body=json_body)
@@ -1598,8 +1599,19 @@ def fetch_incidents(client: Client):
     else:
         raise Exception('Given filter to fetch by is invalid.')
 
+    current_time = int(datetime.now().timestamp()) * 1000
+    offset = 0
+    demisto.info(f"current_time for mmng/v2: {current_time} and end_time: {last_update_time}")
+    malop_management_response = get_malop_management_data(client, last_update_time, current_time, offset)
+    demisto.info(f"mmng/v2 response: {malop_management_response}")
+    # call mmmng/v2 function
+    #iterate the malop list and segregate edr and non edr
+    # if edr: 
     malop_process_type, malop_loggon_session_type = query_malops(client, total_result_limit=10000, per_group_limit=10000,
                                                                  filters=filters)
+    # if nonedr:
+    #     # call detection/details
+    #     pass
     incidents = []
 
     for response in (malop_process_type, malop_loggon_session_type):
@@ -2071,6 +2083,35 @@ def get_machine_details_command(client: Client, args: dict):
             outputs_key_field='MachineID',
             outputs=outputs)
 
+def get_malop_management_data(client: Client, start_time, end_time, offset):
+    demisto.info("initiating get_malop_management_data")
+    query = {
+            "search": {},
+            "range": {
+                "from": start_time,
+                "to" : end_time
+            },
+            "pagination": {
+                "pageSize": 100,
+                "offset": offset
+            },
+             "filter": {
+                    "malop":
+                        {
+                            "status":["Active"],
+                        },
+                      },
+            "federation": {
+                "groups": []
+            },
+            "sort":[{
+                "field": "LastUpdateTime",
+                "order": "desc"
+            }]
+        }
+    demisto.info(f"API query for malop management: {query}")
+    response = client.cybereason_api_call('POST', '/rest/mmng/v2/malops', json_body=query)
+    return response
 
 def query_malop_management_command(client: Client, args: dict):
     malop_guid = args.get('malopGuid')
