@@ -72,7 +72,7 @@ Search for compromised credentials by username
 ```json
 {
     "USTA" : {
-        "StolenCreditCards": [
+        "AccountTakeoverPrevention": [
             {
                 "id": 1234567,
                 "status": "open",
