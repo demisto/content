@@ -19,11 +19,11 @@ class WordParser:
         self.file_path = ""
         self.file_name = ""
         self.file_type = ""
+        self.paragraphs = ""
+        self.tables = ""
+        self.hyperlinks = ""
+        self.core_properties = {}
         self.all_data = ""
-        # self.paragraphs = ""
-        # self.tables = ""
-        # self.hyperlinks = ""
-        # self.core_properties = {}
 
     def get_file_details(self):
         file_path_data = demisto.getFilePath(demisto.args().get("entryID"))
@@ -53,14 +53,14 @@ class WordParser:
     def extract_indicators(self):
         try:
             document = Document(self.file_path)
+            self.paragraphs = self.get_paragraphs(document)
+            self.tables = self.get_tables(document)
+            self.hyperlinks = self.get_hyperlinks(document)
+            self.get_core_properties(document)
             self.all_data = self.get_paragraphs(document)
             self.all_data += self.get_tables(document)
             self.all_data += self.get_core_properties(document)
             self.all_data += self.get_hyperlinks(document)
-            # self.paragraphs = self.get_paragraphs(document)
-            # self.tables = self.get_tables(document)
-            # self.hyperlinks = self.get_hyperlinks(document)
-            # self.get_core_properties(document)
         except PackageNotFoundError:
             self.errEntry["Contents"] = "Input file is not a valid docx/doc file."
             self.res = self.errEntry  # type: ignore
@@ -82,6 +82,14 @@ class WordParser:
         return " ".join(all_cells_txt.split())  # Removes extra whitespaces
 
     def get_core_properties(self, document):
+        self.core_properties['author'] = document.core_properties.author
+        self.core_properties['category'] = document.core_properties.category
+        self.core_properties['comments'] = document.core_properties.comments
+        self.core_properties['identifier'] = document.core_properties.identifier
+        self.core_properties['keywords'] = document.core_properties.keywords
+        self.core_properties['subject'] = document.core_properties.subject
+        self.core_properties['title'] = document.core_properties.title
+
         all_properties_txt = document.core_properties.author + " " + \
             document.core_properties.category + " " + \
             document.core_properties.comments + " " + \
@@ -90,13 +98,6 @@ class WordParser:
             document.core_properties.subject + " " + \
             document.core_properties.title + " "
         return " " + " ".join(all_properties_txt.split()) + " "
-        # self.core_properties['author'] = document.core_properties.author
-        # self.core_properties['category'] = document.core_properties.category
-        # self.core_properties['comments'] = document.core_properties.comments
-        # self.core_properties['identifier'] = document.core_properties.identifier
-        # self.core_properties['keywords'] = document.core_properties.keywords
-        # self.core_properties['subject'] = document.core_properties.subject
-        # self.core_properties['title'] = document.core_properties.title
 
     def get_hyperlinks(self, document):
         all_hyperlinks = ""
@@ -132,30 +133,17 @@ def main():
     except Exception as e:
         return_error(str(e))
 
-    # core_properties_str = " ".join(prop for prop in parser.core_properties.values())
-    # all_data = parser.paragraphs + parser.tables + parser.hyperlinks + core_properties_str
-
+    core_properties_str = " ".join(prop for prop in parser.core_properties.values())
+    all_data = parser.paragraphs + parser.tables + parser.hyperlinks + core_properties_str
 
     # Returning Indicators:
-    indicators_hr = demisto.executeCommand("extractIndicators", {
-        'text': parser.all_data})[0]['Contents']
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': indicators_hr,
-        'HumanReadable': indicators_hr
-    })
+    indicators_hr = demisto.executeCommand("extractIndicators", {'text': all_data})
+    return_results(indicators_hr)
 
-
-
-    # # Returning Indicators:
-    # indicators_hr = demisto.executeCommand("extractIndicators", {'text': all_data})
-    # return_results(indicators_hr)
-    #
-    # hr_output = tableToMarkdown('Properties', parser.core_properties)
-    # hr_output += f'### Paragraphs\n{parser.paragraphs}\n'
-    # hr_output += f'### Tables\n{parser.tables}\n'
-    # hr_output += f'### Hyperlinks\n{parser.hyperlinks}'
+    hr_output = tableToMarkdown('Properties', parser.core_properties)
+    hr_output += f'### Paragraphs\n{parser.paragraphs}\n'
+    hr_output += f'### Tables\n{parser.tables}\n'
+    hr_output += f'### Hyperlinks\n{parser.hyperlinks}'
 
     # Returning all parsed data:
     return_results(CommandResults(readable_output=hr_output))
