@@ -213,15 +213,15 @@ def fetch_events(
         offset=last_run_skip,
     )
 
-    prev_fetch_id = int(last_run.get("prev_fetch_id", 0))
-    fetch_id = prev_fetch_id + 1
+    fetch_id = int(last_run.get("fetch_id", 0)) + 1
+    
 
     demisto.debug(f"Fetched event id: {fetch_id}.")
     demisto.debug(f"Fetched {len(events)} events in fetch No: {fetch_id}")
     next_run = {
         "last_event_date": events[-1].get("created_at") if events else from_date,
         "last_event_id": events[-1].get("id") if events else from_event,
-        "prev_fetch_id": fetch_id,
+        "fetch_id": fetch_id,
         "offset": skip
     }
     if skip:
