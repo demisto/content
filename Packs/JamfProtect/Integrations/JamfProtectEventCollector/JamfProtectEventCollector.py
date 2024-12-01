@@ -123,7 +123,7 @@ class Client(BaseClient):
         expire_date = get_current_time() + timedelta(seconds=expire_in) - timedelta(minutes=MINUTES_BEFORE_TOKEN_EXPIRED)
         set_integration_context({"token": token, "expire_date": str(expire_date)})
 
-    def _generate_token(self, client_id: str, client_password: str) -> dict:  # pragma: no cover
+    def _generate_token(self, client_id: str, client_password: str) -> dict:
         """
         This method generates a reusable access token to authenticate requests to the Jamf Protect API.
 
@@ -144,7 +144,7 @@ class Client(BaseClient):
             json_data=json_data,
         )
 
-    def handle_errors(self, res: dict) -> None:  # pragma: no cover
+    def handle_errors(self, res: dict) -> None:
         """
         Handles errors in the response from the Jamf Protect API.
 
@@ -384,7 +384,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:  # pragma: no cover
+def test_module(client: Client) -> str:
     """
     This method is used to test the connectivity and functionality of the client.
 
@@ -572,31 +572,48 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
     audit_next_page = last_run.get("audit", {}).get("next_page", "")
     computer_next_page = last_run.get("computer", {}).get("next_page", "")
 
-    no_next_pages = not (any((alert_next_page, audit_next_page, computer_next_page)))
+    no_next_pages = not any((alert_next_page, audit_next_page, computer_next_page))
 
-    if no_next_pages or alert_next_page:
-        # The only case we don't trigger the alert event type cycle is when have only the audit and computer next page token.
-        alert_events, alert_next_run = get_event_for_specific_type(start_date=start_date_arg,
-                                                                   max_fetch=max_fetch_alerts,
-                                                                   last_run=last_run,
-                                                                   specific_type='alert',
-                                                                   client_event_type_func=client.get_alerts)
+    # Define the types and associated functions
+    event_types: list[dict] = [
+        {
+            "condition": no_next_pages or alert_next_page,
+            "specific_type": "alert",
+            "client_func": client.get_alerts,
+            "extra_args": {}
+        },
+        {
+            "condition": no_next_pages or audit_next_page,
+            "specific_type": "audit",
+            "client_func": client.get_audits,
+            "extra_args": {}
+        },
+        {
+            "condition": no_next_pages or computer_next_page,
+            "specific_type": "computer",
+            "client_func": client.get_computers,
+            "extra_args": {"fetch_all_computers": fetch_all_computers}
+        },
+    ]
 
-    if no_next_pages or audit_next_page:
-        # The only case we don't trigger the audit event type cycle is when have only the alert and computer next page token.
-        audit_events, audit_next_run = get_event_for_specific_type(start_date=start_date_arg,
-                                                                   max_fetch=max_fetch_alerts,
-                                                                   last_run=last_run,
-                                                                   specific_type='audit',
-                                                                   client_event_type_func=client.get_audits)
-    if no_next_pages or computer_next_page:
-        # The only case we don't trigger the computer event type cycle is when have only the alert and audit next page token.
-        computer_events, computer_next_run = get_event_for_specific_type(start_date=start_date_arg,
-                                                                         max_fetch=max_fetch_alerts,
-                                                                         last_run=last_run,
-                                                                         specific_type='computer',
-                                                                         client_event_type_func=client.get_computers,
-                                                                         fetch_all_computers=fetch_all_computers)
+    # Process event types
+    for event in event_types:
+        if event["condition"]:
+            events, next_run_for_specific_type = get_event_for_specific_type(
+                start_date=start_date_arg,
+                max_fetch=max_fetch_alerts,
+                last_run=last_run,
+                specific_type=event["specific_type"],
+                client_event_type_func=event["client_func"],
+                **event["extra_args"]
+            )
+            # Assign events and next_run to corresponding variables
+            if event["specific_type"] == "alert":
+                alert_events, alert_next_run = events, next_run_for_specific_type
+            elif event["specific_type"] == "audit":
+                audit_events, audit_next_run = events, next_run_for_specific_type
+            elif event["specific_type"] == "computer":
+                computer_events, computer_next_run = events, next_run_for_specific_type
 
     next_run: dict[str, Any] = {"alert": alert_next_run, "audit": audit_next_run, 'computer': computer_next_run}
     if "next_page" in (alert_next_run | audit_next_run | computer_next_run):
