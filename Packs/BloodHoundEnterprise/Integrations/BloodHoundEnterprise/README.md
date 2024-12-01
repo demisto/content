@@ -28,7 +28,7 @@ Each command returns relevant information that you can use for further analysis 
 
 ### bloodhound-get-events
 
-**Description**: Retrieves events from BloodHound Enterprise based on the specified date range.  
+Retrieves events from BloodHound Enterprise based on the specified date range.  
 This command allows you to monitor and analyze recent events directly from the Cortex XSIAM interface.
 
 #### Base Command
