@@ -7,6 +7,8 @@ import demistomock as demisto
 from pytest_mock import MockerFixture
 from pathlib import Path
 
+from CommonServerPython import DemistoException
+
 MOCK_BASEURL = "https://example.protect.jamfcloud.com"
 MOCK_CLIENT_ID = "example_client_id"
 MOCK_CLIENT_PASSWORD = "example_pass"
@@ -259,3 +261,10 @@ def test_get_event_for_specific_type(mocker, client):
     assert new_last_run['last_fetch'] == '2022-05-01T12:53:29.000000Z'
     assert 'source_log_type' in events[0]
     assert events[0]['source_log_type'] == 'alert'
+
+
+def test_handle_errors(client):
+    res: dict = {"errors": [{"message": "error_1"}, {"message": "error_2"}, {"message": "error_3"}]}
+    with pytest.raises(DemistoException) as de:
+        client.handle_errors(res)
+        assert de.message == "\n".join(error.get("message") for error in res["errors"])
