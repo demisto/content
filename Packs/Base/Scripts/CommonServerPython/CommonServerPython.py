@@ -12285,7 +12285,16 @@ def get_server_config():
 
 def xsoar_profiler(func):
     """
-    A decorator that profiles the execution of a function and generates a profiling report.
+    A decorator for profiling the execution time and performance of a function.
+
+    This decorator is useful for identifying performance bottlenecks and understanding the time complexity of your code.
+    It collects and displays detailed profiling information, including the total execution time, the number of calls,
+    and the average time per call.
+    When to use it:
+        - When you need to debug and optimize the performance of your functions or methods.
+        - When you want to identify slow or inefficient parts of your code.
+        - During the development and testing phases to ensure that your code meets performance requirements.
+
     To use, decorate the function that calls the function you want to profile with @xsoar_profiler.
     Example: I want to profile the function_to_profile() function:
         function_to_profile():
@@ -12294,6 +12303,8 @@ def xsoar_profiler(func):
         @xsoar_profiler
         foo():
             function_to_profile()
+
+    Tested with Python 3.
 
     :param func: The function to be profiled.
     :return: The profiled function.
@@ -12345,18 +12356,9 @@ def xsoar_profiler(func):
             timeout_nanoseconds = demisto.callingContext["context"].get("TimeoutDuration") or default_timeout
             timeout_seconds = timeout_nanoseconds / 1e9
             failed_on_timeout = False
-            # Set a timer to dump the file 5 seconds before the timeout expires.
-            timer = threading.Timer(timeout_seconds - 5,
-                                    lambda: demisto.debug("Timeout reached, dumping the profiler results."))
-            timer.start()
-
-            while True:
-                if signal_event.wait(0.1):  # Check for the event signal
-                    break
-                if not timer.is_alive():  # Check if the timeout occurred
-                    failed_on_timeout = True
-                    break
-
+            event_set = signal_event.wait(timeout_seconds - 5)
+            if not event_set:
+                failed_on_timeout = True
             profiler.disable()
             dump_result()
             demisto.debug("Profiler finished.")
@@ -12377,12 +12379,11 @@ def xsoar_profiler(func):
             demisto.debug("Profiler started.")
             try:
                 results["function_results"] = func(*args, **kwargs)
-            except Exception as e:
-                results["function_results"] = e
             finally:
                 # Signal the profiling thread that the command has completed.
                 signal_event.set()
 
+        support_multithreading()
         results = {}
         profiler = cProfile.Profile()
         signal_event = threading.Event()
@@ -12392,7 +12393,7 @@ def xsoar_profiler(func):
 
         failed_on_timeout = profiler_function(signal_event, profiler)
         if failed_on_timeout:
-            raise DemistoException("The profiled function failed due to a timeout")
+            raise DemistoException("The profiled function failed due to a timeout.")
         if results.get("function_results"):
             res = results.get("function_results")
             if isinstance(res, Exception):
