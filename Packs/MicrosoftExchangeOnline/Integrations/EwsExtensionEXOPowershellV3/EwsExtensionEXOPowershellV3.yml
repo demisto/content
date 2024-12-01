@@ -2414,10 +2414,10 @@ script:
   - name: ews-rule-enable
     arguments:
       - name: mailbox
-        description: The mailbox that contains the Inbox rule.
+        description: The mailbox that contains the inbox rule.
         required: true
       - name: identity
-        description: The Inbox rule that you want to enable.
+        description: The inbox rule that you want to enable.
         required: true
     description: Enable an existing inbox rule in a given mailbox.
   - name: ews-mail-flow-rules-list
