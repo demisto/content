@@ -1,3 +1,4 @@
+from typing import Tuple
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -710,12 +711,33 @@ def convert_internal_url_to_base64(match: re.Match[str]) -> str:
     return f'src="data:image/{image_type};base64,{base64_data_image}"'
 
 
-def format_body(new_email_body):
+def _generate_prefix() -> str:
     """
-        Converts markdown included in the email body to HTML
+    Generates URL prefix based on tenant configuration.
+    Uses caching to avoid redundant calculations.
+
+    Returns:
+        str: URL prefix string
+    """
+    prefix = ""
+    if is_xsiam_or_xsoar_saas():
+        prefix = "/xsoar"
+    if account_name := get_tenant_account_name():
+        prefix = f"/{account_name}{prefix}"
+    demisto.debug(f"Account name: {account_name}, prefix: {prefix}")
+    return prefix
+
+
+def format_body(new_email_body: str) -> Tuple[str, str]:
+    """
+    Converts markdown included in the email body to HTML
+
     Args:
-        new_email_body (str): Email body text with or without Markdown formatting included
-    Returns: (str) HTML email body
+        new_email_body: Email body text with optional Markdown formatting
+    Returns:
+        Tuple[str, str]: A tuple containing:
+            - context_html_body: Initial HTML conversion
+            - html_body: Processed HTML with converted internal URLs
     """
     context_html_body = markdown(new_email_body,
                                  extensions=[
@@ -726,15 +748,9 @@ def format_body(new_email_body):
                                      'nl2br',
                                      DemistoExtension(),
                                  ])
-    prefix = ""
-    if is_xsiam_or_xsoar_saas():
-        prefix = "/xsoar"
-    if acc_name := get_tenant_account_name():
-        prefix = f"/{acc_name}{prefix}"
 
-    demisto.debug(f"Account name: {acc_name}, prefix: {prefix}")
     demisto.debug(f"Original context_html_body: {context_html_body}")
-    html_body = re.sub(rf'src="({prefix}/markdown/[^"]+)"', convert_internal_url_to_base64, context_html_body)
+    html_body = re.sub(rf'src="({_generate_prefix()}/markdown/[^"]+)"', convert_internal_url_to_base64, context_html_body)
     demisto.debug(f"Final HTML body: {html_body}")
     return context_html_body, html_body
 
