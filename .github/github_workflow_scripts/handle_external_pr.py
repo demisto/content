@@ -484,7 +484,7 @@ def main():
 
     org_name = 'demisto'
     repo_name = 'content'
-    gh = Github(get_env_var('CONTENTBOT_GH_ADMIN_TOKEN'), verify=False)
+    gh = Github(get_env_var('GITHUB_TOKEN'), verify=False)
     content_repo = gh.get_repo(f'{org_name}/{repo_name}')
 
     pr_number = payload.get('pull_request', {}).get('number')
