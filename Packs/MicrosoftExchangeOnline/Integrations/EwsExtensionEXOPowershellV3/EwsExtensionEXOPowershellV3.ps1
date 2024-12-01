@@ -112,6 +112,60 @@ function ParseRawResponse([PSObject]$response) {
     return $items
 }
 
+function MailFlowRuleHelperFunction($raw_response, $extended_output) {
+    $parsed_raw_response = ParseRawResponse $raw_response
+    $entry_context = if ($extended_output -eq "false") {
+        MailFlowRuleCreateEntryContext $parsed_raw_response
+    } else {
+        @{"$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRules(obj.Guid === val.Guid)" = $parsed_raw_response}
+    }
+    $md_columns = $raw_response | Select-Object -Property Name, State, Priority, Comment, WhenChanged, CreatedBy
+    $human_readable = TableToMarkdown $md_columns "Results of $command"
+    return $human_readable, $entry_context, $parsed_raw_response
+}
+
+function MailFlowRuleCreateEntryContext($parsed_raw_response) {
+    $entry_context = @{}
+    $entries = @()
+    $parsed_raw_response | ForEach-Object {
+        $entry = @{
+            "Size"                          = $_.Size
+            "ExpiryDate"                    = $_.ExpiryDate
+            "Mode"                          = $_.Mode
+            "Quarantine"                    = $_.Quarantine
+            "Guid"                          = $_.Guid
+            "OrganizationId"                = $_.OrganizationId
+            "DistinguishedName"             = $_.DistinguishedName
+            "IsValid"                       = $_.IsValid
+            "Conditions"                    = $_.Conditions
+            "Comments"                      = $_.Comments
+            "WhenChanged"                   = $_.WhenChanged
+            "Description"                   = $_.Description
+            "Actions"                       = $_.Actions
+            "ImmutableId"                   = $_.ImmutableId
+            "Identity"                      = $_.Identity
+            "Name"                          = $_.Name
+            "CreatedBy"                     = $_.CreatedBy
+            "RouteMessageOutboundConnector" = $_.RouteMessageOutboundConnector
+        }
+        $entries += $entry
+    }
+    $entry_context["$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRules(obj.Guid === val.Guid)"] = $entries
+    return $entry_context
+    <#
+        .DESCRIPTION
+        Parse Maile flow rule raw response for limited output.
+
+        .PARAMETER raw_response
+        Mail Rule parsed raw response.
+
+        .EXAMPLE
+        MailFlowRuleCreateEntryContext $parsed_raw_response
+
+        .OUTPUTS
+        PSObject - entries context.
+    #>
+}
 
 class ExchangeOnlinePowershellV3Client
 {
@@ -2316,38 +2370,8 @@ function ListMailFlowRulesCommand {
         Write-Output "No Mail Flow Rules were found."
     }
     else {
-        $parsed_raw_response = ParseRawResponse $raw_response
-        if ($extended_output -eq "false") {
-            $entry_context = @{
-                "$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRules(obj.Guid === val.Guid)" = $parsed_raw_response | ForEach-Object {
-                    @{
-                        "Size"                          = $_.Size
-                        "ExpiryDate"                    = $_.ExpiryDate
-                        "Mode"                          = $_.Mode
-                        "Quarantine"                    = $_.Quarantine
-                        "Guid"                          = $_.Guid
-                        "OrganizationId"                = $_.OrganizationId
-                        "DistinguishedName"             = $_.DistinguishedName
-                        "IsValid"                       = $_.IsValid
-                        "Conditions"                    = $_.Conditions
-                        "Comments"                      = $_.Comments
-                        "WhenChanged"                   = $_.WhenChanged
-                        "Description"                   = $_.Description
-                        "Actions"                       = $_.Actions
-                        "ImmutableId"                   = $_.ImmutableId
-                        "Identity"                      = $_.Identity
-                        "Name"                          = $_.Name
-                        "CreatedBy"                     = $_.CreatedBy
-                        "RouteMessageOutboundConnector" = $_.RouteMessageOutboundConnector }
-                }
-            }
-        }
-        else {
-            $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRules(obj.Guid === val.Guid)" = $parsed_raw_response }
-        }
-        $md_columns = $raw_response | Select-Object -Property Name, State, Priority, Comment, WhenChanged, CreatedBy
-        $human_readable = TableToMarkdown $md_columns "Results of $command"
-        Write-Output $human_readable, $entry_context, $parsed_raw_response
+        $response = MailFlowRuleHelperFunction $raw_response $extended_output
+        Write-Output $response
     }
 }
 function GetMailFlowRuleCommand {
@@ -2357,16 +2381,14 @@ function GetMailFlowRuleCommand {
         [hashtable]$kwargs
     )
     $identity = $kwargs.identity
+    $extended_output = $kwargs.extended_output
     $raw_response = $client.GetMailFlowRule($identity)
     if($raw_response -eq $null){
         Write-Output "No Mail Flow Rule were found."
     }
     else{
-        $parsed_raw_response = ParseRawResponse $raw_response
-        $md_columns = $raw_response | Select-Object -Property Name, State, Priority, Comment, WhenChanged, CreatedBy
-        $human_readable = TableToMarkdown $md_columns "Results of $command"
-        $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRule(obj.Guid === val.Guid)" = $parsed_raw_response }
-        Write-Output $human_readable, $entry_context, $parsed_raw_response
+        $response = MailFlowRuleHelperFunction $raw_response $extended_output
+        Write-Output $response
     }
 }
 function RemoveMailFlowRuleCommand {
