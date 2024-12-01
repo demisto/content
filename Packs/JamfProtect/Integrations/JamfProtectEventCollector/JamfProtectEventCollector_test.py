@@ -188,8 +188,7 @@ def test_next_trigger(mocker):
     from JamfProtectEventCollector import fetch_events, Client
     client = Client(base_url=MOCK_BASEURL, verify=False, proxy=False, client_id=MOCK_CLIENT_ID,
                     client_password=MOCK_CLIENT_PASSWORD)
-    mocker.patch('JamfProtectEventCollector.get_events_alert_type', return_value=([], {}))
-    mocker.patch('JamfProtectEventCollector.get_events_audit_type', return_value=([], {}))
+    mocker.patch('JamfProtectEventCollector.get_event_for_specific_type', return_value=([], {}))
     fetch_events(client, 1, 1, 1, False)
 
 

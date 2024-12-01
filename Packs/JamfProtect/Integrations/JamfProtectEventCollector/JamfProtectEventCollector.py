@@ -4,7 +4,6 @@ from typing import NamedTuple
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-
 ''' CONSTANTS '''
 VENDOR = 'Jamf'
 PRODUCT = 'Protect'
@@ -420,47 +419,51 @@ def parse_response(response: dict) -> tuple:
     return page_info, items
 
 
-def get_events_alert_type(client: Client, start_date: str, max_fetch: int, last_run: dict) -> tuple:
+def get_event_for_specific_type(start_date: str, max_fetch: int, last_run: dict, specific_type: str,
+                                client_event_type_func: Callable[[dict, str], dict]) -> tuple:
     """
-    Fetches alert type events from the Jamf Protect API within a specified date range.
+     Fetches specific type events from the Jamf Protect API within a specified date range.
 
-    This function fetches alert type events from the Jamf Protect API based on the provided start date.
-    It fetches events up to the maximum number specified by max_fetch.
-    The function also uses the information from the last run to continue fetching from where it left off in the previous run.
+     This function fetches the given type events from the Jamf Protect API based on the provided start and end dates.
+     It fetches events up to the maximum number specified by max_fetch.
+     The function also uses the information from the last run to continue fetching from where it left off in the previous run.
 
-    Args:
-        client (Client): An instance of the Client class for interacting with the API.
-        start_date (str): The start date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format.
-        max_fetch (int): The maximum number of events to fetch.
-        last_run (dict): A dictionary containing information about the last run.
+     Args:
+         start_date (str): The start date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format.
+         max_fetch (int): The maximum number of events to fetch.
+         last_run (dict): A dictionary containing information about the last run.
+         specific_type (str): The specific type to fetch.
+         client_event_type_func (Callable): The client's method which pulls the events for the given type.
 
-    Returns:
-        tuple: A tuple containing two elements:
-            - A list of dictionaries. Each dictionary represents an event.
-            - A dictionary with new last run values,
-             the end date of the fetched events and a continuance token if the fetched reached the max limit.
-    """
-    created, current_date = calculate_fetch_dates(start_date, last_run=last_run, last_run_key="alert")
-    command_args = {"created": created}
-    client_event_type_func = client.get_alerts
-    next_page = last_run.get("alert", {}).get("next_page", "")
+     Returns:
+         tuple: A tuple containing two elements:
+             - A list of dictionaries. Each dictionary represents an event.
+             - A dictionary with new last run values,
+              the end date of the fetched events and a continuance token if the fetched reached the max limit.
+     """
+    last_run_key = 'alert' if specific_type == 'audit' else specific_type
+    start_date, end_date = calculate_fetch_dates(start_date, last_run=last_run, last_run_key=last_run_key)
+    command_args = {"created": start_date}
+    next_page = last_run.get(specific_type, {}).get("next_page", "")
 
-    demisto.debug(f"Jamf Protect- Fetching alerts from {created}")
+    demisto.debug(f"Jamf Protect- Fetching {specific_type}s from {start_date} to {end_date}")
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     for event in events:
-        event["source_log_type"] = "alert"
+        event["source_log_type"] = specific_type
     if next_page:
         demisto.debug(
-            f"Jamf Protect- Fetched {len(events)} which is the maximum number of alerts."
+            f"Jamf Protect- Fetched {len(events)} which is the maximum number of {specific_type}s."
             f" Will keep the fetching in the next fetch.")
-        new_last_run_with_next_page = {"next_page": next_page, "last_fetch": created}
+        new_last_run_with_next_page = {"next_page": next_page, "last_fetch": end_date}
         return events, new_last_run_with_next_page
+
+    key_for_created_time = 'date' if specific_type == 'audit' else 'created'
     # If there is no next page, the last fetch date will be the max end date of the fetched events.
-    new_last_fetch_date = max([dt for dt in (arg_to_datetime(event.get("created"), DATE_FORMAT)
+    new_last_fetch_date = max([dt for dt in (arg_to_datetime(event.get(key_for_created_time), DATE_FORMAT)
                                              for event in events) if dt is not None]).strftime(
-        DATE_FORMAT) if events else current_date
+        DATE_FORMAT) if events else end_date
     new_last_run_without_next_page = {"last_fetch": new_last_fetch_date}
-    demisto.debug(f"Jamf Protect- Fetched {len(events)} alerts")
+    demisto.debug(f"Jamf Protect- Fetched {len(events)} {specific_type}s")
     return events, new_last_run_without_next_page
 
 
@@ -479,6 +482,7 @@ def get_events_computer_type(
         start_date (str): The start date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format.
         max_fetch (int): The maximum number of events to fetch.
         last_run (dict): A dictionary containing information about the last run.
+        fetch_all_computers (bool): The maximum number of events to fetch.
 
     Returns:
         tuple: A tuple containing two elements:
@@ -486,22 +490,21 @@ def get_events_computer_type(
             - A dictionary with new last run values,
              the end date of the fetched events and a continuance token if the fetched reached the max limit.
     """
-    created, current_date = calculate_fetch_dates(start_date, last_run=last_run, last_run_key="computer")
-    command_args = {"created": created, 'use_date_filter': bool(last_run or not fetch_all_computers)}
+    start_date, end_date = calculate_fetch_dates(start_date, last_run=last_run, last_run_key="computer")
+    command_args = {"created": start_date, 'use_date_filter': bool(last_run or not fetch_all_computers)}
     next_page = last_run.get("computer", {}).get("next_page", "")
 
-    debug_message = "Fetching all computers" if fetch_all_computers and not last_run else f"Fetching computers since {created}"
+    debug_message = "Fetching all computers" if fetch_all_computers and not last_run else f"Fetching computers since {start_date}"
     demisto.debug(debug_message)
 
-    client_event_type_func = client.get_computers
-    events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
+    events, next_page = get_events(command_args, client.get_computers, max_fetch, next_page)
     for event in events:
         event["source_log_type"] = "computers"
 
     latest_event = max(filter(None, (arg_to_datetime(event.get("created"), DATE_FORMAT)
-                                     for event in events))).strftime(DATE_FORMAT) if events else current_date
+                                     for event in events))).strftime(DATE_FORMAT) if events else end_date
 
-    new_last_fetch_date = max(created, latest_event)
+    new_last_fetch_date = max(start_date, latest_event)
     new_last_run = {"last_fetch": new_last_fetch_date}
 
     demisto.debug(f"Fetched {len(events)} computers")
@@ -515,52 +518,6 @@ def get_events_computer_type(
             f"Fetching will continue using {next_page=} in the next iteration")
 
     return events, new_last_run
-
-
-def get_events_audit_type(client: Client, start_date: str, end_date: str, max_fetch: int, last_run: dict) -> tuple:
-    """
-     Fetches audit type events from the Jamf Protect API within a specified date range.
-
-     This function fetches audit type events from the Jamf Protect API based on the provided start and end dates.
-     It fetches events up to the maximum number specified by max_fetch.
-     The function also uses the information from the last run to continue fetching from where it left off in the previous run.
-
-     Args:
-         client (Client): An instance of the Client class for interacting with the API.
-         start_date (str): The start date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format.
-         end_date (str): The end date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format.
-         max_fetch (int): The maximum number of events to fetch.
-         last_run (dict): A dictionary containing information about the last run.
-
-     Returns:
-         tuple: A tuple containing two elements:
-             - A list of dictionaries. Each dictionary represents an event.
-             - A dictionary with new last run values,
-              the end date of the fetched events and a continuance token if the fetched reached the max limit.
-     """
-    start_date, end_date = calculate_fetch_dates(start_date, end_date=end_date, last_run=last_run, last_run_key="alert")
-    command_args = {"start_date": start_date, "end_date": end_date}
-    client_event_type_func = client.get_audits
-    next_page = last_run.get("audit", {}).get("next_page", "")
-
-    demisto.debug(f"Jamf Protect- Fetching audits from {start_date} to {end_date}")
-    events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
-    for event in events:
-        event["source_log_type"] = "audit"
-    if next_page:
-        demisto.debug(
-            f" Jamf Protect - Fetched {len(events)}"
-            f" which is the maximum number of audits. Will keep the fetching in the next fetch.")
-        new_last_run_with_next_page = {"next_page": next_page, "last_fetch": start_date}
-        return events, new_last_run_with_next_page
-
-    # If there is no next page, the last fetch date will be the max end date of the fetched events.
-    new_last_fetch_date = max([dt for dt in (arg_to_datetime(event.get("date"), DATE_FORMAT)
-                                             for event in events) if dt is not None]).strftime(
-        DATE_FORMAT) if events else end_date
-    new_last_run_without_next_page = {"last_fetch": new_last_fetch_date}
-    demisto.debug(f"Jamf Protect- Fetched {len(events)} audits")
-    return events, new_last_run_without_next_page
 
 
 def get_events(
@@ -635,7 +592,10 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
 
     Args:
         client (Client): An instance of the Client class.
-        max_fetch (int): The maximum number of events to fetch.
+        max_fetch_alerts (int): The maximum number of alerts to fetch.
+        max_fetch_audits (int): The maximum number of audits to fetch.
+        max_fetch_computer (int): The maximum number of computers to fetch.
+        fetch_all_computers (int): The maximum number of events to fetch.
         start_date_arg (str, optional): The start date for fetching events.
         end_date_arg (str, optional): The end date for fetching events.
 
@@ -655,10 +615,19 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
 
     if no_next_pages or alert_next_page:
         # The only case we don't trigger the alert event type cycle is when have only the audit and computer next page token.
-        alert_events, alert_next_run = get_events_alert_type(client, start_date_arg, max_fetch_alerts, last_run)
+        alert_events, alert_next_run = get_event_for_specific_type(start_date=start_date_arg,
+                                                                   max_fetch=max_fetch_alerts,
+                                                                   last_run=last_run,
+                                                                   specific_type='alert',
+                                                                   client_event_type_func=client.get_alerts)
+
     if no_next_pages or audit_next_page:
         # The only case we don't trigger the audit event type cycle is when have only the alert and computer next page token.
-        audit_events, audit_next_run = get_events_audit_type(client, start_date_arg, end_date_arg, max_fetch_audits, last_run)
+        audit_events, audit_next_run = get_event_for_specific_type(start_date=start_date_arg,
+                                                                   max_fetch=max_fetch_alerts,
+                                                                   last_run=last_run,
+                                                                   specific_type='audit',
+                                                                   client_event_type_func=client.get_audits)
     if no_next_pages or computer_next_page:
         # The only case we don't trigger the computer event type cycle is when have only the alert and audit next page token.
         computer_events, computer_next_run = get_events_computer_type(
