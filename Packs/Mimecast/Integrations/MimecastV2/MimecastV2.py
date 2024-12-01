@@ -2550,12 +2550,13 @@ def get_group_members():
 
 def create_get_group_members_request(group_id=-1, limit=100):
     api_endpoint = '/api/directory/get-group-members'
-    group_id = demisto.args().get('group_id', group_id)
-    limit = demisto.args().get('limit', limit)
+    args = demisto.args()
+    group_id = args.get('group_id', group_id)
+    limit = args.get('limit', limit)
+    all_results = argToBoolean(args.get("all_results", False))
 
     meta = {}
     data = {}
-    members = {}
 
     if limit:
         meta['pagination'] = {
@@ -2573,23 +2574,20 @@ def create_get_group_members_request(group_id=-1, limit=100):
     if isinstance(response, dict) and response.get('fail'):
         raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
 
-    members.update(response)
+    if all_results:
+        while int(limit) > len(response['data'][0]['groupMembers']) and response['meta']['pagination'].get('next'):
+            page_token = response['meta']['pagination']['next']
+            meta['pagination'] = {
+                'pageToken': page_token
+            }
+            payload = {
+                'meta': meta,
+                'data': [data]
+            }
 
-    while int(limit) > len(members['data'][0]['groupMembers']) and response['meta']['pagination'].get('next'):
-        page_token = response['meta']['pagination']['next']
-        meta['pagination'] = {
-            'pageToken': page_token
-        }
-        payload = {
-            'meta': meta,
-            'data': [data]
-        }
-
-        response = http_request('POST', api_endpoint, payload)
-
-        members["data"][0]["groupMembers"].extend(response["data"][0]["groupMembers"])
-
-    return members
+            current_response = http_request('POST', api_endpoint, payload)
+            response["data"][0]["groupMembers"].extend(current_response["data"][0]["groupMembers"])
+    return response
 
 
 def group_members_api_response_to_markdown(api_response):
