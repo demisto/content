@@ -2,7 +2,7 @@
     "name": "Proofpoint TAP",
     "description": "Use the Proofpoint Targeted Attack Protection (TAP) integration to protect against and provide additional visibility into phishing and other malicious email attacks.",
     "support": "xsoar",
-    "currentVersion": "1.2.14",
+    "currentVersion": "1.2.15",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
