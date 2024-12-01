@@ -31,8 +31,8 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics,
                                 response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar,
                                 is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
-                                censor_request_logs, censor_request_logs, safe_sleep, get_server_config, get_engine_base_url,
-                                is_integration_instance_running_on_engine
+                                censor_request_logs, censor_request_logs, safe_sleep, get_server_config, b64_decode,
+                                get_engine_base_url, is_integration_instance_running_on_engine
                                 )
 
 EVENTS_LOG_ERROR = \
@@ -3820,6 +3820,26 @@ data_test_b64_encode = [
 def test_b64_encode(_input, expected_output):
     output = b64_encode(_input)
     assert output == expected_output, 'b64_encode({}) returns: {} instead: {}'.format(_input, output, expected_output)
+
+
+B64_STR = 'This is a test!'
+DECODED_B64 = b'N\x18\xac\x8a\xc6\xadz\xcb'
+CASE_NO_PADDING = (B64_STR, DECODED_B64)
+CASE_LESS_PADDING = (B64_STR + '=', DECODED_B64)
+CASE_WITH_PADDING = (B64_STR + '==', DECODED_B64)
+CASE_TOO_MUCH_PADDING = (B64_STR + '===', DECODED_B64)
+
+
+@pytest.mark.parametrize('str_to_decode, expected_encoded',
+                         (CASE_NO_PADDING, CASE_WITH_PADDING, CASE_LESS_PADDING, CASE_TOO_MUCH_PADDING))
+def test_b64_decode(str_to_decode, expected_encoded):
+    """
+    Given: A base 64 encoded str that represents an image, with different paddings.
+    When: Decoding it to an image file.
+    Then: The str is decoded to binary.
+    """
+    encoded = b64_decode(str_to_decode)
+    assert encoded == expected_encoded
 
 
 def test_traceback_in_return_error_debug_mode_on(mocker):

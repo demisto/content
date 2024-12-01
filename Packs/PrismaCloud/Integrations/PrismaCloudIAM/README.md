@@ -2,31 +2,27 @@ Note: This integration should be used as part of our **Identity Lifecycle Manage
 
 The Prisma Cloud IAM API consists of a set of API endpoints that allow customers to perform CRUD operation on their user profiles.
 
-## Configure PrismaCloud IAM on Cortex XSOAR
+## Configure PrismaCloud IAM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for PrismaCloud IAM.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Base URL |  | True |
-    | Username |  | True |
-    | Password |  | True |
-    | Customer name | If you are a multi-tenant user you will also need to provide the customerName. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Allow creating users |  | False |
-    | Allow updating users |  | False |
-    | Allow enabling users |  | False |
-    | Allow disabling users |  | False |
-    | Automatically create user if not found in update command |  | False |
-    | Incoming Mapper |  | True |
-    | Outgoing Mapper |  | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Base URL |  | True |
+| Username |  | True |
+| Password |  | True |
+| Customer name | If you are a multi-tenant user you will also need to provide the customerName. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Allow creating users |  | False |
+| Allow updating users |  | False |
+| Allow enabling users |  | False |
+| Allow disabling users |  | False |
+| Automatically create user if not found in update command |  | False |
+| Incoming Mapper |  | True |
+| Outgoing Mapper |  | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### iam-create-user
 ***
@@ -341,7 +337,6 @@ Disable an active user.
 - In the `User Profile - PrismaCloudIAM (Outgoing)` you should manually configure and map the following required attributes:
     1. timeZone - the time zone of the user.
     1. roleId - the id of the role assigned to the user
-
 
 
 

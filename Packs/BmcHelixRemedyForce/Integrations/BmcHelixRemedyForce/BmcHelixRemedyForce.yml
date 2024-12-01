@@ -797,7 +797,7 @@ script:
     - contextPath: BmcRemedyforce.ServiceRequest.Type
       description: The type of the service request.
       type: String
-  dockerimage: demisto/python3:3.10.13.88772
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: '-'
