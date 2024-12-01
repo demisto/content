@@ -4,7 +4,7 @@ args:
   isArray: true
   required: true
 - description: |-
-    Select which integrations you want the script to run for. If you don't choose any, the command will run for all available integrations. To select multiple integrations, enter their names separated by commas. For example: "Okta v2, Microsoft Graph User."
+    Select which integrations you want the script to run for. If you don't choose any, the command will run for all available integrations. To select multiple integrations, enter their names separated by commas."
   name: brands
   auto: PREDEFINED
   predefined:
