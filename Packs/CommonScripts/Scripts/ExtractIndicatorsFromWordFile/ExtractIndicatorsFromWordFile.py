@@ -133,26 +133,36 @@ def main():
     except Exception as e:
         return_error(str(e))
 
-    core_properties_str = " ".join(prop for prop in parser.core_properties.values())
-    all_data = parser.paragraphs + parser.tables + parser.hyperlinks + core_properties_str
+    # core_properties_str = " ".join(prop for prop in parser.core_properties.values())
+    # all_data = parser.paragraphs + parser.tables + parser.hyperlinks + core_properties_str
+
+    # # Returning Indicators:
+    # indicators_hr = demisto.executeCommand("extractIndicators", {'text': all_data})
+    # return_results(indicators_hr)
+    #
+    # hr_output = tableToMarkdown('Properties', parser.core_properties)
+    # hr_output += f'### Paragraphs\n{parser.paragraphs}\n'
+    # hr_output += f'### Tables\n{parser.tables}\n'
+    # hr_output += f'### Hyperlinks\n{parser.hyperlinks}'
 
     # Returning Indicators:
-    indicators_hr = demisto.executeCommand("extractIndicators", {'text': all_data})
-    return_results(indicators_hr)
-
-    hr_output = tableToMarkdown('Properties', parser.core_properties)
-    hr_output += f'### Paragraphs\n{parser.paragraphs}\n'
-    hr_output += f'### Tables\n{parser.tables}\n'
-    hr_output += f'### Hyperlinks\n{parser.hyperlinks}'
+    indicators_hr = demisto.executeCommand("extractIndicators", {
+        'text': parser.all_data})[0]['Contents']
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': indicators_hr,
+        'HumanReadable': indicators_hr
+    })
 
     # Returning all parsed data:
-    return_results(CommandResults(readable_output=hr_output))
+    demisto.results(parser.all_data.encode('utf-8'))
 
     # Returning error:
     if parser.res:  # If there was an error:
         contents = parser.res["Contents"]  # type: ignore
         if "Error occurred while parsing input" in contents or "Input file is not a valid" in contents:
-            return_results(parser.res)  # Return error too
+            demisto.results(parser.res)  # Return error too
 
 
 # python2 uses __builtin__ python3 uses builtins
