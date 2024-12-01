@@ -51,7 +51,7 @@ script:
     - description: The start date from which to filter events (e.g., 2024-07-10T08:08:46.76).
       name: start_date
       required: false
-    - description: The end date from which to filter events. (e.g., 2024-07-11T08:09:47.08).
+    - description: The end date from which to filter events (e.g., 2024-07-11T08:09:47.08).
       name: end_date
       required: false
     - description: Set this argument to True in order to create events, otherwise the command will only display them.  
