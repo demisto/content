@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "#### Digital Guardian ARC Event Collector\nThe 'Max events per fetch' configuration parameter has been removed due to the switch to 'stream mode' when exporting data using the Digital Guardian API. Refer to the release notes for additional details."
+}
