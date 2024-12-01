@@ -448,7 +448,8 @@ def get_event_for_specific_type(start_date: str, end_date: str, max_fetch: int, 
 
     mapping_command_args: dict[str, dict[str, Any]] = {'audit': {"start_date": start_date, "end_date": end_date},
                                                        'alert': {"created": start_date},
-                                                       'computer': {"created": start_date, 'use_date_filter': bool(last_run or not fetch_all_computers)}}
+                                                       'computer': {"created": start_date, 'use_date_filter':
+                                                                    bool(last_run or not fetch_all_computers)}}
 
     command_args = mapping_command_args[specific_type]
 
