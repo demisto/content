@@ -48,7 +48,7 @@ name: BloodHoundEnterprise
 script:
   commands:
   - arguments:
-    - description: The start date from which to filter events. (e.g., 2024-07-10T08:08:46.76).
+    - description: The start date from which to filter events (e.g., 2024-07-10T08:08:46.76).
       name: start_date
       required: false
     - description: The end date from which to filter events. (e.g., 2024-07-11T08:09:47.08).
