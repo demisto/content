@@ -1,31 +1,27 @@
 Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection. V3 version of the app includes everything that the previous app had and adds more capabilities. It leverages V3 of Trend Micro APIs and introduces further ability to manage domain accounts with addition of 4 domain account actions for enabling/disabling user account, forcing sign-out and password resets for compromised accounts. This app is in active development. We previously added 4 actions, one to fetch email activity data with count, one to fetch endpoint activity data with count and an action to restore a quarantined email message. In this release we have added 6 new custom script actions allowing the user to fetch a list of available custom scripts in XDR portal, ability to run a custom script on a specified endpoint, capacity to add, download, update and delete a custom script from XDR portal.
 This integration was integrated and tested with version 3 API of Trend Micro Vision One.
 
-## Configure Trend Micro Vision One V3. on Cortex XSOAR
+## Configure Trend Micro Vision One V3. in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Trend Micro Vision One V3..
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API URL (e.g. <https://api.xdr.trendmicro.com>) | The base url for the Trend Micro Vision One API | True |
-    | API Key | The API token to access data | True |
-    | Fetch incidents |  | False |
-    | Incidents Fetch Interval |  | False |
-    | Incident type |  | False |
-    | Sync On First Run (days) |  | False |
-    | Max Incidents |  | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | False |
-    | Severity | Severity of the incident being fetched. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API URL (e.g. <https://api.xdr.trendmicro.com>) | The base url for the Trend Micro Vision One API | True |
+| API Key | The API token to access data | True |
+| Fetch incidents |  | False |
+| Incidents Fetch Interval |  | False |
+| Incident type |  | False |
+| Sync On First Run (days) |  | False |
+| Max Incidents |  | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
+| Severity | Severity of the incident being fetched. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### trendmicro-visionone-enable-user-account
@@ -1211,4 +1207,3 @@ Displays a list of Observed Attack Techniques events that match the specified cr
 | VisionOne.Get_Observed_Attack_Techniques.entity_type | string | Entity type associated with an event is determined by the products purchased by the customer and the products supported in their regions. | 
 | VisionOne.Get_Observed_Attack_Techniques.detected_date_time | string | Timestamp in ISO 8601 format that indicates when an Observed Attack Techniques event was detected. | 
 | VisionOne.Get_Observed_Attack_Techniques.ingested_date_time | string | Timestamp in ISO 8601 format that indicates when the pipeline ingested data related to an Observed Attack Techniques event. This field is displayed only when ingestedStartDateTime and ingestedEndDateTime are used to define the data retrieval time range. | 
-
