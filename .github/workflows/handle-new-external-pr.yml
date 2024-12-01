@@ -36,13 +36,12 @@ jobs:
           echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
       - name: Update External PR
         env:
-          CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
           EVENT_PAYLOAD: ${{ toJson(github.event) }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Updating External PR ${{ github.event.pull_request.html_url }}"
           cd .github/github_workflow_scripts
-          poetry run ./handle_external_pr.py
+          poetry run ./handle_external_pr.py --github_token $GITHUB_TOKEN
           echo "Finished Handling External PR"
 
       - name: Add Contribution Form Filled for Marketplace Contributions
