@@ -1,4 +1,4 @@
-- action: ALERTS
+  action: ALERTS
   alert_category: EXECUTION
   alert_description: This alert will trigger in an event where Malware was detected by Microsoft Defender for Endpoints.
   alert_domain: DOMAIN_SECURITY
