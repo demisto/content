@@ -7,7 +7,6 @@ from MicrosoftApiModule import *
 from exchangelib import (
     Account,
     FileAttachment,
-    Folder,
     HTMLBody
 )
 from exchangelib.errors import (
@@ -16,6 +15,7 @@ from exchangelib.errors import (
 )
 from exchangelib.items import Item, Message
 from exchangelib.protocol import BaseProtocol
+from exchangelib.folders.base import BaseFolder
 
 """ Constants """
 INTEGRATION_NAME = get_integration_name()
@@ -109,7 +109,7 @@ class EWSClient:
             default_timezone=time_zone,
         )
 
-    def get_items_from_mailbox(self, account, item_ids):
+    def get_items_from_mailbox(self, account: Optional[Union[Account, str]], item_ids):
         """
         Request specific items from a mailbox associated with an account
 
@@ -121,8 +121,10 @@ class EWSClient:
         # allow user to pass target_mailbox as account
         if not isinstance(account, Account):
             account = self.get_account(account) if isinstance(account, str) else self.get_account(self.account_email)
-        if type(item_ids) is not list:
+
+        if not isinstance(item_ids, list):
             item_ids = [item_ids]
+
         items = [Item(id=x) for x in item_ids]
         result = list(account.fetch(ids=items))
         result = [x for x in result if not (isinstance(x, ErrorItemNotFound | ErrorInvalidIdMalformed))]
@@ -130,7 +132,7 @@ class EWSClient:
             raise Exception("One or more items were not found/malformed. Check the input item ids")
         return result
 
-    def get_item_from_mailbox(self, account, item_id):
+    def get_item_from_mailbox(self, account: Optional[Union[Account, str]], item_id):
         """
         Request a single item from a mailbox associated with an account
         :param account: EWS account or target_mailbox associated with that account
@@ -142,34 +144,29 @@ class EWSClient:
             raise Exception(f"ItemId {str(item_id)} not found")
         return result[0]
 
-    def get_attachments_for_item(self, item_id, account, attachment_ids=None):
+    def get_attachments_for_item(self, item_id, account: Optional[Union[Account, str]], attachment_ids: list=[]):
         """
         Request attachments for an item
         :param item_id: item_id of the item to retrieve attachments from
         :param account: EWS account or target_mailbox associated with that account
-        :param (Optional) attachment_ids: attachment_ids: attachment_ids to retrieve
+        :param (Optional) attachment_ids: attachment_ids to retrieve
         :return: list of exchangelib Item.attachments
         """
         item = self.get_item_from_mailbox(account, item_id)
-        attachments = []
-        attachment_ids = argToList(attachment_ids)
-        if item:
-            if item.attachments:
-                for attachment in item.attachments:
-                    if (
-                        attachment_ids
-                        and attachment.attachment_id.id not in attachment_ids
-                    ):
-                        continue
-                    attachments.append(attachment)
+        if not item:
+            raise DemistoException(f'Message item not found: {item_id}')
 
-        else:
-            raise Exception("Message item not found: " + item_id)
+        attachments = []
+        for attachment in item.attachments or []:
+            if attachment is None:
+                continue
+
+            attachment.parent_item = item
+            if attachment.attachment_id.id in attachment_ids:
+                attachments.append(attachment)
 
         if attachment_ids and len(attachments) < len(attachment_ids):
-            raise Exception(
-                "Some attachment id did not found for message:" + str(attachment_ids)
-            )
+            raise DemistoException( f'Some attachment id was not found for message: {str(attachment_ids)}')
 
         return attachments
 
@@ -188,8 +185,8 @@ class EWSClient:
 
         return False
 
-    def get_folder_by_path(self, path: Optional[str] = None, account: Optional[Account] = None, is_public: bool = False
-                           ) -> Folder:
+    def get_folder_by_path(self, path: str, account: Optional[Account] = None, is_public: bool = False
+                           ) -> BaseFolder:
         """
         Retrieve folder by path
         :param path: path of the folder
@@ -197,35 +194,33 @@ class EWSClient:
         :param is_public: is the requested folder public
         :return: exchangelib Folder
         """
-        if path is None:
-            path = self.folder_name
         if account is None:
             account = self.get_account()
         # handle exchange folder id
         if len(path) == FOLDER_ID_LEN:
-            folders_map = account.root._folders_map  # type: ignore
+            folders_map = account.root._folders_map
             if path in folders_map:
-                return account.root._folders_map[path]  # type: ignore
+                return account.root._folders_map[path]
 
-        root = account.public_folders_root if is_public else account.root
-        folder = root if path == 'AllItems' else root.tois  # type: ignore
+        # TODO: recent discrepancy, investigate further
+        folder = account.public_folders_root if is_public else account.root.tois
         path = path.replace("/", "\\")
         path_parts = path.split("\\")
         for part in path_parts:
             try:
                 demisto.debug(f'resolving {part=} {path_parts=}')
-                folder = folder // part  # type: ignore
+                folder = folder // part
             except Exception as e:
                 demisto.debug(f'got error {e}')
                 raise ValueError(f'No such folder {path_parts}')
-        return folder  # type: ignore
+        return folder
 
     def send_email(self, message: Message):
         account = self.get_account()
         message.account = account
         message.send_and_save()
 
-    def reply_mail(self, inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments):
+    def reply_mail(self, inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments, from_mailbox=None):
         account = self.get_account()
         item_to_reply_to = account.inbox.get(id=inReplyTo)  # type: ignore
         if isinstance(item_to_reply_to, ErrorItemNotFound):
@@ -236,7 +231,7 @@ class EWSClient:
         message_body = HTMLBody(htmlBody) if htmlBody else body
         reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to,
                                               cc_recipients=cc,
-                                              bcc_recipients=bcc)
+                                              bcc_recipients=bcc, author=from_mailbox)
         reply = reply.save(account.drafts)
         m = account.inbox.get(id=reply.id)  # type: ignore
 
