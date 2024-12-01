@@ -31,4 +31,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Wait_Until_Datetime](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Wait_Until_Datetime.png)
+![Wait_Until_Datetime](../doc_files/Wait_Until_Datetime.png)

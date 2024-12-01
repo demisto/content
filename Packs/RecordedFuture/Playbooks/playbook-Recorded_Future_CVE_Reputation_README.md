@@ -46,4 +46,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Recorded Future CVE Reputation](https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/cve_reputation.png)
+![Recorded Future CVE Reputation](../doc_files/cve_reputation.png)

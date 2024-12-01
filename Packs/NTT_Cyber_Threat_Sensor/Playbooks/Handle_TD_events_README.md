@@ -31,4 +31,4 @@ There are no inputs for this playbook.
 
 ## Playbook Image
 ---
-![Handle TD events](https://github.com/demisto/content/raw/a34dd05bc5fdaf1e2d17fe4b82bcd7098ace6463/Packs/NTT_Cyber_Threat_Sensor/doc_files/Handle_TD_events.png)
+![Handle TD events](../doc_files/Handle_TD_events.png)

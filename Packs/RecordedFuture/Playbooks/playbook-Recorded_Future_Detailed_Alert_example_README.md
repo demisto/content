@@ -41,4 +41,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Recorded Future Domain Intelligence](https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/detailed-alert-playbook.png)
+![Recorded Future Domain Intelligence](../doc_files/detailed-alert-playbook.png)

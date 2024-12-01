@@ -116,4 +116,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Recorded Future IOC Reputation](https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/ioc_reputation.png)
+![Recorded Future IOC Reputation](../doc_files/ioc_reputation.png)

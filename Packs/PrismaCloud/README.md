@@ -17,7 +17,7 @@ As part of this pack, you will also get out-of-the-box Prisma Cloud incident vie
 
 _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/packs/prisma-cloud)_
 
-![Prisma_Cloud_Remediation_-_GCP_VPC_Network_Misconfiguration](https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_GCP_VPC_Network_Misconfig.png)
+![Prisma_Cloud_Remediation_-_GCP_VPC_Network_Misconfiguration](doc_files/PCR_-_GCP_VPC_Network_Misconfig.png)
 
 <~XSIAM>
 

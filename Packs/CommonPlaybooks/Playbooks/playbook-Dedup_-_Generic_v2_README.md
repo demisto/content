@@ -43,4 +43,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Dedup - Generic v2](https://github.com/demisto/content/raw/bd4b287e4642b242e8befcd6e832b66c4b03af97/Packs/CommonPlaybooks/doc_files/Dedup_-_Generic_v2.png)
+![Dedup - Generic v2](../doc_files/Dedup_-_Generic_v2.png)

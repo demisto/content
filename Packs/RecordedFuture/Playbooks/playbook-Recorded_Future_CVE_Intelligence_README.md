@@ -117,4 +117,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Recorded Future CVE Intelligence](https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/cve_enrich.png)
+![Recorded Future CVE Intelligence](../doc_files/cve_enrich.png)
