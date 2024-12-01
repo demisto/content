@@ -12,7 +12,7 @@ alert_fields:
 alert_name: Malware detected by Microsoft Defender for Endpoints
 crontab: '*/10 * * * *'
 dataset: alerts
-description: Alert will trigger an event when Malware was detected by Microsoft Defender for Endpoints.
+description: Alert will trigger an event when Malware ks detected by Microsoft Defender for Endpoints.
 drilldown_query_timeframe: ALERT
 execution_mode: SCHEDULED
 global_rule_id: e507490a-6573-406f-98a1-91fc28289e2b
