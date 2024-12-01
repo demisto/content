@@ -2,7 +2,7 @@
     "name": "Tenable.sc",
     "description": "With Tenable.sc (formerly SecurityCenter) you get a real-time, continuous assessment of your security posture so you can find and fix vulnerabilities faster.",
     "support": "xsoar",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
