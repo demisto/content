@@ -21,7 +21,7 @@ comment: |-
 commonfields:
   id: SendPANWIoTDevicesToCiscoISE
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.11.10.116949
 enabled: true
 name: SendPANWIoTDevicesToCiscoISE
 outputs:
