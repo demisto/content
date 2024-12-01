@@ -99,7 +99,6 @@ script:
     - defaultValue: url
       description: The name the file will be saved as.
       name: file_name
-      isArray: true
     - auto: PREDEFINED
       defaultValue: "False"
       description: Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
