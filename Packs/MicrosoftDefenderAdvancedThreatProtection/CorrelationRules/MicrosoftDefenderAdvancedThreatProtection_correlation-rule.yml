@@ -23,7 +23,7 @@
   lookup_mapping: []
   mapping_strategy: CUSTOM
   mitre_defs: {}
-  name: Microsoft Defender for Endpoint - Malware Detected - test2
+  name: Microsoft Defender for Endpoint - Malware Detected
   search_window: 10 minutes
   severity: SEV_040_HIGH
   suppression_duration: null
