@@ -1,30 +1,26 @@
 Streamline alerts and related forensic information from Varonis DSP
 This integration was integrated and tested with version 1.0 of VaronisDataSecurityPlatform
 
-## Configure Varonis Data Security Platform on Cortex XSOAR
+## Configure Varonis Data Security Platform in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Varonis Data Security Platform.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | The FQDN/IP the integration should connect to |  | True |
-    | Name of Varonis user |  | True |
-    | Password |  | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Maximum number of incidents per fetch | Maximum value is 100 | False |
-    | First fetch time |  | False |
-    | Minimum severity of alerts to fetch |  | False |
-    | Varonis threat model name | Comma-separated list of threat model names of alerts to fetch | False |
-    | Varonis alert status |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| The FQDN/IP the integration should connect to |  | True |
+| Name of Varonis user |  | True |
+| Password |  | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Maximum number of incidents per fetch | Maximum value is 100 | False |
+| First fetch time |  | False |
+| Minimum severity of alerts to fetch |  | False |
+| Varonis threat model name | Comma-separated list of threat model names of alerts to fetch | False |
+| Varonis alert status |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### varonis-get-alerts
 ***
@@ -310,4 +306,3 @@ Get events applied to specific alerts
 >|ByUser|Country|Description|Details|ID|IPReputation|IPThreatType|IsMaliciousIP|OnObject|SourceIP|State|Status|Type|UTCTime|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Name: <br/>UserType: <br/>UserAccountType: <br/>SAMAccountName: <br/>Domain: <br/>DisabledAccount: <br/>StaleAccount: <br/>LockoutAccounts:  |  | The DNS Server has resolved successfully  | IsBlacklist: <br/>Operation: Request | 22D3EFC0-E758-4BA0-92C4-EB9566C830AD |  |  |  | Name: dns.msftncsi.com<br/>ObjectType: Dns<br/>Platform: DNS<br/>IsSensitive: <br/>FileServerOrDomain: DNS<br/>IsDisabledAccount: <br/>IsLockOutAccount: <br/>SAMAccountName: <br/>UserAccountType: <br/>DestinationIP: <br/>DestinationDevice:  | 10.10.10.10 |  | Success | Client DNS request | 2022-03-17T17:52:14Z |
-

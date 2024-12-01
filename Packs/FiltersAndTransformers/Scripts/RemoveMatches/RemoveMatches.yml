@@ -29,7 +29,7 @@ comment: |-
 commonfields:
   id: RemoveMatches
   version: -1
-dockerimage: demisto/python3:3.10.14.92207
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 engineinfo: {}
 name: RemoveMatches
