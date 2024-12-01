@@ -56,4 +56,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Display_Results_GVault](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Google_Vault_Display_Results.png)
+![Display_Results_GVault](../doc_files/Google_Vault_Display_Results.png)
