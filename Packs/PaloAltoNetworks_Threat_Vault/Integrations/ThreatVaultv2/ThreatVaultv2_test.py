@@ -526,7 +526,7 @@ def test_ip_command(mocker, args, response, expected_results):
     )
 
     mocker.patch.object(
-        client, "ip_feed__batch_post_request", return_value=response
+        client, "ip_feed_batch_post_request", return_value=response
     )
 
     results = ip_command(client, args)

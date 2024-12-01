@@ -118,7 +118,7 @@ class Client(BaseClient):
         suffix = "ip-feed"
         return self._http_request(method="GET", url_suffix=suffix, params={arg: value})
 
-    def ip_feed__batch_post_request(self, arg: str, value: str) -> dict:    # pragma: no cover
+    def ip_feed_batch_post_request(self, arg: str, value: str) -> dict:    # pragma: no cover
         suffix = "ip-feed"
         payload = json.dumps({"ipaddr": value})
         return self._http_request(method="POST", url_suffix=suffix, data=payload)
@@ -479,7 +479,7 @@ COMMANDS
 
 
 def ip_command(client: Client, args: dict) -> List[CommandResults]:
-    """_summary_
+    """Retrieve information about the inputted IP from ThreatVault
 
     Args:
         client (Client): An instance of the client to call the GET commands.
@@ -509,7 +509,7 @@ def ip_command(client: Client, args: dict) -> List[CommandResults]:
 
         else:
             # Call batch command
-            response = client.ip_feed__batch_post_request(arg="ipaddr", value=ips)
+            response = client.ip_feed_batch_post_request(arg="ipaddr", value=ips)
 
     except DemistoException:
         raise
