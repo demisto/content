@@ -4,26 +4,22 @@ This integration was integrated and tested with version MR 30.7 and MX 18.211.2 
 Some changes have been made that might affect your existing content.
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---cisco-meraki-v2).
 
-## Configure Cisco Meraki v2 on Cortex XSOAR
+## Configure Cisco Meraki v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cisco Meraki v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Base URL | The API base URL. | True |
-    | API Key | An API key can be generated through 'My Profile' in 'API access'. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Organization ID | A default ID to be used in all commands that require an organization. | False |
-    | Network ID | A default ID to be used in all commands that require a network. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Base URL | The API base URL. | True |
+| API Key | An API key can be generated through 'My Profile' in 'API access'. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Organization ID | A default ID to be used in all commands that require an organization. | False |
+| Network ID | A default ID to be used in all commands that require a network. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### meraki-organization-list

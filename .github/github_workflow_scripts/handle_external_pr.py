@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import json
 from pathlib import Path
 import sys
@@ -460,6 +461,18 @@ def find_reviewer_to_assign(content_repo: Repository, pr: PullRequest, pr_number
     return content_reviewer
 
 
+def arguments_handler():
+    """ Validates and parses script arguments.
+
+     Returns:
+        Namespace: Parsed arguments object.
+
+     """
+    parser = argparse.ArgumentParser(description='Create an external PR for contributions.')
+    parser.add_argument('-g', '--github_token', help='The GitHub token to authenticate the GitHub client.')
+    return parser.parse_args()
+
+
 def main():
     """Handles External PRs (PRs from forks)
 
@@ -474,6 +487,7 @@ def main():
     - CONTENTBOT_GH_ADMIN_TOKEN: token to use to update the PR
     - EVENT_PAYLOAD: json data from the pull_request event
     """
+    options = arguments_handler()
     t = Terminal()
 
     payload_str = get_env_var('EVENT_PAYLOAD')
@@ -484,7 +498,7 @@ def main():
 
     org_name = 'demisto'
     repo_name = 'content'
-    gh = Github(get_env_var('CONTENTBOT_GH_ADMIN_TOKEN'), verify=False)
+    gh = Github(options.github_token, verify=False)
     content_repo = gh.get_repo(f'{org_name}/{repo_name}')
 
     pr_number = payload.get('pull_request', {}).get('number')

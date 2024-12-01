@@ -6,30 +6,26 @@ Category ID is the same as the category name, except all letters are capitalized
 
 A custom category ID has the format `CUSTOM_01`, which is not indicative of the category. Use the `zscaler-get-categories` command to get a custom category and its configured name.
 
-## Configure Zscaler Internet Access on Cortex XSOAR
+## Configure Zscaler Internet Access in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Zscaler Internet Access.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Cloud Name (i.e. <https://zsapi.zscalertwo.net>) | See <https://help.zscaler.com/zia/getting-started-zia-api#RetrieveBaseURL> on how to retrieve your cloud name. | True |
-    | Username |  | True |
-    | Password |  | True |
-    | API Key |  | True |
-    | Source Reliability | Reliability of the source providing the intelligence data. | False |
-    | Auto Logout | If enabled, the integration will log out after executing each command. | False |
-    | Auto Activate Changes | If enabled, the integration will activate the command changes after each execution. If disabled, use the 'zscaler-activate-changes' command to activate Zscaler command changes. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Timeout (in seconds) for HTTP requests to Zscaler |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Cloud Name (i.e. <https://zsapi.zscalertwo.net>) | See <https://help.zscaler.com/zia/getting-started-zia-api#RetrieveBaseURL> on how to retrieve your cloud name. | True |
+| Username |  | True |
+| Password |  | True |
+| API Key |  | True |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
+| Auto Logout | If enabled, the integration will log out after executing each command. | False |
+| Auto Activate Changes | If enabled, the integration will activate the command changes after each execution. If disabled, use the 'zscaler-activate-changes' command to activate Zscaler command changes. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Timeout (in seconds) for HTTP requests to Zscaler |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### zscaler-blacklist-url
@@ -821,9 +817,9 @@ Retrieves a full or summary report of the file that was analyzed by Sandbox. The
 
 #### Additional Information
 
-[![image](https://user-images.githubusercontent.com/44546251/56854828-8a921480-6945-11e9-8784-cb55e6c7d83e.png)](https://user-images.githubusercontent.com/44546251/56854828-8a921480-6945-11e9-8784-cb55e6c7d83e.png)
+[![image](../../doc_files/56854828-8a921480-6945-11e9-8784-cb55e6c7d83e.png)](../../doc_files/56854828-8a921480-6945-11e9-8784-cb55e6c7d83e.png)
 
-[![image](https://user-images.githubusercontent.com/44546251/56854735-291d7600-6944-11e9-8c05-b917cc25e322.png)](https://user-images.githubusercontent.com/44546251/56854735-291d7600-6944-11e9-8c05-b917cc25e322.png)
+[![image](../../doc_files/56854735-291d7600-6944-11e9-8c05-b917cc25e322.png)](../../doc_files/56854735-291d7600-6944-11e9-8c05-b917cc25e322.png)
 
 ### zscaler-login
 

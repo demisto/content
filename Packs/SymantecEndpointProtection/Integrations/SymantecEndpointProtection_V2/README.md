@@ -16,26 +16,22 @@ The following role is required to use the Symantec Endpoint Protection API:
 - sysadmin
 Note: An **Administrator** role does not have enough permissions for this integration. A **System Administrator** (sysadmin) role is required. 
 
-## Configure Symantec Endpoint Protection V2 on Cortex XSOAR
+## Configure Symantec Endpoint Protection V2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Symantec Endpoint Protection V2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server (e.g., https://1.2.3.4:8446) | True |
-    | Authentication | True |
-    | Password | True |
-    | SEPM domain for the user | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Local time zone (e.g., +02:30,-06:00) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server (e.g., https://1.2.3.4:8446) | True |
+| Authentication | True |
+| Password | True |
+| SEPM domain for the user | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Local time zone (e.g., +02:30,-06:00) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### sep-endpoints-info
 ***
@@ -98,7 +94,7 @@ Returns information about endpoints.
 ```
 
 #### Human Readable Output
-![Human_Readable_Output_1](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_1.png)
+![Human_Readable_Output_1](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_1.png)
 
 
 ### sep-groups-info
@@ -136,7 +132,7 @@ Returns information about groups.
 ```
 
 #### Human Readable Output
-![Human_Readable_Output_2](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_2.png)
+![Human_Readable_Output_2](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_2.png)
 
 
 ### sep-system-info
@@ -164,7 +160,7 @@ There are no input arguments for this command.
 ```
 
 #### Human Readable Output
-![Human_Readable_Output_3](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_3.png)
+![Human_Readable_Output_3](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_3.png)
 
 
 ### sep-command-status
@@ -196,7 +192,7 @@ Retrieves the status of a command.
 ```
 
 #### Human Readable Output
-![Human_Readable_Output_4](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_4.png)
+![Human_Readable_Output_4](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_4.png)
 
 
 ### sep-client-content
@@ -225,7 +221,7 @@ There are no input arguments for this command.
 ```
 
 #### Human Readable Output
-![Human_Readable_Output_5](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_5.png)
+![Human_Readable_Output_5](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_5.png)
 
 
 ### sep-list-policies
@@ -261,7 +257,7 @@ There are no input arguments for this command.
 ```
 
 #### Human Readable Output
-![Human_Readable_Output_6](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_6.png)
+![Human_Readable_Output_6](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_6.png)
 
 
 ### sep-assign-policy
@@ -292,7 +288,7 @@ There is no context output for this command.
 ```
 
 #### Human Readable Output
-![Human_Readable_Output_7](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_7.png)
+![Human_Readable_Output_7](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_7.png)
 
 
 ### sep-list-locations
@@ -323,7 +319,7 @@ Retrieves a list of location IDs for a specified group.
 ```
 
 #### Human Readable Output
-![Human_Readable_Output_8](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_8.png)
+![Human_Readable_Output_8](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_8.png)
 
 
 ### sep-endpoint-quarantine
@@ -357,7 +353,7 @@ Quarantines an endpoint according to its policy.
 ```
 
 #### Human Readable Output
-![Human_Readable_Output_9](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_9.png)
+![Human_Readable_Output_9](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_9.png)
 
 
 ### sep-scan-endpoint
@@ -391,7 +387,7 @@ Scans an endpoint.
 ```
 
 #### Human Readable Output
-![Human_Readable_Output_10](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_10.png)
+![Human_Readable_Output_10](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_10.png)
 
 
 ### sep-update-endpoint-content
@@ -423,7 +419,7 @@ Updates the content of a specified client.
 ```
 
 #### Human Readable Output
-![Human_Readable_Output_11](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_11.png)
+![Human_Readable_Output_11](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_11.png)
 
 
 ### sep-move-client-to-group
@@ -452,7 +448,7 @@ There is no context output for this command.
 ```
 
 #### Human Readable Output
-![Human_Readable_Output_12](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_112.png)
+![Human_Readable_Output_12](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_112.png)
 
 
 ### sep-identify-old-clients
@@ -486,7 +482,7 @@ There is no context output for this command.
 ```
 
 #### Human Readable Output
-![Human_Readable_Output_13](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_13.png)
+![Human_Readable_Output_13](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_13.png)
 
 
 ## Known Limitations
