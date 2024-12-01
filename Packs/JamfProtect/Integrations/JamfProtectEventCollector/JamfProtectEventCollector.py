@@ -419,7 +419,7 @@ def parse_response(response: dict) -> tuple:
     return page_info, items
 
 
-def get_event_for_specific_type(start_date: str, max_fetch: int, last_run: dict, specific_type: str,
+def get_event_for_specific_type(start_date: str, end_date: str, max_fetch: int, last_run: dict, specific_type: str,
                                 client_event_type_func: Callable[[dict, str], dict], fetch_all_computers: bool = False) -> tuple:
     """
      Fetches specific type events from the Jamf Protect API within a specified date range.
@@ -430,6 +430,7 @@ def get_event_for_specific_type(start_date: str, max_fetch: int, last_run: dict,
 
      Args:
          start_date (str): The start date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format.
+         end_date (str): The end date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format.
          max_fetch (int): The maximum number of events to fetch.
          last_run (dict): A dictionary containing information about the last run.
          specific_type (str): The specific type to fetch.
@@ -443,13 +444,16 @@ def get_event_for_specific_type(start_date: str, max_fetch: int, last_run: dict,
               the end date of the fetched events and a continuance token if the fetched reached the max limit.
      """
     last_run_key = 'alert' if specific_type == 'audit' else specific_type
-    start_date, end_date = calculate_fetch_dates(start_date, last_run=last_run, last_run_key=last_run_key)
-    command_args: dict[str, Any] = {"created": start_date}
+    start_date, end_date = calculate_fetch_dates(start_date, last_run=last_run, last_run_key=last_run_key, end_date=end_date)
 
     debug_message = f"Fetching {specific_type}s from {start_date} to {end_date}"
 
-    if specific_type == 'computer':
-        command_args['use_date_filter'] = bool(last_run or not fetch_all_computers)
+    if specific_type == 'audit':
+        command_args = {"start_date": start_date, "end_date": end_date}
+    elif specific_type == 'alert':
+        command_args: dict[str, Any] = {"created": start_date}
+    else:  # specific_type == 'computer'
+        command_args = {"created": start_date, 'use_date_filter': bool(last_run or not fetch_all_computers)}
         if fetch_all_computers and not last_run:
             debug_message = "Fetching all computers"
 
@@ -580,18 +584,22 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
             "condition": no_next_pages or alert_next_page,
             "specific_type": "alert",
             "client_func": client.get_alerts,
+            "max_fetch": max_fetch_alerts,
             "extra_args": {}
         },
         {
             "condition": no_next_pages or audit_next_page,
             "specific_type": "audit",
             "client_func": client.get_audits,
+            "max_fetch": max_fetch_audits,
             "extra_args": {}
         },
         {
             "condition": no_next_pages or computer_next_page,
             "specific_type": "computer",
             "client_func": client.get_computers,
+            "max_fetch": max_fetch_computer,
+
             "extra_args": {"fetch_all_computers": fetch_all_computers}
         },
     ]
@@ -601,7 +609,8 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
         if event["condition"]:
             events, next_run_for_specific_type = get_event_for_specific_type(
                 start_date=start_date_arg,
-                max_fetch=max_fetch_alerts,
+                end_date=end_date_arg,
+                max_fetch=event["max_fetch"],
                 last_run=last_run,
                 specific_type=event["specific_type"],
                 client_event_type_func=event["client_func"],
