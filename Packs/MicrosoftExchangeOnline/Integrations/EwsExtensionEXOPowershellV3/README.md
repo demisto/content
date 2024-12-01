@@ -1805,8 +1805,8 @@ Disable an existing inbox rule in a given mailbox.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mailbox | The mailbox that contains the Inbox rule. | Required | 
-| identity | The Inbox rule that you want to disable. | Required | 
+| mailbox | The mailbox that contains the inbox rule. | Required | 
+| identity | The inbox rule that you want to disable. | Required | 
 
 
 #### Context Output
