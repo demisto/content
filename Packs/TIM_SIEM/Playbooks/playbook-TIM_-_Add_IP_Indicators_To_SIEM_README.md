@@ -32,4 +32,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Playbook Image](https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/TIM_SIEM/doc_files/TIM_-_Add_IP_Indicators_To_SIEM.png)
+![Playbook Image](../doc_files/TIM_-_Add_IP_Indicators_To_SIEM.png)

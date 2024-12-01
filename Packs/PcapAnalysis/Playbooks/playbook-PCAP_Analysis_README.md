@@ -73,4 +73,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![PCAP Analysis](https://raw.githubusercontent.com/demisto/content/bcca716ea174ff2dc7716db18d86872b1aab05c4/Packs/PcapAnalysis/doc_files/PCAP_Analysis.png)
+![PCAP Analysis](../doc_files/PCAP_Analysis.png)

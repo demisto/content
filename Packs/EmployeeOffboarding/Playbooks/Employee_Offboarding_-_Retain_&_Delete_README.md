@@ -40,4 +40,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Employee_Offboarding_Retain_&_Delete](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Employee_Offboarding_Retain_%26_Delete.png)
+![Employee_Offboarding_Retain_&_Delete](../doc_files/Employee_Offboarding_Retain_and_Delete.png)

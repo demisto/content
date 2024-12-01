@@ -27,4 +27,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Incident Postprocessing - Group-IB Threat Intelligence](https://raw.githubusercontent.com/demisto/content/951efb2cd026c6382d207447ee78eb3c5a1f97aa/Packs/GroupIB_ThreatIntelligenceAttribution/doc_files/Incident_Postprocessing_-_Group-IB_Threat_Intelligence_%26_Attribution_Wed_Oct_20_2021.png)
+![Incident Postprocessing - Group-IB Threat Intelligence](../doc_files/Incident_Postprocessing_-_Group-IB_Threat_Intelligence_and_Attribution_Wed_Oct_20_2021.png)

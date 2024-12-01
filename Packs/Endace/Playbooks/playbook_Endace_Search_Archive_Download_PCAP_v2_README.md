@@ -67,4 +67,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Endace Search Archive Download PCAP v2](https://raw.githubusercontent.com/demisto/content/495a2da87de9d6a64d87d48876f2033139431197/Packs/Endace/doc_imgs/playbook_Endace_Search_Archive_Download_PCAP_v2.png)
+![Endace Search Archive Download PCAP v2](../doc_files/playbook_Endace_Search_Archive_Download_PCAP_v2.png)

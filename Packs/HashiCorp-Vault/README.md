@@ -30,7 +30,7 @@ See also:
       - For a *Windows* server see [Add an XDR Collector profile for Windows](https://docs-cortex.pawloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Add-an-XDR-Collector-profile-for-Windows).
       - For a *Linux* server see [Add an XDR Collector profile for Linux](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Add-an-XDR-Collector-profile-for-Linux).  
       - When configuring the Filebeat YAML Configuration File, use the HashiCorp Vault template as a reference:
-      ![HashiCorp Vault Filebeat Template](https://raw.githubusercontent.com/demisto/content/d53b0958823ac42d2a9c06ab3b32f750f8017bc1/Packs/HashiCorp-Vault/doc_files/HashiCorpVaultFilebeatTemplate.png)
+      ![HashiCorp Vault Filebeat Template](doc_files/HashiCorpVaultFilebeatTemplate.png)
       - Customize the *[paths](https://www.elastic.co/guide/en/beats/filebeat/current/filebeat-input-filestream.html#filestream-input-paths)* parameter in accordance to the path configured for the enabled [File audit device](https://developer.hashicorp.com/vault/docs/audit/file) on the HashiCorp Vault server: 
            ```yaml
             filebeat.inputs:

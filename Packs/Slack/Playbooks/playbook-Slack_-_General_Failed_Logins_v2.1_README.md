@@ -31,4 +31,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Slack - General Failed Logins V2.1](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/Slack_-_General_Failed_Logins_v2.1.png)
+![Slack - General Failed Logins V2.1](../doc_files/Slack_-_General_Failed_Logins_v2_1.png)

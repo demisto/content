@@ -32,4 +32,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Update Or Remove Assets - RiskIQ Digital Footprint](https://github.com/demisto/content/raw/89de9c30e0dac047d5a3b66250e804717da35dd2/Packs/RiskIQDigitalFootprint/doc_files/Update_Or_Remove_Assets_-_RiskIQ_Digital_Footprint.png)
+![Update Or Remove Assets - RiskIQ Digital Footprint](../doc_files/Update_Or_Remove_Assets_-_RiskIQ_Digital_Footprint.png)

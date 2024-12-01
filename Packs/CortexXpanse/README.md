@@ -7,22 +7,22 @@ Cortex Xpanse Active ASM is the best in class External Attack Surface Management
 ## What does this pack do?
 This pack contains an integration for fetching ASM alerts from Cortex Xpanse Active ASM.
 
-![Xpanse Overview Dashboard](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexXpanse/doc_files/Cortex_Xpanse_Overview_Dashboard.png)
+![Xpanse Overview Dashboard](doc_files/Cortex_Xpanse_Overview_Dashboard.png)
 
 ## Playbooks
 
 ## Expanse - Alert Handler
 This playbook is the default handler for Cortex Xpanse alerts that focuses primarily on enrichment.
-![Xpanse - Alert Handler](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexXpanse/doc_files/Xpanse_-_Alert_Handler.png)
+![Xpanse - Alert Handler](doc_files/Xpanse_-_Alert_Handler.png)
 
 ## Expanse - Alert Enrichment
 This playbook handles ASM alerts by enriching asset information via integrations with Cloud Service Providers and other IT and Security tools.
-![Xpanse - Alert Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexXpanse/doc_files/Xpanse_-_Alert_Enrichment.png)
+![Xpanse - Alert Enrichment](doc_files/Xpanse_-_Alert_Enrichment.png)
 
 ## Expanse - Alert Self-Enrichment
 This playbook handles ASM alerts by enriching alert information with Xpanse service and asset details.
-![Xpanse - Alert Self-Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexXpanse/doc_files/Xpanse_-_Alert_Self-Enrichment.png)
+![Xpanse - Alert Self-Enrichment](doc_files/Xpanse_-_Alert_Self-Enrichment.png)
 
 ## Expanse - NMap - Detect Service
 This playbook confirms the observability of a risk by running a quick port scan using NMap.
-![Xpanse - NMap - Detect Service](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexXpanse/doc_files/Xpanse_-_NMap_-_Detect_Service.png)
+![Xpanse - NMap - Detect Service](doc_files/Xpanse_-_NMap_-_Detect_Service.png)

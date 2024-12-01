@@ -48,4 +48,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Endace Search Archive Download PCAP](https://raw.githubusercontent.com/demisto/content/6076f09ff5093102f383da8c11dfce0b12331d82/Packs/Endace/doc_imgs/playbook_Endace_Search_Archive_Download_PCAP.png)
+![Endace Search Archive Download PCAP](../doc_files/playbook_Endace_Search_Archive_Download_PCAP.png)
