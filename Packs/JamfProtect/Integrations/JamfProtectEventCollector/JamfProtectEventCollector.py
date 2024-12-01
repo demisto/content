@@ -123,7 +123,7 @@ class Client(BaseClient):
         expire_date = get_current_time() + timedelta(seconds=expire_in) - timedelta(minutes=MINUTES_BEFORE_TOKEN_EXPIRED)
         set_integration_context({"token": token, "expire_date": str(expire_date)})
 
-    def _generate_token(self, client_id: str, client_password: str) -> dict:
+    def _generate_token(self, client_id: str, client_password: str) -> dict:  # pragma: no cover
         """
         This method generates a reusable access token to authenticate requests to the Jamf Protect API.
 
@@ -384,7 +384,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> str:  # pragma: no cover
     """
     This method is used to test the connectivity and functionality of the client.
 
