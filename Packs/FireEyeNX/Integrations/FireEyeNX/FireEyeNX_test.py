@@ -1253,3 +1253,39 @@ def test_fetch_incidents_for_event_success(
     # Assert
     assert len(incidents) == mock_fetch_limit
     assert next_run.get('alerts').get('start_time') is not None
+
+
+def test_update_start_time_within_last_forty_eight_hours():
+    """
+        Given:
+            - Given a start time equals to 24 hours ago.
+        When:
+            - Running date_to_timestamp function.
+        Then:
+            - Shouldn't update the start time (should return the same start time).
+    """
+
+    from FireEyeNX import update_start_time, DATE_FORMAT
+
+    current_time = datetime.utcnow()
+    start_time = date_to_timestamp(current_time - timedelta(hours=24), DATE_FORMAT) / 1000.0
+    result = update_start_time(start_time)
+    assert result == start_time
+
+
+def test_update_start_time_older_than_last_forty_eight_hours():
+    """
+        Given:
+            - Given a start time equals to 72 hours ago.
+        When:
+            - Running date_to_timestamp function.
+        Then:
+            - Should update the start time to be in the last 48 hours (should return the updated start time).
+    """
+    from FireEyeNX import update_start_time, DATE_FORMAT, FORTY_EIGHT_HOURS_IN_SECOND
+
+    current_time = datetime.utcnow()
+    old_start_time = date_to_timestamp(current_time - timedelta(hours=72), DATE_FORMAT) / 1000.0
+    result = update_start_time(old_start_time)
+    expected_start_time = date_to_timestamp(current_time, DATE_FORMAT) / 1000.0 - FORTY_EIGHT_HOURS_IN_SECOND
+    assert result == expected_start_time
