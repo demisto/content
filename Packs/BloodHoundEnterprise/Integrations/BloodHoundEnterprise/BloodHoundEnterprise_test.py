@@ -12,8 +12,8 @@ def load_test_events():
 def create_mock_client(test_events):
     client = Mock()
 
-    def mock_search_events(limit, from_date, until_date, skip):
-        return test_events[skip: skip + limit]
+    def mock_search_events(limit, from_date, until_date, offset):
+        return test_events[offset: offset + limit]
 
     client.search_events.side_effect = mock_search_events
     return client

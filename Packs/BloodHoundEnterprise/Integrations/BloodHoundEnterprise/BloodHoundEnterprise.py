@@ -97,7 +97,7 @@ class Client(BaseClient):
         limit: int,
         from_date: str | None = None,
         until_date: str | None = None,
-        skip: int | None = None,
+        offset: int | None = None,
     ) -> List[Dict]:
         """
         Searches for audit events using the API with pagination and optional date filtering.
@@ -118,7 +118,7 @@ class Client(BaseClient):
             "sort_by": "created_at",
             "after": from_date,
             "before": until_date,
-            "skip": skip,
+            "skip": offset,
         }
         demisto.debug(f"Got the follow parameters to the query {query_params}")
         remove_nulls_from_dictionary(query_params)
@@ -261,7 +261,7 @@ def get_events_with_pagination(
             - An integer indicating the number of events to skip in the next fetch if applicable.
     """
     fetched_events: list = []
-    pagination_skip = offset
+    pagination_offset = offset
 
     while len(fetched_events) < max_events:
         page_size = min(PAGE_LIMIT, max_events - len(fetched_events))
@@ -269,13 +269,13 @@ def get_events_with_pagination(
             limit=page_size,
             from_date=start_date,
             until_date=end_date,
-            skip=pagination_skip,
+            offset=pagination_offset,
         )
         if not response:
             demisto.debug("No new events received from the API")
             break
         demisto.debug(f"Got {len(response)} events before deduplication")
-        pagination_skip += len(response)
+        pagination_offset += len(response)
         filtered_events = [item for item in response if item.get("id", 0) > last_event_id]
         demisto.debug(f"Got {len(filtered_events)} events after deduplication")
         fetched_events.extend(filtered_events)
