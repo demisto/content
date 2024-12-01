@@ -18,10 +18,10 @@ enabled: true
 args:
 - name: id
   default: true
-  description: Incident to set context values in (Default is current incident)
+  description: Incident to set context values in (Default is current incident).
 - name: key
   required: true
-  description: The key to set
+  description: The key to set.
 - name: value
   required: true
   description: The value to set to the key. Can be an array. Usually, a dq expression.
@@ -30,7 +30,7 @@ args:
   predefined:
   - "true"
   - "false"
-  description: If false then the context key will be overwritten. If set to true then the script will append to existing context key
+  description: If false then the context key will be overwritten. If set to true then the script will append to existing context key.
   defaultValue: "false"
 - name: errorUnfinished
   auto: PREDEFINED

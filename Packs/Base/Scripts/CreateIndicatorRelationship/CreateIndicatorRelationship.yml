@@ -232,7 +232,7 @@ args:
   - F - Reliability cannot be judged
 - description: Free text description to add to the relationship.
   name: description
-- description: 'The time the relationship was seen. If left empty, the default value will be the time the relationship was created. Format (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z'
+- description: 'The time the relationship was seen. If left empty, the default value will be the time the relationship was created. Format (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z.'
   name: first_seen
 - description: True, if the non-existing indicators will be created according to the specified entities and their types. Default is false.
   auto: PREDEFINED

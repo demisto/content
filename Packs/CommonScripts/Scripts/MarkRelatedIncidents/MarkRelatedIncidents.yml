@@ -18,7 +18,7 @@ args:
 - name: related
   required: true
   default: true
-  description: The list of related incident IDs we want to mark
+  description: The list of related incident IDs we want to mark.
   isArray: true
 scripttarget: 0
 tests:

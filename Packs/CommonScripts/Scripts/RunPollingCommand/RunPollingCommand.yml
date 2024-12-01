@@ -17,18 +17,18 @@ enabled: true
 args:
 - name: ids
   required: true
-  description: List of IDs to poll
+  description: List of IDs to poll.
 - name: pollingCommand
   required: true
-  description: Name of the polling command to run
+  description: Name of the polling command to run.
 - name: pollingCommandArgName
   required: true
-  description: Name of the argument of the polling command
+  description: Name of the argument of the polling command.
   defaultValue: ids
 - name: additionalPollingCommandArgNames
-  description: Commas separated arguments of the polling command
+  description: Commas separated arguments of the polling command.
 - name: additionalPollingCommandArgValues
-  description: Commas separated arguments values of the polling command
+  description: Commas separated arguments values of the polling command.
 scripttarget: 0
 tests:
 - No test
