@@ -23,6 +23,12 @@
         "Microsoft",
         "Firewall"
     ],
+    "dependencies": {
+        "MicrosoftEntraID": {
+            "mandatory": false,
+            "display_name": "Azure Logs"
+        }
+    },
     "githubUser": [],
     "certification": "certified",
     "marketplaces": [
