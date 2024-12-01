@@ -1325,6 +1325,10 @@ def test_action_status_get_command(requests_mock):
     action_status_get_command_command_reply = load_test_data('./test_data/action_status_get.json')
 
     data = action_status_get_command_command_reply.get('reply').get('data')
+    # todo:
+    #  add errorReasons part
+    #  add a case where it is empty
+    #  add a case where it doesn't exist (an older version)
     result = []
     for item in data:
         result.append({

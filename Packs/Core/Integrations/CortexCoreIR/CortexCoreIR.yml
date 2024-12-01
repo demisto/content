@@ -1470,6 +1470,33 @@ script:
     - contextPath: Core.GetActionStatus.action_id
       description: The specified action ID.
       type: number
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The error reason bucket.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The error reason file name.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The error reason file path.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The error reason file size.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The error reason missing files.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason error data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason error description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Links the response action to the incident that triggered it.
       name: incident_id
@@ -1980,7 +2007,6 @@ script:
     - contextPath: Core.exclusion.ALERT_WHITELIST_MIGRATED_FROM_ANALYTICS
       description: ''
       type: Number
-
   - arguments:
     - description: A comma-separated list of alert IDs.
       isArray: true

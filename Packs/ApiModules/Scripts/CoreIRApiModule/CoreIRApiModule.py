@@ -1376,7 +1376,7 @@ class CoreClient(BaseClient):
         )
         demisto.debug(f"action_status_get = {reply}")
 
-        return reply.get('reply').get('data')
+        return reply.get('reply')
 
     @logger
     def get_file(self, file_link):
@@ -1959,17 +1959,23 @@ def action_status_get_command(client: CoreClient, args) -> CommandResults:
     demisto.debug(f'action_status_get_command {action_id_list=}')
     result = []
     for action_id in action_id_list:
-        data = client.action_status_get(action_id)
+        reply = client.action_status_get(action_id)
+        data = reply.get('data')
+        error_reasons = reply.get('errorReasons', {})
 
         for endpoint_id, status in data.items():
-            result.append({
+            action_result = {
                 'action_id': action_id,
                 'endpoint_id': endpoint_id,
                 'status': status,
-            })
+            }
+            if error_reason := error_reasons.get(endpoint_id):
+                action_result['ErrorReasons'] = error_reason
+            result.append(action_result)
 
     return CommandResults(
-        readable_output=tableToMarkdown(name='Get Action Status', t=result, removeNull=True),
+        readable_output=tableToMarkdown(name='Get Action Status', t=result, removeNull=True,
+                                        headers=['action_id','endpoint_id', 'status']),
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.'
                        f'GetActionStatus(val.action_id == obj.action_id)',
         outputs=result,
