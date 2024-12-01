@@ -43,4 +43,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![US-BreachNotification](https://raw.githubusercontent.com/demisto/content/master/Packs/BreachNotification-US/doc_files/US_-_Breach_Notification.png)
+![US-BreachNotification](../doc_files/US_-_Breach_Notification.png)
