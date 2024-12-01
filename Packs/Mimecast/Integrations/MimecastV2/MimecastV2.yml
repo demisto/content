@@ -1210,13 +1210,6 @@ script:
       name: domain_address
     - description: The notes for the entry.
       name: notes
-    - auto: PREDEFINED
-      description: Whether to retrieve all results.
-      defaultValue: "false"
-      predefined:
-      - "true"
-      - "false"
-      name: all_results
     description: Adds a user to a group. The email_address and domain_address arguments are optional, but one of them must be supplied.
     name: mimecast-add-group-member
     outputs:
@@ -1234,13 +1227,6 @@ script:
       name: email_address
     - description: A domain of the user to remove from a group.
       name: domain_address
-    - auto: PREDEFINED
-      description: Whether to retrieve all results.
-      defaultValue: "false"
-      predefined:
-      - "true"
-      - "false"
-      name: all_results
     description: Removes a user from a group. The email_address and domain_address arguments are optional, but one of them must be supplied.
     name: mimecast-remove-group-member
     outputs:
