@@ -2405,10 +2405,10 @@ script:
   - name: ews-rule-disable
     arguments:
       - name: mailbox
-        description: The mailbox that contains the Inbox rule.
+        description: The mailbox that contains the inbox rule.
         required: true
       - name: identity
-        description: The Inbox rule that you want to disable.
+        description: The inbox rule that you want to disable.
         required: true
     description: Disable an existing inbox rule in a given mailbox.
   - name: ews-rule-enable
