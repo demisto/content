@@ -226,7 +226,7 @@ def test_get_events_computer_type(mocker: MockerFixture, client, fetch_all_compu
         assert "$created: AWSDateTime" not in actual_query
     else:
         assert "$created: AWSDateTime" in actual_query
-    assert "created" in actual_variables
+        assert "created" in actual_variables
 
 
 @freeze_time("'2022-05-01 12:52:29'")
