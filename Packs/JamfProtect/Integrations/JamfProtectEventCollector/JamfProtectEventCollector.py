@@ -123,7 +123,7 @@ class Client(BaseClient):
         expire_date = get_current_time() + timedelta(seconds=expire_in) - timedelta(minutes=MINUTES_BEFORE_TOKEN_EXPIRED)
         set_integration_context({"token": token, "expire_date": str(expire_date)})
 
-    def _generate_token(self, client_id: str, client_password: str) -> dict:  # pragma: no cover
+    def _generate_token(self, client_id: str, client_password: str) -> dict:
         """
         This method generates a reusable access token to authenticate requests to the Jamf Protect API.
 
@@ -384,7 +384,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:  # pragma: no cover
+def test_module(client: Client) -> str:
     """
     This method is used to test the connectivity and functionality of the client.
 
@@ -477,59 +477,6 @@ def get_event_for_specific_type(start_date: str, max_fetch: int, last_run: dict,
         demisto.debug(
             f"Jamf Protect- Fetched {len(events)} which is the maximum number of {specific_type}s."
             f" Will keep the fetching in the next fetch.")
-
-    return events, new_last_run
-
-
-def get_events_computer_type(
-    client: Client, start_date: str, max_fetch: int, last_run: dict, fetch_all_computers: bool
-) -> tuple[list[dict], dict]:
-    """
-    Fetches computer type events from the Jamf Protect API within a specified date range.
-
-    This function fetches computer type events from the Jamf Protect API based on the provided start date.
-    It fetches events up to the maximum number specified by max_fetch.
-    The function also uses the information from the last run to continue fetching from where it left off in the previous run.
-
-    Args:
-        client (Client): An instance of the Client class for interacting with the API.
-        start_date (str): The start date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format.
-        max_fetch (int): The maximum number of events to fetch.
-        last_run (dict): A dictionary containing information about the last run.
-        fetch_all_computers (bool): The maximum number of events to fetch.
-
-    Returns:
-        tuple: A tuple containing two elements:
-            - A list of dictionaries. Each dictionary represents an event.
-            - A dictionary with new last run values,
-             the end date of the fetched events and a continuance token if the fetched reached the max limit.
-    """
-    start_date, end_date = calculate_fetch_dates(start_date, last_run=last_run, last_run_key="computer")
-    command_args = {"created": start_date, 'use_date_filter': bool(last_run or not fetch_all_computers)}
-    next_page = last_run.get("computer", {}).get("next_page", "")
-
-    debug_message = "Fetching all computers" if fetch_all_computers and not last_run else f"Fetching computers since {start_date}"
-    demisto.debug(debug_message)
-
-    events, next_page = get_events(command_args, client.get_computers, max_fetch, next_page)
-    for event in events:
-        event["source_log_type"] = "computers"
-
-    latest_event = max(filter(None, (arg_to_datetime(event.get("created"), DATE_FORMAT)
-                                     for event in events))).strftime(DATE_FORMAT) if events else end_date
-
-    new_last_fetch_date = max(start_date, latest_event)
-    new_last_run = {"last_fetch": new_last_fetch_date}
-
-    demisto.debug(f"Fetched {len(events)} computers")
-    demisto.debug(f"{latest_event=}")
-    demisto.debug(f"{new_last_fetch_date=}")
-
-    if next_page:
-        new_last_run["next_page"] = next_page
-        demisto.debug(
-            f"Fetched the maximal number of computers. "
-            f"Fetching will continue using {next_page=} in the next iteration")
 
     return events, new_last_run
 

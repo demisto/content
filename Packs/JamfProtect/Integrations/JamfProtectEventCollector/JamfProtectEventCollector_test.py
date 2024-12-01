@@ -6,6 +6,7 @@ import pytest
 import demistomock as demisto
 from pytest_mock import MockerFixture
 from pathlib import Path
+
 MOCK_BASEURL = "https://example.protect.jamfcloud.com"
 MOCK_CLIENT_ID = "example_client_id"
 MOCK_CLIENT_PASSWORD = "example_pass"
@@ -196,18 +197,19 @@ def test_next_trigger(mocker):
 @pytest.mark.parametrize("fetch_all_computers", [True, False])
 def test_get_events_computer_type(mocker: MockerFixture, client, fetch_all_computers):
     """
-    Test get_events_computer_type function with fetch_all_computers True and False.
+    Test get_event_for_specific_type for computer type function with fetch_all_computers True and False.
 
     Ensures the _http_request is called with the correct parameters.
     """
-    from JamfProtectEventCollector import get_events_computer_type
+    from JamfProtectEventCollector import get_event_for_specific_type
 
-    events, new_last_run = get_events_computer_type(
-        client=client,
+    events, new_last_run = get_event_for_specific_type(
         start_date='',
         max_fetch=200,
         last_run={},
-        fetch_all_computers=fetch_all_computers,
+        specific_type='computer',
+        client_event_type_func=client.get_computers,
+        fetch_all_computers=fetch_all_computers
     )
 
     assert client._http_request.call_count > 0  # Use the existing client fixture for assertion
@@ -224,4 +226,36 @@ def test_get_events_computer_type(mocker: MockerFixture, client, fetch_all_compu
         assert "$created: AWSDateTime" not in actual_query
     else:
         assert "$created: AWSDateTime" in actual_query
-        assert "created" in actual_variables
+    assert "created" in actual_variables
+
+
+@freeze_time("'2022-05-01 12:52:29'")
+def test_get_event_for_specific_type(mocker, client):
+    """
+    Given:
+        - A mock JamfProtect client
+        - alert as specific_type
+        - created time of event later than the start_time
+    When:
+        Running get-get_event_for_specific_type.
+    Then:
+        - Ensure created key was added before calling to get_event
+        - The max 'last_fetch' was keeped for the next fetch
+        - The key 'source_log_type' was added to the event with the 'alert' value as expected
+    """
+    from JamfProtectEventCollector import get_event_for_specific_type
+    get_event_mocker = mocker.patch('JamfProtectEventCollector.get_events',
+                                    return_value=([{"created": '2022-05-01 12:53:29'}], {}))
+
+    events, new_last_run = get_event_for_specific_type(
+        start_date='',
+        max_fetch=200,
+        last_run={},
+        specific_type='alert',
+        client_event_type_func=client.get_alerts,
+    )
+
+    assert 'created' in get_event_mocker.call_args[0][0]
+    assert new_last_run['last_fetch'] == '2022-05-01T12:53:29.000000Z'
+    assert 'source_log_type' in events[0]
+    assert events[0]['source_log_type'] == 'alert'
