@@ -507,7 +507,7 @@ script:
       required: true
     description: Deletes a web service custom policy indicated by the policy name.
     name: imperva-waf-web-service-custom-policy-delete
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

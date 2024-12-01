@@ -1074,7 +1074,7 @@ script:
         - contextPath: Rapid7InsightIDR.User.rrn
           description: The unique identifier for this user.
           type: String
-  dockerimage: demisto/python3:3.10.13.89873
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: "-"
