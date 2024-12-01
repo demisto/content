@@ -2311,16 +2311,42 @@ function ListMailFlowRulesCommand {
         [hashtable]$kwargs
     )
     $extended_output = $kwargs.extended_output
-
     $raw_response = $client.ListMailFlowRules()
-    if($raw_response -eq $null){
+    if ($raw_response -eq $null) {
         Write-Output "No Mail Flow Rules were found."
     }
-    else{
+    else {
         $parsed_raw_response = ParseRawResponse $raw_response
+        if ($extended_output -eq "false") {
+            $entry_context = @{
+                "$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRules(obj.Guid === val.Guid)" = $parsed_raw_response | ForEach-Object {
+                    @{
+                        "Size"                          = $_.Size
+                        "ExpiryDate"                    = $_.ExpiryDate
+                        "Mode"                          = $_.Mode
+                        "Quarantine"                    = $_.Quarantine
+                        "Guid"                          = $_.Guid
+                        "OrganizationId"                = $_.OrganizationId
+                        "DistinguishedName"             = $_.DistinguishedName
+                        "IsValid"                       = $_.IsValid
+                        "Conditions"                    = $_.Conditions
+                        "Comments"                      = $_.Comments
+                        "WhenChanged"                   = $_.WhenChanged
+                        "Description"                   = $_.Description
+                        "Actions"                       = $_.Actions
+                        "ImmutableId"                   = $_.ImmutableId
+                        "Identity"                      = $_.Identity
+                        "Name"                          = $_.Name
+                        "CreatedBy"                     = $_.CreatedBy
+                        "RouteMessageOutboundConnector" = $_.RouteMessageOutboundConnector }
+                }
+            }
+        }
+        else {
+            $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRules(obj.Guid === val.Guid)" = $parsed_raw_response }
+        }
         $md_columns = $raw_response | Select-Object -Property Name, State, Priority, Comment, WhenChanged, CreatedBy
         $human_readable = TableToMarkdown $md_columns "Results of $command"
-        $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRules(obj.Guid === val.Guid)" = $parsed_raw_response }
         Write-Output $human_readable, $entry_context, $parsed_raw_response
     }
 }
