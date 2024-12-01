@@ -1939,7 +1939,7 @@ def handle_html(htmlBody):
         attachment = {
             'maintype': maintype,
             'subtype': subtype,
-            'data': base64.b64decode(m.group(3)),
+            'data': b64_decode(m.group(3)),
             'name': name,
             'cid': cid,
             'ID': cid
