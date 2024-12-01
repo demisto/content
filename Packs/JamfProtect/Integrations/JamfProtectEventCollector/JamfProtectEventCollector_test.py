@@ -207,6 +207,7 @@ def test_get_events_computer_type(mocker: MockerFixture, client, fetch_all_compu
 
     events, new_last_run = get_event_for_specific_type(
         start_date='',
+        end_date='',
         max_fetch=200,
         last_run={},
         specific_type='computer',
@@ -251,6 +252,7 @@ def test_get_event_for_specific_type(mocker, client):
 
     events, new_last_run = get_event_for_specific_type(
         start_date='',
+        end_date='',
         max_fetch=200,
         last_run={},
         specific_type='alert',

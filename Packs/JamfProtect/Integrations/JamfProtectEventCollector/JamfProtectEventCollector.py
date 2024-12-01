@@ -443,19 +443,18 @@ def get_event_for_specific_type(start_date: str, end_date: str, max_fetch: int, 
              - A dictionary with new last run values,
               the end date of the fetched events and a continuance token if the fetched reached the max limit.
      """
-    last_run_key = 'alert' if specific_type == 'audit' else specific_type
+    last_run_key = 'alert' if specific_type == 'audit' else specific_type  # although audit is the type, the key should be alert
     start_date, end_date = calculate_fetch_dates(start_date, last_run=last_run, last_run_key=last_run_key, end_date=end_date)
 
-    debug_message = f"Fetching {specific_type}s from {start_date} to {end_date}"
+    mapping_command_args: dict[str, dict[str, Any]] = {'audit': {"start_date": start_date, "end_date": end_date},
+                                                       'alert': {"created": start_date},
+                                                       'computer': {"created": start_date, 'use_date_filter': bool(last_run or not fetch_all_computers)}}
 
-    if specific_type == 'audit':
-        command_args = {"start_date": start_date, "end_date": end_date}
-    elif specific_type == 'alert':
-        command_args: dict[str, Any] = {"created": start_date}
-    else:  # specific_type == 'computer'
-        command_args = {"created": start_date, 'use_date_filter': bool(last_run or not fetch_all_computers)}
-        if fetch_all_computers and not last_run:
-            debug_message = "Fetching all computers"
+    command_args = mapping_command_args[specific_type]
+
+    debug_message = f"Fetching {specific_type}s from {start_date} to {end_date}"
+    if specific_type == 'computer' and fetch_all_computers and not last_run:
+        debug_message = "Fetching all computers"
 
     demisto.debug(debug_message)
 
@@ -479,8 +478,7 @@ def get_event_for_specific_type(start_date: str, end_date: str, max_fetch: int, 
     if next_page:
         new_last_run["next_page"] = next_page
         demisto.debug(
-            f"Fetched {len(events)} which is the maximum number of {specific_type}s."
-            f" Will keep the fetching in the next fetch.")
+            f"Fetched {len(events)} which is the maximum number of {specific_type}s. Will keep the fetching in the next fetch.")
 
     return events, new_last_run
 
