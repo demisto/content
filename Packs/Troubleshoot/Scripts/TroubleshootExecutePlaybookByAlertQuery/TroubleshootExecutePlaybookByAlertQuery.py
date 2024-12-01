@@ -198,7 +198,7 @@ def open_investigation(results_summary: ResultsSummary, alert_ids: list) -> None
         results = demisto.executeCommand("core-api-post", {"uri": "/investigation/:id/reopen", "body": {"id": alert,
                                                                                                         "version": -1}})
         demisto.debug(f"Reopened alert {alert} with the following results: {results}.")
-        
+
     results_summary.update_reopened(alert_ids)
 
 
@@ -223,6 +223,7 @@ def set_playbook_on_alerts(playbook_id: str, alert_ids: list, playbooks_dict: di
 
     demisto.debug(f"Results of setting playbook {playbook_id} on alerts {alert_ids}:\n{command_results}")
     handle_results(command_results, playbook_id, alert_ids, results_summary)
+
 
 def split_alert_ids_into_bulks(alert_inv_status: dict[str, list]) -> tuple[list, list, list]:
     """
@@ -282,7 +283,7 @@ def loop_on_alerts(incidents: list[dict], playbook_id: str, limit: int, reopen_c
     alert_closed_bulks, alert_open_bulks, alert_all_ids_bulks = split_alert_ids_into_bulks(
         alert_inv_status
     )
-    
+
     demisto.debug(
         f'{MAX_BULK_SIZE_ALLOWED=}, all ids: {len(alert_inv_status["all_ids"])}, closed ids:{len(alert_inv_status["close_ids"])},'
         f' open_ids: {len(alert_inv_status["open_ids"])}')
@@ -291,10 +292,10 @@ def loop_on_alerts(incidents: list[dict], playbook_id: str, limit: int, reopen_c
         alert_bulks_to_set = alert_all_ids_bulks
         for bulk in alert_closed_bulks:
             open_investigation(results_summary=results_summary, alert_ids=bulk)
-            
+
     else:
         alert_bulks_to_set = alert_open_bulks
-        
+
     for bulk in alert_bulks_to_set:
         set_playbook_on_alerts(
             playbook_id=playbook_id,
