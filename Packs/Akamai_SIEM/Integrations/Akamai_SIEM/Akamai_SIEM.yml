@@ -72,15 +72,15 @@ configuration:
   type: 0
   defaultvalue: '20'
   required: false
-  additionalinfo: Limit on the number of incidents retrieved in a single fetch.
+  additionalinfo: Limit on the number of incidents retrieved in a single fetch. The maximum is 80k.
   section: Collect
 - display: Akamai Page size
   name: page_size
   type: 0
   required: false
   section: Collect
-  defaultvalue: '50000'
-  additionalinfo: The number of events to fetch per request to akamai (multiple requests are made for each fetch). If you're getting aggregated delays, increase the number. The maximum is 600,000.
+  defaultvalue: '20000'
+  additionalinfo: The number of events to fetch per request to akamai (multiple requests are made for each fetch). If you're getting aggregated delays, increase the number. The maximum is 80k. Note that if your API has higher ingestion rate, the integration will be able to detect it and immediately starts the next run in order to fetch events quicker.
   hidden:
   - xsoar
   advanced: true
@@ -220,7 +220,7 @@ script:
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
       type: String
-  dockerimage: demisto/auth-utils:1.0.0.116752
+  dockerimage: demisto/auth-utils:1.0.0.116930
   isfetch: true
   isfetch:marketplacev2: false
   isfetchevents: true

@@ -1,37 +1,33 @@
 Safewalk server integration
 This integration was integrated and tested with version 3 of SafewalkReports
 
-## Configure SafewalkReports on Cortex XSOAR
+## Configure SafewalkReports in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SafewalkReports.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. https://soar.monstersofhack.com) |  | True |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | API Key |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Fetch indicators |  | False |
-    | Incidents Fetch Interval |  | False |
-    |  |  | False |
-    |  |  | False |
-    |  |  | False |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
-    | Source Reliability | Reliability of the source providing the intelligence data | True |
-    |  |  | False |
-    |  |  | False |
-    | Feed Fetch Interval |  | False |
-    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | Tags | Supports CSV values. | False |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://soar.monstersofhack.com) |  | True |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| API Key |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch indicators |  | False |
+| Incidents Fetch Interval |  | False |
+|  |  | False |
+|  |  | False |
+|  |  | False |
+| Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
+| Source Reliability | Reliability of the source providing the intelligence data | True |
+|  |  | False |
+|  |  | False |
+| Feed Fetch Interval |  | False |
+| Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+| Tags | Supports CSV values. | False |
+| Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### safewalk-get-associated-users
 ***
@@ -361,5 +357,4 @@ safewalk-get-users-associations-indicators
 
 
 #### Human Readable Output
-
 

@@ -1,0 +1,30 @@
+args:
+  - name: new_comment
+    required: true
+    description: The comment text to be added to the incident comments.
+  - name: incident_id
+    required: false
+    description: The ID of the incident to add the comment to. This argument is relevant only when the script is called directly from the War Room.
+commonfields:
+  id: MicrosoftSentinelSubmitNewComment
+  version: -1
+comment: Use this script to add a comment which will then be mirrored as a comment to a Sentinal event. This script should be run within an incident.
+name: MicrosoftSentinelSubmitNewComment
+outputs:
+  - contextPath: AzureSentinel.AddComment.InstanceName
+    type: string
+    description: The name of the instance where the comment is added.
+  - contextPath: AzureSentinel.AddComment.IncidentId
+    type: string
+    description: The ID of the incident where the comment was added.
+  - contextPath: AzureSentinel.AddComment.Message
+    type: string
+    description: The message of the comment added to the incident.
+script: "-"
+tags:
+  - dynamic-section
+timeout: "0"
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.11.10.115887
+fromversion: 5.5.0
