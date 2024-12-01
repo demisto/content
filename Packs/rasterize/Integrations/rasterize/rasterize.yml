@@ -73,7 +73,6 @@ script:
     - default: true
       description: The URL to rasterize. Must be the full URL, including the http prefix.
       name: url
-      isArray: true
       required: true
     - defaultValue: 1024px
       description: The page width, for example, 1024px. Specify with or without the px suffix.
