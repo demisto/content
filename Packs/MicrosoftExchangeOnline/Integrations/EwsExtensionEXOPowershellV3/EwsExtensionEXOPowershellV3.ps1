@@ -122,6 +122,26 @@ function MailFlowRuleHelperFunction($raw_response, $extended_output) {
     $md_columns = $raw_response | Select-Object -Property Name, State, Priority, Comment, WhenChanged, CreatedBy
     $human_readable = TableToMarkdown $md_columns "Results of $command"
     return $human_readable, $entry_context, $parsed_raw_response
+    <#
+        .DESCRIPTION
+        A helper function to process the mail flow rule response.
+        This function takes the raw response from a mail flow rule operation, parses it, and generates
+        the necessary output for display and further processing.
+
+        .PARAMETER raw_response
+        The raw response obtained from the mail flow rule operation.
+
+        .PARAMETER extended_output
+        A flag indicating whether to include extended output in the response.
+
+        .EXAMPLE
+        $response = MailFlowRuleHelperFunction $raw_response $extended_output
+
+        .OUTPUTS
+        - $human_readable: The response formatted as a human-readable Markdown table.
+        - $entry_context: The entry context hashtable.
+        - $parsed_raw_response: The parsed raw response object.
+    #>
 }
 
 function MailFlowRuleCreateEntryContext($parsed_raw_response) {
