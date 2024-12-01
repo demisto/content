@@ -7,6 +7,7 @@ Note that adding code to CommonServerUserPython can override functions in Common
 from __future__ import print_function
 
 import base64
+import binascii
 import gc
 import json
 import logging
@@ -39,9 +40,9 @@ def __line__():
     return cf.f_back.f_lineno  # type: ignore[union-attr]
 
 
-# 43 - The line offset from the beginning of the file.
+# The number is the line offset from the beginning of the file. If you added an import, update this number accordingly.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 44, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 45, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -1407,6 +1408,21 @@ def b64_encode(text):
     if IS_PY3:
         res = res.decode('utf-8')  # type: ignore
     return res
+
+
+def b64_decode(b64_str):
+    """
+    Decode a str in a base 64 format to a picture.
+    Replaces the use of base64.b64decode function which doesn't add padding to the supplied str.
+
+    :param b64_str: string to decode
+    :type b64_str: str
+    :return: decoded binary
+    :rtype: bytes
+    """
+    b64 = b64_str.encode('ascii')
+    b64 += b'=' * (-len(b64) % 4)  # add padding
+    return binascii.a2b_base64(b64)
 
 
 def encode_string_results(text):
