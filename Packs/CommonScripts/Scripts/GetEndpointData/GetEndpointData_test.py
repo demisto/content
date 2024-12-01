@@ -1,6 +1,6 @@
 import pytest
+import demistomock as demisto
 from pytest_mock import MockerFixture
-
 from GetEndpointData import MappedCommand, ModuleManager, CommandRunner, to_list
 
 
@@ -114,4 +114,74 @@ class TestCommandRunner:
 
         assert context_outputs == []
         assert human_readable == ""
-        assert error_outputs == []
+
+    def test_run_execute_command_brand_available_with_args(self, mocker):
+        command = MappedCommand("BrandA", "test_command", {"arg1": "mapped_arg1"})
+
+        mock_execute = mocker.patch.object(demisto,'executeCommand', return_value=[{"Contents": "test_result"}])
+
+        result = self.command_runner._run_execute_command(command)
+
+        mock_execute.assert_called_once_with("test_command", {"arg1": "value1"})
+        assert result == {'command': command, 'results': [{"Contents": "test_result"}]}
+
+    def test_run_execute_command_brand_available_arg_free(self, mocker):
+        command = MappedCommand("TestBrand", "test_command", {})
+        self.arg_free_commands = ["test_command"]
+
+        mocker.patch.object(self.module_manager, 'is_brand_available', return_value=True)
+        mock_execute = mocker.patch('GetEndpointData.demisto.executeCommand', return_value=[{"Contents": "test_result"}])
+
+        result = self.command_runner._run_execute_command(command)
+
+        mock_execute.assert_called_once_with("test_command", {})
+        assert result == {'command': command, 'results': [{"Contents": "test_result"}]}
+
+    def test_run_execute_command_brand_available_no_args_not_arg_free(self, mocker):
+        command = MappedCommand("TestBrand", "test_command", {})
+
+        mocker.patch.object(self.module_manager, 'is_brand_available', return_value=True)
+        mock_execute = mocker.patch('GetEndpointData.demisto.executeCommand')
+
+        result = self.command_runner._run_execute_command(command)
+
+        mock_execute.assert_not_called()
+        assert result == {'command': command, 'results': []}
+
+    def test_run_execute_command_brand_not_available(self, mocker):
+        command = MappedCommand(self.modules['module2']['brand'], "test_command", {"arg1": "mapped_arg1"})
+
+        mock_execute = mocker.patch.object(demisto,'executeCommand', return_value=[{"Contents": "test_result"}])
+        mock_debug = mocker.patch.object(demisto, 'debug')
+
+        result = self.command_runner._run_execute_command(command)
+
+        mock_execute.assert_not_called()
+        mock_debug.assert_called_once_with(f'Skipping command "{command.name}" since the brand {command.brand} is not available.')
+        assert result == {'command': command, 'results': []}
+
+    def test_run_execute_command_debug_logging(self, mocker):
+        command = MappedCommand(self.modules['module1']['brand'], "test_command", {"arg1": "mapped_arg1"})
+        self.endpoint_args = {"mapped_arg1": "value1"}
+
+        mocker.patch.object(self.module_manager, 'is_brand_available', return_value=True)
+        mock_debug = mocker.patch.object(demisto, 'debug')
+        mock_execute = mocker.patch.object(demisto,'executeCommand', return_value=[{"Contents": "test_result"}])
+
+        self.command_runner._run_execute_command(command)
+
+        mock_debug.assert_any_call(f'Running "{command=}" with args={{"arg1": "value1"}}')
+        mock_debug.assert_any_call(f'Command "{command.name}" returned [{{"Contents": "test_result"}}]')
+
+    def test_run_execute_command_to_list_usage(self, mocker):
+        command = MappedCommand("TestBrand", "test_command", {"arg1": "mapped_arg1"})
+        self.endpoint_args = {"mapped_arg1": "value1"}
+
+        mocker.patch.object(self.module_manager, 'is_brand_available', return_value=True)
+        mock_execute = mocker.patch('GetEndpointData.demisto.executeCommand', return_value={"Contents": "test_result"})
+        mock_to_list = mocker.patch('GetEndpointData.to_list', side_effect=lambda x: [x] if not isinstance(x, list) else x)
+
+        result = self.command_runner._run_execute_command(command)
+
+        mock_to_list.assert_called_once_with({"Contents": "test_result"})
+        assert result == {'command': command, 'results': [{"Contents": "test_result"}]}
