@@ -73,6 +73,7 @@ Extracts text from an image.
 | --- | --- | --- |
 | entryid | A comma-separated list of Entry IDs of image files to process. | Required | 
 | langs | A CSV of language codes of the language to use for OCR. Overrides the default configured language list. | Optional | 
+| verbose | Turn on verbose flag to display tesseract and other used libraries versions. | Optional | 
 
 #### Context Output
 
