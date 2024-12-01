@@ -94,7 +94,6 @@ def fetch_check(mocker, client, last_run, first_fetch_time, fetch_limit, mock_re
         assert json.loads(incident['rawJSON']) == json.loads(mock_incident['rawJSON'])
 
 
-
 def test_fetch_incidents(mocker):
     """
     This test check for 4 fetch cycles.

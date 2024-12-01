@@ -239,66 +239,66 @@ DATA_WITH_URLS = [(
 COMPLEX_DATA_WITH_URLS = [(
     [
         {'data':
-             {'id': '1',
-              'result':
-                  {'files':
-                      [
+         {'id': '1',
+          'result':
+          {'files':
+           [
                           {
                               'filename': 'name',
                               'size': 0,
                               'url': 'url'
                           }
-                      ]
-                  },
+                          ]
+           },
               'links': ['link']
-              }
+          }
          },
         {'data':
-             {'id': '2',
-              'result':
-                  {'files':
-                      [
-                          {
-                              'filename': 'name',
-                              'size': 0,
-                              'url': 'url'
-                          }
-                      ]
-                  },
+         {'id': '2',
+          'result':
+          {'files':
+           [
+               {
+                   'filename': 'name',
+                   'size': 0,
+                   'url': 'url'
+               }
+           ]
+           },
               'links': ['link']
-              }
+          }
          }
     ],
     [
         {'data':
-             {'id': '1',
-              'result':
-                  {'files':
-                      [
-                          {
-                              'filename': 'name',
-                              'size': 0,
-                              'url': '[url](url)'
-                          }
-                      ]
-                  },
+         {'id': '1',
+          'result':
+          {'files':
+           [
+               {
+                   'filename': 'name',
+                   'size': 0,
+                   'url': '[url](url)'
+               }
+           ]
+           },
               'links': ['[link](link)']
-              }
+          }
          },
         {'data':
-             {'id': '2',
-              'result':
-                  {'files':
-                      [
-                          {
-                              'filename': 'name',
-                              'size': 0,
-                              'url': '[url](url)'
-                          }
-                      ]
-                  },
+         {'id': '2',
+          'result':
+          {'files':
+           [
+               {
+                   'filename': 'name',
+                   'size': 0,
+                   'url': '[url](url)'
+               }
+           ]
+           },
               'links': ['[link](link)']
-              }
+          }
          }
     ])]
 
@@ -1354,7 +1354,7 @@ def test_logger_replace_strs(mocker):
     assert ('' not in ilog.replace_strs)
     assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
     assert ilog.messages[1] == \
-           'special chars like <XX_REPLACED> should be replaced even when url-encoded like <XX_REPLACED>'
+        'special chars like <XX_REPLACED> should be replaced even when url-encoded like <XX_REPLACED>'
 
 
 TEST_SSH_KEY_ESC = '-----BEGIN OPENSSH PRIVATE KEY-----\\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
@@ -1589,7 +1589,7 @@ def test_return_error_truncated_message(mocker):
     mocker.patch.object(sys, 'exit')
     return_error(err_msg)
     assert len(results.call_args[0][0]["Contents"]) == MAX_ERROR_MESSAGE_LENGTH + \
-           len("...This error body was truncated...")
+        len("...This error body was truncated...")
     assert "This error body was truncated" in results.call_args[0][0]["Contents"]
 
 
@@ -2098,7 +2098,7 @@ class TestCommandResults:
         results = CommandResults(outputs_prefix='File', outputs_key_field=['sha1', 'sha256', 'md5'], outputs=files)
 
         assert list(results.to_context()['EntryContext'].keys())[0] == \
-               'File(val.sha1 && val.sha1 == obj.sha1 && val.sha256 && val.sha256 == obj.sha256 && val.md5 && val.md5 == obj.md5)'
+            'File(val.sha1 && val.sha1 == obj.sha1 && val.sha256 && val.sha256 == obj.sha256 && val.md5 && val.md5 == obj.md5)'
 
     def test_output_prefix_includes_dt(self):
         """
@@ -2119,7 +2119,7 @@ class TestCommandResults:
                                  outputs_key_field='', outputs=files)
 
         assert list(results.to_context()['EntryContext'].keys())[0] == \
-               'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
+            'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
 
     @pytest.mark.parametrize('score, expected_readable',
                              [(CommonServerPython.Common.DBotScore.NONE, 'Unknown'),
@@ -7106,8 +7106,8 @@ class TestCommonTypes:
             traffic_light_protocol='traffic_light_protocol_test'
         )
         assert email_context.to_context()[email_context.CONTEXT_PATH] == \
-               {"Email": {'Address': 'user@example.com'},
-                'Domain': 'example.com',
+            {"Email": {'Address': 'user@example.com'},
+             'Domain': 'example.com',
                 'Description': 'test',
                 'Internal': True,
                 'STIXID': 'stix_id_test',

@@ -459,7 +459,7 @@ def microsoft_365_defender_incident_get_command(client: Client, args: dict) -> C
 
 @logger
 def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: str, fetch_limit: int, timeout: int = None) -> List[
-    dict]:
+        dict]:
     """
     Uses to fetch incidents into Demisto
     Documentation: https://xsoar.pan.dev/docs/integrations/fetching-incidents#the-fetch-incidents-command
@@ -610,7 +610,7 @@ def microsoft_365_defender_advanced_hunting_command(client: Client, args: dict) 
 
 def fetch_modified_incident_ids(client: Client, last_update_time) -> List[str]:
     demisto.debug("microsoft365::Starting fetch_modified_incidents")
-    test_context_for_token(client)  #todo: how to go aabout this in mirroring?
+    test_context_for_token(client)  # todo: how to go aabout this in mirroring?
     incidents = []
 
     # The API is limited to MAX_ENTRIES incidents for each requests, if we are trying to get more than MAX_ENTRIES
@@ -624,7 +624,7 @@ def fetch_modified_incident_ids(client: Client, last_update_time) -> List[str]:
         # HTTP request
         demisto.debug(f"microsoft365::fetch_modified_incidents - fetching incidents with offset {offset}")
         response = client.incidents_list(timeout=50, last_update_time=last_update_time,
-                                         skip=offset)  #todo: should include timeout?
+                                         skip=offset)  # todo: should include timeout?
         raw_incidents = response.get('value')
         demisto.debug(f"microsoft365::fetch_modified_incidents - fetched {len(raw_incidents)} incidents")
         demisto.debug(f"microsoft365::{str(raw_incidents)}")
@@ -632,7 +632,7 @@ def fetch_modified_incident_ids(client: Client, last_update_time) -> List[str]:
             incidents.append(str(incident.get('incidentId')))
         # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
         if len(raw_incidents) < int(
-            MAX_ENTRIES):  #todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
+                MAX_ENTRIES):  # todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
             break
         offset += int(MAX_ENTRIES)
     return incidents
@@ -640,7 +640,7 @@ def fetch_modified_incident_ids(client: Client, last_update_time) -> List[str]:
 
 def fetch_modified_incidents(client: Client, last_update_time) -> List[dict]:
     demisto.debug("microsoft365::Starting fetch_modified_incidents")
-    test_context_for_token(client)  #todo: how to go aabout this in mirroring?
+    test_context_for_token(client)  # todo: how to go aabout this in mirroring?
     incidents = []
 
     # The API is limited to MAX_ENTRIES incidents for each requests, if we are trying to get more than MAX_ENTRIES
@@ -664,7 +664,7 @@ def fetch_modified_incidents(client: Client, last_update_time) -> List[dict]:
             incidents.append(incident)
         # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
         if len(raw_incidents) < int(
-            MAX_ENTRIES):  # todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
+                MAX_ENTRIES):  # todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
             break
         offset += int(MAX_ENTRIES)
     return incidents
@@ -704,7 +704,7 @@ def get_modified_incidents_entries_content(modified_incidents: List[dict], close
 
 def get_modified_remote_data_command(client: Client, args, close_incident: bool,
                                      return_entire_data=False) -> GetModifiedRemoteDataResponse:
-    #todo - do we want to sync assignedto like in xdr?
+    # todo - do we want to sync assignedto like in xdr?
     demisto.debug("microsoft365::Starting get_modified_remote_data_command")
     remote_args = GetModifiedRemoteDataArgs(args)
     parsed_date = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})
@@ -726,13 +726,13 @@ def get_modified_remote_data_command(client: Client, args, close_incident: bool,
         demisto.debug(f"microsoft365::Found {len(modified_incident_ids)} modified incidents")
         demisto.debug(f"microsoft365::{str(modified_incident_ids)}")
 
-        #skip update: In case of a failure. In order to notify the server that the command failed and prevent execution of the get-remote-data commands, returns an error that contains the string "skip update".?
+        # skip update: In case of a failure. In order to notify the server that the command failed and prevent execution of the get-remote-data commands, returns an error that contains the string "skip update".?
         return GetModifiedRemoteDataResponse(modified_incident_ids=modified_incident_ids)
     except Exception as e:
         demisto.debug(f"Error in Microsoft 365 defender incoming mirror \n"
                       f"Error message: {str(e)}")
         if "Rate limit exceeded" in str(
-            e):  #todo - check if this is the correct error message + on the server side what does is expect to ger
+                e):  # todo - check if this is the correct error message + on the server side what does is expect to ger
             return_error("API rate limit")
 
 
@@ -808,7 +808,7 @@ def main() -> None:
     client_credentials = params.get('client_credentials', False)
     enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or \
-                             params.get('certificate_thumbprint', '')
+        params.get('certificate_thumbprint', '')
 
     private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
                    or params.get('private_key', ''))
