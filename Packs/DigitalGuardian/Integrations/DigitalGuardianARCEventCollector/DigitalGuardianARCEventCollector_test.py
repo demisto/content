@@ -116,11 +116,12 @@ def test_get_events_command(mocker: MockerFixture, authenticated_client: Client)
     outputted_events, *_ = get_events_command(authenticated_client, args={'limit': limit})
 
     expected_events = util_load_json('test_data/expected_events.json')[:limit]  # slice list to length = limit
+    expected_table_data = [{key: value for key, value in event.items() if value != "-"} for event in expected_events]
     table_to_markdown_kwargs: dict = table_to_markdown.call_args.kwargs
 
     assert outputted_events == expected_events
     assert table_to_markdown_kwargs['name'] == 'Test Events'
-    assert table_to_markdown_kwargs['t'] == expected_events
+    assert table_to_markdown_kwargs['t'] == expected_table_data
 
 
 def test_push_and_set_last_run(mocker: MockerFixture, authenticated_client: Client):

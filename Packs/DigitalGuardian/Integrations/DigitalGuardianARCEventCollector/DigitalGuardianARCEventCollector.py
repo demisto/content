@@ -83,12 +83,13 @@ class Client(BaseClient):
         return response['access_token']
 
     def get_watchlists(self) -> list[dict]:
-        """Returns all watchlists (used for test module to check connection and authentication).
+        """
+        Returns all watchlists configured to monitor and track specific data or activities.
 
         Returns:
-            list: List of watchlists.
+            list: Watchlists.
         """
-        return self._http_request(method='GET', url_suffix='rest/1.0/watchlists', raise_on_status=True)
+        return self._http_request(method='GET', url_suffix='/rest/1.0/watchlists', raise_on_status=True)
 
     def export_events(self) -> dict:
         """
@@ -208,7 +209,13 @@ def get_events_command(client: Client, args: dict) -> tuple[list, dict, CommandR
     events, last_run = fetch_events(client, limit=limit)
 
     event_list = list(events)
-    human_readable = tableToMarkdown(name='Test Events', t=event_list) if event_list else 'No events found.'
+    if event_list:
+        human_readable = tableToMarkdown(
+            name='Test Events',
+            t=[{key: value for key, value in event.items() if value != "-"} for event in event_list],
+        )
+    else:
+        human_readable = 'No events found.'
 
     demisto.debug(f'Displayed limit of {limit} events from response')
 
