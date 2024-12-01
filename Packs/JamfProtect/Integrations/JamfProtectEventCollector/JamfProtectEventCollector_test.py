@@ -264,6 +264,11 @@ def test_get_event_for_specific_type(mocker, client):
 
 
 def test_handle_errors(client):
+    """
+    A sanity test for handle_errors client's method which ensuring two thing:
+    - DemistoException is thrown
+    - The DemistoException's message is generated as expected.
+    """
     res: dict = {"errors": [{"message": "error_1"}, {"message": "error_2"}, {"message": "error_3"}]}
     with pytest.raises(DemistoException) as de:
         client.handle_errors(res)
