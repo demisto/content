@@ -446,12 +446,12 @@ def get_event_for_specific_type(start_date: str, max_fetch: int, last_run: dict,
     start_date, end_date = calculate_fetch_dates(start_date, last_run=last_run, last_run_key=last_run_key)
     command_args: dict[str, Any] = {"created": start_date}
 
-    debug_message = f"Jamf Protect - Fetching {specific_type}s from {start_date} to {end_date}"
+    debug_message = f"Fetching {specific_type}s from {start_date} to {end_date}"
 
     if specific_type == 'computer':
         command_args['use_date_filter'] = bool(last_run or not fetch_all_computers)
         if fetch_all_computers and not last_run:
-            debug_message = "Jamf Protect - Fetching all computers"
+            debug_message = "Fetching all computers"
 
     demisto.debug(debug_message)
 
@@ -469,13 +469,13 @@ def get_event_for_specific_type(start_date: str, max_fetch: int, last_run: dict,
     new_last_fetch_date = max(start_date, latest_event)
     new_last_run = {"last_fetch": new_last_fetch_date}
 
-    demisto.debug(f"Jamf Protect- Fetched {len(events)} {specific_type}s")
+    demisto.debug(f"Fetched {len(events)} {specific_type}s")
     demisto.debug(f"{latest_event=}, {new_last_fetch_date=}")
 
     if next_page:
         new_last_run["next_page"] = next_page
         demisto.debug(
-            f"Jamf Protect- Fetched {len(events)} which is the maximum number of {specific_type}s."
+            f"Fetched {len(events)} which is the maximum number of {specific_type}s."
             f" Will keep the fetching in the next fetch.")
 
     return events, new_last_run
