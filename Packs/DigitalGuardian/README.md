@@ -1,15 +1,19 @@
 # Digital Guardian
 
-This pack integrates with Digital Guardian's Data Loss Prevention (DLP) solution to facilitate incident management and response coordination and protect sensitive data from threats posed by malicious insiders and external adversaries.
+This pack integrates with Digital Guardian's Data Loss Prevention (DLP) platform Analytics & Reporting Cloud (ARC) solution to identify, remediate, and protect sensitive data from insider and outsider threats.
 
 ## What does this pack do?
 
-* Automates Alert Creation: Automatically creates alerts in Cortex XSIAM from data protection events and alerts fetched from Digital Guardian, enabling a swift response to data threats.
+* Automates alert fetching from user-configured export profiles.
 
-* Response Actions: Allows Cortex to execute response actions within Digital Guardian to mitigate risks without manual intervention.
+* Allows for the execution of response actions to mitigate risks without manual intervention.
 
-* Visibility Enhancement: Provides enhanced visibility into security events with a dedicated dashboard in Cortex XSIAM for monitoring Digital Guardian alerts and activities.
+Customers can decide which events and alerts are integrated by selecting a Digital Guardian export profile when configuring the event collector, ensuring visibility is bespoke to your individual SOC’s needs.
 
-* Custom Alert Types and Layouts: Supports custom alert types and layouts tailored to the specifics of Digital Guardian alerts and events, ensuring that the relevant data is presented effectively to security analysts.
+<~XSIAM>
+Records fetched by the event collector the event collector will appear in the XSIAM ‘Alerts’ page.
+</~XSIAM>
 
-Customers can decide which of these alerts are integrated by selecting a Digital Guardian export profile, ensuring visibility is bespoke to your individual SOC’s needs. Alerts and events from the event collector integration will populate in the ‘Alerts’ page.
+<~XSOAR>
+Records fetched by the event collector the event collector will appear in the XSOAR ‘Incidents’ page.
+</~XSOAR>
