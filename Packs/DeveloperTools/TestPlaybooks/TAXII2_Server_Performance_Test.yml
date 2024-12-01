@@ -1182,7 +1182,7 @@ tasks:
                 value:
                   simple: /objects/?limit=10000&match[type]=url
       password:
-        simple: '{TOMMED}7DTVwutgvncbdicYdK+lcNcle4o2axLVpe1Mi2sYrPUTUmnpHkG5dA6AWVsYqi1MNN0p8t9NN0S0MGY1N4JZfw=='
+        simple: 'test12'
       username:
         simple: ${inputs.username}
     separatecontext: false
