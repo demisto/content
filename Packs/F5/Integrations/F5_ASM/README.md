@@ -1,10 +1,7 @@
 Use the F5 ASM integration to read information and to manage F5 firewall.
 This integration was integrated and tested with version 15.1.0 of F5 ASM
-## Configure F5 ASM on Cortex XSOAR
+## Configure F5 ASM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for F5 ASM.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -13,9 +10,8 @@ This integration was integrated and tested with version 15.1.0 of F5 ASM
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### f5-asm-policy-list
 ***
@@ -6324,4 +6320,3 @@ Gets the MD5 hash of a policy that can be accessed in the API.
 >|md5|
 >|---|
 >| kpD2qFaUlGAbw8RhN5IFQA |
-

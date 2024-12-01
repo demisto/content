@@ -23,4 +23,4 @@ timeout: 0s
 tests:
 - No test - postpone for later
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.11.10.115186
