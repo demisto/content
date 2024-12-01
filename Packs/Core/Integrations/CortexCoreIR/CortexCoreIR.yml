@@ -3103,7 +3103,42 @@ script:
     outputs: 
     - contextPath: Core.CoreAsset
       description: Asset additional information.
-      type: String 
+    - contextPath: Core.CoreAssetList.xdm__asset__provider
+      description: The cloud provider or source responsible for the asset.
+    - contextPath: Core.CoreAssetList.xdm__asset__realm
+      description: The realm or logical grouping of the asset.
+    - contextPath: Core.CoreAssetList.xdm__asset__last_observed
+      description: The timestamp of when the asset was last observed, in ISO 8601 format.
+    - contextPath: Core.CoreAssetList.xdm__asset__type__id
+      description: The unique identifier for the asset type.
+    - contextPath: Core.CoreAssetList.xdm__asset__first_observed
+      description: The timestamp of when the asset was first observed, in ISO 8601 format.
+    - contextPath: Core.CoreAssetList.asset_hierarchy
+      description: The hierarchy or structure representing the asset.
+    - contextPath: Core.CoreAssetList.xdm__asset__type__category
+      description: The category type of the asset.
+    - contextPath: Core.CoreAssetList.xdm__cloud__region
+      description: The cloud region where the asset resides.
+    - contextPath: Core.CoreAssetList.xdm__asset__module_unstructured_fields
+      description: The unstructured fields or metadata associated with the asset module.
+    - contextPath: Core.CoreAssetList.xdm__asset__source
+      description: The originating source of the asset's information.
+    - contextPath: Core.CoreAssetList.xdm__asset__id
+      description: A unique identifier for the asset.
+    - contextPath: Core.CoreAssetList.xdm__asset__type__class
+      description: The classification or type class of the asset.
+    - contextPath: Core.CoreAssetList.xdm__asset__type__name
+      description: The specific name of the asset type.
+    - contextPath: Core.CoreAssetList.xdm__asset__strong_id
+      description: The strong or immutable identifier for the asset.
+    - contextPath: Core.CoreAssetList.xdm__asset__name
+      description: The name of the asset.
+    - contextPath: Core.CoreAssetList.xdm__asset__raw_fields
+      description: The raw fields or unprocessed data related to the asset.
+    - contextPath: Core.CoreAssetList.xdm__asset__normalized_fields
+      description: The normalized fields associated with the asset.
+    - contextPath: Core.CoreAssetList.all_sources
+      description: A list of all sources providing information about the asset.
   - arguments:
     - description: filter for assets table.
       name: filter
@@ -3168,6 +3203,38 @@ script:
       - contextPath: Core.CoreAssetList
         description: Assets list.
         type: List 
+      - contextPath: Core.CoreAssetList.xdm__asset__provider
+        description: The cloud provider or source responsible for the asset.
+      - contextPath: Core.CoreAssetList.xdm__asset__realm
+        description: The realm or logical grouping of the asset.
+      - contextPath: Core.CoreAssetList.xdm__asset__last_observed
+        description: The timestamp of when the asset was last observed, in ISO 8601 format.
+      - contextPath: Core.CoreAssetList.xdm__asset__type__id
+        description: The unique identifier for the asset type.
+      - contextPath: Core.CoreAssetList.xdm__asset__first_observed
+        description: The timestamp of when the asset was first observed, in ISO 8601 format.
+      - contextPath: Core.CoreAssetList.asset_hierarchy
+        description: The hierarchy or structure representing the asset.
+      - contextPath: Core.CoreAssetList.xdm__asset__type__category
+        description: The category type of the asset.
+      - contextPath: Core.CoreAssetList.xdm__cloud__region
+        description: The cloud region where the asset resides.
+      - contextPath: Core.CoreAssetList.xdm__asset__module_unstructured_fields
+        description: The unstructured fields or metadata associated with the asset module.
+      - contextPath: Core.CoreAssetList.xdm__asset__source
+        description: The originating source of the asset's information.
+      - contextPath: Core.CoreAssetList.xdm__asset__id
+        description: A unique identifier for the asset.
+      - contextPath: Core.CoreAssetList.xdm__asset__type__class
+        description: The classification or type class of the asset.
+      - contextPath: Core.CoreAssetList.xdm__asset__type__name
+        description: The specific name of the asset type.
+      - contextPath: Core.CoreAssetList.xdm__asset__strong_id
+        description: The strong or immutable identifier for the asset.
+      - contextPath: Core.CoreAssetList.xdm__asset__name
+        description: The name of the asset.
+      - contextPath: Core.CoreAssetList.xdm__asset__raw_fields
+        description: The raw fields or unprocessed data related to the asset.
   runonce: false
   script: '-'
   subtype: python3

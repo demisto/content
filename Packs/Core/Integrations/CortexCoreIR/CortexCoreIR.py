@@ -315,8 +315,7 @@ def build_filter(args: dict):
                     f"Condition '{condition}' for field '{field}' must start with a valid operator: "
                     f"{field_supported_operators[field]}."
                 )
-                
-    print({"AND": filter_conditions})
+
     return {"AND": filter_conditions}
 
 
@@ -352,6 +351,7 @@ def get_assets_list_command(client: Client, args: dict) -> CommandResults:
         readable_output=tableToMarkdown(f"Assets list - Found {filter_count} out of {total_count} results", assets_list),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CoreAssetList",
         outputs=assets_list,
+        outputs_key_field="xdm__asset__id",
         raw_response=response
     )
 
