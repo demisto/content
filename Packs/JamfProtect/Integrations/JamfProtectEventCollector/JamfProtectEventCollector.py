@@ -621,12 +621,15 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
                 **event["extra_args"]
             )
             # Assign events and next_run to corresponding variables
-            if event["specific_type"] == "alert":
-                alert_events, alert_next_run = events, next_run_for_specific_type
-            elif event["specific_type"] == "audit":
-                audit_events, audit_next_run = events, next_run_for_specific_type
-            elif event["specific_type"] == "computer":
-                computer_events, computer_next_run = events, next_run_for_specific_type
+            match event["specific_type"]:
+                case "alert":
+                    alert_events, alert_next_run = events, next_run_for_specific_type
+                case "audit":
+                    audit_events, audit_next_run = events, next_run_for_specific_type
+                case "computer":
+                    computer_events, computer_next_run = events, next_run_for_specific_type
+                case _:
+                    raise ValueError(f'Unexpected {event["specific_type"=}')
 
     next_run: dict[str, Any] = {"alert": alert_next_run, "audit": audit_next_run, 'computer': computer_next_run}
     if "next_page" in (alert_next_run | audit_next_run | computer_next_run):
