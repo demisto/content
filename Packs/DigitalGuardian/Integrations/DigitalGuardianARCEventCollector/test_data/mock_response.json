@@ -99,14 +99,14 @@
     ],
     "data": [
         [
-            "Duplicate (appears twice)",
+            "test has attached a Salesforce data to an email",
             "dg",
             "test@dgdemo",
             "Created",
             "This file outlook.exe was going to [demo.digitalg@gmail.com]",
             "230523-WIQHA",
             "-",
-            "",
+            "2023-05-23 11:49:32",
             "1dc3c1fa-5474-4fc0-a7c3-74ff42d28e5e",
             "Critical",
             "Incident",
@@ -125,23 +125,9 @@
             "Critical",
             "Incident",
             "279b59f3-02f3-44ea-a7c3-9bac2eb0224d"
-        ],
-        [
-            "Duplicate (appears twice)",
-            "dg",
-            "test@dgdemo",
-            "Created",
-            "This file outlook.exe was going to [demo.digitalg@gmail.com]",
-            "230523-WIQHA",
-            "-",
-            "",
-            "1dc3c1fa-5474-4fc0-a7c3-74ff42d28e5e",
-            "Critical",
-            "Incident",
-            "279b59f3-02f3-44ea-a7c3-9bac2eb0224d"
         ]
     ],
-    "total_hits": 3,
+    "total_hits": 2,
     "bookmark_values": [
         123456789,
         "11111111-2222-3333-4444-55555555"

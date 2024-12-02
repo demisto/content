@@ -1,6 +1,7 @@
 import json
 from urllib.parse import urljoin
 import pytest
+from freezegun import freeze_time
 from pytest_mock.plugin import MockerFixture
 from requests_mock.mocker import Mocker as RequestsMock
 from DigitalGuardianARCEventCollector import Client
@@ -31,6 +32,7 @@ def authenticated_client(requests_mock: RequestsMock) -> Client:
     return Client(**CLIENT_KWARGS)
 
 
+@freeze_time("2024-11-30 12:12:12 UTC")
 def test_get_access_token(mocker: MockerFixture):
     """
     Given:
@@ -40,9 +42,8 @@ def test_get_access_token(mocker: MockerFixture):
     Then:
         - Ensure the token in the integration context is returned and no new token is requested.
     """
-    integration_context_token = {'token': '123', 'valid_until': 2022222222}
+    integration_context_token = {'token': '123', 'valid_until': 1733128972}  # 2024-12-02 08:43:55 UTC
     mocker.patch('DigitalGuardianARCEventCollector.get_integration_context', return_value=integration_context_token)
-    mocker.patch('time.time', return_value=1022222222)
     get_new_token_request = mocker.patch.object(Client, '_http_request')
 
     client = Client(**CLIENT_KWARGS)
@@ -68,8 +69,8 @@ def test_create_events_for_push():
 
     outputted_events = list(create_events_for_push(raw_response, limit))
 
-    assert outputted_events[0]['_time'] is None
-    assert outputted_events[1]['_time'] == "2023-05-23T11:53:11Z"
+    assert outputted_events[0]['_time'] == '2023-05-23T11:49:32Z'
+    assert outputted_events[1]['_time'] == '2023-05-23T11:53:11Z'
     assert len(outputted_events) == limit
 
 
@@ -91,7 +92,6 @@ def test_get_fetch_events(mocker: MockerFixture, authenticated_client: Client):
     events, last_run = fetch_events(authenticated_client)
     outputted_events = list(events)
 
-    assert len(raw_response['data']) >= len(outputted_events)  # sanity check (duplicates should be removed)
     assert outputted_events == expected_events
     assert last_run['bookmark_values'] == raw_response['bookmark_values']
     assert last_run['search_after_values'] == raw_response['search_after_values']
@@ -115,13 +115,12 @@ def test_get_events_command(mocker: MockerFixture, authenticated_client: Client)
 
     outputted_events, *_ = get_events_command(authenticated_client, args={'limit': limit})
 
-    expected_events = util_load_json('test_data/expected_events.json')[:limit]  # slice list to length = limit
-    expected_table_data = [{key: value for key, value in event.items() if value != "-"} for event in expected_events]
+    expected_events = util_load_json('test_data/expected_events.json')[:limit]
     table_to_markdown_kwargs: dict = table_to_markdown.call_args.kwargs
 
     assert outputted_events == expected_events
-    assert table_to_markdown_kwargs['name'] == 'Test Events'
-    assert table_to_markdown_kwargs['t'] == expected_table_data
+    assert table_to_markdown_kwargs['name'] == f'Events for Profile {CLIENT_KWARGS["export_profile"]}'
+    assert table_to_markdown_kwargs['t'] == expected_events
 
 
 def test_push_and_set_last_run(mocker: MockerFixture, authenticated_client: Client):

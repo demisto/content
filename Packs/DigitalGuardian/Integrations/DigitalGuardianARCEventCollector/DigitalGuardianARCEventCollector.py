@@ -57,8 +57,7 @@ class Client(BaseClient):
 
         if token and valid_until and time_now < valid_until:
             # Token is still valid - did not expire yet
-            demisto.debug('Using cached token which is still valid')
-            demisto.debug(f'time-now: {time_now}\n valid token until: {valid_until}')
+            demisto.debug(f'Using cached token, still valid until: {valid_until}')
             return token
 
         response = self._http_request(
@@ -68,16 +67,16 @@ class Client(BaseClient):
             data={
                 'client_id': self.__client_id,
                 'client_secret': self.__client_secret,
-                'grant_type': 'client_credentials'
+                'grant_type': 'client_credentials',
             },
             raise_on_status=True,
         )
         demisto.debug(f'Requested new token from {VENDOR}')
 
-        integration_context = {
-            'token': response['access_token'],
-            'valid_until': time_now + int(response['expires_in']) - 100
-        }
+        valid_until = time_now + int(response['expires_in']) - 100
+        integration_context = {'token': response['access_token'], 'valid_until': valid_until}
+
+        demisto.debug(f'Setting new token in integration context, token valid until: {valid_until}')
         set_integration_context(integration_context)
 
         return response['access_token']
@@ -122,7 +121,7 @@ class Client(BaseClient):
         )
 
 
-def test_module(client: Client, params: dict[str, Any]) -> str:
+def test_module(client: Client) -> str:
     """
     Tests API connectivity and authentication.
     Args:
@@ -174,24 +173,16 @@ def create_events_for_push(raw_response: dict, limit: int | None = None) -> Even
     event_fields = [field['name'] for field in raw_response['fields']]
     events_data = raw_response['data']
 
-    ids = set()
-    index = 0
-
-    for event_data in events_data:
+    for index, event_data in enumerate(events_data):
         if limit is not None and index == limit:  # No API-side limit param (needs to be managed on our end)
             break
 
-        event = dict(zip(event_fields, event_data, strict=True))
-        event_id = event['dg_guid']
+        event: dict[str, Any] = {}
+        for field, value in zip(event_fields, event_data, strict=True):
+            event[field] = value if value != "-" else None  # "-" mark an empty field in Digital Guardian
 
-        if event_id in ids:
-            continue  # Skip duplicate event
-
-        event_time = arg_to_datetime(arg=event.get('dg_time')) if event.get('dg_time') else None
+        event_time = arg_to_datetime(arg=event['dg_time'])
         event['_time'] = event_time.strftime(DATE_FORMAT) if event_time else None
-
-        ids.add(event_id)
-        index += 1
 
         yield event
 
@@ -208,16 +199,11 @@ def get_events_command(client: Client, args: dict) -> tuple[list, dict, CommandR
     limit = arg_to_number(args.get('limit')) or 1000
     events, last_run = fetch_events(client, limit=limit)
 
-    event_list = list(events)
-    if event_list:
-        human_readable = tableToMarkdown(
-            name='Test Events',
-            t=[{key: value for key, value in event.items() if value != "-"} for event in event_list],
-        )
+    if event_list := list(events):
+        human_readable = tableToMarkdown(name=f'Events for Profile {client.export_profile}', t=event_list, removeNull=True)
+        demisto.debug(f'Displayed limit of {limit} events from response')
     else:
         human_readable = 'No events found.'
-
-    demisto.debug(f'Displayed limit of {limit} events from response')
 
     return event_list, last_run, CommandResults(readable_output=human_readable)
 
@@ -234,7 +220,7 @@ def push_and_set_last_run(client: Client, events: Iterable, last_run: dict) -> N
     send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
 
     demisto.debug(f'Setting export bookmark after run: {last_run}.')
-    client.set_export_bookmark()  # API-managed bookmark / pointer removes the need for setting and getting last run on our end
+    client.set_export_bookmark()  # API-managed bookmark (pointer) saves us the need to maintain `last run`
 
 
 def main() -> None:  # pragma: no cover
@@ -249,7 +235,7 @@ def main() -> None:  # pragma: no cover
     export_profile = params.get('export_profile', '')
     verify_certificate = not params.get('insecure', False)
 
-    demisto.debug(f'Running {VENDOR} event collector with base url: {base_url}')
+    demisto.debug(f'{base_url=}')
 
     # How much time before the first fetch to retrieve events
     proxy = params.get('proxy', False)
@@ -268,7 +254,7 @@ def main() -> None:  # pragma: no cover
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, params)
+            result = test_module(client)
             return_results(result)
 
         elif command == 'digital-guardian-get-events':
