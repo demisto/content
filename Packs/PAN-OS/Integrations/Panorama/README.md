@@ -9365,7 +9365,7 @@ There is no context output for this command.
 ***
 Create a default master key that encrypts all the private keys and passwords in the configuration.
 
-**Running this command invalidates the current API key and requires re-configuration of the integration instance.**
+**This command is harmful because it invalidates the current API key and requires re-configuration of the integration instance.**
 
 #### Base Command
 
@@ -9403,7 +9403,7 @@ There is no context output for this command.
 ***
 Update the default master key that encrypts all the private keys and passwords in the configuration. 
 
-**Running this command invalidates the current API key and requires re-configuration of the integration instance.**
+**This command is harmful because it  invalidates the current API key and requires re-configuration of the integration instance.**
 
 #### Base Command
 

@@ -9760,7 +9760,8 @@ script:
       type: String
       description: The number of seconds remaining before being notified that the key is set to expire.
   - name: pan-os-create-master-key
-    description: 'Create a default master key that encrypts all the private keys and passwords in the configuration.\n**Running this command invalidates the current API key and requires re-configuration of the integration instance.**'
+    description: 'Create a default master key that encrypts all the private keys and passwords in the configuration. This command is harmful because it invalidates the current API key and requires re-configuration of the integration instance.'
+    execution: true  # This command is harmful
     arguments:
     - description: The encryption master key. Must be exactly 16 characters.
       name: master_key
@@ -9778,7 +9779,8 @@ script:
       required: true
       isArray: false
   - name: pan-os-update-master-key
-    description: 'Update the default master key that encrypts all the private keys and passwords in the configuration.\n**Running this command invalidates the current API key and requires re-configuration of the integration instance.**'
+    description: 'Update the default master key that encrypts all the private keys and passwords in the configuration. This command is harmful because it invalidates the current API key and requires re-configuration of the integration instance.'
+    execution: true  # This command is harmful
     arguments:
     - description: The new encryption master key. Must be exactly 16 characters.
       name: new_master_key
