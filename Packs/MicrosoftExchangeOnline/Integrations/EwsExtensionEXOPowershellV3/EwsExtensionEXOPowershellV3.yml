@@ -2428,24 +2428,60 @@ script:
       required: no
       defaultValue: '1000'
     outputs:
-    - contextPath: EWS.MailFlowRule.Name
-      description: The rule name.
-      type: string
-    - contextPath: EWS.MailFlowRule.State
-      description: The rule state.
-      type: string
-    - contextPath: EWS.MailFlowRule.Priority
-      description: The priority of the rule.
-      type: string
-    - contextPath: EWS.MailFlowRule.Comment
-      description: Comment about the rule.
-      type: string
-    - contextPath: EWS.MailFlowRule.WhenChanged
-      description: Local time of when the mail flow rule was last changed.
+    - contextPath: EWS.MailFlowRule.Size
+      description: The size of the mail flow rule in bytes, typically related to the storage or data usage of the rule.
+      type: Number
+    - contextPath: EWS.MailFlowRule.ExpiryDate
+      description: The date and time when the mail flow rule is set to expire and no longer apply.
       type: Date
-    - contextPath: EWS.MailFlowRule.CreatedBy
-      description: Who created the mail flow rule.
+    - contextPath: EWS.MailFlowRule.Mode
+      description: The operational mode of the rule, indicating whether it is active (`Enforce`), in testing mode (`Test`), or disabled.
       type: string
+    - contextPath: EWS.MailFlowRule.Quarantine
+      description: Specifies whether the rule actions include quarantining messages that match the rule.
+      type: Boolean
+    - contextPath: EWS.MailFlowRule.Guid
+      description: The unique identifier (Globally Unique Identifier) for the mail flow rule.
+      type: string
+    - contextPath: EWS.MailFlowRule.OrganizationId
+      description: The identifier for the organization where the mail flow rule is configured, typically used in multi-tenant environments.
+      type: string
+    - contextPath: EWS.MailFlowRule.DistinguishedName
+      description: The distinguished name of the mail flow rule in the Exchange directory structure.
+      type: string
+    - contextPath: EWS.MailFlowRule.IsValid
+      description: Indicates whether the mail flow rule is valid and functional.
+      type: Boolean
+    - contextPath: EWS.MailFlowRule.Conditions
+      description: The conditions that trigger the mail flow rule, such as specific senders, recipients, or message properties.
+      type: Unknown
+    - contextPath: EWS.MailFlowRule.Comments
+      description: Free-form text field for adding comments or notes about the rule, typically used for documentation.
+      type: Unknown
+    - contextPath: EWS.MailFlowRule.WhenChanged
+      description: The date and time when the mail flow rule was last modified.
+      type: Date
+    - contextPath: EWS.MailFlowRule.Description
+      description: A brief description of the mail flow rule's purpose or functionality.
+      type: string
+    - contextPath: EWS.MailFlowRule.Actions
+      description: The actions taken when a message matches the rule's conditions, such as redirecting, blocking, or adding headers.
+      type: Unknown
+    - contextPath: EWS.MailFlowRule.ImmutableId
+      description: A persistent, unchangeable identifier for the mail flow rule, ensuring it remains identifiable across modifications.
+      type: Unknown
+    - contextPath: EWS.MailFlowRule.Identity
+      description: The identity of the rule, often combining the name and unique identifiers, used to reference the rule programmatically.
+      type: string
+    - contextPath: EWS.MailFlowRule.Name
+      description: The user-friendly name of the mail flow rule, typically used for easy identification.
+      type: string
+    - contextPath: EWS.MailFlowRule.CreatedBy
+      description: The user or process that created the mail flow rule.
+      type: string
+    - contextPath: EWS.MailFlowRule.RouteMessageOutboundConnector
+      description: Specifies whether messages matching the rule should be routed through a specific outbound connector.
+      type: Unknown
     description: List all mail flow rules (transport rules) in the organization.
   - name: ews-mail-flow-rule-get
     arguments:
@@ -2457,24 +2493,60 @@ script:
       required: no
       defaultValue: false
     outputs:
-    - contextPath: EWS.MailFlowRule.Name
-      description: The rule name.
-      type: string
-    - contextPath: EWS.MailFlowRule.State
-      description: The rule state.
-      type: string
-    - contextPath: EWS.MailFlowRule.Priority
-      description: The priority of the rule.
-      type: string
-    - contextPath: EWS.MailFlowRule.Comment
-      description: Comment about the rule.
-      type: string
-    - contextPath: EWS.MailFlowRule.WhenChanged
-      description: Local time of when the mail flow rule was last changed.
+    - contextPath: EWS.MailFlowRule.Size
+      description: The size of the mail flow rule in bytes, typically related to the storage or data usage of the rule.
+      type: Number
+    - contextPath: EWS.MailFlowRule.ExpiryDate
+      description: The date and time when the mail flow rule is set to expire and no longer apply.
       type: Date
-    - contextPath: EWS.MailFlowRule.CreatedBy
-      description: Who created the mail flow rule.
+    - contextPath: EWS.MailFlowRule.Mode
+      description: The operational mode of the rule, indicating whether it is active (`Enforce`), in testing mode (`Test`), or disabled.
       type: string
+    - contextPath: EWS.MailFlowRule.Quarantine
+      description: Specifies whether the rule actions include quarantining messages that match the rule.
+      type: Boolean
+    - contextPath: EWS.MailFlowRule.Guid
+      description: The unique identifier (Globally Unique Identifier) for the mail flow rule.
+      type: string
+    - contextPath: EWS.MailFlowRule.OrganizationId
+      description: The identifier for the organization where the mail flow rule is configured, typically used in multi-tenant environments.
+      type: string
+    - contextPath: EWS.MailFlowRule.DistinguishedName
+      description: The distinguished name of the mail flow rule in the Exchange directory structure.
+      type: string
+    - contextPath: EWS.MailFlowRule.IsValid
+      description: Indicates whether the mail flow rule is valid and functional.
+      type: Boolean
+    - contextPath: EWS.MailFlowRule.Conditions
+      description: The conditions that trigger the mail flow rule, such as specific senders, recipients, or message properties.
+      type: Unknown
+    - contextPath: EWS.MailFlowRule.Comments
+      description: Free-form text field for adding comments or notes about the rule, typically used for documentation.
+      type: Unknown
+    - contextPath: EWS.MailFlowRule.WhenChanged
+      description: The date and time when the mail flow rule was last modified.
+      type: Date
+    - contextPath: EWS.MailFlowRule.Description
+      description: A brief description of the mail flow rule's purpose or functionality.
+      type: string
+    - contextPath: EWS.MailFlowRule.Actions
+      description: The actions taken when a message matches the rule's conditions, such as redirecting, blocking, or adding headers.
+      type: Unknown
+    - contextPath: EWS.MailFlowRule.ImmutableId
+      description: A persistent, unchangeable identifier for the mail flow rule, ensuring it remains identifiable across modifications.
+      type: Unknown
+    - contextPath: EWS.MailFlowRule.Identity
+      description: The identity of the rule, often combining the name and unique identifiers, used to reference the rule programmatically.
+      type: string
+    - contextPath: EWS.MailFlowRule.Name
+      description: The user-friendly name of the mail flow rule, typically used for easy identification.
+      type: string
+    - contextPath: EWS.MailFlowRule.CreatedBy
+      description: The user or process that created the mail flow rule.
+      type: string
+    - contextPath: EWS.MailFlowRule.RouteMessageOutboundConnector
+      description: Specifies whether messages matching the rule should be routed through a specific outbound connector.
+      type: Unknown
     description: Get a mail flow rule (transport rules) in the organization.
   - name: ews-mail-flow-rule-remove
     arguments:
