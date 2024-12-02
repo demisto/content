@@ -70,7 +70,7 @@ src = [
 ]
 
 [tool.ruff.lint]
-select = [
+lint.select = [
     "B002", # unary-prefix-increment
     "B003", # assignment-to-os-environ
     "B004", # unreliable-callable-check
@@ -132,7 +132,6 @@ select = [
     "E742", # ambiguous-class-name
     "E743", # ambiguous-function-name
     "E902", # io-error
-    "E999", # syntax-error
 
     "F401", # unused-import
     "F402", # import-shadowed-by-loop-var
@@ -351,7 +350,6 @@ select = [
     "UP024", # os-error-alias
     "UP025", # unicode-kind-prefix
     "UP026", # deprecated-mock-import
-    "UP027", # unpacked-list-comprehension
     "UP028", # yield-in-for-loop
     "UP029", # unnecessary-builtin-import
     "UP030", # format-literals
