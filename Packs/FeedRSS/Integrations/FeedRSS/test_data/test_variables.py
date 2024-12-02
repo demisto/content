@@ -78,3 +78,38 @@ FEED_DATA = [({'bozo': False,
                        'tags': [],
                        'description': 'this is summary'
                    }}])]
+
+
+FEED_DATA_NO_PUBLISH_FIELD = [({'bozo': False,
+                                'entries': [feedparser.util.FeedParserDict({'title': 'Test Article, with comma',
+                                                                            'link': 'https://test-article.com/',
+                                                                            'authors': [{'name': 'Example'}],
+                                                                            'tags': [{'term': 'Malware', 'scheme': None, 'label': None}],
+                                                                            'id': 'xxxx',
+                                                                            'guidislink': False,
+                                                                            'summary': "this is summary"})]
+                                }, [{
+                                    "type": 'Report',
+                                    "value": "Test Article with comma",
+                                    "rawJSON": {'value': {'authors': [{'name': 'Example'}],
+                                                          'guidislink': False,
+                                                          'id': 'xxxx',
+                                                          'link': 'https://test-article.com/',
+                                                          'summary': 'this is summary',
+                                                          'tags': [{'label': None,
+                                                                    'scheme': None,
+                                                                    'term': 'Malware'}],
+                                                          'title': 'Test Article, with comma'},
+                                                'type': 'Report', "firstseenbysource": ''},
+                                    "reliability": "F - Reliability cannot be judged",
+                                    "fields": {
+                                        'publications': [{
+                                            'timestamp': '',
+                                            'link': 'https://test-article.com/',
+                                            'source': 'test.com',
+                                            'title': 'Test Article, with comma'
+                                        }],
+                                        'rssfeedrawcontent': 'test description',
+                                        'tags': [],
+                                        'description': 'this is summary'
+                                    }}])]
