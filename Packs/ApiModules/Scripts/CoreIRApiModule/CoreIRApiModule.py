@@ -3171,8 +3171,8 @@ def handle_outgoing_issue_closure(parsed_args: UpdateRemoteSystemArgs):
     """
 
     close_reason_fields = ['close_reason', 'closeReason', 'closeNotes', 'resolve_comment', 'closingUserId']
-    closed_reason = (next((parsed_args.delta.get(key) for key in close_reason_fields if parsed_args.delta.get(key)), None) or
-                     next((parsed_args.data.get(key) for key in close_reason_fields if parsed_args.data.get(key)), None))
+    closed_reason = (next((parsed_args.delta.get(key) for key in close_reason_fields if parsed_args.delta.get(key)), None)
+                     or next((parsed_args.data.get(key) for key in close_reason_fields if parsed_args.data.get(key)), None))
     demisto.debug(f"handle_outgoing_issue_closure: incident_id: {parsed_args.remote_incident_id} {closed_reason=}")
     remote_xdr_status = parsed_args.data.get('status') if parsed_args.data else None
     if parsed_args.inc_status == IncidentStatus.DONE and closed_reason and remote_xdr_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
@@ -3182,7 +3182,8 @@ def handle_outgoing_issue_closure(parsed_args: UpdateRemoteSystemArgs):
             parsed_args.delta['resolve_comment'] = close_notes
 
         parsed_args.delta['status'] = resolve_xdr_close_reason(closed_reason)
-        demisto.debug(f"handle_outgoing_issue_closure Closing Remote incident ID: {parsed_args.remote_incident_id} with status {parsed_args.delta['status']}")
+        demisto.debug(
+            f"handle_outgoing_issue_closure Closing Remote incident ID: {parsed_args.remote_incident_id} with status {parsed_args.delta['status']}")
 
 
 def get_update_args(parsed_args):
