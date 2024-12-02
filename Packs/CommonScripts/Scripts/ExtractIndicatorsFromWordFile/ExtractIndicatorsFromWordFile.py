@@ -19,10 +19,10 @@ class WordParser:
         self.file_path = ""
         self.file_name = ""
         self.file_type = ""
-        self.paragraphs = ""
-        self.tables = ""
-        self.hyperlinks = ""
-        self.core_properties = {}
+        # self.paragraphs = ""
+        # self.tables = ""
+        # self.hyperlinks = ""
+        # self.core_properties = {}
         self.all_data = ""
 
     def get_file_details(self):
@@ -53,10 +53,10 @@ class WordParser:
     def extract_indicators(self):
         try:
             document = Document(self.file_path)
-            self.paragraphs = self.get_paragraphs(document)
-            self.tables = self.get_tables(document)
-            self.hyperlinks = self.get_hyperlinks(document)
-            self.get_core_properties(document)
+            # self.paragraphs = self.get_paragraphs(document)
+            # self.tables = self.get_tables(document)
+            # self.hyperlinks = self.get_hyperlinks(document)
+            # self.get_core_properties(document)
             self.all_data = self.get_paragraphs(document)
             self.all_data += self.get_tables(document)
             self.all_data += self.get_core_properties(document)
@@ -82,14 +82,13 @@ class WordParser:
         return " ".join(all_cells_txt.split())  # Removes extra whitespaces
 
     def get_core_properties(self, document):
-        self.core_properties['author'] = document.core_properties.author
-        self.core_properties['category'] = document.core_properties.category
-        self.core_properties['comments'] = document.core_properties.comments
-        self.core_properties['identifier'] = document.core_properties.identifier
-        self.core_properties['keywords'] = document.core_properties.keywords
-        self.core_properties['subject'] = document.core_properties.subject
-        self.core_properties['title'] = document.core_properties.title
-
+        # self.core_properties['author'] = document.core_properties.author
+        # self.core_properties['category'] = document.core_properties.category
+        # self.core_properties['comments'] = document.core_properties.comments
+        # self.core_properties['identifier'] = document.core_properties.identifier
+        # self.core_properties['keywords'] = document.core_properties.keywords
+        # self.core_properties['subject'] = document.core_properties.subject
+        # self.core_properties['title'] = document.core_properties.title
         all_properties_txt = document.core_properties.author + " " + \
             document.core_properties.category + " " + \
             document.core_properties.comments + " " + \
