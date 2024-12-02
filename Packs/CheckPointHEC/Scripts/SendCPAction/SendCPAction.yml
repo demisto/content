@@ -25,7 +25,7 @@ dependson:
   must:
   - CheckPointHEC|||checkpointhec-send-action
 runonce: false
-dockerimage: demisto/python3:3.10.14.95137
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 6.9.0
 tests:

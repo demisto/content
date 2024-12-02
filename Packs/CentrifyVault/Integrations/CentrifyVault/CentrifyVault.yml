@@ -273,7 +273,7 @@ script:
       required: true
     description: Delete set from the Centrify Vault
     name: centrify-delete-set
-  dockerimage: demisto/python3:3.10.14.100715
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3
