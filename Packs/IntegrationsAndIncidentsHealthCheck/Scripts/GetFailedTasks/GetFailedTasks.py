@@ -40,7 +40,7 @@ def get_tenant_name():
     return tenant_name
 
 
-def get_failed_tasks_output(tasks: list, incident: dict):
+def get_failed_tasks_output(tasks: list, incident: dict, custom_scripts_map_id_and_name: dict[str, str]):
     """
         Converts the failing task objects of an incident to context outputs.
 
@@ -59,6 +59,7 @@ def get_failed_tasks_output(tasks: list, incident: dict):
 
     for task in tasks:
         error_entries = task.get("entries", [])
+        command_id = task.get("task", {}).get("scriptId", '').replace('|||', '')
         entry = {
             "Incident ID": incident.get("id"),
             "Playbook Name": task.get("ancestors", [''])[0],
@@ -67,7 +68,7 @@ def get_failed_tasks_output(tasks: list, incident: dict):
             "Number of Errors": len(error_entries),
             "Task ID": task.get("id"),
             "Incident Created Date": incident.get("created", ''),
-            "Command Name": task.get("task", {}).get("scriptId", '').replace('|||', ''),
+            "Command Name": custom_scripts_map_id_and_name.get(command_id, command_id),
             "Incident Owner": incident["owner"]
         }
         if task.get("task", {}).get("description"):
@@ -141,7 +142,49 @@ def get_incident_tasks_using_internal_request(incident: dict):
     return tasks
 
 
-def get_incident_data(incident: dict, rest_api_instance: str = None):
+def get_custom_scripts_map_id_and_name(rest_api_instance: str | None = None) -> dict[str, str]:
+    uri = "automation/search"
+    body = {"query": "system:F"}
+
+    scripts = []
+    if rest_api_instance:
+        demisto.debug(f"Retrieving custom scripts map using REST API instance: {rest_api_instance}")
+        response = demisto.executeCommand(
+            "core-api-post",
+            {
+                "uri": uri,
+                "body": body,
+                "using": rest_api_instance,
+            }
+        )
+
+        if is_error(response):
+            demisto.error(f"Failed retrieving custom scripts map.\n{get_error(response)}")
+        else:
+            scripts = response[0]["Contents"]["response"].get("scripts", [])
+
+    else:
+        demisto.debug("Retrieving custom scripts map using internal HTTP request")
+        response = demisto.internalHttpRequest(
+            method="POST",
+            uri=uri,
+            body=body
+        )
+
+        if response and response.get('statusCode') == 200:
+            scripts = json.loads(response.get('body', '{}')).get("scripts", [])
+        else:
+            demisto.error(f'Failed running POST query to {uri}.\n{str(response)}')
+
+    custom_scripts_map_id_and_name = {
+        script["id"]: script["name"]
+        for script in scripts
+    }
+    demisto.debug(f"Retrieve the following map: {custom_scripts_map_id_and_name}")
+    return custom_scripts_map_id_and_name
+
+
+def get_incident_data(incident: dict, rest_api_instance: str = None, get_scripts_name: bool = False):
     """
         Returns the failing task objects of an incident.
         The request is done using a Core REST API instance if given,
@@ -168,7 +211,11 @@ def get_incident_data(incident: dict, rest_api_instance: str = None):
                                        'Please specify the rest_api_instance argument.')
             tasks = get_incident_tasks_using_rest_api_instance(incident, rest_api_instance)
 
-    task_outputs, tasks_error_entries_number = get_failed_tasks_output(tasks, incident)
+    custom_scripts_map_id_and_name = {}
+    if get_scripts_name:
+        custom_scripts_map_id_and_name = get_custom_scripts_map_id_and_name(rest_api_instance)
+
+    task_outputs, tasks_error_entries_number = get_failed_tasks_output(tasks, incident, custom_scripts_map_id_and_name)
     if task_outputs:
         return task_outputs, tasks_error_entries_number
     else:
@@ -181,6 +228,7 @@ def main():
     max_incidents = arg_to_number(args.get("max_incidents")) or 300
     max_incidents = min(max_incidents, 1000)
     rest_api_instance = args.get("rest_api_instance")
+    get_scripts_name = argToBoolean(args.get("get_scripts_name", False))
 
     number_of_failed_incidents = 0
     number_of_error_entries = 0
@@ -199,7 +247,7 @@ def main():
                   f'Elapsed time: {time.time() - start_time}')
 
     for incident in total_incidents:
-        task_outputs, incident_error_entries_num = get_incident_data(incident, rest_api_instance)
+        task_outputs, incident_error_entries_num = get_incident_data(incident, rest_api_instance, get_scripts_name)
 
         if task_outputs:
             incidents_output.extend(task_outputs)
