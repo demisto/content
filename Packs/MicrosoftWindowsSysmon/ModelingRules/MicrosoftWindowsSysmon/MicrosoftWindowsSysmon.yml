@@ -4,3 +4,4 @@ name: Microsoft Windows Sysmon Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+toversion: 8.8.0

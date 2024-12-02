@@ -1,4 +1,4 @@
-fromversion: 8.4.0
+fromversion: 8.9.0
 id: Microsoft_Windows_Sysmon_2_6_ModelingRule
 name: Microsoft Windows Sysmon 2.6 Modeling Rule
 rules: ''
