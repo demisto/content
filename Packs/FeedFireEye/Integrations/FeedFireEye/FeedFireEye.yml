@@ -130,7 +130,7 @@ script:
     name: fireeye-get-indicators
   - description: 'WARNING: This command will reset your fetch history.'
     name: fireeye-reset-fetch-indicators
-  dockerimage: demisto/python3:3.11.10.116439
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   runonce: false
   script: '-'
