@@ -2,6 +2,7 @@ id: access_investigation_-_qradar
 version: -1
 name: Access Investigation - QRadar
 fromversion: 5.0.0
+isSilent: true
 description: |-
   Deprecated. No available replacement. This playbook uses the QRadar integration to investigate an access incident by gathering user and IP information.
 
