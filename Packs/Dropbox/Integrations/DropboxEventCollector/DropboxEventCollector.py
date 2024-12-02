@@ -42,7 +42,7 @@ class DropboxEventsClient(IntegrationEventsClient):
 
     def set_request_filter(self, cursor: str):
         if 'continue' not in str(self.request.url):
-            demisto.info('continue in request url')
+            demisto.info('continue not in request url')
             self.request.url = parse_obj_as(AnyUrl, f'{str(self.request.url).removesuffix("/")}/continue')
 
         self.request.data = json.dumps({'cursor': cursor})
