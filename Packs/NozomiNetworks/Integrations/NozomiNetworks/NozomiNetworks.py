@@ -24,7 +24,6 @@ class Client:
 
     def _make_request(self, method, path, **kwargs):
         url = self.base_url + path
-        demisto.info("Nozomi url " + url)
         response = requests.request(
             method=method,
             url=url,
@@ -54,7 +53,6 @@ QUERY_PATH = '/api/open/query/do?query='
 QUERY_ALERTS_PATH = '/api/open/query/do?query=alerts'
 QUERY_ASSETS_PATH = '/api/open/query/do?query=assets | sort id'
 JOB_STATUS_MAX_RETRY = 5
-DEFAULT_HEAD_ALERTS = 20
 DEFAULT_HEAD_ASSETS = 50
 DEFAULT_HEAD_QUERY = 500
 MAX_ASSETS_FINDABLE_BY_A_COMMAND = 100
@@ -135,7 +133,8 @@ def has_last_run(lr):
     return lr is not None and 'last_fetch' in lr
 
 
-def incidents_better_than_time(st, head, risk, also_n2os_incidents, client):
+def incidents_better_than_time(st, risk, also_n2os_incidents, client):
+    head = demisto.params().get('incidentPerRun', False)
     return client.http_get_request(
         f'{QUERY_ALERTS_PATH} | sort record_created_at asc | sort id asc{better_than_time_filter(st)}'
         f'{risk_filter(risk)}{also_n2os_incidents_filter(also_n2os_incidents)} | head {head}'
@@ -173,11 +172,11 @@ def incidents_equal_time_better_id(st, last_id, risk, also_n2os_incidents, clien
         return []
 
 
-def incidents(st, last_id, last_run, risk, also_n2os_incidents, client, head=DEFAULT_HEAD_ALERTS):
+def incidents(st, last_id, last_run, risk, also_n2os_incidents, client):
     def get_incident_name(i):
         return i['name']
 
-    ibtt = incidents_better_than_time(st, head, risk, also_n2os_incidents, client)
+    ibtt = incidents_better_than_time(st, risk, also_n2os_incidents, client)
 
     lft = last_fetched_time(ibtt, last_run)
     lfid = last_fetched_id(ibtt, last_run)
