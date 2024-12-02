@@ -176,7 +176,7 @@ script:
     - contextPath: MSISAC.RetrievedEvents.severity
       description: The severity assigned to the MS-ISAC alert
       type: string
-  dockerimage: demisto/python3:3.10.14.100715
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3
