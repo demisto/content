@@ -2,7 +2,7 @@ comment: "Read the installedpacks.json. \n\nCount and get packs names."
 commonfields:
   id: HealthCheckInstalledPacks
   version: -1
-dockerimage: demisto/python3:3.11.10.111526
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: HealthCheckInstalledPacks
 outputs:
