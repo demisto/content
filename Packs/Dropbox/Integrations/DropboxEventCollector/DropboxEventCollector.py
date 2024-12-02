@@ -114,7 +114,7 @@ def complete_auth_command(code: str, credentials: Credentials, base_url: str, in
     else:
         redable_output = f'❌ Authorization completed failed. {response.text}'
 
-    demisto.debug(f'Complete auto command {redable_output=}')
+    demisto.debug(f'Complete auth command {readable_output=}')
     return CommandResults(readable_output=redable_output)
 
 
