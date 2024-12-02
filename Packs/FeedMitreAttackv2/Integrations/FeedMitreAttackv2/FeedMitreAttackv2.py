@@ -49,6 +49,7 @@ MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {  # pragma: no cover
     'command-and-control': ThreatIntel.KillChainPhases.COMMAND_AND_CONTROL
 }
 FILTER_OBJS = {  # pragma: no cover
+    "Tactic": {"name": "tactic", "filter": Filter("type", "=", "x-mitre-tactic")},
     "Technique": {"name": "attack-pattern", "filter": Filter("type", "=", "attack-pattern")},
     "Mitigation": {"name": "course-of-action", "filter": Filter("type", "=", "course-of-action")},
     "Group": {"name": "intrusion-set", "filter": Filter("type", "=", "intrusion-set")},
@@ -56,7 +57,6 @@ FILTER_OBJS = {  # pragma: no cover
     "Tool": {"name": "tool", "filter": Filter("type", "=", "tool")},
     "relationships": {"name": "relationships", "filter": Filter("type", "=", "relationship")},
     "Campaign": {"name": "campaign", "filter": Filter("type", "=", "campaign")},
-    "Tactic": {"name": "tactic", "filter": Filter("type", "=", "x-mitre-tactic")},
 }
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()   # pragma: no cover
 ENTERPRISE_COLLECTION_NAME = 'enterprise att&ck'                  # pragma: no cover
@@ -83,6 +83,7 @@ class Client:
         self.server: Server
         self.api_root: list[ApiRoot]
         self.collections: list[Collection]
+        self.tactic_name_to_mitre_id = dict()
 
     def get_server(self):
         server_url = urljoin(self.base_url, '/taxii2/')
@@ -117,7 +118,10 @@ class Client:
 
         elif self.tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
-
+        
+        if item_type.lower() == "tactic":
+            indicator_obj["value"] = f'{self.tactic_name_to_mitre_id[value]} - {value}'
+        
         if item_type in ("Attack Pattern", "STIX Attack Pattern") and not mitre_item_json.get("x_mitre_is_subtechnique", None):
             tactics = []
             for tactic in mitre_item_json["kill_chain_phases"]:
@@ -125,12 +129,15 @@ class Client:
                     continue
 
                 else:
+                    tactic_name = tactic["phase_name"].title().replace("-", " ").replace("And", "and")
+                    tactic_mitre_id = self.tactic_name_to_mitre_id[tactic_name]
+                    tactic = f'{tactic_mitre_id} - {tactic_name}'
                     tactics.append(
                         EntityRelationship(
                             name=EntityRelationship.Relationships.PART_OF,
                             entity_a=indicator_obj["value"],
                             entity_a_type=indicator_obj["type"],
-                            entity_b=tactic["phase_name"].title().replace("-", " "),
+                            entity_b=tactic,
                             entity_b_type="Tactic",
                         ).to_indicator()
                     )
@@ -217,6 +224,11 @@ class Client:
                             if is_indicator_deprecated_or_revoked(mitre_item_json):
                                 continue
                             id_to_name[mitre_item_json['id']] = value
+                            
+                            if item_type == 'Tactic':
+                                mitre_id = mitre_item_json['external_references'][0]['external_id']
+                                self.tactic_name_to_mitre_id[value] = mitre_id
+                            
                             indicator_obj = self.create_indicator(item_type, value, mitre_item_json)
                             add_obj_to_mitre_id_to_mitre_name(mitre_id_to_mitre_name, mitre_item_json)
                             indicators.append(indicator_obj)
@@ -729,7 +741,7 @@ def main():
     verify_certificate = not params.get('insecure', False)
     tags = argToList(params.get('feedTags', []))
     tlp_color = params.get('tlp_color')
-    create_relationships = argToBoolean(params.get('create_relationships'))
+    create_relationships = argToBoolean(params.get('create_relationships', True))
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
     if params.get('switch_intrusion_set_to_threat_actor', False):
