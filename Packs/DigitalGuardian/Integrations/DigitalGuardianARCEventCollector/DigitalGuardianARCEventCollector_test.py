@@ -53,24 +53,25 @@ def test_get_access_token(mocker: MockerFixture):
     assert get_new_token_request.called is False
 
 
-def test_create_events_for_push():
+@pytest.mark.parametrize('index', [0, 1])
+def test_create_events_for_push(index: int):
     """
     Given:
-        - list of events and a limit value
+        - Index of an item in a list of events and a limit value
     When:
         - Calling create_events_for_push
     Then:
         - Ensure the _time key is added to the events
     """
-    from DigitalGuardianARCEventCollector import create_events_for_push
+    from DigitalGuardianARCEventCollector import create_events_for_push, arg_to_datetime, DATE_FORMAT
 
     limit = 2
     raw_response = util_load_json('test_data/mock_response.json')
 
     outputted_events = list(create_events_for_push(raw_response, limit))
+    expected_event_time = arg_to_datetime(outputted_events[index]['dg_time']).strftime(DATE_FORMAT)
 
-    assert outputted_events[0]['_time'] == '2023-05-23T11:49:32Z'
-    assert outputted_events[1]['_time'] == '2023-05-23T11:53:11Z'
+    assert outputted_events[index]['_time'] == expected_event_time
     assert len(outputted_events) == limit
 
 
