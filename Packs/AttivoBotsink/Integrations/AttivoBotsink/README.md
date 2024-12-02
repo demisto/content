@@ -101,7 +101,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/30797606/50386345-2c31fc80-06ed-11e9-82a5-34adbe1e70b0.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/30797606/50386345-2c31fc80-06ed-11e9-82a5-34adbe1e70b0.png" alt="image"></a></p>
+<p><a href="../../doc_files/50386345-2c31fc80-06ed-11e9-82a5-34adbe1e70b0.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/50386345-2c31fc80-06ed-11e9-82a5-34adbe1e70b0.png" alt="image"></a></p>
 <h3 id="h_751354897601544959429464">2. Verify if a host is part of a deception environment</h3>
 <hr>
 <p>Checks whether a host is part of the deception environment.</p>
@@ -147,7 +147,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/30797606/50386272-33a4d600-06ec-11e9-94e6-190461ed0e86.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/30797606/50386272-33a4d600-06ec-11e9-94e6-190461ed0e86.png" alt="image"></a></p>
+<p><a href="../../doc_files/50386272-33a4d600-06ec-11e9-94e6-190461ed0e86.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/50386272-33a4d600-06ec-11e9-94e6-190461ed0e86.png" alt="image"></a></p>
 <h3 id="h_8372857491141544959433947">3. Run a playbook configured on Attivo BOTsink</h3>
 <hr>
 <p>Run a pre-built Attivo playbook on the BOTsink appliance.</p>
@@ -447,7 +447,7 @@
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/30797606/50384845-80c87e00-06d3-11e9-81aa-2273285dc439.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/30797606/50384845-80c87e00-06d3-11e9-81aa-2273285dc439.png" alt="image"></a></p>
+<p><a href="../../doc_files/50384845-80c87e00-06d3-11e9-81aa-2273285dc439.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/50384845-80c87e00-06d3-11e9-81aa-2273285dc439.png" alt="image"></a></p>
 <h3 id="h_923142110971545913776046">8. Get a list of all deceptive users</h3>
 <hr>
 <p>Lists all deceptive users.</p>
@@ -458,6 +458,6 @@
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/30797606/50385548-1ec24580-06e0-11e9-939b-e91cd907bf6d.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/30797606/50385548-1ec24580-06e0-11e9-939b-e91cd907bf6d.png" alt="image"></a></p>
+<p><a href="../../doc_files/50385548-1ec24580-06e0-11e9-939b-e91cd907bf6d.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/50385548-1ec24580-06e0-11e9-939b-e91cd907bf6d.png" alt="image"></a></p>
 <h2>Known Limitations</h2>
 <p>This integration works with the Attivo BOTsink. You can only run the <a href="#h_365551906321543920724958">attivo-deploy-decoy</a> using the physical appliance.</p>
