@@ -6,24 +6,20 @@ Use the IPinfo.io API to get data about an IP address.
 - IPinfo v2 Allows setting source reliability.
 - IPinfo v2 Enriches data with IP-hostname relationships.
 
-## Configure IPinfo v2 on Cortex XSOAR
+## Configure IPinfo v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for IPinfo v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API Token | The API key to use for the connection. | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Base URL |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API Token | The API key to use for the connection. | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Base URL |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ip
 ***
