@@ -12409,7 +12409,7 @@ def xsoar_profiler(func):
 
         failed_on_timeout = profiler_function(signal_event, profiler)
         if failed_on_timeout:
-            raise DemistoException("The profiled function failed due to a timeout.")
+            raise DemistoException(f"The profiled function '{func.__name__}' failed due to a timeout.")
         if results.get("function_results"):
             res = results.get("function_results")
             if isinstance(res, Exception):
