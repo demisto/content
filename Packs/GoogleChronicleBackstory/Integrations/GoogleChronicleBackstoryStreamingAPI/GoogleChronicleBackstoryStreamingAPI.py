@@ -100,14 +100,14 @@ class Client:
         self.build_http_client()
 
         filter_alert_type = argToList(params.get("alert_type", []))
-        self.filter_alert_type = [alert_type for alert_type in filter_alert_type if alert_type.strip()]
+        self.filter_alert_type = [alert_type.strip() for alert_type in filter_alert_type if alert_type.strip()]
         filter_severity = argToList(params.get("detection_severity", []))
-        self.filter_severity = [value.lower() for value in filter_severity if value.strip()]
+        self.filter_severity = [value.strip().lower() for value in filter_severity if value.strip()]
         filter_rule_names = argToList(params.get("rule_names", []))
-        self.filter_rule_names = [rule_name for rule_name in filter_rule_names if rule_name.strip()]
+        self.filter_rule_names = [rule_name.strip() for rule_name in filter_rule_names if rule_name.strip()]
         self.filter_exclude_rule_names = argToBoolean(params.get("exclude_rule_names", False))
         filter_rule_ids = argToList(params.get("rule_ids", []))
-        self.filter_rule_ids = [rule_id for rule_id in filter_rule_ids if rule_id.strip()]
+        self.filter_rule_ids = [rule_id.strip() for rule_id in filter_rule_ids if rule_id.strip()]
         self.filter_exclude_rule_ids = argToBoolean(params.get("exclude_rule_ids", False))
 
     def build_http_client(self):
@@ -132,11 +132,13 @@ class Client:
 
 
 def remove_space_from_args(args):
-    """Remove space from args."""
-    for key in args.keys():
-        if isinstance(args[key], str):
-            args[key] = args[key].strip()
-    return args
+    """
+    Return a new dictionary with leading and trailing whitespace removed from all string values.
+
+    :param args: Dictionary of arguments.
+    :return: New dictionary with whitespace-stripped string values.
+    """
+    return {key: value.strip() if isinstance(value, str) else value for key, value in args.items()}
 
 
 def validate_response(client: Client, url, method='GET', body=None):

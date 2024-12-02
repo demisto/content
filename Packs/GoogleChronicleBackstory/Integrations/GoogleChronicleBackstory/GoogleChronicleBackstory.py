@@ -4148,13 +4148,13 @@ def gcb_verify_rule(client_obj: Client, rule_text: str):
     }
     request_url = f"{BACKSTORY_API_V2_URL}/detect/rules:verifyRule"
     json_data = validate_response(client_obj, request_url, method='POST', body=json.dumps(req_json_data))
-    context_data = deepcopy(json_data)
-    context_data['success'] = json_data.get('success', False)
-    context_data['command_name'] = 'gcb-verify-rule'
-
-    ec = {
-        CHRONICLE_OUTPUT_PATHS['VerifyRule']: context_data
+    context_data = {
+        **json_data,
+        'success': json_data.get('success', False),
+        'command_name': 'gcb-verify-rule',
     }
+
+    ec = {CHRONICLE_OUTPUT_PATHS['VerifyRule']: context_data}
 
     return ec, json_data
 
