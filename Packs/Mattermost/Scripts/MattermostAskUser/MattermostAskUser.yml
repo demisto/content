@@ -43,6 +43,6 @@ args:
   defaultValue: No response was received from the user.
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.14.99474
+dockerimage: demisto/python3:3.11.10.115186
 tests:
 - MattermostAskUser_testplaybook

@@ -90,7 +90,7 @@ MICROSOFT_DEFENDER_FOR_ENDPOINT_API = {
     "geo-eu": "https://api-eu.securitycenter.microsoft.com",
     "geo-uk": "https://api-uk.securitycenter.microsoft.com",
     "gcc": "https://api-gcc.securitycenter.microsoft.us",
-    "gcc-high": "https://api-gcc.securitycenter.microsoft.us",
+    "gcc-high": "https://api-gov.securitycenter.microsoft.us",
     "dod": "https://api-gov.securitycenter.microsoft.us",
 }
 

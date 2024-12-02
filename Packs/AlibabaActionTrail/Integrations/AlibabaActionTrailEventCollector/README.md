@@ -1,26 +1,22 @@
 Alibaba log event collector integration for XSIAM.
 This integration was integrated and tested with API version 0.6 of Alicloud Log Service.
 
-## Configure Alibaba Action Trail Event Collector on Cortex XSOAR
+## Configure Alibaba Action Trail Event Collector in Cortex
 
-1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
-2. Search for Alibaba Action Trail Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Endpoint | The URL used to access your project and the data of your project. |True |
-    | Access key id | The ID  used to identify the user. | True |
-    | Access key | The key provided to you by Alibaba Cloud for authentication. | True |
-    | Project name | The name of your project in your Log Service used to isolate the resources of different users and control access to specific resources. | True |
-    | Logstore name | The unit in your Log Service that is used to collect, store, and query logs. | True |
-    | Query | The filter conditions in search statements used to obtain specific logs. Each query statement consists of a search statement and an analytic statement. The search statement and the analytic statement are separated with a vertical bar (\|).A search statement can be a keyword, a numeric value, a numeric value range, a space, or an asterisk . If you specify a space or an asterisk  as the search statement, no conditions are used for searching, and all logs are returned. <br />For example: *(\|) select * from actiontrail_pa_trail, will retrieve all the events from the project as set above. | True |
-    | Number of incidents to fetch per fetch. | The maximum number of incidents to fetch each time. | False |
-    | First fetch time interval | The period to retrieve events for. format: [number] [time unit], for example 12 hours, 1 day, 3 months. Default is 3 days. | False |
-    | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | False |
-    | Use Secured Connection | Use SSL secure connection or ‘None’. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Endpoint | The URL used to access your project and the data of your project. |True |
+| Access key id | The ID  used to identify the user. | True |
+| Access key | The key provided to you by Alibaba Cloud for authentication. | True |
+| Project name | The name of your project in your Log Service used to isolate the resources of different users and control access to specific resources. | True |
+| Logstore name | The unit in your Log Service that is used to collect, store, and query logs. | True |
+| Query | The filter conditions in search statements used to obtain specific logs. Each query statement consists of a search statement and an analytic statement. The search statement and the analytic statement are separated with a vertical bar (\|).A search statement can be a keyword, a numeric value, a numeric value range, a space, or an asterisk . If you specify a space or an asterisk  as the search statement, no conditions are used for searching, and all logs are returned. <br />For example: *(\|) select * from actiontrail_pa_trail, will retrieve all the events from the project as set above. | True |
+| Number of incidents to fetch per fetch. | The maximum number of incidents to fetch each time. | False |
+| First fetch time interval | The period to retrieve events for. format: [number] [time unit], for example 12 hours, 1 day, 3 months. Default is 3 days. | False |
+| Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | False |
+| Use Secured Connection | Use SSL secure connection or ‘None’. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands Alert War Room in the CLI in XSIAM.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
