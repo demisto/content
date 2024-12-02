@@ -580,21 +580,21 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
     # Define the types and associated functions
     event_types: list[dict] = [
         {
-            "condition": no_next_pages or alert_next_page,
+            "condition": alert_next_page,
             "specific_type": "alert",
             "client_func": client.get_alerts,
             "max_fetch": max_fetch_alerts,
             "extra_args": {}
         },
         {
-            "condition": no_next_pages or audit_next_page,
+            "condition": audit_next_page,
             "specific_type": "audit",
             "client_func": client.get_audits,
             "max_fetch": max_fetch_audits,
             "extra_args": {}
         },
         {
-            "condition": no_next_pages or computer_next_page,
+            "condition": computer_next_page,
             "specific_type": "computer",
             "client_func": client.get_computers,
             "max_fetch": max_fetch_computer,
@@ -605,7 +605,7 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
 
     # Process event types
     for event in event_types:
-        if event["condition"]:
+        if no_next_pages or event["condition"]:
             events, next_run_for_specific_type = get_event_for_specific_type(
                 start_date=start_date_arg,
                 end_date=end_date_arg,
