@@ -56,7 +56,7 @@ class DropboxEventsClient(IntegrationEventsClient):
             verify=self.request.verify,
         )
         response = self.call(request)
-        demisto.debug('Send request to obtain access_token')
+        demisto.debug(f'Send request to obtain access_token get status code: {response.status_code}')
         self.request.headers['Authorization'] = f'Bearer {response.json()["access_token"]}'
         self.request.url = parse_obj_as(AnyUrl, f'{str(self.request.url).removesuffix("/")}/2/team_log/get_events')
 
