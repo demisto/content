@@ -2,7 +2,7 @@ comment: Entry widget that returns the number of port based rules found by PAN-O
 commonfields:
   id: EntryWidgetPortBasedRules
   version: -1
-dockerimage: demisto/python3:3.10.14.100715
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: EntryWidgetPortBasedRules
 runas: DBotWeakRole
