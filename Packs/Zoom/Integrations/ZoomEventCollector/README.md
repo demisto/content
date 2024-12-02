@@ -3,27 +3,23 @@ This integration was integrated and tested with version 2.0.0 of Zoom
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Configure Zoom Event Collector on Cortex XSIAM
+## Configure Zoom Event Collector in Cortex
 
-1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.
-2. Search for Zoom Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    |--------| --- |
-    | Server URL (e.g., 'https://api.zoom.us/v2/')                                                             | True   |
-    | Account ID (OAuth)                                                                                       | True   |
-    | Client ID (OAuth)                                                                                        | True   |
-    | Client Secret (OAuth)                                                                                    | True   |
-    | First fetch time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) - within the last six months | False  |
-    | Trust any certificate (not secure)                                                                       | False  |
-    | Use system proxy settings                                                                                | False  |
+| **Parameter** | **Required** |
+|--------| --- |
+| Server URL (e.g., 'https://api.zoom.us/v2/')                                                             | True   |
+| Account ID (OAuth)                                                                                       | True   |
+| Client ID (OAuth)                                                                                        | True   |
+| Client Secret (OAuth)                                                                                    | True   |
+| First fetch time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) - within the last six months | False  |
+| Trust any certificate (not secure)                                                                       | False  |
+| Use system proxy settings                                                                                | False  |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### zoom-get-events
