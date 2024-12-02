@@ -14541,6 +14541,7 @@ def build_master_key_create_or_update_cmd(args: dict, action: Literal['create', 
         case _:
             raise ValueError(f"Invalid action value: '{action}'. Expected 'create' or 'update'.")
 
+    # Whether to encrypt the master key using a Hardware Security Module (HSM) encryption key; currently a static value by demand
     xml_args.append(add_argument_yes_no(arg='no', field_name='on-hsm'))
     master_key_element = add_argument(arg=''.join(xml_args), field_name='master-key', member=False)
 
@@ -14610,7 +14611,7 @@ def pan_os_get_master_key_details_command() -> CommandResults:
     raw_response: dict = http_request(URL, 'GET', params={'type': 'op', 'key': API_KEY, 'cmd': show_master_key_cmd})
     response_result = raw_response['response']['result']
 
-    result_to_human_readable = {'auto-renew-mkey': 'Auto-renew master key', "on-hsm": "Stored on HSM"}
+    result_to_human_readable = {'auto-renew-mkey': 'Auto-renew master key', "on-hsm": "Encryption on HSM"}
     human_readable = tableToMarkdown(
         'Master Key Details',
         response_result,

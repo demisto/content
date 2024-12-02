@@ -9461,7 +9461,7 @@ There are no input arguments for this command.
 | Panorama.MasterKey.hours-to-reminder | String | The number of hours remaining before being notified that the key is set to expire. |
 | Panorama.MasterKey.minutes-to-expiry | String | The number of minutes remaining before the key expires. |
 | Panorama.MasterKey.minutes-to-reminder | String | The number of minutes remaining before being notified that the key is set to expire. |
-| Panorama.MasterKey.on-hsm | String | Whether the key is stored on a Hardware Security Module (HSM). |
+| Panorama.MasterKey.on-hsm | String | Whether the master key is encrypted using a key stored on a Hardware Security Module (HSM). |
 | Panorama.MasterKey.remind-at | String | The date and time when to be notified that the key is set to expire. |
 | Panorama.MasterKey.seconds-to-expiry | String | The number of seconds remaining before the key expires. |
 | Panorama.MasterKey.seconds-to-reminder | String | The number of seconds remaining before being notified that the key is set to expire. |

@@ -9749,7 +9749,7 @@ script:
       description: The number of minutes remaining before being notified that the key is set to expire.
     - contextPath: Panorama.MasterKey.on-hsm
       type: String
-      description: Whether the key is stored on a Hardware Security Module (HSM).
+      description: Whether the master key is encrypted using a key stored on a Hardware Security Module (HSM).
     - contextPath: Panorama.MasterKey.remind-at
       type: String
       description: The date and time when to be notified that the key is set to expire.
