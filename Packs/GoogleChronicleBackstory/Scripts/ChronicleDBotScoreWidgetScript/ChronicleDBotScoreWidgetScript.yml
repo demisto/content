@@ -10,7 +10,7 @@ comment: Shows the DBot Score and reputation of the Domain.
 enabled: true
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.14.90585
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
