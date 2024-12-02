@@ -105,7 +105,7 @@ def complete_auth_command(code: str, credentials: Credentials, base_url: str, in
         'code': code,
     }
     auth = (credentials.identifier or '', credentials.password)
-
+    redable_output = ''
     response = requests.post(f'{base_url}/oauth2/token', data=data, auth=auth, verify=insecure)
     if response.ok:
         demisto.setIntegrationContext({'refresh_token': response.json()['refresh_token']})
