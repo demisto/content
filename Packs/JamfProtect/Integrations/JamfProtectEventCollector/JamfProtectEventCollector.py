@@ -606,6 +606,11 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
     # Process event types
     for event in event_types:
         if no_next_pages or event["condition"]:
+            if event["extra_args"].get(fetch_all_computers): 
+                demisto.debug("fetching all computers")
+            else:
+                demisto.debug(...)
+
             events, next_run_for_specific_type = get_event_for_specific_type(
                 start_date=start_date_arg,
                 end_date=end_date_arg,
