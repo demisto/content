@@ -7,6 +7,7 @@ configuration:
   name: longRunning
   required: false
   type: 8
+  defaultvalue: 'true'
 - display: Incident type
   name: incidentType
   required: false
