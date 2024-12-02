@@ -93,7 +93,7 @@
 <h5>Context Example</h5>
 <p>There is no context output for this command.</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/34302832/45023945-0eeefa80-b038-11e8-9f41-ddb1ef8b6c78.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/34302832/45023945-0eeefa80-b038-11e8-9f41-ddb1ef8b6c78.png" alt="image" width="756" height="82"></a></p>
+<p><a href="../../doc_files/45023945-0eeefa80-b038-11e8-9f41-ddb1ef8b6c78.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/45023945-0eeefa80-b038-11e8-9f41-ddb1ef8b6c78.png" alt="image" width="756" height="82"></a></p>
 <h3 id="h_5057555411231539170456210">2. Create a log stream</h3>
 <hr>
 <p>Creates a log stream for the specified log group.</p>
@@ -149,7 +149,7 @@
 <h5>Context Example</h5>
 <p>There is no context output for this command.</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/34302832/45029145-01da0780-b048-11e8-894c-6b361ec9d200.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/34302832/45029145-01da0780-b048-11e8-894c-6b361ec9d200.png" alt="image" width="749" height="65"></a></p>
+<p><a href="../../doc_files/45029145-01da0780-b048-11e8-894c-6b361ec9d200.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/45029145-01da0780-b048-11e8-894c-6b361ec9d200.png" alt="image" width="749" height="65"></a></p>
 <h3 id="h_6610132052411539170462177">3. Delete a log group</h3>
 <hr>
 <p>Deletes the specified log group and permanently deletes all the archived log events associated with the log group.</p>
@@ -200,7 +200,7 @@
 <h5>Context Example</h5>
 <p>There is no context output for this command.</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/34302832/45030390-ecff7300-b04b-11e8-8e69-abc9b94a9032.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/34302832/45030390-ecff7300-b04b-11e8-8e69-abc9b94a9032.png" alt="image" width="751" height="71"></a></p>
+<p><a href="../../doc_files/45030390-ecff7300-b04b-11e8-8e69-abc9b94a9032.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/45030390-ecff7300-b04b-11e8-8e69-abc9b94a9032.png" alt="image" width="751" height="71"></a></p>
 <h3 id="h_6794234493581539170468577">4. Delete a log stream</h3>
 <hr>
 <p>Deletes the specified log stream and permanently deletes all the archived log events associated with the log stream.</p>
@@ -256,7 +256,7 @@
 <h5>Context Example</h5>
 <p>There is no context output for this command.</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/34302832/45029385-bbd17380-b048-11e8-9651-b1183e42a1ff.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/34302832/45029385-bbd17380-b048-11e8-9651-b1183e42a1ff.png" alt="image" width="747" height="60"></a></p>
+<p><a href="../../doc_files/45029385-bbd17380-b048-11e8-9651-b1183e42a1ff.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/45029385-bbd17380-b048-11e8-9651-b1183e42a1ff.png" alt="image" width="747" height="60"></a></p>
 <h3 id="h_6369265584741539170476181">5. Get list of log events</h3>
 <hr>
 <p>Lists log events from the specified log group. You can list all the log events or filter the results using a filter pattern, a time range, and the name of the log stream.</p>
@@ -371,9 +371,9 @@
 <h5>Command Example</h5>
 <pre>!aws-logs-filter-log-events logGroupName=test</pre>
 <h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/34302832/45035904-69e61900-b05b-11e8-8c58-c77b86f767ba.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/34302832/45035904-69e61900-b05b-11e8-8c58-c77b86f767ba.png" alt="image" width="751" height="248"></a></p>
+<p><a href="../../doc_files/45035904-69e61900-b05b-11e8-8c58-c77b86f767ba.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/45035904-69e61900-b05b-11e8-8c58-c77b86f767ba.png" alt="image" width="751" height="248"></a></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/34302832/45035876-5935a300-b05b-11e8-82a2-818e2671fee6.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/34302832/45035876-5935a300-b05b-11e8-82a2-818e2671fee6.png" alt="image" width="752" height="355"></a></p>
+<p><a href="../../doc_files/45035876-5935a300-b05b-11e8-82a2-818e2671fee6.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/45035876-5935a300-b05b-11e8-82a2-818e2671fee6.png" alt="image" width="752" height="355"></a></p>
 <h3 id="h_3857347865901539170482677">6. Get a list of log groups</h3>
 <hr>
 <p>Lists the specified log groups. You can list all your log groups or filter the results by prefix. The results are ASCII-sorted by log group name.</p>
@@ -473,9 +473,9 @@
 <h5>Command Example</h5>
 <pre>!aws-logs-describe-log-groups</pre>
 <h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/34302832/45031032-030e3300-b04e-11e8-985d-084d68b9a5c2.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/34302832/45031032-030e3300-b04e-11e8-985d-084d68b9a5c2.png" alt="image"></a></p>
+<p><a href="../../doc_files/45031032-030e3300-b04e-11e8-985d-084d68b9a5c2.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/45031032-030e3300-b04e-11e8-985d-084d68b9a5c2.png" alt="image"></a></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/34302832/45031063-16210300-b04e-11e8-915e-334eb5658e36.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/34302832/45031063-16210300-b04e-11e8-915e-334eb5658e36.png" alt="image" width="750" height="342"></a></p>
+<p><a href="../../doc_files/45031063-16210300-b04e-11e8-915e-334eb5658e36.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/45031063-16210300-b04e-11e8-915e-334eb5658e36.png" alt="image" width="750" height="342"></a></p>
 <h3 id="h_1980862417051539170491449">7. Get a list of log streams</h3>
 <hr>
 <p>Lists the log streams for the specified log group. You can list all the log streams or filter the results by prefix. You can also control how the results are ordered.</p>
@@ -595,9 +595,9 @@
 <h5>Command Example</h5>
 <pre>!aws-logs-describe-log-streams logGroupName=test</pre>
 <h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/34302832/45033213-220fc380-b054-11e8-87bd-db85c3b53fb7.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/34302832/45033213-220fc380-b054-11e8-87bd-db85c3b53fb7.png" alt="image" width="750" height="496"></a></p>
+<p><a href="../../doc_files/45033213-220fc380-b054-11e8-87bd-db85c3b53fb7.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/45033213-220fc380-b054-11e8-87bd-db85c3b53fb7.png" alt="image" width="750" height="496"></a></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/34302832/45033162-ff7daa80-b053-11e8-8e42-5225d38e1bb8.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/34302832/45033162-ff7daa80-b053-11e8-8e42-5225d38e1bb8.png" alt="image" width="752" height="322"></a></p>
+<p><a href="../../doc_files/45033162-ff7daa80-b053-11e8-8e42-5225d38e1bb8.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/45033162-ff7daa80-b053-11e8-8e42-5225d38e1bb8.png" alt="image" width="752" height="322"></a></p>
 <h3 id="h_5016742518191539170499700">8. Assign a retention policy for a log group</h3>
 <hr>
 <p>Sets the retention of the specified log group. A retention policy allows you to configure the number of days for which to retain log events in the specified log group.</p>
@@ -653,7 +653,7 @@
 <h5>Context Example</h5>
 <p>There is no context output for this command.</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/34302832/45033993-82076980-b056-11e8-8a1b-ff0a9f4cb3e0.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/34302832/45033993-82076980-b056-11e8-8a1b-ff0a9f4cb3e0.png" alt="image" width="749" height="57"></a></p>
+<p><a href="../../doc_files/45033993-82076980-b056-11e8-8a1b-ff0a9f4cb3e0.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/45033993-82076980-b056-11e8-8a1b-ff0a9f4cb3e0.png" alt="image" width="749" height="57"></a></p>
 <h3 id="h_2248133599311539170508332">9. Delete a retention policy</h3>
 <hr>
 <p>Deletes the specified retention policy. Log events do not expire if they belong to log groups without a retention policy.</p>
@@ -684,7 +684,7 @@
 <h5>Context Example</h5>
 <p>There is no context output for this command.</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/34302832/45034065-acf1bd80-b056-11e8-9314-946f75e9c220.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/34302832/45034065-acf1bd80-b056-11e8-9314-946f75e9c220.png" alt="image" width="748" height="71"></a></p>
+<p><a href="../../doc_files/45034065-acf1bd80-b056-11e8-9314-946f75e9c220.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/45034065-acf1bd80-b056-11e8-9314-946f75e9c220.png" alt="image" width="748" height="71"></a></p>
 <h3 id="h_48298123210421539170515290">10. Upload log events to a log stream</h3>
 <hr>
 <p>Uploads a batch of log events to the specified log stream. You must include the sequence token obtained from the response of the previous call. An upload in a newly created log stream does not require a sequence token. You can also get the sequence token using DescribeLogStreams . If you call PutLogEvents twice within a narrow time period using the same value for sequenceToken , both calls may be successful, or one may be rejected.</p>
@@ -769,9 +769,9 @@
 <h5>Command Example</h5>
 <pre>!aws-logs-put-log-events logGroupName=test logStreamName=test message="test message" timestamp=1536063673395</pre>
 <h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/34302832/45035763-0b209f80-b05b-11e8-86d1-bd20010b3b85.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/34302832/45035763-0b209f80-b05b-11e8-86d1-bd20010b3b85.png" alt="image" width="749" height="509"></a></p>
+<p><a href="../../doc_files/45035763-0b209f80-b05b-11e8-86d1-bd20010b3b85.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/45035763-0b209f80-b05b-11e8-86d1-bd20010b3b85.png" alt="image" width="749" height="509"></a></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/34302832/45035693-e4626900-b05a-11e8-8d20-959dc8905a83.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/34302832/45035693-e4626900-b05a-11e8-8d20-959dc8905a83.png" alt="image" width="752" height="103"></a></p>
+<p><a href="../../doc_files/45035693-e4626900-b05a-11e8-8d20-959dc8905a83.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/45035693-e4626900-b05a-11e8-8d20-959dc8905a83.png" alt="image" width="752" height="103"></a></p>
 <h3 id="h_34162922711531539170522887">11. Create or modify a metric filter</h3>
 <hr>
 <p>Creates or updates a metric filter and associates it with the specified log group. Metric filters allow you to configure rules to extract metric data from log events ingested through PutLogEvents .</p>
@@ -847,7 +847,7 @@
 <h5>Context Example</h5>
 <p>There is no context output for this command.</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/34302832/45036317-6dc66b00-b05c-11e8-874e-8c511268edf6.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/34302832/45036317-6dc66b00-b05c-11e8-874e-8c511268edf6.png" alt="image" width="744" height="38"></a></p>
+<p><a href="../../doc_files/45036317-6dc66b00-b05c-11e8-874e-8c511268edf6.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/45036317-6dc66b00-b05c-11e8-874e-8c511268edf6.png" alt="image" width="744" height="38"></a></p>
 <h3 id="h_48620941212621539170533774">12. Delete a metric filter</h3>
 <hr>
 <p>Deletes the specified metric filter.</p>
@@ -903,7 +903,7 @@
 <h5>Context Example</h5>
 <p>There is no context output for this command.</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/34302832/45036441-d1509880-b05c-11e8-8ce5-02d6d3640351.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/34302832/45036441-d1509880-b05c-11e8-8ce5-02d6d3640351.png" alt="image"></a></p>
+<p><a href="../../doc_files/45036441-d1509880-b05c-11e8-8ce5-02d6d3640351.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/45036441-d1509880-b05c-11e8-8ce5-02d6d3640351.png" alt="image"></a></p>
 <h3 id="h_44862796213701539170540253">13. Get a list of metric filters</h3>
 <hr>
 <p>Lists the specified metric filters. You can list all the metric filters or filter the results by log name, prefix, metric name, or metric namespace.</p>
@@ -998,6 +998,6 @@
 <h5>Command Example</h5>
 <pre>!aws-logs-describe-metric-filters</pre>
 <h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/34302832/45036378-a5cdae00-b05c-11e8-8969-a7945db1d75a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/34302832/45036378-a5cdae00-b05c-11e8-8969-a7945db1d75a.png" alt="image"></a></p>
+<p><a href="../../doc_files/45036378-a5cdae00-b05c-11e8-8969-a7945db1d75a.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/45036378-a5cdae00-b05c-11e8-8969-a7945db1d75a.png" alt="image"></a></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/34302832/45036365-99495580-b05c-11e8-94ca-972868c0b189.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/34302832/45036365-99495580-b05c-11e8-94ca-972868c0b189.png" alt="image" width="751" height="353"></a></p>
+<p><a href="../../doc_files/45036365-99495580-b05c-11e8-94ca-972868c0b189.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/45036365-99495580-b05c-11e8-94ca-972868c0b189.png" alt="image" width="751" height="353"></a></p>
