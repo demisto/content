@@ -12,7 +12,7 @@
 	"itemVersion": "",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 15,
+	"logicalVersion": 20,
 	"mapping": {
 		"Gatewatcher Incident": {
 			"dontMapEventToLabels": true,
@@ -101,11 +101,29 @@
 				"Gatewatcher file.name": {
 					"simple": "file.name"
 				},
+				"Gatewatcher http.accept": {
+					"simple": "http.accept"
+				},
+				"Gatewatcher http.date": {
+					"simple": "http.date"
+				},
+				"Gatewatcher http.hostname": {
+					"simple": "http.hostname"
+				},
+				"Gatewatcher http.http2": {
+					"simple": "http.http2"
+				},
 				"Gatewatcher http.http_refer": {
 					"simple": "http.http_refer"
 				},
+				"Gatewatcher http.last_modified": {
+					"simple": "http.last_modified"
+				},
 				"Gatewatcher http.request.method": {
 					"simple": "http.request.method"
+				},
+				"Gatewatcher http.request.mime_type": {
+					"simple": "http.request.mime_type"
 				},
 				"Gatewatcher http.response.mime_type": {
 					"simple": "http.response.mime_type"
@@ -115,6 +133,33 @@
 				},
 				"Gatewatcher http.version": {
 					"simple": "http.version"
+				},
+				"Gatewatcher http2.http2": {
+					"simple": "http2.http2"
+				},
+				"Gatewatcher http2.http_method": {
+					"simple": "http2.http_method"
+				},
+				"Gatewatcher http2.http_user_agent": {
+					"simple": "http2.http_user_agent"
+				},
+				"Gatewatcher http2.length": {
+					"simple": "http2.length"
+				},
+				"Gatewatcher http2.request_headers": {
+					"simple": "http2.request_headers"
+				},
+				"Gatewatcher http2.response_headers": {
+					"simple": "http2.response_headers"
+				},
+				"Gatewatcher http2.status": {
+					"simple": "http2.status"
+				},
+				"Gatewatcher http2.url": {
+					"simple": "http2.url"
+				},
+				"Gatewatcher http2.version": {
+					"simple": "http2.version"
 				},
 				"Gatewatcher malcore.detail_threat_found": {
 					"simple": "malcore.detail_threat_found"
@@ -172,9 +217,6 @@
 				},
 				"Gatewatcher smb": {
 					"simple": "smb"
-				},
-				"severity": {
-					"simple": "event.severity"
 				}
 			}
 		},

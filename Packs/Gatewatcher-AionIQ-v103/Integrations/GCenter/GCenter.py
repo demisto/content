@@ -291,6 +291,19 @@ def test_module(client: GwClient) -> str:  # noqa: E501
     else:
         return "Authentication error, please check ip/user/password/token: [ERROR]"
 
+def convertEventSeverity(gwSev: int) -> int:
+
+    if gwSev == 0:
+        return 0.5
+    if gwSev == 1:
+        return 4
+    if gwSev == 2:
+        return 2
+    if gwSev == 3:
+        return 1
+
+    return 0
+
 def fetch_incidents():
 
     params = demisto.params()
@@ -316,6 +329,7 @@ def fetch_incidents():
     max_fetch = arg_to_number(args.get('max_fetch')) or params.get('max_fetch', '200')
 
     last_run = demisto.getLastRun()
+
     # Fetch was never runned
     if last_run == {}:
         first_fetch_dt_str = first_fetch_dt.isoformat(sep='T', timespec='milliseconds')+"Z"
@@ -365,6 +379,13 @@ def fetch_incidents():
                     'type': "Gatewatcher Incident"
                     }
 
+        # XSOAR Severity
+        if 'severity' in gwAlerts[i]['_source']['event'].keys():
+            incident['severity'] = convertEventSeverity(gwAlerts[i]['_source']['event']['severity'])
+
+        else:
+            incident['severity'] = convertEventSeverity(-1)
+
         # Sigflow alert signature
         if 'sigflow' in gwAlerts[i]['_source'].keys():
             if 'signature' in gwAlerts[i]['_source']['sigflow'].keys():
@@ -393,6 +414,13 @@ def fetch_incidents():
                     'rawJSON': json.dumps(gwMeta[i]['_source']),
                     'type': "Gatewatcher Incident"
                     }
+
+        # XSOAR Severity
+        if 'severity' in gwMeta[i]['_source']['event'].keys():
+            incident['severity'] = convertEventSeverity(gwMeta[i]['_source']['event']['severity'])
+
+        else:
+            incident['severity'] = convertEventSeverity(-1)
 
         incidents.append(incident)
 
