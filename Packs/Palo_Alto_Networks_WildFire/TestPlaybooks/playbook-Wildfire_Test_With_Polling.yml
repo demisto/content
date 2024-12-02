@@ -1024,8 +1024,8 @@ tasks:
       '#none#':
       - "37"
     scriptarguments:
-      sha256:
-        simple: 1d457069cb511af47a587287d59817148d404a2a7f39e1032d16094811f648e3
+      md5:
+        simple: 0e4e3c2d84a9bc726a50b3c91346fbb1
     separatecontext: false
     view: |-
       {
@@ -1068,7 +1068,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 1d457069cb511af47a587287d59817148d404a2a7f39e1032d16094811f648e3.xlsx
+              simple: afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc.xls
     view: |-
       {
         "position": {
