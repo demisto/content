@@ -35,7 +35,7 @@ ALLOWED_ROLES = demisto.params().get("roles").split(",")
 # Instantiate the App Class
 try:
     app = App(token=SLACK_BOT_TOKEN)
-except Exception as e:
+except Exception:
     return_error("Invalid Bot Token.")
 
 # Instantiate the Demisto Client
