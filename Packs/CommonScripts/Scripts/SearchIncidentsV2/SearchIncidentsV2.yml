@@ -64,6 +64,15 @@ args:
   predefined:
   - "false"
   - "true"
+- description: When the value is set to 'True', informational severity alerts will return as part of the results. The ‘fromdate’ and ‘todate’ arguments must be provided to use this argument. The maximum value currently supported for the 'fromdate' argument to retrieve informational incidents is 5 hours. If a value greater than this is provided, it will be adjusted to 5 hours ago. To retrieve only informational incidents, use the `query` argument and include this limitation within the query. Default is false.
+  name: includeinformational
+  auto: PREDEFINED
+  predefined:
+  - "false"
+  - "true"
+  defaultValue: "false"
+  hidden: true
+  hidden:marketplacev2: false
 - description: A comma seperated list of fields to add to context when using summarized version, (default- id,name,type,severity,status,owner,created,closed).
   name: add_fields_to_summarize_context
 comment: |-
@@ -123,7 +132,7 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.11.10.115186
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

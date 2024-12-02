@@ -434,6 +434,7 @@ URLS_LIST = [
     ("www.Müünchen.com", "www.Mxn--tdaanchen.com"),
     ("www.MükÖnchen.com", "www.Mxn--tdakxn--ndanchen.com"),
     ("www.こんにちは.com", 'www.xn--28j2a3ar1p.com'),
+    ("https://paloaltonetworks–test.com", "https://paloaltonetworksxn--7ugtest.com")    # noqa: RUF001
 ]
 
 

@@ -1,11 +1,8 @@
 Commvault Cloud provides pre-built integrations, automation workflows, and playbooks to streamline operations, enhance threat intelligence integration, and gain actionable insights through advanced reporting and analytics.
 This integration was integrated and tested with version 6.9.0 of CommvaultSecurityIQ.
 
-## Configure Commvault Cloud on Cortex XSOAR
+## Configure Commvault Cloud in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Commvault Cloud.
-3. Click **Add instance** to create and configure a new integration instance.
 
    | **Parameter**| **Required**|
    | ---| ---|
@@ -25,13 +22,12 @@ This integration was integrated and tested with version 6.9.0 of CommvaultSecuri
    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)| False|
    | Max events to fetch| False|
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ##### Note :- If "Fetch Incidents" parameter is selected then make sure "Long running instance" capability of the integration is disabled.
 ##### Note :- Set Mapper (incoming) to "Commvault Suspicious File Activity Mapper"
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### commvault-security-set-disable-data-aging

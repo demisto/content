@@ -726,7 +726,14 @@ def test_update_remote_system_command(incident_changed, delta):
     assert actual_remote_id == expected_remote_id
 
 
-def test_update_remote_system_command_should_not_close_xdr_incident(mocker):
+@pytest.mark.parametrize("data", [
+    {'close_reason': 'Resolved', 'status': 'Other'},
+    {'CortexXDRIRstatus': 'resolved', 'close_reason': 'Resolved', 'status': 'False Positive'},
+    {'status': 'under_investigation'},
+    {'status': 'Resolved', 'resolve_comment': 'comment'},
+    {'status': 'False Positive', 'resolve_comment': 'comment'}
+])
+def test_update_remote_system_command_should_not_close_xdr_incident(mocker, data):
     """
     Given:
         - an XDR client with 'close_xdr_incident' set to False.
@@ -744,25 +751,36 @@ def test_update_remote_system_command_should_not_close_xdr_incident(mocker):
         params={'close_xdr_incident': False}
     )
 
-    data = {'CortexXDRIRstatus': 'resolved', 'close_reason': 'Resolved', 'status': 'test'}
-    delta = {'CortexXDRIRstatus': 'resolved'}
+    delta = copy.deepcopy(data)
     expected_remote_id = 'remote_id'
 
     args = {
         'remoteId': expected_remote_id,
         'data': data,
-        'entries': [],
         'incidentChanged': True,
         'delta': delta,
         'status': 2,
     }
 
     mock_update_incident_command = mocker.patch("CortexXDRIR.update_incident_command")
-
     update_remote_system_command(client, args)
     update_args = mock_update_incident_command.call_args[0][1]
+    if data.get('status') in XSOAR_RESOLVED_STATUS_TO_XDR:
+        assert 'status' not in update_args
+        assert 'resolve_comment' not in update_args
+    else:
+        assert 'status' in update_args
+        if data.get('resolve_comment'):
+            assert 'resolve_comment' in update_args
 
-    assert 'status' not in update_args or update_args['status'] != XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
+    # checks when close_all_alerts is true -> should update only the alerts status
+    client._params['close_alerts_in_xdr'] = True
+    mock_update_related_alerts = mocker.patch('CortexXDRIR.update_related_alerts')
+    update_remote_system_command(client, args)
+
+    if mock_update_related_alerts.called:
+        update_args = mock_update_related_alerts.call_args[0][1]
+        assert 'status' in update_args
 
 
 def test_update_remote_system_command_incident_changed_but_no_delta(mocker):
@@ -1733,3 +1751,118 @@ def test_get_xsoar_close_reasons(mocker):
     }
     mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
     assert get_xsoar_close_reasons() == list(XSOAR_RESOLVED_STATUS_TO_XDR.keys()) + ['CustomReason1', 'CustomReason 2', 'Foo']
+
+
+@freeze_time("2020-11-18T13:20:00.00000", tz_offset=0)
+def test_get_modified_remote_data_default_xdr_delay(mocker):
+    """
+    Given:
+        - an XDR client
+        - arguments - lastUpdate time
+        - raw incidents (result of client.get_incidents)
+        - xdr_delay = None
+    When
+        - running get_modified_remote_data_command
+    Then
+        - the method is returning a list of incidents IDs that were modified after adding xdr_delay
+    """
+    from CortexXDRIR import get_modified_remote_data_command, Client
+    from CommonServerPython import BaseClient
+
+    mocker.patch.object(demisto, 'getIntegrationContext')
+    mocker.patch.object(BaseClient, "_http_request", return_value={
+        "reply": {"total_count": 0, "result_count": 0, "incidents": [], "restricted_incident_ids": []}
+    })
+    previous_last_update_time = "2020-11-18T13:15:00.000"
+    client = Client(base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
+
+    modified_incidents_empty, new_last_run_time_empty = get_modified_remote_data_command(
+        client, {'lastUpdate': previous_last_update_time, }, previous_last_update_time,
+    )
+
+    assert not modified_incidents_empty.modified_incident_ids
+    assert new_last_run_time_empty == "2020-11-18 13:19:00.001"
+
+
+@freeze_time("2020-11-18T13:20:00.00000", tz_offset=0)
+def test_get_modified_remote_data_two_minutes_xdr_delay(mocker):
+    """
+    Given:
+        - an XDR client
+        - arguments - lastUpdate time
+        - raw incidents (result of client.get_incidents)
+        - xdr_delay = 2 minutes
+    When
+        - running get_modified_remote_data_command
+    Then
+        - the method is returning a list of incidents IDs that were modified after adding xdr_delay
+    """
+    from CortexXDRIR import get_modified_remote_data_command, Client
+    from CommonServerPython import BaseClient
+
+    mocker.patch.object(demisto, 'getIntegrationContext')
+    mocker.patch.object(BaseClient, "_http_request", return_value=load_test_data('./test_data/get_incidents_list.json'))
+    previous_last_update_time = "2020-11-18T13:15:00.000"
+    client = Client(base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
+
+    incidents_response, new_last_time_stamp = get_modified_remote_data_command(
+        client, {'lastUpdate': previous_last_update_time}, previous_last_update_time, xdr_delay=2
+    )
+
+    assert new_last_time_stamp == "2020-11-18 13:18:00.001"
+    assert incidents_response.modified_incident_ids == ['1', '2']
+
+
+@freeze_time("2020-11-18T13:20:00.00000", tz_offset=0)
+def test_mirror_in_empty_last_update(mocker):
+    """
+        Given:
+            - an XDR client
+            - Empty mirror-in args - lastUpdate time = '' (e.g. {'lastUpdate': ''}) may happen the first mirror-in iteration
+            - raw incidents (result of client.get_incidents)
+        When
+            - Running get_modified_remote_data_command function
+        Then
+            - Make sure we set a default last_update time.
+    """
+    from CortexXDRIR import get_modified_remote_data_command, Client
+    from CommonServerPython import BaseClient
+
+    mocker.patch.object(demisto, 'getIntegrationContext')
+    mocker.patch.object(BaseClient, "_http_request", return_value=load_test_data('./test_data/get_incidents_list.json'))
+    mock_debug = mocker.patch.object(demisto, 'debug')
+
+    client = Client(base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
+    _, _ = get_modified_remote_data_command(
+        client, {'lastUpdate': ''}
+    )
+
+    expected_log = "Mirror last update is: last_update='' will set it to default_last_update='2020-11-18 13:18:00'"
+    assert mock_debug.call_args_list[1].args[0] == expected_log
+    assert "last_update='2020-11-18 13:18:00'" in mock_debug.call_args_list[2].args[0]
+
+
+def test_mirror_in_wrong_last_update(mocker):
+    """
+        Given:
+            - an XDR client
+            - Wrong mirror-in args - lastUpdate time = 'abcdefg' (e.g. {'lastUpdate': 'abcdefg'})
+            - raw incidents (result of client.get_incidents)
+        When
+            - Running get_modified_remote_data_command function
+        Then
+            - Make sure we raise an exception with the expected message.
+    """
+    from CortexXDRIR import get_modified_remote_data_command, Client
+    from CommonServerPython import BaseClient
+
+    mocker.patch.object(demisto, 'getIntegrationContext')
+    mocker.patch.object(BaseClient, '_http_request', return_value=load_test_data('./test_data/get_incidents_list.json'))
+
+    client = Client(base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
+    with pytest.raises(DemistoException) as e:
+        _, _ = get_modified_remote_data_command(
+            client, {'lastUpdate': 'abcdefg'}
+        )
+
+    assert e.value.message == "Failed to parse last_update='abcdefg' got last_update_utc=None"
