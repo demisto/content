@@ -99,13 +99,14 @@ def build_query_job_config(allow_large_results, default_dataset_string, destinat
     return query_job_config
 
 
-def convert_to_string_if_datetime(object_that_may_be_datetime):
-    if isinstance(object_that_may_be_datetime, datetime):
-        return object_that_may_be_datetime.strftime("%m/%d/%Y %H:%M:%S")
-    if isinstance(object_that_may_be_datetime, date):
-        return object_that_may_be_datetime.strftime("%m/%d/%Y")
-    else:
-        return object_that_may_be_datetime
+def convert_to_string(object_that_may_not_be_string):
+    if isinstance(object_that_may_not_be_string, datetime):
+        return object_that_may_not_be_string.strftime("%m/%d/%Y %H:%M:%S")
+    if isinstance(object_that_may_not_be_string, date):
+        return object_that_may_not_be_string.strftime("%m/%d/%Y")
+    if isinstance(object_that_may_not_be_string, bytes):
+        return object_that_may_not_be_string.decode('utf-8')
+    return object_that_may_not_be_string
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -166,7 +167,7 @@ def query_command(query_to_run=None):
     else:
 
         for row in query_results:
-            row_context = {underscoreToCamelCase(k): convert_to_string_if_datetime(v) for k, v in row.items()}
+            row_context = {underscoreToCamelCase(k): convert_to_string(v) for k, v in row.items()}
             rows_contexts.append(row_context)
 
         if rows_contexts:
@@ -241,7 +242,7 @@ def row_to_incident(row):
     Transform a Google BigQuery row to an incident's format.
     """
     incident = {}
-    raw = {underscoreToCamelCase(k): convert_to_string_if_datetime(v) for k, v in row.items()}
+    raw = {underscoreToCamelCase(k): convert_to_string(v) for k, v in row.items()}
     incident["rawJSON"] = json.dumps(raw)
     incident_name_field = demisto.params().get("incident_name_field")
     if incident_name_field and incident_name_field in raw:
