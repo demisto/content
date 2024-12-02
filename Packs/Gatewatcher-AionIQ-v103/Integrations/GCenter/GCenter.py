@@ -336,7 +336,8 @@ def fetch_incidents():
 
         now = datetime.today()
         now_str = now.isoformat(sep='T', timespec='milliseconds')+"Z"
-        queryRange = {'query': {
+        queryRange = {'size': max_fetch,
+                      'query': {
                         'range': {
                             '@timestamp': {
                                 'gte': str(first_fetch_dt_str),
@@ -350,7 +351,8 @@ def fetch_incidents():
 
         now = datetime.today()
         now_str = now.isoformat(sep='T', timespec='milliseconds')+"Z"
-        queryRange = {'query': {
+        queryRange = {'size': max_fetch,
+                      'query': {
                         'range': {
                             '@timestamp': {
                                 'gt': str(last_fetch),
