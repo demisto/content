@@ -1,7 +1,6 @@
 This playbook addresses the following alerts:
  
 - Uncommon creation or access operation of sensitive shadow copy by a high-risk process
-- Suspicious access to shadow file
  
 Playbook Stages:
   
@@ -24,7 +23,7 @@ Investigation:
  
 Containment:
  
-- Terminate causality process (CGO) process
+- Terminate causality process (CGO) process - if CGO a malicious behavior or unsigned process from uncommon path attempted to create or access shadow copy
 
 ## Dependencies
 
