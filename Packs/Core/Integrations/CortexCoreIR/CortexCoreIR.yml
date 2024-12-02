@@ -3095,7 +3095,7 @@ script:
       description: The action id.
       type: String 
   - arguments:
-    - description: asset UUID
+    - description: asset unique identifier.
       name: asset_id
       required: true
     name: core-get-asset-details
@@ -3144,33 +3144,33 @@ script:
       name: filter
       isArray: false
       required: false  
-    - description: A comma-separated list of asset names. Supports '=', '!=', 'contains', 'not contains'. For example, 'contains xcloud'.  
+    - description: "A comma-separated list of asset names. Use the format: '<operator> <value>, <operator2> <value2>', where <operator> can be one of '=', '!=', 'contains', or 'not contains' and <value> is the asset name. For example: 'contains xcloud, = gcp'. Conditions between operators are joined using a logical OR."
       name: name_filter
       isArray: true
-    - description: A comma-separated list of cloud providers. Supports '=', '!='. For example, '= AWS,= GCP'.  
+    - description: "A comma-separated list of cloud providers. Use the format: '<operator> <value>, <operator2> <value2>', where <operator> can be one of '=' or '!=' and <value> is the cloud provider. For example: ' = AWS, != GCP'. Conditions between operators are joined using a logical OR."
       name: provider_filter
       isArray: true
-    - description: A comma-separated list of unique identifiers for the asset. Supports '=', '!=', 'contains', 'not contains'. For example, 'contains abc123, not contains xyz789'.  
+    - description: "A comma-separated list of unique identifiers for the asset. Use the format: '<operator> <value>, <operator2> <value2>', where <operator> can be one of '=', '!=', 'contains', or 'not contains' and <value> is the identifier. For example: 'contains abc123, not contains xyz789'. Conditions between operators are joined using a logical OR."
       name: id_filter
       isArray: true
-    - description: A comma-separated list of asset type categories. Supports '=', '!='. For example, '= compute, != storage'.  
+    - description: "A comma-separated list of asset type categories. Use the format: '<operator> <value>, <operator2> <value2>', where <operator> can be one of '=' or '!=' and <value> is the category name. For example: ' = compute, != storage'. Conditions between operators are joined using a logical OR."
       name: type_category_filter
-      isArray: true  
-    - description: A comma-separated list of cloud regions for the asset. Supports '=', '!=', 'contains', 'not contains'. For example, '= us-east-1, not contains us-west'.  
+      isArray: true
+    - description: "A comma-separated list of cloud regions for the asset. Use the format: '<operator> <value>, <operator2> <value2>', where <operator> can be one of '=', '!=', 'contains', or 'not contains' and <value> is the region. For example: ' = us-east-1, not contains us-west'. Conditions between operators are joined using a logical OR."
       name: region_filter
       isArray: true
-    - description: A comma-separated list of specific names for the asset type. Supports '=', '!='. For example, '= VM, != bucket'.  
+    - description: "A comma-separated list of specific names for the asset type. Use the format: '<operator> <value>, <operator2> <value2>', where <operator> can be one of '=' or '!=' and <value> is the asset type name. For example: ' = VM, != bucket'. Conditions between operators are joined using a logical OR."
       name: type_name_filter
       isArray: true
-    - description: A comma-separated list of environments or realms for the asset. Supports '=', '!=', 'contains', 'not contains'. For example, 'contains prod, != staging'.  
+    - description: "A comma-separated list of environments or realms for the asset. Use the format: '<operator> <value>, <operator2> <value2>', where <operator> can be one of '=', '!=', 'contains', or 'not contains' and <value> is the realm. For example: 'contains prod, != staging'. Conditions between operators are joined using a logical OR."
       name: realm_filter
       isArray: true
-    - description: A comma-separated list of sources of the asset's data. Supports '=', '!='. For example, '= system, != manual'.
+    - description: "A comma-separated list of sources of the asset's data. Use the format: '<operator> <value>, <operator2> <value2>', where <operator> can be one of '=' or '!=' and <value> is the source name. For example: ' = system, != manual'. Conditions between operators are joined using a logical OR."
       name: source_filter
       isArray: true
-    - description: "A timestamp when the asset was first observed. Supports 'from' and 'to'. For example, 'from: 2023-11-27T10:30:00, to: 2023-11-27T18:00:00'."  
+    - description: "Timestamp when the asset was first observed. Supports 'from' and 'to' (e.g., 'from: 2023-11-27T10:30:00, to: 2023-11-27T18:00:00') or relative times like '3 days ago' for 'from' with 'to' as 'now'."
       name: first_observed_filter
-    - description: "A timestamp when the asset was last observed. Supports 'from' and 'to'. For example, 'from: 2023-11-27T10:30:00, to: 2023-11-27T18:00:00'."
+    - description: "Timestamp when the asset was last observed. Supports 'from' and 'to' (e.g., 'from: 2023-11-27T10:30:00, to: 2023-11-27T18:00:00') or relative times like '3 days ago' for 'from' with 'to' as 'now'."
       name: last_observed_filter
     - auto: PREDEFINED
       description: Specifies the field by which to sort the results. By default the sort is defined as xdm__asset__name.
@@ -3197,6 +3197,13 @@ script:
     - description: Limit of results number. Default set to 50.
       name: limit
       defaultValue: 50
+    - auto: PREDEFINED
+      description: Specifies the logical operator between conditions. Accepts 'AND' or 'OR'. Default is 'AND'.
+      name: operator
+      predefined:
+      - AND
+      - OR
+      defaultValue: AND
     name: core-get-assets-list
     description: Returns a list of assets by filter.
     outputs: 

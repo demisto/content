@@ -180,28 +180,49 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     response = client.get_asset_details(asset_id)
     parsed = response.get("reply") if response else "An empty response was returned."
     return CommandResults(
-        readable_output=tableToMarkdown("Asset Details", parsed),
+        readable_output=tableToMarkdown("Asset Details", parsed, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CoreAsset",
         outputs=parsed,
         raw_response=parsed,
     )
 
-
-def parse_date_range_to_timestamp(date_range_str: str) -> dict:
+def parse_date_range_to_timestamp(conditions: str) -> dict:
     """
-    Parses a date range string and converts it into a dictionary with 'from' and 'to' timestamps.
-    
+    Parses a date range condition into a dictionary with 'from' and 'to' timestamps.
+
     Args:
-        date_range_str (str): Date range in the format "from: YYYY:MM:DDTHH:MM:SS, to: YYYY:MM:DDTHH:MM:SS".
-    
+        conditions (str): A string containing the date range, such as:
+                          - "from: 2023-11-27T10:30:00, to: 2023-11-27T18:00:00"
+                          - "3 days ago"
+                          - "from: 3 days ago, to: now"
+
     Returns:
-        dict: Dictionary with 'from' and 'to' keys, each holding the corresponding timestamp.
+        dict: A dictionary with 'from' and 'to' timestamps.
     """
     try:
-        from_str, to_str = date_range_str.split(",")
-        
-        from_date_str = from_str.split(":", 1)[1].strip()
-        to_date_str = to_str.split(":", 1)[1].strip()
+        conditions = conditions.strip().lower()
+        from_date, to_date = None, None
+
+        if "from:" in conditions and "to:" in conditions:
+            parts = [part.strip() for part in conditions.split(",")]
+            for part in parts:
+                if part.startswith("from:"):
+                    from_date = part.replace("from:", "").strip()
+                elif part.startswith("to:"):
+                    to_date = part.replace("to:", "").strip()
+        else:
+            # Assume the entire input is "from" and "now" is the "to"
+            from_date = conditions
+            to_date = "now"
+            
+        if not from_date or not to_date:
+            raise DemistoException(
+                f"Invalid date range condition: '{conditions}'. "
+                "Provide either 'from: ..., to: ...' or relative/absolute time like '3 days ago'."
+            )
+            
+        from_date_str = arg_to_datetime(from_date)
+        to_date_str = arg_to_datetime(to_date)
 
         from_timestamp = date_to_timestamp(from_date_str)
         to_timestamp = date_to_timestamp(to_date_str)
@@ -211,6 +232,7 @@ def parse_date_range_to_timestamp(date_range_str: str) -> dict:
     except Exception as e:
         raise DemistoException(f"Error parsing date range: {e}")
 
+    
 def get_filter_config(args: dict) -> tuple:
     """
     Initializes filter configuration for supported operators, fields, and operator mappings.
@@ -276,20 +298,18 @@ def build_filter(args: dict):
             continue
         
         if field in ["xdm__asset__first_observed", "xdm__asset__last_observed"]:
-            if "from:" in conditions and "to:" in conditions:
+            try:
                 date_range = parse_date_range_to_timestamp(conditions)
                 filter_conditions.append({
                     "SEARCH_FIELD": field,
                     "SEARCH_TYPE": "RANGE",
                     "SEARCH_VALUE": date_range
                 })
-            else:
-                raise DemistoException(
-                    f"Invalid date range condition for field '{field}'. "
-                    "Condition must include both 'from:' and 'to:' in the format 'from: YYYY-MM-DDTHH:MM:SS, to: YYYY-MM-DDTHH:MM:SS'."
-                )
+            except DemistoException as e:
+                raise DemistoException(f"Error processing field '{field}': {str(e)}")
             continue
         
+        field_conditions = []
         for condition in conditions:
             condition = condition.strip()
             valid_operator_found = False
@@ -303,7 +323,7 @@ def build_filter(args: dict):
                             f"Supported operators are: {field_supported_operators[field]}"
                         )
                         
-                    filter_conditions.append({
+                    field_conditions.append({
                         "SEARCH_FIELD": field,
                         "SEARCH_TYPE": search_type,
                         "SEARCH_VALUE": value
@@ -315,8 +335,16 @@ def build_filter(args: dict):
                     f"Condition '{condition}' for field '{field}' must start with a valid operator: "
                     f"{field_supported_operators[field]}."
                 )
+                
+        # If there are multiple conditions for a field, wrap them in an OR operator
+        if len(field_conditions) > 1:
+            filter_conditions.append({
+                "OR": field_conditions
+            })
+        elif len(field_conditions) == 1:
+            filter_conditions.append(field_conditions[0])
 
-    return {"AND": filter_conditions}
+    return {args.get("operator"): filter_conditions}
 
 
 def get_assets_list_command(client: Client, args: dict) -> CommandResults:
@@ -337,7 +365,6 @@ def get_assets_list_command(client: Client, args: dict) -> CommandResults:
         },
         "jsons": [],
     }
-    print(payload)
     response = client.get_assets_list(payload)
     if not response:
         return CommandResults(readable_output="An empty response was returned.")
@@ -346,9 +373,8 @@ def get_assets_list_command(client: Client, args: dict) -> CommandResults:
     filter_count = response.get("FILTER_COUNT")
     total_count = response.get("TOTAL_COUNT")
     assets_list = response.get("DATA")
-    print(response)
     return CommandResults(
-        readable_output=tableToMarkdown(f"Assets list - Found {filter_count} out of {total_count} results", assets_list),
+        readable_output=tableToMarkdown(f"Assets list - Found {filter_count} out of {total_count} results", assets_list, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CoreAssetList",
         outputs=assets_list,
         outputs_key_field="xdm__asset__id",
