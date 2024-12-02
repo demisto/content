@@ -24,7 +24,7 @@ def test_parse_word(file_name, file_path):
 
 
     parser.parse_word()
-    os.remove(basename)
+    # os.remove(basename)
     # assert (expected_partial_all_data in parser.paragraphs)
     assert (expected_partial_all_data in parser.all_data)
 
