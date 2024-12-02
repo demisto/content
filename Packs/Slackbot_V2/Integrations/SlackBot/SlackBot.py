@@ -15,6 +15,10 @@ import demisto_client
 import ast
 from demisto_client.demisto_api.rest import ApiException
 
+class StatusCode(Enum):
+    PENDING = 0
+    ACTIVE = 1
+    CLOSED = 2
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -92,13 +96,12 @@ def test_module():
 
 def map_status_code(status_code):
     try:
-        status_codes = {
-            0: "Pending",
-            1: "Active",
-            2: "Closed"
+        status_mapping = {
+        StatusCode.PENDING: "Pending",
+        StatusCode.ACTIVE: "Active",
+        StatusCode.CLOSED: "Closed"
         }
-
-        return status_codes.get("status_code", "Pending")
+        return status_mapping.get(StatusCode(status_code), "Pending")
 
     except Exception as e:
         logging.error(e)
