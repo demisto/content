@@ -8,7 +8,7 @@ subtype: python3
 tags:
 - infra
 - server
-comment: EWS Client class, provides generic Infrastructure to all EWS integrations.
+comment: EWS Api Module, provides EWSClient and other generic logic to EWS integrations.
 scripttarget: 0
 dependson: {}
 timeout: 0s

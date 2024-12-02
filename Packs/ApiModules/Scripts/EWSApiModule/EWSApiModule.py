@@ -5,26 +5,116 @@ from CommonServerPython import *  # noqa: F401
 
 from MicrosoftApiModule import *
 from exchangelib import (
+    OAUTH2,
+    BASIC,
+    NTLM,
+    DIGEST,
     Account,
+    Build,
+    Configuration,
+    Credentials,
     FileAttachment,
-    HTMLBody
+    HTMLBody,
+    Identity,
+    Version,
 )
 from exchangelib.errors import (
     ErrorInvalidIdMalformed,
     ErrorItemNotFound,
+    AutoDiscoverFailed,
 )
 from exchangelib.items import Item, Message
-from exchangelib.protocol import BaseProtocol
+from exchangelib.protocol import BaseProtocol, FaultTolerance, Protocol
 from exchangelib.folders.base import BaseFolder
+from exchangelib.credentials import BaseCredentials, OAuth2AuthorizationCodeCredentials
+from oauthlib.oauth2 import OAuth2Token
+from requests.adapters import HTTPAdapter
+from exchangelib.version import (
+    EXCHANGE_O365,
+    EXCHANGE_2007,
+    EXCHANGE_2010,
+    EXCHANGE_2010_SP2,
+    EXCHANGE_2013,
+    EXCHANGE_2013_SP1,
+    EXCHANGE_2016,
+    EXCHANGE_2019,
+)
 
 """ Constants """
 INTEGRATION_NAME = get_integration_name()
 FOLDER_ID_LEN = 120
 
+ON_PREM_VERSIONS = {
+    '2007': EXCHANGE_2007,
+    '2010': EXCHANGE_2010,
+    '2010_SP2': EXCHANGE_2010_SP2,
+    '2013': EXCHANGE_2013,
+    '2013_SP1': EXCHANGE_2013_SP1,
+    '2016': EXCHANGE_2016,
+    '2019': EXCHANGE_2019,
+}
 
 class IncidentFilter(str, Enum):
     MODIFIED_FILTER = 'modified-time'
     RECEIVED_FILTER = 'received-time'
+
+class CustomDomainOAuth2Credentials(OAuth2AuthorizationCodeCredentials):
+    def __init__(self, azure_cloud: AzureCloud, **kwargs):
+        self.ad_base_url = azure_cloud.endpoints.active_directory or 'https://login.microsoftonline.com'
+        self.exchange_online_scope = azure_cloud.endpoints.exchange_online or 'https://outlook.office365.com'
+        demisto.debug(f'Initializing {self.__class__}: '
+                      f'{azure_cloud.abbreviation=} | {self.ad_base_url=} | {self.exchange_online_scope}')
+        super().__init__(**kwargs)
+
+    @property
+    def token_url(self):
+        """
+            The URL to request tokens from.
+            Overrides the token_url property to specify custom token retrieval endpoints for different authority's cloud env.
+        """
+        # We may not know (or need) the Microsoft tenant ID. If not, use common/ to let Microsoft select the appropriate
+        # tenant for the provided authorization code or refresh token.
+        return f"{self.ad_base_url}/{self.tenant_id or 'common'}/oauth2/v2.0/token"
+
+    @property
+    def scope(self):
+        """
+            The scope we ask for the token to have
+            Overrides the scope property to specify custom token retrieval endpoints for different authority's cloud env.
+        """
+        return [f"{self.exchange_online_scope}/.default"]
+
+class ProxyAdapter(HTTPAdapter):
+    """
+    Proxy Adapter used to add PROXY to requests
+    """
+
+    def send(self, *args, **kwargs):
+        kwargs['proxies'] = handle_proxy()
+        return super().send(*args, **kwargs)
+
+class InsecureSSLAdapter(SSLAdapter):
+    """
+    Insecure SSL Adapter used to disable SSL verification for requests.
+    """
+
+    def __init__(self, *args, **kwargs):
+        # Processing before init call
+        kwargs.pop('verify', None)
+        super().__init__(verify=False, **kwargs)
+
+    def cert_verify(self, conn, url, verify, cert):
+        # We're overriding a method, so we have to keep the signature, although verify is unused
+        del verify
+        super().cert_verify(conn=conn, url=url, verify=False, cert=cert)
+
+class InsecureProxyAdapter(InsecureSSLAdapter):
+    """
+    Insecure Proxy Adapter used to add proxy to requests.
+    """
+    def send(self, *args, **kwargs):
+        kwargs['proxies'] = handle_proxy()
+        return super().send(*args, **kwargs)
 
 
 class EWSClient:
@@ -34,13 +124,21 @@ class EWSClient:
         client_secret: str,
         access_type: str,
         default_target_mailbox: str,
+        ews_server: str,
         max_fetch: int,
+        auth_type: str = '',
+        version: str = 'O365',
         folder: str = 'Inbox',
+        auto_discovery: bool = False,
         is_public_folder: bool = False,
         request_timeout: str = '120',
         mark_as_read: bool = False,
         legacy_name: bool = False,
         incident_filter: IncidentFilter = IncidentFilter.RECEIVED_FILTER,
+        azure_cloud: Optional[AzureCloud] = None,
+        tenant_id: str = '',
+        self_deployed: bool = True,
+        manual_username: Optional[str] = None,
         log_memory: bool = False,
         app_name: str = 'EWS',
         insecure: bool = True,
@@ -53,42 +151,184 @@ class EWSClient:
         :param client_secret: Application client secret
         :param access_type: Access type for authentication
         :param default_target_mailbox: Email address from which to fetch incidents
+        :param ews_server: The EWS Server address.
         :param max_fetch: Max incidents per fetch
+        :param auth_type: Authentication type (OAUTH2, BASIC, NTLM or DIGEST)
+        :param version: Exchange version to use (O365, 2007, 2010, 2010_SP2, 2013, 2013_SP1, 2016, 2019)
         :param folder: Name of the folder from which to fetch incidents
+        :param auto_discovery: Whether to use auto-discovery to find the EWS server
         :param is_public_folder: Public Folder flag
         :param request_timeout: Timeout (in seconds) for HTTP requests to Exchange Server
         :param mark_as_read: Whether to mark fetched incidents as read
         :param legacy_name: Whether to use the legacy naming convention for attachments
         :param incident_filter: The type of time filter to use for incidents (modified or received time)
+        :param azure_cloud: The Azure cloud environment for authentication to O365 services.
+        :param tenant_id: Tenant id used for O365 authentication.
+        :param self_deployed: Whether the Azure app is self-deployed or part of a managed service.
+        :param manual_username: Username to use for the EWS connection (instead of client_id).
         :param log_memory: Whether to log memory usage
         :param app_name: The name of the app (e.g. EWSv2 or EWSO365)
         :param insecure: Trust any certificate (not secure)
         :param proxy: Whether to use a proxy for the connection
         """
+        if auth_type not in (OAUTH2, BASIC, NTLM, DIGEST):
+            raise ValueError(f'Invalid auth_type: {auth_type}')
+
         BaseProtocol.TIMEOUT = int(request_timeout)  # type: ignore
-        self.folder_name = folder
-        self.is_public_folder = is_public_folder
-        self.access_type = (access_type[0] if isinstance(access_type, list) else access_type).lower()
-        self.max_fetch = max_fetch
         self.client_id = client_id
         self.client_secret = client_secret
+        self.access_type = access_type.lower()
         self.account_email = default_target_mailbox
-        self.config = None
+        self.ews_server = ews_server
+        self.max_fetch = max_fetch
+        self.auth_type = auth_type
+        self.version = version
+        self.folder_name = folder
+        self.auto_discover = auto_discovery
+        self.is_public_folder = is_public_folder
         self.mark_as_read = mark_as_read
         self.legacy_name = legacy_name
         self.incident_filter = incident_filter
+        self.manual_username = manual_username
+        self.azure_cloud = azure_cloud
+        self.tenant_id = tenant_id
+        self.self_deployed = self_deployed
         self.log_memory = log_memory
         self.app_name = app_name
         self.insecure = insecure
         self.proxy = proxy
 
+        self.config, self.credentials = self.prepare()
+
+    def prepare(self) -> tuple[Optional[Configuration], BaseCredentials]:
+        """
+        Prepares the client protocol, credentials and configuration based on the authentication type.
+
+        :return: Configuration and Credentials objects.
+        """
+        if self.auth_type == OAUTH2:
+            return self.prepare_oauth()
+
+        return self.prepare_onprem()
+
+
+    def prepare_oauth(self) -> tuple[Configuration, CustomDomainOAuth2Credentials]:
+        """
+        Prepares the client PROTOCOL, CREDENTIALS and CONFIGURATION
+
+        :return: OAuth 2 Configuration and Credentials
+        """
+        if self.version != 'O365':
+            raise ValueError('Error, only the O365 version is supported for OAuth2 authentication.')
+
+        if not self.azure_cloud:
+            raise ValueError('Error, failed to get Azure cloud object required for OAuth2 authentication.')
+
+        BaseProtocol.HTTP_ADAPTER_CLS = InsecureProxyAdapter if self.insecure else ProxyAdapter
+
+        self.ms_client = MicrosoftClient(
+            tenant_id=self.tenant_id,
+            auth_id=self.client_id,
+            enc_key=self.client_secret,
+            app_name=self.app_name,
+            base_url=self.ews_server,
+            verify=not self.insecure,
+            proxy=self.proxy,
+            self_deployed=self.self_deployed,
+            scope=f'{self.azure_cloud.endpoints.exchange_online}/.default',
+            command_prefix='ews',
+            azure_cloud=self.azure_cloud
+        )
+
+        access_token = self.ms_client.get_access_token()
+        oauth2_token = OAuth2Token({'access_token': access_token})
+        credentials = CustomDomainOAuth2Credentials(
+            azure_cloud=self.azure_cloud,
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+            access_token=oauth2_token,
+        )
+        # need to add identity for protocol OAuth header
+        credentials.identity = Identity(upn=self.account_email)
+        config = Configuration(
+            credentials=credentials,
+            auth_type=OAUTH2,
+            version=Version(EXCHANGE_O365),
+            service_endpoint=f'{self.azure_cloud.endpoints.exchange_online}/EWS/Exchange.asmx',
+        )
+        return config, credentials
+
+    def prepare_onprem(self) -> tuple[Optional[Configuration], Credentials]:
+        """
+        Prepares the client protocol, credentials and configuration based on the authentication type.
+        For auto_discovery, the configuration object will be created as needed from the discovered connection parameters.
+
+        :return: Configuration and Credentials objects.
+        """
+        BaseProtocol.HTTP_ADAPTER_CLS = InsecureSSLAdapter if self.insecure else HTTPAdapter
+
+        self.auto_discover = not self.ews_server
+        if self.auto_discover:
+            credentials = Credentials(username=self.client_id, password=self.client_secret)
+            self.prepare_on_prem_context(credentials)
+            return None, credentials
+
+        if 'outlook.office365.com' in self.ews_server.lower():
+            if not self.auth_type:
+                self.auth_type = BASIC
+            self.version = '2016'
+        else:
+            if self.manual_username:
+                self.client_id = self.manual_username
+            if not self.auth_type:
+                self.auth_type = NTLM
+            if not self.version:
+                return_error('Exchange Server Version is required for on-premise Exchange Servers.')
+
+        version = get_on_prem_version(self.version)
+        credentials = Credentials(username=self.client_id, password=self.client_secret)
+        config_args = {
+            'credentials': credentials,
+            'auth_type': self.auth_type,
+            'version': version
+        }
+        if not self.ews_server:
+            return_error("Exchange Server Hostname or IP Address is required for manual configuration.")
+        elif 'http' in self.ews_server.lower():
+            config_args['service_endpoint'] = self.ews_server
+        else:
+            config_args['server'] = self.ews_server
+        return Configuration(**config_args, retry_policy=FaultTolerance(max_wait=60)), credentials
+
+    def prepare_on_prem_context(self, credentials):
+        context_dict = demisto.getIntegrationContext()
+        if not context_dict:
+            try:
+                account = Account(
+                    primary_smtp_address=self.account_email, autodiscover=True,
+                    access_type=self.access_type, credentials=credentials,
+                )
+                self.ews_server = account.protocol.service_endpoint
+                self.server_build = account.protocol.version.build
+                demisto.setIntegrationContext(cache_autodiscover_results(context_dict, account))
+            except AutoDiscoverFailed:
+                return_error("Auto discovery failed. Check credentials or configure manually")
+            except Exception as e:
+                return_error(str(e))
+        else:
+            self.server_build = get_build_from_context(context_dict)
+            self.ews_server = get_endpoint_from_context(context_dict)
+
     def get_protocol(self):
         """
         Get the EWS protocol with the configured settings.
-        
+
         :return: The EWS protocol instance.
         """
-        return BaseProtocol(self.config)
+        if self.auto_discover:
+            return self.get_account_autodiscover(self.account_email).protocol
+
+        return Protocol(self.config)
 
     def get_account(self, target_mailbox: Optional[str]=None, time_zone=None) -> Account:
         """
@@ -100,6 +340,9 @@ class EWSClient:
         """
         if not target_mailbox:
             target_mailbox = self.account_email
+            
+        if self.auto_discover:
+            return self.get_account_autodiscover(target_mailbox, time_zone)
 
         return Account(
             primary_smtp_address=target_mailbox,
@@ -108,6 +351,55 @@ class EWSClient:
             access_type=self.access_type,
             default_timezone=time_zone,
         )
+        
+    def get_account_autodiscover(self, target_mailbox: str, time_zone=None) -> Account:
+        """
+        Request an account from EWS using the autodiscovery mechanism
+
+        :param target_mailbox: Mailbox associated with the requested account
+        :param time_zone: Timezone associated with the requested account
+
+        :return: exchangelib Account
+        """
+        original_exc = None
+        context_dict = demisto.getIntegrationContext()
+
+        if context_dict:
+            try:
+                config_args = get_config_from_context(context_dict, self.credentials)
+                account = Account(
+                    primary_smtp_address=target_mailbox,
+                    autodiscover=False,
+                    config=Configuration(**config_args),
+                    access_type=self.access_type,
+                    default_timezone=time_zone
+                )
+                account.root.effective_rights.read  # noqa: B018 pylint: disable=E1101
+                return account
+            except Exception as e:
+                # fixing flake8 correction where original_exc is assigned but unused
+                original_exc = e
+
+        try:
+            account = Account(
+                primary_smtp_address=self.account_email,
+                autodiscover=True,
+                credentials=self.credentials,
+                access_type=self.access_type,
+            )
+        except AutoDiscoverFailed:
+            return_error('Auto discovery failed. Check credentials or configure manually')
+
+        new_context = cache_autodiscover_results(context_dict, account)
+        if new_context == context_dict and original_exc:
+            # Autodiscovery returned the same connection params as the cached ones we failed to use
+            raise original_exc  # pylint: disable=E0702
+
+        if target_mailbox == self.account_email:
+            demisto.setIntegrationContext(new_context)
+
+        return account
+
 
     def get_items_from_mailbox(self, account: Optional[Union[Account, str]], item_ids):
         """
@@ -129,7 +421,7 @@ class EWSClient:
         result = list(account.fetch(ids=items))
         result = [x for x in result if not (isinstance(x, ErrorItemNotFound | ErrorInvalidIdMalformed))]
         if len(result) != len(item_ids):
-            raise Exception("One or more items were not found/malformed. Check the input item ids")
+            raise Exception('One or more items were not found/malformed. Check the input item ids')
         return result
 
     def get_item_from_mailbox(self, account: Optional[Union[Account, str]], item_id):
@@ -141,7 +433,7 @@ class EWSClient:
         """
         result = self.get_items_from_mailbox(account, [item_id])
         if len(result) == 0:
-            raise Exception(f"ItemId {str(item_id)} not found")
+            raise Exception(f'ItemId {str(item_id)} not found')
         return result[0]
 
     def get_attachments_for_item(self, item_id, account: Optional[Union[Account, str]], attachment_ids: list=[]):
@@ -202,10 +494,14 @@ class EWSClient:
             if path in folders_map:
                 return account.root._folders_map[path]
 
-        # TODO: recent discrepancy, investigate further
-        folder = account.public_folders_root if is_public else account.root.tois
-        path = path.replace("/", "\\")
-        path_parts = path.split("\\")
+        if (self.version == 'O365'):
+            root = account.public_folders_root if is_public else account.root
+            folder = root if path == 'AllItems' else root.tois
+        else:
+            folder = account.public_folders_root if is_public else account.root.tois
+
+        path = path.replace('/', '\\')
+        path_parts = path.split('\\')
         for part in path_parts:
             try:
                 demisto.debug(f'resolving {part=} {path_parts=}')
@@ -216,11 +512,30 @@ class EWSClient:
         return folder
 
     def send_email(self, message: Message):
+        """
+        Send message using the EWS account associated with this client instance.
+
+        :param message: Message to be sent
+        """
         account = self.get_account()
         message.account = account
         message.send_and_save()
 
-    def reply_mail(self, inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments, from_mailbox=None):
+    def reply_email(self, inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments, from_mailbox=None):
+        """
+        Send a reply email using the EWS account associated with this client, based on the provided parameters.
+        
+        :param inReplyTo: ID of the email to reply to
+        :param to: List of email addresses for the "To" field
+        :param body: Body of the email
+        :param subject: Subject of the email
+        :param bcc: List of 'BCC' email addresses
+        :param cc: List of 'CC' email addresses
+        :param html_body: HTML body of the email (overrides body)
+        :param attachments: List of attachments to include in the email
+        :param from_mailbox: Email address of the sender (optional)
+        :return: The sent message
+        """
         account = self.get_account()
         item_to_reply_to = account.inbox.get(id=inReplyTo)  # type: ignore
         if isinstance(item_to_reply_to, ErrorItemNotFound):
@@ -272,3 +587,72 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
 
     clean_body += html_body[last_index:]
     return clean_body, attachments
+
+def get_config_from_context(context: dict, credentials: BaseCredentials):
+    """
+    Create a configuration obj from the cached autodiscovery results in the provided integration context.
+
+    :param context: the integration context dict
+    :param credentials: the credentials
+    :return: config: a configuration object for the previously discovered connection params
+    """
+    auth_type = context['auth_type']
+    api_version = context['api_version']
+    version = Version(get_build_from_context(context), api_version)
+    service_endpoint = context['service_endpoint']
+
+    config_args = {
+        'credentials': credentials,
+        'auth_type': auth_type,
+        'version': version,
+        'service_endpoint': service_endpoint
+    }
+    return config_args
+
+def get_build_from_context(context: dict):
+    """
+    Create a Build object from the cached autodiscovery results in the provided integration context.
+
+    :param context: the integration context dict
+    :return: build: a Build object for the previously discovered connection params
+    """
+    build_params = context['build'].split('.')
+    build_params = [int(i) for i in build_params]
+    return Build(*build_params)
+
+def get_endpoint_from_context(context_dict: dict):
+    """
+    Get the EWS Server endpoint from the cached autodiscovery results in the provided integration context.
+
+    :param context: the integration context dict
+    :return: endpoint: The endpoint from the previously discovered connection params
+    """
+    return context_dict["service_endpoint"]
+
+def cache_autodiscover_results(context: dict, account: Account):
+    """
+    Add the autodiscovery results to the integration context for later reuse.
+
+    :param context: the integration context dict
+    :param account: the discovered account object
+    :return: the updated context
+    """
+    context['auth_type'] = account.protocol.auth_type
+    context['service_endpoint'] = account.protocol.service_endpoint
+    context['build'] = str(account.protocol.version.build)
+    context['api_version'] = account.protocol.version.api_version
+    
+    return context
+
+def get_on_prem_version(version: str):
+    """
+    Convert a version string to a Version object for on-prem Exchange Server versions.
+    
+    :param version: The version string (e.g. "2013", "2016", "2019")
+    :return: A Version object representing the on-premises Exchange Server version
+    """
+    if version not in ON_PREM_VERSIONS:
+        supported_versions = '\\'.join(list(ON_PREM_VERSIONS.keys()))
+        raise Exception(f'{version} is not a supported version. Choose one of: {supported_versions}.')
+
+    return Version(ON_PREM_VERSIONS[version])
