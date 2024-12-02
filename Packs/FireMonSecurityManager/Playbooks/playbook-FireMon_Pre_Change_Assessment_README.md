@@ -33,5 +33,5 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![FireMon Pre Change Assessment](../doc_files/playbook-FireMon_Pre_Change_Assessment.png)
+![FireMon Pre Change Assessment](../doc_files/playbook_firemon_pre_change_assessment.png)
 
