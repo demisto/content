@@ -119,7 +119,7 @@ def complete_auth_command(code: str, credentials: Credentials, base_url: str, in
 
 
 def reset_auth_command() -> CommandResults:
-    demisto.debug('reseting integration context to empty dict.')
+    demisto.debug('resetting integration context to empty dict.')
     set_integration_context({})
     message = 'Authorization was reset successfully. Run **!dropbox-auth-start** to start the authentication process.'
     return CommandResults(readable_output=message)
