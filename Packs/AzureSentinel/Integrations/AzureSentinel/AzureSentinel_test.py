@@ -20,7 +20,8 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     update_remote_system_command, update_remote_incident, close_incident_in_remote, update_incident_request, \
     set_xsoar_incident_entries, build_threat_indicator_data, DEFAULT_SOURCE, list_alert_rule_command, \
     list_alert_rule_template_command, delete_alert_rule_command, validate_required_arguments_for_alert_rule, \
-    create_data_for_alert_rule, create_and_update_alert_rule_command, COMMENT_HEADERS, update_incident_command
+    create_data_for_alert_rule, create_and_update_alert_rule_command, COMMENT_HEADERS, update_incident_command, \
+    extract_classification_reason
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
@@ -2112,3 +2113,45 @@ def test_update_incident_with_client_changed_etag(mocker):
 
     assert http_request_mock.call_count == 2
     assert http_request_mock.call_args[1].get('data', {}).get('etag') == newer_incident_from_azure.get('etag')
+
+
+@pytest.mark.parametrize(
+    "delta, data, expected",
+    [
+        (
+            {
+                "classification": "FalsePositive",
+                "classificationReason": "InaccurateData",
+            },
+            {},
+            "InaccurateData",
+        ),
+        (
+            {"classification": "FalsePositive"},
+            {"classificationReason": "SystemError"},
+            "SystemError",
+        ),
+        ({"classification": "FalsePositive"}, {}, "InaccurateData"),
+        (
+            {
+                "classification": "TruePositive",
+                "classificationReason": "InaccurateData",
+            },
+            {},
+            "SuspiciousActivity",
+        ),
+        ({}, {"classification": "BenignPositive"}, "SuspiciousButExpected"),
+        ({}, {}, ""),
+    ],
+    ids=[
+        "FalsePositive classification with specific reason in delta",
+        "FalsePositive classification with reason in data",
+        "FalsePositive classification without specific reason",
+        "TruePositive classification with default reason",
+        "No classification in delta, but classification in data",
+        "No classification in delta or data",
+    ],
+)
+def test_extract_classification_reason(delta, data, expected):
+    result = extract_classification_reason(delta, data)
+    assert result == expected

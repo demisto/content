@@ -2,7 +2,7 @@
     "name": "Check Point Threat Emulation (SandBlast)",
     "description": "Upload files using polling, the service supports Microsoft Office files, as well as PDF, SWF, archives and executables. Active content will be cleaned from any documents that you upload (Microsoft Office and PDF files only). Query on existing IOCs, file status, analysis, reports. Download files from the database. Supports both appliance and cloud. Supported Threat Emulation versions are any R80x.",
     "support": "xsoar",
-    "currentVersion": "1.0.11",
+    "currentVersion": "1.0.12",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
