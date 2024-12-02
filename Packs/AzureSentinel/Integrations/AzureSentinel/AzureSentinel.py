@@ -705,6 +705,12 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
     Returns:
         Dict[str, Any]: the response of the update incident request
     """
+    # we will run the mirror-out update only if there is relevant changes or need to close the remote ticket
+    relevant_keys_delta = delta.keys() & OUTGOING_MIRRORED_FIELDS.keys()
+    if not relevant_keys_delta and not close_ticket:
+        demisto.debug('No relevant changes to update in the remote system')
+        return {}
+
     fetched_incident_data = get_incident_by_id_command(client, {'incident_id': incident_id}).raw_response
     required_fields = ('severity', 'status', 'title')
     if any(field not in data for field in required_fields):
@@ -717,7 +723,7 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
         'title': data.get('title'),
         'description': delta.get('description'),
         'severity': severity if severity in LEVEL_TO_SEVERITY.values() else LEVEL_TO_SEVERITY[severity],
-        'status': 'Active',
+        'status': data.get('status', 'Active'),
         'firstActivityTimeUtc': delta.get('firstActivityTimeUtc'),
         'lastActivityTimeUtc': delta.get('lastActivityTimeUtc'),
         'owner': demisto.get(fetched_incident_data, 'properties.owner', {}),

@@ -1708,42 +1708,57 @@ def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, to_cl
 
 @pytest.mark.parametrize("data, delta, mocked_fetch_data, expected_response, close_ticket", [
     (   # Update description of active incident.
-        {'title': 'Title', 'description': 'old desc', 'severity': 2, 'status': 1},
+        {'title': 'Title', 'description': 'old desc', 'severity': 2, 'status': 'Active'},
         {'title': 'Title', 'description': 'new desc'},
         {'title': 'Title', 'description': 'old desc', 'severity': 'Medium', 'status': 'Active'},
         {'title': 'Title', 'description': 'new desc', 'severity': 'Medium', 'status': 'Active'},
         False
     ),
+    (   # Update runStatus (not mirror field) of active incident - shouldn't run the update,
+        # and will return {}
+        {'title': 'Title', 'description': 'old desc', 'severity': 2, 'status': 'New'},
+        {'runStatus': 'running'},
+        {'title': 'Title', 'description': 'old desc', 'severity': 'Medium', 'status': 'New'},
+        {},
+        False
+    ),
+    (   # Update runStatus (not mirror field) of Closed incident - should close the ticket,
+        {'title': 'Title', 'description': 'old desc', 'severity': 1, 'status': 'New'},
+        {'runStatus': 'running', 'classification': 'Undetermined'},
+        {'title': 'Title', 'severity': 'Low', 'status': 'Active'},
+        {'title': 'Title', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
+        True
+    ),
     (   # Update description and classification and close incident.
-        {'title': 'Title', 'description': 'old desc', 'severity': 1, 'status': 2},
+        {'title': 'Title', 'description': 'old desc', 'severity': 1, 'status': 'Active'},
         {'title': 'Title', 'description': 'new desc', 'classification': 'Undetermined'},
         {'title': 'Title', 'description': 'old desc', 'severity': 'Low', 'status': 'Active'},
         {'title': 'Title', 'description': 'new desc', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
         True
     ),
     (   # Update description and classification of active incident without closing. Result in description update only.
-        {'title': 'Title', 'description': 'old desc', 'severity': 1, 'status': 2},
+        {'title': 'Title', 'description': 'old desc', 'severity': 1, 'status': 'Active'},
         {'title': 'Title', 'description': 'new desc', 'classification': 'Undetermined'},
         {'title': 'Title', 'description': 'old desc', 'severity': 'Low', 'status': 'Active'},
         {'title': 'Title', 'description': 'new desc', 'severity': 'Low', 'status': 'Active'},
         False
     ),
     (   # Update title and close incident with classification already in data. Result in closing with classification.
-        {'title': 'Title', 'severity': 1, 'status': 2, 'classification': 'Undetermined'},
+        {'title': 'Title', 'severity': 1, 'status': 'Active', 'classification': 'Undetermined'},
         {'title': 'Title'},
         {'title': 'Title', 'severity': 'Low', 'status': 'Active', 'classification': 'Undetermined'},
         {'title': 'Title', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
         True
     ),
     (  # Update labels of active incident when no labels exist.
-        {'title': 'Title', 'description': 'desc', 'severity': 2, 'status': 1, 'tags': []},
+        {'title': 'Title', 'description': 'desc', 'severity': 2, 'status': 'Active', 'tags': []},
         {'title': 'Title', 'tags': ['Test']},
         {'title': 'Title', 'description': 'desc', 'severity': 'Medium', 'status': 'Active'},
         {'title': 'Title', 'severity': 'Medium', 'status': 'Active', 'labels': [{'labelName': 'Test', 'type': 'User'}]},
         False
     ),
     (   # Update labels of active incident when a label already exist.
-        {'title': 'Title', 'description': 'desc', 'severity': 2, 'status': 1, 'tags': ['Test']},
+        {'title': 'Title', 'description': 'desc', 'severity': 2, 'status': 'Active', 'tags': ['Test']},
         {'title': 'Title', 'tags': ['Test2']},
         {'title': 'Title', 'description': 'desc', 'severity': 'Medium', 'status': 'Active',
          'properties': {'labels': [{'labelName': 'Test', 'type': 'User'}]}},
@@ -1767,7 +1782,7 @@ def test_update_incident_request(mocker, data, delta, mocked_fetch_data, expecte
     mocker.patch.object(client, 'http_request', return_value=mocked_fetch_data)
 
     update_incident_request(client, 'id-incident-1', data, delta, close_ticket)
-    assert client.http_request.call_args[1]['data'].get('properties') == expected_response
+    assert not expected_response or client.http_request.call_args[1]['data'].get('properties') == expected_response
 
 
 @pytest.mark.parametrize("args", [
