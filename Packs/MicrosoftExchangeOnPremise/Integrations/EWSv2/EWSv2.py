@@ -604,7 +604,7 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
     return m
 
 
-def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
+def handle_html(html_body: str) -> tuple[str, List[Dict[str, Any]]]:
     """
     Extract all data-url content from within the html and return as separate attachments.
     Due to security implications, we support only images here
@@ -618,12 +618,11 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
         name = f'image{i}'
         cid = (f'{name}_{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
         attachment = {
-            'data': base64.b64decode(m.group(3)),
+            'data': b64_decode(m.group(3)),
             'name': name
-
         }
         attachment['cid'] = cid
-        clean_body += html_body[last_index:m.start(1)] + 'cid:' + attachment['cid']
+        clean_body += html_body[last_index:m.start(1)] + 'cid:' + str(attachment['cid'])
         last_index = m.end() - 1
         new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
                                         content_id=attachment.get('cid'), is_inline=True)
