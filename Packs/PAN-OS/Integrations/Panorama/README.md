@@ -9395,7 +9395,8 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Master key changed successfully. All key material has been re-encrypted with new master key and committed via jobid 1234.
->The current API key has been invalidated. Generate a new API key and ensure the integration instance is updated accordingly.
+>
+>⚠️ The current API key is no longer valid! (by design). Generate a new API key and update it in the integration instance configuration to keep using the integration.
 
 ### pan-os-update-master-key
 
@@ -9433,7 +9434,8 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Master key changed successfully. All key material has been re-encrypted with new master key and committed via jobid 2468.
->The current API key has been invalidated. Generate a new API key and ensure the integration instance is updated accordingly.
+>
+>⚠️ The current API key is no longer valid! (by design). Generate a new API key and update it in the integration instance configuration to keep using the integration.
 
 ### pan-os-get-master-key-details
 
