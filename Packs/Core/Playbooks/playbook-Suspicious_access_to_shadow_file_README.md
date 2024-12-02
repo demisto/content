@@ -7,15 +7,24 @@ Playbook Stages:
   
 Triage: 
  
-- Verify if the Causality Generating Object (CGO) is signed and analyze its image name
+- Check if the causality process image (CGO) is signed or not
  
 Investigation:
  
 - Examine process details, prevalence, and historical data for similar alerts
+- If CGO is unsigned:
+  - Check the CGO process prevalence
+  - Check if the process image path is common
+- If CGO is signed:
+  - Check process image name
+  - Check intiating process image name
+  - Check if username is SYSTEM
+  - Check if host is a server
+  - Check for previous similar alerts
  
 Containment:
  
-- Terminate suspicious processes
+- Terminate causality process (CGO) process
 
 ## Dependencies
 
@@ -31,7 +40,7 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* SearchAlertsV2
+* SearchIncidentsV2
 
 ### Commands
 

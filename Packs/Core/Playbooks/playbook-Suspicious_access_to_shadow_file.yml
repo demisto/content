@@ -1,7 +1,7 @@
 id: Suspicious access to shadow file
 version: -1
 name: Suspicious access to shadow file
-description: "This playbook addresses the following alerts:\n \n- Uncommon creation or access operation of sensitive shadow copy by a high-risk process\n- Suspicious access to shadow file\n \nPlaybook Stages:\n  \nTriage: \n \n- Verify if the Causality Generating Object (CGO) is signed and analyze its image name\n \nInvestigation:\n \n- Examine process details, prevalence, and historical data for similar alerts\n \nContainment:\n \n- Terminate suspicious processes"
+description: "This playbook addresses the following alerts:\n \n- Uncommon creation or access operation of sensitive shadow copy by a high-risk process\n- Suspicious access to shadow file\n \nPlaybook Stages:\n  \nTriage: \n \n- Check if the causality process image (CGO) is signed or not\n \nInvestigation:\n \n- Examine process details, prevalence, and historical data for similar alerts\n- If CGO is unsigned:\n  - Check the CGO process prevalence\n  - Check if the process image path is common\n- If CGO is signed:\n  - Check process image name\n  - Check intiating process image name\n  - Check if username is SYSTEM\n  - Check if host is a server\n  - Check for previous similar alerts\n \nContainment:\n \n- Terminate causality process (CGO) process"
 
 tags:
 - T1003 - OS Credential Dumping
