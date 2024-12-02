@@ -7,7 +7,7 @@ import demistomock as demisto
 from pytest_mock import MockerFixture
 from pathlib import Path
 
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, get_current_time
 
 MOCK_BASEURL = "https://example.protect.jamfcloud.com"
 MOCK_CLIENT_ID = "example_client_id"
@@ -275,3 +275,26 @@ def test_handle_errors(client):
     with pytest.raises(DemistoException) as de:
         client.handle_errors(res)
         assert de.message == "\n".join(error.get("message") for error in res["errors"])
+
+
+@freeze_time("'2022-05-01 12:52:29'")
+def test_login(mocker):
+    """
+    Given:
+        - Mocked integration context which contains a valid token (not expired)
+    When:
+        - running _login client's method
+    Then:
+        - Ensure that no new token is generated (since the existing token is not expired)
+    """
+    from JamfProtectEventCollector import Client
+    DATE_FORMAT_FOR_TOKEN = "%m/%d/%Y, %H:%M:%S"
+    context = {
+        "token": "TEST",
+        "expires": (get_current_time() + datetime.timedelta(seconds=10)).strftime(DATE_FORMAT_FOR_TOKEN)
+    }
+
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=context)
+    mock_create_new_token = mocker.patch.object(Client, '_create_new_token')
+    Client(base_url="1.1.1.1", verify=True, client_id='UserName', client_password='Password')
+    mock_create_new_token.assert_not_called()  # ensuring _create_new_token was not called
