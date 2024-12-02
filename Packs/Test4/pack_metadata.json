@@ -1,0 +1,21 @@
+{
+    "name": "test4",
+    "description": "test4_desc",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "RotemAmit",
+    "url": "",
+    "email": "",
+    "created": "2024-12-02T13:35:05Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "RotemAmit"
+    ]
+}
