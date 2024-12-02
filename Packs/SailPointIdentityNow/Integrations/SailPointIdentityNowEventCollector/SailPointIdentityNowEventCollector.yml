@@ -61,7 +61,7 @@ script:
     description: Gets events from SailPoint IdentityNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding API request limitations.
 
     name: identitynow-get-events
-  dockerimage: demisto/python3:3.11.9.106403
+  dockerimage: demisto/python3:3.11.10.115186
   isfetchevents: true
   runonce: false
   script: '-'
