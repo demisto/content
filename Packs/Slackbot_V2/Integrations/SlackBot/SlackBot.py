@@ -29,7 +29,7 @@ DEDICATED_CHANNEL = demisto.params().get("dedicated_slack_channel_name")
 DEMISTO_API_KEY = demisto.params().get("api_key", {}).get("password", "")
 DEMISTO_BASE_URL = demisto.params().get("base_url")
 XSIAM_AUTH_ID = demisto.params().get("api_key_id")
-Allowed_roles = demisto.params().get("roles").split(",")
+ALLOWED_ROLES = demisto.params().get("roles").split(",")
 # TRUST = argToBoolean(demisto.params().get("insecure", False))
 
 # Instantiate the App Class
