@@ -83,7 +83,7 @@ class Client:
         self.server: Server
         self.api_root: list[ApiRoot]
         self.collections: list[Collection]
-        self.tactic_name_to_mitre_id = dict()
+        self.tactic_name_to_mitre_id: dict[str, str] = {}
 
     def get_server(self):
         server_url = urljoin(self.base_url, '/taxii2/')
@@ -118,10 +118,10 @@ class Client:
 
         elif self.tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
-        
+
         if item_type.lower() == "tactic":
             indicator_obj["value"] = f'{self.tactic_name_to_mitre_id[value]} - {value}'
-        
+
         if item_type in ("Attack Pattern", "STIX Attack Pattern") and not mitre_item_json.get("x_mitre_is_subtechnique", None):
             tactics = []
             for tactic in mitre_item_json["kill_chain_phases"]:
@@ -212,7 +212,7 @@ class Client:
                         mitre_item_json = json.loads(str(mitre_item))
 
                     if mitre_item_json.get('id') not in mitre_id_list:
-                        value = mitre_item_json.get('name')
+                        value = str(mitre_item_json.get('name'))
                         item_type = get_item_type(mitre_item_json.get('type'), is_up_to_6_2)
 
                         if item_type.lower() == 'relationship':
@@ -224,11 +224,11 @@ class Client:
                             if is_indicator_deprecated_or_revoked(mitre_item_json):
                                 continue
                             id_to_name[mitre_item_json['id']] = value
-                            
+
                             if item_type == 'Tactic':
                                 mitre_id = mitre_item_json['external_references'][0]['external_id']
                                 self.tactic_name_to_mitre_id[value] = mitre_id
-                            
+
                             indicator_obj = self.create_indicator(item_type, value, mitre_item_json)
                             add_obj_to_mitre_id_to_mitre_name(mitre_id_to_mitre_name, mitre_item_json)
                             indicators.append(indicator_obj)

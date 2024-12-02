@@ -45,6 +45,9 @@ def test_fetch_indicators(mocker, indicator, expected_result):
     import FeedMitreAttackv2 as fm
     from FeedMitreAttackv2 import Client, create_relationship
     client = Client(url="https://test.org", proxies=False, verify=False, tags=[], tlp_color=None)
+    client.tactic_name_to_mitre_id = {"Defense Evasion": "TA0005",
+                                      "Privilege Escalation": "TA0004",
+                                      "Resource Development": "TA0042"}
 
     default_id = ENTERPRISE_COLLECTION_ID
     nondefault_id = 2
