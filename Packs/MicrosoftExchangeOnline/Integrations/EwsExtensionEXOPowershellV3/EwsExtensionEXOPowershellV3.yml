@@ -2026,8 +2026,7 @@ script:
     - contextPath: EWS.ExportQuarantineMessage.Organization
       description: Identifier for the organization associated with the message.
       type: string
-    description: Export quarantine messages. Uses PowerShell Export-QuarantineMessage
-      cmdlet.
+    description: Export quarantine messages. Uses PowerShell Export-QuarantineMessage cmdlet.
     execution: true
   - name: ews-get-quarantinemessage
     arguments:
@@ -2224,8 +2223,7 @@ script:
     - contextPath: EWS.GetQuarantineMessage.Type
       description: Type of the message.
       type: string
-    description: Retrieve quarantine messages. Uses PowerShell Get-QuarantineMessage
-      cmdlet.
+    description: Retrieve quarantine messages. Uses PowerShell Get-QuarantineMessage cmdlet.
     execution: true
   - name: ews-release-quarantinemessage
     arguments:
@@ -2264,8 +2262,7 @@ script:
       description: Specify whether to report the message as a false positive.
     - name: action_type
       description: The type of action to take when releasing the message.
-    description: Release quarantine messages. Uses PowerShell Release-QuarantineMessage
-      cmdlet.
+    description: Release quarantine messages. Uses PowerShell Release-QuarantineMessage cmdlet.
     execution: true
   - name: ews-remove-tenant-allow-block-list-items
     arguments:
@@ -2349,18 +2346,18 @@ script:
       description: Maximum number of rules to get. A value of 0 means to get all rules.
       name: limit
     outputs:
-      - contextPath: EWS.Rule.RuleIdentity
-        description: The rule identity.
-        type: string
-      - contextPath: EWS.Rule.Name
-        description: The rule name.
-        type: string
-      - contextPath: EWS.Rule.Enabled
-        description: Whether the rule is enabled or not.
-        type: string
-      - contextPath: EWS.Rule.Priority
-        description: The priorty of the rule.
-        type: string
+    - contextPath: EWS.Rule.RuleIdentity
+      description: The rule identity.
+      type: string
+    - contextPath: EWS.Rule.Name
+      description: The rule name.
+      type: string
+    - contextPath: EWS.Rule.Enabled
+      description: Whether the rule is enabled or not.
+      type: string
+    - contextPath: EWS.Rule.Priority
+      description: The priorty of the rule.
+      type: string
     description: Retrieve a list of an Inbox rules.
   - name: ews-get-rule
     arguments:
@@ -2404,104 +2401,104 @@ script:
     description: Remove an Inbox rule.
   - name: ews-rule-disable
     arguments:
-      - name: mailbox
-        description: The mailbox that contains the inbox rule.
-        required: true
-      - name: identity
-        description: The inbox rule that you want to disable.
-        required: true
+    - name: mailbox
+      description: The mailbox that contains the inbox rule.
+      required: true
+    - name: identity
+      description: The inbox rule that you want to disable.
+      required: true
     description: Disable an existing inbox rule in a given mailbox.
   - name: ews-rule-enable
     arguments:
-      - name: mailbox
-        description: The mailbox that contains the inbox rule.
-        required: true
-      - name: identity
-        description: The inbox rule that you want to enable.
-        required: true
+    - name: mailbox
+      description: The mailbox that contains the inbox rule.
+      required: true
+    - name: identity
+      description: The inbox rule that you want to enable.
+      required: true
     description: Enable an existing inbox rule in a given mailbox.
   - name: ews-mail-flow-rules-list
     arguments:
-      - name: extended_output
-        description: Determine whether the output will be in verbose format or not.
-        required: no
-        defaultValue: false
+    - name: extended_output
+      description: Determine whether the output will be in verbose format or not.
+      required: no
+      defaultValue: false
     outputs:
-      - contextPath: EWS.MailFlowRule.Name
-        description: The rule name.
-        type: string
-      - contextPath: EWS.MailFlowRule.State
-        description: The rule state.
-        type: string
-      - contextPath: EWS.MailFlowRule.Priority
-        description: The priority of the rule.
-        type: string
-      - contextPath: EWS.MailFlowRule.Comment
-        description: Comment about the rule.
-        type: string
-      - contextPath: EWS.MailFlowRule.WhenChanged
-        description: Local time of when the mail flow rule was last changed.
-        type: Date
-      - contextPath: EWS.MailFlowRule.CreatedBy
-        description: Who created the mail flow rule.
-        type: string
+    - contextPath: EWS.MailFlowRule.Name
+      description: The rule name.
+      type: string
+    - contextPath: EWS.MailFlowRule.State
+      description: The rule state.
+      type: string
+    - contextPath: EWS.MailFlowRule.Priority
+      description: The priority of the rule.
+      type: string
+    - contextPath: EWS.MailFlowRule.Comment
+      description: Comment about the rule.
+      type: string
+    - contextPath: EWS.MailFlowRule.WhenChanged
+      description: Local time of when the mail flow rule was last changed.
+      type: Date
+    - contextPath: EWS.MailFlowRule.CreatedBy
+      description: Who created the mail flow rule.
+      type: string
     description: List all mail flow rules (transport rules) in the organization.
   - name: ews-mail-flow-rule-get
     arguments:
-      - name: identity
-        description: The rule that you want to view.
-        required: true
-      - name: extended_output
-        description: Determine whether the output will be in verbose format or not.
-        required: no
-        defaultValue: false
+    - name: identity
+      description: The rule that you want to view.
+      required: true
+    - name: extended_output
+      description: Determine whether the output will be in verbose format or not.
+      required: no
+      defaultValue: false
     outputs:
-      - contextPath: EWS.MailFlowRule.Name
-        description: The rule name.
-        type: string
-      - contextPath: EWS.MailFlowRule.State
-        description: The rule state.
-        type: string
-      - contextPath: EWS.MailFlowRule.Priority
-        description: The priority of the rule.
-        type: string
-      - contextPath: EWS.MailFlowRule.Comment
-        description: Comment about the rule.
-        type: string
-      - contextPath: EWS.MailFlowRule.WhenChanged
-        description: Local time of when the mail flow rule was last changed.
-        type: Date
-      - contextPath: EWS.MailFlowRule.CreatedBy
-        description: Who created the mail flow rule.
-        type: string
+    - contextPath: EWS.MailFlowRule.Name
+      description: The rule name.
+      type: string
+    - contextPath: EWS.MailFlowRule.State
+      description: The rule state.
+      type: string
+    - contextPath: EWS.MailFlowRule.Priority
+      description: The priority of the rule.
+      type: string
+    - contextPath: EWS.MailFlowRule.Comment
+      description: Comment about the rule.
+      type: string
+    - contextPath: EWS.MailFlowRule.WhenChanged
+      description: Local time of when the mail flow rule was last changed.
+      type: Date
+    - contextPath: EWS.MailFlowRule.CreatedBy
+      description: Who created the mail flow rule.
+      type: string
     description: Get a mail flow rule (transport rules) in the organization.
   - name: ews-mail-flow-rule-remove
     arguments:
-      - name: identity
-        description: The rule that you want to remove.
-        required: true
+    - name: identity
+      description: The rule that you want to remove.
+      required: true
     description: Remove a mail flow rule (transport rule) from the organization.
   - name: ews-mail-flow-rule-disable
     arguments:
-      - name: identity
-        description: The rule that you want to disable.
-        required: true
+    - name: identity
+      description: The rule that you want to disable.
+      required: true
     description: Disable a mail flow rule (transport rule) in the organization.
   - name: ews-mail-flow-rule-enable
     arguments:
-      - name: identity
-        description: The rule that you want to enable.
-        required: true
+    - name: identity
+      description: The rule that you want to enable.
+      required: true
     description: Enable a mail flow rule (transport rule) in the organization.
   - name: ews-mail-forwarding-disable
     arguments:
-      - name: identity
-        description: The mailbox that you want to modify.
-        required: true
+    - name: identity
+      description: The mailbox that you want to modify.
+      required: true
     description: Disable mail forwarding for a given user.
   script: ''
   type: powershell
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.88371
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.116826
 fromversion: 5.5.0
 tests:
 - playbook-O365-EWS-Extension-Powershell-Online-V3-Test
