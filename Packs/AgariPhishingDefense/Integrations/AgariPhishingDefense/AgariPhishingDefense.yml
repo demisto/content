@@ -323,7 +323,7 @@ script:
       required: true
     description: Remediate suspected message.
     name: apd-remediate-message
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: '-'

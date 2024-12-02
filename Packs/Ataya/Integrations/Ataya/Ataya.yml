@@ -39,7 +39,7 @@ script:
       description: the cilient imsi which need to be assigned.
     description: approve user to access external network.
     name: ataya-assign-user
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3
