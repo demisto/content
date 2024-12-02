@@ -40,7 +40,7 @@ def get_tenant_name():
     return tenant_name
 
 
-def get_failed_tasks_output(tasks: list, incident: dict, custom_scripts_map_id_and_name: dict[str, str]):
+def get_failed_tasks_output(tasks: list, incident: dict, custom_scripts_map_id_and_name: dict[str, str] = {}):
     """
         Converts the failing task objects of an incident to context outputs.
 
