@@ -443,8 +443,6 @@ def get_event_for_specific_type(start_date: str, end_date: str, max_fetch: int, 
              - A dictionary with new last run values,
               the end date of the fetched events and a continuance token if the fetched reached the max limit.
      """
-    last_run_key = 'alert' if specific_type == 'audit' else specific_type  # although audit is the type, the key should be alert
-    start_date, end_date = calculate_fetch_dates(start_date, last_run=last_run, last_run_key=last_run_key, end_date=end_date)
 
     mapping_command_args: dict[str, dict[str, Any]] = {'audit': {"start_date": start_date, "end_date": end_date},
                                                        'alert': {"created": start_date},
@@ -452,12 +450,6 @@ def get_event_for_specific_type(start_date: str, end_date: str, max_fetch: int, 
                                                                     bool(last_run or not fetch_all_computers)}}
 
     command_args = mapping_command_args[specific_type]
-
-    debug_message = f"Fetching {specific_type}s from {start_date} to {end_date}"
-    if specific_type == 'computer' and fetch_all_computers and not last_run:
-        debug_message = "Fetching all computers"
-
-    demisto.debug(debug_message)
 
     next_page = last_run.get(specific_type, {}).get("next_page", "")
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
@@ -606,14 +598,23 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
     # Process event types
     for event in event_types:
         if no_next_pages or event["condition"]:
-            if event["extra_args"].get(fetch_all_computers): 
-                demisto.debug("fetching all computers")
-            else:
-                demisto.debug(...)
+
+            specific_type = event["specific_type"]
+
+            last_run_key = 'alert' if specific_type == 'audit' else specific_type  # for audit type, key should be alert
+
+            start_date, end_date = calculate_fetch_dates(start_date_arg, last_run=last_run, last_run_key=last_run_key,
+                                                         end_date=end_date_arg)
+
+            debug_message = f"Fetching {specific_type}s from {start_date} to {end_date}"
+            if specific_type == 'computer' and fetch_all_computers and not last_run:
+                debug_message = "Fetching all computers"  # a unique debug_message fort his case (overrides the generic one)
+
+            demisto.debug(debug_message)
 
             events, next_run_for_specific_type = get_event_for_specific_type(
-                start_date=start_date_arg,
-                end_date=end_date_arg,
+                start_date=start_date,
+                end_date=end_date,
                 max_fetch=event["max_fetch"],
                 last_run=last_run,
                 specific_type=event["specific_type"],
@@ -621,7 +622,7 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
                 **event["extra_args"]
             )
             # Assign events and next_run to corresponding variables
-            match event["specific_type"]:
+            match specific_type:
                 case "alert":
                     alert_events, alert_next_run = events, next_run_for_specific_type
                 case "audit":
@@ -629,7 +630,7 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
                 case "computer":
                     computer_events, computer_next_run = events, next_run_for_specific_type
                 case _:
-                    raise ValueError(f'Unexpected {event["specific_type"=}')
+                    raise ValueError(f'Unexpected {specific_type=}')
 
     next_run: dict[str, Any] = {"alert": alert_next_run, "audit": audit_next_run, 'computer': computer_next_run}
     if "next_page" in (alert_next_run | audit_next_run | computer_next_run):
