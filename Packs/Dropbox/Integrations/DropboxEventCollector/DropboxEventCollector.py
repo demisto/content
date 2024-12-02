@@ -190,7 +190,10 @@ def main(command: str, demisto_params: dict):
                 return_results(command_results)
 
     except Exception as e:
-        return_error(f'An error was returned from dropbox event collector {str(e)}, Traceback: , {traceback.format_exc()}')
+        return_error(
+            f'An error was returned from dropbox event collector while executing {command} command. error: {str(e)}',
+            error=e
+        )
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
