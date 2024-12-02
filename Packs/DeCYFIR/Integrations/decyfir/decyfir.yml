@@ -53,7 +53,7 @@ display: DeCYFIR
 name: decyfir
 script:
   commands: []
-  dockerimage: demisto/python3:3.10.14.90585
+  dockerimage: demisto/python3:3.11.10.115186
   feed: false
   isfetch: true
   runonce: false
