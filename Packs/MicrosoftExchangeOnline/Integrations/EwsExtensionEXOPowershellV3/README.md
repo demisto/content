@@ -1846,9 +1846,10 @@ List all mail flow rules (transport rules) in the organization.
 
 `ews-mail-flow-rules-list`
 #### Input
-| **Argument Name** | **Description**                                                | **Possible Values** | **Is Array** | **Required** | **Note** |
-| --- |----------------------------------------------------------------|---------------------| --- | --- | --- |
-| extended_output | Determine whether the output will be in verbose format or not. | Boolean             | No | No | Default = False |
+| **Argument Name** | **Description**                                                | **Possible Values** | **Is Array** | **Required** | **Note**        |
+|-------------------|----------------------------------------------------------------|---------------------|--------------| --- |-----------------|
+| extended_output   | Determine whether the output will be in verbose format or not. | Boolean             | No           | No | Default = False |
+| limit             | The amount of mail flow rules to return. | Number             | No           | No | Default = 1000  |
 
 #### Context Output
 | **Path** | **Type** | **Description** |

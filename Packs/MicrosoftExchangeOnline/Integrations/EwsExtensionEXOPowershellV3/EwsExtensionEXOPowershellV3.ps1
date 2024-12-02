@@ -1579,14 +1579,17 @@ class ExchangeOnlinePowershellV3Client
         #>
     }
 
-    [PSObject]ListMailFlowRules()
+    [PSObject]ListMailFlowRules([int]$limit)
     {
         $response = ""
         try {
             # Establish session to remote
             $this.CreateSession()
             # Import and Execute command
-            $response = Get-TransportRule -WarningAction:SilentlyContinue
+            if ($limit -gt 0){
+                $cmd_params.ResultSize = $limit
+            }
+            $response = Get-TransportRule @cmd_params -WarningAction:SilentlyContinue
         } finally {
             $this.DisconnectSession()
         }
@@ -1594,6 +1597,9 @@ class ExchangeOnlinePowershellV3Client
         <#
         .DESCRIPTION
         List all mail flow rules (transport rules) in the organization.
+
+        .PARAMETER limit
+        The amount of mail flow rules to return.
 
         .EXAMPLE
         Get-TransportRule
@@ -2385,7 +2391,8 @@ function ListMailFlowRulesCommand {
         [hashtable]$kwargs
     )
     $extended_output = $kwargs.extended_output
-    $raw_response = $client.ListMailFlowRules()
+    $limit = $kwargs.limit -as [int]
+    $raw_response = $client.ListMailFlowRules($limit)
     if ($raw_response -eq $null) {
         Write-Output "No Mail Flow Rules were found."
     }

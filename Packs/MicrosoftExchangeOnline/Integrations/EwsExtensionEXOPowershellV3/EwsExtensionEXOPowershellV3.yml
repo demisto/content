@@ -2423,6 +2423,10 @@ script:
       description: Determine whether the output will be in verbose format or not.
       required: no
       defaultValue: false
+    - name: limit
+      description: The maximum number of results to retrieve. Default is 1000.
+      required: no
+      defaultValue: '1000'
     outputs:
     - contextPath: EWS.MailFlowRule.Name
       description: The rule name.
