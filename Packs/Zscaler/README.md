@@ -18,7 +18,7 @@ The sections below describe the necessary configurations required on Cortex XSIA
    | `Compression`  | Select *gzip*.                                                   | 
    | `Log Format`   | Select *JSON*.                                                   | 
    | `Vendor`       | Enter *zscaler*.                                                 |
-   | `Product`      | Enter *cloudnss*.                                                     | 
+   | `Product`      | Enter *cloudnss*.                                                | 
 
 3. Click **Save & Generate Token**.
    1. Click the **Copy** icon and record the copied generated token somewhere safe. You will need to provide this token when you configure the ZIA Cloud NSS feed on Zscaler. 
