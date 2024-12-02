@@ -110,7 +110,7 @@ def complete_auth_command(code: str, credentials: Credentials, base_url: str, in
     redable_output = ''
     if response.ok:
         demisto.setIntegrationContext({'refresh_token': response.json()['refresh_token']})
-        redable_output = '✅ Authorization completed successfully.'
+        readable_output = '✅ Authorization completed successfully.'
     else:
         redable_output = f'❌ Authorization completed failed. {response.text}'
 
