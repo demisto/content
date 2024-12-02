@@ -20,7 +20,7 @@ SlashNext leads the industry with the greatest speed at internet scale, fast and
 * **Playbooks** for automating abuse inbox management and online brand protection
 
 ### SlashNext Platform Architecture
-![Architecture](https://github.com/demisto/content/raw/master/Packs/SlashNextPhishingIncidentResponse/doc_files/Architecture.png)
+![Architecture](doc_files/Architecture.png)
 
 ### Package Includes
 * URL Intelligence and Forensics

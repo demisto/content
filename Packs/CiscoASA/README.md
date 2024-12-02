@@ -26,7 +26,7 @@ Another supported date format is "Jul 08 09:14:35 UTC".
 
 **Note** : If a different timestamp format is used, time extraction and mapping will not be supported.
 
-![Server Screenshot](https://raw.githubusercontent.com/demisto/content/8a2f8a41f73e9d9f4e20693e3b99dc6b75336321/Packs/CiscoASA/docs_imgs/CiscoASDM_timestamp.png)
+![Server Screenshot](docs_imgs/CiscoASDM_timestamp.png)
 
 
 ### The supported events on Modeling rules:

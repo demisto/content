@@ -50,4 +50,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![California-BreachNotification](https://raw.githubusercontent.com/demisto/content/ddf1dde33bee934554152c990a1b9fee54645142/Packs/BreachNotification-US/doc_files/California_-_Breach_Notification.png)
+![California-BreachNotification](../doc_files/California_-_Breach_Notification.png)
