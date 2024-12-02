@@ -734,6 +734,25 @@ script:
          If your instance configuration involves a Cortex XSOAR engine, provide the engine's IP (or DNS name) and the port in use in the following format - `https://IP:port` or `http://IP:port`.
          For example - `https://my-engine.name:443`, `http://1.1.1.1:443`.   
         name: engine_url
+  - description: Retrieves the configuration details of the bots configured in Microsoft Teams.
+    name: microsoft-teams-bot-configuration-list
+    arguments:
+      - description: |-
+          The Azure subscription ID. To get your Azure subscription ID see - https://learn.microsoft.com/en-us/azure/azure-portal/get-subscription-tenant-id#find-your-azure-subscription,
+        name: subscription_id
+        required: true
+      - description: The maximum number of bots to retrieve details for. 
+        name: limit
+        required: false
+        defaultValue: '50'
+      - description: Whether to retrieve details for all the bots configured in Microsoft Teams. If true, the "limit" argument will be ignored.
+        name: all_results
+        required: false
+        defaultValue: false
+        auto: PREDEFINED
+        predefined:
+        - 'false'
+        - 'true'
   dockerimage: demisto/teams:1.0.0.116912
   longRunning: true
   longRunningPort: true

@@ -2884,7 +2884,40 @@ def create_messaging_endpoint_command():
     )
 
     return_results(result)
+    
+def bot_configuration_list_command():
+    """
+    Retrieves the configuration details of the bots configured in Microsoft Teams.
+    
+    """
+    args= demisto.args()
+    subscription_id = argToList(args.get('subscription_id', []))
+    limit = args.get('limit', MAX_ITEMS_PER_RESPONSE)
+    all_results = args.get('all_results', False)
+    
+    # TODO: take it out to a separate func
+    demisto.debug(f'Given subscription: {subscription_id}')
+    url = f"https://management.azure.com/subscriptions/{subscription_id}/providers/Microsoft.Search/searchServices?api-version=2023-11-01"
 
+    response: dict = cast(dict[Any, Any], http_request('GET', url))
+    print(f'response is: {response}')
+    print(f'response type is: {type(response)}')
+    
+    hr = ''
+    
+    result = CommandResults(
+        readable_output=tableToMarkdown(
+            f"prefix",
+            hr,
+            removeNull=True
+        ),
+        outputs_prefix='MicrosoftTeams.BotList',
+        outputs_key_field='',
+        outputs={},
+        raw_response=response
+    )
+    return_results(result) 
+    
 
 def validate_auth_code_flow_params(command: str = ''):
     """
@@ -2984,7 +3017,8 @@ def main():   # pragma: no cover
         'microsoft-teams-generate-login-url': generate_login_url_command,
         'microsoft-teams-auth-reset': reset_graph_auth,
         'microsoft-teams-token-permissions-list': token_permissions_list_command,
-        'microsoft-teams-create-messaging-endpoint': create_messaging_endpoint_command
+        'microsoft-teams-create-messaging-endpoint': create_messaging_endpoint_command,
+        'microsoft-teams-bot-configuration-list': bot_configuration_list_command,
     }
 
     commands_auth_code: dict = {
