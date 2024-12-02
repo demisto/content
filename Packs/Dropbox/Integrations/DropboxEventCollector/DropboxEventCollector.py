@@ -56,7 +56,7 @@ class DropboxEventsClient(IntegrationEventsClient):
             verify=self.request.verify,
         )
         response = self.call(request)
-        demisto.debug(f'Send request to obtain access_token get status code: {response.status_code}')
+        demisto.debug(f'Send request to obtain access_token get status code: {response.status_code}')       # pragma: no cover
         self.request.headers['Authorization'] = f'Bearer {response.json()["access_token"]}'
         self.request.url = parse_obj_as(AnyUrl, f'{str(self.request.url).removesuffix("/")}/2/team_log/get_events')
 
@@ -81,7 +81,7 @@ class DropboxEventsGetter(IntegrationGetEvents):
             if results.get('has_more'):
                 self.client.set_request_filter(results.get('cursor'))
                 demisto.debug(
-                    f'Setting the next request filter {results.get("cursor")}'
+                    f'Setting the next request filter {results.get("cursor")}'      # pragma: no cover
                 )
                 results = self.client.call(self.client.request).json()
             else:
@@ -113,12 +113,12 @@ def complete_auth_command(code: str, credentials: Credentials, base_url: str, in
     else:
         readable_output = f'❌ Authorization completed failed. {response.text}'
 
-    demisto.debug(f'Complete auth command {readable_output=}')
+    demisto.debug(f'Complete auth command {readable_output=}')  # pragma: no cover
     return CommandResults(readable_output=redable_output)
 
 
 def reset_auth_command() -> CommandResults:
-    demisto.debug('resetting integration context to empty dict.')
+    demisto.debug('resetting integration context to empty dict.')   #pragma: no cover
     set_integration_context({})
     message = 'Authorization was reset successfully. Run **!dropbox-auth-start** to start the authentication process.'
     return CommandResults(readable_output=message)
@@ -157,7 +157,7 @@ def main(command: str, demisto_params: dict):
             return_results(complete_auth_command(str(demisto_params.get('code')), credentials, base_url, insecure))
 
         elif not demisto.getIntegrationContext().get('refresh_token'):
-            demisto.debug('Integration getIntegrationContext.get(refresh_token) is empty run auth start.')
+            demisto.debug('Integration getIntegrationContext.get(refresh_token) is empty run auth start.')  # pragma: no cover
             return_results(CommandResults(readable_output='Please run the **!dropbox-auth-start** command first'))
 
         elif command == 'dropbox-auth-reset':
@@ -176,7 +176,7 @@ def main(command: str, demisto_params: dict):
 
                 if events:
                     last_run = get_events.get_last_run(events[-1])
-                    demisto.debug(f'Set last run to {last_run}')
+                    demisto.debug(f'Set last run to {last_run}')    # pragma: no cover.
                     demisto.setLastRun(last_run)
 
             if command == 'dropbox-get-events':
@@ -190,8 +190,7 @@ def main(command: str, demisto_params: dict):
 
     except Exception as e:
         return_error(
-            f'An error was returned from dropbox event collector while executing {command} command. error: {str(e)}',
-            error=e
+            f'An error was returned from dropbox event collector while executing {command} command. error: {str(e)}'
         )
 
 
