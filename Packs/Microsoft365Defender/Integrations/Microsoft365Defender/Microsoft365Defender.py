@@ -459,7 +459,7 @@ def microsoft_365_defender_incident_get_command(client: Client, args: dict) -> C
 
 @logger
 def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: str, fetch_limit: int, timeout: int = None) -> List[
-        dict]:
+    dict]:
     """
     Uses to fetch incidents into Demisto
     Documentation: https://xsoar.pan.dev/docs/integrations/fetching-incidents#the-fetch-incidents-command
@@ -610,7 +610,6 @@ def microsoft_365_defender_advanced_hunting_command(client: Client, args: dict) 
 
 def fetch_modified_incident_ids(client: Client, last_update_time) -> List[str]:
     demisto.debug("microsoft365::Starting fetch_modified_incidents")
-    test_context_for_token(client)  # todo: how to go aabout this in mirroring?
     incidents = []
 
     # The API is limited to MAX_ENTRIES incidents for each requests, if we are trying to get more than MAX_ENTRIES
@@ -632,7 +631,7 @@ def fetch_modified_incident_ids(client: Client, last_update_time) -> List[str]:
             incidents.append(str(incident.get('incidentId')))
         # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
         if len(raw_incidents) < int(
-                MAX_ENTRIES):  # todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
+            MAX_ENTRIES):  # todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
             break
         offset += int(MAX_ENTRIES)
     return incidents
@@ -640,7 +639,6 @@ def fetch_modified_incident_ids(client: Client, last_update_time) -> List[str]:
 
 def fetch_modified_incidents(client: Client, last_update_time) -> List[dict]:
     demisto.debug("microsoft365::Starting fetch_modified_incidents")
-    test_context_for_token(client)  # todo: how to go aabout this in mirroring?
     incidents = []
 
     # The API is limited to MAX_ENTRIES incidents for each requests, if we are trying to get more than MAX_ENTRIES
@@ -664,7 +662,7 @@ def fetch_modified_incidents(client: Client, last_update_time) -> List[dict]:
             incidents.append(incident)
         # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
         if len(raw_incidents) < int(
-                MAX_ENTRIES):  # todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
+            MAX_ENTRIES):  # todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
             break
         offset += int(MAX_ENTRIES)
     return incidents
@@ -702,10 +700,11 @@ def get_modified_incidents_entries_content(modified_incidents: List[dict], close
     return entries_content
 
 
-def get_modified_remote_data_command(client: Client, args, close_incident: bool,
+def get_modified_remote_data_command(client: Client, args,
                                      return_entire_data=False) -> GetModifiedRemoteDataResponse:
     # todo - do we want to sync assignedto like in xdr?
     demisto.debug("microsoft365::Starting get_modified_remote_data_command")
+    close_incident = argToBoolean(demisto.params().get('close_incident', False))
     remote_args = GetModifiedRemoteDataArgs(args)
     parsed_date = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})
     assert parsed_date is not None, f'could not parse {remote_args.last_update}'
@@ -732,7 +731,7 @@ def get_modified_remote_data_command(client: Client, args, close_incident: bool,
         demisto.debug(f"Error in Microsoft 365 defender incoming mirror \n"
                       f"Error message: {str(e)}")
         if "Rate limit exceeded" in str(
-                e):  # todo - check if this is the correct error message + on the server side what does is expect to ger
+            e):  # todo - check if this is the correct error message + on the server side what does is expect to ger
             return_error("API rate limit")
 
 
@@ -746,8 +745,9 @@ def fetch_modified_incident(client: Client, incident_id: str) -> dict:
     return incident
 
 
-def get_remote_data_command(client: Client, args: dict[str, Any], close_incident: bool, ) -> GetRemoteDataResponse:
+def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDataResponse:
     remote_args = GetRemoteDataArgs(args)
+    close_incident = argToBoolean(demisto.params().get('close_incident', False))
     mirrored_object = {}
     demisto.debug(
         f'Performing get-remote-data command with incident id: {remote_args.remote_incident_id} and last_update: {remote_args.last_update}')
@@ -779,8 +779,67 @@ def get_mapping_fields_command():
     return GetMappingFieldsResponse(incident_type_scheme)
 
 
-def update_remote_system_command(client: Client, args: dict):
-    pass
+def update_remote_incident(client: Client, remote_args) -> str:
+    demisto.debug(f"microsoft365::Starting update_remote_incident")
+    remote_args_data = remote_args.data
+    remote_args_delta = remote_args.delta
+    current_remote_status = remote_args_data.get('status') if remote_args_data else None
+    is_closed_delta = remote_args_delta.get('closeReason') or remote_args_delta.get('closeNotes') or remote_args_delta.get(
+        'closingUserId') or remote_args_delta.get('closed')
+    is_closed_data = (
+        remote_args_data.get('closeReason') or remote_args_data.get('closeNotes'))  #check that closed is not a default sate
+    demisto.debug(f"update_remote_system_command {is_closed_delta=}, {is_closed_data=}")
+    remote_is_already_closed = current_remote_status == 'Resolved'
+    demisto.debug(f"{remote_is_already_closed=}")
+
+    # status , classification , determination = handle_incident_status(remote_args_delta, remote_args_data)
+    #todo - delta returns an empty dict
+    updated_incident = client.update_incident(incident_id=remote_args.remote_incident_id,
+                                              status=remote_args_data.get('status'),
+                                              assigned_to=remote_args_data.get('assignedTo'),
+                                              classification=remote_args_data.get('classification'),
+                                              determination=remote_args_data.get('determination'),
+                                              tags=argToList(remote_args_data.get('tags')),
+                                              timeout=50,
+                                              comment=remote_args_data.get('comment'))
+    demisto.debug(f"microsoft365::Updated incident {str(updated_incident)}")
+
+    return ''
+
+
+def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
+    remote_args = UpdateRemoteSystemArgs(args)
+    incident_id = remote_args.remote_incident_id
+    remote_data = remote_args.data
+    remote_delta = remote_args.delta
+
+    demisto.debug(f"update_remote_system_command {incident_id=}")
+    demisto.debug(f"update_remote_system_command {remote_delta=} ")
+    demisto.debug(f"update_remote_system_command {remote_data=} ")
+    demisto.debug(f"update_remote_system_command {remote_args.incident_changed=}")
+    demisto.debug(f"update_remote_system_command {remote_args.inc_status=}")
+    demisto.debug(f"update_remote_system_command {remote_args.entries=}")
+
+    demisto.debug(f"update_remote_system_command {incident_id=} , {remote_data.get('closeReason')=}, "
+                  f"{remote_data.get('closeNotes')=}")
+
+    if remote_args.delta:
+        demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
+                      f'incident {remote_args.remote_incident_id}')
+    try:
+        if remote_args.incident_changed:
+            update_remote_incident(client, remote_args)
+        else:
+            demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
+                          f'as it is not new nor changed')
+
+        return remote_args.remote_incident_id
+
+    except Exception as e:
+        demisto.error(f"Error in outgoing mirror for incident {remote_args.remote_incident_id} \n"
+                      f"Error message: {str(e)}")
+
+        return remote_args.remote_incident_id
 
 
 ''' MAIN FUNCTION '''
@@ -808,7 +867,7 @@ def main() -> None:
     client_credentials = params.get('client_credentials', False)
     enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or \
-        params.get('certificate_thumbprint', '')
+                             params.get('certificate_thumbprint', '')
 
     private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
                    or params.get('private_key', ''))
@@ -825,12 +884,11 @@ def main() -> None:
         'mirror_instance': demisto.integrationInstance()
     }
 
-    close_incident = argToBoolean(params.get('close_incident', False))
-    demisto.debug(str(mirroring_fields))
     demisto.debug(f'Command being called is {demisto.command()}')
 
     command = demisto.command()
     args = demisto.args()
+    demisto.debug(str(args))
 
     try:
         if not managed_identities_client_id and not app_id:
@@ -887,15 +945,18 @@ def main() -> None:
             demisto.incidents(incidents)
 
         elif command == 'get-remote-data':
-            return_results(get_remote_data_command(client, args, close_incident))
+            test_context_for_token(client)
+            return_results(get_remote_data_command(client, args))
 
         elif command == 'get-modified-remote-data':
-            modified_incidents = get_modified_remote_data_command(client, demisto.args(), close_incident)
+            test_context_for_token(client)
+            modified_incidents = get_modified_remote_data_command(client, args)
             demisto.debug(
                 f"microsoft365::returning {len(modified_incidents.modified_incident_ids)} incidents to the server. {str(modified_incidents.modified_incident_ids)}")
             return_results(modified_incidents)
 
         elif command == 'update-remote-system':
+            test_context_for_token(client)
             return_results(update_remote_system_command(client, args))
 
         elif command == 'get-mapping-fields':

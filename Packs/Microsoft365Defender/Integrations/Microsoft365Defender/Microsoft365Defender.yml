@@ -457,6 +457,12 @@ script:
     description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
     execution: false
     name: get-mapping-fields
+  - arguments: []
+    deprecated: false
+    description: Updates the remote incident with local incident changes. This method
+      is only used for debugging purposes and will not update the current incident.
+    execution: false
+    name: update-remote-system
   dockerimage: demisto/crypto:1.0.0.114611
   isfetch: true
   script: ''
