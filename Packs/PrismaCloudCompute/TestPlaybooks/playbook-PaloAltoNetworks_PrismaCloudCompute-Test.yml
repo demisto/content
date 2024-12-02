@@ -411,7 +411,7 @@ tasks:
       - "13"
     scriptarguments:
       id:
-        simple: ${PrismaCloudCompute.ProfileContainer._id}
+        simple: ${PrismaCloudCompute.ProfileContainer.[0]._id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
