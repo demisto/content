@@ -71,5 +71,4 @@ XSOAR content included in this pack will be built based on our integrations with
 # XSOAR in Isolated OT Environment
 ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/IsolatedDeployment.png)
 XSOAR provides the ability to have a production instance running in an isolated OT environment, with a jumb host access to a local repository that stores the content updates, for more details:
-https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Configure-a-Remote-Repository-on-a-Development-Machine
-
+[XSOAR 6](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations) or [XSOAR 8](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script).
