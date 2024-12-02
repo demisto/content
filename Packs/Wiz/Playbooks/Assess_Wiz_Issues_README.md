@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Assess Wiz Issues](https://raw.githubusercontent.com/demisto/content/master/Packs/Wiz/Author_image.png)
+![Assess Wiz Issues](../Author_image.png)

@@ -6,18 +6,18 @@ Follow the steps below on Microsoft IIS to configure IIS logging at the [site le
 For configuring logging [Per-site](https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis#configure-per-site-logging-at-the-server-level) or [Per-server](https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis#configure-per-server-logging-at-the-server-level) at the server level, refer to the Microsoft [Configure Logging in IIS](https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis) docs. 
 
 1. Open the IIS Manager.
-![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b33523bbb3666eb18c779b09d38fbf14e4764075/Packs/MicrosoftIISWebServer/doc_imgs/IISManager.png)
+![Server Screenshot](doc_files/IISManager.png)
 
 1. Under the *Connections* tree view on the left, select the requested website for logging.
 
 2. In *Features View*, click **Logging**.
-   ![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b33523bbb3666eb18c779b09d38fbf14e4764075/Packs/MicrosoftIISWebServer/doc_imgs/IISWebsites.png)
+   ![Server Screenshot](doc_files/IISWebsites.png)
 
 3. In the *Log File* section under *Format*, select **W3C**.
-   ![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b33523bbb3666eb18c779b09d38fbf14e4764075/Packs/MicrosoftIISWebServer/doc_imgs/IISW3C.png)
+   ![Server Screenshot](doc_files/IISW3C.png)
 
 4. Click **Select Fields** and ensure all the standard fields are selected.
-![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b33523bbb3666eb18c779b09d38fbf14e4764075/Packs/MicrosoftIISWebServer/doc_imgs/IISLogging.png)
+![Server Screenshot](doc_files/IISLogging.png)
 
 ### Supported Log Formats
 The XDM normalization included in this pack is supported only for the *W3C* format, for logs with the following field list structures: 

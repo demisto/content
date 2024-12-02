@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![SX - PC - PingCastle Report](SX_-_PC_-_PingCastle_Report.png)
+![SX - PC - PingCastle Report](../doc_files/SX_-_PC_-_PingCastle_Report.png)

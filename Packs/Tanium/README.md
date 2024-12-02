@@ -41,7 +41,7 @@ More information can be found [here](https://docs.tanium.com/integrity_monitor/i
 Make sure to send the logs in UTC time. 
 Modify the value type of the "Event Time" field to "Date/Time" and select "ISO 8601 UTC (Zulu)".
 The supported time format is yyyy-MM-ddThh:mm:ssZ (2021-01-15T10:00:00Z). The relevant field is "Event Time".
-![Example:](https://raw.githubusercontent.com/demisto/content/951a4bbd3e5b4a99425cd2681b74dbab81982767/Packs/Tanium/doc_files/Tanium_Integrity_Monitor_TimeStamp.png)
+![Example:](doc_files/Tanium_Integrity_Monitor_TimeStamp.png)
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.

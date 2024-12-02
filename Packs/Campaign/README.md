@@ -19,8 +19,7 @@ This allows the user to take additional steps on the campaign findings, like blo
 - The Phishing content pack is required because the **FindEmailCampaign** script uses the **FindDuplicateEmailIncidents** script from that pack.
 
 _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/packs/phishing-campaign)._
-
-![image](doc_files/campaign-overview.png)
+c
 
 ![image](doc_files/campaign-canvas.png)
 
