@@ -191,13 +191,20 @@ class URIObject:
         urls_list = raw_url.split('##comma##')
         results = []
         for url in urls_list:
-            if auto_detect_indicator_type(url) == 'URL':
+            if type_ == 'URL' and auto_detect_indicator_type(url) == 'URL':
                 results.append({
                     'indicator': url,
                     'type': type_
                 })
+            elif type_ == 'Domain':
+                domain = url.replace('https://', "").replace("http://", "")
+                if len(domain.split(".")) > 1:
+                    results.append({
+                        'indicator': domain,
+                        'type': 'Domain'
+                    })
             else:
-                demisto.debug(f"obj with value {url} is not a url, skipping.")
+                demisto.debug(f"obj with value {url} is not of type {type_}, skipping.")
 
         return results
 
