@@ -22,7 +22,7 @@ def test_parse_word(file_name, file_path, request):
         except OSError:
             pass
 
-    request.addfinalizer(cleanup)
+
     if os.getcwd().endswith('test_data'):
         os.chdir('..')
     parser = WordParser()
