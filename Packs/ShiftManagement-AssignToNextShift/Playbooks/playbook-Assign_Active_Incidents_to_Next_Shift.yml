@@ -172,7 +172,7 @@ tasks:
       description: "Randomly assigns the incidents to users on call (requires shift management) and users on call.
       
         See for more information:  
-        [XSOAR 6.12](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Shift-Management)  
+        [XSOAR 6.13](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Shift-Management)  
         [XSOAR 8](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Manage-roles-in-the-Cortex-XSOAR-tenant)
 
         Incident Ids should be passed in as a comma separated list."
