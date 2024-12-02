@@ -947,7 +947,7 @@ def test_handle_outgoing_issue_closure_close_reason(mocker):
     request_data_log = mocker.patch.object(demisto, 'debug')
     handle_outgoing_issue_closure(remote_args)
 
-    assert "handle_outgoing_issue_closure Closing Remote incident incident_id=None with status resolved_security_testing" in \
+    assert "handle_outgoing_issue_closure Closing Remote incident ID: None with status resolved_security_testing" in \
            request_data_log.call_args[  # noqa: E501
                0][0]
 
