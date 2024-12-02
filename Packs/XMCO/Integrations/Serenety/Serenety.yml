@@ -59,7 +59,7 @@ script:
   commands:
   - name: fetch-incidents
     description: Fetch Serenety alert from XMCO LePortail.
-  dockerimage: demisto/python3:3.11.9.105369
+  dockerimage: demisto/python3:3.11.10.115186
   feed: false
   isfetch: true
   longRunning: false

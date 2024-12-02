@@ -6,7 +6,7 @@ args:
 commonfields:
   id: DeleteAndExcludeIndicators
   version: -1
-dockerimage: demisto/python3:3.10.14.100715
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 comment: ''
 name: DeleteAndExcludeIndicators

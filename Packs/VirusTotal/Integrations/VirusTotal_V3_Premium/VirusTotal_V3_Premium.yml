@@ -1478,7 +1478,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.95956
+  dockerimage: demisto/python3:3.11.10.115186
 defaultmapperin: VirusTotal Intelligence LiveHunt Notification
 fromversion: 5.5.0
 tests:
