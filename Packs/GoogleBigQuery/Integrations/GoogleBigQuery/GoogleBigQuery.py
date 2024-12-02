@@ -99,14 +99,14 @@ def build_query_job_config(allow_large_results, default_dataset_string, destinat
     return query_job_config
 
 
-def convert_to_string(object_that_may_not_be_string):
-    if isinstance(object_that_may_not_be_string, datetime):
-        return object_that_may_not_be_string.strftime("%m/%d/%Y %H:%M:%S")
-    if isinstance(object_that_may_not_be_string, date):
-        return object_that_may_not_be_string.strftime("%m/%d/%Y")
-    if isinstance(object_that_may_not_be_string, bytes):
-        return object_that_may_not_be_string.decode('utf-8')
-    return object_that_may_not_be_string
+def convert_to_string(field_value):
+    if isinstance(field_value, datetime):
+        return field_value.strftime("%m/%d/%Y %H:%M:%S")
+    if isinstance(field_value, date):
+        return field_value.strftime("%m/%d/%Y")
+    if isinstance(field_value, bytes):
+        return field_value.decode('utf-8')
+    return field_value
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
