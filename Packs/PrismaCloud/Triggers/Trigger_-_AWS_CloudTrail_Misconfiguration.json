@@ -4,6 +4,7 @@
   "suggestion_reason": "Recommended for AWS CloudTrail Misconfiguration alerts",
   "description": "This trigger is responsible for handling AWS CloudTrail Misconfiguration alerts",
   "trigger_name": "AWS CloudTrail Misconfiguration",
+  "isSilent": true,
   "alerts_filter": {
     "filter": {
       "AND": [
