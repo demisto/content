@@ -1022,7 +1022,8 @@ def update_remote_system_command(client, args):
     try:
         if parsed_args.incident_changed:
             demisto.debug(
-                f'For incident ID: {parsed_args.remote_incident_id} got the following delta keys {str(list(parsed_args.delta.keys()))} to update.')
+                f'For incident ID: {parsed_args.remote_incident_id} got the following'
+                f' delta keys {str(list(parsed_args.delta.keys()))} to update.')
             xsoar_to_xdr_delta = get_update_args(parsed_args)
             demisto.debug(f"update_remote_system_command: After returning from get_update_args, {xsoar_to_xdr_delta=}")
             xsoar_to_xdr_delta['incident_id'] = parsed_args.remote_incident_id
@@ -1047,7 +1048,7 @@ def update_remote_system_command(client, args):
                     xsoar_to_xdr_delta['status'] = status
                     demisto.debug(f'Restored {status=} in order to update the alerts status.')
                 update_related_alerts(client, xsoar_to_xdr_delta)
-                demisto.debug(f"update_remote_system_command: closed xdr alerts")
+                demisto.debug("update_remote_system_command: closed xdr alerts")
         else:
             demisto.debug(f'Skipping updating remote incident fields [{parsed_args.remote_incident_id}] '
                           f'as it is not new nor changed')
