@@ -296,8 +296,8 @@ def load_new_template():
 @app.event("app_home_opened")
 def update_home_tab(client, event):
     try:
-        # # Acknowledge the request -- DO NOT REMOVE
-        # ack()
+        # Acknowledge the request -- DO NOT REMOVE
+        ack()
 
         app_home_template = get_xsoar_list(list_name="SlackAppHome")
 
