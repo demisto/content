@@ -1586,6 +1586,7 @@ class ExchangeOnlinePowershellV3Client
             # Establish session to remote
             $this.CreateSession()
             # Import and Execute command
+            $cmd_params = @{ }
             if ($limit -gt 0){
                 $cmd_params.ResultSize = $limit
             }
