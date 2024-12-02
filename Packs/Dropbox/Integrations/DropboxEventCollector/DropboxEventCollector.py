@@ -90,7 +90,7 @@ class DropboxEventsGetter(IntegrationGetEvents):
 
 # ----------------------------------------- Authentication Functions -----------------------------------------
 
-def start_auth_command(base_url: str, app_key: str) -> CommandResults:
+def start_auth_command(base_url: str, app_key: str) -> CommandResults:      # pragma: no cover
     url = f'https://www.dropbox.com/oauth2/authorize?client_id={app_key}&token_access_type=offline&response_type=code'
     message = f"""### Authorization instructions
 1. To sign in, use a web browser to open the page [{url}]({url})
@@ -118,7 +118,7 @@ def complete_auth_command(code: str, credentials: Credentials, base_url: str, in
 
 
 def reset_auth_command() -> CommandResults:
-    demisto.debug('resetting integration context to empty dict.')   #pragma: no cover
+    demisto.debug('resetting integration context to empty dict.')  # pragma: no cover
     set_integration_context({})
     message = 'Authorization was reset successfully. Run **!dropbox-auth-start** to start the authentication process.'
     return CommandResults(readable_output=message)
