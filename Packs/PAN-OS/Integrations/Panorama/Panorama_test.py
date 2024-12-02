@@ -8009,8 +8009,8 @@ def test_pan_os_create_master_key_command(requests_mock: RequestsMock):
 
     # Assert
     assert command_results.readable_output == (
-        f'{response_result}. The current API key has been invalidated. '
-        'Generate a new API key and ensure the integration instance is updated accordingly.'
+        f'{response_result}. \n\n⚠️ The current API key is no longer valid! (by design) '
+        'Generate a new API key and update it in the integration instance configuration to keep using the integration.'
     )
     assert command_results.raw_response == json.loads(xml2json(xml_response_text))
 

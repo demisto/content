@@ -52,7 +52,7 @@ This integration was integrated and tested with versions 8.xx, 9.xx, and 10.xx o
    * [pan-os-create-master-key](#pan-os-create-master-key)
    * [pan-os-update-master-key](#pan-os-update-master-key)
 * The target argument is supported only in operational type commands. Meaning, you cannot use it with commit, logs, or PCAP commands.
-* Creating or updating the encryption master key of Palo Alto Networks Firewall or Panorama invalidates the current API key and requires obtaining a new one. All subsequent commands will raise an "Invalid Credentials" error until a new API key is obtained and the integration instance is updated accordingly.
+* Creating or updating the encryption master key of Palo Alto Networks Firewall or Panorama invalidates the current API key and requires obtaining a new one. All subsequent commands will raise an "Invalid Credential" error until a new API key is obtained and the integration instance is updated accordingly.
 
 ## Fetch Incidents
 The Panorama integration now supports fetch incidents.
@@ -9365,6 +9365,8 @@ There is no context output for this command.
 ***
 Create a default master key that encrypts all the private keys and passwords in the configuration.
 
+**Running this command invalidates the current API key and requires re-configuration of the integration instance.**
+
 #### Base Command
 
 `pan-os-create-master-key`
@@ -9379,7 +9381,9 @@ Create a default master key that encrypts all the private keys and passwords in 
 
 #### Limitations
 
-Running this command invalidates the current API key and requires obtaining a new one. All subsequent commands will raise an "Invalid Credentials" error until a new API key is obtained and the integration instance is updated accordingly.
+- All changes to the configuration of the Palo Alto firewall or Panorama need to be committed before running this command. This can be done using using the [pan-os-commit](#pan-os-commit) and [pan-os-push-status](#pan-os-push-status) commands.
+
+- The command invalidates the current API key and requires obtaining a new one using the instructions in [the PAN-OS and Panorama API usage guide](https://docs.paloaltonetworks.com/pan-os/11-1/pan-os-panorama-api/pan-os-api-authentication/get-your-api-key). All subsequent commands will raise an "Invalid Credential" error until a new API key is obtained and the integration instance is updated accordingly.
 
 #### Command example
 ```!pan-os-create-master-key master_key="MyFakeMasterKey1" lifetime_in_hours=2160 reminder_in_hours=1992```
@@ -9396,7 +9400,9 @@ There is no context output for this command.
 ### pan-os-update-master-key
 
 ***
-Update the default master key that encrypts all the private keys and passwords in the configuration.
+Update the default master key that encrypts all the private keys and passwords in the configuration. 
+
+**Running this command invalidates the current API key and requires re-configuration of the integration instance.**
 
 #### Base Command
 
@@ -9413,7 +9419,9 @@ Update the default master key that encrypts all the private keys and passwords i
 
 #### Limitations
 
-Running this command invalidates the current API key and requires obtaining a new one. All subsequent commands will raise an "Invalid Credentials" error until a new API key is obtained and the integration instance is updated accordingly.
+- All changes to the configuration of the Palo Alto firewall or Panorama need to be committed before running this command. This can be done using using the [pan-os-commit](#pan-os-commit) and [pan-os-push-status](#pan-os-push-status) commands.
+
+- The command invalidates the current API key and requires obtaining a new one using the instructions in [the PAN-OS and Panorama API usage guide](https://docs.paloaltonetworks.com/pan-os/11-1/pan-os-panorama-api/pan-os-api-authentication/get-your-api-key). All subsequent commands will raise an "Invalid Credential" error until a new API key is obtained and the integration instance is updated accordingly.
 
 #### Command example
 ```!pan-os-update-master-key current_master_key="MyFakeMasterKey1" new_master_key="MyFakeMasterKey2" lifetime_in_hours=2160 reminder_in_hours=1992```

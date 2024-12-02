@@ -14521,24 +14521,28 @@ def build_master_key_create_or_update_cmd(args: dict, action: Literal['create', 
     Returns:
         str: XML string of the master key create or update command.
     """
-    master_key_args = [
+    xml_args = [
         add_argument(arg=args.get('lifetime_in_hours'), field_name='lifetime', member=False),
         add_argument(arg=args.get('reminder_in_hours'), field_name='reminder', member=False),
     ]
-    if action == 'create':
-        master_key_args.append(
-            add_argument(arg=args.get('master_key'), field_name='new-master-key', member=False),
-        )
-    else:
-        master_key_args.extend(
-            [
-                add_argument(arg=args.get('new_master_key'), field_name='new-master-key', member=False),
-                add_argument(arg=args.get('current_master_key'), field_name='current-master-key', member=False),
-            ]
-        )
 
-    master_key_args.append(add_argument_yes_no(arg='no', field_name='on-hsm'))
-    master_key_element = add_argument(arg=''.join(master_key_args), field_name='master-key', member=False)
+    match action:
+        case 'create':
+            xml_args.append(
+                add_argument(arg=args.get('master_key'), field_name='new-master-key', member=False),
+            )
+        case 'update':
+            xml_args.extend(
+                [
+                    add_argument(arg=args.get('new_master_key'), field_name='new-master-key', member=False),
+                    add_argument(arg=args.get('current_master_key'), field_name='current-master-key', member=False),
+                ]
+            )
+        case _:
+            raise ValueError(f"Invalid action value: '{action}'. Expected 'create' or 'update'.")
+
+    xml_args.append(add_argument_yes_no(arg='no', field_name='on-hsm'))
+    master_key_element = add_argument(arg=''.join(xml_args), field_name='master-key', member=False)
 
     return add_argument(arg=master_key_element, field_name='request', member=False)
 
@@ -14555,13 +14559,14 @@ def create_or_update_master_key(args: dict, action: Literal['create', 'update'])
     """
     master_key_cmd = build_master_key_create_or_update_cmd(args, action=action)
     raw_response: dict = http_request(URL, 'GET', params={'type': 'op', 'key': API_KEY, 'cmd': master_key_cmd})
-    response_result = dict_safe_get(raw_response, ('response', 'result'))  # human readable message
+    response_result = raw_response['response']['result']  # human readable message
 
     # Creating or updating the encryption master key by definition invalidates the current API key, refer to the integration docs.
     demisto.info(f'The master key of {URL} has been {action}d. The current API key has been invalidated.')
 
     return CommandResults(
-        readable_output=f'{response_result}. The current API key has been invalidated. Generate a new API key and ensure the integration instance is updated accordingly.',
+        readable_output=f'{response_result}. \n\n⚠️ The current API key is no longer valid! (by design) '
+        'Generate a new API key and update it in the integration instance configuration to keep using the integration.',
         raw_response=raw_response,
     )
 
@@ -14603,7 +14608,7 @@ def pan_os_get_master_key_details_command() -> CommandResults:
     show_master_key_cmd = add_argument(arg=system_element, field_name='show', member=False)
 
     raw_response: dict = http_request(URL, 'GET', params={'type': 'op', 'key': API_KEY, 'cmd': show_master_key_cmd})
-    response_result = dict_safe_get(raw_response, ('response', 'result'), default_return_value={})
+    response_result = raw_response['response']['result']
 
     result_to_human_readable = {'auto-renew-mkey': 'Auto-renew master key', "on-hsm": "Stored on HSM"}
     human_readable = tableToMarkdown(
