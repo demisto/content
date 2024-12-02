@@ -46,6 +46,7 @@ PRIVATE_KEY = replace_spaces_in_credential(PARAMS.get('creds_certificate', {}).g
 
 INCIDENT_TYPE: str = PARAMS.get('incidentType', '')
 URL_REGEX = r'(?<!\]\()https?://[^\s]*'
+XSOAR_ENGINE_URL_REGEX = r'\bhttps?://(?:\w+[\w.-]*\w+|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):\d+(?:/(?:\w+/)*\w+)?'
 ENTITLEMENT_REGEX: str = \
     r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
 MENTION_REGEX = r'^@([^@;]+);| @([^@;]+);'
@@ -59,6 +60,12 @@ MESSAGE_TYPES: dict = {
 }
 
 NEW_INCIDENT_WELCOME_MESSAGE: str = "Successfully created incident <incident_name>.\nView it on: <incident_link>"
+MISS_CONFIGURATION_ERROR_MESSAGE = "Did not receive a tenant ID from Microsoft Teams. Verify that the messaging endpoint in the "\
+                                   "Demisto bot configuration in Microsoft Teams is configured correctly.\nUse the "\
+                                   "`microsoft-teams-create-messaging-endpoint` command to get the correct messaging endpoint "\
+                                   "based on the server URL, the server version, and the instance configurations.\n"\
+                                   "For more information See - "\
+                                   "https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#troubleshooting."
 
 CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
 AUTHORIZATION_CODE_FLOW = 'Authorization Code'
@@ -721,10 +728,7 @@ def get_graph_access_token() -> str:
         return access_token
     tenant_id = integration_context.get('tenant_id')
     if not tenant_id:
-        raise ValueError(
-            'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '
-            'See https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#troubleshooting for more information'
-        )
+        raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
     headers = None
     url: str = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
     data: dict = {
@@ -2645,10 +2649,7 @@ def ring_user():
     integration_context: dict = get_integration_context()
     tenant_id: str = integration_context.get('tenant_id', '')
     if not tenant_id:
-        raise ValueError(
-            'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '
-            'See https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#troubleshooting for more information'
-        )
+        raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
     # get user to call name and id
     username_to_call = demisto.args().get('username')
     user: list = get_user(username_to_call)
@@ -2774,6 +2775,117 @@ def long_running_loop():
             time.sleep(5)
 
 
+def token_permissions_list_command():
+    """
+    Gets the Graph access token stored in the integration context and displays the token's API permissions in the war room.
+
+    Use-case:
+    This command is ideal for users encountering insufficient permissions errors when attempting to
+    execute an integration command.
+    By utilizing this command, the user can identify the current permissions associated with their token (app), compare them to
+    the required permissions for executing the desired command (detailed in the integration's docs), and determine any additional
+    permissions needed to be added to their application.
+    """
+    # Get the used token from the integration context:
+    access_token: str = get_graph_access_token()
+
+    # Decode the token and extract the roles:
+    if access_token:
+        decoded_token = jwt.decode(access_token, options={"verify_signature": False})
+
+        if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
+            roles = decoded_token.get('roles', [])
+
+        else:  # Authorization code flow
+            roles = decoded_token.get('scp', '')
+            roles = roles.split()
+
+        if roles:
+            hr = tableToMarkdown(f'The current API permissions in the Teams application are: ({len(roles)})',
+                                 sorted(roles), headers=['Permission'])
+        else:
+            hr = 'No permissions obtained for the used graph access token.'
+
+    else:
+        hr = 'Graph access token is not set.'
+
+    demisto.debug(f"'microsoft-teams-token-permissions-list' command result is: {hr}. Authorization type is: {AUTH_TYPE}.")
+
+    result = CommandResults(
+        readable_output=hr
+    )
+
+    return_results(result)
+
+
+def create_messaging_endpoint_command():
+    """
+    Generates the messaging endpoint, based on the server url, the server version and the instance configurations.
+
+    The messaging endpoint should be added to the Demisto bot configuration in Microsoft Teams as part of the Prerequisites of
+    the integration's set-up.
+    Link to documentation: https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#1-using-cortex-xsoar-or-cortex-xsiam-rerouting
+    """
+    server_address = ''
+    messaging_endpoint = ''
+
+    # Get instance name and server url:
+    urls = demisto.demistoUrls()
+    instance_name = demisto.integrationInstance()
+    xsoar_url = urls.get('server', '')
+    engine_url = demisto.args().get('engine_url', '')
+
+    if is_using_engine():  # In case of an XSOAR engine user - The user must provide the engine address.
+        if not engine_url:
+            raise ValueError("Your instance configuration involves a Cortex XSOAR engine.\nIn that case the messaging endpoint "
+                             "that should be added to the Demisto bot configuration in Microsoft Teams is the engine's IP "
+                             "(or DNS name) and the port in use, in the following format - `https://IP:port` or `http://IP:port`."
+                             " For example - `https://my-engine.name:443`, `http://1.1.1.1:443`.\nTo test the format validity run"
+                             " this command with your engine's URL set as the value of the `engine_url` argument.")
+
+        elif engine_url and not re.search(XSOAR_ENGINE_URL_REGEX, engine_url):  # engine url is not valid
+            raise ValueError("Invalid engine URL - Please ensure that the `engine_url` includes the IP (or DNS name)"
+                             " and the port in use, and that it is in the correct format: `https://IP:port` or `http://IP:port`.")
+        else:
+            messaging_endpoint = engine_url
+
+    elif engine_url:  # engine_url was unnecessarily set
+        raise ValueError("Your instance configuration doesn't involve a Cortex XSOAR engine, but an `engine_url` was set.\n"
+                         "If you wish to run on an engine - set this option in the instance configuration. Otherwise, delete "
+                         "the value of the `engine_url` argument.")
+
+    elif is_xsoar_on_prem():
+        messaging_endpoint = urljoin(urljoin(xsoar_url, 'instance/execute'), instance_name)
+
+    else:  # XSIAM or XSOAR SAAS
+        # Add the 'ext-' prefix to the xsoar url
+        if xsoar_url.startswith('http://'):
+            server_address = xsoar_url.replace('http://', 'http://ext-', 1)
+        elif xsoar_url.startswith('https://'):
+            server_address = xsoar_url.replace('https://', 'https://ext-', 1)
+
+        messaging_endpoint = urljoin(urljoin(server_address, 'xsoar/instance/execute'), instance_name)
+
+        if is_xsiam():
+            # Replace the '.xdr-' with '.crtx-' for XSIAM tenants
+            # This substitution is related to this platform ticket: https://jira-dc.paloaltonetworks.com/browse/CIAC-12256.
+            messaging_endpoint = messaging_endpoint.replace('.xdr-', '.crtx-', 1)
+
+    hr = f"The messaging endpoint is:\n `{messaging_endpoint}`\n\n The messaging endpoint should be added to the Demisto bot"\
+         f" configuration in Microsoft Teams as part of the prerequisites of the integration's setup.\n"\
+         f"For more information see: [Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#create-the-demisto-bot-in-microsoft-teams)."
+
+    demisto.debug(
+        f"The messaging endpoint that should be added to the Demisto bot configuration in Microsoft Teams is:"
+        f"{messaging_endpoint}")
+
+    result = CommandResults(
+        readable_output=hr
+    )
+
+    return_results(result)
+
+
 def validate_auth_code_flow_params(command: str = ''):
     """
     Validates that the necessary parameters for the Authorization Code flow have been received.
@@ -2870,8 +2982,9 @@ def main():   # pragma: no cover
         'microsoft-teams-channel-user-list': channel_user_list_command,
         'microsoft-teams-user-remove-from-channel': user_remove_from_channel_command,
         'microsoft-teams-generate-login-url': generate_login_url_command,
-        'microsoft-teams-auth-reset': reset_graph_auth
-
+        'microsoft-teams-auth-reset': reset_graph_auth,
+        'microsoft-teams-token-permissions-list': token_permissions_list_command,
+        'microsoft-teams-create-messaging-endpoint': create_messaging_endpoint_command
     }
 
     commands_auth_code: dict = {
