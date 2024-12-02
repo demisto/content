@@ -16,7 +16,7 @@ Investigation:
   - Check if the process image path is common
 - If CGO is signed:
   - Check process image name
-  - Check intiating process image name
+  - Check initiating process image name
   - Check if username is SYSTEM
   - Check if host is a server
   - Check for previous similar alerts
@@ -61,4 +61,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Suspicious access to shadow file](../doc_files/Suspicious_access_to_shadow_file.png)
+![Suspicious access to shadow file](../doc_files/Uncommon_creation_or_access_operation_of_sensitive_shadow_copy_by_a_high_risk_process.png)
