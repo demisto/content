@@ -3,6 +3,7 @@ import os
 import shutil
 from ExtractIndicatorsFromWordFile import WordParser
 import demistomock as demisto
+from unittest.mock import MagicMock
 
 expected_partial_all_data = 'Lorem ipsum dolor sit amet, an quas nostro posidonium mei, pro choro vocent pericula et'
 
@@ -59,3 +60,28 @@ def test_getting_file_from_context(mocker):
 
     # validate
     assert mocked_method.call_args[0][0] == 'getContext'
+
+
+def test_get_hyperlinks():
+    """
+    Given:
+        - Document with 3 hyperlinks.
+    When:
+        - Call to get_hyperlinks
+    Then:
+        - Validate the result contains the 3 links.
+    """
+    from docx.opc.constants import RELATIONSHIP_TYPE as RT
+    parser = WordParser()
+
+    doc = MagicMock()
+    doc.part.rels = {}
+
+    doc.part.rels = {
+        "r1": MagicMock(reltype=RT.HYPERLINK, _target="http://example1.com"),
+        "r2": MagicMock(reltype=RT.HYPERLINK, _target="http://example2.com"),
+        "r3": MagicMock(reltype=RT.HYPERLINK, _target="http://example3.com")
+    }
+
+    result = parser.get_hyperlinks(doc)
+    assert result == "http://example1.com http://example2.com http://example3.com "
