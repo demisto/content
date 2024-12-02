@@ -2892,8 +2892,8 @@ def bot_configuration_list_command():
     """
     args= demisto.args()
     subscription_id = argToList(args.get('subscription_id', []))
-    limit = args.get('limit', MAX_ITEMS_PER_RESPONSE)
-    all_results = args.get('all_results', False)
+    limit = int(args.get('limit', MAX_ITEMS_PER_RESPONSE))
+    all_results = argToBoolean(args.get('all_results', False))
     
     # TODO: take it out to a separate func
     demisto.debug(f'Given subscription: {subscription_id}')
@@ -3018,7 +3018,6 @@ def main():   # pragma: no cover
         'microsoft-teams-auth-reset': reset_graph_auth,
         'microsoft-teams-token-permissions-list': token_permissions_list_command,
         'microsoft-teams-create-messaging-endpoint': create_messaging_endpoint_command,
-        'microsoft-teams-bot-configuration-list': bot_configuration_list_command,
     }
 
     commands_auth_code: dict = {
@@ -3030,6 +3029,7 @@ def main():   # pragma: no cover
         'microsoft-teams-chat-member-list': chat_member_list_command,
         'microsoft-teams-chat-message-list': chat_message_list_command,
         'microsoft-teams-chat-update': chat_update_command,
+        'microsoft-teams-bot-configuration-list': bot_configuration_list_command,
     }
 
     ''' EXECUTION '''
