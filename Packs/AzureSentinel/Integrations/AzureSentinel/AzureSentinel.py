@@ -705,11 +705,6 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
     Returns:
         Dict[str, Any]: the response of the update incident request
     """
-    # we will run the mirror-out update only if there is relevant changes or need to close the remote ticket
-    relevant_keys_delta = delta.keys() & OUTGOING_MIRRORED_FIELDS.keys()
-    if not relevant_keys_delta and not close_ticket:
-        demisto.debug('No relevant changes to update in the remote system')
-        return {}
 
     fetched_incident_data = get_incident_by_id_command(client, {'incident_id': incident_id}).raw_response
     required_fields = ('severity', 'status', 'title')
@@ -718,12 +713,17 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
                                f'API: {required_fields}')
 
     severity = data.get('severity', '')
-
+    status = data.get('status', 'Active')
+    if status == 'Closed' and delta.get('closingUserId') == '':
+        # closingUserId='' it's mean the XSOAR incident was reopen 
+        # need to update the remote incident status to Active
+        demisto.debug(f'Reopen remote incident {incident_id}, set status to Active')
+        status = 'Active'
     properties = {
         'title': data.get('title'),
         'description': delta.get('description'),
         'severity': severity if severity in LEVEL_TO_SEVERITY.values() else LEVEL_TO_SEVERITY[severity],
-        'status': data.get('status', 'Active'),
+        'status': status,
         'firstActivityTimeUtc': delta.get('firstActivityTimeUtc'),
         'lastActivityTimeUtc': delta.get('lastActivityTimeUtc'),
         'owner': demisto.get(fetched_incident_data, 'properties.owner', {}),
@@ -751,21 +751,23 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
 
 def update_remote_incident(client: AzureSentinelClient, data: Dict[str, Any], delta: Dict[str, Any],
                            incident_status: IncidentStatus, incident_id: str) -> str:
-    if incident_status == IncidentStatus.DONE:
-        if close_incident_in_remote(delta, data):
-            demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
+    
+    # we will run the mirror-out update only if there is relevant changes
+    # (or closingUserId was changed meaning the incident wa reopened) or need to close the remote ticket
+    relevant_keys_delta = OUTGOING_MIRRORED_FIELDS.keys() | {'closingUserId'}
+    relevant_keys_delta &= delta.keys()
+    # those fields are close incident fields and handled separately in close_incident_in_remote
+    relevant_keys_delta -= {'classification', 'classificationComment'}
+    
+    if incident_status in (IncidentStatus.DONE, IncidentStatus.ACTIVE):
+        if incident_status == IncidentStatus.DONE and close_incident_in_remote(delta, data):
+            demisto.debug(f'XSOAR incident closed, closing incident with remote ID {incident_id} in remote system.')
             return str(update_incident_request(client, incident_id, data, delta, close_ticket=True))
-        elif delta.keys() <= {'classification', 'classificationComment'}:
-            demisto.debug(f'Incident with remote ID {incident_id} is closed in XSOAR, '
-                          'but not in the remote system ("Close Mirrored Microsoft Sentinel Ticket" parameter is not set).')
-            return ''
-        else:  # The delta contains fields that are not related to closing the incident and close_incident_in_remote() is False
-            demisto.debug(f'Updating incident with remote ID {incident_id} in remote system (but not closing it).')
+        if relevant_keys_delta:
+            demisto.debug(f'Updating incident with remote ID {incident_id} in remote system.')
             return str(update_incident_request(client, incident_id, data, delta))
-
-    elif incident_status == IncidentStatus.ACTIVE:
-        demisto.debug(f'Updating incident with remote ID {incident_id} in remote system.')
-        return str(update_incident_request(client, incident_id, data, delta))
+        else:
+            demisto.debug(f'No relevant changes detected for the incident with remote ID {incident_id}, not updating.')
 
     demisto.debug(f'Incident with remote ID {incident_id} is not Active or Closed, not updating. (status: {incident_status})')
     return ''

@@ -1661,8 +1661,8 @@ def test_update_remote_system_command(mocker):
     (IncidentStatus.DONE, False, {}, False),  # delta is empty
     (IncidentStatus.DONE, False, {'classification': 'FalsePositive'}, False),  # delta have only closing fields
     (IncidentStatus.DONE, False, {'title': 'Title'}, True),  # delta have fields except closing fields
-    (IncidentStatus.ACTIVE, True, {}, True),
-    (IncidentStatus.ACTIVE, False, {}, True),
+    (IncidentStatus.ACTIVE, True, {}, False),  # delta is empty and close_incident_in_remote is False
+    (IncidentStatus.ACTIVE, False, {'title': 'Title'}, True),
     (IncidentStatus.PENDING, True, {}, False),
 ])
 def test_update_remote_incident(mocker, incident_status, close_incident_in_remote, delta, expected_update_call):
