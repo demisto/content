@@ -31,4 +31,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![SailPoint IdentityIQ Disable User Account Access](../doc_files/SailPoint_IdentityIQ_Disable_User_Account_Access.png)
+![SailPoint IdentityIQ Disable User Account Access](../doc_files/sailpoint_identityiq_disable_user_account_access.png)
