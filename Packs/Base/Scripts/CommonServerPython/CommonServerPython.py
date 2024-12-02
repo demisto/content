@@ -12115,6 +12115,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     # Correspond to case 1: List of strings or dicts where each string or dict represents an one event or asset or snapshot.
     if isinstance(data, list):
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
+        demisto.debug("Sending {size} {data_type} to XSIAM".format(size=len(data), data_type=data_type))
         if isinstance(data[0], dict):
             data = [json.dumps(item) for item in data]
             data_format = 'json'
