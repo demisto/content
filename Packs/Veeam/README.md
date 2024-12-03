@@ -46,7 +46,7 @@ It includes:
 - Multiple data source support.
 
 ***Information:***\
-To leverage the Cortex XSIAM Monitoring Dashboards and data processing, you can download and manually import the templates from your [my.veeam.com](https://my.veeam.com/) account by navigating to "Products -> Additional Downloads -> Third-party Integration". It will become fully available as part of the marketplace pack after pending Cortex XSIAM platform updates have been implemented.
+The Monitoring Dashboards and data processing will become available at the marketplace after pending Cortex XSIAM platform updates have been implemented. To manually download and import the dashboards, reports, and correlation rules please follow [this](https://www.veeam.com/download_add_packs/vmware-esx-backup/palo-alto-xsiam-monitoring/) link.
 
 ### Automation:
 Using the data available in Palo Alto Networks Cortex XSIAM you can leverage built-in Veeam playbooks such as:
