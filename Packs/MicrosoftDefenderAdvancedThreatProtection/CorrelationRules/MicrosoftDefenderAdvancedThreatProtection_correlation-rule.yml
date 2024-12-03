@@ -1,5 +1,5 @@
 alert_category: EXECUTION
-alert_description: This alert will trigger in an event where Malware was detected by Microsoft Defender for Endpoints.
+alert_description: This alert will trigger when Malware is detected by Microsoft Defender for Endpoint.
 alert_fields:
   action_local_ip: xdm.target.ipv4
   actor_effective_username: xdm.source.user.username
@@ -12,7 +12,7 @@ alert_fields:
 alert_name: Malware detected by Microsoft Defender for Endpoints
 crontab: '*/10 * * * *'
 dataset: alerts
-description: An alert will trigger in an event when a Malware was detected by Microsoft Defender for Endpoint.
+description: This alert will trigger when Malware is detected by Microsoft Defender for Endpoint.
 drilldown_query_timeframe: ALERT
 execution_mode: SCHEDULED
 global_rule_id: 6af7a4d0-498c-4d89-804c-655dd14c37ab
