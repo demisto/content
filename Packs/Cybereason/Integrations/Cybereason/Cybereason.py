@@ -1502,9 +1502,8 @@ def malop_to_incident(malop: str) -> dict:
         malopStatus = (malop.get('status', 'UNREAD'))
     elif malop.get('simpleValues', ''):
         malopStatus = (malop.get('simpleValues', {}).get('managementStatus', {}).get('values', ['UNREAD'])[0])
-    if (malopStatus == "Active") or (malopStatus == "UNREAD"):
-        status = 0
-    elif (malopStatus == "Remediated") or (malopStatus == "TODO"):
+
+    if (malopStatus == "Remediated") or (malopStatus == "TODO"):
         status = 1
     elif (malopStatus == "Closed") or (malopStatus == "RESOLVED"):
         status = 2
@@ -1523,8 +1522,8 @@ def malop_to_incident(malop: str) -> dict:
         isEdr = False
 
     if simple_values := malop.get('simpleValues'):
-        malopCreationTime =simple_values.get('creationTime', {}).get('values', ['2010-01-01'])[0]
-        malopUpdateTime =simple_values.get('malopLastUpdateTime', {}).get('values', ['2010-01-01'])[0]
+        malopCreationTime = simple_values.get('creationTime', {}).get('values', ['2010-01-01'])[0]
+        malopUpdateTime = simple_values.get('malopLastUpdateTime', {}).get('values', ['2010-01-01'])[0]
     else:
         malopCreationTime = str(malop.get('creationTime', '2010-01-01'))
         malopUpdateTime = str(malop.get('lastUpdateTime', '2010-01-01'))
@@ -1661,10 +1660,11 @@ def login(client: Client):
         'username': USERNAME,
         'password': PASSWORD
     }
-    response = client.cybereason_api_call('POST', '/login.html', data=data, headers=headers, custom_response=True, return_json=False)
+    client.cybereason_api_call('POST', '/login.html', data=data, headers=headers, custom_response=True, return_json=False)
     JSESSIONID = client._session.cookies.get("JSESSIONID")
     creation_time = int(time.time())
     return JSESSIONID, creation_time
+
 
 def validate_jsession(client: Client):
     creation_time = int(time.time())
@@ -1672,19 +1672,18 @@ def validate_jsession(client: Client):
     token = integration_context.get('jsession_id')
     valid_until = integration_context.get('valid_until')
     demisto.debug(f"token: {token} and valid until: {valid_until}")
-    if token and valid_until:
-        if creation_time < valid_until:
-            demisto.debug(f"Token is still valid - did not expire. token: {token}")
-            HEADERS["Cookie"] =  f"JSESSIONID={token}"
-            return
+    if token and valid_until and creation_time < valid_until:
+        demisto.debug(f"Token is still valid - did not expire. token: {token}")
+        HEADERS["Cookie"] = f"JSESSIONID={token}"
+        return
     token, creation_time = login(client)
     integration_context = {
         'jsession_id': token,
         'valid_until': creation_time + 28000
     }
     set_integration_context(integration_context)
-    HEADERS["Cookie"] =  f"JSESSIONID={token}"
- 
+    HEADERS["Cookie"] = f"JSESSIONID={token}"
+
 
 def client_certificate():
     cert = CERTIFICATE
