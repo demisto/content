@@ -1,4 +1,4 @@
-This playbook addresses the following alerts:
+This playbook addresses the following alert:
  
 - Uncommon creation or access operation of sensitive shadow copy by a high-risk process
  
