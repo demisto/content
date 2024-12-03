@@ -490,8 +490,13 @@ def get_events_computer_type(
     command_args = {"created": created, 'use_date_filter': bool(last_run or not fetch_all_computers)}
     next_page = last_run.get("computer", {}).get("next_page", "")
 
-    debug_message = "Fetching all computers" if fetch_all_computers and not last_run else f"Fetching computers since {created}"
-    demisto.debug(debug_message)
+    if next_page:
+        demisto.debug(f"last_fetch {created}")
+        demisto.debug(f"fetching computers using {next_page=}")
+    elif fetch_all_computers and not last_run:
+        demisto.debug("Fetching all computers")
+    else:
+        demisto.debug(f"Fetching computers since {created}")
 
     client_event_type_func = client.get_computers
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
