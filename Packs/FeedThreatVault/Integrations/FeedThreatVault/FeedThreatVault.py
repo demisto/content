@@ -196,7 +196,7 @@ def threatvault_get_indicators_command(client: Client, list_format: str, args: D
         )
 
     else:
-        raise DemistoException(f"couldn't fetch, {response.get('success')}, response.get('message')")
+        raise DemistoException(f"couldn't fetch - {response.get('message')}")
 
 
 def fetch_indicators_command(client: Client,
@@ -267,7 +267,7 @@ def fetch_indicators_command(client: Client,
             offset += LIMIT
 
     else:
-        raise DemistoException(f"couldn't fetch, {response.get('success')}, response.get('message')")
+        raise DemistoException(f"couldn't fetch - {response.get('message')}")
 
     indicators = ipaddr_list
     demisto.debug(f'{LOG_LINE} got {len(indicators)}')
@@ -344,9 +344,13 @@ def main():
         else:
             raise NotImplementedError(f'Command "{command}" was not implemented.')
 
-    except Exception:
+    except NotImplementedError:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Failed to execute {command} command. The command not implemented")
+
+    except Exception as err:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f"Error runnning integration - {err}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

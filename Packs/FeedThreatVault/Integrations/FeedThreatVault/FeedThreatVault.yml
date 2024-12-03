@@ -87,8 +87,7 @@ configuration:
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data
   section: Collect
-- display: ""
-  name: feedExpirationPolicy
+- name: feedExpirationPolicy
   defaultvalue: indicatorType
   type: 17
   required: false
@@ -98,8 +97,7 @@ configuration:
   - indicatorType
   - suddenDeath
   section: Collect
-- display: ''
-  name: feedExpirationInterval
+- name: feedExpirationInterval
   defaultvalue: '20160'
   type: 1
   required: false
