@@ -508,8 +508,8 @@ def command_test_module(kafka: KafkaCommunicator, demisto_params: dict, log_stre
     kafka.test_connection(log_stream=log_stream)
     if demisto_params.get('isFetch', False):
         check_params(kafka=kafka,
-                     topic=demisto_params.get('topic', None),
-                     partitions=handle_empty(argToList(demisto_params.get('partition', None)), None),
+                     topic=demisto_params.get('topic'),
+                     partitions=handle_empty(argToList(demisto_params.get('partition')), None),
                      offset=handle_empty(demisto_params.get('offset', 'earliest'), 'earliest'))
     return 'ok'
 

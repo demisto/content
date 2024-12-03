@@ -212,16 +212,16 @@ def get_assets_command(client: Client, args: dict) -> tuple:
 
     filters += DEFAUL_ASSETS_FILTERS
 
-    criticality_str = args.get("criticality", None)
-    criticality_int = CTD_TO_DEMISTO_SEVERITY.get(criticality_str, None)
+    criticality_str = args.get("criticality")
+    criticality_int = CTD_TO_DEMISTO_SEVERITY.get(criticality_str)
     if criticality_int:
         filters.append(Filter("criticality", criticality_int - 1))
 
-    insight_name = args.get("insight_name", None)
+    insight_name = args.get("insight_name")
     if insight_name:
         filters.extend([Filter("insight_name", insight_name), Filter("insight_status", 0)])
 
-    assets_last_seen = args.get("assets_last_seen", None)
+    assets_last_seen = args.get("assets_last_seen")
     if assets_last_seen:
         filters.append(Filter("last_seen", assets_last_seen, "gte"))
 
@@ -290,7 +290,7 @@ def resolve_alert_command(client: Client, args: dict) -> tuple:
 
 def get_single_alert_command(client: Client, args: dict) -> tuple:
     relevant_fields = get_fields("alert", args.get("fields", "").split(","))
-    alert_rid = args.get("alert_rid", None)
+    alert_rid = args.get("alert_rid")
     result = client.get_alert(alert_rid)
     parsed_results = _parse_single_alert(result, relevant_fields)
 
@@ -320,11 +320,11 @@ def query_alerts_command(client: Client, args: dict) -> tuple:
                 filters.append(Filter(filter_type[0], filter_type[1]))
                 alert_type_exists = True
 
-    alert_time = args.get("date_from", None)
+    alert_time = args.get("date_from")
     if alert_time:
         filters.append(Filter("timestamp", alert_time, "gte"))
 
-    alert_severity = args.get("minimal_severity", None)
+    alert_severity = args.get("minimal_severity")
     if alert_severity:
         filters.append(Filter("severity", get_severity_filter(alert_severity), "gte"))
 

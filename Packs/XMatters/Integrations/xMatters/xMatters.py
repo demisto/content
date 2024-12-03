@@ -354,7 +354,7 @@ def fetch_incidents(client: Client,
 
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch')
     # Handle first fetch time
     if last_fetch is None:
         # if missing, use what provided via first_fetch_time

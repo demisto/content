@@ -1842,7 +1842,7 @@ def fetch_incidents(client: Client, params: Dict[str, Any], last_run: Dict[str, 
     :returns: Tuple containing two elements. incidents list and timestamp.
     """
     # Retrieving last run time if not none, otherwise first_fetch will be considered.
-    start_time = last_run.get('start_time', None)
+    start_time = last_run.get('start_time')
     start_time = int(start_time) if start_time else first_fetch
 
     incidents: List[Dict[str, Any]] = []

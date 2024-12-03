@@ -1439,7 +1439,7 @@ def map_alert_type(old_type: str | None):
         'watchlist': 'WATCHLIST',
         'all': None
     }
-    return alert_type_mapping.get(old_type, None) if old_type else None
+    return alert_type_mapping.get(old_type) if old_type else None
 
 
 def convert_to_demisto_severity(severity: int) -> int:

@@ -114,7 +114,7 @@ def fetch_post_records(client: Client, url_suffix, prefix, key, params, post_url
 def fetch_incidents(client: Client, max_results: int, last_run: dict[str, int],
                     first_fetch_time: int | None
                     ) -> tuple[dict[str, int], list[dict]]:
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch')
     case_status = 'OPEN'
     url_access_time = datetime.now().timestamp()
     endDate = (datetime.fromtimestamp(cast(int, url_access_time)).strftime(API_DATE_FORMAT))

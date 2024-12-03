@@ -1364,7 +1364,7 @@ def test_module(_: dict, params: dict):
         # This is for the autogeneration port feature before port allocation.
         params['longRunningPort'] = '1111'
     get_params_port(params)
-    on_demand = params.get('on_demand', None)
+    on_demand = params.get('on_demand')
     if not on_demand:
         try_parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG)  # validate EDL Size was set
         cache_refresh_rate = params.get('cache_refresh_rate', '')

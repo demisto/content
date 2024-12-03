@@ -393,11 +393,11 @@ def get_indicators_command(client: Client, args: dict[str, Any]) -> dict[str, An
     :return: A dict with result options that is then passed to ``return_results``,
     :rtype: ``dict``
     """
-    since = args.get('since', None)
-    until = args.get('until', None)
-    indicator_type = args.get('type', None)
-    source_type = args.get('source_type', None)
-    source_id = args.get('source_id', None)
+    since = args.get('since')
+    until = args.get('until')
+    indicator_type = args.get('type')
+    source_type = args.get('source_type')
+    source_id = args.get('source_id')
     limit = int(args.get('limit', INDICATORS_LIMIT))
 
     if since is not None:
@@ -457,7 +457,7 @@ def indicator_sighting_command(client: Client, args: dict[str, Any]) -> dict[str
     :return: A dict with result options that is then passed to ``return_results``,
     :rtype: ``dict``
     """
-    value = args.get('value', None)
+    value = args.get('value')
 
     if not value:
         raise ValueError('Value not specified')

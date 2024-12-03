@@ -64,7 +64,7 @@ def get_data_collection_url(task_id: str, users: List[str]) -> List[Dict[str, st
 
 
 def get_data_collection_url_command(args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    task_id = args.get('task_id', None)
+    task_id = args.get('task_id')
     if not task_id:
         raise ValueError('task_id not specified')
 

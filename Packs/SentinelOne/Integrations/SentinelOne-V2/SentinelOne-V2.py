@@ -2352,8 +2352,8 @@ def remove_item_from_whitelist(client: Client, args: dict) -> CommandResults:
     item = args.get('item')
     if not item:
         raise DemistoException("You must specify a valid item to be removed")
-    os_type = args.get('os_type', None)
-    exclusion_type = args.get('exclusion_type', None)
+    os_type = args.get('os_type')
+    exclusion_type = args.get('exclusion_type')
 
     item_ids = get_item_ids_from_whitelist(client, item, exclusion_type, os_type)
 
@@ -2874,7 +2874,7 @@ def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
     event_standards = []
     query_id = args.get('query_id')
     limit = int(args.get('limit', 50))
-    cursor = args.get('cursor', None)
+    cursor = args.get('cursor')
     column_to_display = argToList(args.get("columns"))
 
     events, pagination = client.get_events_request(query_id, limit, cursor)
@@ -3062,7 +3062,7 @@ def remove_hash_from_blocklist(client: Client, args: dict) -> CommandResults:
     sha1 = args.get('sha1')
     if not sha1:
         raise DemistoException("You must specify a valid Sha1 hash")
-    os_type = args.get('os_type', None)
+    os_type = args.get('os_type')
     hash_ids = get_hash_ids_from_blocklist(client, sha1, os_type)
 
     if not hash_ids:
@@ -3103,10 +3103,10 @@ def get_blocklist(client: Client, args: dict) -> CommandResults:
 
     offset = arg_to_number(int(args.get('offset', "0")))
     limit = arg_to_number(int(args.get('limit', "100")))
-    group_ids = args.get('group_ids', None)
-    site_ids = args.get('site_ids', None)
-    account_ids = args.get('account_ids', None)
-    value = args.get('hash', None)
+    group_ids = args.get('group_ids')
+    site_ids = args.get('site_ids')
+    account_ids = args.get('account_ids')
+    value = args.get('hash')
 
     contents = []
 
@@ -3196,7 +3196,7 @@ def get_accounts(client: Client, args: dict) -> CommandResults:
     """
     Get accounts info (ID, etc).
     """
-    account_id = args.get('account_id', None)
+    account_id = args.get('account_id')
 
     context_entries = []
     # Make request and get raw response
@@ -3447,7 +3447,7 @@ def get_mapping_fields_command():
 def update_remote_incident(client: Client, threat_id: str, sentinelone_analyst_verdict: str,
                            sentinelone_threat_status: str, closing_notes: str):
     if sentinelone_analyst_verdict:
-        action = ANALYST_VERDICT.get(sentinelone_analyst_verdict, None)
+        action = ANALYST_VERDICT.get(sentinelone_analyst_verdict)
         if action:
             response = client.update_threat_analyst_verdict_request(threat_ids=argToList(threat_id), action=action)
             if response.get("affected") and int(response.get("affected")) > 0:
@@ -3458,7 +3458,7 @@ def update_remote_incident(client: Client, threat_id: str, sentinelone_analyst_v
             else:
                 demisto.debug(f"Unable to update the analyst verdict of incident with remote ID [{threat_id}]")
     if sentinelone_threat_status:
-        action = THREAT_STATUS.get(sentinelone_threat_status, None)
+        action = THREAT_STATUS.get(sentinelone_threat_status)
         if action == "resolved":
             response = client.update_threat_status_request(threat_ids=argToList(threat_id), status=action)
             if response.get("affected") and int(response.get("affected")) > 0:

@@ -445,7 +445,7 @@ def fetch_incidents(client: Client, max_alerts: int, last_run: dict[str, int],
 
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch')
     # Handle first fetch time
     if last_fetch is None:
         last_fetch = first_fetch_time
@@ -518,7 +518,7 @@ def get_model_breach_command(client: Client, args: dict[str, Any]) -> CommandRes
     :rtype: ``CommandResults``
     """
     check_required_fields(args, 'pbid')
-    pbid = str(args.get('pbid', None))
+    pbid = str(args.get('pbid'))
     model_breach = client.get_model_breach(pbid=pbid)
 
     if 'time' in model_breach:
@@ -627,7 +627,7 @@ def get_model_component_command(client: Client, args: dict[str, Any]) -> Command
     :rtype: ``CommandResults``
     """
     check_required_fields(args, 'cid')
-    cid = str(args.get('cid', None))
+    cid = str(args.get('cid'))
     res = client.get_model_component(cid=cid)
     readable_output = tableToMarkdown(f'Darktrace Component {cid}', res)
 
@@ -657,7 +657,7 @@ def get_model_breach_comments_command(client: Client, args: dict[str, Any]) -> C
     :rtype: ``CommandResults``
     """
     check_required_fields(args, 'pbid')
-    pbid = str(args.get('pbid', None))
+    pbid = str(args.get('pbid'))
 
     comments = client.get_model_breach_comments(pbid=pbid)
 
@@ -736,7 +736,7 @@ def unacknowledge_model_breach_command(client: Client, args: dict[str, Any]) -> 
     :rtype: ``CommandResults``
     """
     check_required_fields(args, 'pbid')
-    pbid = str(args.get('pbid', None))
+    pbid = str(args.get('pbid'))
 
     ack_response = client.unacknowledge_model_breach(pbid=pbid)
     if ack_response['response'] != 'SUCCESS':

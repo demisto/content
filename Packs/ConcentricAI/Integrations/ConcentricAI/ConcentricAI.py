@@ -438,8 +438,8 @@ def test_module(client: LoginClient):
 def fetch_incidents(loginClient: LoginClient, queryClient: QueryClient, last_run: Dict[str, int],
                     max_results: int, fetch_time):
     global SCROLL_ID_INCIDENT
-    last_fetch = last_run.get('last_fetch', None)
-    scroll_id = last_run.get('scroll_id', None)
+    last_fetch = last_run.get('last_fetch')
+    scroll_id = last_run.get('scroll_id')
 
     if last_fetch is None:
         if fetch_time is not None:

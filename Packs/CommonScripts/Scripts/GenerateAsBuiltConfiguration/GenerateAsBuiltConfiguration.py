@@ -381,8 +381,8 @@ def get_instance_classifier_incident_type(integration_instance: dict, incident_t
     """
     classifier_data = None
     incident_type_data = {}
-    classifier_id = integration_instance.get("mappingId", None)
-    inc_type_id = integration_instance.get("incident_type", None)
+    classifier_id = integration_instance.get("mappingId")
+    inc_type_id = integration_instance.get("incident_type")
     if classifier_id:
         for classifier in classifiers:
             if classifier_id == classifier["id"]:
@@ -417,7 +417,7 @@ def get_instance_incoming_mapper(integration_instance: dict, mappers: list) -> d
     in_mapper : dictionary having incoming mapper data mapped to an integration
     """
     in_mapper = None
-    mapper_id = integration_instance.get("incomingMapperId", None)
+    mapper_id = integration_instance.get("incomingMapperId")
     if mapper_id:
         for mapper in mappers:
             if mapper["id"] == mapper_id:
@@ -440,7 +440,7 @@ def get_instance_outgoing_mapper(integration_instance: dict, mappers: list) -> d
     out_mapper : dictionary having outgoing mapper data mapped to an integration
     """
     out_mapper = None
-    mapper_id = integration_instance.get("outgoingMapperId", None)
+    mapper_id = integration_instance.get("outgoingMapperId")
     if mapper_id:
         for mapper in mappers:
             if mapper["id"] == mapper_id:

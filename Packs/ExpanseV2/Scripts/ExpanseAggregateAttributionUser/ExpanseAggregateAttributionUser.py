@@ -75,7 +75,7 @@ def aggregate_command(args: Dict[str, Any]) -> CommandResults:
             domain = ""
 
         user_key = f"{username}::{domain}"
-        current_state = current_users.get(user_key, None)
+        current_state = current_users.get(user_key)
         if current_state is None:
             current_state = {
                 'username': username,

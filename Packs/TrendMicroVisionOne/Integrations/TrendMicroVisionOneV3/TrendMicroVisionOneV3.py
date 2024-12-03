@@ -2429,8 +2429,8 @@ def update_status(
     workbench_id = args.get(WORKBENCH_ID, EMPTY_STRING)
     status = args.get(STATUS, EMPTY_STRING)
     if_match = args.get(IF_MATCH, EMPTY_STRING)
-    inv_res = args.get(INV_RESULT, None)
-    inv_sts = args.get(INV_STATUS, None)
+    inv_res = args.get(INV_RESULT)
+    inv_sts = args.get(INV_STATUS)
     message: dict[str, Any] = {}
     # Choose Status Enum
     sts = status.upper()

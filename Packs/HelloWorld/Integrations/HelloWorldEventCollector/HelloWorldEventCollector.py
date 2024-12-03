@@ -75,7 +75,7 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -
     """
 
     try:
-        alert_status = params.get('alert_status', None)
+        alert_status = params.get('alert_status')
 
         fetch_events(
             client=client,
@@ -122,7 +122,7 @@ def fetch_events(client: Client, last_run: dict[str, int],
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be created in XSIAM.
     """
-    prev_id = last_run.get('prev_id', None)
+    prev_id = last_run.get('prev_id')
     if not prev_id:
         prev_id = 0
 

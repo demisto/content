@@ -491,7 +491,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], is_by_host: bool,
 
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch')
 
     if not is_by_host:
         if last_fetch is None:

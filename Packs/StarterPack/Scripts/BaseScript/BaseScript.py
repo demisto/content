@@ -43,7 +43,7 @@ def basescript_dummy(dummy: str) -> Dict[str, str]:
 # TODO: REMOVE the following dummy command function
 def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
 
-    dummy = args.get('dummy', None)
+    dummy = args.get('dummy')
     if not dummy:
         raise ValueError('dummy not specified')
 

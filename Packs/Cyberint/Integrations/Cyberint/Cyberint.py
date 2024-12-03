@@ -319,19 +319,19 @@ def cyberint_alerts_fetch_command(client: Client, args: dict) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     created_date_from, created_date_to = set_date_pair(
-        args.get("created_date_from", None),
-        args.get("created_date_to", None),
-        args.get("created_date_range", None),
+        args.get("created_date_from"),
+        args.get("created_date_to"),
+        args.get("created_date_range"),
     )
     modify_date_from, modify_date_to = set_date_pair(
-        args.get("modification_date_from", None),
-        args.get("modification_date_to", None),
-        args.get("modification_date_range", None),
+        args.get("modification_date_from"),
+        args.get("modification_date_to"),
+        args.get("modification_date_range"),
     )
     update_date_from, update_date_to = set_date_pair(
-        args.get("updated_date_from", None),
-        args.get("updated_date_to", None),
-        args.get("updated_date_range", None),
+        args.get("updated_date_from"),
+        args.get("updated_date_to"),
+        args.get("updated_date_range"),
     )
     if int(args.get("page_size", 10)) < 10 or int(args.get("page_size", 10)) > 100:
         raise DemistoException("Page size must be between 10 and 100.")
@@ -756,7 +756,7 @@ def fetch_incidents(
     #  Start by setting the time to fetch from.
     # use condition statement to avoid mypy error
 
-    last_fetch_timestamp = last_run.get("last_fetch", None)
+    last_fetch_timestamp = last_run.get("last_fetch")
     if last_fetch_timestamp:
         last_fetch_date = datetime.fromtimestamp(last_fetch_timestamp / 1000)
         last_fetch = last_fetch_date

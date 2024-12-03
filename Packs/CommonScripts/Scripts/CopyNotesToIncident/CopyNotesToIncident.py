@@ -15,7 +15,7 @@ def remove_id_and_version_from_entry(entry):
 
 def copy_notes_to_target_incident(args: dict[str, Any]) -> CommandResults:
 
-    target_incident = args.get('target_incident', None)
+    target_incident = args.get('target_incident')
     if not target_incident:
         raise ValueError('Target Incident ID not specified')
 

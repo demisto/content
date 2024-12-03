@@ -141,8 +141,8 @@ def dig_command(args: Dict[str, Any]) -> CommandResults:
     Returns:
         CommandResults: XSOAR command results
     """
-    server = args.get('server', None)
-    name = args.get('name', None)
+    server = args.get('server')
+    name = args.get('name')
     reverse_lookup = argToBoolean(args.get("reverseLookup"))
 
     if reverse_lookup:

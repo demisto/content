@@ -1128,7 +1128,7 @@ def find_file_folder_by_share_link_command(client: Client, args: Dict[str, Any])
     return_results function in main()
     """
     share_link: str = args.get('shared_link')  # type:ignore
-    password: str = args.get('password', None)
+    password: str = args.get('password')
     response: dict = client.find_file_folder_by_share_link(shared_link=share_link, password=password)
     readable_output = tableToMarkdown(
         name=f'File/Folder Share Link for {share_link}',
@@ -1962,7 +1962,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     :param as_user:
     :return:
     """
-    created_after = last_run.get('time', None)
+    created_after = last_run.get('time')
     incidents = []
     if not created_after:
         created_after = datetime.fromtimestamp(first_fetch_time, tz=UTC).strftime(

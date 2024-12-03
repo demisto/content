@@ -1725,7 +1725,7 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: dict[str, int],
 
     demisto.debug(f"CortexXpanse - Logger - Number of incidents: {len(xsoar_incidents)}")
     if len(xsoar_incidents) > 0:
-        demisto.debug(f"CortexXpanse - Logger - Last fetched alert timestamp: {str(last_run.get('last_fetch', None))}")
+        demisto.debug(f"CortexXpanse - Logger - Last fetched alert timestamp: {str(last_run.get('last_fetch'))}")
         alert_id_list = [alert['alert_id'] for alert in filtered_alerts]
         demisto.debug(f"CortexXpanse - Logger - Xpanse alerts ingested: {alert_id_list}")
         demisto.debug(f"CortexXpanse - Logger - Request data: {request_data}")

@@ -182,13 +182,13 @@ def create_spycloud_args(args: dict) -> dict:
     """
 
     spycloud_args: dict = {}
-    since: Any = arg_to_datetime(args.get("since", None), "Since")
-    until: Any = arg_to_datetime(args.get("until", None), "Until")
+    since: Any = arg_to_datetime(args.get("since"), "Since")
+    until: Any = arg_to_datetime(args.get("until"), "Until")
     since_modification_date: Any = arg_to_datetime(
-        args.get("since_modification_date", None), "Since Modification Date"
+        args.get("since_modification_date"), "Since Modification Date"
     )
     until_modification_date: Any = arg_to_datetime(
-        args.get("until_modification_date", None), "Until Modification Date"
+        args.get("until_modification_date"), "Until Modification Date"
     )
     if until:
         until = until.strftime("%Y-%m-%d")

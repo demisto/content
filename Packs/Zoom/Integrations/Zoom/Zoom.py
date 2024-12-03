@@ -1477,13 +1477,13 @@ def zoom_create_channel_command(client, **args) -> CommandResults:
     client = client
     user_id = args.get('user_id')
     member_emails = argToList(args.get('member_emails'))
-    add_member_permissions = args.get('add_member_permissions', None)
+    add_member_permissions = args.get('add_member_permissions')
     add_member_permissions_num = MEMBER_PERMISSIONS_MAPPING.get(add_member_permissions)
-    posting_permissions = args.get('posting_permissions', None)
+    posting_permissions = args.get('posting_permissions')
     posting_permissions_num = POSTING_PERMISSIONS_MAPPING.get(posting_permissions)
     new_members_can_see_prev_msgs = args.get('new_members_can_see_prev_msgs', True)
     channel_name = args.get('channel_name')
-    channel_type = args.get('channel_type', None)
+    channel_type = args.get('channel_type')
     channel_type_num = CHANNEL_TYPE_MAPPING.get(channel_type)
     json_all_data = {}
     email_json = [{"email": email} for email in member_emails]
@@ -1550,9 +1550,9 @@ def zoom_update_channel_command(client, **args) -> CommandResults:
         Update a Zoom channel
     """
     client = client
-    add_member_permissions = args.get('add_member_permissions', None)
+    add_member_permissions = args.get('add_member_permissions')
     add_member_permissions_num = MEMBER_PERMISSIONS_MAPPING.get(add_member_permissions)
-    posting_permissions = args.get('posting_permissions', None)
+    posting_permissions = args.get('posting_permissions')
     posting_permissions_num = POSTING_PERMISSIONS_MAPPING.get(posting_permissions)
     new_members_can_see_prev_msgs = args.get('new_members_can_see_prev_msgs', True)
     channel_name = args.get('channel_name')
@@ -2115,7 +2115,7 @@ def zoom_list_messages_command(client, **args) -> CommandResults:
     request_data = remove_None_values_from_dict(json_data)
     url_suffix = f'users/{user_id}/messages'
     all_messages: List = []
-    next_page_token = args.get('next_page_token', None)
+    next_page_token = args.get('next_page_token')
     while True:
         try:
             raw_data = client.zoom_list_user_messages(url_suffix=url_suffix,

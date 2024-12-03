@@ -55,7 +55,7 @@ def json_to_html(value: str) -> str:
 
 def json_to_html_command(args: dict[str, Any]) -> CommandResults:
 
-    json_value = args.get('value', None)
+    json_value = args.get('value')
     if not json_value:
         raise ValueError('JSON object was not specified!')
 

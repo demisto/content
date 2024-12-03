@@ -714,7 +714,7 @@ def fetch_incidents(client: Client,
     """Function used to pull incidents into XSOAR every few minutes.  """
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch')
     first_fetch_datetime = datetime.fromtimestamp(first_fetch_time)
     # Handle first fetch time
     if last_fetch is None:
@@ -782,7 +782,7 @@ def fetch_incidents(client: Client,
 
 def get_asm_risk_command(client: Client, args: dict[str, Any]) -> CommandResults:
     check_required_fields(args, 'risk_id')
-    risk_id = str(args.get('risk_id', None))
+    risk_id = str(args.get('risk_id'))
 
     response = client.get_asm_risk(risk_id)
 
@@ -800,7 +800,7 @@ def get_asm_risk_command(client: Client, args: dict[str, Any]) -> CommandResults
 
 def mitigate_asm_risk_command(client: Client, args: dict[str, Any]) -> str:
     check_required_fields(args, 'risk_id')
-    risk_id = str(args.get('risk_id', None))
+    risk_id = str(args.get('risk_id'))
 
     client.mitigate_asm_risk(risk_id)
 
@@ -810,7 +810,7 @@ def mitigate_asm_risk_command(client: Client, args: dict[str, Any]) -> str:
 
 def get_asm_asset_command(client: Client, args: dict[str, Any]) -> CommandResults:
     check_required_fields(args, 'asset_id')
-    asset_id = str(args.get('asset_id', None))
+    asset_id = str(args.get('asset_id'))
 
     response = client.get_asm_asset(asset_id)
 
@@ -828,8 +828,8 @@ def get_asm_asset_command(client: Client, args: dict[str, Any]) -> CommandResult
 
 def post_asm_comment_command(client: Client, args: dict[str, Any]) -> str:
     check_required_fields(args, 'id', 'comment')
-    id = str(args.get('id', None))
-    comment = str(args.get('comment', None))
+    id = str(args.get('id'))
+    comment = str(args.get('comment'))
 
     response = client.post_asm_comment(id, comment)
 
@@ -847,8 +847,8 @@ def post_asm_comment_command(client: Client, args: dict[str, Any]) -> str:
 
 def edit_asm_comment_command(client: Client, args: dict[str, Any]) -> str:
     check_required_fields(args, 'comment_id', 'comment')
-    comment_id = str(args.get('comment_id', None))
-    comment = str(args.get('comment', None))
+    comment_id = str(args.get('comment_id'))
+    comment = str(args.get('comment'))
 
     response = client.edit_asm_comment(comment_id, comment)
 
@@ -866,7 +866,7 @@ def edit_asm_comment_command(client: Client, args: dict[str, Any]) -> str:
 
 def delete_asm_comment_command(client: Client, args: dict[str, Any]) -> str:
     check_required_fields(args, 'comment_id')
-    comment_id = str(args.get('comment_id', None))
+    comment_id = str(args.get('comment_id'))
 
     response = client.delete_asm_comment(comment_id)
 
@@ -881,7 +881,7 @@ def delete_asm_comment_command(client: Client, args: dict[str, Any]) -> str:
 
 def create_asm_tag_command(client: Client, args: dict[str, Any]) -> str:
     check_required_fields(args, 'tag_name')
-    tag_name = str(args.get('tag_name', None))
+    tag_name = str(args.get('tag_name'))
 
     client.create_asm_tag(tag_name)
 
@@ -893,8 +893,8 @@ def create_asm_tag_command(client: Client, args: dict[str, Any]) -> str:
 
 def assign_asm_tag_command(client: Client, args: dict[str, Any]) -> str:
     check_required_fields(args, 'tag_name', 'asset_id')
-    tag_name = str(args.get('tag_name', None))
-    asset_id = str(args.get('asset_id', None))
+    tag_name = str(args.get('tag_name'))
+    asset_id = str(args.get('asset_id'))
 
     response = client.assign_asm_tag(tag_name, asset_id)
 
@@ -908,8 +908,8 @@ def assign_asm_tag_command(client: Client, args: dict[str, Any]) -> str:
 
 def unassign_asm_tag_command(client: Client, args: dict[str, Any]) -> str:
     check_required_fields(args, 'tag_name', 'asset_id')
-    tag_name = str(args.get('tag_name', None))
-    asset_id = str(args.get('asset_id', None))
+    tag_name = str(args.get('tag_name'))
+    asset_id = str(args.get('asset_id'))
 
     response = client.unassign_asm_tag(tag_name, asset_id)
 

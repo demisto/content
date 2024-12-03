@@ -300,7 +300,7 @@ def create_project_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
     unix_timestamp: str = str(int(time.time()))
     project_name: str = args.get('project_name', unix_timestamp)
-    project_description: Optional[str] = args.get('project_description', None)
+    project_description: Optional[str] = args.get('project_description')
     result: Dict[str, Any] = client.create_project(project_name, project_description)
 
     return CommandResults(
@@ -313,7 +313,7 @@ def create_project_command(client: Client, args: Dict[str, Any]) -> CommandResul
 def list_project_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     ''' Command handler for cado-list-project '''
 
-    project_id: Optional[int] = args.get('project_id', None)
+    project_id: Optional[int] = args.get('project_id')
     limit: int = int(args.get('limit', 50))
 
     if project_id:
@@ -331,9 +331,9 @@ def list_project_command(client: Client, args: Dict[str, Any]) -> CommandResults
 def get_pipeline_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     ''' Command handler for cado-get-pipeline '''
 
-    project_id: Optional[int] = args.get('project_id', None)
+    project_id: Optional[int] = args.get('project_id')
     limit: int = int(args.get('limit', 50))
-    pipeline_id: Optional[int] = args.get('pipeline_id', None)
+    pipeline_id: Optional[int] = args.get('pipeline_id')
 
     if pipeline_id:
         result: CadoResponseCombinedOutput = client.get_pipeline(pipeline_id, project_id)
@@ -350,8 +350,8 @@ def get_pipeline_command(client: Client, args: Dict[str, Any]) -> CommandResults
 def list_ec2_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     ''' Command handler for cado-list-ec2 '''
 
-    project_id: Optional[int] = args.get('project_id', None)
-    region: Optional[str] = args.get('region', None)
+    project_id: Optional[int] = args.get('project_id')
+    region: Optional[str] = args.get('region')
     limit: int = int(args.get('limit', 100))
     result: List[Dict[str, Any]] = client.list_instances(project_id, region, limit)
 
@@ -365,7 +365,7 @@ def list_ec2_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def list_s3_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     ''' Command handler for cado-list-s3 '''
 
-    project_id: Optional[int] = args.get('project_id', None)
+    project_id: Optional[int] = args.get('project_id')
     limit: int = int(args.get('limit', 100))
     result: Dict[str, Any] = client.list_buckets(project_id, limit)
 
@@ -378,10 +378,10 @@ def list_s3_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def trigger_ec2_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     ''' Command handler for cado-trigger-ec2 '''
 
-    project_id: Optional[int] = args.get('project_id', None)
-    instance_id: Optional[str] = args.get('instance_id', None)
-    region: Optional[str] = args.get('region', None)
-    bucket: Optional[str] = args.get('bucket', None)
+    project_id: Optional[int] = args.get('project_id')
+    instance_id: Optional[str] = args.get('instance_id')
+    region: Optional[str] = args.get('region')
+    bucket: Optional[str] = args.get('bucket')
     compress: bool = args.get('compress', True)
     include_disks: bool = args.get('include_disks', True)
     include_hash: bool = args.get('include_hash', False)
@@ -406,9 +406,9 @@ def trigger_ec2_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def trigger_s3_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     ''' Command handler for cado-trigger-s3 '''
 
-    project_id: Optional[int] = args.get('project_id', None)
-    bucket: Optional[str] = args.get('bucket', None)
-    file_name: Optional[str] = args.get('file_name', None)
+    project_id: Optional[int] = args.get('project_id')
+    bucket: Optional[str] = args.get('bucket')
+    file_name: Optional[str] = args.get('file_name')
 
     if not bucket:
         raise DemistoException('bucket is a required parameter!')

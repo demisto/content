@@ -96,7 +96,7 @@ def test_module(client: Client) -> str:
 # TODO: REMOVE the following dummy command function
 def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    dummy = args.get('dummy', None)
+    dummy = args.get('dummy')
     if not dummy:
         raise ValueError('dummy not specified')
 

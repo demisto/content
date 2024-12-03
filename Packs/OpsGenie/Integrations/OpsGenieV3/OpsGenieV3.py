@@ -145,7 +145,7 @@ class Client(BaseClient):
         if args.get("escalation_id") and args.get("escalation_name"):
             raise DemistoException("Either escalation_id or escalation_name should be provided.")
         identifier_type = "id" if args.get("escalation_id") else "name"
-        escalation = args.get("escalation_id", None) or args.get("escalation_name", None)
+        escalation = args.get("escalation_id") or args.get("escalation_name")
         return self._http_request(method='GET',
                                   url_suffix=f"/v2/{ESCALATION_SUFFIX}/{escalation}",
                                   params={"identifierType": identifier_type}
@@ -206,7 +206,7 @@ class Client(BaseClient):
         if not is_one_argument_given(args.get("schedule_id"), args.get("schedule_name")):
             raise DemistoException("Either schedule_id or schedule_name should be provided.")
         identifier_type = "id" if args.get("schedule_id") else "name"
-        schedule = args.get("schedule_id", None) or args.get("schedule_name", None)
+        schedule = args.get("schedule_id") or args.get("schedule_name")
         return self._http_request(method='GET',
                                   url_suffix=f"/v2/{SCHEDULE_SUFFIX}/{schedule}",
                                   params={"identifierType": identifier_type}
@@ -219,7 +219,7 @@ class Client(BaseClient):
 
     def get_schedule_override(self, args: dict):
         identifier_type = "id" if args.get("schedule_id") else "name"
-        schedule = args.get("schedule_id", None) or args.get("schedule_name", None)
+        schedule = args.get("schedule_id") or args.get("schedule_name")
         return self._http_request(method='GET',
                                   url_suffix=f"/v2/{SCHEDULE_SUFFIX}/{schedule}/"
                                              f"overrides/{args.get('override_alias')}",
@@ -228,7 +228,7 @@ class Client(BaseClient):
 
     def list_schedule_overrides(self, args: dict):
         identifier_type = "id" if args.get("schedule_id") else "name"
-        schedule = args.get("schedule_id", None) or args.get("schedule_name", None)
+        schedule = args.get("schedule_id") or args.get("schedule_name")
         return self._http_request(method='GET',
                                   url_suffix=f"/v2/{SCHEDULE_SUFFIX}/{schedule}/overrides",
                                   params={"scheduleIdentifierType": identifier_type}

@@ -79,7 +79,7 @@ class Client(BaseClient):
 
     def get_issues_list_request(self, project_id, status_id, offset_to_dict, limit_to_dict, exclude_subproject,
                                 args: dict[str, Any]):
-        if exclude_subproject and args.get('subproject_id', None):
+        if exclude_subproject and args.get('subproject_id'):
             raise DemistoException("Specify only one of the following, subproject_id or exclude.")
         elif exclude_subproject:
             args['subproject_id'] = f'!{exclude_subproject}'
@@ -492,7 +492,7 @@ def remove_issue_watcher_command(client: Client, args: dict[str, Any]):
 
 
 def get_project_list_command(client: Client, args: dict[str, Any]):
-    include_arg = args.get('include', None)
+    include_arg = args.get('include')
     if include_arg:
         check_include_validity(include_arg,
                                ['trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities', 'issue_custom_fields']

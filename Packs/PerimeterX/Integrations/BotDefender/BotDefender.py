@@ -197,12 +197,12 @@ def perimeterx_get_investigate_details(client: Client, args: Dict[str, Any],
     """
 
     # Check for the field to query for
-    search_type = args.get('search_type', None)
+    search_type = args.get('search_type')
     if not search_type:
         raise ValueError('No search_type specified')
 
     # Check to make sure we have a query term
-    search_term = args.get('search_term', None)
+    search_term = args.get('search_term')
     if not search_term:
         raise ValueError('No search_term specified')
 

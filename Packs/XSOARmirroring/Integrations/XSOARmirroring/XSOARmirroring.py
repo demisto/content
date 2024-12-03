@@ -486,7 +486,7 @@ def get_incident_command(client: Client, args: dict[str, Any]) -> CommandResults
     :rtype: ``CommandResults``
     """
 
-    incident_id = args.get('id', None)
+    incident_id = args.get('id')
     if not incident_id:
         raise ValueError('id not specified')
 
@@ -501,11 +501,11 @@ def get_incident_command(client: Client, args: dict[str, Any]) -> CommandResults
         arg_name='max_results',
         required=False
     )
-    categories = args.get('categories', None)
+    categories = args.get('categories')
     if categories:
         categories = categories.split(',')
 
-    tags = args.get('tags', None)
+    tags = args.get('tags')
     if tags:
         tags = tags.split(',')
 
@@ -624,8 +624,8 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict[s
         remote_args = GetRemoteDataArgs(args)
         demisto_debug(f'Getting update for remote [{remote_args.remote_incident_id}]')
 
-        categories = argToList(params.get('categories', None))
-        tags = argToList(params.get('tags', None))
+        categories = argToList(params.get('categories'))
+        tags = argToList(params.get('tags'))
 
         incident = client.get_incident(incident_id=remote_args.remote_incident_id)  # type: ignore
         # If incident was modified before we last updated, no need to return it

@@ -257,7 +257,7 @@ def safe_b64_to_hex(i: str) -> Optional[str]:
 
 
 def ip_to_demisto_indicator(ip_indicator: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    value = ip_indicator.get('ip', None)
+    value = ip_indicator.get('ip')
     if value is None:
         return None
 
@@ -277,12 +277,12 @@ def ip_to_demisto_indicator(ip_indicator: Dict[str, Any]) -> Optional[Dict[str, 
         'rawJSON': ip_indicator,
         'score': Common.DBotScore.NONE,
         'fields': {
-            'expansetype': ip_indicator.get('type', None),
-            'expanseassetype': ip_indicator.get('assetType', None),
-            'expansedomain': ip_indicator.get('domain', None),
-            'expansecommonname': ip_indicator.get('commonName', None),
-            'expanselastobserved': ip_indicator.get('lastObserved', None),
-            'lastseenbysource': ip_indicator.get('lastObserved', None),
+            'expansetype': ip_indicator.get('type'),
+            'expanseassetype': ip_indicator.get('assetType'),
+            'expansedomain': ip_indicator.get('domain'),
+            'expansecommonname': ip_indicator.get('commonName'),
+            'expanselastobserved': ip_indicator.get('lastObserved'),
+            'lastseenbysource': ip_indicator.get('lastObserved'),
             'expanseprovidername': provider_name,
             'expansetenantname': tenant_name,
             'expansebusinessunits': business_unit_names
@@ -359,14 +359,14 @@ def certificate_to_demisto_indicator(certificate: Dict[str, Any]) -> Optional[Di
 
             # expanse specific
             'expansetags': tags,
-            'expansecertificateadvertisementstatus': certificate.get('certificateAdvertisementStatus', None),
-            'expansedateadded': certificate.get('dateAdded', None),
-            'expansefirstobserved': certificate.get('firstObserved', None),
-            'firstseenbysource': certificate.get('firstObserved', None),
-            'expanselastobserved': certificate.get('lastObserved', None),
-            'lastseenbysource': certificate.get('lastObserved', None),
+            'expansecertificateadvertisementstatus': certificate.get('certificateAdvertisementStatus'),
+            'expansedateadded': certificate.get('dateAdded'),
+            'expansefirstobserved': certificate.get('firstObserved'),
+            'firstseenbysource': certificate.get('firstObserved'),
+            'expanselastobserved': certificate.get('lastObserved'),
+            'lastseenbysource': certificate.get('lastObserved'),
             'expanseproperties': '\n'.join(certificate.get('properties', [])),
-            'expanseservicestatus': certificate.get('serviceStatus', None),
+            'expanseservicestatus': certificate.get('serviceStatus'),
             'expanseprovidername': provider_name,
             'expansetenantname': tenant_name,
             'expansebusinessunits': business_unit_names
@@ -375,7 +375,7 @@ def certificate_to_demisto_indicator(certificate: Dict[str, Any]) -> Optional[Di
 
 
 def domain_to_demisto_indicator(domain_indicator: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    domain = domain_indicator.get('domain', None)
+    domain = domain_indicator.get('domain')
     if domain is None:
         return None
 
@@ -400,15 +400,15 @@ def domain_to_demisto_indicator(domain_indicator: Dict[str, Any]) -> Optional[Di
         'score': Common.DBotScore.NONE,
         'fields': {
             'expansetags': tags,
-            'expansednsresolutionstatus': domain_indicator.get('dnsResolutionStatus', None),
-            'expansedateadded': domain_indicator.get('dateAdded', None),
-            'expansefirstobserved': domain_indicator.get('firstObserved', None),
-            'firstseenbysource': domain_indicator.get('firstObserved', None),
-            'expanselastobserved': domain_indicator.get('lastObserved', None),
-            'lastseenbysource': domain_indicator.get('lastObserved', None),
-            'expanselastsampledip': domain_indicator.get('lastSampledIp', None),
-            'expanseservicestatus': domain_indicator.get('serviceStatus', None),
-            'expansesourcedomain': domain_indicator.get('sourceDomain', None),
+            'expansednsresolutionstatus': domain_indicator.get('dnsResolutionStatus'),
+            'expansedateadded': domain_indicator.get('dateAdded'),
+            'expansefirstobserved': domain_indicator.get('firstObserved'),
+            'firstseenbysource': domain_indicator.get('firstObserved'),
+            'expanselastobserved': domain_indicator.get('lastObserved'),
+            'lastseenbysource': domain_indicator.get('lastObserved'),
+            'expanselastsampledip': domain_indicator.get('lastSampledIp'),
+            'expanseservicestatus': domain_indicator.get('serviceStatus'),
+            'expansesourcedomain': domain_indicator.get('sourceDomain'),
             'expanseprovidername': provider_name,
             'expansetenantname': tenant_name,
             'expansebusinessunits': business_unit_names
@@ -423,7 +423,7 @@ def iprange_to_demisto_indicator(iprange_indicator: Dict[str, Any]) -> Iterable[
     if ipVersion != "4":
         return []
 
-    start_address = iprange_indicator.get('startAddress', None)
+    start_address = iprange_indicator.get('startAddress')
     if start_address is None:
         return []
     try:
@@ -431,7 +431,7 @@ def iprange_to_demisto_indicator(iprange_indicator: Dict[str, Any]) -> Iterable[
     except AddressValueError:
         return []
 
-    end_address = iprange_indicator.get('endAddress', None)
+    end_address = iprange_indicator.get('endAddress')
     if end_address is None:
         return []
     try:
@@ -464,7 +464,7 @@ def iprange_to_demisto_indicator(iprange_indicator: Dict[str, Any]) -> Iterable[
                 'expansebusinessunits': business_unit_names,
                 'expanseseveritycount': iprange_indicator.get('severityCounts', {}),
                 'expanseattributionreason': attribution_reasons,
-                'expanseresponsiveipcount': iprange_indicator.get('responsiveIpCount', None)
+                'expanseresponsiveipcount': iprange_indicator.get('responsiveIpCount')
             }
         }
 

@@ -55,15 +55,15 @@ def add_key_to_list(list_name: str, key_name: str, value: str, append: bool = Fa
 
 def add_key_to_list_command(args: Dict[str, Any]) -> CommandResults:
 
-    list_name = args.get('listName', None)
+    list_name = args.get('listName')
     if not list_name:
         raise ValueError('listName must be specified')
 
-    key_name = args.get('keyName', None)
+    key_name = args.get('keyName')
     if not key_name:
         raise ValueError('keyName must be specified')
 
-    value = args.get('value', None)
+    value = args.get('value')
     if not value:
         raise ValueError('value must be specified')
 

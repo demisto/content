@@ -257,8 +257,8 @@ def create_x_pred(output_rasterize: dict, url: str) -> pd.DataFrame:
     :param url: url to examine
     :return: pd.DataFrame
     """
-    website64 = output_rasterize.get(KEY_IMAGE_RASTERIZE, None)
-    html = output_rasterize.get(KEY_IMAGE_HTML, None)
+    website64 = output_rasterize.get(KEY_IMAGE_RASTERIZE)
+    html = output_rasterize.get(KEY_IMAGE_HTML)
     X_pred = pd.DataFrame(columns=['name', 'image', 'html'])
     X_pred.loc[0] = [url, website64, html]
     return X_pred
@@ -354,7 +354,7 @@ def return_entry_summary(
     if pred_json:
         image = pred_json[MODEL_KEY_LOGO_IMAGE_BYTES]
         if not image:
-            image = image_from_base64_to_bytes(output_rasterize.get(KEY_IMAGE_RASTERIZE, None))
+            image = image_from_base64_to_bytes(output_rasterize.get(KEY_IMAGE_RASTERIZE))
         res = fileResult(filename='Logo detection engine', data=image)
         res['Type'] = entryTypes['image']
         if pred_json[MODEL_KEY_LOGO_FOUND]:

@@ -359,7 +359,7 @@ def signal_get_details(client: Client, args: dict[str, Any]) -> CommandResults:
     '''
     Get signal details
     '''
-    signal_id = args.get('signal_id', None)
+    signal_id = args.get('signal_id')
     if not signal_id:
         raise ValueError('signal_id not specified')
 
@@ -383,7 +383,7 @@ def entity_get_details(client: Client, args: dict[str, Any]) -> CommandResults:
     '''
     Get entity details
     '''
-    entity_id = args.get('entity_id', None)
+    entity_id = args.get('entity_id')
     if not entity_id:
         raise ValueError('entity_id not specified')
 
@@ -872,7 +872,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, int], 
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
     demisto.debug(f"Sumo Logic Integration last run: {last_run}")
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch')
 
     # track last_fetch_ids to handle insights with the same timestamp
     last_fetch_ids: list[str] = cast(list[str], last_run.get('last_fetch_ids', []))

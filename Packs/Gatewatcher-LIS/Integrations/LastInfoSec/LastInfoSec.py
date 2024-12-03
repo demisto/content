@@ -538,8 +538,8 @@ def lis_get_leaked_email_by_domain(
     Returns:
         CommandResults object with the "LIS.leakedEmail.GetByDomain" prefix.
     """
-    domain = args.get("Domain", None)
-    after = args.get("After", None)
+    domain = args.get("Domain")
+    after = args.get("After")
     response = client.get_leaked_email_by_domain(domain, after)
 
     emails = [res["Value"] for res in response]
@@ -566,8 +566,8 @@ def lis_is_email_leaked(client: GwClient, args: dict[Any, Any]) -> CommandResult
     Returns:
         CommandResults object with the "LIS.leakedEmail.getByEmail" prefix.
     """
-    email = args.get("Email", None)
-    after = args.get("After", None)
+    email = args.get("Email")
+    after = args.get("After")
     response = client.get_is_email_leaked(email, after)
 
     result = email if len(response) > 0 else None

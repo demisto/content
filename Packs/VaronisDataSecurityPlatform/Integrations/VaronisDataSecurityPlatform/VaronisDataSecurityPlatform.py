@@ -587,7 +587,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
     if max_results > MAX_INCIDENTS_TO_FETCH:
         raise ValueError(f'{max_results} is too big number to fetch. Max incidents to fetch is {MAX_INCIDENTS_TO_FETCH}')
 
-    last_fetched_id = last_run.get('last_fetched_id', None)
+    last_fetched_id = last_run.get('last_fetched_id')
     incidents: List[Dict[str, Any]] = []
 
     demisto.debug(f'Fetching incidents. Last fetched id: {last_fetched_id}')
@@ -660,19 +660,19 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     :rtype: ``CommandResults``
     """
-    threat_model_names = args.get('threat_model_name', None)
-    max_results = args.get('max_results', None)
-    start_time = args.get('start_time', None)
-    end_time = args.get('end_time', None)
-    alert_statuses = args.get('alert_status', None)
-    alert_severities = args.get('alert_severity', None)
-    device_names = args.get('device_name', None)
+    threat_model_names = args.get('threat_model_name')
+    max_results = args.get('max_results')
+    start_time = args.get('start_time')
+    end_time = args.get('end_time')
+    alert_statuses = args.get('alert_status')
+    alert_severities = args.get('alert_severity')
+    device_names = args.get('device_name')
     page = args.get('page', '1')
-    user_domain_name = args.get('user_domain_name', None)
-    user_names = args.get('user_name', None)
-    sam_account_names = args.get('sam_account_name', None)
-    emails = args.get('email', None)
-    last_days = args.get('last_days', None)
+    user_domain_name = args.get('user_domain_name')
+    user_names = args.get('user_name')
+    sam_account_names = args.get('sam_account_name')
+    emails = args.get('email')
+    last_days = args.get('last_days')
     descending_order = args.get('descending_order', True)
 
     user_names = try_convert(user_names, lambda x: argToList(x))
@@ -779,7 +779,7 @@ def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) ->
     :rtype: ``bool``
 
     """
-    status = args.get('status', None)
+    status = args.get('status')
     statuses = list(filter(lambda name: name != 'closed', ALERT_STATUSES.keys()))
     if status.lower() not in statuses:
         raise ValueError(f'status must be one of {statuses}.')
@@ -805,7 +805,7 @@ def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
     :rtype: ``bool``
 
     """
-    close_reason = args.get('close_reason', None)
+    close_reason = args.get('close_reason')
     close_reasons = list(filter(lambda name: not strEqual(name, 'none'), CLOSE_REASONS.keys()))
     if close_reason.lower() not in close_reasons:
         raise ValueError(f'close reason must be one of {close_reasons}')
@@ -834,7 +834,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
 
     :rtype: ``CommandResults``
     """
-    alerts = args.get('alert_id', None)
+    alerts = args.get('alert_id')
     page = args.get('page', '1')
     max_results = args.get('max_results', '100')
     descending_order = args.get('descending_order', True)

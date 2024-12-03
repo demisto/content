@@ -177,7 +177,7 @@ def fetch_events(client: Client, max_results: int, last_run: Dict[str, int],
         list: List of events that will be created in XSIAM.
     """
 
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch')
     if last_fetch is None:
         last_fetch = first_fetch_time
     else:
