@@ -42,4 +42,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![D2_Endpoint_data_collection](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/D2_Endpoint_data_collection.png)
+![D2_Endpoint_data_collection](../doc_files/D2_Endpoint_data_collection.png)
