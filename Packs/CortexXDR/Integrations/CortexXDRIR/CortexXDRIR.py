@@ -832,43 +832,60 @@ def resolve_xsoar_close_reason(xdr_close_reason: str):
     )
     return xsoar_close_reason
 
+def close_incident_in_xsoar(incident_data, incident_id):
+    demisto.debug(
+        f"handle_incoming_incident {incident_data.get('status')=} {incident_id=}"
+    )
+    demisto.debug(f"Closing XDR issue {incident_id=}")
+    xsoar_close_reason = resolve_xsoar_close_reason(incident_data.get("status"))
+    closing_entry = {
+        "Type": EntryType.NOTE,
+        "Contents": {
+            "dbotIncidentClose": True,
+            "closeReason": xsoar_close_reason,
+            "closeNotes": incident_data.get("resolve_comment", ""),
+        },
+        "ContentsFormat": EntryFormat.JSON,
+    }
+    incident_data["closeReason"] = closing_entry["Contents"]["closeReason"]
+    incident_data["closeNotes"] = closing_entry["Contents"]["closeNotes"]
+    demisto.debug(
+        f"handle_incoming_incident {incident_id=} {incident_data['closeReason']=} "
+        f"{incident_data['closeNotes']=}"
+    )
 
-def handle_incoming_closing_incident(incident_data) -> dict:
-    incident_id = incident_data.get("incident_id")
-    demisto.debug(f"handle_incoming_closing_incident {incident_data=} {incident_id=}")
-    closing_entry = {}  # type: Dict
-
-    if incident_data.get("status") in XDR_RESOLVED_STATUS_TO_XSOAR:
+    if incident_data.get("status") == "resolved_known_issue":
+        close_notes = f'Known Issue.\n{incident_data.get("closeNotes", "")}'
+        closing_entry["Contents"]["closeNotes"] = close_notes
+        incident_data["closeNotes"] = close_notes
         demisto.debug(
-            f"handle_incoming_closing_incident {incident_data.get('status')=} {incident_id=}"
+            f"handle_incoming_incident {incident_id=} {close_notes=}"
         )
-        demisto.debug(f"Closing XDR issue {incident_id=}")
-        xsoar_close_reason = resolve_xsoar_close_reason(incident_data.get("status"))
-        closing_entry = {
-            "Type": EntryType.NOTE,
-            "Contents": {
-                "dbotIncidentClose": True,
-                "closeReason": xsoar_close_reason,
-                "closeNotes": incident_data.get("resolve_comment", ""),
-            },
-            "ContentsFormat": EntryFormat.JSON,
-        }
-        incident_data["closeReason"] = closing_entry["Contents"]["closeReason"]
-        incident_data["closeNotes"] = closing_entry["Contents"]["closeNotes"]
-        demisto.debug(
-            f"handle_incoming_closing_incident {incident_id=} {incident_data['closeReason']=} "
-            f"{incident_data['closeNotes']=}"
-        )
-
-        if incident_data.get("status") == "resolved_known_issue":
-            close_notes = f'Known Issue.\n{incident_data.get("closeNotes", "")}'
-            closing_entry["Contents"]["closeNotes"] = close_notes
-            incident_data["closeNotes"] = close_notes
-            demisto.debug(
-                f"handle_incoming_closing_incident {incident_id=} {close_notes=}"
-            )
-
+    demisto.debug(f"The closing entry, {closing_entry=}")
     return closing_entry
+
+
+def reopen_incident_in_xsoar():
+    opening_entry = {
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentReopen': True
+            },
+            'ContentsFormat': EntryFormat.JSON
+        }
+    demisto.debug(f"The opening entry, {opening_entry=}")
+    return opening_entry
+
+
+def handle_incoming_incident(incident_data) -> dict:
+    incident_id = incident_data.get("incident_id")
+    demisto.debug(f"handle_incoming_incident {incident_data=} {incident_id=}")
+    demisto.debug(f'{incident_data.get("status")=}')
+    if incident_data.get("status") in XDR_RESOLVED_STATUS_TO_XSOAR:
+        return close_incident_in_xsoar(incident_data, incident_id)
+    else:
+        demisto.debug(f'handle_incoming_incident Incident is opened (or reopened): {incident_id}')
+        return reopen_incident_in_xsoar()
 
 
 def get_mapping_fields_command():
@@ -917,7 +934,6 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
 
     id_to_modification_time = {raw.get('incident_id'): raw.get('modification_time') for raw in raw_incidents}
     demisto.debug(f"{last_run_mirroring_str=}, modified incidents {id_to_modification_time=}")
-
     return GetModifiedRemoteDataResponse(list(id_to_modification_time.keys())), last_run_mirroring_str
 
 
@@ -930,11 +946,12 @@ def get_remote_data_command(client, args):
         # when Demisto version is 6.1.0 and above, this command will only be automatically executed on incidents
         # returned from get_modified_remote_data_command so we want to perform extra-data request on those incidents.
         return_only_updated_incident = not is_demisto_version_ge('6.1.0')  # True if version is below 6.1 else False
-
+        demisto.debug(f"{remote_args.remote_incident_id=}")
         incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
                                                                  "alerts_limit": 1000,
                                                                  "return_only_updated_incident": return_only_updated_incident,
                                                                  "last_update": remote_args.last_update})
+        demisto.debug(f"{incident_data=}")
         if 'The incident was not modified' not in incident_data[0]:
             demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
 
@@ -957,7 +974,7 @@ def get_remote_data_command(client, args):
             # handle closed issue in XDR and handle outgoing error entry
             entries = []
             if argToBoolean(client._params.get('close_xsoar_incident', True)):
-                entries = [handle_incoming_closing_incident(incident_data)]
+                entries = [handle_incoming_incident(incident_data)]
 
             reformatted_entries = []
             for entry in entries:
@@ -965,7 +982,7 @@ def get_remote_data_command(client, args):
                     reformatted_entries.append(entry)
 
             incident_data['in_mirror_error'] = ''
-
+            demisto.debug(f"{incident_data=}, {reformatted_entries=}")
             return GetRemoteDataResponse(
                 mirrored_object=incident_data,
                 entries=reformatted_entries
@@ -976,7 +993,7 @@ def get_remote_data_command(client, args):
                 'id': remote_args.remote_incident_id,
                 'in_mirror_error': ""
             }
-
+            demisto.debug(f"{incident_data=}")
             return GetRemoteDataResponse(
                 mirrored_object=incident_data,
                 entries=[]
@@ -1001,7 +1018,6 @@ def get_remote_data_command(client, args):
                 'id': remote_args.remote_incident_id,
                 'in_mirror_error': str(e)
             }
-
         return GetRemoteDataResponse(
             mirrored_object=incident_data,
             entries=[]
@@ -1602,6 +1618,7 @@ def main():  # pragma: no cover
 
         elif command == 'get-modified-remote-data':
             last_run_mirroring: Dict[Any, Any] = get_last_mirror_run() or {}
+            demisto.debug(f"asdfghjk")
             demisto.debug(f"before get-modified-remote-data, last run={last_run_mirroring}")
 
             modified_incidents, next_mirroring_time = get_modified_remote_data_command(
@@ -1613,6 +1630,7 @@ def main():  # pragma: no cover
             last_run_mirroring['mirroring_last_update'] = next_mirroring_time
             set_last_mirror_run(last_run_mirroring)
             demisto.debug(f"after get-modified-remote-data, last run={last_run_mirroring}")
+            demisto.debug(f"IDs of modified remote incidents {modified_incidents.modified_incident_ids=}")
             return_results(modified_incidents)
 
         elif command == 'xdr-script-run':  # used with polling = true always
