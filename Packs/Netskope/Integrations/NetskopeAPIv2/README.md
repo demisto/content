@@ -1,34 +1,30 @@
 Netskope API v2 provides a powerful interface for managing and monitoring Netskope deployments. It enables users to retrieve alerts and events, manage URL lists, and control clients. With Netskope API v2, organizations can proactively respond to security threats, enforce web access policies, and efficiently administer their Netskope environment.
 This integration was integrated and tested with version 2 of the Netskope API.
 
-## Configure Netskope (API v2) on Cortex XSOAR
+## Configure Netskope (API v2) in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Netskope (API v2).
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                                            | **Description**                                                                                                                                                           | **Required** |
-    | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-    | Server URL                                               |                                                                                                                                                                           | True         |
-    | Use system proxy settings                                |                                                                                                                                                                           | False        |
-    | Trust any certificate (not secure)                       |                                                                                                                                                                           | False        |
-    | API token                                                | Netskope API access token \(make sure to generate token for the required endpoints\).                                                                                     | True         |
-    | First fetch timestamp                                    | First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago".                                                                                        | False        |
-    | Maximum incidents per fetch                              | Maximum number of incidents per fetch. Default is 50. The maximum is 100.                                                                                                 | False        |
-    | Maximum events as incidents per fetch. Max value is 200. |                                                                                                                                                                           | False        |
-    | Fetch Events                                             | Fetch events as incidents, in addition to the alerts.                                                                                                                     | False        |
-    | Event types to fetch.                                    | The event types to fetch as incidents.                                                                                                                                    | False        |
-    | Alerts Query                                             | Free text query to filter the fetched alerts. For more information, visit Netskope documentation \(https://docs.netskope.com/en/get-alerts-data.html\).                   | False        |
-    | Events Query                                             | Free text query to filter the fetched events \(if configured\). For more information, visit Netskope documentation \(https://docs.netskope.com/en/get-alerts-data.html\). | False        |
-    | Incident type                                            |                                                                                                                                                                           | False        |
-    | Fetch incidents                                          |                                                                                                                                                                           | False        |
-    | Incidents Fetch Interval                                 |                                                                                                                                                                           | False        |
+| **Parameter**                                            | **Description**                                                                                                                                                           | **Required** |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| Server URL                                               |                                                                                                                                                                           | True         |
+| Use system proxy settings                                |                                                                                                                                                                           | False        |
+| Trust any certificate (not secure)                       |                                                                                                                                                                           | False        |
+| API token                                                | Netskope API access token \(make sure to generate token for the required endpoints\).                                                                                     | True         |
+| First fetch timestamp                                    | First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago".                                                                                        | False        |
+| Maximum incidents per fetch                              | Maximum number of incidents per fetch. Default is 50. The maximum is 100.                                                                                                 | False        |
+| Maximum events as incidents per fetch. Max value is 200. |                                                                                                                                                                           | False        |
+| Fetch Events                                             | Fetch events as incidents, in addition to the alerts.                                                                                                                     | False        |
+| Event types to fetch.                                    | The event types to fetch as incidents.                                                                                                                                    | False        |
+| Alerts Query                                             | Free text query to filter the fetched alerts. For more information, visit Netskope documentation \(https://docs.netskope.com/en/get-alerts-data.html\).                   | False        |
+| Events Query                                             | Free text query to filter the fetched events \(if configured\). For more information, visit Netskope documentation \(https://docs.netskope.com/en/get-alerts-data.html\). | False        |
+| Incident type                                            |                                                                                                                                                                           | False        |
+| Fetch incidents                                          |                                                                                                                                                                           | False        |
+| Incidents Fetch Interval                                 |                                                                                                                                                                           | False        |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### netskope-alert-list
