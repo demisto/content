@@ -134,8 +134,42 @@ def test_get_tables():
     result = parser.get_tables(doc)
     assert result == "Cell 1 text. Cell 2 text."
 
+
 def test_main(mocker):
-    mocker.patch.object(WordParser, 'parse_word')
+    """
+    Given:
+        - Document with author, title and paragraph.
+    When:
+        - Call main
+    Then:
+        - Validate the human-readable output is correct.
+        - validate extractIndicators command executed with the correct arguments.
+    """
+
+    expected_hr_output = '''### Properties
+    |author|title|
+    |---|---|
+    | author | title |
+
+    ### Paragraphs
+    paragraphs
+
+    ### Tables
+
+    ### Hyperlinks
+    '''
+
+    parser = WordParser()
+    parser.core_properties = {'author': 'author', 'title': 'title'}
+    parser.paragraphs = 'paragraphs'
+    mocker.patch('ExtractIndicatorsFromWordFile.WordParser', return_value=parser)
+
+    mocker.patch.object(parser, 'parse_word', return_value={})
+    execute_command_mock = mocker.patch.object(demisto, 'executeCommand', return_value={})
+    return_results_mock = mocker.patch('ExtractIndicatorsFromWordFile.return_results')
+
     main()
 
-    assert 1==1
+    return_results_mock.call_args[0][0] == expected_hr_output
+    assert execute_command_mock.call_args[0][0] == 'extractIndicators'
+    assert execute_command_mock.call_args[0][1]['text'] == 'paragraphs   author title'

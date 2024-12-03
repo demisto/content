@@ -120,7 +120,7 @@ def main():
         return_error(str(e))
 
     core_properties_str = " ".join(prop for prop in parser.core_properties.values())
-    all_data = parser.paragraphs + parser.tables + parser.hyperlinks + core_properties_str
+    all_data = " ".join([parser.paragraphs, parser.tables, parser.hyperlinks, core_properties_str])
 
     # Returning Indicators:
     indicators_hr = demisto.executeCommand("extractIndicators", {'text': all_data})
