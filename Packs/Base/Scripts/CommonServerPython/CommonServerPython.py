@@ -3257,10 +3257,11 @@ class Common(object):
                      malware_family=None, relationships=None, blocked=None, description=None, stix_id=None,
                      whois_records=None, organization_prevalence=None,
                      global_prevalence=None, organization_first_seen=None, organization_last_seen=None,
-                     first_seen_by_source=None, last_seen_by_source=None):
+                     first_seen_by_source=None, last_seen_by_source=None, ip_type="IP"):
 
             # Main value of the indicator
             self.ip = ip
+            self.ip_type = ip_type
 
             # Core custom fields - IP
             self.blocked = blocked
@@ -3445,8 +3446,14 @@ class Common(object):
                                          relationship.to_context()]
                 ip_context['Relationships'] = relationships_context
 
+            if self.ip_type == "IP":
+                context_path = Common.IP.CONTEXT_PATH
+
+            elif self.ip_type == "IPv6":
+                context_path = Common.IP.CONTEXT_PATH.replace("IP", "IPv6")
+
             ret_value = {
-                Common.IP.CONTEXT_PATH: ip_context
+                context_path: ip_context
             }
 
             if self.dbot_score:
@@ -8612,10 +8619,85 @@ def is_xsiam():
 
 def is_using_engine():
     """Determines whether or not the platform is using engine.
+    NOTE: 
+     - This method works only for system integrations (not custom).
+     - On xsoar 8, this method works only for integrations that runs on the xsoar pod - not on the engine-0 (mainly long running
+       integrations) such as:  EDL, Cortex Core - IOC, Cortex Core - IR, ExportIndicators, Generic Webhook, PingCastle,
+       Publish List, Simple API Proxy, Syslog v2, TAXII Server, TAXII2 Server, Web File Repository, Workday_IAM_Event_Generator, 
+       XSOAR-Web-Server, Microsoft Teams, AWS-SNS-Listener.
+
     :return: True iff the platform is using engine.
     :rtype: ``bool``
     """
     return demisto.demistoVersion().get("engine")
+
+
+def is_integration_instance_running_on_engine():
+    """Determines whether the current integration instance runs on an xsoar engine.
+    If yes - returns the engine id.
+
+    :return: The engine id iff the instance is running on an xsaor engine.
+    :rtype: ``str``
+    """
+    engine_id = ''
+    integrations_raw_response = demisto.internalHttpRequest(
+        'POST', uri='/settings/integration/search', body='{\"size\":1000}'
+    )
+    integrations_body_raw_response = integrations_raw_response.get('body', '{}')
+    try:
+        integrations_body_response = json.loads(integrations_body_raw_response)  # type: ignore
+    except json.JSONDecodeError:  # type: ignore[attr-defined]
+        demisto.debug('Unable to load response {}'.format(integrations_body_raw_response))
+        integrations_body_response = {}
+
+    instances = integrations_body_response.get('instances', [])
+    instance_name = demisto.integrationInstance()
+    demisto.debug("Search for the data of the {} instance.".format(instance_name))
+    for instance in instances:
+        if instance_name == instance.get('name', ''):
+            engine_id = instance.get('engine', '')
+            break
+
+    if engine_id:  # engine_id = '' for instances that don't run on engine
+        demisto.debug("The {} instance runs on an xsoar engine, engine ID is: {}".format(instance_name, engine_id))
+    else:
+        demisto.debug("The {} instance does not run on an xsoar engine.".format(instance_name))
+
+    return engine_id
+
+
+def get_engine_base_url(engine_id):
+    """Gets the xsoar engine id and returns it's base url. 
+    For example: for engine_id = '4ccccccc-5aaa-4000-b666-dummy_id', base url = '11.180.111.111:1443'.
+
+    :type engine_id: ``str``
+    :param engine_id: The xsoar engine id.
+
+    :return: The base URL of the engine.
+    :rtype: ``str`
+    """
+
+    engines_raw_response = demisto.internalHttpRequest(
+        'GET', uri='/engines', body=json.dumps({})
+    )
+    engines_body_raw_response = engines_raw_response.get('body', '{}')
+
+    try:
+        engines_body_response = json.loads(engines_body_raw_response)  # type: ignore
+    except json.JSONDecodeError:  # type: ignore[attr-defined]
+        demisto.debug('Unable to load response {}'.format(engines_body_raw_response))
+        engines_body_response = {}
+
+    engines = engines_body_response.get('engines', [])
+    demisto.debug("Search for the data of engine ID {}.".format(engine_id))
+    for engine in engines:
+        if engine.get('id') == engine_id:
+            engine_base_url = engine.get('baseUrl', '')
+            demisto.debug("The base URL of engine ID {} is: {}.".format(engine_id, engine_base_url))
+            return engine_base_url
+
+    demisto.debug("Couldn't find a base url for engine ID {}.".format(engine_id))
+    return ''
 
 
 class DemistoHandler(logging.Handler):
