@@ -6,7 +6,6 @@
         "TIM_REVIEWER": "The GitHub username for TIM reviews owner"
     },
     "CONTRIBUTION_REVIEWERS": [
-        "MLainer1",
         "YairGlik",
         "amshamah419"
     ],
@@ -14,7 +13,7 @@
     "CONTRIBUTION_SECURITY_REVIEWER": ["idovandijk"],
     "ON_CALL_DEVS": [
         "sshuker",
-        "yhayun"
+        "sberman"
     ],
     "DOC_REVIEWER": "ShirleyDenkberg",
     "TIM_REVIEWER": "MLainer1"

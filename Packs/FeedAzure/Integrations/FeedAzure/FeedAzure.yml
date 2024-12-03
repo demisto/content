@@ -255,7 +255,7 @@ script:
       name: limit
     description: Gets indicators from the feed.
     name: azure-get-indicators
-  dockerimage: demisto/python3:3.11.9.107902
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   runonce: false
   script: '-'

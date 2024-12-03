@@ -47,4 +47,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Illusive - Incident Escalation](https://raw.githubusercontent.com/demisto/content/bb996a5e640102bdfdefb010f1e42c147b4b573c/Packs/IllusiveNetworks/doc_files/Illusive-Incident_Escalation.png)
+![Illusive - Incident Escalation](../doc_files/Illusive-Incident_Escalation.png)

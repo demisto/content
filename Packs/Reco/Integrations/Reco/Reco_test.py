@@ -293,6 +293,12 @@ def get_random_risky_users_response() -> GetIncidentTableResponse:
                                 ).decode(ENCODING),
                             ),
                             KeyValuePair(
+                                key="identity_id",
+                                value=base64.b64encode(
+                                    f"{uuid.uuid4()}".encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
                                 key="email_account",
                                 value=base64.b64encode(
                                     f"{uuid.uuid4()}@acme.com".encode(ENCODING)
@@ -699,6 +705,12 @@ def test_add_risky_user_label(requests_mock, reco_client: RecoClient) -> None:
     requests_mock.put(
         f"{DUMMY_RECO_API_DNS_NAME}/entry-label-relations", json={}, status_code=200
     )
+    raw_result = get_random_risky_users_response()
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-risk-management-table",
+        json=raw_result,
+        status_code=200,
+    )
     res = add_risky_user_label(reco_client=reco_client, email_address=label_id)
     assert "labeled as risky" in res.readable_output
 
@@ -800,7 +812,7 @@ def test_get_private_email_list_with_access(requests_mock, reco_client: RecoClie
     actual_result = get_private_email_list_with_access(
         reco_client=reco_client
     )
-    assert 0 == len(actual_result.outputs)
+    assert len(actual_result.outputs) == 0
 
 
 def test_get_assets_shared_externally_command(requests_mock, reco_client: RecoClient) -> None:
@@ -901,6 +913,11 @@ def test_get_user_context_by_email(requests_mock, reco_client: RecoClient) -> No
     raw_result = get_random_user_context_response()
     requests_mock.post(
         f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200
+    )
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-risk-management-table",
+        json=raw_result,
+        status_code=200,
     )
     res = get_user_context_by_email_address(reco_client, "charles@corp.com")
     assert res.outputs_prefix == "Reco.User"

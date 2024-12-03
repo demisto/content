@@ -2,23 +2,19 @@ Arkime (formerly Moloch) is a large scale, open source, indexed packet capture a
 This integration was integrated and tested with version 3.4.1 (API v3) of Arkime. 
 For older versions, see the Moloch pack (deprecated). 
 
-## Configure Arkime on Cortex XSOAR
+## Configure Arkime in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Arkime.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | Username | True |
-    | Password | True |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL | True |
+| Username | True |
+| Password | True |
+| Use system proxy settings | False |
+| Trust any certificate (not secure) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### arkime-connection-list
 ***
@@ -1314,4 +1310,3 @@ Gets a list of PCAP files that Arkime knows about.
 >|---|---|---|---|---|---|
 >| localhost | /opt/arkime/raw/localhost-220621-00000384.pcap | 384 | 1970-01-20 03:57:24 | 1073744628 | 1073744628 |
 >| localhost | /opt/arkime/raw/localhost-220621-00000385.pcap | 385 | 1970-01-20 03:57:34 |  |  |
-
