@@ -2547,8 +2547,8 @@ def test_token_permissions_list_command(mocker, token, decoded_token, auth_type,
      'http://ext-viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com/xsoar/instance/execute/teams'),
     ('https://viso-test-dummy.xdr-qa-ttt.ss.paloaltonetworks.com', False, True,
      'https://ext-viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com/xsoar/instance/execute/teams'),
-    ('http://viso-test-dummy.xdr-qa-ttt.ss.paloaltonetworks.com', False, True,
-     'http://ext-viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com/xsoar/instance/execute/teams'),
+    ('http://viso-test-dummy.xdr.qa-ttt.ss.paloaltonetworks.com', False, True,
+     'http://ext-viso-test-dummy.crtx.qa-ttt.ss.paloaltonetworks.com/xsoar/instance/execute/teams'),
     ('http://viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com', False, True,
      'http://ext-viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com/xsoar/instance/execute/teams'),
 ],
@@ -2557,7 +2557,7 @@ def test_token_permissions_list_command(mocker, token, decoded_token, auth_type,
          "Test xsoar 8 server url (with http:// prefix)",
          "Test xsiam server url (with https:// prefix)",
          "Test xsiam server url (with http:// prefix)",
-         "Test xsiam server url without the '.xdr-' string in the dns name"
+         "Test xsiam server url without the 'xdr' string in the dns name"
          ])
 def test_create_messaging_endpoint_command(mocker, xsoar_server, is_xsoar_on_prem, is_xsiam, expected_hr):
     """
@@ -2569,7 +2569,7 @@ def test_create_messaging_endpoint_command(mocker, xsoar_server, is_xsoar_on_pre
         3. An xsoar 8 server url (with http:// prefix).
         4. An xsiam server url (with https:// prefix).
         5. An xsiam server url (with http:// prefix).
-        6. An xsiam server url without the '.xdr-' string in the dns name.
+        6. An xsiam server url without the 'xdr' string in the dns name.
 
     When:
         - Running the create_messaging_endpoint_command.
@@ -2578,9 +2578,9 @@ def test_create_messaging_endpoint_command(mocker, xsoar_server, is_xsoar_on_pre
         1. The 'instance/execute/teams' suffix was added.
         2. The 'ext' prefix was added to the dns name, and the 'xsoar/instance/execute/teams' suffix was added.
         3. The 'ext' prefix was added to the dns name, and the 'xsoar/instance/execute/teams' suffix was added.
-        4. The 'ext' prefix was added to the dns name, the 'xdr-' was replaced with 'crtx-' and the 'xsoar/instance/execute/teams'
+        4. The 'ext' prefix was added to the dns name, the 'xdr' was replaced with 'crtx' and the 'xsoar/instance/execute/teams'
            suffix was added.
-        5. The 'ext' prefix was added to the dns name, the 'xdr-' was replaced with 'crtx-' and the 'xsoar/instance/execute/teams'
+        5. The 'ext' prefix was added to the dns name, the 'xdr' was replaced with 'crtx' and the 'xsoar/instance/execute/teams'
            suffix was added.
         6. The 'ext' prefix was added to the dns name, and the 'xsoar/instance/execute/teams' suffix was added.
     """
