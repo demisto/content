@@ -2421,11 +2421,11 @@ script:
     arguments:
     - name: extended_output
       description: Determine whether the output will be in verbose format or not.
-      required: no
+      required: false
       defaultValue: false
     - name: limit
       description: The maximum number of results to retrieve. Default is 1000.
-      required: no
+      required: false
       defaultValue: '1000'
     outputs:
     - contextPath: EWS.MailFlowRule.Size
@@ -2490,7 +2490,7 @@ script:
       required: true
     - name: extended_output
       description: Determine whether the output will be in verbose format or not.
-      required: no
+      required: false
       defaultValue: false
     outputs:
     - contextPath: EWS.MailFlowRule.Size
