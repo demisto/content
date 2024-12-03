@@ -1,7 +1,7 @@
 import pytest
 import os
 import shutil
-from ExtractIndicatorsFromWordFile import WordParser
+from ExtractIndicatorsFromWordFile import WordParser, main
 import demistomock as demisto
 from unittest.mock import MagicMock
 
@@ -133,3 +133,9 @@ def test_get_tables():
 
     result = parser.get_tables(doc)
     assert result == "Cell 1 text. Cell 2 text."
+
+def test_main(mocker):
+    mocker.patch.object(WordParser, 'parse_word')
+    main()
+
+    assert 1==1
