@@ -100,3 +100,36 @@ def test_get_paragraphs():
     doc.paragraphs = mock_paragraphs
     result = parser.get_paragraphs(doc)
     assert result == "This is the first paragraph.\nThis is the second paragraph.\nThis is the third paragraph."
+
+
+def test_get_tables():
+    """
+    Given:
+        - Document with a table.
+    When:
+        - Call get_tables
+    Then:
+        - Validate the result contains the table data.
+    """
+    parser = WordParser()
+
+    doc = MagicMock()
+
+    # create a mock table, row, cell, and paragraph structure
+    mock_table = MagicMock()
+    mock_row = MagicMock()
+    mock_cell_1 = MagicMock()
+    mock_cell_2 = MagicMock()
+
+    mock_paragraph_1 = MagicMock(text="Cell 1 text.")
+    mock_paragraph_2 = MagicMock(text="Cell 2 text.")
+
+    mock_cell_1.paragraphs = [mock_paragraph_1]
+    mock_cell_2.paragraphs = [mock_paragraph_2]
+
+    mock_row.cells = [mock_cell_1, mock_cell_2]
+    mock_table.rows = [mock_row]
+    doc.tables = [mock_table]
+
+    result = parser.get_tables(doc)
+    assert result == "Cell 1 text. Cell 2 text."
