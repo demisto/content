@@ -1,10 +1,7 @@
 Retrieve alerts and recommendations from NTT CTS
 This integration was integrated and tested with version 1.0 of NTT Cyber Threat Sensor
-## Configure NTT Cyber Threat Sensor on Cortex XSOAR
+## Configure NTT Cyber Threat Sensor in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for NTT Cyber Threat Sensor.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -17,9 +14,8 @@ This integration was integrated and tested with version 1.0 of NTT Cyber Threat 
 | incidentType | Incident type | False |
 | BASEURL | The base URL for the backend to consume from | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ntt-cyber-threat-sensor-poll-blobs
 ***
