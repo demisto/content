@@ -213,10 +213,11 @@ def merge_accounts(accounts: list[dict[str, str]]) -> dict[str, Any]:
         dict[str, Any]: A merged account dictionary in the Common.Account context format.
                         Returns an empty dictionary if the input list is empty.
     """
+
     def recursive_merge(target: dict, source: dict):
         for key, value in source.items():
             # Check if the value is a dictionary and has specific keys 'Value' and 'Source'
-            if isinstance(value, dict) and 'Value' in value and 'Source' in value:
+            if isinstance(value, dict) and "Value" in value and "Source" in value:
                 if key not in target:
                     target[key] = []
                 target[key].append(value)
@@ -255,7 +256,13 @@ def prepare_human_readable(
     """
     result = []
     if human_readable:
-        command = f'!{command_name} {" ".join([f"{arg}={value}" for arg, value in args.items() if value])}'
+        formatted_args = []
+        for arg, value in args.items():
+            if value:
+                if isinstance(value, dict):
+                    value = json.dumps(value).replace('"', '\\\\"')
+                formatted_args.append(f'{arg}="{value}"')
+        command = f"!{command_name} {' '.join(formatted_args)}"
         if not is_error:
             result_message = f"#### Result for {command}\n{human_readable}"
             result.append(
@@ -469,7 +476,9 @@ def ad_get_user(command: Command) -> tuple[list[CommandResults], dict[str, Any],
     )
     output_key = get_output_key("ActiveDirectory.Users", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
-    account_disable = outputs.get("userAccountControlFields", {}).pop("ACCOUNTDISABLE", None)
+    account_disable = outputs.get("userAccountControlFields", {}).pop(
+        "ACCOUNTDISABLE", None
+    )
     is_enabled = (not account_disable) if isinstance(account_disable, bool) else None
     manager_dn = (outputs.pop("manager", None) or [""])[0]
     account_output = create_account(
@@ -638,6 +647,7 @@ def msgraph_user_get_manager(
 def xdr_list_risky_users(
     command: Command,
     user_name: str,
+    outputs_key_field: str,
 ) -> tuple[list[CommandResults], dict[str, Any]]:
     readable_outputs_list = []
 
@@ -648,7 +658,7 @@ def xdr_list_risky_users(
     readable_outputs_list.extend(
         prepare_human_readable(command.name, command.args, human_readable)
     )
-    output_key = get_output_key("PaloAltoNetworksXDR.RiskyUser", entry_context[0])
+    output_key = get_output_key(f"{outputs_key_field}.RiskyUser", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
 
     username = user_name if outputs else None
@@ -869,7 +879,22 @@ def main():
                 xdr_list_risky_users_command
             ) and is_valid_args(xdr_list_risky_users_command):
                 readable_outputs, outputs = xdr_list_risky_users(
-                    xdr_list_risky_users_command, user_name
+                    xdr_list_risky_users_command,
+                    user_name,
+                    outputs_key_field="PaloAltoNetworksXDR",
+                )
+                single_user_readable_outputs.extend(readable_outputs)
+                single_user_outputs.append(outputs)
+            core_list_risky_users_command = Command(
+                brand="Cortex Core - IR",
+                name="core-list-risky-users",
+                args={"user_id": user_name},
+            )
+            if modules.is_brand_available(
+                core_list_risky_users_command
+            ) and is_valid_args(core_list_risky_users_command):
+                readable_outputs, outputs = xdr_list_risky_users(
+                    core_list_risky_users_command, user_name, outputs_key_field="Core"
                 )
                 single_user_readable_outputs.extend(readable_outputs)
                 single_user_outputs.append(outputs)

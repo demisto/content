@@ -588,7 +588,7 @@ def test_prepare_human_readable_success():
         It should return a list with a single CommandResults object containing the formatted output.
     """
     command_name = "test-command"
-    args = {"arg1": "value1", "arg2": "value2"}
+    args = {"arg1": "value1", "arg2": {"nested": "value2"}}
     human_readable = "Test output"
 
     result = prepare_human_readable(command_name, args, human_readable)
@@ -597,7 +597,7 @@ def test_prepare_human_readable_success():
     assert isinstance(result[0], CommandResults)
     assert (
         result[0].readable_output
-        == "#### Result for !test-command arg1=value1 arg2=value2\nTest output"
+        == '#### Result for !test-command arg1="value1" arg2="{\\\\"nested\\\\": \\\\"value2\\\\"}"\nTest output'
     )
     assert result[0].mark_as_note is True
 
@@ -622,7 +622,7 @@ def test_prepare_human_readable_error():
     assert isinstance(result[0], CommandResults)
     assert (
         result[0].readable_output
-        == "#### Error for !test-command arg1=value1\nError occurred"
+        == '#### Error for !test-command arg1="value1"\nError occurred'
     )
     assert result[0].entry_type == EntryType.ERROR
     assert result[0].mark_as_note is True
@@ -1369,6 +1369,7 @@ class TestGetUserData:
             It returns the expected tuple of readable outputs and account output.
         """
         user_name = "xdr_user"
+        outputs_key_field = "PaloAltoNetworksXDR"
         command = Command(
             "Cortex XDR - IR", "xdr-list-risky-users", {"user_id": user_name}
         )
@@ -1389,7 +1390,7 @@ class TestGetUserData:
         mocker.patch("GetUserData.get_outputs", return_value=mock_outputs)
         mocker.patch("GetUserData.prepare_human_readable", return_value=[])
 
-        result = xdr_list_risky_users(command, user_name)
+        result = xdr_list_risky_users(command, user_name, outputs_key_field)
 
         assert isinstance(result, tuple)
         assert len(result) == 2
