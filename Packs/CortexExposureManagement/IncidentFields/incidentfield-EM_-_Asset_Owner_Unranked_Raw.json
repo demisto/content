@@ -1,7 +1,7 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "emserviceowner",
+    "cliName": "emassetownerunrankedraw",
     "closeForm": false,
     "columns": [
         {
@@ -16,7 +16,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "Optional: Name of service owner. Either name or email will be present."
+            "_comment": "Optional: Name of asset owner. Either name or email will be present."
         },
         {
             "displayName": "Email",
@@ -30,7 +30,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "Optional: Email address of service owner. Either name or email will be present."
+            "_comment": "Optional: Email address of asset owner. Either name or email will be present."
         },
         {
             "displayName": "Source",
@@ -44,7 +44,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "Mandatory: Where this service owner was found from based on data from integrations."
+            "_comment": "Mandatory: Where this asset owner was found from based on data from integrations."
         },
         {
             "displayName": "Timestamp",
@@ -59,34 +59,6 @@
             "type": "shortText",
             "width": 150,
             "_comment": "Mandatory: Current timestamp the user was found by the playbook."
-        },
-        {
-            "displayName": "Ranking Score",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "ranking_score",
-            "orgType": "shortText",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150,
-            "_comment": "Mandatory: Score for how likely a the user is a service owner."
-        },
-        {
-            "displayName": "Justification",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "justification",
-            "orgType": "shortText",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150,
-            "_comment": "Mandatory: Same as source, subject to change in the future."
         }
     ],
     "content": true,
@@ -95,14 +67,14 @@
         {},
         {}
     ],
-    "description": "Potential service owners gathered through playbook",
+    "description": "Original set of potential asset owners gathered through playbook. This field contains all the asset owners collected by the playbook in emassetowner as well as additional users that may help identify likely owners (e.g. service accounts).",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_emserviceowner",
+    "id": "incident_emassetownerunrankedraw",
     "isReadOnly": false,
     "locked": false,
-    "name": "EM - Service Owner",
+    "name": "EM - Asset Owner Unranked Raw",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
