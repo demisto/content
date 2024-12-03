@@ -11,7 +11,7 @@ import secrets
 import jwt
 import re
 from distutils.util import strtobool
-from datetime import timezone
+from datetime import UTC
 from typing import Any, Dict, Tuple, List, Optional, BinaryIO
 from requests.models import Response
 from hashlib import sha1
@@ -1935,7 +1935,7 @@ def test_module(client: Client, params: dict, first_fetch_time: int) -> str:
         if not params.get('as_user'):
             raise DemistoException("In order to use fetch, a User ID for Fetching Incidents is "
                                    "required.")
-        created_after = datetime.fromtimestamp(first_fetch_time, tz=timezone.utc).strftime(
+        created_after = datetime.fromtimestamp(first_fetch_time, tz=UTC).strftime(
             DATE_FORMAT)
         response = client.list_events(
             as_user=params.get('as_user'),  # type:ignore
@@ -1965,12 +1965,12 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     created_after = last_run.get('time', None)
     incidents = []
     if not created_after:
-        created_after = datetime.fromtimestamp(first_fetch_time, tz=timezone.utc).strftime(
+        created_after = datetime.fromtimestamp(first_fetch_time, tz=UTC).strftime(
             DATE_FORMAT)
     results = client.list_events(stream_type='admin_logs', as_user=as_user, limit=max_results,
                                  created_after=created_after)
     raw_incidents = results.get('entries', [])
-    next_run = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
+    next_run = datetime.now(tz=UTC).strftime(DATE_FORMAT)
     for raw_incident in raw_incidents:
         event = Event(raw_input=raw_incident)
         xsoar_incident = event.format_incident()

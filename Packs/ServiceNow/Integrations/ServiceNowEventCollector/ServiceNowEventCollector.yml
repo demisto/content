@@ -33,11 +33,29 @@ configuration:
   type: 8
   required: false
   section: Connect
-- defaultvalue: '10000'
-  display: Maximum number of events per fetch
-  name: max_fetch
+- display: Event Types To Fetch
+  section: Collect
+  name: event_types_to_fetch
+  type: 16
   required: false
+  additionalinfo: Event types to fetch. Defaults to 'Audit' if no type is specified.
+  defaultvalue: 'Audit'
+  options:
+  - Audit
+  - Syslog Transactions
+- additionalinfo: Maximum number of audit events per fetch.
+  defaultvalue: '10000'
+  display: Maximum audit events to fetch
+  name: max_fetch
   type: 0
+  required: false
+  section: Collect
+- additionalinfo: Maximum number of syslog transactions events per fetch.
+  defaultvalue: '10000'
+  display: Maximum syslog transactions events to fetch
+  name: max_fetch_syslog_transactions
+  type: 0
+  required: false
   section: Collect
 - defaultvalue: 1
   display: Events Fetch Interval
@@ -58,14 +76,13 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-description: Use this integration to fetch audit logs from ServiceNow as Cortex XSIAM events.
+description: Use this integration to fetch audit and syslog transactions logs from ServiceNow as Cortex XSIAM events.
 display: ServiceNow Event Collector
 name: ServiceNow Event Collector
 script:
   commands:
   - name: service-now-get-audit-logs
-    description: Returns audit logs events extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
-    deprecated: false
+    description: Returns events extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
     arguments:
     - auto: PREDEFINED
       defaultValue: "False"
@@ -75,11 +92,31 @@ script:
       - "True"
       - "False"
       required: true
-    - name: limit
-      description: The maximum number of events to return.
+    - description: Maximum audit events to fetch. Default is 1000.
+      name: limit
+    - name: from_date
+      description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
       required: false
       isArray: false
-      defaultValue: 1000
+      defaultValue: ""
+    - name: offset
+      description: Starting record index from which to begin retrieving records.
+      required: false
+      isArray: false
+      defaultValue: ""
+  - name: service-now-get-syslog-transactions
+    description: Returns syslog transactions events extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
+    arguments:
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - "True"
+      - "False"
+      required: true
+    - description: Maximum syslog transactions events to fetch. Default is 1000.
+      name: limit
     - name: from_date
       description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
       required: false
@@ -91,7 +128,7 @@ script:
       isArray: false
       defaultValue: ""
     outputs: []
-  dockerimage: demisto/python3:3.11.10.113941
+  dockerimage: demisto/python3:3.11.10.115186
   isfetchevents: true
   runonce: false
   script: ''

@@ -104,24 +104,24 @@ You can use Splunk to define a user lookup table and then configure the SplunkPy
 1. Define the lookup table in Splunk.  
    1. Under **App: Lookup Editor**, select **Lookup Editor**.  
 
-      ![image](https://raw.githubusercontent.com/demisto/content-docs/091b2154a54c6208428b84f2969836c71a36bafe/docs/doc_imgs/integrations/splunk-lookup-editor.png)  
+      ![image](../../doc_files/splunk-lookup-editor.png)  
 
    2. Select **Create a New Lookup** > **KV Store lookup**.  
 
-      ![image](https://raw.githubusercontent.com/demisto/content-docs/5d64d0aa825b56327759c5c6ec1b81b1d9dcf493/docs/doc_imgs/integrations/kv-store-lookup.png)  
+      ![image](../../doc_files/kv-store-lookup.png)  
 
    3. Enter the **Name** for the table. For example, **splunk_xsoar_users** is the default lookup table name defined in the SplunkPy integration settings.
    4. Under **App**, select **Enterprise Security**.
    5. Assign two **Key-value collection schema** fields, one for the Cortex XSOAR usernames and one for the corresponding Splunk usernames. For example, **xsoar_user** and **splunk_user** are the default field values defined in the SplunkPy integration settings.
    6. Click **Create Lookup**. 
 
-      ![image](https://raw.githubusercontent.com/demisto/content-docs/ab6faddf6146cab19d13a8f3211b49ba70b166a7/docs/doc_imgs/integrations/new-lookup-table.png) 
+      ![image](../../doc_files/new-lookup-table.png) 
        
      **Note:**  
     If the user keys are defined already in another table, you can use that table name and relevant key names in the SplunkPy integration settings.
     7. Add values to the table to map Cortex XSOAR users to the Splunk users.  
 
-      ![image](https://raw.githubusercontent.com/demisto/content-docs/79c67e22ea19619f3278b2956eb41375c4d77f3f/docs/doc_imgs/integrations/add-values-to-lookup-table.png)
+      ![image](../../doc_files/add-values-to-lookup-table.png)
 2. Configure the Splunk integration instance.  
 Define the lookup table in Splunk.  
    1. Under **Settings** > **Integrations**, search for the SplunkPy integration and create an instance.
@@ -131,7 +131,7 @@ Define the lookup table in Splunk.
        3. Set the **XSOAR user key**  to the field defined in the Splunk lookup table. By default it is **xsoar_user**.
        4. Set the **SPLUNK user key** to the field defined in the Splunk lookup table. By default it is **splunk_user**. 
 
-          ![image](https://raw.githubusercontent.com/demisto/content-docs/9a41b8c19df9d5fd8120471bfde111de31caf033/docs/doc_imgs/integrations/user-mapping-settings-configuration.png)
+          ![image](../../doc_files/user-mapping-settings-configuration.png)
    
 
 #### Troubleshooting enrichment status
@@ -393,7 +393,7 @@ There is no context output for this command.
 
 ##### Human Readable Output
 
-![image](https://user-images.githubusercontent.com/50324325/63268589-2fda4b00-c29d-11e9-95b5-4b9fcf6c08ee.png)
+![image](../../doc_files/63268589-2fda4b00-c29d-11e9-95b5-4b9fcf6c08ee.png)
 
 
 ### splunk-get-indexes
@@ -416,7 +416,7 @@ There is no context output for this command.
 
 ##### Human Readable Output
 
-![image](https://user-images.githubusercontent.com/50324325/63268447-d8d47600-c29c-11e9-88a4-5003971a492e.png)
+![image](../../doc_files/63268447-d8d47600-c29c-11e9-88a4-5003971a492e.png)
 
 
 ### splunk-notable-event-edit
@@ -447,7 +447,7 @@ There is no context output for this command.
 ``` !splunk-notable-event-edit eventIDs=66D21DF4-F4FD-4886-A986-82E72ADCBFE9@@notable@@a045b8acc3ec93c2c74a2b18c2caabf4 comment="Demisto"```
 
 ##### Human Readable Output
-![image](https://user-images.githubusercontent.com/50324325/63522203-914e2400-c500-11e9-949a-0b55eb2c5871.png)
+![image](../../doc_files/63522203-914e2400-c500-11e9-949a-0b55eb2c5871.png)
 
 
 ### splunk-job-create
@@ -484,7 +484,7 @@ Creates a new search job in Splunk.
 }
 ```
 ##### Human Readable Output
-![image](https://user-images.githubusercontent.com/50324325/63269769-75981300-c29f-11e9-950a-6ca77bcf564c.png)
+![image](../../doc_files/63269769-75981300-c29f-11e9-950a-6ca77bcf564c.png)
 
 
 ### splunk-parse-raw
@@ -516,7 +516,8 @@ Parses the raw part of the event.
 
 ### splunk-submit-event-hec
 ***
-Sends events to an HTTP event collector using the Splunk platform JSON event protocol.
+Sends events Splunk. if `batch_event_data` or `entry_id` arguments are provided then all arguments related to a single event are ignored.
+
 ##### Base Command
 
 `splunk-submit-event-hec`
@@ -524,14 +525,23 @@ Sends events to an HTTP event collector using the Splunk platform JSON event pro
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event | The event payload key-value pair. An example string: "event": "Access log test message.". | Required |
+| event | The event payload key-value pair. An example string: "event": "Access log test message.". | Optional |
 | fields | Fields for indexing that do not occur in the event payload itself. Accepts multiple, comma-separated, fields. | Optional |
 | index | The index name. | Optional |
 | host | The hostname. | Optional |
 | source_type | The user-defined event source type. | Optional |
 | source | The user-defined event source. | Optional | 
 | time | The epoch-formatted time. | Optional | 
-| request_channel | A channel identifier (ID) where to send the request, must be a Globally Unique Identifier (GUID). **If the indexer acknowledgment is turned on, a channel is required.** | Optional | 
+| batch_event_data | A  batch of events to send to Splunk. For example, `{"event": "something happened at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test2, test2"}, "index": "index0","sourcetype": "sourcetype0","source": "/example/something" } {"event": "something happened at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1","source": "/example/something", "fields":{ "fields" : "severity: INFO, category: test2, test2"}}`. **If provided, the arguments related to a single event and the `entry_id` argument are ignored.** | Optional |
+| batch_event_data | A  batch of events to send to splunk. For example, `{"event": "something happened at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test2, test2"}, "index": "index0","sourcetype": "sourcetype0","source": "/example/something" } {"event": "something happened at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1","source": "/exeample/something", "fields":{ "fields" : "severity: INFO, category: test2, test2"}}`. **If provided, the arguments related to a single event and the `entry_id` argument are ignored.** | Optional |
+| entry_id | The entry id in Cortex XSOAR of the file containing a batch of events. Content of the file should be valid batch event's data, as it would be provided to the `batch_event_data`. **If provided, the arguments related to a single event are ignored.** | Optional |
+
+##### Batched events description
+This command allows sending events to Splunk, either as a single event or a batch of multiple events.
+To send a single event: Use the `event`, `fields`, `host`, `index`, `source`, `source_type`, and `time` arguments.
+To send a batch of events, there are two options, either use the batch_event_data argument or use the entry_id argument (for a file uploaded to Cortex XSOAR).
+Batch format requirements: The batch must be a single string containing valid dictionaries, each representing an event. Events should not be separated by commas. Each dictionary should include all necessary fields for an event. For example: `{"event": "event occurred at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test1"}, "index": "index0", "sourcetype": "sourcetype0", "source": "/path/event1"} {"event": "event occurred at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1", "source": "/path/event2", "fields": {"severity": "INFO", "category": "test2"}}`.
+This formatted string can be passed directly via `batch_event_data`, or, if saved in a file, the file can be uploaded to Cortex XSOAR, and the `entry_id` (e.g., ${File.[4].EntryID}) should be provided.
 
 ##### Context Output
 
@@ -573,7 +583,7 @@ Splank.JobStatus = {
 ```
 
 ##### Human Readable Output
-![image](https://user-images.githubusercontent.com/50324325/77630707-2b24f600-6f54-11ea-94fe-4bf6c734aa29.png)
+![image](../../doc_files/77630707-2b24f600-6f54-11ea-94fe-4bf6c734aa29.png)
 
 ### get-mapping-fields
 ***

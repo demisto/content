@@ -1919,8 +1919,11 @@ script:
       description: The file SHA1 hash.
       type: String
     - contextPath: MicrosoftATP.FileStatistics.Statistics.OrgPrevalence
-      description: The prevalence of the file in the organization.
+      description: The number of times the file is detected in the organization.
       type: String
+    - contextPath: MicrosoftATP.FileStatistics.Statistics.OrganizationPrevalence
+      description: The number of times the file is detected in the organization.
+      type: Number
     - contextPath: MicrosoftATP.FileStatistics.Statistics.OrgFirstSeen
       description: The first date and time the file was in the organization.
       type: Date
@@ -1928,8 +1931,11 @@ script:
       description: The last date and time the file was in the organization.
       type: Date
     - contextPath: MicrosoftATP.FileStatistics.Statistics.GlobalPrevalence
-      description: The global prevalence of the file.
+      description: The number of times the file is detected across all organizations by Microsoft Defender ATP.
       type: String
+    - contextPath: MicrosoftATP.FileStatistics.Statistics.GloballyPrevalence
+      description: The number of times the file is detected across all organizations by Microsoft Defender ATP.
+      type: Number
     - contextPath: MicrosoftATP.FileStatistics.Statistics.GlobalFirstObserved
       description: The global first observation date and time of the file.
       type: Date
@@ -1939,6 +1945,27 @@ script:
     - contextPath: MicrosoftATP.FileStatistics.Statistics.TopFileNames
       description: The file's top names.
       type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.OrganizationPrevalence
+      description: The number of times the indicator is detected in the organization.
+      type: Number
+    - contextPath: File.GlobalPrevalence
+      description: The number of times the indicator is detected across all organizations by Microsoft Defender ATP.
+      type: Number
+    - contextPath: File.OrganizationFirstSeen
+      description: The date and time when the indicator was first seen in the organization.
+      type: Date
+    - contextPath: File.OrganizationLastSeen
+      description: The date and time when the indicator was last seen in the organization.
+      type: Date
+    - contextPath: File.FirstSeenBySource
+      description: The date and time when the indicator was first seen by Microsoft Defender ATP.
+      type: Date
+    - contextPath: File.LastSeenBySource 
+      description: The date and time when the indicator was last seen by Microsoft Defender ATP.
+      type: Date
     polling: true
   - arguments:
     - description: File SHA1 hash to get statistics on.
@@ -5624,7 +5651,7 @@ script:
     execution: false
     name: microsoft-atp-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.114611
+  dockerimage: demisto/crypto:1.0.0.115419
   isfetch: true
   runonce: false
   script: '-'

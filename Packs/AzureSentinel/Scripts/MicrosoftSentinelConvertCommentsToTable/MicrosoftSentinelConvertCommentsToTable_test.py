@@ -7,9 +7,19 @@ def test_format_comment():
     Then:
         - Validate the comment is formatted correctly
     """
-    comment = {'name': 'test', 'kind': 'test_kind', 'properties':
-               {'message': 'test_message', 'createdTimeUtc': 'test_time', 'author': {'userPrincipalName': 'test_user'}}}
-    expected = {'name': 'test', 'message': 'test_message', 'createdTimeUtc': 'test_time', 'userPrincipalName': 'test_user'}
+    comment = {
+        "kind": "test_kind",
+        "properties": {
+            "message": "test_message",
+            "createdTimeUtc": "2024-08-05T14:19:49.3176516Z",
+            "author": {"name": "test", "userPrincipalName": "test_user"},
+        },
+    }
+    expected = {
+        "name": "test",
+        "message": "test_message",
+        "createdTime": "05/08/2024, 14:19",
+    }
 
     from MicrosoftSentinelConvertCommentsToTable import format_comment
     result = format_comment(comment)
@@ -17,15 +27,20 @@ def test_format_comment():
     assert result == expected
 
 
-CONTEXT_RESULTS = ('[{"name": "test", "kind": "test_kind", "properties": {"message": "test_message", '
-                   '"createdTimeUtc": "test_time", "author": {"userPrincipalName": "test_user"}}}, '
-                   '{"name": "test2", "kind": "test_kind2", "properties": {"message": "test_message2", '
-                   '"createdTimeUtc": "test_time2", "author": {"userPrincipalName": "test_user2"}}}]')
+CONTEXT_RESULTS = """[{"kind": "test_kind", "properties": {"message": "test_message",
+    "createdTimeUtc": "2024-08-05T14:19:49.3176516Z", "author": {"name": "test", "userPrincipalName": "test_user"}}},
+    {"kind": "test_kind2", "properties": {"message": "test_message2",
+    "createdTimeUtc": "2024-08-05T14:19:49.3176516Z", "author": {"name": "test2", "userPrincipalName": "test_user2"}}},
+    {"kind": "test_kind3", "properties": {"message": "test_message3",
+    "createdTimeUtc": 111, "author": {"name": "test3", "userPrincipalName": "test_user"}}}]"""
 
-EXPECTED_TABLE = "|Name|Message|Created Time Utc|User Principal Name|\n" \
-                 "|---|---|---|---|\n" \
-                 "| test | test_message | test_time | test_user |\n" \
-                 "| test2 | test_message2 | test_time2 | test_user2 |\n"
+EXPECTED_TABLE = (
+    "|Message|Created Time|Name|\n"
+    "|---|---|---|\n"
+    "| test_message | 05/08/2024, 14:19 | test |\n"
+    "| test_message2 | 05/08/2024, 14:19 | test2 |\n"
+    "| test_message3 | 111 | test3 |\n"
+)
 
 
 def test_convert_to_table():

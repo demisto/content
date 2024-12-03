@@ -9,9 +9,9 @@ More information about McAfee ePO's permissions model is available [here](https:
 
 Example `!epo-help` outputs with permission information: 
 * `!epo-help command="repository.findPackages"`:
-![](https://raw.githubusercontent.com/demisto/content/0b1cdaff3a3cd238cbe98ae25bee0c6206af11e0/Packs/epo/doc_files/epo-help-find-pkg.png)
+![](../../doc_files/epo-help-find-pkg.png)
 * `!epo-help command="repository.deletePackage"`:
-![](https://raw.githubusercontent.com/demisto/content/0b1cdaff3a3cd238cbe98ae25bee0c6206af11e0/Packs/epo/doc_files/epo-help-delete-pkg.png)
+![](../../doc_files/epo-help-delete-pkg.png)
 
 ## Configure McAfee ePO v2 on Cortex XSOAR
 

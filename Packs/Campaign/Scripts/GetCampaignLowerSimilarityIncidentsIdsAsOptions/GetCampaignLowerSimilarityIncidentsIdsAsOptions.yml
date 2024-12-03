@@ -10,7 +10,7 @@ comment: Gets the IDs of incidents with lower similarity. Used to fill the optio
 enabled: true
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.11.10.113941
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:

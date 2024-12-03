@@ -21,7 +21,7 @@ script: '-'
 subtype: python3
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.11.10.113941
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 tags: []
 tests:

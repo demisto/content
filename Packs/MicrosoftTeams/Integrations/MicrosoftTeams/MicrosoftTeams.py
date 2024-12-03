@@ -60,11 +60,6 @@ MESSAGE_TYPES: dict = {
 
 NEW_INCIDENT_WELCOME_MESSAGE: str = "Successfully created incident <incident_name>.\nView it on: <incident_link>"
 
-if '@' in BOT_ID:
-    demisto.debug("setting tenant id in the integration context")
-    BOT_ID, tenant_id, service_url = BOT_ID.split('@')
-    set_integration_context({'tenant_id': tenant_id, 'service_url': service_url})
-
 CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
 AUTHORIZATION_CODE_FLOW = 'Authorization Code'
 AUTH_TYPE = PARAMS.get('auth_type', CLIENT_CREDENTIALS_FLOW)

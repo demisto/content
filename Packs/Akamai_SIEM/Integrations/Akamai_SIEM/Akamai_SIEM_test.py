@@ -288,6 +288,7 @@ class TestCommandsFunctions:
         - Ensure that the events list returned doesn't include the filtered events and that the length of the list is 247.
         - Ensure that on each iteration, the number of events in the hashed events is 50
         (even in intervals where some events were deduped).
+        - Ensure the returned offset and hashed events are json serializable.
         """
         num_of_results = 500
         page_size = 50
@@ -318,6 +319,8 @@ class TestCommandsFunctions:
         assert total_events_count == 247
         for event_not_in_list in events_not_in_list:
             assert event_not_in_list not in events
+        ctx = {"offset": offset, "hashed_events_from_previous_run": list(hashed)}
+        assert isinstance(json.dumps(ctx), str)
 
 
 @pytest.mark.parametrize(

@@ -3,6 +3,7 @@ from CommonServerPython import *
 import SekoiaXDR  # type: ignore
 from freezegun import freeze_time
 
+
 from datetime import datetime
 import pytest
 import json
@@ -379,9 +380,9 @@ def test_search_events(client, requests_mock, mocker):
     }
     result: PollResult = SekoiaXDR.search_events_command(client=client, args=args)
 
-    assert result.outputs[0]["action_id"]  # type: ignore
-    assert result.outputs[0]["action_outcome"]  # type: ignore
-    assert result.outputs[0]["action_name"]  # type: ignore
+    assert result.outputs[0]["action_id"]
+    assert result.outputs[0]["action_outcome"]
+    assert result.outputs[0]["action_name"]
 
 
 def test_list_assets(client, requests_mock):
@@ -490,13 +491,120 @@ def test_get_user(client, requests_mock):
     assert result.outputs["lastname"] == "done"
 
 
+def test_modified_remote_data(client, requests_mock):
+    mock_response = util_load_json("test_data/SekoiaXDR_get_alerts.json")
+    requests_mock.get(MOCK_URL + "/v1/sic/alerts", json=mock_response)
+
+    args = {"lastUpdate": "2023-06-28T13:21:45"}
+    results = SekoiaXDR.get_modified_remote_data_command(client, args)
+
+    assert len(results.modified_incident_ids) == 2
+
+
+@pytest.mark.parametrize(
+    "close_incident, close_note, mirror_events, mirror_kill_chain, reopen_incident",
+    [
+        (False, "Closed by Sekoia.", True, True, False),
+        (False, "Closed by Sekoia.", False, False, False),
+    ],
+)
+def test_get_remote_data(
+    client,
+    mocker,
+    requests_mock,
+    close_incident,
+    close_note,
+    mirror_events,
+    mirror_kill_chain,
+    reopen_incident,
+):
+    mock_response = util_load_json("test_data/SekoiaXDR_get_alert.json")
+    mock_response_query_events = util_load_json("test_data/SekoiaXDR_query_events.json")
+    mock_response_query_events_status = util_load_json(
+        "test_data/SekoiaXDR_query_events_status.json"
+    )
+    mock_response_retrieve_events = util_load_json(
+        "test_data/SekoiaXDR_retrieve_events.json"
+    )
+    mock_response_killchain = util_load_json(
+        "test_data/SekoiaXDR_get_killchain_mirroring.json"
+    )
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/kill-chains/KCXKNfnJuUUU", json=mock_response_killchain
+    )
+    requests_mock.get(MOCK_URL + "/v1/sic/alerts/ALL1A4SKUiU2", json=mock_response)
+    requests_mock.post(
+        MOCK_URL + "/v1/sic/conf/events/search/jobs", json=mock_response_query_events
+    )
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f",
+        json=mock_response_query_events_status,
+    )
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f/events",
+        json=mock_response_retrieve_events,
+    )
+
+    params = {"exclude_info_events": "False", "replace_dots_event": "_"}
+    mocker.patch.object(demisto, "params", return_value=params)
+
+    invistagation = {
+        "cacheVersn": 0,
+        "category": "",
+        "closed": "0001-01-01T00:00:00Z",
+        "created": "2024-04-09T15:58:41.908148032Z",
+        "creatingUserId": "admin",
+        "details": "",
+        "entryUsers": ["admin"],
+        "highPriority": False,
+        "id": "5721bf3c-f9ef-4b9e-8942-712ac829e0b7",
+        "isDebug": False,
+        "lastOpen": "0001-01-01T00:00:00Z",
+        "mirrorAutoClose": None,
+        "mirrorTypes": None,
+        "modified": "2024-04-10T09:10:14.357270528Z",
+        "name": "Playground",
+        "rawCategory": "",
+        "reason": None,
+        "runStatus": "",
+        "sizeInBytes": 0,
+        "slackMirrorAutoClose": False,
+        "slackMirrorType": "",
+        "status": 0,
+        "systems": None,
+        "tags": None,
+        "type": 9,
+        "users": ["admin"],
+        "version": 2,
+    }
+    mocker.patch.object(demisto, "investigation", return_value=invistagation)
+
+    args = {"lastUpdate": "2023-06-28T13:21:45", "id": "ALL1A4SKUiU2"}
+    results = SekoiaXDR.get_remote_data_command(
+        client,
+        args,
+        close_incident,
+        close_note,
+        mirror_events,
+        mirror_kill_chain,
+        reopen_incident,
+    )
+
+    assert len(results.mirrored_object) > 0
+    if mirror_kill_chain:
+        assert results.mirrored_object.get("kill_chain")
+    if mirror_events:
+        assert results.mirrored_object.get("events")
+
+
 @pytest.mark.parametrize(
     "max_results, last_run, first_fetch_time, alert_status, alert_urgency, alert_type, fetch_mode, \
-    fetch_with_assets, fetch_with_kill_chain",
+    mirror_direction, fetch_with_assets, fetch_with_kill_chain",
     [
         (
             100,
             {"last_fetch": 1574065501},
+            None,
             None,
             None,
             None,
@@ -509,6 +617,7 @@ def test_get_user(client, requests_mock):
             100,
             {"last_fetch": None},
             1574065501,
+            None,
             None,
             None,
             None,
@@ -528,6 +637,7 @@ def test_fetch_incidents(
     alert_urgency,
     alert_type,
     fetch_mode,
+    mirror_direction,
     fetch_with_assets,
     fetch_with_kill_chain,
 ):
@@ -543,6 +653,7 @@ def test_fetch_incidents(
         alert_urgency,
         alert_type,
         fetch_mode,
+        mirror_direction,
         fetch_with_assets,
         fetch_with_kill_chain,
     )
