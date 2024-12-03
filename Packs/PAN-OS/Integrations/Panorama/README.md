@@ -9381,9 +9381,9 @@ Create a default master key that encrypts all the private keys and passwords in 
 
 #### Limitations
 
-- All changes to the configuration of the Palo Alto firewall or Panorama need to be committed before running this command. This can be done using using the [pan-os-commit](#pan-os-commit) and [pan-os-push-status](#pan-os-push-status) commands.
+* All changes to the configuration of the Palo Alto firewall or Panorama need to be committed before running this command. This can be done using using the [pan-os-commit](#pan-os-commit) and [pan-os-push-status](#pan-os-push-status) commands.
 
-- The command invalidates the current API key and requires obtaining a new one using the instructions in [the PAN-OS and Panorama API usage guide](https://docs.paloaltonetworks.com/pan-os/11-1/pan-os-panorama-api/pan-os-api-authentication/get-your-api-key). All subsequent commands will raise an "Invalid Credential" error until a new API key is obtained and the integration instance is updated accordingly.
+* The command invalidates the current API key and requires obtaining a new one using the instructions in [the PAN-OS and Panorama API usage guide](https://docs.paloaltonetworks.com/pan-os/11-1/pan-os-panorama-api/pan-os-api-authentication/get-your-api-key). All subsequent commands will raise an "Invalid Credential" error until a new API key is obtained and the integration instance is updated accordingly.
 
 #### Command example
 ```!pan-os-create-master-key master_key="MyFakeMasterKey1" lifetime_in_hours=2160 reminder_in_hours=1992```
@@ -9403,7 +9403,7 @@ There is no context output for this command.
 ***
 Update the default master key that encrypts all the private keys and passwords in the configuration. 
 
-**This command is harmful because it  invalidates the current API key and requires re-configuration of the integration instance.**
+**This command is harmful because it invalidates the current API key and requires re-configuration of the integration instance.**
 
 #### Base Command
 
@@ -9420,9 +9420,9 @@ Update the default master key that encrypts all the private keys and passwords i
 
 #### Limitations
 
-- All changes to the configuration of the Palo Alto firewall or Panorama need to be committed before running this command. This can be done using using the [pan-os-commit](#pan-os-commit) and [pan-os-push-status](#pan-os-push-status) commands.
+* All changes to the configuration of the Palo Alto firewall or Panorama need to be committed before running this command. This can be done using using the [pan-os-commit](#pan-os-commit) and [pan-os-push-status](#pan-os-push-status) commands.
 
-- The command invalidates the current API key and requires obtaining a new one using the instructions in [the PAN-OS and Panorama API usage guide](https://docs.paloaltonetworks.com/pan-os/11-1/pan-os-panorama-api/pan-os-api-authentication/get-your-api-key). All subsequent commands will raise an "Invalid Credential" error until a new API key is obtained and the integration instance is updated accordingly.
+* The command invalidates the current API key and requires obtaining a new one using the instructions in [the PAN-OS and Panorama API usage guide](https://docs.paloaltonetworks.com/pan-os/11-1/pan-os-panorama-api/pan-os-api-authentication/get-your-api-key). All subsequent commands will raise an "Invalid Credential" error until a new API key is obtained and the integration instance is updated accordingly.
 
 #### Command example
 ```!pan-os-update-master-key current_master_key="MyFakeMasterKey1" new_master_key="MyFakeMasterKey2" lifetime_in_hours=2160 reminder_in_hours=1992```
@@ -9492,6 +9492,6 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Master Key Details
->| Auto-renew master key | Stored on HSM | Remind at | Expire at |
+>| Auto-renew master key | Encrypted on HSM | Remind at | Expire at |
 >| --- | --- | --- | --- |
 >| 0 | no | 2024/11/27 04:26:05 | 2025/02/18 04:26:05 |
