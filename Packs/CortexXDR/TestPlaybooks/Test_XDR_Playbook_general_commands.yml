@@ -3218,22 +3218,16 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: in
+      - - operator: isExists
           left:
             value:
-              simple: low
-          right:
-            value:
-              simple: ${PaloAltoNetworksXDR.Incident.alerts.severity}
+              simple: ${PaloAltoNetworksXDR.Incident.alerts.severity(val=="low")}
             iscontext: true
-      - - operator: in
+      - - operator: isExists
           left:
             value:
-              simple: i was updated from playbook
-          right:
-            value:
-              simple: ${PaloAltoNetworksXDR.Incident.alerts.resolution_comment}
-            iscontext: true
+              simple: ${PaloAltoNetworksXDR.Incident.alerts.resolution_comment(val=="i
+                was updated from playbook")}
     continueonerrortype: ""
     view: |-
       {
