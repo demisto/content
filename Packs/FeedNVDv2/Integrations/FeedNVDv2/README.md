@@ -4,28 +4,24 @@ This integration was built and tested with version 2.0 of National Vulnerability
 
 An API key for this feed can be obtained at [the NIST NVD Developer Website](https://nvd.nist.gov/developers/request-an-api-key)
 
-## Configure National Vulnerability Database on Cortex XSOAR
+## Configure National Vulnerability Database in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Data Enrichment & Threat Intelligence**.
-2. Search for National Vulnerability Database.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API Key | API Key from the NIST NVD Website (see above). | True |
-    | Start_date | Start date for the integration to begin fetching CVEs from (YYYY-MM-DD). | True |
-    | Return only CVEs that have a KEV | Check this box to only retrieve CVEs in the given date range that have a known exploited vulnerability (KEV) associated with them. Default: FALSE. | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | True |
-    | Indicator Expiration Method | The method to be used to expire indicators from this feed. Default: Never. | True |
-    | Feed Fetch Interval | Interval at which this feed will check for new CVE data. Default: 4 Hours. | True |
-    | Bypass exclusion list | Allow this feed to bypass the Cortex XSOAR integrated exclusion list. | False |
-    | Trust any certificate (not secure) | Should the feed trust self-signed certificates. | False |
-    | Use system proxy settings | Use the proxy settings configured on the Cortex XSOAR server. | False |
-    | Tags | Tag CVE indicators from this instance of the feed with the provided tag. | False |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
-    | Log Level | **IMPORTANT** When performing a long initial fetch, it is recommended to set this to **DEBUG**. This will append output to /var/log/demisto/integration_instance.log so you can verify the feed is fetching data from NIST NVD. It is recommended to leave this log setting to **OFF** after the initial fetch. See **NOTE ONE** below for a sample of the debug output. | False |
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API Key | API Key from the NIST NVD Website (see above). | True |
+| Start_date | Start date for the integration to begin fetching CVEs from (YYYY-MM-DD). | True |
+| Return only CVEs that have a KEV | Check this box to only retrieve CVEs in the given date range that have a known exploited vulnerability (KEV) associated with them. Default: FALSE. | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | True |
+| Indicator Expiration Method | The method to be used to expire indicators from this feed. Default: Never. | True |
+| Feed Fetch Interval | Interval at which this feed will check for new CVE data. Default: 4 Hours. | True |
+| Bypass exclusion list | Allow this feed to bypass the Cortex XSOAR integrated exclusion list. | False |
+| Trust any certificate (not secure) | Should the feed trust self-signed certificates. | False |
+| Use system proxy settings | Use the proxy settings configured on the Cortex XSOAR server. | False |
+| Tags | Tag CVE indicators from this instance of the feed with the provided tag. | False |
+| Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
+| Log Level | **IMPORTANT** When performing a long initial fetch, it is recommended to set this to **DEBUG**. This will append output to /var/log/demisto/integration_instance.log so you can verify the feed is fetching data from NIST NVD. It is recommended to leave this log setting to **OFF** after the initial fetch. See **NOTE ONE** below for a sample of the debug output. | False |
 
 ### NOTE ONE - Sample Debug Output - /var/log/demisto/integration_instance.log
 
@@ -46,7 +42,7 @@ An API key for this feed can be obtained at [the NIST NVD Developer Website](htt
     Current Total Fetched Indicator Count: 4184
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 ### nvd-get-indicators
 ***
 Manually retrieve CVEs from NVD using the history parameter for the duration back to fetch.
