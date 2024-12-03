@@ -179,8 +179,8 @@ def create_events_for_push(raw_response: dict, limit: int | None = None) -> list
         for field, value in zip(event_fields, event_data, strict=True):
             event[field] = value if value != "-" else None  # "-" mark an empty field in Digital Guardian
 
-        event_time = arg_to_datetime(arg=event['dg_time'])
-        event['_time'] = event_time.strftime(DATE_FORMAT) if event_time else None
+        event_time: datetime = arg_to_datetime(arg=event['dg_time'], required=True)  # type: ignore[union-attr] - used required = True
+        event['_time'] = event_time.strftime(DATE_FORMAT)
 
         events.append(event)
 
