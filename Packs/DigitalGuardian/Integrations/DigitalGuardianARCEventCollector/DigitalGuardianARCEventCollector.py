@@ -217,7 +217,7 @@ def push_and_set_last_run(client: Client, events: list[dict], last_run: dict) ->
         events (list[dict]): Events get_events_command or fetch_events.
         last_run (dict): Dictionary with 'bookmark_values' and 'search_after_values' from raw API response.
     """
-    demisto.debug(f'Sending {len(events)} to XSIAM')
+    demisto.debug(f'Sending {len(events)} events to XSIAM')
     send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
 
     demisto.debug(f'Setting export bookmark after run: {last_run}.')
