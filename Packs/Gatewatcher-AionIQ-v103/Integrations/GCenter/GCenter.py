@@ -336,7 +336,7 @@ def fetch_incidents():
 
         now = datetime.today()
         now_str = now.isoformat(sep='T', timespec='milliseconds')+"Z"
-        queryRange = {'size': max_fetch,
+        queryRange = {'size': int(max_fetch),
                       'query': {
                         'range': {
                             '@timestamp': {
@@ -344,14 +344,17 @@ def fetch_incidents():
                                 'lte': str(now_str)
                                 }
                             }
-                        }
+                        },
+                      'sort': [
+                          {"@timestamp": "asc"}
+                      ]
                     }
     else:
         last_fetch = last_run.get('start_time')
 
         now = datetime.today()
         now_str = now.isoformat(sep='T', timespec='milliseconds')+"Z"
-        queryRange = {'size': max_fetch,
+        queryRange = {'size': int(max_fetch),
                       'query': {
                         'range': {
                             '@timestamp': {
@@ -359,77 +362,175 @@ def fetch_incidents():
                                 'lt': str(now_str)
                                 }
                             }
-                        }
+                        },
+                      'sort': [
+                          {"@timestamp": "asc"}
+                      ]                      
                     }
-
-    # Alert events
-    ret = client._post(endpoint="/api/v1/data/es/search/", params={"index": "engines_alerts"}, json_data=queryRange)
-
-    results = ret.json()
-    gwAlerts = results['hits']['hits']
-
-    incidents = []
-
-	for i in range(0, len(gwAlerts)):
-
-        incident = {'name': "Gatewatcher Alert: " + gwAlerts[i]['_source']['event']['module'],
-                    'occurred': str(gwAlerts[i]['_source']['@timestamp']),
-                    'dbotMirrorId': str(gwAlerts[i]['_source']['event']['id']),
-                    'labels': [{"value": str(gwAlerts[i]['_source']['source']['ip']), "type": "IP"},
-                               {"value": str(gwAlerts[i]['_source']['destination']['ip']), "type": "IP"}],
-                    'rawJSON': json.dumps(gwAlerts[i]['_source']),
-                    'type': "Gatewatcher Incident"
-                    }
-
-        # XSOAR Severity
-        if 'severity' in gwAlerts[i]['_source']['event'].keys():
-            incident['severity'] = convertEventSeverity(gwAlerts[i]['_source']['event']['severity'])
-
-        else:
-            incident['severity'] = convertEventSeverity(-1)
-
-        # Sigflow alert signature
-        if 'sigflow' in gwAlerts[i]['_source'].keys():
-            if 'signature' in gwAlerts[i]['_source']['sigflow'].keys():
-                incident['name'] = "Gatewatcher Alert: " + str(gwAlerts[i]['_source']['sigflow']['signature'])
-
-        # NBA alert signature
-        if 'nba' in gwAlerts[i]['_source'].keys():
-            if 'signature' in gwAlerts[i]['_source']['nba'].keys():
-                incident['name'] = "Gatewatcher Alert: " + str(gwAlerts[i]['_source']['nba']['signature'])
-	
-        incidents.append(incident)
     
-    # Metadata events
-    ret = client._post(endpoint="/api/v1/data/es/search/", params={"index": "engines_metadata"}, json_data=queryRange)
+    if int(max_fetch) > 10000:
 
-    results = ret.json()
-    gwMeta = results['hits']['hits']
+        queryRange['size'] = 10000
 
-    for i in range(0, len(gwMeta)):
+        retA = client._post(endpoint="/api/v1/data/es/search/", params={"index": "engines_alerts"}, json_data=queryRange)
+        retM = client._post(endpoint="/api/v1/data/es/search/", params={"index": "engines_metadata"}, json_data=queryRange)
 
-        incident = {'name': "Gatewatcher Metadata: " + gwMeta[i]['_source']['event']['module'],
-                    'occurred': str(gwMeta[i]['_source']['@timestamp']),
-                    'dbotMirrorId': str(gwMeta[i]['_source']['event']['id']),
-                    'labels': [{"value": str(gwMeta[i]['_source']['source']['ip']), "type": "IP"},
-                               {"value": str(gwMeta[i]['_source']['destination']['ip']), "type": "IP"}],
-                    'rawJSON': json.dumps(gwMeta[i]['_source']),
-                    'type': "Gatewatcher Incident"
-                    }
+        resA = retA.json()
+        resM = retM.json()
+        
+        gwAlerts = resA['hits']['hits']
+        gwMeta = resM['hits']['hits']
+        
+        search_after_idA = gwAlerts[-1]['sort'][0]
+        search_after_idM = gwMeta[-1]['sort'][0]
+        
+        nbReq = int(max_fetch) // 10000
+        nbReq = nbReq + 1
+        
+        while nbReq > 0:
 
-        # XSOAR Severity
-        if 'severity' in gwMeta[i]['_source']['event'].keys():
-            incident['severity'] = convertEventSeverity(gwMeta[i]['_source']['event']['severity'])
+            queryRange['search_after'] = [search_after_idA]
 
-        else:
-            incident['severity'] = convertEventSeverity(-1)
+            retA = client._post(endpoint="/api/v1/data/es/search/", params={"index": "engines_alerts"}, json_data=queryRange)
 
-        incidents.append(incident)
+            queryRange['search_after'] = [search_after_idM]
+    
+            retM = client._post(endpoint="/api/v1/data/es/search/", params={"index": "engines_metadata"}, json_data=queryRange)
+            
+            resA = retA.json()
+            resM = retM.json()
 
-    if len(incidents) > 0:
-        incidents = sorted(incidents, key=lambda d: d['occurred'])
-        last_incident = incidents[len(incidents)-1]
-        demisto.setLastRun({'start_time': str(last_incident['occurred'])})
+            gwAlerts += resA['hits']['hits']
+            gwMeta += resM['hits']['hits']
+
+            search_after_idA = gwAlerts[-1]['sort'][0]
+            search_after_idM = gwMeta[-1]['sort'][0]
+           
+            nbReq = nbReq - 1
+        
+        # Alert events
+        incidents = []
+
+        for i in range(0, len(gwAlerts)):
+
+            incident = {'name': "Gatewatcher Alert: " + gwAlerts[i]['_source']['event']['module'],
+                        'occurred': str(gwAlerts[i]['_source']['@timestamp']),
+                        'dbotMirrorId': str(gwAlerts[i]['_source']['event']['id']),
+                        'labels': [{"value": str(gwAlerts[i]['_source']['source']['ip']), "type": "IP"},
+                                   {"value": str(gwAlerts[i]['_source']['destination']['ip']), "type": "IP"}],
+                        'rawJSON': json.dumps(gwAlerts[i]['_source']),
+                        'type': "Gatewatcher Incident"
+                        }
+
+            # XSOAR Severity
+            if 'severity' in gwAlerts[i]['_source']['event'].keys():
+                incident['severity'] = convertEventSeverity(gwAlerts[i]['_source']['event']['severity'])
+
+            else:
+                incident['severity'] = convertEventSeverity(-1)
+
+            # Sigflow alert signature
+            if 'sigflow' in gwAlerts[i]['_source'].keys():
+                if 'signature' in gwAlerts[i]['_source']['sigflow'].keys():
+                    incident['name'] = "Gatewatcher Alert: " + str(gwAlerts[i]['_source']['sigflow']['signature'])
+
+            # NBA alert signature
+            if 'nba' in gwAlerts[i]['_source'].keys():
+                if 'signature' in gwAlerts[i]['_source']['nba'].keys():
+                    incident['name'] = "Gatewatcher Alert: " + str(gwAlerts[i]['_source']['nba']['signature'])
+        
+            incidents.append(incident)
+        
+        # Metadata events
+        for i in range(0, len(gwMeta)):
+
+            incident = {'name': "Gatewatcher Metadata: " + gwMeta[i]['_source']['event']['module'],
+                        'occurred': str(gwMeta[i]['_source']['@timestamp']),
+                        'dbotMirrorId': str(gwMeta[i]['_source']['event']['id']),
+                        'labels': [{"value": str(gwMeta[i]['_source']['source']['ip']), "type": "IP"},
+                                   {"value": str(gwMeta[i]['_source']['destination']['ip']), "type": "IP"}],
+                        'rawJSON': json.dumps(gwMeta[i]['_source']),
+                        'type': "Gatewatcher Incident"
+                        }
+
+            # XSOAR Severity
+            if 'severity' in gwMeta[i]['_source']['event'].keys():
+                incident['severity'] = convertEventSeverity(gwMeta[i]['_source']['event']['severity'])
+
+            else:
+                incident['severity'] = convertEventSeverity(-1)
+
+            incidents.append(incident)
+
+    else:
+        # Alert events
+        ret = client._post(endpoint="/api/v1/data/es/search/", params={"index": "engines_alerts"}, json_data=queryRange)
+
+        results = ret.json()
+        gwAlerts = results['hits']['hits']
+
+        incidents = []
+
+        for i in range(0, len(gwAlerts)):
+
+            incident = {'name': "Gatewatcher Alert: " + gwAlerts[i]['_source']['event']['module'],
+                        'occurred': str(gwAlerts[i]['_source']['@timestamp']),
+                        'dbotMirrorId': str(gwAlerts[i]['_source']['event']['id']),
+                        'labels': [{"value": str(gwAlerts[i]['_source']['source']['ip']), "type": "IP"},
+                                   {"value": str(gwAlerts[i]['_source']['destination']['ip']), "type": "IP"}],
+                        'rawJSON': json.dumps(gwAlerts[i]['_source']),
+                        'type': "Gatewatcher Incident"
+                        }
+
+            # XSOAR Severity
+            if 'severity' in gwAlerts[i]['_source']['event'].keys():
+                incident['severity'] = convertEventSeverity(gwAlerts[i]['_source']['event']['severity'])
+
+            else:
+                incident['severity'] = convertEventSeverity(-1)
+
+            # Sigflow alert signature
+            if 'sigflow' in gwAlerts[i]['_source'].keys():
+                if 'signature' in gwAlerts[i]['_source']['sigflow'].keys():
+                    incident['name'] = "Gatewatcher Alert: " + str(gwAlerts[i]['_source']['sigflow']['signature'])
+
+            # NBA alert signature
+            if 'nba' in gwAlerts[i]['_source'].keys():
+                if 'signature' in gwAlerts[i]['_source']['nba'].keys():
+                    incident['name'] = "Gatewatcher Alert: " + str(gwAlerts[i]['_source']['nba']['signature'])
+        
+            incidents.append(incident)
+        
+        # Metadata events
+        ret = client._post(endpoint="/api/v1/data/es/search/", params={"index": "engines_metadata"}, json_data=queryRange)
+
+        results = ret.json()
+        gwMeta = results['hits']['hits']
+
+        for i in range(0, len(gwMeta)):
+
+            incident = {'name': "Gatewatcher Metadata: " + gwMeta[i]['_source']['event']['module'],
+                        'occurred': str(gwMeta[i]['_source']['@timestamp']),
+                        'dbotMirrorId': str(gwMeta[i]['_source']['event']['id']),
+                        'labels': [{"value": str(gwMeta[i]['_source']['source']['ip']), "type": "IP"},
+                                   {"value": str(gwMeta[i]['_source']['destination']['ip']), "type": "IP"}],
+                        'rawJSON': json.dumps(gwMeta[i]['_source']),
+                        'type': "Gatewatcher Incident"
+                        }
+
+            # XSOAR Severity
+            if 'severity' in gwMeta[i]['_source']['event'].keys():
+                incident['severity'] = convertEventSeverity(gwMeta[i]['_source']['event']['severity'])
+
+            else:
+                incident['severity'] = convertEventSeverity(-1)
+
+            incidents.append(incident)
+
+        if len(incidents) > 0:
+            incidents = sorted(incidents, key=lambda d: d['occurred'])
+            last_incident = incidents[len(incidents)-1]
+            demisto.setLastRun({'start_time': str(last_incident['occurred'])})
 
     demisto.incidents(incidents)
 
