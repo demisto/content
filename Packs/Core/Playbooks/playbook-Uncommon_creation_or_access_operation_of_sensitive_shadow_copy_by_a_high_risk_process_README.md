@@ -10,7 +10,6 @@ Triage:
  
 Investigation:
  
-- Examine process details, prevalence, and historical data for similar alerts
 - If CGO is unsigned:
   - Check the CGO process prevalence
   - Check if the process image path is common
@@ -19,11 +18,11 @@ Investigation:
   - Check initiating process image name
   - Check if username is SYSTEM
   - Check if host is a server
-  - Check for previous similar alerts
+  - Check for previous similar alert closed as False Positive
  
 Containment:
  
-- Terminate causality process (CGO) process - if CGO a malicious behavior or unsigned process from uncommon path attempted to create or access shadow copy
+- Terminate causality process (CGO) process - when a signed high-risk process or an unsigned process from an uncommon path attempting to create or access sensitive shadow copy data.
 
 ## Dependencies
 
@@ -61,4 +60,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Suspicious access to shadow file](../doc_files/Uncommon_creation_or_access_operation_of_sensitive_shadow_copy_by_a_high_risk_process.png)
+![Uncommon creation or access operation of sensitive shadow copy by a high-risk process](../doc_files/Uncommon_creation_or_access_operation_of_sensitive_shadow_copy_by_a_high_risk_process.png)

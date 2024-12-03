@@ -1,8 +1,7 @@
 id: Uncommon creation or access operation of sensitive shadow copy by a high-risk process
 version: -1
 name: Uncommon creation or access operation of sensitive shadow copy by a high-risk process
-description: "This playbook addresses the following alerts:\n \n- Uncommon creation or access operation of sensitive shadow copy by a high-risk process\n- Suspicious access to shadow file\n \nPlaybook Stages:\n  \nTriage: \n \n- Check if the causality process image (CGO) is signed or not\n \nInvestigation:\n \n- Examine process details, prevalence, and historical data for similar alerts\n- If CGO is unsigned:\n  - Check the CGO process prevalence\n  - Check if the process image path is common\n- If CGO is signed:\n  - Check process image name\n  - Check intiating process image name\n  - Check if username is SYSTEM\n  - Check if host is a server\n  - Check for previous similar alerts\n \nContainment:\n \n- Terminate causality process (CGO) process - if CGO a malicious behavior or unsigned process from uncommon path attempted to create or access shadow copy"
-
+description: "This playbook addresses the following alerts:\n \n- Uncommon creation or access operation of sensitive shadow copy by a high-risk process\n \nPlaybook Stages:\n  \nTriage: \n \n- Check if the causality process image (CGO) is signed or not\n \nInvestigation:\n \n- If CGO is unsigned:\n  - Check the CGO process prevalence\n  - Check if the process image path is common\n- If CGO is signed:\n  - Check process image name\n  - Check initiating process image name\n  - Check if username is SYSTEM\n  - Check if host is a server\n  - Check for previous similar alert closed as False Positive\n \nContainment:\n \n- Terminate causality process (CGO) process - when a signed high-risk process or an unsigned process from an uncommon path attempting to create or access sensitive shadow copy data."
 tags:
 - T1003 - OS Credential Dumping
 - TA0006 - Credential Access
@@ -10,25 +9,25 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2b1843da-b454-40d0-8c98-d43d5aac61c7
+    taskid: 428b5718-7175-42a6-8bef-53a30125d97c
     type: start
     task:
-      id: 2b1843da-b454-40d0-8c98-d43d5aac61c7
+      id: 428b5718-7175-42a6-8bef-53a30125d97c
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "6"
+      - "31"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 705,
-          "y": -115
+          "y": -385
         }
       }
     note: false
@@ -40,10 +39,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 45cabc54-42bf-4b00-8b00-f061a71985df
+    taskid: c6089b52-e788-4593-8d95-00223f919652
     type: condition
     task:
-      id: 45cabc54-42bf-4b00-8b00-f061a71985df
+      id: c6089b52-e788-4593-8d95-00223f919652
       version: -1
       name: Check if CGO is signed
       description: ""
@@ -54,7 +53,7 @@ tasks:
       '#default#':
       - "17"
       CGO-Signed:
-      - "7"
+      - "33"
     separatecontext: false
     conditions:
     - label: CGO-Signed
@@ -73,7 +72,7 @@ tasks:
       {
         "position": {
           "x": 705,
-          "y": 25
+          "y": -105
         }
       }
     note: false
@@ -85,10 +84,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 2667e8b6-1a0c-4371-830f-cbcc85cefe0e
+    taskid: f0154772-d5ec-42cc-8053-0cf4f57da493
     type: condition
     task:
-      id: 2667e8b6-1a0c-4371-830f-cbcc85cefe0e
+      id: f0154772-d5ec-42cc-8053-0cf4f57da493
       version: -1
       name: Check CGO image name
       description: ""
@@ -139,8 +138,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 107.5,
-          "y": 200
+          "x": 110,
+          "y": 210
         }
       }
     note: false
@@ -152,10 +151,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 20bb089a-85d7-460d-8132-f6e8896f84e4
+    taskid: 3538379b-1a77-4f01-8688-2fe1caa4c8ec
     type: condition
     task:
-      id: 20bb089a-85d7-460d-8132-f6e8896f84e4
+      id: 3538379b-1a77-4f01-8688-2fe1caa4c8ec
       version: -1
       name: Check actor_process_image_name
       description: ""
@@ -224,10 +223,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: eb0f834d-c611-4168-83b1-2810a762d561
+    taskid: cc7e9e61-7560-48b8-8ca4-cab430695e9e
     type: condition
     task:
-      id: eb0f834d-c611-4168-83b1-2810a762d561
+      id: cc7e9e61-7560-48b8-8ca4-cab430695e9e
       version: -1
       name: Check actor_process_image_name VSSVC.exe & username SYSTEM
       description: ""
@@ -278,10 +277,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 9598e1e5-8f95-43fd-8378-1afd9a0a4964
+    taskid: 91d336ec-f65c-49d8-8478-2db259fda538
     type: title
     task:
-      id: 9598e1e5-8f95-43fd-8378-1afd9a0a4964
+      id: 91d336ec-f65c-49d8-8478-2db259fda538
       version: -1
       name: Remediation
       type: title
@@ -296,7 +295,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 107.5,
+          "x": 110,
           "y": 1100
         }
       }
@@ -309,12 +308,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: ee5bea53-5707-4ba5-80d0-154f7734eab3
+    taskid: 8dfc4320-e1fd-43ce-8c00-2603050d46c8
     type: title
     task:
-      id: ee5bea53-5707-4ba5-80d0-154f7734eab3
+      id: 8dfc4320-e1fd-43ce-8c00-2603050d46c8
       version: -1
-      name: No Verdict
+      name: Inconclusive
       type: title
       iscommand: false
       brand: ""
@@ -327,8 +326,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 1100
+          "x": 915,
+          "y": 1090
         }
       }
     note: false
@@ -340,10 +339,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: da20cac0-b1f5-4556-809b-649bc1f783ed
+    taskid: e2b5323d-2924-4bf6-8439-041c85b45852
     type: condition
     task:
-      id: da20cac0-b1f5-4556-809b-649bc1f783ed
+      id: e2b5323d-2924-4bf6-8439-041c85b45852
       version: -1
       name: Check CGO image name is mmc.exe & OS is server
       description: ""
@@ -394,12 +393,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 399768de-2567-4ae5-879e-a373d4e4903c
+    taskid: da277d21-3e93-4c1c-8ee9-7154a9ce95a3
     type: title
     task:
-      id: 399768de-2567-4ae5-879e-a373d4e4903c
+      id: da277d21-3e93-4c1c-8ee9-7154a9ce95a3
       version: -1
-      name: Common FP behaviour - No Results Found
+      name: Common False Positive behavior
       type: title
       iscommand: false
       brand: ""
@@ -425,12 +424,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 891a7f17-7fc8-4ecb-88a1-4a4d65561bb6
+    taskid: 6caefd22-63e0-4214-8338-c82a251bf75d
     type: title
     task:
-      id: 891a7f17-7fc8-4ecb-88a1-4a4d65561bb6
+      id: 6caefd22-63e0-4214-8338-c82a251bf75d
       version: -1
-      name: No Verdict
+      name: Inconclusive
       type: title
       iscommand: false
       brand: ""
@@ -456,10 +455,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 6c47a73d-1a8e-4882-8590-245fffde9704
+    taskid: cd2d9a39-7e2d-4c76-8ee1-c21683bdc9c5
     type: title
     task:
-      id: 6c47a73d-1a8e-4882-8590-245fffde9704
+      id: cd2d9a39-7e2d-4c76-8ee1-c21683bdc9c5
       version: -1
       name: Remediation
       type: title
@@ -487,30 +486,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 878cf460-bb34-4cb1-8e3b-11fed639d400
-    type: regular
+    taskid: 62314706-1001-4f0d-85cd-31f8a5e87266
+    type: title
     task:
-      id: 878cf460-bb34-4cb1-8e3b-11fed639d400
+      id: 62314706-1001-4f0d-85cd-31f8a5e87266
       version: -1
-      name: Get Causality process prevalence
+      name: Investigation
       description: Get the prevalence of a process, identified by process_name.
-      script: '|||core-get-process-analytics-prevalence'
-      type: regular
-      iscommand: true
+      type: title
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "28"
-    scriptarguments:
-      process_name:
-        simple: ${alert.cgoname}
+      - "32"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1330,
-          "y": 200
+          "y": 70
         }
       }
     note: false
@@ -522,12 +517,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 8af1f43f-ca51-4bbe-81e5-5a557ac1cdda
+    taskid: bf2b6360-6501-409f-88c5-93623524e48c
     type: regular
     task:
-      id: 8af1f43f-ca51-4bbe-81e5-5a557ac1cdda
+      id: bf2b6360-6501-409f-88c5-93623524e48c
       version: -1
-      name: Close Alert - FP
+      name: Close Alert - False Positive
       description: commands.local.cmd.close.inv
       script: Builtin|||closeInvestigation
       type: regular
@@ -538,9 +533,9 @@ tasks:
       - "19"
     scriptarguments:
       closeNotes:
-        simple: No Malicious Results Found
+        simple: Found common false positive behavior or previous similar alerts closed as False Positive.
       closeReason:
-        simple: Resolved - Handled by the playbook "Suspicious access to shadow file"
+        simple: Resolved - Handled by the playbook "Uncommon creation or access operation of sensitive shadow copy by a high-risk process"
       id:
         simple: ${alert.id}
     separatecontext: false
@@ -561,10 +556,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 1a6b1eb5-ae5d-4da9-8d52-fdb4c214042a
+    taskid: 8b07b7af-d903-41ac-895e-8bd498bc4288
     type: title
     task:
-      id: 1a6b1eb5-ae5d-4da9-8d52-fdb4c214042a
+      id: 8b07b7af-d903-41ac-895e-8bd498bc4288
       version: -1
       name: Done
       type: title
@@ -589,10 +584,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 074b7958-e0c6-4d30-8646-dbb2e0485906
+    taskid: 92e9595e-122b-4c9b-8190-44e377c737d9
     type: regular
     task:
-      id: 074b7958-e0c6-4d30-8646-dbb2e0485906
+      id: 92e9595e-122b-4c9b-8190-44e377c737d9
       version: -1
       name: Close Alert - True Positive
       description: Close the current alert.
@@ -628,10 +623,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 00476411-2779-4c70-844f-5d4cb2503d6d
+    taskid: e1ce75c2-ed9d-4709-8878-1f305495eccc
     type: regular
     task:
-      id: 00476411-2779-4c70-844f-5d4cb2503d6d
+      id: e1ce75c2-ed9d-4709-8878-1f305495eccc
       version: -1
       name: Terminate Causality (CGO)
       description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4.
@@ -670,10 +665,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 9256a97d-0cc3-48de-8af8-7829f2aecde9
+    taskid: 4a8f2186-267b-46bd-8abe-ad82434463a2
     type: regular
     task:
-      id: 9256a97d-0cc3-48de-8af8-7829f2aecde9
+      id: 4a8f2186-267b-46bd-8abe-ad82434463a2
       version: -1
       name: Terminate Causality Process Manually
       description: |
@@ -705,10 +700,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 03e3f109-a454-49d5-89a2-c0271b49552d
+    taskid: ed439778-6001-42b4-8be1-05769f1a1122
     type: condition
     task:
-      id: 03e3f109-a454-49d5-89a2-c0271b49552d
+      id: ed439778-6001-42b4-8be1-05769f1a1122
       version: -1
       name: Check if process path is common & causality process is prevalent
       description: ""
@@ -768,10 +763,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: b0ffeab0-a316-4ad5-8d50-5d6b95a86cdf
+    taskid: 567766c6-1d5a-4503-8d90-381bc56f626a
     type: regular
     task:
-      id: b0ffeab0-a316-4ad5-8d50-5d6b95a86cdf
+      id: 567766c6-1d5a-4503-8d90-381bc56f626a
       version: -1
       name: Check if Previous Similar Alerts
       description: |
@@ -785,11 +780,11 @@ tasks:
       - "30"
     scriptarguments:
       fromdate:
-        simple: 3 months ago
+        simple: 30 days ago
       name:
         simple: ${alert.name}
       query:
-        simple: 'resolution_status: STATUS_060_RESOLVED_FALSE_POSITIVE and hostname: ${alert.hostname}'
+        simple: name:"Uncommon creation or access operation of sensitive shadow copy by a high-risk process" and resolution_status:*False*Positive*
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -808,12 +803,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 68b415b6-b846-412c-86f7-b71f265470cf
+    taskid: 2c5471f8-5841-4359-8960-f2273ec3cbff
     type: condition
     task:
-      id: 68b415b6-b846-412c-86f7-b71f265470cf
+      id: 2c5471f8-5841-4359-8960-f2273ec3cbff
       version: -1
-      name: Check if Previous Alerts Closed as FP
+      name: Check if Previous Alerts Closed as False Positive
       description: ""
       type: condition
       iscommand: false
@@ -832,12 +827,111 @@ tasks:
             value:
               simple: foundIncidents
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 915,
           "y": 845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: a5c00bd3-eda3-4a80-8db7-160828d6bc8b
+    type: title
+    task:
+      id: a5c00bd3-eda3-4a80-8db7-160828d6bc8b
+      version: -1
+      name: Triage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": -240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 84fdb0e0-163f-4ecf-8545-b41727f8c970
+    type: regular
+    task:
+      id: 84fdb0e0-163f-4ecf-8545-b41727f8c970
+      version: -1
+      name: Get Causality process prevalence
+      description: Get the prevalence of a process, identified by process_name.
+      script: '|||core-get-process-analytics-prevalence'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      process_name:
+        simple: ${alert.cgoname}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: db0e4684-aeb5-4d83-8279-e9ab7dcd5da7
+    type: title
+    task:
+      id: db0e4684-aeb5-4d83-8279-e9ab7dcd5da7
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 70
         }
       }
     note: false
@@ -861,10 +955,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1930,
+        "height": 2200,
         "width": 1920,
         "x": -210,
-        "y": -115
+        "y": -385
       }
     }
   }
