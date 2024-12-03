@@ -253,7 +253,8 @@ class CoreClient(BaseClient):
                       lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
                       starred_incidents_fetch_window=None, sort_by_modification_time=None, sort_by_creation_time=None,
                       page_number=0, limit=100, gte_creation_time_milliseconds=0,
-                      gte_modification_time_milliseconds=None, lte_modification_time_milliseconds=None):
+                      gte_modification_time_milliseconds=None, lte_modification_time_milliseconds=None,
+                      filter_by_alert_sources=[]):
         """
         Filters and returns incidents
 
@@ -270,8 +271,9 @@ class CoreClient(BaseClient):
         :param page_number: page number
         :param limit: maximum number of incidents to return per page
         :param gte_creation_time_milliseconds: greater than time in milliseconds
-        :param gte_modification_time_milliseconds: greater than modification time in milliseconds
-        :param lte_modification_time_milliseconds: greater than modification time in milliseconds
+        :param gte_modification_time_milliseconds: on or after than modification time in milliseconds
+        :param lte_modification_time_milliseconds: on or before than modification time in milliseconds
+        :param filter_by_alert_sources: List of sources that detected the alerts.
         :return:
         """
         search_from = page_number * limit
@@ -311,6 +313,14 @@ class CoreClient(BaseClient):
                 'value': status
             })
 
+        if filter_by_alert_sources:
+            filters.append({
+                'field': 'alert_sources',
+                'operator': 'in',
+                'value': filter_by_alert_sources
+            })
+        print(f"{filters=}")
+
         if starred and starred_incidents_fetch_window and demisto.command() == 'fetch-incidents':
             filters.append({
                 'field': 'starred',
@@ -322,7 +332,6 @@ class CoreClient(BaseClient):
                 'operator': 'gte',
                 'value': starred_incidents_fetch_window
             })
-
             if len(filters) > 0:
                 request_data['filters'] = filters
             incidents = self.handle_fetch_starred_incidents(limit, page_number, request_data)
@@ -398,9 +407,9 @@ class CoreClient(BaseClient):
                 'operator': 'lte',
                 'value': date_to_timestamp(lte_modification_time_milliseconds)
             })
-
         if len(filters) > 0:
             request_data['filters'] = filters
+        print(f"{request_data=}")
         res = self._http_request(
             method='POST',
             url_suffix='/incidents/get_incidents/',
@@ -4462,8 +4471,10 @@ def get_incidents_command(client, args):
     starred_incidents_fetch_window = args.get('starred_incidents_fetch_window', '3 days')
     starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
 
+    filter_by_alert_sources = argToList(args.get('alert_sources', []))
     sort_by_modification_time = args.get('sort_by_modification_time')
     sort_by_creation_time = args.get('sort_by_creation_time')
+    
 
     page = int(args.get('page', 0))
     limit = int(args.get('limit', 100))
@@ -4492,6 +4503,7 @@ def get_incidents_command(client, args):
                 status=status,
                 starred=starred,
                 starred_incidents_fetch_window=starred_incidents_fetch_window,
+                filter_by_alert_sources=filter_by_alert_sources
             )
 
         if len(raw_incidents) > limit:
@@ -4509,6 +4521,7 @@ def get_incidents_command(client, args):
             limit=limit,
             starred=starred,
             starred_incidents_fetch_window=starred_incidents_fetch_window,
+            filter_by_alert_sources=filter_by_alert_sources
         )
 
     return (

@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Cortex XDR - IR
+  id: Cortex XDR - IR1
   version: -1
 configuration:
 - display: Fetch incidents
@@ -199,9 +199,15 @@ configuration:
   advanced: true
   type: 8
   section: Collect
+- additionalinfo: The alert sources of the incidents that will be fetched. If not provided will fetch incidents of all alert sources.
+  display: Incidents to fetch by alert sources
+  name: alert_sources
+  required: false
+  section: Collect
+  type: 0
 description: Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
-display: Palo Alto Networks Cortex XDR - Investigation and Response
-name: Cortex XDR - IR
+display: Palo Alto Networks Cortex XDR - Investigation and Response - Tal
+name: Cortex XDR - IR1
 script:
   commands:
   - arguments:
@@ -250,6 +256,8 @@ script:
       defaultValue: 3 days
       name: starred_incidents_fetch_window
       deprecated: true
+    - description: Comma-separated list of sources that detected the alerts.
+      name: alert_sources
     description: |-
       Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
       If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
