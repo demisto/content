@@ -157,8 +157,6 @@ def search_incidents(args: Dict):  # pragma: no cover
             args.pop('trimevents')
 
     if includeinformational := argToBoolean(args.get('includeinformational', False)):
-        if not is_xsiam():
-            raise ValueError('The includeinformational argument is supported only in XSIAM.')
         if not (args.get('fromdate') and args.get('todate')):
             raise ValueError('The includeinformational argument requires fromdate and todate arguments.')
 

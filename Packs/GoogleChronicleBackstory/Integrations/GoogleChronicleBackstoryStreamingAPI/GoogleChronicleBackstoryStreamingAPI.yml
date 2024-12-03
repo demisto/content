@@ -73,7 +73,7 @@ description: Use the Google Chronicle Backstory Streaming API integration to ing
 display: Chronicle Streaming API
 name: Google Chronicle Backstory Streaming API
 script:
-  dockerimage: demisto/googleapi-python3:1.0.0.97032
+  dockerimage: demisto/googleapi-python3:1.0.0.115338
   longRunning: true
   isFetchSamples: true
   runonce: false

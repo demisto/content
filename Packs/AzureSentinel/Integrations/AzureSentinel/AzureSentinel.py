@@ -21,7 +21,7 @@ APP_NAME = 'ms-azure-sentinel'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DATE_FORMAT_WITH_MILLISECONDS = '%Y-%m-%dT%H:%M:%S.%fZ'
 
-API_VERSION = '2022-11-01'
+API_VERSION = '2024-03-01'
 
 NEXT_LINK_DESCRIPTION = 'NextLink for listing commands'
 
@@ -30,10 +30,11 @@ XSOAR_USER_AGENT = 'SentinelPartner-PaloAltoNetworks-CortexXsoar/1.0.0'
 AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access token.\n' \
                           'The response from the server did not contain the expected content.'
 
-INCIDENT_HEADERS = ['ID', 'IncidentNumber', 'Title', 'Description', 'Severity', 'Status', 'IncidentUrl', 'AssigneeName',
-                    'AssigneeEmail', 'AssigneeObjectID', 'AssigneeUPN', 'Label', 'FirstActivityTimeUTC', 'LastActivityTimeUTC',
-                    'LastModifiedTimeUTC', 'CreatedTimeUTC', 'AlertsCount', 'BookmarksCount', 'CommentsCount',
-                    'AlertProductNames', 'Tactics', 'FirstActivityTimeGenerated', 'LastActivityTimeGenerated']
+INCIDENT_HEADERS = ['ID', 'IncidentNumber', 'Title', 'Description', 'Severity', 'Status', 'IncidentUrl', 'ProviderIncidentUrl',
+                    'AssigneeName', 'AssigneeEmail', 'AssigneeObjectID', 'AssigneeUPN', 'Label', 'FirstActivityTimeUTC',
+                    'LastActivityTimeUTC', 'LastModifiedTimeUTC', 'CreatedTimeUTC', 'AlertsCount', 'BookmarksCount',
+                    'CommentsCount', 'AlertProductNames', 'Tactics', 'FirstActivityTimeGenerated',
+                    'LastActivityTimeGenerated']
 
 COMMENT_HEADERS = ['ID', 'IncidentID', 'Message', 'AuthorName', 'AuthorEmail', 'CreatedTimeUTC']
 
@@ -67,15 +68,16 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 INCOMING_MIRRORED_FIELDS = ['ID', 'Etag', 'Title', 'Description', 'Severity', 'Status', 'owner', 'tags', 'FirstActivityTimeUTC',
                                   'LastActivityTimeUTC', 'LastModifiedTimeUTC', 'CreatedTimeUTC', 'IncidentNumber', 'AlertsCount',
-                                  'AlertProductNames', 'Tactics', 'relatedAnalyticRuleIds', 'IncidentUrl', 'classification',
-                                  'classificationComment', 'alerts', 'entities', 'comments', 'relations']
+                                  'AlertProductNames', 'Tactics', 'relatedAnalyticRuleIds', 'IncidentUrl', 'ProviderIncidentUrl',
+                                  'classification', 'classificationReason', 'classificationComment', 'alerts', 'entities',
+                                  'comments', 'relations']
+
 OUTGOING_MIRRORED_FIELDS = {'etag', 'title', 'description', 'severity', 'status', 'tags', 'firstActivityTimeUtc',
                             'lastActivityTimeUtc', 'classification', 'classificationComment', 'classificationReason'}
 OUTGOING_MIRRORED_FIELDS = {filed: pascalToSpace(filed) for filed in OUTGOING_MIRRORED_FIELDS}
 
 LEVEL_TO_SEVERITY = {0: 'Informational', 0.5: 'Informational', 1: 'Low', 2: 'Medium', 3: 'High', 4: 'High'}
-CLASSIFICATION_REASON = {'FalsePositive': 'InaccurateData', 'TruePositive': 'SuspiciousActivity',
-                         'BenignPositive': 'SuspiciousButExpected'}
+CLASSIFICATION_REASON = {'TruePositive': 'SuspiciousActivity', 'BenignPositive': 'SuspiciousButExpected'}
 
 
 class AzureSentinelClient:
@@ -248,6 +250,7 @@ def incident_data_to_xsoar_format(inc_data, is_fetch_incidents=False):
         'BookmarksCount': properties.get('additionalData', {}).get('bookmarksCount'),
         'CommentsCount': properties.get('additionalData', {}).get('commentsCount'),
         'AlertProductNames': properties.get('additionalData', {}).get('alertProductNames'),
+        'ProviderIncidentUrl': properties.get('additionalData', {}).get('providerIncidentUrl'),
         'Tactics': properties.get('additionalData', {}).get('tactics'),
         'Techniques': properties.get('additionalData', {}).get('techniques'),
         'FirstActivityTimeGenerated': format_date(properties.get('firstActivityTimeGenerated')),
@@ -670,6 +673,28 @@ def close_incident_in_remote(delta: Dict[str, Any], data: Dict[str, Any]) -> boo
     return demisto.params().get('close_ticket') and bool(closing_reason)
 
 
+def extract_classification_reason(delta: Dict[str, str], data: Dict[str, str]):
+    """
+    Returns the classification reason based on `delta` and `data`.
+
+    Args:
+        delta (dict): Contains potential 'classification' and 'classificationReason' keys.
+        data (dict): Default classification information, with 'classification' and 'classificationReason'.
+
+    Returns:
+        The resolved classification reason.
+    """
+
+    classification: str = delta.get("classification", "") or data.get(
+        "classification", ""
+    )
+    if classification == "FalsePositive":
+        return delta.get("classificationReason") or data.get(
+            "classificationReason", "InaccurateData"
+        )
+    return CLASSIFICATION_REASON.get(classification, "")
+
+
 def update_incident_request(client: AzureSentinelClient, incident_id: str, data: Dict[str, Any], delta: Dict[str, Any],
                             close_ticket: bool = False) -> Dict[str, Any]:
     """
@@ -689,10 +714,13 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
     if any(field not in data for field in required_fields):
         raise DemistoException(f'Update incident request is missing one of the required fields for the '
                                f'API: {required_fields}')
+
+    severity = data.get('severity', '')
+
     properties = {
         'title': data.get('title'),
         'description': delta.get('description'),
-        'severity': LEVEL_TO_SEVERITY[data.get('severity', '')],
+        'severity': severity if severity in LEVEL_TO_SEVERITY.values() else LEVEL_TO_SEVERITY[severity],
         'status': 'Active',
         'firstActivityTimeUtc': delta.get('firstActivityTimeUtc'),
         'lastActivityTimeUtc': delta.get('lastActivityTimeUtc'),
@@ -707,7 +735,7 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
             'status': 'Closed',
             'classification': delta.get('classification') or data.get('classification'),
             'classificationComment': delta.get('classificationComment') or data.get('classificationComment'),
-            'classificationReason': CLASSIFICATION_REASON.get(delta.get('classification', data.get('classification', '')))
+            'classificationReason': extract_classification_reason(delta, data)
         }
     remove_nulls_from_dictionary(properties)
     data = {

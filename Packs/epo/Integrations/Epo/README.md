@@ -1,18 +1,15 @@
 
 This integration was integrated and tested with McAfee ePO v5.3.2.
 
-## Configure McAfee ePO on Cortex XSOAR
+## Configure McAfee ePO in Cortex
 
-1.  Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2.  Search for McAfee ePO.
-3.  Click **Add instance** to create and configure a new integration instance.
-    *   **Name**: a textual name for the integration instance.
-    *   **Url**: for example: `https://****:port`
-    *   **Username**
-    *   **Password**
-    *   **Trust any certificate (not secure)** Mark to trust Certificate Authority.
-    *   **Use system proxy settings**
-4.  Click **Test** to validate the URLs, credentials, and connection.
+*   **Name**: a textual name for the integration instance.
+*   **Url**: for example: `https://****:port`
+*   **Username**
+*   **Password**
+*   **Trust any certificate (not secure)** Mark to trust Certificate Authority.
+*   **Use system proxy settings**
+
 
 ## Permissions
 McAfee ePO has a highly flexible and powerful permissions system. The permissions required for the user that uses this integration depend on which operations they need to perform. The API user should have the same permissions a regular user would have in order to access the data via the UI. It is possible to view the exact permissions needed for a specific command by running the `!epo-help` command. The `!epo-help` command's output will include help information for the specific command including required permissions. 
@@ -20,9 +17,9 @@ More info about McAfee ePO's permissions model is available [here](https://docs.
 
 Example `!epo-help` outputs with permission information: 
 * `!epo-help command="repository.findPackages"`:
-![](https://raw.githubusercontent.com/demisto/content/0b1cdaff3a3cd238cbe98ae25bee0c6206af11e0/Packs/epo/doc_files/epo-help-find-pkg.png)
+![](../../doc_files/epo-help-find-pkg.png)
 * `!epo-help command="repository.deletePackage"`:
-![](https://raw.githubusercontent.com/demisto/content/0b1cdaff3a3cd238cbe98ae25bee0c6206af11e0/Packs/epo/doc_files/epo-help-delete-pkg.png)
+![](../../doc_files/epo-help-delete-pkg.png)
 
 ## Playbooks
 * McAfee ePO Endpoint Connectivity Diagnostics - Perform a check on ePO endpoints to see if any endpoints are unmanaged or lost connectivity with ePO and take steps to return to valid state.
@@ -32,7 +29,7 @@ Example `!epo-help` outputs with permission information:
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1.  Print help for ePO commands: epo-help
 2.  Get the latest DAT file: epo-get-latest-dat
@@ -77,7 +74,7 @@ There is no context output for this command.
 
 ##### Human Readable Output
 
-[![screen shot 2018-08-26 at 10 28 00](https://user-images.githubusercontent.com/37335599/44625852-d013c300-a91a-11e8-839e-b4f139ab893d.png)](https://user-images.githubusercontent.com/37335599/44625852-d013c300-a91a-11e8-839e-b4f139ab893d.png)
+[![screen shot 2018-08-26 at 10 28 00](../../doc_files/44625852-d013c300-a91a-11e8-839e-b4f139ab893d.png)](../../doc_files/44625852-d013c300-a91a-11e8-839e-b4f139ab893d.png)
 
 ### 2. Get the latest DAT file
 
@@ -105,7 +102,7 @@ There is no input for this command. 
 
 ##### Human Readable Output
 
-[![screen shot 2018-08-26 at 10 15 58](https://user-images.githubusercontent.com/37335599/44625740-2b44b600-a919-11e8-9d18-ecca5185ffef.png)](https://user-images.githubusercontent.com/37335599/44625740-2b44b600-a919-11e8-9d18-ecca5185ffef.png)
+[![screen shot 2018-08-26 at 10 15 58](../../doc_files/44625740-2b44b600-a919-11e8-9d18-ecca5185ffef.png)](../../doc_files/44625740-2b44b600-a919-11e8-9d18-ecca5185ffef.png)
 
 ### 3. Check the current DAT file version
 
@@ -133,7 +130,7 @@ There is no input for this command.
 
 ##### Human Readable Output
 
-[![screen shot 2018-08-26 at 10 18 36](https://user-images.githubusercontent.com/37335599/44625764-7bbc1380-a919-11e8-9959-1090d30f1db3.png)](https://user-images.githubusercontent.com/37335599/44625764-7bbc1380-a919-11e8-9959-1090d30f1db3.png)
+[![screen shot 2018-08-26 at 10 18 36](../../doc_files/44625764-7bbc1380-a919-11e8-9959-1090d30f1db3.png)](../../doc_files/44625764-7bbc1380-a919-11e8-9959-1090d30f1db3.png)
 
 ### 4. Update the DAT file
 
@@ -188,7 +185,7 @@ There is no context output for this command.
 
 ##### Human Readable Output
 
-[![screen shot 2018-08-26 at 10 41 04](https://user-images.githubusercontent.com/37335599/44625952-9d6aca00-a91c-11e8-92b7-2a42b2b618d6.png)](https://user-images.githubusercontent.com/37335599/44625952-9d6aca00-a91c-11e8-92b7-2a42b2b618d6.png)
+[![screen shot 2018-08-26 at 10 41 04](../../doc_files/44625952-9d6aca00-a91c-11e8-92b7-2a42b2b618d6.png)](../../doc_files/44625952-9d6aca00-a91c-11e8-92b7-2a42b2b618d6.png)
 
 ### 5. Update a repository
 
@@ -214,7 +211,7 @@ There is no context output for this command.
 
 ##### Human Readable Output
 
-[![screen shot 2018-08-26 at 10 00 40](https://user-images.githubusercontent.com/37335599/44625662-65ad5380-a917-11e8-8120-5e6211e148bd.png)](https://user-images.githubusercontent.com/37335599/44625662-65ad5380-a917-11e8-8120-5e6211e148bd.png)
+[![screen shot 2018-08-26 at 10 00 40](../../doc_files/44625662-65ad5380-a917-11e8-8120-5e6211e148bd.png)](../../doc_files/44625662-65ad5380-a917-11e8-8120-5e6211e148bd.png)
 
 ### 6. Get system tree groups
 
@@ -242,7 +239,7 @@ Returns system tree groups.
 
 ##### Human Readable Output
 
-[![screen shot 2018-08-26 at 9 59 49](https://user-images.githubusercontent.com/37335599/44625635-d0aa5a80-a916-11e8-826d-15bae934412c.png)](https://user-images.githubusercontent.com/37335599/44625635-d0aa5a80-a916-11e8-826d-15bae934412c.png)
+[![screen shot 2018-08-26 at 9 59 49](../../doc_files/44625635-d0aa5a80-a916-11e8-826d-15bae934412c.png)](../../doc_files/44625635-d0aa5a80-a916-11e8-826d-15bae934412c.png)
 
 ### 7. Find systems in the system tree
 
@@ -301,12 +298,12 @@ epo-command
 !epo-command command=system.find searchText=10.0.0.1
 
   
-[![screen shot 2018-10-02 at 9 44 34](https://user-images.githubusercontent.com/37335599/46333148-e1da3b80-c627-11e8-82cf-40970f8e5aab.png)](https://user-images.githubusercontent.com/37335599/46333148-e1da3b80-c627-11e8-82cf-40970f8e5aab.png)
+[![screen shot 2018-10-02 at 9 44 34](../../doc_files/46333148-e1da3b80-c627-11e8-82cf-40970f8e5aab.png)](../../doc_files/46333148-e1da3b80-c627-11e8-82cf-40970f8e5aab.png)
 
 !epo-command command=agentmgmt.listAgentHandlers
 
   
-[![screen shot 2018-10-02 at 9 46 00](https://user-images.githubusercontent.com/37335599/46333232-37164d00-c628-11e8-91a7-1be03063edb0.png)](https://user-images.githubusercontent.com/37335599/46333232-37164d00-c628-11e8-91a7-1be03063edb0.png)
+[![screen shot 2018-10-02 at 9 46 00](../../doc_files/46333232-37164d00-c628-11e8-91a7-1be03063edb0.png)](../../doc_files/46333232-37164d00-c628-11e8-91a7-1be03063edb0.png)
 
 ### 9. epo-advanced-command
 
@@ -336,7 +333,7 @@ To get a list of available commands, run the ''epo-help'' command. For example/:
 !epo-advanced-command command="clienttask.find" commandArgs="searchText:On-demand"
 
   
-[![screen shot 2018-10-29 at 13 31 53](https://user-images.githubusercontent.com/37335599/47647276-27cee480-db7f-11e8-9430-b3685d914cde.png)](https://user-images.githubusercontent.com/37335599/47647276-27cee480-db7f-11e8-9430-b3685d914cde.png)
+[![screen shot 2018-10-29 at 13 31 53](../../doc_files/47647276-27cee480-db7f-11e8-9430-b3685d914cde.png)](../../doc_files/47647276-27cee480-db7f-11e8-9430-b3685d914cde.png)
 
 ### 10. Wake up an agent
 
@@ -417,22 +414,22 @@ Queries an ePO table.
 `!epo-query-table target=EPOLeafNode select="(select EPOLeafNode.NodeName EPOLeafNode.Tags EPOBranchNode.NodeName)" where="(hasTag EPOLeafNode.AppliedTags 4)"`
 
   
-[![screen shot 2018-10-29 at 15 17 18](https://user-images.githubusercontent.com/37335599/47652110-bf3b3400-db8d-11e8-934d-56542c178b6f.png)](https://user-images.githubusercontent.com/37335599/47652110-bf3b3400-db8d-11e8-934d-56542c178b6f.png)
+[![screen shot 2018-10-29 at 15 17 18](../../doc_files/47652110-bf3b3400-db8d-11e8-934d-56542c178b6f.png)](../../doc_files/47652110-bf3b3400-db8d-11e8-934d-56542c178b6f.png)
 
 `!epo-query-table target=EPOLeafNode select="(select (top 3) EPOLeafNode.NodeName EPOLeafNode.Tags EPOBranchNode.NodeName)"`
 
   
-[![screen shot 2018-10-29 at 15 17 43](https://user-images.githubusercontent.com/37335599/47652140-d417c780-db8d-11e8-819b-542dcc01c925.png)](https://user-images.githubusercontent.com/37335599/47652140-d417c780-db8d-11e8-819b-542dcc01c925.png)
+[![screen shot 2018-10-29 at 15 17 43](../../doc_files/47652140-d417c780-db8d-11e8-819b-542dcc01c925.png)](../../doc_files/47652140-d417c780-db8d-11e8-819b-542dcc01c925.png)
 
 `!epo-query-table target="EPOEvents" select="(select EPOEvents.AutoID EPOEvents.DetectedUTC EPOEvents.ReceivedUTC)" order="(order(desc EPOEvents.DetectedUTC))"`
 
   
-[![screen shot 2018-10-29 at 16 35 41](https://user-images.githubusercontent.com/37335599/47656891-b734c180-db98-11e8-9c65-1b58fd4c8268.png)](https://user-images.githubusercontent.com/37335599/47656891-b734c180-db98-11e8-9c65-1b58fd4c8268.png)
+[![screen shot 2018-10-29 at 16 35 41](../../doc_files/47656891-b734c180-db98-11e8-9c65-1b58fd4c8268.png)](../../doc_files/47656891-b734c180-db98-11e8-9c65-1b58fd4c8268.png)
 
 `!epo-query-table target="EPExtendedEvent" select="(select (top 250) EPOEvents.ThreatName EPOEvents.AutoID EPExtendedEvent.EventAutoID EPExtendedEvent.TargetHash EPExtendedEvent.TargetPath EPOEvents.SourceHostName)" order="(order(desc EPExtendedEvent.TargetHash))" joinTables="EPOEvents"where="(where(eq EPOEvents.ThreatName "real Protect-LS!d5435f1fea5e"))"`
 
   
-[![screen shot 2018-10-31 at 10 03 49](https://user-images.githubusercontent.com/37335599/47773949-4b676b80-dcf4-11e8-9562-c67fced9176c.png)](https://user-images.githubusercontent.com/37335599/47773949-4b676b80-dcf4-11e8-9562-c67fced9176c.png)
+[![screen shot 2018-10-31 at 10 03 49](../../doc_files/47773949-4b676b80-dcf4-11e8-9562-c67fced9176c.png)](../../doc_files/47773949-4b676b80-dcf4-11e8-9562-c67fced9176c.png)
 
 ### 14. Get an ePO table
 
@@ -459,7 +456,7 @@ There is no context output for this command.
 
 ##### Human Readable Output
 
-##### [![screen shot 2018-10-29 at 15 19 13](https://user-images.githubusercontent.com/37335599/47652211-06292980-db8e-11e8-8075-87a415c92b20.png)](https://user-images.githubusercontent.com/37335599/47652211-06292980-db8e-11e8-8075-87a415c92b20.png)
+##### [![screen shot 2018-10-29 at 15 19 13](../../doc_files/47652211-06292980-db8e-11e8-8075-87a415c92b20.png)](../../doc_files/47652211-06292980-db8e-11e8-8075-87a415c92b20.png)
 
 ### 15. Get the ePO version
 
@@ -483,7 +480,7 @@ Gets the ePO version. This command requires global admin permissions.
 !epo-get-version
 
   
-[![screen shot 2018-11-06 at 15 43 18](https://user-images.githubusercontent.com/37335599/48068154-b58f7d00-e1da-11e8-97c1-410d77954d6d.png)](https://user-images.githubusercontent.com/37335599/48068154-b58f7d00-e1da-11e8-97c1-410d77954d6d.png)
+[![screen shot 2018-11-06 at 15 43 18](../../doc_files/48068154-b58f7d00-e1da-11e8-97c1-410d77954d6d.png)](../../doc_files/48068154-b58f7d00-e1da-11e8-97c1-410d77954d6d.png)
 
 ### 16. Find systems in the system tree
 
@@ -530,7 +527,7 @@ Finds systems in the system tree.
 !epo-find-system searchText=mar
 
   
-[![screen shot 2018-11-06 at 15 46 12](https://user-images.githubusercontent.com/37335599/48068300-1fa82200-e1db-11e8-9b4c-1df113f5934d.png)](https://user-images.githubusercontent.com/37335599/48068300-1fa82200-e1db-11e8-9b4c-1df113f5934d.png)
+[![screen shot 2018-11-06 at 15 46 12](../../doc_files/48068300-1fa82200-e1db-11e8-9b4c-1df113f5934d.png)](../../doc_files/48068300-1fa82200-e1db-11e8-9b4c-1df113f5934d.png)
 
 ### 17. Move a system to a different group
 
@@ -560,4 +557,4 @@ There is no context output for this command.
 
 ##### Human Readable Output
 
-[![Screen Shot 2019-07-31 at 11 34 28](https://user-images.githubusercontent.com/37335599/62196720-30ab4b80-b387-11e9-93e2-56f5821cd34c.png)](https://user-images.githubusercontent.com/37335599/62196720-30ab4b80-b387-11e9-93e2-56f5821cd34c.png)
+[![Screen Shot 2019-07-31 at 11 34 28](../../doc_files/62196720-30ab4b80-b387-11e9-93e2-56f5821cd34c.png)](../../doc_files/62196720-30ab4b80-b387-11e9-93e2-56f5821cd34c.png)

@@ -4,6 +4,7 @@ import demistomock as demisto
 from CommonServerPython import entryTypes
 from tempfile import NamedTemporaryFile
 from pytest_mock import MockerFixture
+from unittest.mock import MagicMock
 import os
 import logging
 import http.server
@@ -663,20 +664,20 @@ def test_increase_counter_chrome_instances_file(mocker):
     When:
         - Executing the increase_counter_chrome_instances_file function
     Then:
-        - The function writes to the correct file and increase the "rasteriztion_count" by 1
+        - The function writes to the correct file and increase the "RASTERIZATION_COUNT" by 1
     """
-    from rasterize import increase_counter_chrome_instances_file, RASTERIZETION_COUNT
+    from rasterize import increase_counter_chrome_instances_file, RASTERIZATION_COUNT
     from unittest.mock import mock_open
     mocker.patch("os.path.exists", return_value=True)
     mock_file_content = util_load_json("test_data/chrome_instances.json")
-    expected_rasterizetion_count = mock_file_content['2222'][RASTERIZETION_COUNT] + 1
+    expected_rasterization_count = mock_file_content['2222'][RASTERIZATION_COUNT] + 1
     mock_file = mock_open()
     mocker.patch("builtins.open", mock_file)
     mocker.patch.object(json, 'load', return_value=mock_file_content)
     mocker_json = mocker.patch("json.dump")
     increase_counter_chrome_instances_file(chrome_port="2222")
     assert mocker_json.called
-    assert expected_rasterizetion_count == mocker_json.call_args[0][0]['2222'][RASTERIZETION_COUNT]
+    assert expected_rasterization_count == mocker_json.call_args[0][0]['2222'][RASTERIZATION_COUNT]
 
 
 def test_add_new_chrome_instance(mocker):
@@ -774,11 +775,114 @@ def test_rasterize_mailto(capfd, mocker):
     """
     mocker_output = mocker.patch('rasterize.return_results')
 
-    with pytest.raises(SystemExit) as excinfo:
-        with capfd.disabled():
-            perform_rasterize(path='mailto:some.person@gmail.com', width=250, height=250, rasterize_type=RasterizeType.PNG)
+    with pytest.raises(SystemExit) as excinfo, capfd.disabled():
+        perform_rasterize(path='mailto:some.person@gmail.com', width=250, height=250, rasterize_type=RasterizeType.PNG)
 
     assert mocker_output.call_args.args[0].readable_output == 'URLs that start with "mailto:" cannot be rasterized.' \
                                                               '\nURL: [\'mailto:some.person@gmail.com\']'
     assert excinfo.type == SystemExit
     assert excinfo.value.code == 0
+
+
+def test_handle_request_paused(mocker):
+    """
+        Given:
+            - cloudflare.com as BLOCKED_URLS parameter.
+        When:
+            - Running the 'handle_request_paused' function.
+        Then:
+            - Verify that tab.Fetch.failRequest executed with the correct requestId and errorReason Aborted
+    """
+
+    mocker.patch('rasterize.BLOCKED_URLS', ['cloudflare.com'])
+    kwargs = {'requestId': '1', 'request': {'url': 'cloudflare.com'}}
+    mock_tab = MagicMock(spec=pychrome.Tab)
+    mock_fetch = mocker.MagicMock()
+    mock_fetch.disable = MagicMock()
+    mock_fail_request = mocker.patch.object(mock_fetch, 'failRequest', new_callable=MagicMock)
+    mock_tab.Fetch = mock_fetch
+    tab_event_handler = PychromeEventHandler(None, mock_tab, None)
+
+    tab_event_handler.handle_request_paused(**kwargs)
+
+    assert mock_fail_request.call_args[1]['requestId'] == '1'
+    assert mock_fail_request.call_args[1]['errorReason'] == 'Aborted'
+
+
+def test_chrome_manager_one_port_use_same_port(mocker):
+    """
+    Given:
+        - instance id and chrome options.
+    When:
+        - Executing the chrome_manager_one_port function
+    Then:
+        - The function writes to the correct file the data and selects a port that already use the given chrome_option.
+    """
+    from rasterize import chrome_manager_one_port, read_json_file
+
+    instance_id = "22222222-2222-2222-2222-222222222221"  # not exist
+    chrome_options = "chrome_options2"
+
+    mock_context = {
+        'context': {
+            'IntegrationInstanceID': instance_id
+        }
+    }
+
+    params = {
+        'chrome_options': chrome_options
+    }
+
+    mock_file_content = read_json_file("test_data/chrome_instances.json")
+
+    mocker.patch.object(demisto, 'callingContext', mock_context)
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(rasterize, 'read_json_file', return_value=mock_file_content)
+
+    mocker.patch.object(rasterize, 'get_chrome_browser', return_value="browser_object")
+
+    browser, chrome_port = chrome_manager_one_port()
+    assert browser == "browser_object"
+    assert chrome_port == "2222"
+
+
+def test_chrome_manager_one_port_open_new_port(mocker):
+    """
+    Given:
+        - instance id and chrome options.
+    When:
+        - Executing the chrome_manager_one_port function
+    Then:
+        - The function terminate all the ports that are open in chrome_manager, and opens a new chrome port to use.
+    """
+    from rasterize import chrome_manager_one_port, read_json_file
+
+    instance_id = "22222222-2222-2222-2222-222222222221"  # not exist
+    chrome_options = "new_chrome_options"
+
+    mock_context = {
+        'context': {
+            'IntegrationInstanceID': instance_id
+        }
+    }
+
+    params = {
+        'chrome_options': chrome_options
+    }
+
+    mock_file_content = read_json_file("test_data/chrome_instances.json")
+
+    mocker.patch.object(demisto, 'callingContext', mock_context)
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(rasterize, 'read_json_file', return_value=mock_file_content)
+
+    mocker.patch.object(rasterize, 'get_chrome_browser', return_value="browser_object")
+    terminate_chrome_mocker = mocker.patch.object(rasterize, 'terminate_chrome', return_value=None)
+    generate_new_chrome_instance_mocker = mocker.patch.object(rasterize, 'generate_new_chrome_instance',
+                                                              return_value=["browser_object", "chrome_port"])
+
+    browser, chrome_port = chrome_manager_one_port()
+    assert terminate_chrome_mocker.call_count == 3
+    assert generate_new_chrome_instance_mocker.call_count == 1
+    assert browser == "browser_object"
+    assert chrome_port == "chrome_port"

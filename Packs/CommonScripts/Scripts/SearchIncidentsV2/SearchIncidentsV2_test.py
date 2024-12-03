@@ -304,15 +304,6 @@ def test_includeinformational_logic(mocker, args, expected_filtered_args, expect
         assert execute_mock.call_args[0][1] == expected_filtered_args
 
 
-def test_includeinformational_raises_error_in_xsoar(mocker):
-    import SearchIncidentsV2
-    mocker.patch.object(SearchIncidentsV2, 'is_xsiam', return_value=False)
-    mocker.patch.object(SearchIncidentsV2, 'execute_command', side_effect=get_incidents_mock_include_informational)
-
-    with pytest.raises(ValueError):
-        SearchIncidentsV2.search_incidents({'includeinformational': 'true'})
-
-
 @pytest.mark.parametrize('platform, version, link_type, expected_result', [
     ('x2', '', 'alertLink', 'alerts?action:openAlertDetails='),
     ('xsoar', '6.10.0', 'incidentLink', '#/Details/'),

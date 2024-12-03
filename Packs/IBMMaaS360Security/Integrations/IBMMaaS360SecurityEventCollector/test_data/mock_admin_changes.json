@@ -1,0 +1,213 @@
+[
+    {
+        "adminChanges": {
+            "count": 3,
+            "pageNumber": 1,
+            "pageSize": 3,
+            "adminChange": [
+                {
+                    "updateDate": 1730209172000,
+                    "performedBy": "test@mail.com",
+                    "operationType": "CHANGE",
+                    "ipAddress": "1.1.1.1",
+                    "administrator": {
+                        "email": "test@mail.com",
+                        "username": "test@mail.com",
+                        "firstName": "guy",
+                        "middleName": "",
+                        "lastName": "",
+                        "address": "",
+                        "phone": "",
+                        "jobTitle": "",
+                        "watchSubscription": "Y",
+                        "accountStatus": "Active",
+                        "managedUserGroups": "All groups",
+                        "lastLoginTime": "",
+                        "rolesAdded": "",
+                        "rolesDeleted": "",
+                        "previousState": ""
+                    }
+                },
+                {
+                    "updateDate": 1730209172000,
+                    "performedBy": "test@mail.com",
+                    "operationType": "CHANGE",
+                    "ipAddress": "1.1.1.1",
+                    "administrator": {
+                        "email": "test@mail.com",
+                        "username": "test@mail.com",
+                        "firstName": "guy",
+                        "middleName": "",
+                        "lastName": "",
+                        "address": "",
+                        "phone": "",
+                        "jobTitle": "",
+                        "watchSubscription": "Y",
+                        "accountStatus": "Active",
+                        "managedUserGroups": "All groups",
+                        "lastLoginTime": "",
+                        "rolesAdded": "Help Desk",
+                        "rolesDeleted": "",
+                        "previousState": ""
+                    }
+                },
+                {
+                    "updateDate": 1730206429000,
+                    "performedBy": "test@mail.com",
+                    "operationType": "CHANGE",
+                    "ipAddress": "1.1.1.1",
+                    "administrator": {
+                        "email": "test@mail.com",
+                        "username": "test@mail.com",
+                        "firstName": "guy",
+                        "middleName": "",
+                        "lastName": "",
+                        "address": "",
+                        "phone": "",
+                        "jobTitle": "",
+                        "watchSubscription": "Y",
+                        "accountStatus": "Active",
+                        "managedUserGroups": "All groups",
+                        "lastLoginTime": "",
+                        "rolesAdded": "",
+                        "rolesDeleted": "",
+                        "previousState": ""
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "adminChanges": {
+            "count": 3,
+            "pageNumber": 2,
+            "pageSize": 3,
+            "adminChange": [
+                {
+                    "updateDate": 1730206429000,
+                    "performedBy": "test@mail.com",
+                    "operationType": "CHANGE",
+                    "ipAddress": "1.1.1.1",
+                    "administrator": {
+                        "email": "test@mail.com",
+                        "username": "test@mail.com",
+                        "firstName": "guy",
+                        "middleName": "",
+                        "lastName": "",
+                        "address": "",
+                        "phone": "",
+                        "jobTitle": "",
+                        "watchSubscription": "Y",
+                        "accountStatus": "Active",
+                        "managedUserGroups": "All groups",
+                        "lastLoginTime": "",
+                        "rolesAdded": "",
+                        "rolesDeleted": "Help Desk",
+                        "previousState": ""
+                    }
+                },
+                {
+                    "updateDate": 1730205691000,
+                    "performedBy": "test@mail.com",
+                    "operationType": "CHANGE",
+                    "ipAddress": "1.1.1.1",
+                    "administrator": {
+                        "email": "test@mail.com",
+                        "username": "test@mail.com",
+                        "firstName": "guy",
+                        "middleName": "",
+                        "lastName": "",
+                        "address": "",
+                        "phone": "",
+                        "jobTitle": "",
+                        "watchSubscription": "Y",
+                        "accountStatus": "Active",
+                        "managedUserGroups": "All groups",
+                        "lastLoginTime": "",
+                        "rolesAdded": "",
+                        "rolesDeleted": "",
+                        "previousState": ""
+                    }
+                },
+                {
+                    "updateDate": 1730205691000,
+                    "performedBy": "test@mail.com",
+                    "operationType": "CHANGE",
+                    "ipAddress": "1.1.1.1",
+                    "administrator": {
+                        "email": "test@mail.com",
+                        "username": "test@mail.com",
+                        "firstName": "guy",
+                        "middleName": "",
+                        "lastName": "",
+                        "address": "",
+                        "phone": "",
+                        "jobTitle": "",
+                        "watchSubscription": "Y",
+                        "accountStatus": "Active",
+                        "managedUserGroups": "All groups",
+                        "lastLoginTime": "",
+                        "rolesAdded": "Help Desk",
+                        "rolesDeleted": "",
+                        "previousState": ""
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "adminChanges": {
+            "count": 3,
+            "pageNumber": 3,
+            "pageSize": 2,
+            "adminChange": [
+                {
+                    "updateDate": 1730116877000,
+                    "performedBy": "test@mail.com",
+                    "operationType": "CHANGE",
+                    "ipAddress": "1.1.1.1",
+                    "administrator": {
+                        "email": "test@mail.com",
+                        "username": "test@mail.com",
+                        "firstName": "guy",
+                        "middleName": "",
+                        "lastName": "",
+                        "address": "",
+                        "phone": "",
+                        "jobTitle": "",
+                        "watchSubscription": "Y",
+                        "accountStatus": "Active",
+                        "managedUserGroups": "All groups",
+                        "lastLoginTime": "",
+                        "rolesAdded": "",
+                        "rolesDeleted": "",
+                        "previousState": ""
+                    }
+                },
+                {
+                    "updateDate": 1730116877000,
+                    "performedBy": "test@mail.com",
+                    "operationType": "CHANGE",
+                    "ipAddress": "1.1.1.1",
+                    "administrator": {
+                        "email": "test@mail.com",
+                        "username": "test@mail.com",
+                        "firstName": "guy",
+                        "middleName": "",
+                        "lastName": "",
+                        "address": "",
+                        "phone": "",
+                        "jobTitle": "",
+                        "watchSubscription": "Y",
+                        "accountStatus": "Active",
+                        "managedUserGroups": "All groups",
+                        "lastLoginTime": "",
+                        "rolesAdded": "",
+                        "rolesDeleted": "Help Desk",
+                        "previousState": ""
+                    }
+                }
+            ]
+        }
+    }
+]

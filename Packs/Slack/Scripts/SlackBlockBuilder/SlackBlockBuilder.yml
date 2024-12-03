@@ -67,7 +67,7 @@ outputs:
   description: The app ID retrieved from the message notification.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.90168
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 dependson:
   must:

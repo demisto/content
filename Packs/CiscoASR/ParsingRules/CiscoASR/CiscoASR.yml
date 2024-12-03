@@ -1,6 +1,6 @@
-id: Cisco_ASR
-name: Cisco ASR
-fromversion: 8.2.0
+name: Cisco ASR Parsing Rule
+id: Cisco_ASR_ParsingRule
+fromversion: 8.4.0
 tags: []
 rules: ''
 samples: ''

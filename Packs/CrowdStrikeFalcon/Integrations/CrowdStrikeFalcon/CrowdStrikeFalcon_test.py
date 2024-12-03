@@ -3343,6 +3343,43 @@ def test_get_ioc_device_count_command_exists(requests_mock):
     assert result['EntryContext']['CrowdStrike.IOC(val.ID === obj.ID)'][0]['ID'] == 'md5:testmd5'
 
 
+def test_get_ioc_device_count_command_rate_limit_exceeded(requests_mock):
+    """
+    Test cs-falcon-device-count-ioc with rate limit exceeded
+
+    Given
+    - There is a rate limit in CS side
+    When
+    - The user is running cs-falcon-device-count-ioc with md5:testmd5
+    Then
+    - ensure the correct count is returned by the offset mechanism
+    """
+    from CrowdStrikeFalcon import get_ioc_device_count_command
+    response = {'resources': [{'id': 'md5:testmd5', 'type': 'md5',
+                               'value': 'testmd5', 'limit_exceeded': 'true', 'device_count': 1}]}
+    indicators_queries_res = {'resources': ["res_1", "res_2", "res_3"]}
+    indicators_queries_res_with_offset = indicators_queries_res | {'meta': {'pagination': {'offset': 1}}}
+    requests_mock.get(
+        f'{SERVER_URL}/indicators/aggregates/devices-count/v1',
+        json=response,
+        status_code=200,
+    )
+    requests_mock.get(
+        f'{SERVER_URL}/indicators/queries/devices/v1',
+        json=indicators_queries_res_with_offset,
+        status_code=200,
+    )
+    requests_mock.get(
+        f'{SERVER_URL}/indicators/queries/devices/v1?type=md5&value=testmd5&offset=1',
+        json=indicators_queries_res,
+        status_code=200,
+    )
+
+    res = get_ioc_device_count_command(ioc_type='md5', value='testmd5')
+
+    assert 'device count: **6**' in res['HumanReadable']
+
+
 def test_get_process_details_command_not_exists(requests_mock, mocker):
     """
     Test cs-falcon-process-details with an unsuccessful query (doesn't exist)
