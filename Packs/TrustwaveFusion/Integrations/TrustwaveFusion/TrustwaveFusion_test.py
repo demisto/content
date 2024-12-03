@@ -224,7 +224,7 @@ def test_search_assets_command(requests_mock):
 def test_fetch_incidents(requests_mock, mocker):
     json_response = util_load_json("test_data/trustwave_search_tickets.json")
     requests_mock.get(
-        "http://api.example.com/v2/tickets?pageSize=10&createdSince=2022-01-31T13%3A00%3A00Z&sortField=createdOn&sortDescending=false",  # noqa: 501
+        "http://api.example.com/v2/tickets?pageSize=10&createdSince=2022-01-31T13%3A00%3A00Z&sortField=createdOn&sortDescending=false",  # noqa: E501
         json=json_response,
     )
     mocker.patch.object(demisto, "incidents")
@@ -241,7 +241,7 @@ def test_fetch_incidents(requests_mock, mocker):
 def test_fetch_incidents_last_fetch(requests_mock, mocker):
     json_response = util_load_json("test_data/trustwave_search_tickets.json")
     requests_mock.get(
-        "http://api.example.com/v2/tickets?pageSize=10&createdSince=2022-01-22T03%3A03%3A20Z&sortField=createdOn&sortDescending=false",  # noqa: 501
+        "http://api.example.com/v2/tickets?pageSize=10&createdSince=2022-01-22T03%3A03%3A20Z&sortField=createdOn&sortDescending=false",  # noqa: E501
         json=json_response,
     )
     mocker.patch.object(demisto, 'incidents')
