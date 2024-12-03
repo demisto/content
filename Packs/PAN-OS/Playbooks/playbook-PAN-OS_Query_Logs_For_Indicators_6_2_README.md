@@ -72,4 +72,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![PAN-OS_Query_Logs_For_Indicators](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PAN-OS_Query_Logs_For_Indicators.png)
+![PAN-OS_Query_Logs_For_Indicators](../doc_files/PAN-OS_Query_Logs_For_Indicators.png)

@@ -39,4 +39,4 @@ This playbook does not use any sub-playbooks.
 | Illusive.Forensics.Evidence.title | The forensics evidence description | unknown |
 | Illusive.Forensics.IncidentId | The Incident Id | unknown |
 
-![Playbook Image](https://raw.githubusercontent.com/demisto/content/0d472d7658632fa55e87a39e3562056d9cd289b8/Packs/IllusiveNetworks/doc_files/Illusive-Retrieve-Incident.png)
+![Playbook Image](../doc_files/Illusive-Retrieve-Incident.png)
