@@ -88,6 +88,7 @@ configuration:
   additionalinfo: Reliability of the source providing the intelligence data
   section: Collect
 - name: feedExpirationPolicy
+  display: ''
   defaultvalue: indicatorType
   type: 17
   required: false
@@ -98,6 +99,7 @@ configuration:
   - suddenDeath
   section: Collect
 - name: feedExpirationInterval
+  display: ''
   defaultvalue: '20160'
   type: 1
   required: false
