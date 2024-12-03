@@ -295,6 +295,65 @@ def test_ip_from_mac_not_found(requests_mock):
     assert result['outputs'] is None
 
 
+def test_incidents_head_limit(requests_mock):
+    import urllib.parse
+
+    query = "alerts | sort record_created_at asc | sort id asc | where record_created_at > 1392048082000 | where risk >= 4 | head 20"
+    request_path = f"/api/open/query/do?query={urllib.parse.quote(query)}"
+
+    client = __get_client(
+        [
+            {
+                'json': {
+                    "result": [
+                        {
+                            "id": 1,
+                            "name": "Mock Incident 1",
+                            "record_created_at": 1392048082001,
+                            "risk": 4.5  # Example field for severity parsing
+                        },
+                        {
+                            "id": 2,
+                            "name": "Mock Incident 2",
+                            "record_created_at": 1392048082002,
+                            "risk": 3.0
+                        }
+                    ],
+                    "total": 2
+                },
+                'path': request_path
+            }
+        ],
+        requests_mock
+    )
+
+    incidents_result, lft, lfid = incidents(
+        '1392048082000',
+        None,
+        {},
+        '4',
+        True,
+        client
+    )
+
+    assert requests_mock.called
+    assert lft == 1392048082002
+    assert lfid == 2
+    assert len(incidents_result) == 2
+    assert incidents_result[0]['name'] == "Mock Incident 1_1"
+    assert incidents_result[1]['name'] == "Mock Incident 2_2"
+
+
+def test_last_fetched_time_empty_incidents():
+    last_run = {'last_fetch': 1392048082000}
+    result = last_fetched_time([], last_run)
+    assert result == 1392048082000
+
+    incidents = [{'id': 1}]
+    result = last_fetched_time(incidents, last_run)
+    assert result == 1392048082000
+
+
 def test_query_count_alerts(requests_mock):
     result = query(
         {'query': 'alerts | count'},

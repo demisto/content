@@ -54,6 +54,7 @@ QUERY_ALERTS_PATH = '/api/open/query/do?query=alerts'
 QUERY_ASSETS_PATH = '/api/open/query/do?query=assets | sort id'
 JOB_STATUS_MAX_RETRY = 5
 DEFAULT_HEAD_ASSETS = 50
+DEFAULT_HEAD_ALERTS = 20
 DEFAULT_HEAD_QUERY = 500
 MAX_ASSETS_FINDABLE_BY_A_COMMAND = 100
 DEFAULT_ASSETS_FINDABLE_BY_A_COMMAND = 50
@@ -134,10 +135,10 @@ def has_last_run(lr):
 
 
 def incidents_better_than_time(st, risk, also_n2os_incidents, client):
-    head = demisto.params().get('incidentPerRun', False)
+    head = demisto.params().get('incidentPerRun', DEFAULT_HEAD_ALERTS)
     return client.http_get_request(
         f'{QUERY_ALERTS_PATH} | sort record_created_at asc | sort id asc{better_than_time_filter(st)}'
-        f'{risk_filter(risk)}{also_n2os_incidents_filter(also_n2os_incidents)} | head {head}'
+        f'{risk_filter(risk)}{also_n2os_incidents_filter(also_n2os_incidents)} | head {min(int(head), 1000)}'
     )['result']
 
 
@@ -193,7 +194,9 @@ def incidents(st, last_id, last_run, risk, also_n2os_incidents, client):
 
 
 def last_fetched_time(inc, last_run):
-    return inc[-1]['record_created_at'] if len(inc) > 0 else last_run.get("last_fetch", 0)
+    if len(inc) > 0 and 'record_created_at' in inc[-1]:
+        return inc[-1]['record_created_at']
+    return last_run.get("last_fetch", 0)
 
 
 def last_fetched_id(inc, last_run):
