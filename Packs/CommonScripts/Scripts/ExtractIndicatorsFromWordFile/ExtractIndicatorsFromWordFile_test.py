@@ -16,13 +16,6 @@ def test_parse_word(file_name, file_path, request):
     basename = os.path.basename(file_path)
     shutil.copy(file_path, os.getcwd())
 
-    def cleanup():
-        try:
-            os.remove(basename + ".docx")
-            os.remove(basename)
-        except OSError:
-            pass
-
     if os.getcwd().endswith('test_data'):
         os.chdir('..')
     parser = WordParser()
@@ -31,7 +24,6 @@ def test_parse_word(file_name, file_path, request):
     parser.file_path = basename
     parser.parse_word()
     assert (expected_partial_all_data in parser.paragraphs)
-    # request.addfinalizer(cleanup)
 
 
 def test_getting_file_from_context(mocker):
@@ -67,7 +59,7 @@ def test_get_hyperlinks():
     Given:
         - Document with 3 hyperlinks.
     When:
-        - Call to get_hyperlinks
+        - Call get_hyperlinks
     Then:
         - Validate the result contains the 3 links.
     """
@@ -85,3 +77,26 @@ def test_get_hyperlinks():
 
     result = parser.get_hyperlinks(doc)
     assert result == "http://example1.com http://example2.com http://example3.com "
+
+
+def test_get_paragraphs():
+    """
+    Given:
+        - Document with 3 paragraphs.
+    When:
+        - Call get_paragraphs
+    Then:
+        - Validate the result contains the 3 paragraphs.
+    """
+    parser = WordParser()
+
+    doc = MagicMock()
+    mock_paragraphs = [
+        MagicMock(text='This is the first paragraph.'),
+        MagicMock(text='This is the second paragraph.'),
+        MagicMock(text='This is the third paragraph.')
+    ]
+
+    doc.paragraphs = mock_paragraphs
+    result = parser.get_paragraphs(doc)
+    assert result == "This is the first paragraph.\nThis is the second paragraph.\nThis is the third paragraph."
