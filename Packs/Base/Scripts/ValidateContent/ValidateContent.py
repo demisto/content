@@ -1,11 +1,12 @@
 import os
 
+os.environ['DEMISTO_SDK_MAX_CPU_CORES'] = "1"  # TODO - Consider not specifying and use as much as available
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import io
 import git
 import zipfile
-import sys
 from contextlib import contextmanager
 from base64 import b64decode
 from pkg_resources import get_distribution
@@ -28,6 +29,31 @@ CONTENT_REPO_URL = 'https://github.com/demisto/content.git'
 CACHED_MODULES_DIR = '/tmp/cached_modules'
 PRE_COMMIT_TEMPLATE_PATH = os.path.join(CONTENT_DIR_PATH, '.pre-commit-config_template.yaml')
 BRANCH_MASTER = 'master'
+SKIPPED_HOOKS = [
+    # 'validate-deleted-files',
+    'pwsh-test-in-docker',
+    'pwsh-analyze-in-docker',
+    'coverage-pytest-analyze',
+    'merge-pytest-reports',
+    'format',
+    'validate',
+    'validate-content-paths',
+    'validate-conf-json',
+    'check-merge-conflict',
+    # 'check-json',
+    # 'check-yaml',
+    'check-ast',
+    'name-tests-test',
+    'check-added-large-files',
+    'check-case-conflict',
+    # 'poetry-check',
+    # 'pycln',
+    # 'ruff',
+    # 'autopep8',
+    # 'mypy',
+    # 'xsoar-lint',
+]
+
 
 @contextmanager
 def ConstantTemporaryDirectory(path):
@@ -44,8 +70,7 @@ def ConstantTemporaryDirectory(path):
         os.makedirs(path, exist_ok=True)
         yield path
     finally:
-        demisto.debug('NOT CLEANUPSSS')
-        # cleanup()
+        pass
 
 
 def log_demisto_sdk_version():
@@ -242,7 +267,6 @@ def prepare_single_content_item_for_validation(file_name: str, data: bytes, pack
 def run_validate(path_to_validate: str, json_output_file: str) -> int:
     """
     Runs demisto-sdk validations on a specified file path and writes the results to a JSON file.
-
     Args:
         path_to_validate (str): The path of the file or directory to be validated.
         json_output_file (str): The file path where validation results will be written in JSON format.
@@ -337,6 +361,11 @@ def get_content_modules(content_path: str, verify_ssl: bool = True) -> None:
             'file': '.pre-commit-config_template.yaml',
             'github_url': 'https://raw.githubusercontent.com/demisto/content/master/.pre-commit-config_template.yaml',
             'content_path': '',
+        },
+        {
+            'file': '.pre-commit-config.yaml',
+            'github_url': 'https://raw.githubusercontent.com/demisto/content/master/.pre-commit-config_template.yaml',
+            'content_path': '',
         }
 
     ]
@@ -368,21 +397,25 @@ def get_content_modules(content_path: str, verify_ssl: bool = True) -> None:
             copy(fallback_path, module_path)
 
 
-def run_pre_commit(path_to_validate: str, output_path: str) -> int:
+def run_pre_commit(output_path: str) -> int:
     """
-    <DOCSTRING>
+    Runs demisto-sdk pre-commit.
+    Args:
+        output_path (str): The file path where validation results will be written in JSON format.
+
+    Returns:
+        int: An exit code indicating the validation status; 0 for success and non-zero for failures.
+
     """
     from demisto_sdk.commands.pre_commit.pre_commit_command import pre_commit_manager
-    demisto.debug(f"£££ {os.getenv('DEMISTO_SDK_OFFLINE_ENV')=}")
-    os.environ['DEMISTO_SDK_OFFLINE_ENV'] = 'False'
+
+    demisto.debug(f'run_pre_commit | {SKIPPED_HOOKS=} | {PRE_COMMIT_TEMPLATE_PATH=} | {output_path=}')
     exit_code = pre_commit_manager(
-        skip_hooks=['validate-deleted-files'],
-        
-        # TODO - Verify if it can be both a folder and files.
-        input_files=[Path(path_to_validate)],
+        skip_hooks=SKIPPED_HOOKS,
+        all_files=True,
         run_docker_hooks=False,
         pre_commit_template_path=Path(PRE_COMMIT_TEMPLATE_PATH),
-        # output_path=Path(output_path)
+        json_output_path=Path(output_path)
     )
     demisto.debug(f'run_pre_commit {exit_code=}')
     return exit_code
@@ -409,29 +442,30 @@ def validate_content(path_to_validate: str):
         path_to_validate: Path to the file/directory to validate.
 
     Returns:
-        CommandResults objects with validation's & pre-commit's results.
-
+        TODO - Complete
     """
 
-    pre_commit_output_path = 'pre-commit-output/'
+    validate_content_output_dir = f'/tmp/ValidateContentOutput/run-{datetime.now().strftime("%Y%m%d-%H%M%S")}'
+    os.makedirs(validate_content_output_dir, exist_ok=True)
 
-    validations_output_path = 'validation_res.json'
-    os.environ['DEMISTO_SDK_LOG_NO_COLORS'] = 'true'
-    os.environ['LOGURU_DIAGNOSE'] = 'true'
+    validations_output_path = f'{validate_content_output_dir}/validation_res.json'
 
-    validate_exit_code = 0
-    # validate_exit_code = run_validate(path_to_validate, validations_output_path)
-    # pre_commit_exit_code = 0
-    pre_commit_exit_code = run_pre_commit(path_to_validate, pre_commit_output_path)
+    pre_commit_output_path = f'{validate_content_output_dir}/pre-commit-output/'
+    os.makedirs(pre_commit_output_path, exist_ok=True)
+
+    validate_exit_code = run_validate(path_to_validate, validations_output_path)
+
+    pre_commit_exit_code = run_pre_commit(pre_commit_output_path)
 
     if not (validate_exit_code or pre_commit_exit_code):
-        return CommandResults(readable_output='All validations passed.')
+        return {}, {}
 
     if not Path(validations_output_path).exists():
         raise DemistoException('Validation Results file does not exist.')
 
     all_outputs = []
     demisto.debug(f'about to read results -> {os.listdir(os.getcwd())}')
+    # TODO - FunctionHere@1
     with open(validations_output_path, 'r') as json_outputs:
         raw_outputs = json.load(json_outputs)
         if raw_outputs:
@@ -441,6 +475,15 @@ def validate_content(path_to_validate: str):
                 all_outputs.append(raw_outputs)
 
     # TODO - Read pre-commit results.
+    pre_commit_raw_outputs = []
+    for output_file in os.listdir(pre_commit_output_path):
+        # TODO - FunctionHere@1
+        with open(output_file, 'r') as json_output:
+            if outputs := json.load(json_output):
+                if type(outputs) is list:
+                    pre_commit_raw_outputs.extend(outputs)
+                else:
+                    pre_commit_raw_outputs.append(outputs)
 
     # TODO - Remove
     demisto.debug(f'Validation Results: {all_outputs=}')
@@ -448,7 +491,7 @@ def validate_content(path_to_validate: str):
 
     # TODO - Remove
     demisto.debug(f'Validation Results: {reformatted_outputs=}')
-    return reformatted_outputs, raw_outputs
+    return reformatted_outputs, all_outputs.extend(pre_commit_raw_outputs)
 
 
 def setup_content_repo(content_path: str):
@@ -463,7 +506,7 @@ def setup_content_repo(content_path: str):
 
     # Set up the remote branch and fetch it.
     content_repo.create_remote('origin', CONTENT_REPO_URL)
-    content_repo.remotes.origin.fetch()
+    content_repo.remotes.origin.fetch('master', depth=1)
 
     # Ensure 'master' branch exists, and checkout.
     if BRANCH_MASTER not in content_repo.heads:
@@ -491,20 +534,19 @@ def get_file_name_and_contents(
 def setup_content_dir(file_name: str, file_contents: str, entry_id: str, verify_ssl=False) -> Tuple[str, str]:
     """ Sets up the content directory to validate the content items in it. """
 
-    content_path = CONTENT_DIR_PATH
     # Set up the content directory path globally, required for demisto-sdk logic.
-    os.environ['DEMISTO_SDK_CONTENT_PATH'] = content_path
+    os.environ['DEMISTO_SDK_CONTENT_PATH'] = CONTENT_DIR_PATH
 
-    packs_path = os.path.join(content_path, PACKS_DIR_NAME)
+    packs_path = os.path.join(CONTENT_DIR_PATH, PACKS_DIR_NAME)
     os.mkdir(packs_path)
     demisto.debug(f"created packs directory in {packs_path}")
 
-    content_repo = setup_content_repo(content_path)
+    content_repo = setup_content_repo(CONTENT_DIR_PATH)
     file_name, file_contents = get_file_name_and_contents(file_name, file_contents, entry_id)
 
     if file_name.endswith('.zip'):
         path_to_validate, code_fp_to_row_offset = prepare_content_pack_for_validation(
-            file_name, file_contents, content_path
+            file_name, file_contents, CONTENT_DIR_PATH
         )
     else:
         path_to_validate, code_fp_to_row_offset = prepare_single_content_item_for_validation(
@@ -518,16 +560,23 @@ def setup_content_dir(file_name: str, file_contents: str, entry_id: str, verify_
         demisto.debug(f'setup_content_dir {os.listdir(path_to_validate)=}')
 
     os.makedirs(CACHED_MODULES_DIR, exist_ok=True)
-    get_content_modules(content_path, verify_ssl=verify_ssl)
-    return path_to_validate, content_path
+    get_content_modules(CONTENT_DIR_PATH, verify_ssl=verify_ssl)
+    return path_to_validate
+
+
+def setup_envvars():
+    os.environ['DEMISTO_SDK_IGNORE_CONTENT_WARNING'] = "false"
+    os.environ['DEMISTO_SDK_OFFLINE_ENV'] = 'False'
+    os.environ['ARTIFACTS_FOLDER'] = '/tmp/artifacts'
+    os.environ['DEMISTO_SDK_LOG_NO_COLORS'] = 'true'
+    demisto.debug(f'setup_envvars: {os.environ}')
 
 
 def main():
+    setup_envvars()
     cwd = os.getcwd()
     demisto.debug(f'{cwd=}')
-    os.environ['DEMISTO_SDK_IGNORE_CONTENT_WARNING'] = "false"
-    os.environ['DEMISTO_SDK_OFFLINE_ENV'] = "true"
-    os.environ['DEMISTO_SDK_MAX_CPU_CORES'] = "1"  # TODO - Consider not specifying and use as much as available
+
     try:
         args = demisto.args()
         demisto.debug(f'Got {args=}')
@@ -547,13 +596,15 @@ def main():
                 console_threshold='DEBUG',
                 propagate=True
             )
-
             demisto.debug(f"Finished setting logger.")
-            path_to_validate, content_path = setup_content_dir(filename, data, entry_id, verify_ssl)
-            # os.listdir(f'BABABAB TODO REMOVE - {os.listdir(content_path)=}')
-            os.chdir(content_path)
+
+            path_to_validate = setup_content_dir(filename, data, entry_id, verify_ssl)
+            os.chdir(CONTENT_DIR_PATH)
             results, raw_outputs = validate_content(path_to_validate)
             os.chdir(cwd)
+            if not results:
+                return_results(CommandResults(readable_output='All validations passed.'))
+
             return_results(CommandResults(
                 readable_output=tableToMarkdown(
                     'Validation Results', results, headers=['Error Code', 'Error', 'File']
@@ -569,7 +620,6 @@ def main():
         return_error(f'Failed to execute ValidateContent. Error: {str(e)}')
     finally:
         os.chdir(cwd)
-        os.environ['DEMISTO_SDK_CONTENT_PATH'] = ''
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
