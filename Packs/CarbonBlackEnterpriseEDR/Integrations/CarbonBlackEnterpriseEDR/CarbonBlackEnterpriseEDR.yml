@@ -1477,7 +1477,7 @@ script:
       description: Threat ID.
     - contextPath: CarbonBlackEEDR.Threat.Tags
       description: Threat tags.
-  dockerimage: demisto/python3:3.11.9.105369
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: ''

@@ -30,6 +30,7 @@ To ingest feeds via a URL, you could use one of the following content packs:
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Feed Fetch Interval |  | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+    | Max. indicators per fetch | Limit the number of indicators retrieved in a fetch run. | False |
     | MISP Attribute Tags | Attributes having one of the tags, or being an attribute of an event having one of the tags, will be returned. You can enter a comma-separated list of tags, for example <tag1,tag2,tag3>. The list of MISP tags can be found in your MISP instance under 'Event Actions'>'List Tags' | False |
     | MISP Attribute Types | Attributes of one of these types will be returned. You can enter a comma-separated list of types, for example <type1,type2,type3>. The list of MISP types can be found in your MISP instance then 'Event Actions'>'Search Attributes'>'Type dropdown list' | False |
     | Query | JSON query to filter MISP attributes. When the query parameter is used, Attribute Types and Attribute Tags parameters are not used. You can check for the correct syntax at https://&lt;Your MISP url&gt;/servers/openapi\#operation/restSearchAttributes | False |

@@ -1,0 +1,222 @@
+{
+    "links": [
+        {
+            "href": "h",
+            "rel": "self"
+        },
+        {
+            "href": "h",
+            "rel": "next"
+        }
+    ],
+    "results": [
+        {
+            "created": "2024-11-10T14:25:46Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "1",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id"
+        },
+        {
+            "alertConfigId": "id",
+            "created": "2024-11-10T14:21:28Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "2",
+            "isGlobalAdmin": false,
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "remoteAddress": "ip",
+            "userId": "id",
+            "username": "@"
+        },
+        {
+            "created": "2024-11-07T09:32:40Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "3",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id"
+        },
+        {
+            "alertConfigId": "id",
+            "created": "2024-11-07T09:29:34Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "4",
+            "isGlobalAdmin": false,
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "remoteAddress": "ip",
+            "userId": "id",
+            "username": "#"
+        },
+        {
+            "created": "2024-11-05T12:13:52Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "5",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id"
+        },
+        {
+            "alertConfigId": "id",
+            "created": "2024-11-05T12:09:41Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "6",
+            "isGlobalAdmin": false,
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "remoteAddress": "ip",
+            "userId": "id",
+            "username": "@"
+        },
+        {
+            "created": "2024-11-05T11:39:01Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "7",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id"
+        },
+        {
+            "created": "2024-11-05T11:35:01Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "8",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id"
+        },
+        {
+            "created": "2024-11-05T11:30:01Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "9",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id"
+        },
+        {
+            "created": "2024-11-05T11:20:01Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "10",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id"
+        },
+        {
+            "created": "2024-11-05T11:10:01Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "11",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id"
+        },
+        {
+            "created": "2024-11-05T11:10:01Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "12",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id"
+        },
+        {
+            "created": "2024-11-05T11:10:01Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "13",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id"
+        },
+        {
+            "created": "2024-11-05T11:10:01Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "14",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id"
+        },
+        {
+            "created": "2024-11-05T11:10:01Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "15",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id"
+        }
+    ],
+    "totalCount": 375
+}
