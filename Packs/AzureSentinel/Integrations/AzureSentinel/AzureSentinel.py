@@ -755,14 +755,14 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
 
 def update_remote_incident(client: AzureSentinelClient, data: Dict[str, Any], delta: Dict[str, Any],
                            incident_status: IncidentStatus, incident_id: str) -> str:
-    
+
     # we will run the mirror-out update only if there is relevant changes
     # (or closingUserId was changed meaning the incident wa reopened) or need to close the remote ticket
     relevant_keys_delta = OUTGOING_MIRRORED_FIELDS.keys() | {'closingUserId'}
     relevant_keys_delta &= delta.keys()
     # those fields are close incident fields and handled separately in close_incident_in_remote
     relevant_keys_delta -= {'classification', 'classificationComment'}
-    
+
     if incident_status in (IncidentStatus.DONE, IncidentStatus.ACTIVE):
         if incident_status == IncidentStatus.DONE and close_incident_in_remote(delta, data):
             demisto.debug(f'XSOAR incident closed, closing incident with remote ID {incident_id} in remote system.')
