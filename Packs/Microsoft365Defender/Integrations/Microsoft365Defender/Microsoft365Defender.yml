@@ -199,6 +199,26 @@ configuration:
   hidden:
   - marketplacev2
   required: false
+- additionalinfo: Choose a tag to add to an entry to mirror it as a comment into Microsoft 365 Defender.
+  defaultvalue: CommentToMicrosoft365Defender
+  display: Comment Entry Tag To ServiceNow
+  name: comment_tag
+  type: 0
+  section: Collect
+  advanced: true
+  hidden:
+  - marketplacev2
+  required: false
+- additionalinfo: Choose a tag to add to an entry to mirror it as a comment from Microsoft 365 Defender
+  defaultvalue: CommentFromMicrosoft365Defender
+  display: Comment Entry Tag From Microsoft 365 Defender
+  name: comment_tag_from_microsoft365defender
+  type: 0
+  section: Collect
+  advanced: true
+  hidden:
+  - marketplacev2
+  required: false
 description: Microsoft 365 Defender is a unified pre- and post-breach enterprise defense suite that natively coordinates detection, prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated protection against sophisticated attacks.
 display: Microsoft 365 Defender
 name: Microsoft 365 Defender
