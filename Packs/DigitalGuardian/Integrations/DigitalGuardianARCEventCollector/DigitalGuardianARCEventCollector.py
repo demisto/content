@@ -153,6 +153,7 @@ def fetch_events(client: Client, limit: int | None = None) -> tuple[list[dict], 
     demisto.info(f"Pulled {raw_response['total_hits']} events from {VENDOR}")
     events = create_events_for_push(raw_response, limit)
 
+    # Fields relating to the internal API bookmark (pointer); logged before pushing events to XSIAM (for debugging purposes)
     last_run = {key: value for key, value in raw_response.items() if key in ('bookmark_values', 'search_after_values')}
 
     return events, last_run
