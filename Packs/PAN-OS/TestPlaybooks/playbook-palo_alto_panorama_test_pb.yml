@@ -3290,7 +3290,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 8875
+          "y": 9065
         }
       }
     note: false
@@ -3315,7 +3315,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - "145"
+      - "148"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -3363,6 +3363,72 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "148":
+    id: "148"
+    taskid: fb45b9c6-f4a3-4d1d-8788-2a58f411d943
+    type: condition
+    task:
+      id: fb45b9c6-f4a3-4d1d-8788-2a58f411d943
+      version: -1
+      name: Check master-key-details
+      description: Verify context output fields of the command ***pan-os-get-master-key-details***
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "145"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: Panorama.MasterKey.auto-renew-mkey
+            iscontext: true
+          right:
+            value:
+              simple: 0,1
+      - - operator: inList
+          left:
+            value:
+              simple: Panorama.MasterKey.on-hsm
+            iscontext: true
+          right:
+            value:
+              simple: yes,no
+      - - operator: match
+          left:
+            value:
+              simple: Panorama.MasterKey.seconds-to-reminder
+            iscontext: true
+          right:
+            value:
+              simple: \d+
+      - - operator: match
+          left:
+            value:
+              simple: Panorama.MasterKey.seconds-to-expiry
+            iscontext: true
+          right:
+            value:
+              simple: \d+
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 8890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 version: -1
 view: |-
   {
@@ -3371,7 +3437,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 8890,
+        "height": 9080,
         "width": 1730,
         "x": 50,
         "y": 50
