@@ -388,14 +388,6 @@ unfixable = [
     "RUF001"  # ambiguous-unicode-character-string
 ]
 
-line-length = 130
-target-version = "py310"
-src = [
-    "Packs/Base/Scripts/CommonServerPython",
-    "Tests/demistomock",
-    "Packs/ApiModules/Scripts/*",
-]
-
 [tool.ruff.lint.per-file-ignores]
 "**/*_test.py" = []
 # Ignore any Python update in ApiModules, until we can proprtly determine their desired version.

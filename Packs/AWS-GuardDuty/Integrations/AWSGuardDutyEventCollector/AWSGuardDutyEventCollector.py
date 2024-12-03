@@ -190,7 +190,7 @@ def main():  # pragma: no cover
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate,
                                timeout, retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
 
-        client: "GuardDutyClient" = aws_client.aws_session(service=CLIENT_SERVICE, region=aws_default_region)
+        client: GuardDutyClient = aws_client.aws_session(service=CLIENT_SERVICE, region=aws_default_region)
 
         command = demisto.command()
         if command == 'test-module':

@@ -570,7 +570,7 @@ def fetch_incidents(client: "GuardDutyClient", aws_gd_severity: List[str], last_
     created_time_to_ids[latest_created_time] = last_incidents_ids
 
     # Represents the criteria to be used in the filter for querying findings.
-    criterion_conditions: Dict[str, "ConditionTypeDef"] = {}
+    criterion_conditions: Dict[str, ConditionTypeDef] = {}
     criterion_conditions['severity'] = {'Gte': gd_severity_mapping(aws_gd_severity)}
     if is_archive:
         demisto.debug('Fetching Amazon GuardDuty with Archive')
@@ -777,7 +777,7 @@ def main():  # pragma: no cover
                                timeout, retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
         args = demisto.args()
 
-        client: "GuardDutyClient" = aws_client.aws_session(service=SERVICE, region=args.get('region'),
+        client: GuardDutyClient = aws_client.aws_session(service=SERVICE, region=args.get('region'),
                                                            role_arn=args.get('roleArn'),
                                                            role_session_name=args.get('roleSessionName'),
                                                            role_session_duration=args.get('roleSessionDuration'))
