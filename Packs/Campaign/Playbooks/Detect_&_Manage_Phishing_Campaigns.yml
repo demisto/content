@@ -1471,7 +1471,7 @@ view: |-
 inputs:
 - key: AutomaticallyLinkIncidents
   value:
-    simple: "True"
+    simple: "false"
   required: false
   description: Whether to automatically link the incidents that make up the campaign, to the phishing campaign incident. Can be True (default) or False. It is recommended not to change the default.
   playbookInputQuery:
