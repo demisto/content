@@ -1,11 +1,8 @@
 The Nozomi Networks Guardian platform is a hardware or virtual appliance that is used to monitor OT/IoT/IT networks. It combines asset discovery, network visualization, vulnerability assessment, risk monitoring and threat detection in a single solution.
   This integration is used to gather alert and asset information from Nozomi.
 
-## Configure Nozomi Networks on Cortex XSOAR
+## Configure Nozomi Networks in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Nozomi Networks.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -19,9 +16,8 @@ The Nozomi Networks Guardian platform is a hardware or virtual appliance that is
 | riskFrom | Get incidents from risk level | False |
 | fecthAlsoIncidents | Fetch also nozomi incidents | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### nozomi-find-assets
 ***
