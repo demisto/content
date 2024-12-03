@@ -132,7 +132,7 @@ def main():
     hr_output += f'### Hyperlinks\n{parser.hyperlinks}'
 
     # Returning all parsed data:
-    return_results(hr_output)
+    return_results(CommandResults(readable_output=hr_output))
 
     # Returning error:
     if parser.res:  # If there was an error:
