@@ -212,7 +212,7 @@
 					},
 					{
 						"displayType": "ROW",
-						"h": 2,
+						"h": 3,
 						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
 						"isVisible": true,
 						"items": [
@@ -362,7 +362,7 @@
 						"static": false,
 						"w": 1,
 						"x": 1,
-						"y": 6
+						"y": 7
 					},
 					{
 						"displayType": "CARD",
@@ -455,11 +455,11 @@
 						"static": false,
 						"w": 1,
 						"x": 1,
-						"y": 4
+						"y": 5
 					},
 					{
 						"displayType": "CARD",
-						"h": 2,
+						"h": 3,
 						"hideName": false,
 						"i": "caseinfoid-233ac8f0-acc3-11ef-9202-89fa98701c99",
 						"items": [
@@ -494,11 +494,11 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "File field",
+						"name": "file",
 						"static": false,
 						"w": 1,
-						"x": 1,
-						"y": 11
+						"x": 2,
+						"y": 10
 					},
 					{
 						"displayType": "CARD",
@@ -574,29 +574,84 @@
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "gatewatcherhttpresponsestatus",
+								"fieldId": "gatewatcherhttpaccept",
 								"height": 53,
-								"id": "622de7a0-ad71-11ef-a64e-e91401017d2c",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "gatewatcherhttphttprefer",
-								"height": 53,
-								"id": "466fb390-ad71-11ef-a64e-e91401017d2c",
-								"index": 2,
+								"id": "6efcf6f0-ae30-11ef-9710-ffe19afa0fac",
+								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "gatrewatcherhttphostname",
+								"fieldId": "gatewatcherhttpdate",
 								"height": 53,
-								"id": "48be5e80-ad71-11ef-a64e-e91401017d2c",
+								"id": "71ecc3e0-ae30-11ef-9710-ffe19afa0fac",
+								"index": 1,
+								"listId": "caseinfoid-2fdf5590-ad71-11ef-a64e-e91401017d2c",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gatewatcherhttphostname",
+								"height": 53,
+								"id": "755e1ce0-ae30-11ef-9710-ffe19afa0fac",
+								"index": 2,
+								"listId": "caseinfoid-2fdf5590-ad71-11ef-a64e-e91401017d2c",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gatewatcherhttphttprefer",
+								"height": 53,
+								"id": "466fb390-ad71-11ef-a64e-e91401017d2c",
 								"index": 3,
+								"listId": "caseinfoid-2fdf5590-ad71-11ef-a64e-e91401017d2c",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherhttphttp2",
+								"height": 53,
+								"id": "a91158f0-ae39-11ef-9710-ffe19afa0fac",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gatewatcherhttplastmodified",
+								"height": 53,
+								"id": "7a923480-ae30-11ef-9710-ffe19afa0fac",
+								"index": 5,
+								"listId": "caseinfoid-2fdf5590-ad71-11ef-a64e-e91401017d2c",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gatewatcherhttprequestmethod",
+								"height": 53,
+								"id": "83621080-ae30-11ef-9710-ffe19afa0fac",
+								"index": 6,
+								"listId": "caseinfoid-2fdf5590-ad71-11ef-a64e-e91401017d2c",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gatewatcherhttprequestmimetype",
+								"height": 53,
+								"id": "84c98fc0-ae30-11ef-9710-ffe19afa0fac",
+								"index": 7,
 								"listId": "caseinfoid-2fdf5590-ad71-11ef-a64e-e91401017d2c",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -606,7 +661,18 @@
 								"fieldId": "gatewatcherhttpresponsemimetype",
 								"height": 53,
 								"id": "7d51fe90-ad71-11ef-a64e-e91401017d2c",
-								"index": 4,
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gatewatcherhttpresponsestatus",
+								"height": 53,
+								"id": "622de7a0-ad71-11ef-a64e-e91401017d2c",
+								"index": 9,
+								"listId": "caseinfoid-2fdf5590-ad71-11ef-a64e-e91401017d2c",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -615,7 +681,7 @@
 								"fieldId": "gatewatcherhttpversion",
 								"height": 53,
 								"id": "7e904af0-ad71-11ef-a64e-e91401017d2c",
-								"index": 5,
+								"index": 10,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -623,15 +689,15 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "HTTP field",
+						"name": "http",
 						"static": false,
 						"w": 1,
 						"x": 0,
-						"y": 14
+						"y": 16
 					},
 					{
 						"displayType": "CARD",
-						"h": 3,
+						"h": 2,
 						"hideName": false,
 						"i": "caseinfoid-adedd390-ad9d-11ef-9be1-5d2604062cce",
 						"items": [
@@ -694,7 +760,7 @@
 					},
 					{
 						"displayType": "CARD",
-						"h": 2,
+						"h": 3,
 						"hideName": false,
 						"i": "caseinfoid-e28432c0-ad9d-11ef-9be1-5d2604062cce",
 						"items": [
@@ -732,12 +798,12 @@
 						"name": "Ransomware detect engine",
 						"static": false,
 						"w": 1,
-						"x": 1,
-						"y": 9
+						"x": 0,
+						"y": 10
 					},
 					{
 						"displayType": "CARD",
-						"h": 2,
+						"h": 3,
 						"hideName": false,
 						"i": "caseinfoid-6f0f1740-ad9f-11ef-9be1-5d2604062cce",
 						"items": [
@@ -814,20 +880,56 @@
 						"static": false,
 						"w": 1,
 						"x": 2,
-						"y": 8
+						"y": 7
 					},
 					{
 						"displayType": "CARD",
-						"h": 2,
+						"h": 3,
 						"hideName": false,
 						"i": "caseinfoid-218e3610-ada2-11ef-9be1-5d2604062cce",
 						"items": [
 							{
 								"endCol": 2,
 								"fieldId": "gatewatcherdns",
-								"height": 22,
+								"height": 53,
 								"id": "328b4570-ada2-11ef-9be1-5d2604062cce",
 								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdnsanswers",
+								"height": 53,
+								"id": "0fe210f0-b192-11ef-b835-73f24f516e16",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdnsauthorities",
+								"height": 53,
+								"id": "11325eb0-b192-11ef-b835-73f24f516e16",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdnsresponsecode",
+								"height": 53,
+								"id": "12758d10-b192-11ef-b835-73f24f516e16",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdnstype",
+								"height": 53,
+								"id": "13ddcfa0-b192-11ef-b835-73f24f516e16",
+								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -835,24 +937,114 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "Dns field",
+						"name": "dns",
 						"static": false,
 						"w": 1,
-						"x": 0,
+						"x": 1,
 						"y": 10
 					},
 					{
 						"displayType": "CARD",
-						"h": 2,
+						"h": 3,
 						"hideName": false,
 						"i": "caseinfoid-d890c4b0-ada5-11ef-9be1-5d2604062cce",
 						"items": [
 							{
 								"endCol": 2,
 								"fieldId": "gatewatchersmb",
-								"height": 22,
+								"height": 53,
 								"id": "e91e9780-ada5-11ef-9be1-5d2604062cce",
 								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersmbcommand",
+								"height": 53,
+								"id": "2ab72b40-b197-11ef-b835-73f24f516e16",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersmbdialect",
+								"height": 53,
+								"id": "2c9476c0-b197-11ef-b835-73f24f516e16",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersmbfilename",
+								"height": 53,
+								"id": "2e2ace30-b197-11ef-b835-73f24f516e16",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersmbfuid",
+								"height": 53,
+								"id": "2fbfc610-b197-11ef-b835-73f24f516e16",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersmbid",
+								"height": 53,
+								"id": "318f7d00-b197-11ef-b835-73f24f516e16",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersmbsessionid",
+								"height": 53,
+								"id": "33323080-b197-11ef-b835-73f24f516e16",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersmbshare",
+								"height": 53,
+								"id": "35789e10-b197-11ef-b835-73f24f516e16",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersmbstatus",
+								"height": 53,
+								"id": "3803dcd0-b197-11ef-b835-73f24f516e16",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersmbstatuscode",
+								"height": 53,
+								"id": "3b53a410-b197-11ef-b835-73f24f516e16",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersmbtreeid",
+								"height": 53,
+								"id": "3d8d1950-b197-11ef-b835-73f24f516e16",
+								"index": 9,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -860,11 +1052,759 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "Smb field",
+						"name": "smb",
 						"static": false,
 						"w": 1,
 						"x": 0,
-						"y": 12
+						"y": 19
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-5ea1baf0-ae32-11ef-9710-ffe19afa0fac",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherhttp2httpmethod",
+								"height": 53,
+								"id": "90395910-ae32-11ef-9710-ffe19afa0fac",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherhttp2httpuseragent",
+								"height": 53,
+								"id": "2e041390-ae3a-11ef-9710-ffe19afa0fac",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherhttphttp2",
+								"height": 53,
+								"id": "245ebf20-ae3a-11ef-9710-ffe19afa0fac",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherhttp2length",
+								"height": 53,
+								"id": "34bde0d0-ae3a-11ef-9710-ffe19afa0fac",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherhttp2requestheaders",
+								"height": 53,
+								"id": "91a78f10-ae32-11ef-9710-ffe19afa0fac",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherhttp2responseheaders",
+								"height": 53,
+								"id": "92b63ff0-ae32-11ef-9710-ffe19afa0fac",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherhttp2status",
+								"height": 53,
+								"id": "96547550-ae32-11ef-9710-ffe19afa0fac",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherhttp2url",
+								"height": 53,
+								"id": "98b325d0-ae32-11ef-9710-ffe19afa0fac",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherhttp2version",
+								"height": 53,
+								"id": "3a889320-ae3a-11ef-9710-ffe19afa0fac",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "http2",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 13
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-ec012970-b194-11ef-b835-73f24f516e16",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchertlsclient",
+								"height": 53,
+								"id": "0cdc6ab0-b195-11ef-b835-73f24f516e16",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gatewatchertlsja3",
+								"height": 53,
+								"id": "0fe564f0-b195-11ef-b835-73f24f516e16",
+								"index": 1,
+								"listId": "caseinfoid-ec012970-b194-11ef-b835-73f24f516e16",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchertlsja3s",
+								"height": 53,
+								"id": "13348ff0-b195-11ef-b835-73f24f516e16",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchertlsserial",
+								"height": 53,
+								"id": "15604990-b195-11ef-b835-73f24f516e16",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gatewatchertlsserver",
+								"height": 53,
+								"id": "191625a0-b195-11ef-b835-73f24f516e16",
+								"index": 4,
+								"listId": "caseinfoid-ec012970-b194-11ef-b835-73f24f516e16",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchertlssni",
+								"height": 53,
+								"id": "1af4f7c0-b195-11ef-b835-73f24f516e16",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchertlsversion",
+								"height": 53,
+								"id": "37c38a60-b195-11ef-b835-73f24f516e16",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "tls",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 16
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-18fba350-b196-11ef-b835-73f24f516e16",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersmtphelo",
+								"height": 53,
+								"id": "88aa2f00-b196-11ef-b835-73f24f516e16",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersmtpmailfrom",
+								"height": 53,
+								"id": "89b4e840-b196-11ef-b835-73f24f516e16",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersmtprcptto",
+								"height": 53,
+								"id": "8a718180-b196-11ef-b835-73f24f516e16",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "smtp",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 16
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-ea5f0ad0-b197-11ef-b835-73f24f516e16",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchernfsfiletx",
+								"height": 53,
+								"id": "307e8cc0-b198-11ef-b835-73f24f516e16",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchernfsfilename",
+								"height": 53,
+								"id": "345d9bb0-b198-11ef-b835-73f24f516e16",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchernfshhash",
+								"height": 53,
+								"id": "359c0f20-b198-11ef-b835-73f24f516e16",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchernfsid",
+								"height": 53,
+								"id": "36f70b40-b198-11ef-b835-73f24f516e16",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchernfsprocedure",
+								"height": 53,
+								"id": "38d2a910-b198-11ef-b835-73f24f516e16",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchernfsstatus",
+								"height": 53,
+								"id": "3a510bb0-b198-11ef-b835-73f24f516e16",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchernfstype",
+								"height": 53,
+								"id": "3c4f4cb0-b198-11ef-b835-73f24f516e16",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchernfsversion",
+								"height": 53,
+								"id": "3f399b60-b198-11ef-b835-73f24f516e16",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "nfs",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 13
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-f9aa7290-b197-11ef-b835-73f24f516e16",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherftpcommand",
+								"height": 53,
+								"id": "e681b420-b198-11ef-b835-73f24f516e16",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherftpcompletioncode",
+								"height": 53,
+								"id": "e87b8850-b198-11ef-b835-73f24f516e16",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherftpdynamicport",
+								"height": 53,
+								"id": "e9a08050-b198-11ef-b835-73f24f516e16",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherftpreply",
+								"height": 53,
+								"id": "eb3921b0-b198-11ef-b835-73f24f516e16",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherftpreplyreceived",
+								"height": 53,
+								"id": "eca18b50-b198-11ef-b835-73f24f516e16",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherftpreplytruncated",
+								"height": 53,
+								"id": "edf5d0b0-b198-11ef-b835-73f24f516e16",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "ftp",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 13
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-1cfea310-b198-11ef-b835-73f24f516e16",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchertftpfile",
+								"height": 53,
+								"id": "8b6995c0-b199-11ef-b835-73f24f516e16",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchertftpmode",
+								"height": 53,
+								"id": "8cc443c0-b199-11ef-b835-73f24f516e16",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchertftppacket",
+								"height": 22,
+								"id": "8e2ed040-b199-11ef-b835-73f24f516e16",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "tftp",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 19
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-1f662d30-b198-11ef-b835-73f24f516e16",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersshclient",
+								"height": 53,
+								"id": "d9fb6a60-b199-11ef-b835-73f24f516e16",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersshserver",
+								"height": 22,
+								"id": "db5ecaf0-b199-11ef-b835-73f24f516e16",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "ssh",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 19
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-26407ac0-b198-11ef-b835-73f24f516e16",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherkrbcname",
+								"height": 53,
+								"id": "8dc877e0-b19a-11ef-b835-73f24f516e16",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherkrbencryption",
+								"height": 53,
+								"id": "8eebc230-b19a-11ef-b835-73f24f516e16",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherkrbmsgtype",
+								"height": 53,
+								"id": "9226f000-b19a-11ef-b835-73f24f516e16",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherkrbrealm",
+								"height": 53,
+								"id": "94f4b600-b19a-11ef-b835-73f24f516e16",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherkrbsname",
+								"height": 53,
+								"id": "960ba440-b19a-11ef-b835-73f24f516e16",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherkrbweakencryption",
+								"height": 53,
+								"id": "97ec7230-b19a-11ef-b835-73f24f516e16",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "krb",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 22
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-28077f20-b198-11ef-b835-73f24f516e16",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdhcpassignedip",
+								"height": 53,
+								"id": "ddfeb840-b19b-11ef-b835-73f24f516e16",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdhcpclientip",
+								"height": 53,
+								"id": "dfa03340-b19b-11ef-b835-73f24f516e16",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gatewatcherdhcpclientmac",
+								"height": 53,
+								"id": "e143f830-b19b-11ef-b835-73f24f516e16",
+								"index": 2,
+								"listId": "caseinfoid-28077f20-b198-11ef-b835-73f24f516e16",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdhcpdhcptype",
+								"height": 53,
+								"id": "e608d340-b19b-11ef-b835-73f24f516e16",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdhcpdnsservers",
+								"height": 53,
+								"id": "e8f6f280-b19b-11ef-b835-73f24f516e16",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdhcphostname",
+								"height": 53,
+								"id": "f0449b50-b19b-11ef-b835-73f24f516e16",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdhcpid",
+								"height": 53,
+								"id": "f29c9510-b19b-11ef-b835-73f24f516e16",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdhcpleasetime",
+								"height": 53,
+								"id": "f4861590-b19b-11ef-b835-73f24f516e16",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdhcpnextserverip",
+								"height": 53,
+								"id": "f6d47260-b19b-11ef-b835-73f24f516e16",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdhcprelayip",
+								"height": 53,
+								"id": "fc8708d0-b19b-11ef-b835-73f24f516e16",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdhcprouters",
+								"height": 53,
+								"id": "00480870-b19c-11ef-b835-73f24f516e16",
+								"index": 11,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdhcpsubnetmask",
+								"height": 53,
+								"id": "02b9f2d0-b19c-11ef-b835-73f24f516e16",
+								"index": 11,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdhcptype",
+								"height": 53,
+								"id": "07013970-b19c-11ef-b835-73f24f516e16",
+								"index": 12,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "dhcp",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 22
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-29564640-b198-11ef-b835-73f24f516e16",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "New Section",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 22
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-edcc6f66-b19b-11ef-b835-73f24f516e16",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherkrbcname",
+								"height": 53,
+								"id": "edcc6f60-b19b-11ef-b835-73f24f516e16",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherkrbencryption",
+								"height": 53,
+								"id": "edcc6f61-b19b-11ef-b835-73f24f516e16",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherkrbmsgtype",
+								"height": 53,
+								"id": "edcc6f62-b19b-11ef-b835-73f24f516e16",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherkrbrealm",
+								"height": 53,
+								"id": "edcc6f63-b19b-11ef-b835-73f24f516e16",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherkrbsname",
+								"height": 53,
+								"id": "edcc6f64-b19b-11ef-b835-73f24f516e16",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherkrbweakencryption",
+								"height": 53,
+								"id": "edcc6f65-b19b-11ef-b835-73f24f516e16",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "krb",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 25
 					}
 				],
 				"type": "custom"

@@ -12,7 +12,7 @@
 	"itemVersion": "",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 20,
+	"logicalVersion": 30,
 	"mapping": {
 		"Gatewatcher Incident": {
 			"dontMapEventToLabels": true,
@@ -80,11 +80,59 @@
 				"Gatewatcher dga.top_DGA": {
 					"simple": "dga.top_DGA"
 				},
+				"Gatewatcher dhcp.assigned_ip": {
+					"simple": "dhcp.assigned_ip"
+				},
+				"Gatewatcher dhcp.client_ip": {
+					"simple": "dhcp.client_ip"
+				},
+				"Gatewatcher dhcp.client_mac": {
+					"simple": "dhcp.client_mac"
+				},
+				"Gatewatcher dhcp.dhcp_type": {
+					"simple": "dhcp.dhcp_type"
+				},
+				"Gatewatcher dhcp.dns_servers": {
+					"simple": "dhcp.dns_servers"
+				},
+				"Gatewatcher dhcp.hostname": {
+					"simple": "dhcp.hostname"
+				},
+				"Gatewatcher dhcp.id": {
+					"simple": "dhcp.id"
+				},
+				"Gatewatcher dhcp.lease_time": {
+					"simple": "dhcp.lease_time"
+				},
+				"Gatewatcher dhcp.next_server_ip": {
+					"simple": "dhcp.next_server_ip"
+				},
+				"Gatewatcher dhcp.relay_ip": {
+					"simple": "dhcp.relay_ip"
+				},
+				"Gatewatcher dhcp.routers": {
+					"simple": "dhcp.routers"
+				},
+				"Gatewatcher dhcp.subnet_mask": {
+					"simple": "dhcp.subnet_mask"
+				},
+				"Gatewatcher dhcp.type": {
+					"simple": "dhcp.type"
+				},
 				"Gatewatcher dns": {
 					"simple": "dns"
 				},
+				"Gatewatcher dns.answers": {
+					"simple": "dns.answers"
+				},
+				"Gatewatcher dns.authorities": {
+					"simple": "dns.authorities"
+				},
 				"Gatewatcher dns.response_code": {
 					"simple": "dns.response_code"
+				},
+				"Gatewatcher dns.type": {
+					"simple": "dns.type"
 				},
 				"Gatewatcher ecs.version": {
 					"simple": "ecs.version"
@@ -100,6 +148,24 @@
 				},
 				"Gatewatcher file.name": {
 					"simple": "file.name"
+				},
+				"Gatewatcher ftp.command": {
+					"simple": "ftp.command"
+				},
+				"Gatewatcher ftp.completion_code": {
+					"simple": "ftp.completion_code"
+				},
+				"Gatewatcher ftp.dynamic_port": {
+					"simple": "ftp.dynamic_port"
+				},
+				"Gatewatcher ftp.reply": {
+					"simple": "ftp.reply"
+				},
+				"Gatewatcher ftp.reply_received": {
+					"simple": "ftp.reply_received"
+				},
+				"Gatewatcher ftp.reply_truncated": {
+					"simple": "ftp.reply_truncated"
 				},
 				"Gatewatcher http.accept": {
 					"simple": "http.accept"
@@ -161,6 +227,24 @@
 				"Gatewatcher http2.version": {
 					"simple": "http2.version"
 				},
+				"Gatewatcher krb.cname": {
+					"simple": "krb.cname"
+				},
+				"Gatewatcher krb.encryption": {
+					"simple": "krb.encryption"
+				},
+				"Gatewatcher krb.msg_type": {
+					"simple": "krb.msg_type"
+				},
+				"Gatewatcher krb.realm": {
+					"simple": "krb.realm"
+				},
+				"Gatewatcher krb.sname": {
+					"simple": "krb.sname"
+				},
+				"Gatewatcher krb.weak_encryption": {
+					"simple": "krb.weak_encryption"
+				},
 				"Gatewatcher malcore.detail_threat_found": {
 					"simple": "malcore.detail_threat_found"
 				},
@@ -187,6 +271,30 @@
 				},
 				"Gatewatcher network.transport": {
 					"simple": "network.transport"
+				},
+				"Gatewatcher nfs.file_tx": {
+					"simple": "nfs.file_tx"
+				},
+				"Gatewatcher nfs.filename": {
+					"simple": "nfs.filename"
+				},
+				"Gatewatcher nfs.hhash": {
+					"simple": "nfs.hhash"
+				},
+				"Gatewatcher nfs.id": {
+					"simple": "nfs.id"
+				},
+				"Gatewatcher nfs.procedure": {
+					"simple": "nfs.procedure"
+				},
+				"Gatewatcher nfs.status": {
+					"simple": "nfs.status"
+				},
+				"Gatewatcher nfs.type": {
+					"simple": "nfs.type"
+				},
+				"Gatewatcher nfs.version": {
+					"simple": "nfs.version"
 				},
 				"Gatewatcher ransomware.alert_threshold": {
 					"simple": "ransomware.alert_threshold"
@@ -217,6 +325,81 @@
 				},
 				"Gatewatcher smb": {
 					"simple": "smb"
+				},
+				"Gatewatcher smb.command": {
+					"simple": "smb.command"
+				},
+				"Gatewatcher smb.dialect": {
+					"simple": "smb.dialect"
+				},
+				"Gatewatcher smb.filename": {
+					"simple": "smb.filename"
+				},
+				"Gatewatcher smb.fuid": {
+					"simple": "smb.fuid"
+				},
+				"Gatewatcher smb.id": {
+					"simple": "smb.id"
+				},
+				"Gatewatcher smb.session_id": {
+					"simple": "smb.session_id"
+				},
+				"Gatewatcher smb.share": {
+					"simple": "smb.share"
+				},
+				"Gatewatcher smb.status": {
+					"simple": "smb.status"
+				},
+				"Gatewatcher smb.status_code": {
+					"simple": "smb.status_code"
+				},
+				"Gatewatcher smb.tree_id": {
+					"simple": "smb.tree_id"
+				},
+				"Gatewatcher smtp.helo": {
+					"simple": "smtp.helo"
+				},
+				"Gatewatcher smtp.mail_from": {
+					"simple": "smtp.mail_from"
+				},
+				"Gatewatcher smtp.rcpt_to": {
+					"simple": "smtp.rcpt_to"
+				},
+				"Gatewatcher ssh.client": {
+					"simple": "ssh.client"
+				},
+				"Gatewatcher ssh.server": {
+					"simple": "ssh.server"
+				},
+				"Gatewatcher tftp.file": {
+					"simple": "tftp.file"
+				},
+				"Gatewatcher tftp.mode": {
+					"simple": "tftp.mode"
+				},
+				"Gatewatcher tftp.packet": {
+					"simple": "tftp.packet"
+				},
+				"Gatewatcher tls.client": {
+					"simple": "tls.client"
+				},
+				"Gatewatcher tls.ja3": {
+					"simple": "tls.ja3"
+				},
+				"Gatewatcher tls.ja3s": {
+					"simple": "tls.ja3s"
+				},
+				"Gatewatcher tls.serial": {
+					"simple": "tls.serial"
+				},
+				"Gatewatcher tls.server": {
+					"simple": "tls.server"
+				},
+				"Gatewatcher tls.sni": {
+					"simple": "tls.sni"
+				},
+				"Gatewatcher tls.version": {
+					"simple": "tls.version"
 				}
 			}
 		},
