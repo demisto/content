@@ -719,7 +719,7 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
     severity = data.get('severity', '')
     status = data.get('status', 'Active')
     if status == 'Closed' and delta.get('closingUserId') == '':
-        # closingUserId='' it's mean the XSOAR incident was reopen 
+        # closingUserId='' it's mean the XSOAR incident was reopen
         # need to update the remote incident status to Active
         demisto.debug(f'Reopen remote incident {incident_id}, set status to Active')
         status = 'Active'
