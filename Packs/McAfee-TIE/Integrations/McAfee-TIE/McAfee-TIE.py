@@ -7,6 +7,7 @@ from dxltieclient import TieClient
 from dxltieclient.constants import HashType
 from datetime import datetime
 
+
 VENDOR_NAME = 'McAfee Threat Intelligence Exchange'
 
 HASH_TYPE_KEYS = {
