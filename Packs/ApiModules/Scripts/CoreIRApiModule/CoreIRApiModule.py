@@ -1757,6 +1757,7 @@ def run_polling_command(client: CoreClient,
         outputs_result_func[0].get(polling_field)
     cond = result not in polling_value if stop_polling else result in polling_value
     if values_raise_error and result in values_raise_error:
+        return_results(command_results)
         raise DemistoException(f"The command {cmd} failed. Received status {result}")
     if cond:
         # schedule next poll
@@ -1971,16 +1972,24 @@ def action_status_get_command(client: CoreClient, args) -> CommandResults:
             }
             if error_reason := error_reasons.get(endpoint_id):
                 action_result['ErrorReasons'] = error_reason
+                action_result['error_description'] = (error_reason.get('errorDescription') or
+                                                      get_missing_files_description(error_reason.get('missing_files')) or
+                                                      'An error occurred while processing the request.')
             result.append(action_result)
 
     return CommandResults(
         readable_output=tableToMarkdown(name='Get Action Status', t=result, removeNull=True,
-                                        headers=['action_id','endpoint_id', 'status']),
+                                        headers=['action_id', 'endpoint_id', 'status', 'error_description']),
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.'
                        f'GetActionStatus(val.action_id == obj.action_id)',
         outputs=result,
         raw_response=result
     )
+
+
+def get_missing_files_description(missing_files):
+    if isinstance(missing_files, list) and len(missing_files) > 0 and isinstance(missing_files[0], dict):
+        return missing_files[0].get('description')
 
 
 def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
