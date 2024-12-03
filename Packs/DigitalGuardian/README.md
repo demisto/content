@@ -4,16 +4,12 @@ This pack integrates with Digital Guardian's Data Loss Prevention (DLP) platform
 
 ## What does this pack do?
 
-* Automates alert fetching from user-configured export profiles.
+* Automates event fetching from user-configured export profiles.
 
-* Allows for the execution of response actions to mitigate risks without manual intervention.
-
-Customers can decide which events and alerts are integrated by selecting a Digital Guardian export profile when configuring the event collector, ensuring visibility is bespoke to your individual SOC’s needs.
+* Allows for the execution of response actions to mitigate data loss risks without manual intervention.
 
 <~XSIAM>
-Records fetched by the event collector the event collector will appear in the XSIAM ‘Alerts’ page.
-</~XSIAM>
+Customers can decide which events and alerts are integrated into Cortex XSIAM by selecting a Digital Guardian export profile when configuring the Digital Guardian ARC Event Collector, ensuring visibility is bespoke to your individual SOC’s needs.
 
-<~XSOAR>
-Records fetched by the event collector the event collector will appear in the XSOAR ‘Incidents’ page.
-</~XSOAR>
+Events and logs fetched by the event collector can accessed and queried by navigating to **Incident response > Investigation > Query Builder**.
+</~XSIAM>

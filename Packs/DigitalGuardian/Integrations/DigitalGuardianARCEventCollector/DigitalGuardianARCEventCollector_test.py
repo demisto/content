@@ -68,7 +68,7 @@ def test_create_events_for_push(index: int):
     limit = 2
     raw_response = util_load_json('test_data/mock_response.json')
 
-    outputted_events = list(create_events_for_push(raw_response, limit))
+    outputted_events = create_events_for_push(raw_response, limit)
     expected_event_time = arg_to_datetime(outputted_events[index]['dg_time']).strftime(DATE_FORMAT)
 
     assert outputted_events[index]['_time'] == expected_event_time
@@ -90,8 +90,7 @@ def test_get_fetch_events(mocker: MockerFixture, authenticated_client: Client):
     mocker.patch.object(authenticated_client, 'export_events', return_value=raw_response)
     expected_events = util_load_json('test_data/expected_events.json')
 
-    events, last_run = fetch_events(authenticated_client)
-    outputted_events = list(events)
+    outputted_events, last_run = fetch_events(authenticated_client)
 
     assert outputted_events == expected_events
     assert last_run['bookmark_values'] == raw_response['bookmark_values']
