@@ -784,7 +784,9 @@ tasks:
       name:
         simple: ${alert.name}
       query:
-        simple: name:"Uncommon creation or access operation of sensitive shadow copy by a high-risk process" and resolution_status:*False*Positive*
+        simple: name:"Uncommon creation or access operation of sensitive shadow copy
+          by a high-risk process" and resolution_status:*False*Positive* and cgo_name:${alert.cgoname.[0]}
+          and initiatedby:${alert.initiatedby.[0]}
     separatecontext: false
     continueonerrortype: ""
     view: |-
