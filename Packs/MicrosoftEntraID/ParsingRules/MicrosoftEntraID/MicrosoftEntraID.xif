@@ -1,9 +1,9 @@
 [INGEST:vendor="msft", product="azure", target_dataset="msft_azure_raw", no_hit=drop]
 filter category not in("AZFW*")
 | alter tmp_time = if(
-    category in ("AuditLogs", "ProvisioningLogs", "UserRiskEvents", "ServicePrincipalRiskEvents"), properties -> activityDateTime,
-    category in ("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrincipalSignInLogs", "ManagedIdentitySignInLogs"), properties -> createdDateTime,
-    category in ("RiskyUsers", "RiskyServicePrincipals"), properties -> riskLastUpdatedDateTime,
+    category in ("AuditLogs", "ProvisioningLogs", "ServicePrincipalRiskEvents", "UserRiskEvents"), properties -> activityDateTime,
+    category in ("ADFSSignInLogs", "ManagedIdentitySignInLogs", "NonInteractiveUserSignInLogs", "ServicePrincipalSignInLogs", "SignInLogs"), properties -> createdDateTime,
+    category in ("RiskyServicePrincipals", "RiskyUsers"), properties -> riskLastUpdatedDateTime,
     to_string(time))
 | alter tmp_time = replace(tmp_time, "Z", "+00:00") // normalize zulu time suffix notation to a numerical offset
 | alter _time = if(tmp_time ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?[+-]\d{2}:\d{2}", parse_timestamp("%FT%H:%M:%E*S%Ez", tmp_time), _insert_time) // assert an RFC3339 compatible timestamp (e.g. "2024-09-24T19:41:59.698+03:00") or fallback to ingestion time
