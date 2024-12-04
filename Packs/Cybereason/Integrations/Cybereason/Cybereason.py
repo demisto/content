@@ -556,11 +556,12 @@ def query_malops_command(client: Client, args: dict):
 
 def get_detection_details(client: Client, non_edr_guid):
     try:
-        json_body = {"malopGuid":non_edr_guid}
+        json_body = {"malopGuid": non_edr_guid}
         detection_details_response = client.cybereason_api_call('POST', '/rest/detection/details', json_body=json_body)
         demisto.info(f"detection details api response: {detection_details_response}")
     except Exception as error:
         demisto.info(f"Exception while getting detection/details: {error}")
+
 
 def poll_malops(client: Client, start_time):
     end_time = round(datetime.now().timestamp()) * 1000
@@ -1624,18 +1625,18 @@ def fetch_incidents(client: Client):
     demisto.info(f"edr guid list: {edr_guid_list}")
     demisto.info(f"non_edr_guid_list: {non_edr_guid_list}")
     # call mmmng/v2 function
-    #iterate the malop list and segregate edr and non edr
-    # if edr: 
+    # iterate the malop list and segregate edr and non edr
+    # if edr:
     if edr_guid_list:
         malop_process_type, malop_loggon_session_type = query_malops(client, total_result_limit=10000, per_group_limit=10000,
-                                                                 filters=filters,guid_list=edr_guid_list)
+                                                                     filters=filters, guid_list=edr_guid_list)
     if non_edr_guid_list:
-        demisto.info(f"inside if non_edr_guid_list")
-        for non_edr_malop in non_edr_guid_list:
+        demisto.info("inside if non_edr_guid_list")
+        for _non_edr_malop in non_edr_guid_list:
             demisto.info(f"processing non edr malop id: {non_edr_guid_list}")
             detection_detail_response = get_detection_details(client, non_edr_guid_list)
             demisto.info(f"detection_detail_response: {detection_detail_response}")
-   
+
     incidents = []
 
     for response in (malop_process_type, malop_loggon_session_type):
@@ -1699,10 +1700,11 @@ def login(client: Client):
         'username': USERNAME,
         'password': PASSWORD
     }
-    response = client.cybereason_api_call('POST', '/login.html', data=data, headers=headers, custom_response=True, return_json=False)
+    client.cybereason_api_call('POST', '/login.html', data=data, headers=headers, custom_response=True, return_json=False)
     JSESSIONID = client._session.cookies.get("JSESSIONID")
     creation_time = int(time.time())
     return JSESSIONID, creation_time
+
 
 def validate_jsession(client: Client):
     creation_time = int(time.time())
@@ -1710,19 +1712,18 @@ def validate_jsession(client: Client):
     token = integration_context.get('jsession_id')
     valid_until = integration_context.get('valid_until')
     demisto.debug(f"token: {token} and valid until: {valid_until}")
-    if token and valid_until:
-        if creation_time < valid_until:
-            demisto.debug(f"Token is still valid - did not expire. token: {token}")
-            HEADERS["Cookie"] =  f"JSESSIONID={token}"
-            return
+    if token and valid_until and creation_time < valid_until:
+        demisto.debug(f"Token is still valid - did not expire. token: {token}")
+        HEADERS["Cookie"] = f"JSESSIONID={token}"
+        return
     token, creation_time = login(client)
     integration_context = {
         'jsession_id': token,
         'valid_until': creation_time + 28000
     }
     set_integration_context(integration_context)
-    HEADERS["Cookie"] =  f"JSESSIONID={token}"
- 
+    HEADERS["Cookie"] = f"JSESSIONID={token}"
+
 
 def client_certificate():
     cert = CERTIFICATE
@@ -2107,35 +2108,37 @@ def get_machine_details_command(client: Client, args: dict):
             outputs_key_field='MachineID',
             outputs=outputs)
 
+
 def get_malop_management_data(client: Client, start_time, end_time, offset):
     demisto.info("initiating get_malop_management_data")
     query = {
-            "search": {},
-            "range": {
-                "from": start_time,
-                "to" : end_time
+        "search": {},
+        "range": {
+            "from": start_time,
+            "to": end_time
+        },
+        "pagination": {
+            "pageSize": 100,
+            "offset": offset
+        },
+        "filter": {
+            "malop":
+            {
+                "status": ["Active"],
             },
-            "pagination": {
-                "pageSize": 100,
-                "offset": offset
-            },
-             "filter": {
-                    "malop":
-                        {
-                            "status":["Active"],
-                        },
-                      },
-            "federation": {
-                "groups": []
-            },
-            "sort":[{
-                "field": "LastUpdateTime",
-                "order": "desc"
-            }]
-        }
+        },
+        "federation": {
+            "groups": []
+        },
+        "sort": [{
+            "field": "LastUpdateTime",
+            "order": "desc"
+        }]
+    }
     demisto.info(f"API query for malop management: {query}")
     response = client.cybereason_api_call('POST', '/rest/mmng/v2/malops', json_body=query)
     return response
+
 
 def query_malop_management_command(client: Client, args: dict):
     malop_guid = args.get('malopGuid')
