@@ -379,25 +379,6 @@ Get the conversation for a workspace thread
 #### Context Output
 
 There is no context output for this command.
-### anyllm-workspace-thread-new
-
-***
-Create a new conversation thread
-
-#### Base Command
-
-`anyllm-workspace-thread-new`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| workspace | Name of the workspace. | Required | 
-| thread | Name of the new conversation thread. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
 ### anyllm-workspace-thread-chat
 
 ***
@@ -415,6 +396,25 @@ Send a chat a message to a conversation thread
 | thread | Name of the conversation thread. | Required | 
 | message | Message to send. | Required | 
 | mode | Mode to chat, query or chat. Possible values are: query, chat. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### anyllm-workspace-thread-new
+
+***
+Create a new conversation thread
+
+#### Base Command
+
+`anyllm-workspace-thread-new`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| workspace | Name of the workspace. | Required | 
+| thread | Name of the new conversation thread. | Required | 
 
 #### Context Output
 

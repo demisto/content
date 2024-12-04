@@ -25,7 +25,7 @@ class Client(BaseClient):
                 url_suffix=f"/v1/document/{name}"
             )
         except Exception as e:
-            msg = f"AnythingLLM: document_get: exception getting document details - {str(e)}"
+            msg = f"AnythingLLM: document_get: exception getting document details - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -45,7 +45,7 @@ class Client(BaseClient):
                 json_data=data
             )
         except Exception as e:
-            msg = f"AnythingLLM: document_delete: exception deleting document - {str(e)}"
+            msg = f"AnythingLLM: document_delete: exception deleting document - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -62,7 +62,7 @@ class Client(BaseClient):
                 json_data=data
             )
         except Exception as e:
-            msg = f"AnythingLLM: document_createfolder: exception creating folder - {str(e)}"
+            msg = f"AnythingLLM: document_createfolder: exception creating folder - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -85,7 +85,7 @@ class Client(BaseClient):
                 json_data=data
             )
         except Exception as e:
-            msg = f"AnythingLLM: document_move: exception moving document - {str(e)}"
+            msg = f"AnythingLLM: document_move: exception moving document - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -116,7 +116,7 @@ class Client(BaseClient):
                 if exists:  # pylint: disable=E0601
                     raise Exception(f"document already exists [{title}]")
         except Exception as e:
-            msg = f"AnythingLLM: document_upload_text: exception uploading text - {str(e)}"
+            msg = f"AnythingLLM: document_upload_text: exception uploading text - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -147,7 +147,7 @@ class Client(BaseClient):
                 if exists:  # pylint: disable=E0601
                     raise Exception(f"document already exists [{title}]")
         except Exception as e:
-            msg = f"AnythingLLM: document_upload_link: exception uploading link [{link}] - {str(e)}"
+            msg = f"AnythingLLM: document_upload_link: exception uploading link [{link}] - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -175,7 +175,7 @@ class Client(BaseClient):
                 if exists:  # pylint: disable=E0601
                     raise Exception(f"document already exists [{file_name}]")
         except Exception as e:
-            msg = f"AnythingLLM: document_upload_file: exception uploading a file entry [{entry_id}] from the war room - {str(e)}"
+            msg = f"AnythingLLM: document_upload_file: exception uploading a file entry [{entry_id}] from the war room - {e}"
             demisto.debug(msg)
             raise Exception(msg)
         finally:
@@ -205,7 +205,7 @@ class Client(BaseClient):
                 if exists:  # pylint: disable=E0601
                     raise Exception("workspace already exists")
         except Exception as e:
-            msg = f"AnythingLLM: workspace_new: exception creating a new workspace [{workspace}] - {str(e)}"
+            msg = f"AnythingLLM: workspace_new: exception creating a new workspace [{workspace}] - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -226,7 +226,7 @@ class Client(BaseClient):
                 url_suffix=f"/v1/workspace/{slug}",
             )
         except Exception as e:
-            msg = f"AnythingLLM: thread_list: exception listing workspace threads - {str(e)}"
+            msg = f"AnythingLLM: thread_list: exception listing workspace threads - {e}"
             demisto.debug(msg)
             raise Exception(msg)
         return response['workspace'][0]['threads']
@@ -239,7 +239,7 @@ class Client(BaseClient):
                 url_suffix=f"/v1/workspace/{slug}",
             )
         except Exception as e:
-            msg = f"AnythingLLM: workspace_get: exception getting workspace details - {str(e)}"
+            msg = f"AnythingLLM: workspace_get: exception getting workspace details - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -254,7 +254,7 @@ class Client(BaseClient):
                 resp_type='bytes'
             )
         except Exception as e:
-            msg = f"AnythingLLM: workspace_delete: exception deleting workspace - {str(e)}"
+            msg = f"AnythingLLM: workspace_delete: exception deleting workspace - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -263,28 +263,22 @@ class Client(BaseClient):
     def workspace_thread_new(self, workspace: str, thread: str):
         try:
             wslug = workspace_slug(workspace, self.workspace_list())
-            try:
-                exists = False
-                thread_slug(workspace, self.thread_list(workspace))
-                exists = True
-            except Exception:
-                # enforce unique thread names and always append "_slug" to the name
-                # to create the slug
-                data = {
-                    'name': thread,
-                    'slug': thread + "_slug"
-                }
-                response = self._http_request(
-                    method="POST",
-                    url_suffix=f"/v1/workspace/{wslug}/thread/new",
-                    json_data=data
-                )
-                return response
-            finally:
-                if exists:  # pylint: disable=E0601
-                    raise Exception("workspace thread already exists")
+            tslug = f"{thread}_slug"
+            threads = self.thread_list(workspace)
+            if any(t['slug'] == tslug for t in threads):
+                raise Exception(f"Thread '{thread}' already exists in workspace '{workspace}'.")
+            data = {
+                'name': thread,
+                'slug': tslug
+            }
+            response = self._http_request(
+                method="POST",
+                url_suffix=f"/v1/workspace/{wslug}/thread/new",
+                json_data=data
+            )
+            return response
         except Exception as e:
-            msg = f"AnythingLLM: workspace_thread_new: exception creating a new workspace [{workspace}] - {str(e)}"
+            msg = f"AnythingLLM: workspace_thread_new: exception creating a new workspace [{workspace}] - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -299,7 +293,7 @@ class Client(BaseClient):
                 url_suffix=f"/v1/workspace/{slug}/thread/{thread + '_slug'}/chats"
             )
         except Exception as e:
-            msg = f"AnythingLLM: workspace_thread_chats: exception chatting - {str(e)}"
+            msg = f"AnythingLLM: workspace_thread_chats: exception chatting - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -315,7 +309,7 @@ class Client(BaseClient):
                 resp_type='bytes'
             )
         except Exception as e:
-            msg = f"AnythingLLM: workspace_thread_delete: exception deleting workspace - {str(e)}"
+            msg = f"AnythingLLM: workspace_thread_delete: exception deleting workspace - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -333,7 +327,7 @@ class Client(BaseClient):
                 json_data=settings
             )
         except Exception as e:
-            msg = f"AnythingLLM: workspace_settings: exception updating workspace settings - {str(e)}"
+            msg = f"AnythingLLM: workspace_settings: exception updating workspace settings - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -365,7 +359,7 @@ class Client(BaseClient):
                 json_data=data
             )
         except Exception as e:
-            msg = f"AnythingLLM: workspace_pin: exception pinning embedded document to workspace - {str(e)}"
+            msg = f"AnythingLLM: workspace_pin: exception pinning embedded document to workspace - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -384,7 +378,7 @@ class Client(BaseClient):
                 json_data=data
             )
         except Exception as e:
-            msg = f"AnythingLLM: _chat: exception chatting - {str(e)}"
+            msg = f"AnythingLLM: _chat: exception chatting - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -404,7 +398,7 @@ class Client(BaseClient):
                 json_data=data
             )
         except Exception as e:
-            msg = f"AnythingLLM: _tchat: exception chatting - {str(e)}"
+            msg = f"AnythingLLM: _tchat: exception chatting - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -417,7 +411,7 @@ class Client(BaseClient):
                 url_suffix=f"/v1/{items}",
             )
         except Exception as e:
-            msg = f"AnythingLLM: _list: exception listing {items} - {str(e)}"
+            msg = f"AnythingLLM: _list: exception listing {items} - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -452,7 +446,7 @@ class Client(BaseClient):
                 json_data=data
             )
         except Exception as e:
-            msg = f"AnythingLLM: _embedding: exception [{action}] a document embedding [{document}] in [{workspace}] - {str(e)}"
+            msg = f"AnythingLLM: _embedding: exception [{action}] a document embedding [{document}] in [{workspace}] - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -925,7 +919,7 @@ def main() -> None:  # pragma: no cover
         else:
             raise NotImplementedError(f'Command {command} is not implemented')
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError: {str(e)}')
+        return_error(f'Failed to execute {command} command.\nError: {e}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

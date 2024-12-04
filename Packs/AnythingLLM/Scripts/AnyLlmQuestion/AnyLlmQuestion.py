@@ -40,7 +40,7 @@ def main():
         execute_command("setIncident", {'customFields': {'llmconversation': convo, 'llmnewcontext': ""}})
     except Exception as ex:
         demisto.error(traceback.format_exc())
-        return_error(f'AnyLlmQuestion: error is - {str(ex)}')
+        return_error(f'AnyLlmQuestion: error is - {ex}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

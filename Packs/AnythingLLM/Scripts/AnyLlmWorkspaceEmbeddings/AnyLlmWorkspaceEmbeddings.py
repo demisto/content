@@ -24,7 +24,7 @@ def main():
         execute_command("setIncident", {'customFields': rows, 'version': -1})
     except Exception as ex:
         demisto.error(traceback.format_exc())
-        return_error(f'AnyLlmWorkspaceEmbeddings: error - {str(ex)}')
+        return_error(f'AnyLlmWorkspaceEmbeddings: error - {ex}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

@@ -14,7 +14,7 @@ def main():
         execute_command("setIncident", {'customFields': {'llmupload': json.dumps(args)}})
     except Exception as ex:
         demisto.error(traceback.format_exc())
-        return_error(f'AnyLlmUploadText: error - {str(ex)}')
+        return_error(f'AnyLlmUploadText: error - {ex}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

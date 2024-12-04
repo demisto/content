@@ -28,7 +28,7 @@ def main():
         raise Exception(f"Processed document {title} not found in File context key")
     except Exception as ex:
         demisto.error(traceback.format_exc())
-        return_error(f"AnyLlmUploadDocument: error is - {str(ex)}")
+        return_error(f"AnyLlmUploadDocument: error is - {ex}")
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

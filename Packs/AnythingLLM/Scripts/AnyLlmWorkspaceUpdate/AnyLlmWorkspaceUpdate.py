@@ -87,7 +87,7 @@ def main():
             UpdateConversation(workspace)
     except Exception as ex:
         demisto.error(traceback.format_exc())
-        return_error(f'AnyLlmWorkspaceUpdate: error is - {str(ex)}')
+        return_error(f'AnyLlmWorkspaceUpdate: error is - {ex}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
