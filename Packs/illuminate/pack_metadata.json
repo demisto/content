@@ -2,7 +2,7 @@
     "name": "Analyst1",
     "description": "This integration utilizes Analyst1's system to support multiple operations to assist the cyber analyst. These include intelligence collection from any source, deployment of configured indicator or signature sets for improved boundary/host defense, and enriching XSOAR indicators with data provided by the Analyst1 REST API, such as actor and malware information, activity and reported dates, evidence and hit counts, and more. For assistance with this app and any use cases please contact support@analyst1.com.",
     "support": "partner",
-    "currentVersion": "1.1.9",
+    "currentVersion": "1.1.10",
     "author": "Analyst1",
     "url": "",
     "email": "support@analyst1.com",

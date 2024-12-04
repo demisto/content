@@ -9,11 +9,11 @@ from CommonServerUserPython import *
 VENDOR = 'Jamf'
 PRODUCT = 'Protect'
 ALERT_PAGE_SIZE = 200
-COMPUTER_PAGE_SIZE = 200
+COMPUTER_PAGE_SIZE = 100
 AUDIT_PAGE_SIZE = 5000
 DEFAULT_MAX_FETCH_ALERT = 1000
 DEFAULT_MAX_FETCH_AUDIT = 20000
-DEFAULT_MAX_FETCH_COMPUTER = 1000
+DEFAULT_MAX_FETCH_COMPUTER = 500
 DEFAULT_LIMIT = 10
 MINUTES_BEFORE_TOKEN_EXPIRED = 2
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -490,8 +490,13 @@ def get_events_computer_type(
     command_args = {"created": created, 'use_date_filter': bool(last_run or not fetch_all_computers)}
     next_page = last_run.get("computer", {}).get("next_page", "")
 
-    debug_message = "Fetching all computers" if fetch_all_computers and not last_run else f"Fetching computers since {created}"
-    demisto.debug(debug_message)
+    if next_page:
+        demisto.debug(f"last_fetch {created}")
+        demisto.debug(f"fetching computers using {next_page=}")
+    elif fetch_all_computers and not last_run:
+        demisto.debug("Fetching all computers")
+    else:
+        demisto.debug(f"Fetching computers since {created}")
 
     client_event_type_func = client.get_computers
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
