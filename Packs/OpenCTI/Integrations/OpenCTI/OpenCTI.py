@@ -1184,7 +1184,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
         )
         outputs = {
             'OpenCTI.Indicators(val.lastRunID)': {'lastRunID': last_run},
-            'OpenCTI.Indicators.IndicatorList(val.ID === obj.ID)': indicators
+            'OpenCTI.Indicators.IndicatorList(val.id === obj.id)': indicators
         }
 
         return CommandResults(
