@@ -21,7 +21,7 @@ APP_NAME = 'ms-azure-sentinel'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DATE_FORMAT_WITH_MILLISECONDS = '%Y-%m-%dT%H:%M:%S.%fZ'
 
-API_VERSION = '2022-11-01'
+API_VERSION = '2024-03-01'
 
 NEXT_LINK_DESCRIPTION = 'NextLink for listing commands'
 
@@ -30,10 +30,11 @@ XSOAR_USER_AGENT = 'SentinelPartner-PaloAltoNetworks-CortexXsoar/1.0.0'
 AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access token.\n' \
                           'The response from the server did not contain the expected content.'
 
-INCIDENT_HEADERS = ['ID', 'IncidentNumber', 'Title', 'Description', 'Severity', 'Status', 'IncidentUrl', 'AssigneeName',
-                    'AssigneeEmail', 'AssigneeObjectID', 'AssigneeUPN', 'Label', 'FirstActivityTimeUTC', 'LastActivityTimeUTC',
-                    'LastModifiedTimeUTC', 'CreatedTimeUTC', 'AlertsCount', 'BookmarksCount', 'CommentsCount',
-                    'AlertProductNames', 'Tactics', 'FirstActivityTimeGenerated', 'LastActivityTimeGenerated']
+INCIDENT_HEADERS = ['ID', 'IncidentNumber', 'Title', 'Description', 'Severity', 'Status', 'IncidentUrl', 'ProviderIncidentUrl',
+                    'AssigneeName', 'AssigneeEmail', 'AssigneeObjectID', 'AssigneeUPN', 'Label', 'FirstActivityTimeUTC',
+                    'LastActivityTimeUTC', 'LastModifiedTimeUTC', 'CreatedTimeUTC', 'AlertsCount', 'BookmarksCount',
+                    'CommentsCount', 'AlertProductNames', 'Tactics', 'FirstActivityTimeGenerated',
+                    'LastActivityTimeGenerated']
 
 COMMENT_HEADERS = ['ID', 'IncidentID', 'Message', 'AuthorName', 'AuthorEmail', 'CreatedTimeUTC']
 
@@ -67,8 +68,10 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 INCOMING_MIRRORED_FIELDS = ['ID', 'Etag', 'Title', 'Description', 'Severity', 'Status', 'owner', 'tags', 'FirstActivityTimeUTC',
                                   'LastActivityTimeUTC', 'LastModifiedTimeUTC', 'CreatedTimeUTC', 'IncidentNumber', 'AlertsCount',
-                                  'AlertProductNames', 'Tactics', 'relatedAnalyticRuleIds', 'IncidentUrl', 'classification',
-                                  'classificationReason', 'classificationComment', 'alerts', 'entities', 'comments', 'relations']
+                                  'AlertProductNames', 'Tactics', 'relatedAnalyticRuleIds', 'IncidentUrl', 'ProviderIncidentUrl',
+                                  'classification', 'classificationReason', 'classificationComment', 'alerts', 'entities',
+                                  'comments', 'relations']
+
 OUTGOING_MIRRORED_FIELDS = {'etag', 'title', 'description', 'severity', 'status', 'tags', 'firstActivityTimeUtc',
                             'lastActivityTimeUtc', 'classification', 'classificationComment', 'classificationReason'}
 OUTGOING_MIRRORED_FIELDS = {filed: pascalToSpace(filed) for filed in OUTGOING_MIRRORED_FIELDS}
@@ -247,6 +250,7 @@ def incident_data_to_xsoar_format(inc_data, is_fetch_incidents=False):
         'BookmarksCount': properties.get('additionalData', {}).get('bookmarksCount'),
         'CommentsCount': properties.get('additionalData', {}).get('commentsCount'),
         'AlertProductNames': properties.get('additionalData', {}).get('alertProductNames'),
+        'ProviderIncidentUrl': properties.get('additionalData', {}).get('providerIncidentUrl'),
         'Tactics': properties.get('additionalData', {}).get('tactics'),
         'Techniques': properties.get('additionalData', {}).get('techniques'),
         'FirstActivityTimeGenerated': format_date(properties.get('firstActivityTimeGenerated')),

@@ -39,37 +39,33 @@ Follow the instructions in the [Fetched Incidents Data](#fetched-incidents-data)
 - Send notifications to external users.
 - Send an email asking for a response to be returned as part of a playbook. See [Receiving an email reply](https://xsoar.pan.dev/docs/reference/scripts/email-ask-user)
 
-## Configure EWS v2 on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for EWS v2.
-3. Click **Add instance** to create and configure a new integration instance.
-
-    | **Parameter**                                                                                                                                 | **Required** |
-    |-----------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-    | Email address                                                                                                                                 | True         |
-    | Password                                                                                                                                      | True         |
-    | Email address from which to fetch incidents                                                                                                   | True         |
-    | Name of the folder from which to fetch incidents (supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing)                            | True         |
-    | Public Folder                                                                                                                                 | False        |
-    | Has impersonation rights                                                                                                                      | False        |
-    | Use system proxy settings                                                                                                                     | False        |
-    | Fetch incidents                                                                                                                               | False        |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)                                                              | False        |
-    | Mark fetched emails as read                                                                                                                   | False        |
-    | Incident type                                                                                                                                 | False        |
-    | ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br/>‎                                           Manual Mode<br/>Exchange Server Hostname or IP address                 | False        |
-    | DOMAIN\USERNAME (e.g. DEMISTO.INT\admin)                                                                                                      | False        |
-    | Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013, 2016, and 2019)                                     | False        |
-    | Trust any certificate (not secure)                                                                                                            | False        |
-    | ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br/>‎                                         Advanced Mode<br/>Override Authentication Type (NTLM, Basic, or Digest). | False        |
-    | Timeout (in seconds) for HTTP requests to Exchange Server                                                                                     | False        |
-    | Max incidents per fetch                                                                                                                       | False        |
-    | Run as a separate process (protects against memory depletion)                                                                                 | False        |
-    | Skip unparsable emails during fetch incidents                                                                                                 | False        |
+## Configure EWS v2 in Cortex
 
 
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter**                                                                                                                                 | **Required** |
+|-----------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| Email address                                                                                                                                 | True         |
+| Password                                                                                                                                      | True         |
+| Email address from which to fetch incidents                                                                                                   | True         |
+| Name of the folder from which to fetch incidents (supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing)                            | True         |
+| Public Folder                                                                                                                                 | False        |
+| Has impersonation rights                                                                                                                      | False        |
+| Use system proxy settings                                                                                                                     | False        |
+| Fetch incidents                                                                                                                               | False        |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)                                                              | False        |
+| Mark fetched emails as read                                                                                                                   | False        |
+| Incident type                                                                                                                                 | False        |
+| ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br/>‎                                           Manual Mode<br/>Exchange Server Hostname or IP address                 | False        |
+| DOMAIN\USERNAME (e.g. DEMISTO.INT\admin)                                                                                                      | False        |
+| Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013, 2016, and 2019)                                     | False        |
+| Trust any certificate (not secure)                                                                                                            | False        |
+| ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br/>‎                                         Advanced Mode<br/>Override Authentication Type (NTLM, Basic, or Digest). | False        |
+| Timeout (in seconds) for HTTP requests to Exchange Server                                                                                     | False        |
+| Max incidents per fetch                                                                                                                       | False        |
+| Run as a separate process (protects against memory depletion)                                                                                 | False        |
+| Skip unparsable emails during fetch incidents                                                                                                 | False        |
+
+
 
 ## Fetched Incidents Data
 
@@ -95,7 +91,7 @@ Find more information on impersonation or delegation rights in the  [Additional 
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### ews-get-attachment
