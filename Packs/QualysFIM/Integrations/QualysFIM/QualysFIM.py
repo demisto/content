@@ -373,7 +373,7 @@ def list_incident_events_command(client: Client, args: dict):
                           readable_output=readable_output)
 
 
-def create_incident_command(client: Client, args: dict):
+def create_incident_command(client, args):
     """
     Create a new incident.
 
@@ -430,7 +430,7 @@ def create_incident_command(client: Client, args: dict):
                           readable_output=readable_output)
 
 
-def approve_incident_command(client: Client, args: dict):
+def approve_incident_command(client: Client, args: dict) -> CommandResults:
     """
     Approve incident based on ID.
 
