@@ -159,6 +159,12 @@ def get_indicators(
     client: OpenCTIApiClient,
     label: str = None,
     created_by: str = None,
+    created_after: str = None,
+    created_before: str = None,
+    valid_from_after: str = None,
+    valid_from_before: str = None,
+    valid_until_after: str = None,
+    valid_until_before: str = None,
     indicator_types: list[str] = None,
     limit: int | None = 50,
     last_run_id: str = None,
@@ -205,7 +211,42 @@ def get_indicators(
             'operator': 'eq',
             'mode': 'or'
         })
-
+    if created_after:
+        filters["filters"].append({
+            'key': 'created_at',
+            'values': [created_after],
+            'operator': 'gt'
+        })
+    if created_before:
+        filters["filters"].append({
+            'key': 'created_at',
+            'values': [created_before],
+            'operator': 'lt'
+        })
+    if valid_from_after:
+        filters["filters"].append({
+            'key': 'valid_from',
+            'values': [valid_from_after],
+            'operator': 'gt'
+        })
+    if valid_from_before:
+        filters["filters"].append({
+            'key': 'valid_from',
+            'values': [valid_from_before],
+            'operator': 'lt'
+        })
+    if valid_until_after:
+        filters["filters"].append({
+            'key': 'valid_until',
+            'values': [valid_until_after],
+            'operator': 'gt'
+        })
+    if valid_until_before:
+        filters["filters"].append({
+            'key': 'valid_until',
+            'values': [valid_until_before],
+            'operator': 'lt'
+        })
     try:
         indicator_list = client.indicator.list(
             after=last_run_id,
@@ -1088,13 +1129,25 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
     last_run_id = args.get('last_run_id')
     label = args.get('label_id')
     created_by = args.get('created_by')
+    created_after = args.get('created_after')
+    created_before = args.get('created_before')
+    valid_until_after = args.get('valid_until_after')
+    valid_until_before = args.get('valid_until_before')
+    valid_from_after = args.get('valid_from_after')
+    valid_from_before = args.get('valid_from_before')
     value = args.get('value', '')
-    indicator_types = args.get('indicator_types')
+    indicator_types = argToList(args.get('indicator_types'))
 
     raw_response = get_indicators(
         client=client,
         label=label,
         created_by=created_by,
+        created_after=created_after,
+        created_before=created_before,
+        valid_until_after=valid_until_after,
+        valid_until_before=valid_until_before,
+        valid_from_after=valid_from_after,
+        valid_from_before=valid_from_before,
         indicator_types=indicator_types,
         limit=limit,
         last_run_id=last_run_id,

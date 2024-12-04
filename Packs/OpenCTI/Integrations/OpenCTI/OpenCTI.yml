@@ -516,6 +516,18 @@ script:
       name: value
     - description: The ID of the entity that created the indicator (use opencti-organization-list to find or create).
       name: created_by
+    - description: "Created after date filter. Format: YYYY-MM-DDThh:mm:ss.sssZ"
+      name: created_after
+    - description: "Created before date filter. Format: YYYY-MM-DDThh:mm:ss.sssZ"
+      name: created_before
+    - description: "Valid until after date filter. Format: YYYY-MM-DDThh:mm:ss.sssZ"
+      name: valid_until_after
+    - description: "Valid until before date filter. Format: YYYY-MM-DDThh:mm:ss.sssZ"
+      name: valid_until_before
+    - description: "Valid from after date filter. Format: YYYY-MM-DDThh:mm:ss.sssZ"
+      name: valid_from_after
+    - description: "Valid from before date filter. Format: YYYY-MM-DDThh:mm:ss.sssZ"
+      name: valid_from_before
     - description: The types of the indicator. Use opencti-indicator-types-list to find all indicator types in OpenCTI.
       isArray: true
       name: indicator_types
