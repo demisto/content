@@ -555,6 +555,9 @@ script:
     - contextPath: OpenCTI.Indicators.IndicatorList.createdBy
       description: Name of the entity that created the indicator.
       type: string
+    - contextPath: OpenCTI.Indicators.IndicatorList.creators
+      description: Name of the indicator creators.
+      type: list
     - contextPath: OpenCTI.Indicators.IndicatorList.labels
       description: Labels associated with the indicator.
       type: list

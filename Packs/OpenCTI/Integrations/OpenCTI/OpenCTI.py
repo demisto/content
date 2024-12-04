@@ -1086,7 +1086,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
     """
     limit = arg_to_number(args.get('limit', '50'))
     last_run_id = args.get('last_run_id')
-    label = args.get('label')
+    label = args.get('label_id')
     created_by = args.get('created_by')
     value = args.get('value', '')
     indicator_types = args.get('indicator_types')
@@ -1113,6 +1113,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
                 "validUntil": indicator.get("valid_until"),
                 "score": indicator.get("x_opencti_score"),
                 "createdBy": indicator.get("createdBy")["name"] if indicator.get("createdBy") else "",
+                "creators": [label["name"] for label in indicator.get("creators", [])],
                 "labels": [label["value"] for label in indicator.get("objectLabel", [])],
                 "indicatorTypes": indicator.get("indicator_types"),
                 "created": indicator.get("created"),
@@ -1125,7 +1126,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
             "Indicators",
             indicators,
             headers=["id", "name", "description", "pattern", "validFrom", "validUntil",
-                     "score", "createdBy", "labels", "indicatorTypes", "created", "updatedAt"],
+                     "score", "createdBy", "creators", "labels", "indicatorTypes", "created", "updatedAt"],
             headerTransform=pascalToSpace
         )
         outputs = {
