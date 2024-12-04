@@ -2554,13 +2554,18 @@ def create_get_group_members_request(group_id=-1, limit=100):
     group_id = args.get('group_id', group_id)
     limit = args.get('limit', limit)
     all_results = argToBoolean(args.get("all_results", False))
+    API_MAX_VALUE=500
 
     meta = {}
     data = {}
 
-    if limit:
+    if limit and not all_results:
         meta['pagination'] = {
             'pageSize': int(limit)
+        }
+    else:
+        meta['pagination'] = {
+            'pageSize': API_MAX_VALUE
         }
 
     data['id'] = group_id
