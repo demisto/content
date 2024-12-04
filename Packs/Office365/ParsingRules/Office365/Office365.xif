@@ -28,18 +28,18 @@ call O365_timestamp_parsing_T_Z;
 call O365_timestamp_parsing_T_noZ;
 
 /*
-[INGEST:vendor="msft", product="O365 Sharepoint Online", target_dataset="msft_o365_sharepoint_online_raw", no_hit=keep]
-call O365_timestamp_parsing_UTC_string;
-call O365_timestamp_parsing_T_Z;
-call O365_timestamp_parsing_T_noZ;
+        [INGEST:vendor="msft", product="O365 Sharepoint Online", target_dataset="msft_o365_sharepoint_online_raw", no_hit=keep]
+        call O365_timestamp_parsing_UTC_string;
+        call O365_timestamp_parsing_T_Z;
+        call O365_timestamp_parsing_T_noZ;
 
-[INGEST:vendor="msft", product="O365 DLP", target_dataset="msft_o365_dlp_raw", no_hit=keep]
-call O365_timestamp_parsing_UTC_string;
-call O365_timestamp_parsing_T_Z;
-call O365_timestamp_parsing_T_noZ;
+        [INGEST:vendor="msft", product="O365 DLP", target_dataset="msft_o365_dlp_raw", no_hit=keep]
+        call O365_timestamp_parsing_UTC_string;
+        call O365_timestamp_parsing_T_Z;
+        call O365_timestamp_parsing_T_noZ;
 
-[INGEST:vendor="msft", product="o365_emails", target_dataset="msft_o365_emails_raw", no_hit=keep]
-filter to_string(createdDateTime) ~= ".*\d{2}:\d{2}:\d{2}.*"
-| alter
-    _time = createdDateTime;
+        [INGEST:vendor="msft", product="o365_emails", target_dataset="msft_o365_emails_raw", no_hit=keep]
+        filter to_string(createdDateTime) ~= ".*\d{2}:\d{2}:\d{2}.*"
+        | alter
+            _time = createdDateTime;
 */
