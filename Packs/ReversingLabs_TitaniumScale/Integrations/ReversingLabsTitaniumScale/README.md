@@ -19,32 +19,28 @@ You need to obtain the following:
 *   TitaniumScale API Token
 
 
-## Configure ReversingLabs TitaniumScale on Cortex XSOAR
+## Configure ReversingLabs TitaniumScale in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ReversingLabs TitaniumScale.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | ReversingLabs TitaniumScale instance URL | True |
-    | API Token | True |
-    | Verify host certificates | False |
-    | Reliability | False |
-    | Wait time between report fetching retries (seconds). Deafult is 2 seconds. | False |
-    | Number of report fetching retries. Default is 30. | False |
-    | HTTP proxy address with the protocol and port number | False |
-    | HTTP proxy username | False |
-    | HTTP proxy password | False |
-    | HTTPS proxy address with the protocol and port number | False |
-    | HTTPS proxy username | False |
-    | HTTPS proxy password | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| ReversingLabs TitaniumScale instance URL | True |
+| API Token | True |
+| Verify host certificates | False |
+| Reliability | False |
+| Wait time between report fetching retries (seconds). Deafult is 2 seconds. | False |
+| Number of report fetching retries. Default is 30. | False |
+| HTTP proxy address with the protocol and port number | False |
+| HTTP proxy username | False |
+| HTTP proxy password | False |
+| HTTPS proxy address with the protocol and port number | False |
+| HTTPS proxy username | False |
+| HTTPS proxy password | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### reversinglabs-titaniumscale-upload-sample-and-get-results

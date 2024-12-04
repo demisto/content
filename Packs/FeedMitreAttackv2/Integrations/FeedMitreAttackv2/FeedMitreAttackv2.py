@@ -643,7 +643,10 @@ def get_mitre_value_from_id(client, args):
                 attack_pattern_name = f'{parent_name}: {attack_pattern_name}'
 
             if attack_pattern_name:
-                attack_values.append({'id': attack_id, 'value': attack_pattern_name})
+                if not is_indicator_deprecated_or_revoked(attack_pattern[0]):
+                    attack_values.append({'id': attack_id, 'value': attack_pattern_name})
+                else:
+                    attack_values.append({'id': attack_id, 'value': ''})
 
     if attack_values:
         return CommandResults(
