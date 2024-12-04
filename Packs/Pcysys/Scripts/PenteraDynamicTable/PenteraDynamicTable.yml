@@ -9,7 +9,7 @@ tags:
 enabled: true
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.14.90585
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 comment: Renders a Markdown Table from penteraoperationdetails field in Pentera Insight incidents
 fromversion: 5.0.0
