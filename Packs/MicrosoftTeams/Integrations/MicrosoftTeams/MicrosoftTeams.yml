@@ -215,7 +215,15 @@ script:
   - description: Returns real-time and historical data on the integration status.
     name: microsoft-teams-integration-health
     arguments: []
-  - arguments: []
+  - arguments:
+    - description: The name of the resource to test it's token
+      auto: PREDEFINED
+      name: resource
+      required: false
+      predefined:
+      - Graph
+      - User Impersonation
+      defaultValue: Graph
     description: Tests the connectivity to MicrosoftTeams.
     name: microsoft-teams-auth-test
   - arguments:

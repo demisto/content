@@ -778,6 +778,74 @@ def get_graph_access_token() -> str:
         return access_token
     except ValueError:
         raise ValueError('Failed to get Graph access token')
+    
+def get_user_impersonation_access_token() -> str:
+    """
+    Retrieves Microsoft Graph API access token, either from cache or from Microsoft
+    :return: The Microsoft Graph API access token
+    """
+    integration_context: dict = get_integration_context()
+
+    refresh_token = integration_context.get('current_user_impersonation_refresh_token', '')
+    access_token: str = integration_context.get('user_impersonation_access_token', '')
+    valid_until: int = integration_context.get('user_impersonation_valid_until', int)
+    if access_token and valid_until and epoch_seconds() < valid_until:
+        demisto.debug('Using access token from integration context')
+        return access_token
+    tenant_id = integration_context.get('tenant_id')
+    if not tenant_id:
+        raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
+    headers = None
+    url: str = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'   
+    data: dict = {
+        'grant_type': CLIENT_CREDENTIALS,
+        'client_id': BOT_ID,
+        'scope': 'https://management.azure.com/user_impersonation',
+        'client_secret': BOT_PASSWORD
+    }
+    # old scope: 'https://graph.microsoft.com/.default'
+    # new scope: 'https://management.azure.com/user_impersonation'
+    if AUTH_TYPE == AUTHORIZATION_CODE_FLOW:
+        data['redirect_uri'] = REDIRECT_URI
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        if refresh_token := refresh_token or get_refresh_token_from_auth_code_param():
+            demisto.debug('Using refresh token from integration context')
+            data['grant_type'] = REFRESH_TOKEN
+            data['refresh_token'] = refresh_token
+        else:
+            if SESSION_STATE in AUTH_CODE:
+                raise ValueError('Malformed auth_code parameter: Please copy the auth code from the redirected uri '
+                                 'without any additional info and without the "session_state" query parameter.')
+            data['grant_type'] = AUTHORIZATION_CODE
+            data['code'] = AUTH_CODE
+
+    response: requests.Response = requests.post(
+        url,
+        data=data,
+        verify=USE_SSL,
+        proxies=PROXIES,
+        headers=headers
+    )
+    if not response.ok:
+        error = error_parser(response)
+        raise ValueError(f'Failed to get user impersonation access token [{response.status_code}] - {error}')
+    try:
+        response_json: dict = response.json()
+        access_token = response_json.get('access_token', '')
+        expires_in: int = response_json.get('expires_in', 3595)
+        refresh_token = response_json.get('refresh_token', '')
+
+        time_now: int = epoch_seconds()
+        time_buffer = 5  # seconds by which to shorten the validity period
+        if expires_in - time_buffer > 0:
+            expires_in -= time_buffer
+        integration_context['current_user_impersonation_refresh_token'] = refresh_token
+        integration_context['user_impersonation_access_token'] = access_token
+        integration_context['user_impersonation_valid_until'] = time_now + expires_in
+        set_integration_context(integration_context)
+        return access_token
+    except ValueError:
+        raise ValueError('Failed to get user impersonation access token')
 
 
 def http_request(
@@ -796,7 +864,12 @@ def http_request(
     Returns:
         Union[dict, list]: The response in list or dict format.
     """
-    access_token = get_graph_access_token() if api == 'graph' else get_bot_access_token()  # Bot Framework API
+    if api == 'graph':
+        access_token = get_graph_access_token()  
+    elif api == 'bot':
+        access_token = get_bot_access_token()  # Bot Framework API
+    else:
+        access_token = get_user_impersonation_access_token() # Azure Service Management user_impersonation 
 
     headers: dict = {
         'Authorization': f'Bearer {access_token}',
@@ -2891,30 +2964,38 @@ def bot_configuration_list_command():
     
     """
     args= demisto.args()
-    subscription_id = argToList(args.get('subscription_id', []))
+    subscription_ids = argToList(args.get('subscription_id', []))
     limit = int(args.get('limit', MAX_ITEMS_PER_RESPONSE))
     all_results = argToBoolean(args.get('all_results', False))
+    bots_configuration = []
     
     # TODO: take it out to a separate func
-    demisto.debug(f'Given subscription: {subscription_id}')
-    url = f"https://management.azure.com/subscriptions/{subscription_id}/providers/Microsoft.Search/searchServices?api-version=2023-11-01"
-
-    response: dict = cast(dict[Any, Any], http_request('GET', url))
-    print(f'response is: {response}')
-    print(f'response type is: {type(response)}')
-    
-    hr = ''
-    
+    for subscription_id in subscription_ids:
+        demisto.debug(f'Given subscription: {subscription_id}')
+        url = f"https://management.azure.com/subscriptions/{subscription_id}/providers/Microsoft.BotService/botServices?api-version=2021-03-01"
+        
+        response: dict = cast(dict[Any, Any], http_request('GET', url, api="user_impersonation"))
+        if bots_configuration_info := response.get('value'):
+            for bot in bots_configuration_info:
+                bot_config = {
+                    "ID": bot.get('id'),
+                    "Name": bot.get('name'),
+                    "Messaging Endpoint": bot.get('properties',[]).get('endpoint', ''),
+                    "App ID": bot.get('properties',[]).get('msaAppId', ''),
+                }
+                bots_configuration.append(bot_config)
+        
     result = CommandResults(
         readable_output=tableToMarkdown(
-            f"prefix",
-            hr,
-            removeNull=True
+            "Configuration info of the Bots configured in Microsoft Teams:\n",
+            bots_configuration,
+            removeNull=True, 
+            headers=["ID", "Name", "Messaging Endpoint", "App ID"]
         ),
         outputs_prefix='MicrosoftTeams.BotList',
         outputs_key_field='',
-        outputs={},
-        raw_response=response
+        outputs=bots_configuration,
+        raw_response=bots_configuration_info
     )
     return_results(result) 
     
@@ -2942,7 +3023,11 @@ def test_connection():
     """
     Test connectivity in the Authorization Code flow mode.
     """
-    get_graph_access_token()  # If fails, get_graph_access_token returns an error
+    resource = demisto.args().get('resource', 'Graph')
+    if resource == 'User Impersonation':
+        get_user_impersonation_access_token()
+    else:
+        get_graph_access_token()  # If fails, get_graph_access_token returns an error
     return_results(CommandResults(readable_output='✅ Success!'))
 
 
