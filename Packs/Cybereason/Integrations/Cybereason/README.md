@@ -37,8 +37,6 @@ This involves the mapping of response fields to XSOAR incidents, enhancing the a
 
 These custom fields provide flexibility and enhance the granularity of the incident information.
 
-### Fetch MalOps
-
 ### Usage
 
 1. **Configure Custom Fields:** Ensure that all custom fields are properly set up in XSOAR before running the fetch function.
