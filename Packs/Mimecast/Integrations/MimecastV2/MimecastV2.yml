@@ -1167,7 +1167,7 @@ script:
     - description: The group ID to return. Can be retrieved by running the mimecast-find-groups command.
       name: group_id
       required: true
-    - description: The maximum number of results to return.
+    - description: The maximum number of results to return. Default value is 100.
       name: limit
     - auto: PREDEFINED
       description: Whether to retrieve all results.
