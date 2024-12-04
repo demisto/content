@@ -73,7 +73,7 @@ script:
       description: The endpoint hostname that Cyber Triage investigated.
       type: string
     description: initiates a cyber triage collection on an endpoint.
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.115186
 tests:
 - No test - no instance
 fromversion: 5.0.0

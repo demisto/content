@@ -10,32 +10,28 @@ Also, the following contact details can be used:
 Each indicator is ranked from 0 to 100. Indicators are being collected from multiple sources and are cross-verified using multiple criteria. 
 Please check indicator tags and malware family fields. An indicator may describe a known malware or a scanning host. Therefore, different actions may be required based on the context.
 
-## Configure RST Cloud - Threat Feed API on Cortex XSOAR
+## Configure RST Cloud - Threat Feed API in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for RST Cloud - Threat Feed API.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. <https://api.rstcloud.net/v1>) |  | True |
-    | API Key |  | True |
-    | Score threshold for IP reputation command | Set this to determine the RST Threat Feed score that will determine if an IP is malicious \(0-100\) | True |
-    | Score threshold for domain reputation command | Set this to determine the RST Threat Feed score that will determine if a domain is malicious \(0-100\) | True |
-    | Score threshold for url reputation command | Set this to determine the RST Threat Feed score that will determine if a url is malicious \(0-100\) | True |
-    | Score threshold for file reputation command | Set this to determine the RST Threat Feed score that will determine if a file is malicious \(0-100\) | True |
-    | IP Indicator Expiration (days) | Mark IP indicators older than indicator_expiration_ip value in days as Suspicious ignoring the last available score | True |
-    | Domain Indicator Expiration (days) | Mark domain indicators older than indicator_expiration_domain value in days as Suspicious ignoring the last available score | True |
-    | URL Indicator Expiration (days) | Mark URL indicators older than indicator_expiration_url value in days as Suspicious ignoring the last available score | True |
-    | Hash Indicator Expiration (days) | Mark Hash indicators older than indicator_expiration_url value in days as Suspicious ignoring the last available score | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. <https://api.rstcloud.net/v1>) |  | True |
+| API Key |  | True |
+| Score threshold for IP reputation command | Set this to determine the RST Threat Feed score that will determine if an IP is malicious \(0-100\) | True |
+| Score threshold for domain reputation command | Set this to determine the RST Threat Feed score that will determine if a domain is malicious \(0-100\) | True |
+| Score threshold for url reputation command | Set this to determine the RST Threat Feed score that will determine if a url is malicious \(0-100\) | True |
+| Score threshold for file reputation command | Set this to determine the RST Threat Feed score that will determine if a file is malicious \(0-100\) | True |
+| IP Indicator Expiration (days) | Mark IP indicators older than indicator_expiration_ip value in days as Suspicious ignoring the last available score | True |
+| Domain Indicator Expiration (days) | Mark domain indicators older than indicator_expiration_domain value in days as Suspicious ignoring the last available score | True |
+| URL Indicator Expiration (days) | Mark URL indicators older than indicator_expiration_url value in days as Suspicious ignoring the last available score | True |
+| Hash Indicator Expiration (days) | Mark Hash indicators older than indicator_expiration_url value in days as Suspicious ignoring the last available score | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### ip
@@ -554,4 +550,3 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Indicator: thisisnotamaliciousdomain.com was submitted as False Positive to RST Cloud
-
