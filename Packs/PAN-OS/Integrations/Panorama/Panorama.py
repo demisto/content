@@ -7522,7 +7522,7 @@ def get_anti_spyware_best_practice_command():
     })
 
 
-def apply_dns_signature_policy_command(args):
+def apply_dns_signature_policy_command(args: dict) -> CommandResults:
     """
         Args:
             - the args passed by the user
