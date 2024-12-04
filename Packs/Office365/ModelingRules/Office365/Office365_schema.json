@@ -4,6 +4,10 @@
             "type": "string",
             "is_array": false
         },
+        "receivers": {
+            "type": "string",
+            "is_array": false
+        },
         "OrganizationId": {
             "type": "string",
             "is_array": false
@@ -97,10 +101,6 @@
             "is_array": false
         },
         "ReleaseTo": {
-            "type": "string",
-            "is_array": false
-        },
-        "recipients": {
             "type": "string",
             "is_array": false
         },
@@ -326,6 +326,10 @@
             "type": "string",
             "is_array": false
         },
+        "recipients": {
+            "type": "string",
+            "is_array": false
+        },
         "OrganizationId": {
             "type": "string",
             "is_array": false
@@ -431,10 +435,6 @@
             "is_array": false
         },
         "ClientProcessName": {
-            "type": "string",
-            "is_array": false
-        },
-        "receivers": {
             "type": "string",
             "is_array": false
         },
