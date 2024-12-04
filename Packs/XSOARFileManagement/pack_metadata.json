@@ -2,7 +2,7 @@
     "name": "XSOAR File Management",
     "description": "This pack let user manipulate file inside XSOAR more easily than with the builtin functions.",
     "support": "community",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.1.3",
     "author": "Pierre",
     "url": "",
     "email": "",
