@@ -17,12 +17,12 @@ filter to_string(CreationTime) ~= ":\d{2}(?:[\.\d]+)?$"
     _time = parse_timestamp("%Y-%m-%dT%H:%M:%E*S", to_string(CreationTime), "+00:00");
 
 
-[INGEST:vendor="msft", product="O365 General", target_dataset="msft_o365_general_raw", no_hit=keep]
+[INGEST:vendor="msft", product="o365_general", target_dataset="msft_o365_general_raw", no_hit=keep]
 call O365_timestamp_parsing_UTC_string;
 call O365_timestamp_parsing_T_Z;
 call O365_timestamp_parsing_T_noZ;
 
-[INGEST:vendor="msft", product="O365_Exchange_Online", target_dataset="msft_o365_exchange_online_raw", no_hit=keep]
+[INGEST:vendor="msft", product="o365_exchange_online", target_dataset="msft_o365_exchange_online_raw", no_hit=keep]
 call O365_timestamp_parsing_UTC_string;
 call O365_timestamp_parsing_T_Z;
 call O365_timestamp_parsing_T_noZ;
