@@ -150,7 +150,7 @@ def fix_traceback_line_numbers(trace_str):
                 block_start = module_info.get('start_wrapper', module_info['start'])
                 block_end = module_info.get('end_wrapper', module_info['end'])
                 if block_start > module_start_line and block_end < line_num \
-                        and not is_adjusted_block(block_start, block_end, adjusted_lines):
+                    and not is_adjusted_block(block_start, block_end, adjusted_lines):
                     actual_number -= block_end - block_start
                     adjusted_lines[block_start] = block_end
 
@@ -1457,7 +1457,7 @@ def safe_load_json(json_object):  # pragma: no cover
     if isinstance(json_object, dict) or isinstance(json_object, list):
         return json_object
     if (json_object.startswith('{') and json_object.endswith('}')) or (
-            json_object.startswith('[') and json_object.endswith(']')):
+        json_object.startswith('[') and json_object.endswith(']')):
         try:
             safe_json = json.loads(json_object)
         except ValueError as e:
@@ -1560,7 +1560,7 @@ def aws_table_to_markdown(response, table_header):
     if isinstance(response, dict):
         if len(response) == 1:
             if isinstance(response[list(response.keys())[0]], dict) or isinstance(
-                    response[list(response.keys())[0]], list):
+                response[list(response.keys())[0]], list):
                 if isinstance(response[list(response.keys())[0]], list):
                     list_response = response[list(response.keys())[0]]
                     if not list_response:
@@ -3342,7 +3342,7 @@ class Common(object):
                 ip_context['UpdatedDate'] = self.updated_date
 
             if self.registrar_abuse_name or self.registrar_abuse_address or self.registrar_abuse_country or \
-                    self.registrar_abuse_network or self.registrar_abuse_phone or self.registrar_abuse_email:
+                self.registrar_abuse_network or self.registrar_abuse_phone or self.registrar_abuse_email:
                 ip_context['Registrar'] = {'Abuse': {}}
                 if self.registrar_abuse_name:
                     ip_context['Registrar']['Abuse']['Name'] = self.registrar_abuse_name
@@ -6142,9 +6142,9 @@ class Common(object):
 
             elif (
                 self.extension_type in [
-                    Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
-                    Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS
-                ]
+                Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
+                Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS
+            ]
                 and self.signed_certificate_timestamps is not None
             ):
                 extension_context["Value"] = [sct.to_context() for sct in self.signed_certificate_timestamps]
@@ -6284,10 +6284,10 @@ class Common(object):
                 subject_alternative_name
                 and isinstance(subject_alternative_name, list)
                 and not all(
-                    isinstance(san, str)
-                    or isinstance(san, dict)
-                    or isinstance(san, Common.CertificateExtension.SubjectAlternativeName)
-                    for san in subject_alternative_name)
+                isinstance(san, str)
+                or isinstance(san, dict)
+                or isinstance(san, Common.CertificateExtension.SubjectAlternativeName)
+                for san in subject_alternative_name)
             ):
                 raise TypeError(
                     'subject_alternative_name must be list of str or Common.CertificateExtension.SubjectAlternativeName'
@@ -8674,7 +8674,7 @@ def censor_request_logs(request_log):
 
     # Rebuild the request log so that the only change is the masked information.
     censored_string = SEND_PREFIX + \
-        ' '.join(request_log_lst) if request_log.startswith(SEND_PREFIX) else ' '.join(request_log_lst)
+                      ' '.join(request_log_lst) if request_log.startswith(SEND_PREFIX) else ' '.join(request_log_lst)
     censored_string = censored_string.replace(" \\r\\n", "\\r\\n")
     return censored_string
 
@@ -8984,6 +8984,7 @@ if 'requests' in sys.modules:
         CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:' \
                          'ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'
 
+
         class SSLAdapter(HTTPAdapter):
             """
                 A wrapper used for https communication to enable ciphers that are commonly used
@@ -9008,6 +9009,7 @@ if 'requests' in sys.modules:
             def proxy_manager_for(self, *args, **kwargs):
                 kwargs['ssl_context'] = self.context
                 return super(SSLAdapter, self).proxy_manager_for(*args, **kwargs)
+
 
     class BaseClient(object):
         """Client to use in integrations with powerful _http_request
@@ -10857,8 +10859,8 @@ def get_message_global_vars():
     for current_key in globals_dict.keys():
         current_value = globals_dict[current_key]
         if not type(current_value) in excluded_types \
-                and current_key not in excluded_globals \
-                and type(current_value).__name__ not in excluded_types_names:
+            and current_key not in excluded_globals \
+            and type(current_value).__name__ not in excluded_types_names:
             globals_dict_full[current_key] = {
                 'name': current_key,
                 'value': current_value,
@@ -10889,8 +10891,8 @@ def get_message_modules_sizes():
     for current_key in globals_dict.keys():
         current_value = globals_dict[current_key]
         if isinstance(current_value, types.ModuleType) \
-                and current_key not in excluded_globals \
-                and type(current_value).__name__ not in excluded_types_names:
+            and current_key not in excluded_globals \
+            and type(current_value).__name__ not in excluded_types_names:
             globals_dict_full[current_key] = {
                 'name': current_key,
                 'value': current_value,
@@ -10985,14 +10987,14 @@ def shorten_string_for_printing(source_string, max_length=64):
     if max_length % 2 == 0:
         # even max_length. Start with one more char than at the beginning
         ret_value = source_string[:extremeties_length + 1] \
-            + '...' \
-            + source_string[-extremeties_length:]
+                    + '...' \
+                    + source_string[-extremeties_length:]
         return ret_value
     else:
         # odd max_length
         ret_value = source_string[:extremeties_length] \
-            + '...' \
-            + source_string[-extremeties_length:]
+                    + '...' \
+                    + source_string[-extremeties_length:]
         return ret_value
 
 
@@ -12300,7 +12302,7 @@ def get_server_config():
     return server_config
 
 
-def xsoar_profiler(func):
+def content_profiler(func):
     """
     A decorator for profiling the execution time and performance of a function.
 
@@ -12362,9 +12364,12 @@ def xsoar_profiler(func):
 
                 # Delete the temporary file
                 os.remove(temp_file_path)
-
+                context = demisto.callingContext
+                executed_commands = context.get("context", {}).get("ExecutedCommands", {})
+                automation_name = context.get("command") or executed_commands[0].get("name",
+                                                                                     "stats") if executed_commands else "stats"
                 # Use Demisto's fileResult to create a file from the profiling stats
-                demisto.results(fileResult('profiling_stats.prof', profiling_results))
+                demisto.results(fileResult('{}.prof'.format(automation_name), profiling_results))
 
             # 5 minutes in nanoseconds
             default_timeout = 60 * 5 * 1e9
@@ -12372,14 +12377,12 @@ def xsoar_profiler(func):
             # The system timeout configuration.
             timeout_nanoseconds = demisto.callingContext["context"].get("TimeoutDuration") or default_timeout
             timeout_seconds = timeout_nanoseconds / 1e9
-            failed_on_timeout = False
             event_set = signal_event.wait(timeout_seconds - 5)
             if not event_set:
-                failed_on_timeout = True
+                raise DemistoException("The profiled function '{}' failed due to a timeout.".format(func.__name__))
             profiler.disable()
             dump_result()
             demisto.debug("Profiler finished.")
-            return failed_on_timeout
 
         def function_runner(func, profiler, signal_event,
                             results, *args, **kwargs):
@@ -12404,19 +12407,11 @@ def xsoar_profiler(func):
         results = {}
         profiler = cProfile.Profile()
         signal_event = threading.Event()
-        profiler_thread = threading.Thread(target=function_runner, args=(func, profiler, signal_event, results) + args,
+        function_thread = threading.Thread(target=function_runner, args=(func, profiler, signal_event, results) + args,
                                            kwargs=kwargs)
-        profiler_thread.start()
-
-        failed_on_timeout = profiler_function(signal_event, profiler)
-        if failed_on_timeout:
-            raise DemistoException(f"The profiled function '{func.__name__}' failed due to a timeout.")
-        if results.get("function_results"):
-            res = results.get("function_results")
-            if isinstance(res, Exception):
-                raise res
-            return res
-        return None
+        function_thread.start()
+        profiler_function(signal_event, profiler)
+        return results.get("function_results")
 
     return profiler_wrapper
 
