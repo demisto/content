@@ -13,6 +13,9 @@ ignore=IF115
 [file:incidentfield-Top_Rules.json]
 ignore=IF115
 
+[file:README.md]
+ignore=RM110
+
 
 [known_words]
 harfanglab
