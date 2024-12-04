@@ -22,6 +22,6 @@ dependson:
   - cbp-fileRule-search
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.11.10.115186
 tests:
 - No test

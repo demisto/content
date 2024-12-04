@@ -1,22 +1,18 @@
 This API queries alerts and alert data from the MS-ISAC API to enrich and query alerts from the platform
 This integration was integrated and tested with version 1.1 of MS-ISAC
 
-## Configure MS-ISAC on Cortex XSOAR
+## Configure MS-ISAC in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for MS-ISAC.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API Key | Key provided by MS-ISAC according to the detailed Instructions | True |
-    | Server URL | This is the URL provided by MS-ISAC for the base of all endpoints | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API Key | Key provided by MS-ISAC according to the detailed Instructions | True |
+| Server URL | This is the URL provided by MS-ISAC for the base of all endpoints | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### msisac-get-event
 ***
@@ -105,4 +101,3 @@ Retrieves a list of MS-ISAC events for a given number of days (one or greater)
 | MSISAC.RetrievedEvents.analysis | string | The analysis provided by MS-ISAC | 
 | MSISAC.RetrievedEvents.description | string | The description of the event | 
 | MSISAC.RetrievedEvents.severity | string | The severity assigned to the MS-ISAC alert | 
-
