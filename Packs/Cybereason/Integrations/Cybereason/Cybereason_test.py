@@ -155,6 +155,31 @@ def test_validate_jsession(mocker):
     })
 
 
+def test_get_remediation_action_status_success(mocker):
+    from Cybereason import get_remediation_action_status, Client
+    # Mock dependencies
+    mocker.patch('Cybereason.dict_safe_get', side_effect=lambda d,
+                 keys: 'remediation123' if 'remediationId' in keys else 'SUCCESS')
+    mocker.patch('Cybereason.get_remediation_action_progress', return_value={"Remediation status": "SUCCESS"})
+    mocker.patch('Cybereason.add_comment')
+    HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
+    # Prepare test inputs
+    client = Client(
+        base_url="https://test.server.com:8888",
+        verify=False,
+        headers=HEADERS,
+        proxy=True)
+    user_name = "test_user"
+    malop_guid = "malop123"
+    response = {"remediationId": "remediation123"}
+    comment = "Remediation successful."
+    # Call the function
+    result = get_remediation_action_status(client, user_name, malop_guid, response, comment)
+    # Assertions
+    assert result["Remediation status"] == "SUCCESS"
+    assert result["Remediation ID"] == "remediation123"
+
+
 def test_malop_processes_command(mocker):
     from Cybereason import malop_processes_command
     from Cybereason import Client
