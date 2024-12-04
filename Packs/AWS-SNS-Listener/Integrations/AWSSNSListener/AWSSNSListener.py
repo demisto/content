@@ -85,11 +85,18 @@ def is_valid_sns_message(sns_payload):
     # Verify the signature
     decoded_signature = base64.b64decode(sns_payload["Signature"])
     try:
+        demisto.debug(f'sns_payload["SigningCertURL"] = {sns_payload["SigningCertURL"]}')
         response: requests.models.Response = client.get(full_url=sns_payload["SigningCertURL"], resp_type='response')
         response.raise_for_status()
         certificate = X509.load_cert_string(response.text)
     except Exception as e:
         demisto.error(f'Exception validating sign cert url: {e}')
+        if "502" in str(e):
+            demisto.error(f'SigningCertURL: {sns_payload["SigningCertURL"]}')
+        elif "Verify that the server URL parameter" in str(e):
+            demisto.error(f'client base url: {client._base_url}')
+        elif "Proxy Error" in str(e):
+            demisto.error(f'PROXIES = {PROXIES}')
         return False
 
     public_key = certificate.get_pubkey()
