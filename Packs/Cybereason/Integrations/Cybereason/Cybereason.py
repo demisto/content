@@ -554,6 +554,14 @@ def query_malops_command(client: Client, args: dict):
         outputs=outputs)
 
 
+def get_detection_details(client: Client, non_edr_guid):
+    try:
+        json_body = {"malopGuid":non_edr_guid}
+        detection_details_response = client.cybereason_api_call('POST', '/rest/detection/details', json_body=json_body)
+        demisto.info(f"detection details api response: {detection_details_response}")
+    except Exception as error:
+        demisto.info(f"Exception while getting detection/details: {error}")
+
 def poll_malops(client: Client, start_time):
     end_time = round(datetime.now().timestamp()) * 1000
     json_body = {"startTime": start_time, "endTime": end_time}
@@ -577,6 +585,7 @@ def get_non_edr_malop_data(client, start_time):
 def query_malops(
     client: Client, total_result_limit: int = None, per_group_limit: int = None, template_context: str = None,
         filters: list = None, guid_list: str = None) -> Any:
+    demisto.info(f"guid list in query_malop function: {guid_list}")
     json_body = {
         'totalResultLimit': int(total_result_limit) if total_result_limit else 10000,
         'perGroupLimit': int(per_group_limit) if per_group_limit else 10000,
@@ -1604,14 +1613,29 @@ def fetch_incidents(client: Client):
     demisto.info(f"current_time for mmng/v2: {current_time} and end_time: {last_update_time}")
     malop_management_response = get_malop_management_data(client, last_update_time, current_time, offset)
     demisto.info(f"mmng/v2 response: {malop_management_response}")
+    edr_guid_list, non_edr_guid_list = [], []
+    malop_management_response = malop_management_response["data"]["data"]
+    for malop in malop_management_response:
+        demisto.info(f"inside for loop mmng/v2. malop: {malop}")
+        if malop.get("isEdr"):
+            edr_guid_list.append(malop["guid"])
+        else:
+            non_edr_guid_list.append(malop["guid"])
+    demisto.info(f"edr guid list: {edr_guid_list}")
+    demisto.info(f"non_edr_guid_list: {non_edr_guid_list}")
     # call mmmng/v2 function
     #iterate the malop list and segregate edr and non edr
     # if edr: 
-    malop_process_type, malop_loggon_session_type = query_malops(client, total_result_limit=10000, per_group_limit=10000,
-                                                                 filters=filters)
-    # if nonedr:
-    #     # call detection/details
-    #     pass
+    if edr_guid_list:
+        malop_process_type, malop_loggon_session_type = query_malops(client, total_result_limit=10000, per_group_limit=10000,
+                                                                 filters=filters,guid_list=edr_guid_list)
+    if non_edr_guid_list:
+        demisto.info(f"inside if non_edr_guid_list")
+        for non_edr_malop in non_edr_guid_list:
+            demisto.info(f"processing non edr malop id: {non_edr_guid_list}")
+            detection_detail_response = get_detection_details(client, non_edr_guid_list)
+            demisto.info(f"detection_detail_response: {detection_detail_response}")
+   
     incidents = []
 
     for response in (malop_process_type, malop_loggon_session_type):
