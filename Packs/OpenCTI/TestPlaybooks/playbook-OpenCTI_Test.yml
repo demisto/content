@@ -870,8 +870,8 @@ tasks:
     task:
       id: 3001f8cf-6aef-43bf-80cf-f017639a3c66
       version: -1
-      name: OpenCTI Create Observable
-      playbookName: OpenCTI Create Observable
+      name: OpenCTI Create Indicator
+      playbookName: OpenCTI Create Indicator
       type: playbook
       iscommand: false
       brand: ""
