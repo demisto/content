@@ -1,8 +1,8 @@
 args:
-- description: Entry ID of json
+- description: Entry ID of json.
   name: entryid
   required: true
-- description: Output CSV filename
+- description: Output CSV filename.
   name: filename
   required: true
 - default: true
@@ -17,22 +17,22 @@ enabled: true
 name: JSONFileToCSV
 outputs:
 - contextPath: File.Name
-  description: Filename (only in case of report type=json)
+  description: Filename (only in case of report type=json).
   type: Unknown
 - contextPath: File.Type
-  description: File type e.g. "PE" (only in case of report type=json)
+  description: File type e.g. "PE" (only in case of report type=json).
   type: Unknown
 - contextPath: File.Size
-  description: File size (only in case of report type=json)
+  description: File size (only in case of report type=json).
   type: Unknown
 - contextPath: File.MD5
-  description: MD5 hash of the file (only in case of report type=json)
+  description: MD5 hash of the file (only in case of report type=json).
   type: Unknown
 - contextPath: File.SHA1
-  description: SHA1 hash of the file (only in case of report type=json)
+  description: SHA1 hash of the file (only in case of report type=json).
   type: Unknown
 - contextPath: File.SHA256
-  description: SHA256 hash of the file (only in case of report type=json)
+  description: SHA256 hash of the file (only in case of report type=json).
   type: Unknown
 script: '-'
 timeout: 600ns
