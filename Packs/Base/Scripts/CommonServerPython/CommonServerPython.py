@@ -12394,16 +12394,18 @@ def content_profiler(func):
         - When you want to identify slow or inefficient parts of your code.
         - During the development and testing phases to ensure that your code meets performance requirements.
 
-    To use, decorate the function that calls the function you want to profile with @xsoar_profiler.
+    To use, decorate the function that calls the function you want to profile with @content_profiler.
     Example: I want to profile the function_to_profile() function:
-        function_to_profile():
-            # some code
+            ```
+            @content_profiler
+            function_to_profile():
+                # some code
+            ```
+    Analyze the Profiling Data with SnakeViz:
+        Download the <automation_name>.prof from the war room and run:
+            pip install snakeviz; snakveiz <automation_name>.prof
 
-        @xsoar_profiler
-        foo():
-            function_to_profile()
-
-    Tested with Python 3.
+    **Tested with Python 3.10**
 
     :param func: The function to be profiled.
     :return: The profiled function.
