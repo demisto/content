@@ -251,7 +251,7 @@ class URLCheck:
 
                 elif index <= 4:
                     # This might be an IPv6 with no scheme
-                    self.inside_brackets == 1
+                    self.inside_brackets += 1
                     self.output = f"[{self.output}"  # Reading the bracket that was removed by the cleaner
 
                 else:
