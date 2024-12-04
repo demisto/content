@@ -3,23 +3,19 @@ The XSOAR Engineer Training (XET) integration provides sample data to fetch even
 Use for training purposes only.
 This integration was integrated and tested with versions 6.9+ and 8.3 of XSOAR.
 
-## Configure XSOAR Engineer Training on Cortex XSOAR
+## Configure XSOAR Engineer Training in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for XSOAR Engineer Training.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Incidents Fetch Interval | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Fetch incidents | False |
+| Incident type | False |
+| Incidents Fetch Interval | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### xet-get-events
