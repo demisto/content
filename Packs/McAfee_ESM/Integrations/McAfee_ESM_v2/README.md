@@ -3,11 +3,8 @@ Run queries and receive alarms from Intel Security ESM.
 This integration was integrated and tested with version 11.3 of McAfee ESM v2.
 Previous versions have been declared [EOL](https://kc.mcafee.com/corporate/index?page=content&id=KB94822) by the vendor.
 
-## Configure McAfee ESM v2 on Cortex XSOAR
+## Configure McAfee ESM v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for McAfee ESM v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -25,7 +22,6 @@ Previous versions have been declared [EOL](https://kc.mcafee.com/corporate/index
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Required Permissions
 | Component | Permission |
@@ -35,7 +31,7 @@ Previous versions have been declared [EOL](https://kc.mcafee.com/corporate/index
 | Watchlists | Watchlists |
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### esm-fetch-fields
 ***
