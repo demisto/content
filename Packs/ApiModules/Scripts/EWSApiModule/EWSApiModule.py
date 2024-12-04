@@ -43,7 +43,7 @@ from exchangelib.version import (
 INTEGRATION_NAME = get_integration_name()
 FOLDER_ID_LEN = 120
 
-ON_PREM_VERSIONS = {
+SUPPORTED_ON_PREM_BUILDS = {
     '2007': EXCHANGE_2007,
     '2010': EXCHANGE_2010,
     '2010_SP2': EXCHANGE_2010_SP2,
@@ -195,9 +195,10 @@ class EWSClient:
         self.proxy = proxy
 
         self.auto_discover = not ews_server
-        self.config, self.credentials = self.configure_auth()
+        self.config, self.credentials, self.server_build = self.configure_auth()
 
-    def configure_auth(self) -> tuple[Optional[Configuration], BaseCredentials]:
+
+    def configure_auth(self) -> tuple[Optional[Configuration], BaseCredentials, Optional[Build]]:
         """
         Prepares the client protocol, credentials and configuration based on the authentication type.
 
@@ -209,7 +210,7 @@ class EWSClient:
         return self.configure_onprem()
 
 
-    def configure_oauth(self) -> tuple[Configuration, CustomDomainOAuth2Credentials]:
+    def configure_oauth(self) -> tuple[Configuration, CustomDomainOAuth2Credentials, Build]:
         """
         Prepares the client PROTOCOL, CREDENTIALS and CONFIGURATION
 
@@ -223,7 +224,7 @@ class EWSClient:
 
         BaseProtocol.HTTP_ADAPTER_CLS = InsecureProxyAdapter if self.insecure else ProxyAdapter
 
-        self.ms_client = MicrosoftClient(
+        ms_client = MicrosoftClient(
             tenant_id=self.tenant_id,
             auth_id=self.client_id,
             enc_key=self.client_secret,
@@ -237,7 +238,7 @@ class EWSClient:
             azure_cloud=self.azure_cloud
         )
 
-        access_token = self.ms_client.get_access_token()
+        access_token = ms_client.get_access_token()
         oauth2_token = OAuth2Token({'access_token': access_token})
         credentials = CustomDomainOAuth2Credentials(
             azure_cloud=self.azure_cloud,
@@ -253,9 +254,9 @@ class EWSClient:
             version=Version(EXCHANGE_O365),
             service_endpoint=f'{self.azure_cloud.endpoints.exchange_online}/EWS/Exchange.asmx',
         )
-        return config, credentials
+        return config, credentials, EXCHANGE_O365
 
-    def configure_onprem(self) -> tuple[Optional[Configuration], Credentials]:
+    def configure_onprem(self) -> tuple[Optional[Configuration], Credentials, Optional[Build]]:
         """
         Prepares the client protocol, credentials and configuration based on the authentication type.
         For auto_discovery, the configuration object will be created as needed from the discovered connection parameters.
@@ -266,8 +267,8 @@ class EWSClient:
 
         if self.auto_discover:
             credentials = Credentials(username=self.client_id, password=self.client_secret)
-            self.ews_server, self.server_build = self.get_autodiscover_server_params(credentials)
-            return None, credentials
+            self.ews_server, server_build = self.get_autodiscover_server_params(credentials)
+            return None, credentials, server_build
 
         if 'outlook.office365.com' in self.ews_server.lower():
             if not self.auth_type:
@@ -294,7 +295,8 @@ class EWSClient:
             config_args['service_endpoint'] = self.ews_server
         else:
             config_args['server'] = self.ews_server
-        return Configuration(**config_args, retry_policy=FaultTolerance(max_wait=60)), credentials
+
+        return Configuration(**config_args, retry_policy=FaultTolerance(max_wait=60)), credentials, get_on_prem_build(self.version)
 
     def get_autodiscover_server_params(self, credentials):
         """
@@ -667,16 +669,26 @@ def cache_autodiscover_results(context: dict, account: Account):
     
     return context
 
+def get_on_prem_build(version: str):
+    """
+    Convert a version string to a Build object for supported on-prem Exchange Server versions.
+    
+    :param version: The version string (e.g. '2013', '2016', '2019')
+
+    :return: A Build object representing the on-premises Exchange Server build
+    """
+    if version not in SUPPORTED_ON_PREM_BUILDS:
+        supported_versions = '\\'.join(list(SUPPORTED_ON_PREM_BUILDS.keys()))
+        raise Exception(f'{version} is not a supported version. Choose one of: {supported_versions}.')
+
+    return SUPPORTED_ON_PREM_BUILDS[version]
+
 def get_on_prem_version(version: str):
     """
-    Convert a version string to a Version object for on-prem Exchange Server versions.
-    
+    Convert a version string to a Version object for supported on-prem Exchange Server versions.
+
     :param version: The version string (e.g. '2013', '2016', '2019')
 
     :return: A Version object representing the on-premises Exchange Server version
     """
-    if version not in ON_PREM_VERSIONS:
-        supported_versions = '\\'.join(list(ON_PREM_VERSIONS.keys()))
-        raise Exception(f'{version} is not a supported version. Choose one of: {supported_versions}.')
-
-    return Version(ON_PREM_VERSIONS[version])
+    return Version(get_on_prem_build(version))
