@@ -143,7 +143,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 ### Troubleshooting
 The Ansible-Runner container is not suitable for running as a non-root user.
-Therefore, the Ansible integrations will fail if you follow the instructions in [XSOAR 6.13 Docker Hardening Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide). and [XSOAR 8 Docker Hardening Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide). 
+Therefore, the Ansible integrations will fail if you follow the instructions in [Cortex XSOAR 6.13 Docker Hardening Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) and [Cortex XSOAR 8 Cloud Docker Hardening Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide). 
 
 The `docker.run.internal.asuser` server configuration causes the software that is run inside of the Docker containers utilized by Cortex XSOAR to run as a non-root user account inside the container.
 
@@ -153,4 +153,4 @@ This is a limitation of the Ansible-Runner software itself https://github.com/an
 
 A workaround is to use the `docker.run.internal.asuser.ignore` server setting and to configure Cortex XSOAR to ignore the Ansible container image by setting the value of `demisto/ansible-runner` and afterwards running /reset_containers to reload any containers that might be running to ensure they receive the configuration.
 
-See step 2 of this [XSOAR 6.13 guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users), Or for XSOAR 8 use the [XSOAR 8 guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users) for complete instructions.
+See step 2 of this [Cortex XSOAR 6.13 Run-Docker-with-Non-Root-Internal-Users guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users), Or for Cortex XSOAR 8 Cloud see step C of this [Cortex XSOAR 8 Cloud Run-Docker-with-Non-Root-Internal-Users guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users) for complete instructions.
