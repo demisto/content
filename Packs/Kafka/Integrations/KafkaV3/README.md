@@ -4,38 +4,34 @@ This integration was integrated and tested with version 2.7.1 of Kafka.
 
 This integration is fully compatible with the Kafka v2 integration.
 
-## Configure Kafka v3 on Cortex XSOAR
+## Configure Kafka v3 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Instances**.
-2. Search for Kafka v3.
-3. Click **Add instance** to create and configure a new integration instance.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| CSV list of Kafka brokers to connect to, e.g., 172.16.20.207:9092,172.16.20.234:9093 |  | True |
+| Consumer group ID | This group id will be used when fetching incidents and preforming consumer commands. If not set the group id 'xsoar_group' will be used. | False |
+| Use TLS for connection |  | False |
+| Trust any certificate (not secure) |  | False |
+| CA certificate of Kafka server (.cer) |  | False |
+| Client certificate (.cer) |  | False |
+| Client certificate key (.key) |  | False |
+| Client certificate key password (if required) |  | False |
+| Password |  | False |
+| Use SASL PLAIN for connection |  | False |
+| SASL PLAIN Username |  | False |
+| SASL PLAIN Password |  | False |
+| Topic to fetch incidents from (Required for fetch incidents) |  | False |
+| CSV list of partitions to fetch messages from |  | False |
+| Offset to fetch messages from (exclusive) | The initial offset to start fetching from, not including the value set \(e.g., if 3 is set, the first event that will be fetched will be with offset 4\). If you want to start from the earliest or latest, type in 'earliest' or 'latest' accordingly. | False |
+| Maximum number of messages to fetch |  | False |
+| Stop consuming upon timeout | When fetching a significant number of messages (100+), it's advisable to halt message consumption upon timeout. This ensures that the fetch terminates if no messages are received after a specified duration, instead of requesting messages until reaching the maximum number of messages to fetch. | False |
+| Consumer Only |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Max number of bytes per message | The max number of message bytes to retrieve in each attempted fetch request. Should be in multiples of 1024. If the fetching process takes a long time, consider increasing this value. Default is '1048576'. | False |
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | CSV list of Kafka brokers to connect to, e.g., 172.16.20.207:9092,172.16.20.234:9093 |  | True |
-    | Consumer group ID | This group id will be used when fetching incidents and preforming consumer commands. If not set the group id 'xsoar_group' will be used. | False |
-    | Use TLS for connection |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | CA certificate of Kafka server (.cer) |  | False |
-    | Client certificate (.cer) |  | False |
-    | Client certificate key (.key) |  | False |
-    | Client certificate key password (if required) |  | False |
-    | Password |  | False |
-    | Use SASL PLAIN for connection |  | False |
-    | SASL PLAIN Username |  | False |
-    | SASL PLAIN Password |  | False |
-    | Topic to fetch incidents from (Required for fetch incidents) |  | False |
-    | CSV list of partitions to fetch messages from |  | False |
-    | Offset to fetch messages from (exclusive) | The initial offset to start fetching from, not including the value set \(e.g., if 3 is set, the first event that will be fetched will be with offset 4\). If you want to start from the earliest or latest, type in 'earliest' or 'latest' accordingly. | False |
-    | Max number of messages to fetch |  | False |
-    | Consumer Only |  | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Max number of bytes per message | The max number of message bytes to retrieve in each attempted fetch request. Should be in multiples of 1024. If the fetching process takes a long time, consider increasing this value. Default is '1048576'. | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### kafka-print-topics
 ***
@@ -144,6 +140,7 @@ Consumes a single Kafka message.
 | topic | A topic to get messages from. | Required | 
 | offset | Message offset to filter by. Acceptable values are 'Earliest', 'Latest', or any other offest number. Default is Earliest. | Optional | 
 | partition | Partition (number). | Optional | 
+| poll_timeout | Poll timeout to consume the message. | Optional |
 
 
 #### Context Output
