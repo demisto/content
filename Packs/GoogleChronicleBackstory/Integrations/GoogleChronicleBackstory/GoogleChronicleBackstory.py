@@ -45,7 +45,7 @@ CHRONICLE_OUTPUT_PATHS = {
     'Domain': 'GoogleChronicleBackstory.Domain(val.IoCQueried && val.IoCQueried == obj.IoCQueried)',
     'Alert': 'GoogleChronicleBackstory.Alert(val.AssetName && val.AssetName == obj.AssetName)',
     'UserAlert': 'GoogleChronicleBackstory.UserAlert(val.User && val.User == obj.User)',
-    'Events': 'GoogleChronicleBackstory.Events',
+    'Events': 'GoogleChronicleBackstory.Events(val.id == obj.id)',
     'UDMEvents': 'GoogleChronicleBackstory.Events(val.id == obj.id)',
     'Detections': 'GoogleChronicleBackstory.Detections(val.id == obj.id && val.ruleVersion == obj.ruleVersion)',
     'CuratedRuleDetections': 'GoogleChronicleBackstory.CuratedRuleDetections(val.id == obj.id)',
@@ -66,7 +66,10 @@ CHRONICLE_OUTPUT_PATHS = {
     'UserAliases': 'GoogleChronicleBackstory.UserAliases(val.user.email == obj.user.email '
                    '&& val.user.username == obj.user.username && val.user.windows_sid == obj.user.windows_sid && '
                    'val.user.employee_id == obj.user.employee_id && val.user.product_object_id == '
-                   'obj.user.product_object_id ) '
+                   'obj.user.product_object_id ) ',
+    'VerifyValueInReferenceList': 'GoogleChronicleBackstory.VerifyValueInReferenceList(val.value == obj.value && '
+                                  'val.case_insensitive == obj.case_insensitive)',
+    'VerifyRule': 'GoogleChronicleBackstory.VerifyRule(val.command_name == obj.command_name)',
 }
 
 ARTIFACT_NAME_DICT = {
@@ -4127,6 +4130,35 @@ def gcb_list_user_aliases(client_obj: Client, start_time: str, end_time: str, pa
     return ec, json_data
 
 
+def gcb_verify_rule(client_obj: Client, rule_text: str):
+    """
+    Return context data and raw response for gcb_verify_rule command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api.
+
+    :type rule_text: str
+    :param rule_text: items to validate.
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response of the request.
+    """
+    req_json_data = {
+        'ruleText': rule_text
+    }
+    request_url = f"{BACKSTORY_API_V2_URL}/detect/rules:verifyRule"
+    json_data = validate_response(client_obj, request_url, method='POST', body=json.dumps(req_json_data))
+    context_data = {
+        **json_data,
+        'success': json_data.get('success', False),
+        'command_name': 'gcb-verify-rule',
+    }
+
+    ec = {CHRONICLE_OUTPUT_PATHS['VerifyRule']: context_data}
+
+    return ec, json_data
+
+
 ''' REQUESTS FUNCTIONS '''
 
 
@@ -5080,6 +5112,110 @@ def gcb_verify_reference_list_command(client_obj, args):
     return hr, ec, json_data
 
 
+def gcb_verify_value_in_reference_list_command(client_obj, args):
+    """
+    Check if the value is present in the reference list.
+
+    :type client_obj: Client
+    :param client_obj: Client object which is used to get response from api.
+
+    :type args: Dict[str, str]
+    :param args: It contains arguments for gcb-verify-value-in-reference-list command.
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+    delimiter = args.get('delimiter', ',')
+    reference_lists_names = argToList(args.get('reference_list_names', []))
+    search_values = argToList(args.get('values', []), separator=delimiter)
+    case_insensitive = argToBoolean(args.get('case_insensitive_search', 'false'))
+    add_not_found_reference_lists = argToBoolean(args.get('add_not_found_reference_lists', 'false'))
+
+    reference_lists = validate_argument(get_unique_value_from_list(
+        [reference_list.strip() for reference_list in reference_lists_names]), 'reference_list_names')
+    values = validate_argument(get_unique_value_from_list([value.strip() for value in search_values]), 'values')
+
+    found_reference_lists = {}
+    not_found_reference_lists = []
+
+    for reference_list in reference_lists:
+        try:
+            _, json_data = gcb_get_reference_list(client_obj, name=reference_list, view='FULL')
+            found_reference_lists[reference_list] = json_data.get('lines', [])
+        except Exception:
+            not_found_reference_lists.append(reference_list)
+
+    if not_found_reference_lists:
+        return_warning('The following Reference lists were not found: {}'.format(', '.join(not_found_reference_lists)),
+                       exit=len(not_found_reference_lists) == len(reference_lists))
+
+    if case_insensitive:
+        for reference_list, lines in found_reference_lists.items():
+            found_reference_lists[reference_list] = [line.lower() for line in lines]
+
+    hr_dict, json_data, ec_data = [], [], []
+    for value in values:
+        overall_status = 'Not Found'
+        found_lists, not_found_lists = [], []
+        for reference_list, lines in found_reference_lists.items():
+            if value in lines:
+                found_lists.append(reference_list)
+            elif case_insensitive and value.lower() in lines:
+                found_lists.append(reference_list)
+            else:
+                not_found_lists.append(reference_list)
+
+        if found_lists:
+            overall_status = 'Found'
+
+        result = {
+            'value': value,
+            'found_in_lists': found_lists,
+            'not_found_in_lists': not_found_lists,
+            'overall_status': overall_status,
+            'case_insensitive': case_insensitive
+        }
+        json_data.append(result)
+        data = deepcopy(result)
+
+        hr_data = {
+            'value': string_escape_markdown(value),
+            'found_in_lists': ', '.join(found_lists),
+            'not_found_in_lists': ', '.join(not_found_lists),
+            'overall_status': overall_status
+        }
+
+        if not add_not_found_reference_lists:
+            hr_data['not_found_in_lists'] = []
+            data['not_found_in_lists'] = []
+
+        ec_data.append(data)
+        hr_dict.append(hr_data)
+
+    title = 'Successfully searched provided values in the reference lists in Google Chronicle.'
+    hr = tableToMarkdown(title, hr_dict, ['value', 'found_in_lists', 'not_found_in_lists', 'overall_status'],
+                         headerTransform=header_transform_to_title_case, removeNull=True)
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['VerifyValueInReferenceList']: ec_data
+    }
+
+    return hr, ec, json_data
+
+
+def header_transform_to_title_case(string: str) -> str:
+    '''
+    Header transform function to convert given string to title case with the spaces between words.
+
+    :type string: ``str``
+    :param string: The string to convert to title case.
+
+    :return: The string in title case.
+    '''
+    new_string = string.split('_')
+    new_string = [i.capitalize() for i in new_string]
+    return ' '.join(new_string)
+
+
 def prepare_hr_for_gcb_test_rule_stream_command(detections):
     """
     Prepare Human Readable output from the response received.
@@ -5322,6 +5458,155 @@ def gcb_list_user_aliases_command(
     return hr, ec, json_data
 
 
+def gcb_verify_rule_command(client_obj, args):
+    """
+    Verify the rule has valid YARA-L 2.0 format.
+
+    :type client_obj: Client
+    :param client_obj: Client object which is used to get response from API.
+
+    :type args: Dict[str, Any]
+    :param args: It contains arguments for gcb-verify-rule command.
+
+    :rtype: str, dict, dict
+    :return: Command output.
+    """
+    rule_text = args.get('rule_text', '')
+    validate_rule_text(rule_text)
+
+    ec, json_data = gcb_verify_rule(client_obj, rule_text)
+
+    success = json_data.get('success')
+    context = json_data.get('context')
+
+    if success:
+        hr = f'### {context.capitalize()}'
+    else:
+        hr = f'### Error: {context}'
+
+    return hr, ec, json_data
+
+
+def gcb_get_event_command(client_obj, args: dict[str, str]):
+    """
+    Get specific event With the given ID.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type args: Dict[str, str]
+    :param args: it contain arguments of gcb-get-event command
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+
+    event_id = validate_argument(args.get('event_id'), 'event_id')
+    event_id = urllib.parse.quote(event_id)
+
+    request_url = '{}/event:get?name={}'.format(BACKSTORY_API_V1_URL, event_id)
+
+    json_data = validate_response(client_obj, request_url)
+
+    event_data = deepcopy(json_data.get('udm', {}))
+
+    hr = prepare_hr_for_gcb_get_event(deepcopy(event_data))
+
+    parsed_ec = get_context_for_events([event_data])
+    ec = {
+        CHRONICLE_OUTPUT_PATHS["Events"]: parsed_ec
+    }
+
+    return hr, ec, json_data
+
+
+def prepare_hr_for_gcb_get_event(event: dict[str, Any]):
+    """
+    Prepare Human Readable output from the response received.
+
+    :type event: Dict
+    :param event: raw response received from api in json format.
+
+    :return: Human Readable output to display.
+    :rtype: str
+    """
+    event = convert_numbers_to_strings_for_object(event)
+
+    metadata = event.get('metadata', {})
+    event_id = metadata.get('id', '')
+    human_readable = (
+        tableToMarkdown(f'General Information for the given event with ID: {event_id}', metadata, removeNull=True,
+                        headerTransform=convert_string_table_case_to_title_case, is_auto_json_transform=True,)
+        if metadata else '')
+
+    principal_info = event.get('principal', {})
+    human_readable += ('\n' + tableToMarkdown('Principal Information', principal_info, is_auto_json_transform=True,
+                                              headerTransform=convert_string_table_case_to_title_case, removeNull=True)
+                       if principal_info else '')
+
+    target_info = event.get('target', {})
+    human_readable += ('\n' + tableToMarkdown('Target Information', target_info, is_auto_json_transform=True,
+                                              headerTransform=convert_string_table_case_to_title_case, removeNull=True)
+                       if target_info else '')
+
+    security_result_info = event.get('securityResult', [])
+    human_readable += ('\n' + tableToMarkdown('Security Result Information', security_result_info, is_auto_json_transform=True,
+                                              headerTransform=convert_string_table_case_to_title_case, removeNull=True)
+                       if security_result_info else '')
+
+    network_info = event.get('network', {})
+    human_readable += ('\n' + tableToMarkdown('Network Information', network_info, is_auto_json_transform=True,
+                                              headerTransform=convert_string_table_case_to_title_case, removeNull=True)
+                       if network_info else '')
+    return human_readable
+
+
+def convert_numbers_to_strings_for_object(d: Any) -> Any:
+    """
+    Recursively convert all integer and float values in a object to strings,
+
+    :param d: Input object.
+    :type d: Any
+    :return: An object with all integer and float values converted to strings.
+    :rtype: Any
+    """
+
+    def convert(x: Any) -> Any:
+        """
+        Recursively convert all integer and float values in a nested data structure to strings.
+
+        :param x: A nested data structure containing the values to be converted.
+        :return: A nested data structure with all integer and float values converted to strings.
+        """
+        if isinstance(x, (int, float)):
+            return str(x)
+        if isinstance(x, list):
+            return [convert(v) for v in x]
+        if isinstance(x, dict):
+            return {k: convert(v) for k, v in x.items()}
+        return x
+
+    if not isinstance(d, (dict, list)):
+        return convert(d)
+    if isinstance(d, list):
+        return [convert(v) for v in d]
+    return {k: convert(v) for k, v in d.items()}
+
+
+def convert_string_table_case_to_title_case(input_str: str) -> str:
+    """
+    Convert string in table case to title case.
+
+    :type input_str: str
+    :param input_str: string in table case.
+
+    :return: string in title case
+    """
+    transformed = re.sub(r'(?<=[a-z])([A-Z])', r' \1', input_str)
+
+    return transformed.title()
+
+
 def main():
     """PARSE AND VALIDATE INTEGRATION PARAMS."""
     # supported command list
@@ -5354,6 +5639,9 @@ def main():
         'gcb-list-curatedrule-detections': gcb_list_curatedrule_detections_command,
         'gcb-udm-search': gcb_udm_search_command,
         'gcb-verify-reference-list': gcb_verify_reference_list_command,
+        'gcb-verify-value-in-reference-list': gcb_verify_value_in_reference_list_command,
+        'gcb-verify-rule': gcb_verify_rule_command,
+        'gcb-get-event': gcb_get_event_command,
     }
     # initialize configuration parameter
     proxy = demisto.params().get('proxy')
