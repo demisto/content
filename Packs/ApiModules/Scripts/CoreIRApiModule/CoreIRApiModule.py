@@ -2427,9 +2427,8 @@ def form_powershell_command(unescaped_string: str) -> str:
         str: Prefixed and escaped command.
     """
     escaped_string = ''
-    for i in range(len(unescaped_string)):
-        char = unescaped_string[i]
 
+    for i, char in enumerate(unescaped_string):
         if char == "'":
             escaped_string += "''"
 
