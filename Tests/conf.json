@@ -5711,6 +5711,11 @@
             "fromversion": "6.2.0"
         },
         {
+            "integrations": "CiscoESA",
+            "playbookID": "CiscoESA_dictionary_commands_tpb",
+            "fromversion": "6.10.0"
+        },
+        {
             "integrations": "CiscoSMA",
             "playbookID": "CiscoSMA",
             "fromversion": "6.2.0"
