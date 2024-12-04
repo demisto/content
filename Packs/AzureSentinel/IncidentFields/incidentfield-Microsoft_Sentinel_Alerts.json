@@ -1,7 +1,7 @@
 {
     "id": "incident_microsoftsentinelalerts",
     "version": -1,
-    "modified": "2023-02-28T07:32:59.05305206Zasdff",
+    "modified": "2023-02-28T07:32:59.05305206Z",
     "name": "Microsoft Sentinel Alerts",
     "ownerOnly": false,
     "cliName": "microsoftsentinelalerts",
@@ -24,5 +24,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.5.0"
+    "fromVersion": "6.6.0"
 }

@@ -2,7 +2,7 @@
     "id": "incident_microsoftsentinelclassificationreason",
     "version": -1,
     "modified": "2024-11-06T08:33:57.789743118Z",
-    "name": "Microsoft Sentinel Classification Reasoassadfasdfn",
+    "name": "Microsoft Sentinel Classification Reason",
     "ownerOnly": false,
     "cliName": "microsoftsentinelclassificationreason",
     "type": "singleSelect",
