@@ -20,5 +20,11 @@
     ],
     "marketplaces": [
         "marketplacev2"
-    ]
+    ],
+    "dependencies": {
+        "AzureFirewall": {
+            "mandatory": false,
+            "display_name": "Azure Firewall"
+        }
+    }
 }
