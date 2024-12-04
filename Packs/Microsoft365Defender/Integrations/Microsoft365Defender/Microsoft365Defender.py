@@ -281,6 +281,15 @@ def _get_meta_data_for_incident(raw_incident: dict) -> dict:
     first_activity_list = [alert.get('firstActivity') for alert in alerts_list]
     last_activity_list = [alert.get('lastActivity') for alert in alerts_list]
 
+    mailboxes_set = set()
+    mailboxes = []
+    for alert in alerts_list:
+        for entity in alert.get('entities', []):
+            if entity.get('entityType') == 'Mailbox':
+                if entity.get('mailboxAddress', '') not in mailboxes_set:
+                    mailboxes.append({'Mailbox': entity.get('mailboxAddress', ''),
+                                     'Display Name': entity.get('mailboxDisplayName', '')})
+                    mailboxes_set.add((entity.get('mailboxAddress', '')))
     return {
         'Categories': [alert.get('category', '') for alert in alerts_list],
         'Impacted entities': list({(entity.get('domainName', ''))
@@ -298,7 +307,7 @@ def _get_meta_data_for_incident(raw_incident: dict) -> dict:
                      'tags': ','.join(device.get('tags', []))
                      } for alert in alerts_list
                     for device in alert.get('devices', [])],
-    }
+        'Mailboxes': mailboxes}
 
 
 def convert_incident_to_readable(raw_incident: dict) -> dict:
@@ -323,7 +332,8 @@ def convert_incident_to_readable(raw_incident: dict) -> dict:
         'Incident ID': raw_incident.get('incidentId'),
         # investigation state - relevant only for alerts.
         'Categories': ', '.join(set(incident_meta_data.get('Categories', []))),
-        'Impacted entities': ', '.join(incident_meta_data.get('Impacted entities', [])),
+        'Impacted users': ', '.join(incident_meta_data.get('Impacted entities', [])),
+        'Impacted mailboxes': ', '.join(mailbox.get('Mailbox') for mailbox in incident_meta_data.get('Mailboxes', [])),
         'Active alerts': incident_meta_data.get('Active alerts', []),
         'Service sources': ', '.join(incident_meta_data.get('Service sources', [])),
         'Detection sources': ', '.join(incident_meta_data.get('Detection sources', [])),
@@ -459,7 +469,7 @@ def microsoft_365_defender_incident_get_command(client: Client, args: dict) -> C
 
 @logger
 def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: str, fetch_limit: int, timeout: int = None) -> List[
-    dict]:
+        dict]:
     """
     Uses to fetch incidents into Demisto
     Documentation: https://xsoar.pan.dev/docs/integrations/fetching-incidents#the-fetch-incidents-command
@@ -631,7 +641,7 @@ def fetch_modified_incident_ids(client: Client, last_update_time) -> List[str]:
             incidents.append(str(incident.get('incidentId')))
         # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
         if len(raw_incidents) < int(
-            MAX_ENTRIES):  # todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
+                MAX_ENTRIES):  # todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
             break
         offset += int(MAX_ENTRIES)
     return incidents
@@ -662,7 +672,7 @@ def fetch_modified_incidents(client: Client, last_update_time) -> List[dict]:
             incidents.append(incident)
         # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
         if len(raw_incidents) < int(
-            MAX_ENTRIES):  # todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
+                MAX_ENTRIES):  # todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
             break
         offset += int(MAX_ENTRIES)
     return incidents
@@ -676,8 +686,8 @@ MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON = {
 }
 
 
-def get_modified_incidents_entries_content(modified_incidents: List[dict], close_incident: bool) -> List[dict]:
-    demisto.debug("microsoft365::Starting get_modified_incidents_entries_content")
+def get_modified_incidents_close_or_repopen_entries_content(modified_incidents: List[dict], close_incident: bool) -> List[dict]:
+    demisto.debug("microsoft365::Starting get_modified_incidents_close_or_repopen_entries_content")
     entries_content = []
     if close_incident:
         for incident in modified_incidents:
@@ -731,7 +741,7 @@ def get_modified_remote_data_command(client: Client, args,
         demisto.debug(f"Error in Microsoft 365 defender incoming mirror \n"
                       f"Error message: {str(e)}")
         if "Rate limit exceeded" in str(
-            e):  # todo - check if this is the correct error message + on the server side what does is expect to ger
+                e):  # todo - check if this is the correct error message + on the server side what does is expect to ger
             return_error("API rate limit")
 
 
@@ -754,7 +764,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
     try:
         mirrored_object: Dict = fetch_modified_incident(client, remote_args.remote_incident_id)
         demisto.debug(f"microsoft365::Fetched incident {str(mirrored_object)}")
-        entry_contents = get_modified_incidents_entries_content([mirrored_object], close_incident=close_incident)
+        entry_contents = get_modified_incidents_close_or_repopen_entries_content([mirrored_object], close_incident=close_incident)
         entries = [{
             'Type': EntryType.NOTE,
             'Contents': entry_content,
@@ -779,32 +789,28 @@ def get_mapping_fields_command():
     return GetMappingFieldsResponse(incident_type_scheme)
 
 
-def update_remote_incident(client: Client, remote_args) -> str:
+def update_remote_incident(client: Client, updated_args) -> str:
     demisto.debug(f"microsoft365::Starting update_remote_incident")
-    remote_args_data = remote_args.data
-    remote_args_delta = remote_args.delta
-    current_remote_status = remote_args_data.get('status') if remote_args_data else None
-    is_closed_delta = remote_args_delta.get('closeReason') or remote_args_delta.get('closeNotes') or remote_args_delta.get(
-        'closingUserId') or remote_args_delta.get('closed')
-    is_closed_data = (
-        remote_args_data.get('closeReason') or remote_args_data.get('closeNotes'))  #check that closed is not a default sate
-    demisto.debug(f"update_remote_system_command {is_closed_delta=}, {is_closed_data=}")
-    remote_is_already_closed = current_remote_status == 'Resolved'
-    demisto.debug(f"{remote_is_already_closed=}")
-
-    # status , classification , determination = handle_incident_status(remote_args_delta, remote_args_data)
-    #todo - delta returns an empty dict
-    updated_incident = client.update_incident(incident_id=remote_args.remote_incident_id,
-                                              status=remote_args_data.get('status'),
-                                              assigned_to=remote_args_data.get('assignedTo'),
-                                              classification=remote_args_data.get('classification'),
-                                              determination=remote_args_data.get('determination'),
-                                              tags=argToList(remote_args_data.get('tags')),
+    # todo - delta returns an empty dict
+    updated_incident = client.update_incident(incident_id=updated_args.remote_incident_id,
+                                              status=updated_args.get('status'),
+                                              assigned_to=updated_args.get('assignedTo'),
+                                              classification=updated_args.get('classification'),
+                                              determination=updated_args.get('determination'),
+                                              tags=argToList(updated_args.get('tags')),
                                               timeout=50,
-                                              comment=remote_args_data.get('comment'))
+                                              comment=updated_args.get('comment'))
     demisto.debug(f"microsoft365::Updated incident {str(updated_incident)}")
-
     return ''
+
+
+def handle_incident_close_out():
+    pass
+
+
+def handle_mirror_out_entries(client, entries):
+    for entry in entries:
+        demisto.debug(f"Adding entry {entry}")
 
 
 def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
@@ -813,25 +819,23 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     remote_data = remote_args.data
     remote_delta = remote_args.delta
 
-    demisto.debug(f"update_remote_system_command {incident_id=}")
-    demisto.debug(f"update_remote_system_command {remote_delta=} ")
-    demisto.debug(f"update_remote_system_command {remote_data=} ")
-    demisto.debug(f"update_remote_system_command {remote_args.incident_changed=}")
-    demisto.debug(f"update_remote_system_command {remote_args.inc_status=}")
-    demisto.debug(f"update_remote_system_command {remote_args.entries=}")
+    demisto.debug(
+        f"update_remote_system_command {incident_id=} \n {remote_delta=} \n {remote_data=} \n {remote_args.incident_changed=} \n {remote_args.inc_status=} \n {remote_args.entries=}")
 
-    demisto.debug(f"update_remote_system_command {incident_id=} , {remote_data.get('closeReason')=}, "
-                  f"{remote_data.get('closeNotes')=}")
-
-    if remote_args.delta:
-        demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
-                      f'incident {remote_args.remote_incident_id}')
     try:
-        if remote_args.incident_changed:
-            update_remote_incident(client, remote_args)
-        else:
-            demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
-                          f'as it is not new nor changed')
+        # if remote_args.incident_changed and remote_args.delta:
+        #     demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
+        #                   f'incident {remote_args.remote_incident_id}')
+        #     if remote_args.inc_status == IncidentStatus.DONE:
+        #         handle_incident_close_out()
+        #
+        #     update_remote_incident(client, remote_args.data)
+        # else:
+        #     demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
+        #                   f'as it is not new nor changed')
+        #
+        # if remote_args.entries:
+        #     handle_mirror_out_entries()
 
         return remote_args.remote_incident_id
 
@@ -867,7 +871,7 @@ def main() -> None:
     client_credentials = params.get('client_credentials', False)
     enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or \
-                             params.get('certificate_thumbprint', '')
+        params.get('certificate_thumbprint', '')
 
     private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
                    or params.get('private_key', ''))
