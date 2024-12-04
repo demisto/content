@@ -181,8 +181,15 @@ tasks:
     scriptarguments:
       Ids:
         complex:
-          root: O365.SecurityAndCompliance.ContentSearch.SearchAction
-          accessor: Name
+          root: O365.SecurityAndCompliance.ContentSearch
+          accessor: SearchAction
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: '.=val.SearchStatus!=="NotFound" ? val.Name : val.Name +
+                    "_Preview"'
       Interval:
         simple: ${inputs.polling_interval}
       PollingCommandArgName:

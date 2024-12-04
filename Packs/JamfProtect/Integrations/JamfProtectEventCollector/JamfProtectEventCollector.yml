@@ -49,7 +49,7 @@ configuration:
   advanced: true
   section: Collect
 - additionalinfo: Maximum number of computer events to fetch at a time.
-  defaultvalue: '1000'
+  defaultvalue: '500'
   display: Max computer events per fetch
   name: max_fetch_computer
   required: false
