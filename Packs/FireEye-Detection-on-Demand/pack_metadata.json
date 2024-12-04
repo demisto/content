@@ -2,7 +2,7 @@
     "name": "FireEye Detection on Demand",
     "description": "Detonate files, hashes, and URLs using FireEye Detection on Demand",
     "support": "partner",
-    "currentVersion": "1.0.5",
+    "currentVersion": "1.0.6",
     "author": "FireEye Inc.",
     "githubUser": [
         "mckibbenc",
