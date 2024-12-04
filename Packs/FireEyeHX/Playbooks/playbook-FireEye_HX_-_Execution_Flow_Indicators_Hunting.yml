@@ -119,7 +119,7 @@ tasks:
       - "156"
     scriptarguments:
       brandname:
-        simple: FireEye Endpoint Security (HX) v2
+        simple: FireEyeHX v2
     results:
     - brandInstances
     separatecontext: false
@@ -230,12 +230,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"
@@ -385,12 +385,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"
@@ -481,12 +481,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"
@@ -650,12 +650,12 @@ tasks:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.Process ID
+                  simple: FireEyeHX.Search.results.data.Process ID
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.Process Name
+                  simple: FireEyeHX.Search.results.data.Process Name
                 iscontext: true
     separatecontext: false
     continueonerrortype: ""
@@ -761,12 +761,12 @@ tasks:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.Process ID
+                  simple: FireEyeHX.Search.results.data.Process ID
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.Process Name
+                  simple: FireEyeHX.Search.results.data.Process Name
                 iscontext: true
     separatecontext: false
     continueonerrortype: ""
@@ -849,12 +849,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"
@@ -1173,12 +1173,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"

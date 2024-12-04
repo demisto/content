@@ -702,7 +702,7 @@ def test_task_create_command(
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/api/arsys/v1/entry/TMS:Task?fields=values(Task ID,Create Date)"
     requests_mock.post(url=url, json=mock_response)
-    query = "'Request ID' = \"PKE000000000227\""
+    query = "('Request ID' = \"PKE000000000227\")"
     url = f"{BASE_URL}/api/arsys/v1/entry/PBM:KnownErrorInterface?q={query}"
     requests_mock.get(url=url, json=load_mock_response("get_known_error.json"))
 
@@ -1182,7 +1182,7 @@ def test_gen_fetch_incidents_query():
         urgency_filter,
         custom_query,
     )
-    assert query == "'Submit Date' <= \"1657032797\" AND 'Submit Date' >\"1657032797\" AND 'Urgency' = \"4-Low\""
+    assert query == "('Submit Date' <= \"1657032797\" AND 'Submit Date' >\"1657032797\") AND ('Urgency' = \"4-Low\")"
 
 
 @pytest.mark.parametrize(
@@ -1509,8 +1509,8 @@ def test_fetch_command(
                                                                 status_filter=[],
                                                                 impact_filter=[],
                                                                 urgency_filter=[],
-                                                                custom_query=("'Submit Date' <= \"1657032797\" AND 'Submit Date'"
-                                                                              ">\"1657032797\" AND 'Urgency' = \"4-Low\""),
+                                                                custom_query=("('Submit Date' <= \"1657032797\" AND 'Submit Date'"
+                                                                              ">\"1657032797\") AND ('Urgency' = \"4-Low\")"),
                                                                 mirror_direction="both",
                                                                 )
     assert last_run_result["SRM:Request"]["last_create_time"] == expected_result

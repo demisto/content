@@ -43,7 +43,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: KnowBE4 PhishER integration allows to pull events from PhishER system and do mutations
+description: KnowBE4 PhishER integration allows to pull events from PhishER system and do mutations.
 display: PhishER
 name: Phisher
 defaultmapperin: PhishER-mapper
@@ -51,11 +51,11 @@ script:
   commands:
   - arguments:
     - defaultValue: '50'
-      description: The maximum number of messages to fetch
+      description: The maximum number of messages to fetch.
       name: limit
-    - description: The Lucene query to search against
+    - description: The Lucene query to search against.
       name: query
-    - description: ID of specific message to retrieve. If ID is given query will be ignored
+    - description: ID of specific message to retrieve. If ID is given query will be ignored.
       name: id
     - auto: PREDEFINED
       defaultValue: 'False'
@@ -64,17 +64,17 @@ script:
       - 'False'
       - 'True'
       description: Whether to include all message events in the result.
-    description: Command to get messages from PhishER
+    description: Command to get messages from PhishER.
     name: phisher-message-list
     outputs:
     - contextPath: Phisher.Message.actionStatus
-      description: Action Status
+      description: Action Status.
       type: String
     - contextPath: Phisher.Message.attachments
-      description: A collection of attachments associated with this message
+      description: A collection of attachments associated with this message.
       type: String
     - contextPath: Phisher.Message.category
-      description: The message's category
+      description: The message's category.
       type: String
     - contextPath: Phisher.Message.comments
       description: A collection of comments associated with this message.
@@ -83,7 +83,7 @@ script:
       description: A collection of events associated with this message.
       type: String
     - contextPath: Phisher.Message.from
-      description: Sender's email
+      description: Sender's email.
       type: String
     - contextPath: Phisher.Message.id
       description: Unique identifier for the message.
@@ -92,22 +92,22 @@ script:
       description: A collection of links that were found in the message.
       type: String
     - contextPath: Phisher.Message.phishmlReport
-      description: The PhishML report associated with this message
+      description: The PhishML report associated with this message.
       type: String
     - contextPath: Phisher.Message.pipelineStatus
-      description: Pipeline Status
+      description: Pipeline Status.
       type: String
     - contextPath: Phisher.Message.reportedBy
       description: The person who reported the message.
       type: String
     - contextPath: Phisher.Message.rawUrl
-      description: URL where to download the raw message
+      description: URL where to download the raw message.
       type: String
     - contextPath: Phisher.Message.rules
       description: A collection of rules associated with this message.
       type: String
     - contextPath: Phisher.Message.severity
-      description: The message's severity
+      description: The message's severity.
       type: String
     - contextPath: Phisher.Message.subject
       description: Subject of the message.
@@ -116,17 +116,17 @@ script:
       description: A collection of tags associated with this message.
       type: String
   - arguments:
-    - description: Message ID
+    - description: Message ID.
       name: id
       required: true
     - description: The comment to add.
       name: comment
       required: true
-    description: Adds a comment to a PhishER message
+    description: Adds a comment to a PhishER message.
     name: phisher-create-comment
   - arguments:
     - auto: PREDEFINED
-      description: "Message Category, can be: UNKNOWN,CLEAN,SPAM,THREAT\t\t"
+      description: "Message Category, can be: UNKNOWN,CLEAN,SPAM,THREAT\t\t."
       name: category
       predefined:
       - UNKNOWN
@@ -134,14 +134,14 @@ script:
       - SPAM
       - THREAT
     - auto: PREDEFINED
-      description: 'Message Status, can be: RECEIVED,IN_REVIEW,RESOLVED'
+      description: 'Message Status, can be: RECEIVED,IN_REVIEW,RESOLVED.'
       name: status
       predefined:
       - RECEIVED
       - IN_REVIEW
       - RESOLVED
     - auto: PREDEFINED
-      description: 'Message Severity, can be: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'
+      description: 'Message Severity, can be: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL.'
       name: severity
       predefined:
       - UNKNOWN
@@ -149,22 +149,22 @@ script:
       - MEDIUM
       - HIGH
       - CRITICAL
-    - description: Message ID
+    - description: Message ID.
       name: id
       required: true
     description: Updates a PhishER message status. User must provide at least one argument.
     name: phisher-update-message
   - arguments:
-    - description: Message ID
+    - description: Message ID.
       name: id
       required: true
     - description: Comma separated list of tags to add.
       name: tags
       required: true
-    description: Add tags to a given message
+    description: Add tags to a given message.
     name: phisher-tags-create
   - arguments:
-    - description: Message ID
+    - description: Message ID.
       name: id
       required: true
     - description: Comma separated list of tags to remove.
@@ -172,7 +172,7 @@ script:
       required: true
     description: Removes tags from a given message.
     name: phisher-tags-delete
-  dockerimage: demisto/python3:3.10.14.90585
+  dockerimage: demisto/python3:3.11.10.113941
   isfetch: true
   runonce: false
   script: '-'

@@ -7,7 +7,7 @@
     "id": "Onion Address",
     "locked": false,
     "mergeContext": false,
-    "regex": "\\b((https?):\\/ֿֿֿֿ\\/)?([a-z2-7]{17}|[a-z2-7]{57})\\.onion\\b",
+    "regex": "\\b([a-z2-7]{16}|[a-z2-7]{56})[.]onion\\b",
     "reputationScriptName": "OnionURLReputation",
     "system": false,
     "updateAfter": 0,

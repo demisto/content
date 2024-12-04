@@ -303,9 +303,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              complex:
-                accessor: asmserviceid
-                root: alert
+              simple: inputs.IssueTypeID
           operator: isExists
       label: "yes"
     continueonerrortype: ""
@@ -327,7 +325,7 @@ tasks:
       description: Determines if the "Cortex Attack Surface Management" integration instance is configured.
       id: fd4026e1-3931-4ef4-88fb-057c7078953d
       iscommand: false
-      name: Is Cortex ASM enabled?
+      name: Is Cortex ASM enabled and Input defined?
       type: condition
       version: -1
     taskid: fd4026e1-3931-4ef4-88fb-057c7078953d

@@ -1,0 +1,569 @@
+id: Event Log Was Cleared
+version: -1
+name: Event Log Was Cleared
+description: "This playbook is designed to handle the following alerts:  \n- Windows Event Log was cleared using wevtutil.exe\n- Security Event Log was cleared using wevtutil.exe\n- A Sensitive Windows Event Log was cleared using wevtutil.exe\n- Windows event logs were cleared with PowerShell\n- Suspicious clear or delete security provider event logs with PowerShell\n- Suspicious clear or delete default providers event logs with PowerShell\n- Windows event logs cleared using wmic.exe\n\nThe playbook executes the following stages:\n\nInvestigation:\nCheck the following parameters to determine if remediation actions are needed:\n- Cortex XSIAM alerts related to the hostname by MITRE tactics indicating malicious activity.\n- Whether the CGO or the OSParent process is unsigned.\n- The prevalence of the OSParent process.\n\nRemediation:\n- Handles malicious alerts by terminating the relevant processes.\n- Handles non-malicious alerts identified during the investigation."
+tags:
+- T1070 - Indicator Removal
+- T1490 - Inhibit System Recovery
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: acc9b1ca-5e6b-485d-8152-4171df653733
+    type: start
+    task:
+      id: acc9b1ca-5e6b-485d-8152-4171df653733
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 3bcade69-bdb3-46e0-880b-c9f741342853
+    type: title
+    task:
+      id: 3bcade69-bdb3-46e0-880b-c9f741342853
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "73"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: d5887430-f83b-453c-87b3-649e9fac2eb7
+    type: condition
+    task:
+      id: d5887430-f83b-453c-87b3-649e9fac2eb7
+      version: -1
+      name: Check for process signatures and prevalence
+      description: |-
+        Determines the appropriate verdict based on:
+        - Process Signature
+        - CMD line/Process name prevalence
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "77"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: alert.osparentsignature
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: alert.osparentsignature
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+          ignorecase: true
+        - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: alert.cgosignature
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: alert.cgosignature
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: Core.AnalyticsPrevalence.Process.value
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 1473ad2f-f097-4673-8227-54c63e7bb296
+    type: title
+    task:
+      id: 1473ad2f-f097-4673-8227-54c63e7bb296
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "76"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 7f649638-3182-4d2c-8369-d0a14ec35642
+    type: regular
+    task:
+      id: 7f649638-3182-4d2c-8369-d0a14ec35642
+      version: -1
+      name: Close Alert
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      closeNotes:
+        simple: Suspicious activity detected
+      closeReason:
+        simple: Resolved - Handled by the playbook "Event Log was cleared".
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 1475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 331ffb07-1760-4644-837c-68732ecf9bee
+    type: title
+    task:
+      id: 331ffb07-1760-4644-837c-68732ecf9bee
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 1655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 5b4b20fd-e0f6-43d0-843d-7d3c52c89fb7
+    type: condition
+    task:
+      id: 5b4b20fd-e0f6-43d0-843d-7d3c52c89fb7
+      version: -1
+      name: Found any alerts indicating this is malicious activity?
+      description: Determines whether the incident contains related alerts by MITRE Techniques, indicating that the alert was part of an attack pattern.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 273d63e4-d318-4050-8e20-fa8b42b3b527
+    type: title
+    task:
+      id: 273d63e4-d318-4050-8e20-fa8b42b3b527
+      version: -1
+      name: No Results Found
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "70"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 53074f01-741a-4f1e-8f5f-4e19539684f3
+    type: regular
+    task:
+      id: 53074f01-741a-4f1e-8f5f-4e19539684f3
+      version: -1
+      name: Close Alert - No results returned
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      closeNotes:
+        simple: No Results Found
+      closeReason:
+        simple: Resolved - Handled by the playbook "Event Log was cleared"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 11e37dbd-4664-442a-8b48-737b5e95ad75
+    type: regular
+    task:
+      id: 11e37dbd-4664-442a-8b48-737b5e95ad75
+      version: -1
+      name: Get prevalence for the processes in the causality
+      description: Get the prevalence of a process, identified by process name.
+      script: '|||core-get-process-analytics-prevalence'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      process_name:
+        complex:
+          root: alert
+          accessor: osparentname
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: alert.cgoname
+                iscontext: true
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys:
+                value:
+                  simple: "false"
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 7c9f23f6-7986-4c42-835f-f31c037a9fde
+    type: regular
+    task:
+      id: 7c9f23f6-7986-4c42-835f-f31c037a9fde
+      version: -1
+      name: Terminate Causality (CGO)
+      description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "78"
+      '#none#':
+      - "21"
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.cid}
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 7270541a-9892-47dc-8e5f-2b8c5c9c4583
+    type: regular
+    task:
+      id: 7270541a-9892-47dc-8e5f-2b8c5c9c4583
+      version: -1
+      name: Search for suspicious-related alerts by MITRE Technique
+      description: "This task searches for Cortex XSIAM suspicious alerts related to the current incident by Mitre Technique, indicating that the alert is part of an attack pattern.\n\nFocus on identifying alerts associated with the following MITRE techniques:\n- T1055 - Process Injection \n- T1059 - Command and Scripting Interpreter"
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      query:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '(mitreattcktechnique:*T1055* or mitreattcktechnique:*T1059*) and caseid:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 891baf84-9fd1-4e29-800c-35768048337b
+    type: regular
+    task:
+      id: 891baf84-9fd1-4e29-800c-35768048337b
+      version: -1
+      name: Terminate Causality Process Manually
+      description: |
+        Dear Analyst,
+
+        During the remediation process, the playbook failed to terminate the causality process: ${alert.cgoname}
+        Please investigate this before closing this alert.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "24_7_yes": 0.23,
+      "76_78_#error#": 0.56
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1680,
+        "width": 1220,
+        "x": 200,
+        "y": 40
+      }
+    }
+  }
+inputs: []
+inputSections:
+- inputs: []
+  name: General (Inputs group)
+  description: Generic group for inputs.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs.
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.8.0

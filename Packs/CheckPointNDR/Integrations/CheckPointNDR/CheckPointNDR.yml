@@ -50,6 +50,13 @@ configuration:
   type: 8
   required: false
 - section: Collect
+  display: Minimum probability level
+  additionalinfo: Filter out NDR insights with probability lower than this value
+  name: min_probability
+  defaultvalue: "0"
+  type: 0
+  required: false
+- section: Collect
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "10"
@@ -75,7 +82,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.113941
 fromversion: 6.9.0
 tests:
 - No tests (auto formatted)

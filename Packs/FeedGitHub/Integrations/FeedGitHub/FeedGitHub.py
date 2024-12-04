@@ -422,6 +422,7 @@ def fetch_indicators(
     tlp_color: Optional[str] = None,
     feed_tags: List = [],
     limit: int = -1,
+    enrichment_excluded: bool = False,
 ) -> List[Dict]:
     """
     Fetches indicators from a GitHub repository using the provided client.
@@ -452,6 +453,8 @@ def fetch_indicators(
             item["fields"]["tags"] = feed_tags
         if tlp_color:
             item["fields"]["trafficlightprotocol"] = tlp_color
+        if enrichment_excluded:
+            item['enrichmentExcluded'] = enrichment_excluded
         indicators.append(item)
     demisto.debug(f"After fetch command last run: {last_commit_info}")
     if last_commit_info:
@@ -491,6 +494,7 @@ def get_indicators_command(client: Client, params: dict, args: dict = {}) -> Com
         Outputs.
     """
     limit = arg_to_number(args.get("limit"))
+    enrichment_excluded = argToBoolean(params.get('enrichmentExcluded', False))
     indicators: list = []
     try:
         if limit and limit <= 0:
@@ -510,6 +514,9 @@ def get_indicators_command(client: Client, params: dict, args: dict = {}) -> Com
             if limit and limit > 0:
                 indicators = indicators[:limit]
             for indicator in indicators:
+                if enrichment_excluded:
+                    indicator['enrichmentExcluded'] = enrichment_excluded
+
                 hr_indicators.append(
                     {
                         "Value": indicator.get("value"),
@@ -537,7 +544,7 @@ def get_indicators_command(client: Client, params: dict, args: dict = {}) -> Com
         raise ValueError(f"get_indicators_command return with error. \n\nError massage: {err}")
 
 
-def fetch_indicators_command(client: Client, params: Dict[str, str], args) -> List[Dict]:
+def fetch_indicators_command(client: Client, params: dict, args) -> list[dict]:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
     Args:
         client: Client object with request
@@ -547,9 +554,11 @@ def fetch_indicators_command(client: Client, params: Dict[str, str], args) -> Li
     """
     feed_tags = argToList(params.get("feedTags", ""))
     tlp_color = params.get("tlp_color")
+    enrichment_excluded = argToBoolean(params.get('enrichmentExcluded', False))
     limit = int(params.get("limit", -1))
     last_commit_fetch = demisto.getLastRun().get("last_commit")
-    indicators = fetch_indicators(client, last_commit_fetch, params, tlp_color=tlp_color, feed_tags=feed_tags, limit=limit)
+    indicators = fetch_indicators(client, last_commit_fetch, params, tlp_color=tlp_color, feed_tags=feed_tags, limit=limit,
+                                  enrichment_excluded=enrichment_excluded)
     return indicators
 
 

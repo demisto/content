@@ -1966,7 +1966,7 @@ tasks:
           right:
             value:
               complex:
-                root: inputs.AcceptedRiskDs
+                root: inputs.AcceptedRiskIDs
             iscontext: true
         - operator: inList
           left:
@@ -3372,7 +3372,7 @@ tasks:
       BypassDevCheck:
         simple: ${inputs.BypassDevCheck}
       ExternallyDetectedProviders:
-        simple: ${ASM.ExternalService.externally_detected_providers}
+        simple: ${alert.asmprovider}
     separatecontext: true
     skipunavailable: false
     task:
@@ -3517,7 +3517,7 @@ inputs:
 
     Set to "True" if you want to bypass.  Default is "False".
   playbookInputQuery:
-- key: AcceptedRiskDs
+- key: AcceptedRiskIDs
   value: {}
   required: false
   description: Comma-separated list of instance/VM IDs that are considered an accepted risk and that should be closed.
@@ -3560,7 +3560,7 @@ inputSections:
   - RemediationNotificationSubject
   - RemediationNotificationHTMLBody
   - BypassDevCheck
-  - AcceptedRiskDs
+  - AcceptedRiskIDs
   - AcceptedRiskProjects
   - AcceptedRiskOther
   - JiraProjectKey

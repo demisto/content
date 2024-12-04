@@ -7,3 +7,6 @@ ignore=BA110
 [file:RiskSenseGetRansomewareCVEScript.yml]
 ignore=BA110
 
+[file:playbook-CVE_Exposure_-_RiskSense.yml]
+ignore=GR107
+

@@ -12,8 +12,18 @@
         "externalendtime": "2023-12-22T16:15:28.000000Z",
         "externallink": "https://now.checkpoint.com/#/insights?id=636750&domain=test&startDate=1703258128000&endDate=1703261728000",
         "description": "An anomaly detected from 127.0.0.1",
-        "eventdescriptions": ""
+        "eventdescriptions": "",
+        "sourceips": ["127.0.0.1"],
+        "sourceexternalips": ["1.2.3.4"],
+        "destinationips": ["192.168.0.1"],
+        "dstports": ["1434"],
+        "filemd5": ["098f6bcd4621d373cade4e832627b4f6"],
+        "appiName": ["TeamViewer", "google.com"],
+        "users": ["maxn"],
+        "hostnames": ["DESKTOP1"],
+        "sentbytes": 512,
+        "receivedbytes": 1024
     },
-    "rawJSON": "{\"id\": 950961, \"domain\": \"test\", \"from\": 1703258128000, \"to\": 1703261728000, \"filter\": \"src:\\\"127.0.0.1\\\"\", \"targetDomain\": \"test\", \"type\": \"Behavioral\", \"insight\": \"Behavioral.Geo.Bulgaria\", \"count\": 1, \"data\": {\"discovery_date\": \"1703387402954\"}, \"user\": \"Analytics\", \"created\": 1703387404364, \"updated\": 1703387404364, \"mdr\": false, \"probability\": 64, \"externalId\": null, \"editable\": true}"
+    "rawJSON": "{\"id\": 950961, \"domain\": \"test\", \"from\": 1703258128000, \"to\": 1703261728000, \"filter\": \"src:\\\"127.0.0.1\\\"\", \"targetDomain\": \"test\", \"type\": \"Behavioral\", \"insight\": \"Behavioral.Geo.Bulgaria\", \"count\": 1, \"data\": {\"discovery_date\": \"1703387402954\", \"statistics\": {\"count\": 1, \"top_dst\": [\"192.168.0.1\"], \"top_src\": [\"127.0.0.1\"], \"total_dst\": 1, \"total_src\": 1, \"top_service\": [\"1434\"], \"top_file_md5\": [\"098f6bcd4621d373cade4e832627b4f6\"], \"top_appi_name\": [\"TeamViewer\", \"google.com\"], \"total_service\": 1, \"total_file_md5\": 1, \"total_appi_name\": 2, \"top_proxy_src_ip\": [\"1.2.3.4\"], \"total_bytes_sent\": 512, \"top_src_user_name\": [\"maxn\"], \"total_proxy_src_ip\": 1, \"top_protection_name\": [\"MS-SQL Monitor Protocol\"], \"total_src_user_name\": 1, \"top_src_machine_name\": [\"DESKTOP1\"], \"total_bytes_received\": 1024, \"total_protection_name\": 1, \"total_src_machine_name\": 1}}, \"user\": \"Analytics\", \"created\": 1703387404364, \"updated\": 1703387404364, \"mdr\": false, \"probability\": 64, \"externalId\": null, \"editable\": true}"
     }
 ]

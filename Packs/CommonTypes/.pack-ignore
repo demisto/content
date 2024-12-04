@@ -408,3 +408,12 @@ ignore=GR103
 # GR103 is temporary, see CIAC-11705
 [file:incidentfield-Last_Modified_On.json]
 ignore=GR103
+
+[file:reputation-ipv6.json]
+ignore=GR107
+
+[file:reputation-cidr.json]
+ignore=GR107
+
+[file:3_5_23.md]
+ignore=RN115

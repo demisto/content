@@ -1,7 +1,7 @@
 [file:layoutscontainer-Review_Indicators_Manually.json]
 ignore=BA101
 
-[file:layoutscontainer-Review_Indicators_Manually_For_Whitelisting.json]
+[file:layoutscontainer-Review_Indicators_Manually_For_Allowlisting.json]
 ignore=BA101
 
 [file:playbook-TIM_-_Run_Enrichment_For_Hash_Indicators_README.md]
@@ -37,7 +37,7 @@ ignore=PB115
 [file:playbook-TIM_-_Review_Indicators_Manually.yml]
 ignore=PB115
 
-[file:playbook-TIM_-_Review_Indicators_Manually_For_Whitelisting.yml]
+[file:playbook-TIM_-_Review_Indicators_Manually_For_Allowlisting.yml]
 ignore=PB115
 
 [file:playbook-TIM_-_Run_Enrichment_For_Domain_Indicators.yml]

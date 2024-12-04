@@ -122,6 +122,12 @@ configuration:
   type: 8
   advanced: true
   defaultvalue: 'false'
+- display: Skip unparsable emails during fetch incidents
+  name: skip_unparsable_emails
+  section: Collect
+  type: 8
+  advanced: true
+  required: false
 description: Exchange Web Services and Office 365 (mail).
 display: EWS v2
 name: EWS v2
@@ -245,8 +251,8 @@ script:
     - description: The mailbox IDs to search. If empty, all mailboxes are searched.
       isArray: true
       name: mailbox-search-scope
-    - defaultValue: '250'
-      description: Maximum number of results to return.
+    - defaultValue: '100'
+      description: Maximum number of results to return. Default is 100. This maximum limit can vary based on the EWS server configuration, but a safe recommendation for this argument's upper value is 1000.
       name: limit
     - description: CSV list or array of email addresses.
       isArray: true
@@ -318,7 +324,7 @@ script:
       required: true
     - description: The mailbox on which to run the command.
       name: target-mailbox
-    description: Delete items from mailbox.
+    description: Delete items from mailbox. This command requires eDiscovery permissions to the Exchange Server. For more information, see the EWSv2 integration documentation.
     name: ews-delete-items
     outputs:
     - contextPath: EWS.Items.itemId
@@ -1030,7 +1036,7 @@ script:
       name: from
     description: Replies to an email using EWS.
     name: reply-mail
-  dockerimage: demisto/py-ews:5.4.1.98221
+  dockerimage: demisto/py-ews:5.5.0.115394
   isfetch: true
   runonce: false
   script: '-'

@@ -1,5 +1,5 @@
 [file:playbook-PAN-OS_edit_policy.yml]
-ignore=PB105
+ignore=PB105,GR107
 
 [file:playbook-Jira_Change_Management.yml]
 ignore=PB106
@@ -15,4 +15,7 @@ fw
 
 [file:IncidentState.yml]
 ignore=BA124
+
+[file:playbook-PAN-OS_create_or_edit_policy.yml]
+ignore=GR107
 

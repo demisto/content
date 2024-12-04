@@ -154,7 +154,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.111039
   commands:
   - name: domain
     description: Gets a quick indicator of the risk associated with a domain.
@@ -164,6 +164,14 @@ script:
       default: true
       isArray: true
       description: The domain for which to get the reputation.
+    - name: collective_insights
+      description: Save IOC to Collective Insights? If not specified - uses demisto param setting value.
+      required: false
+      default: false
+      auto: PREDEFINED
+      predefined:
+        - on
+        - off
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -231,6 +239,14 @@ script:
       default: true
       isArray: true
       description: IP address for which to get the reputation.
+    - name: collective_insights
+      description: Save IOC to Collective Insights? If not specified - uses demisto param setting value.
+      required: false
+      default: false
+      auto: PREDEFINED
+      predefined:
+        - on
+        - off
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -298,6 +314,14 @@ script:
       isArray: true
       default: true
       description: File hash for which to check the reputation. Can be an MD5, SHA1, SHA256, SHA512, CRC32 or CTPH.
+    - name: collective_insights
+      description: Save IOC to Collective Insights? If not specified - uses demisto param setting value.
+      required: false
+      default: false
+      auto: PREDEFINED
+      predefined:
+        - on
+        - off
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -380,6 +404,14 @@ script:
       default: true
       isArray: true
       description: CVE for which to get the reputation.
+    - name: collective_insights
+      description: Save IOC to Collective Insights? If not specified - uses demisto param setting value.
+      required: false
+      default: false
+      auto: PREDEFINED
+      predefined:
+        - on
+        - off
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -441,6 +473,14 @@ script:
       default: true
       isArray: true
       description: URL for which to get the reputation.
+    - name: collective_insights
+      description: Save IOC to Collective Insights? If not specified - uses demisto param setting value.
+      required: false
+      default: false
+      auto: PREDEFINED
+      predefined:
+        - on
+        - off
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -2866,6 +2906,7 @@ script:
     - contextPath: RecordedFuture.ThreatMap.links
       description: Recorded Future threat actor links by type.
       type: string
+
   - name: recordedfuture-threat-links
     description: Search links.
     arguments:
@@ -2923,6 +2964,7 @@ script:
       description: Recorded Future link section.
     - contextPath: RecordedFuture.Links.links.attributes
       description: Recorded Future link attributes.
+
   - name: recordedfuture-detection-rules
     description: Search detection rules.
     arguments:
@@ -3000,6 +3042,7 @@ script:
     - contextPath: RecordedFuture.DetectionRules.rules.file_name
       description: Recorded Future Detection rules file_name.
       type: String
+
   - name: recordedfuture-collective-insight
     description: Post detection to collective insight.
     arguments:

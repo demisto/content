@@ -2,7 +2,7 @@
     "name": "SlashNext Phishing Incident Response - Annual Subscription  (Direct Subscription)",
     "description": "This community edition of SlashNext Phishing Incident Response is intended for organization to try the world’s largest, real-time phishing intelligence database for accurate, definitive binary verdicts on suspicious URLs and download phishing forensics including webpage screenshots, HTML and text. \n\nThis edition is for organizations that need a direct annual subscription to SlashNext Phishing Incident Response, the world’s largest, real-time phishing intelligence database for accurate, definitive binary verdicts on suspicious URLs and download phishing forensics including webpage screenshots, HTML and text. \n\nFor more information go to: https://www.slashnext.com/technology-partners/cortex-xsoar/",
     "support": "partner",
-    "currentVersion": "1.3.9",
+    "currentVersion": "1.3.10",
     "author": "SlashNext",
     "url": "https://www.slashnext.com",
     "email": "support@slashnext.com",

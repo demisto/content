@@ -1,45 +1,37 @@
 {
     "description": "",
     "feed": false,
+    "fromVersion": "6.2.0",
     "id": "Netskope Mapper",
     "mapping": {
         "Netskope Behavior Analytics": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Application Name": {
-                    "complex": null,
                     "simple": "app"
                 },
-                "Netskope Cloud Confidence Level": {
-                    "complex": null,
-                    "simple": "ccl"
+                "Event Type": {
+                    "simple": "event_type"
                 },
                 "Netskope Action": {
-                    "complex": null,
                     "simple": "action"
                 },
                 "Netskope Behavior Analytics Policy": {
-                    "complex": null,
                     "simple": "policy"
                 },
-                "Event Type": {
-                    "complex": null,
-                    "simple": "event_type"
+                "Netskope Cloud Confidence Level": {
+                    "simple": "ccl"
                 },
                 "Netskope Object": {
-                    "complex": null,
                     "simple": "object"
                 },
                 "Netskope Object ID": {
-                    "complex": null,
                     "simple": "object_id"
                 },
                 "Netskope Object Type": {
-                    "complex": null,
                     "simple": "object_type"
                 },
                 "name": {
-                    "complex": null,
                     "simple": "${policy} -${user}"
                 }
             }
@@ -47,50 +39,39 @@
         "Netskope Compromised Credentials": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Netskope Cloud Confidence Level": {
-                    "complex": null,
-                    "simple": "ccl"
-                },
                 "Netskope Access Method": {
-                    "complex": null,
                     "simple": "email_source"
                 },
                 "Netskope Acknowledge": {
-                    "complex": null,
                     "simple": "acked"
-                },
-                "Netskope Breach Description": {
-                    "complex": null,
-                    "simple": "breach_description"
-                },
-                "Netskope Breach Score": {
-                    "complex": null,
-                    "simple": "breach_score"
-                },
-                "Netskope Leak ID": {
-                    "complex": null,
-                    "simple": "breach_id"
                 },
                 "Netskope Breach Date": {
                     "complex": {
-                        "accessor": "",
                         "filters": [],
                         "root": "breach_date",
                         "transformers": [
                             {
-                                "args": {},
                                 "operator": "TimeStampToDate"
                             }
                         ]
-                    },
-                    "simple": ""
+                    }
+                },
+                "Netskope Breach Description": {
+                    "simple": "breach_description"
+                },
+                "Netskope Breach Score": {
+                    "simple": "breach_score"
                 },
                 "Netskope Breach Source": {
-                    "complex": null,
                     "simple": "alert_name"
                 },
+                "Netskope Cloud Confidence Level": {
+                    "simple": "ccl"
+                },
+                "Netskope Leak ID": {
+                    "simple": "breach_id"
+                },
                 "name": {
-                    "complex": null,
                     "simple": "${alert_type} - ${user}"
                 }
             }
@@ -99,70 +80,161 @@
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Alert ID": {
-                    "complex": null,
                     "simple": "_id"
                 },
                 "Application Name": {
-                    "complex": null,
                     "simple": "app"
                 },
-                "Netskope Cloud Confidence Level": {
-                    "complex": null,
-                    "simple": "ccl"
-                },
                 "Event Type": {
-                    "complex": null,
                     "simple": "alert_type"
                 },
                 "File Path": {
-                    "complex": null,
                     "simple": "file_path"
                 },
-                "Netskope Object": {
-                    "complex": null,
-                    "simple": "object"
-                },
-                "Netskope Object ID": {
-                    "complex": null,
-                    "simple": "object_id"
-                },
-                "Netskope Object Type": {
-                    "complex": null,
-                    "simple": "object_type"
+                "Netskope Cloud Confidence Level": {
+                    "simple": "ccl"
                 },
                 "Netskope DLP Profile": {
-                    "complex": null,
                     "simple": "dlp_profile"
                 },
                 "Netskope DLP Rule": {
-                    "complex": null,
                     "simple": "dlp_rule"
                 },
+                "Netskope Object": {
+                    "simple": "object"
+                },
+                "Netskope Object ID": {
+                    "simple": "object_id"
+                },
+                "Netskope Object Type": {
+                    "simple": "object_type"
+                },
                 "Source Username": {
-                    "complex": null,
                     "simple": "user"
                 },
                 "name": {
-                    "complex": null,
                     "simple": "${alert_type} - ${user}"
                 },
                 "occurred": {
                     "complex": {
-                        "accessor": "",
                         "filters": [],
                         "root": "timestamp",
                         "transformers": [
                             {
-                                "args": {},
                                 "operator": "TimeStampToDate"
                             }
                         ]
-                    },
-                    "simple": ""
+                    }
                 },
                 "severity": {
-                    "complex": null,
                     "simple": "dlp_rule_severity"
+                }
+            }
+        },
+        "Netskope DLP Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "object_id"
+                },
+                "App": {
+                    "simple": "app"
+                },
+                "Assigned User": {
+                    "simple": "assignee"
+                },
+                "Event ID": {
+                    "simple": "object_id"
+                },
+                "File MD5": {
+                    "simple": "md5"
+                },
+                "File Name": {
+                    "simple": "dlp_file"
+                },
+                "File Size": {
+                    "simple": "file_size"
+                },
+                "MD5": {
+                    "simple": "md5"
+                },
+                "Netskope Access Method": {
+                    "simple": "access_method"
+                },
+                "Netskope Action": {
+                    "simple": "activity"
+                },
+                "Netskope DLP Policy": {
+                    "simple": "dlp_match_info.[].dlp_policy"
+                },
+                "Netskope DLP Profile": {
+                    "simple": "dlp_match_info.[].dlp_profile_name"
+                },
+                "Netskope DLP Rule": {
+                    "simple": "dlp_match_info.[].dlp_rules.[].dlp_rule_name"
+                },
+                "Netskope File Type": {
+                    "simple": "true_obj_type"
+                },
+                "Netskope Object": {
+                    "simple": "object"
+                },
+                "Netskope Object ID": {
+                    "simple": "object_id"
+                },
+                "Netskope Object Type": {
+                    "simple": "object_type"
+                },
+                "Netskope Original Severity": {
+                    "simple": "severity"
+                },
+                "Netskope Original Status": {
+                    "simple": "status"
+                },
+                "Netskope Severity": {
+                    "simple": "severity"
+                },
+                "Netskope Site": {
+                    "simple": "site"
+                },
+                "Netskope Timestamp": {
+                    "simple": "timestamp"
+                },
+                "Policy Actions": {
+                    "simple": "dlp_match_info.[].dlp_action"
+                },
+                "Rule Name": {
+                    "simple": "dlp_match_info.[].dlp_rules.[].dlp_rule_name"
+                },
+                "Source Status": {
+                    "simple": "status"
+                },
+                "Source Username": {
+                    "simple": "user"
+                },
+                "Title": {
+                    "simple": "title"
+                },
+                "URLs": {
+                    "simple": "url"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "object_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "name": {
+                    "simple": "${incident_type} - ${user}"
+                },
+                "occurred": {
+                    "simple": "timestamp"
+                },
+                "sourceInstance": {
+                    "simple": "instance_id"
                 }
             }
         },
@@ -170,31 +242,24 @@
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "File Names": {
-                    "complex": null,
                     "simple": "object"
                 },
                 "File Paths": {
-                    "complex": null,
                     "simple": "file_path"
                 },
                 "File Size": {
-                    "complex": null,
                     "simple": "file_size"
                 },
                 "Netskope Access Method": {
-                    "complex": null,
                     "simple": "access_method"
                 },
                 "Netskope Malware ID": {
-                    "complex": null,
                     "simple": "malware_id"
                 },
                 "Netskope Malware Name": {
-                    "complex": null,
                     "simple": "object"
                 },
                 "Netskope Malware Type": {
-                    "complex": null,
                     "simple": "malware_type"
                 }
             }
@@ -203,35 +268,27 @@
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "File MD5": {
-                    "complex": null,
                     "simple": "md5"
                 },
                 "File Names": {
-                    "complex": null,
                     "simple": "object"
                 },
                 "File Size": {
-                    "complex": null,
                     "simple": "file_size"
                 },
                 "Netskope Access Method": {
-                    "complex": null,
                     "simple": "access_method"
                 },
                 "Netskope Quarantine File ID": {
-                    "complex": null,
                     "simple": "quarantine_file_id"
                 },
                 "Netskope Quarantine Policy": {
-                    "complex": null,
                     "simple": "policy"
                 },
                 "Netskope Quarantine Profile": {
-                    "complex": null,
                     "simple": "dlp_profile"
                 },
                 "Netskope Quarantine Profile ID": {
-                    "complex": null,
                     "simple": "quarantine_profile_id"
                 }
             }
@@ -240,44 +297,35 @@
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Alert ID": {
-                    "complex": null,
                     "simple": "_id"
                 },
                 "Event Type": {
-                    "complex": null,
                     "simple": "alert_type"
                 },
                 "Source Username": {
-                    "complex": null,
                     "simple": "user"
                 },
                 "name": {
-                    "complex": null,
                     "simple": "${alert_type} - ${user}"
                 },
                 "occurred": {
                     "complex": {
-                        "accessor": "",
                         "filters": [],
                         "root": "timestamp",
                         "transformers": [
                             {
-                                "args": {},
                                 "operator": "TimeStampToDate"
                             }
                         ]
-                    },
-                    "simple": ""
+                    }
                 },
                 "severity": {
-                    "complex": null,
                     "simple": "severity"
                 }
             }
         }
     },
-    "type": "mapping-incoming",
     "name": "Netskope Mapper",
-    "version": -1,
-    "fromVersion": "6.2.0"
+    "type": "mapping-incoming",
+    "version": -1
 }

@@ -26,3 +26,6 @@ ignore=GR103
 ignore=GR103
 [file:HealthCheckGetLargestInputsAndOutputsInIncidents.yml]
 ignore=GR103
+
+[file:HealthCheck.yml]
+ignore=GR107

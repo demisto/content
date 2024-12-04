@@ -11,13 +11,20 @@ CONFIDENT_EMAIL_INFOS = {
     'news or mail text',
 }
 
+EMAIL_FILE_TYPES = (
+    'eml',
+    'eml}',
+    'message/rfc822'
+)
+
 
 # IMPORTANT: If you modify the logic here make sure to update ParseEmailFiles too
 def is_email(file_metadata: dict, file_name: str) -> bool:
     file_info = file_metadata.get('info', '').strip().lower()
     file_name = file_name.strip().lower()
+    file_type = file_metadata.get('type', '').strip().lower()
     return any((
-        file_metadata.get('type') in ('eml', 'eml}'),
+        file_type in EMAIL_FILE_TYPES,
         any(info in file_info for info in CONFIDENT_EMAIL_INFOS),
         file_name.endswith('.eml') and ('text' in file_info or file_info == 'data'),
         file_name.endswith('.msg') and 'composite document file v2 document' in file_info

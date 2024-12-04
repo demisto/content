@@ -1,0 +1,46 @@
+{
+    "author": "pH-T (Nextron Systems)",
+    "category": "dns_query",
+    "definition": "",
+    "description": "Detects DNS queries for \"anonfiles.com\", which is an anonymous file upload platform often used for malicious purposes",
+    "product": "windows",
+    "publications": [
+        {
+            "date": "2022-07-15",
+            "link": "https://www.trendmicro.com/vinfo/us/security/news/ransomware-spotlight/ransomware-spotlight-blackbyte",
+            "source": "sigma rule",
+            "title": "DNS Query for Anonfiles.com Domain - Sysmon"
+        }
+    ],
+    "service": "",
+    "sigmacondition": [
+        {
+            "condition": "selection"
+        }
+    ],
+    "sigmadetection": [
+        {
+            "key": "QueryName",
+            "modifiers": "contains",
+            "selection": "selection",
+            "values": "(1) .anonfiles.com"
+        }
+    ],
+    "sigmafalsepositives": [
+        {
+            "reason": "Rare legitimate access to anonfiles.com"
+        }
+    ],
+    "sigmaruleid": "065cceea-77ec-4030-9052-fc0affea7110",
+    "sigmarulelevel": "high",
+    "sigmarulelicense": "",
+    "sigmaruleraw": "{\"author\": \"pH-T (Nextron Systems)\", \"date\": \"2022-07-15\", \"description\": \"Detects DNS queries for \\\"anonfiles.com\\\", which is an anonymous file upload platform often used for malicious purposes\", \"detection\": {\"condition\": \"selection\", \"selection\": {\"QueryName|contains\": \".anonfiles.com\"}}, \"falsepositives\": [\"Rare legitimate access to anonfiles.com\"], \"id\": \"065cceea-77ec-4030-9052-fc0affea7110\", \"level\": \"high\", \"logsource\": {\"category\": \"dns_query\", \"product\": \"windows\"}, \"references\": [\"https://www.trendmicro.com/vinfo/us/security/news/ransomware-spotlight/ransomware-spotlight-blackbyte\"], \"status\": \"test\", \"tags\": [\"attack.exfiltration\", \"attack.t1567.002\"], \"title\": \"DNS Query for Anonfiles.com Domain - Sysmon\"}",
+    "sigmarulestatus": "test",
+    "tags": [
+        "Exfiltration",
+        "T1567.002"
+    ],
+    "type": "Sigma Rule",
+    "value": "DNS Query for Anonfiles.com Domain - Sysmon",
+    "verdict": "Malicious"
+}

@@ -83,7 +83,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.111039
   commands:
   - name: recordedfuture-playbook-alerts-details
     description: Get Playbook alert details by id.
@@ -92,7 +92,7 @@ script:
       required: true
       description: Ids of the playbook alert that should be fetched.
     - name: detail_sections
-      description: What evidence sections to include in the fetch, fetches all available if not specified.
+      description: What evidence sections to include in the fetch. Fetches all available if not specified.
       auto: PREDEFINED
       predefined:
       - status
@@ -512,6 +512,16 @@ script:
       - in-progress
       - dismissed
       - resolved
+    - name: comment
+      description: Add comment to all alerts in alert_ids.
+      required: false
+    - name: reopen
+      description: 'Set the reopen strategy for the alert. Reopen on significant updates or keep the alert Resolved. Default: reopen on significant updates. Can only be used with new_status=resolved.'
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - never
+        - significant_updates
     outputs:
     - contextPath: RecordedFuture.PlaybookAlerts.playbook_alert_id
       description: Unique id of the playbook alert in Recorded Future.
@@ -530,7 +540,7 @@ script:
     description: Search playbook alerts based on filters.
     arguments:
     - name: category
-      description: filter what playbook alert categories that is wanted. (default = all available).
+      description: The playbook alert categories to retrieve. Default is all_available.
       auto: PREDEFINED
       predefined:
       - all_available
@@ -538,9 +548,9 @@ script:
       - vulnerability
       - code_repo_leakage
     - name: limit
-      description: Limits the number of alerts to fetch.
+      description: The maximum number of alerts to fetch.
     - name: time_since_update
-      description: Time between now and e.g. "2 hours" or "7 days" ago.
+      description: The amount of time since the last update. E.g., "2 hours" or "7 days" ago.
     - name: playbook_alert_status
       auto: PREDEFINED
       predefined:
@@ -548,7 +558,7 @@ script:
       - in-progress
       - dismissed
       - resolved
-      description: Filter what statuses are fetched, defaults to only new status if not specified.
+      description: The statuses to retrieve. Defaults to only new status if not specified.
     - name: priority
       auto: PREDEFINED
       predefined:
@@ -561,7 +571,7 @@ script:
       predefined:
       - updated
       - created
-      description: Actions pritority assigned in Recorded Future.
+      description: The order by which to search for playbook alerts.
     outputs:
     - contextPath: RecordedFuture.PlaybookAlerts.playbook_alert_id
       description: Unique id of the playbook alert.

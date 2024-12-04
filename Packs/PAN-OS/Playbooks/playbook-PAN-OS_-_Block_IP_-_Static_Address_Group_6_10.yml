@@ -1,0 +1,627 @@
+id: PAN-OS - Block IP - Static Address Group
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: PAN-OS - Block IP - Static Address Group
+description: |-
+  This playbook blocks IP addresses using Static Address Groups in Palo Alto Networks Panorama or Firewall.
+  The playbook receives malicious IP addresses and an address group name as inputs, verifies that the addresses are not already a part of the address group, adds them and commits the configuration.
+
+  ***Note - The playbook does not block the address group communication using a policy block rule. This step will be taken once outside of the playbook.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 190b5447-4f35-40e2-83f3-8dd9753b0708
+    type: start
+    task:
+      id: 190b5447-4f35-40e2-83f3-8dd9753b0708
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 480942ef-335c-4e66-87f7-dc2b3ada2048
+    type: condition
+    task:
+      id: 480942ef-335c-4e66-87f7-dc2b3ada2048
+      version: -1
+      name: Palo Alto Networks PAN-OS enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Panorama
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 1ecb1e3c-a84b-40ce-8975-79f309bd0b07
+    type: condition
+    task:
+      id: 1ecb1e3c-a84b-40ce-8975-79f309bd0b07
+      version: -1
+      name: Is there an IP to block?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.IP
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 36d25b97-4e69-4936-86da-72333275ad79
+    type: title
+    task:
+      id: 36d25b97-4e69-4936-86da-72333275ad79
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: e5deb437-498e-4e8a-8b9e-d1d79579f6a2
+    type: regular
+    task:
+      id: e5deb437-498e-4e8a-8b9e-d1d79579f6a2
+      version: -1
+      name: PAN-OS - Get address group
+      description: Get details for the specified address group
+      script: '|||pan-os-get-address-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      name:
+        complex:
+          root: inputs.AddressGroupName
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 435dfd22-d2d5-4ccb-8116-20e0c9dab09f
+    type: condition
+    task:
+      id: 435dfd22-d2d5-4ccb-8116-20e0c9dab09f
+      version: -1
+      name: Check if the malicious IPs already exist in the address group
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Panorama.AddressGroups.Addresses
+            iscontext: true
+          right:
+            value:
+              simple: inputs.IP
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: ec1a0c5b-7017-4503-8ee3-c582418808c3
+    type: regular
+    task:
+      id: ec1a0c5b-7017-4503-8ee3-c582418808c3
+      version: -1
+      name: PAN OS - Add IP addresses to address group
+      description: Add IP addresses to a static or dynamic address group.
+      script: '|||pan-os-edit-address-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      element_to_add:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      name:
+        complex:
+          root: inputs.AddressGroupName
+      type:
+        simple: static
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: c27672c3-546c-4a5b-8b16-31729a029798
+    type: regular
+    task:
+      id: c27672c3-546c-4a5b-8b16-31729a029798
+      version: -1
+      name: PAN-OS - Create address objects
+      description: Creates an address object
+      script: '|||pan-os-create-address'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      description:
+        simple: ${inputs.IPDescription}
+      ip_netmask:
+        simple: ${inputs.IP}
+      name:
+        complex:
+          root: inputs.IP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: e910a8ff-52dd-40db-8fe2-e39b357b4c15
+    type: playbook
+    task:
+      id: e910a8ff-52dd-40db-8fe2-e39b357b4c15
+      version: -1
+      name: PAN-OS Commit Configuration v2
+      playbookName: PAN-OS Commit Configuration v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 52739aac-151a-484e-8ca0-cb85200d4a9b
+    type: condition
+    task:
+      id: 52739aac-151a-484e-8ca0-cb85200d4a9b
+      version: -1
+      name: AutoCommit defined?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoCommit
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 32cbe912-af9b-416f-8c8a-e54b58a88558
+    type: regular
+    task:
+      id: 32cbe912-af9b-416f-8c8a-e54b58a88558
+      version: -1
+      name: Commit PAN-OS Instance manually
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1440,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 9a28e55c-f29e-4a61-8659-beac27c60f74
+    type: regular
+    task:
+      id: 9a28e55c-f29e-4a61-8659-beac27c60f74
+      version: -1
+      name: PAN OS - Add IP addresses to address group
+      description: Add IP addresses to a static or dynamic address group.
+      script: '|||pan-os-edit-address-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      element_to_add:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      name:
+        complex:
+          root: inputs.AddressGroupName
+      type:
+        simple: static
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1440,
+          "y": 1395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 8a034a0d-ebea-401c-8b9d-e7e708d94fdb
+    type: regular
+    task:
+      id: 8a034a0d-ebea-401c-8b9d-e7e708d94fdb
+      version: -1
+      name: Commit PAN-OS Instance manually
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1440,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 4bc1586a-2526-4146-8bd5-98477fd43863
+    type: playbook
+    task:
+      id: 4bc1586a-2526-4146-8bd5-98477fd43863
+      version: -1
+      name: PAN-OS Commit Configuration v2
+      playbookName: PAN-OS Commit Configuration v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_3_#default#": 0.16,
+      "2_3_#default#": 0.17,
+      "5_3_yes": 0.29
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1765,
+        "width": 1370,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IP
+  value:
+    complex:
+      root: IP
+      filters:
+      - - operator: isExists
+          left:
+            value:
+              simple: IP.Malicious
+            iscontext: true
+      accessor: Address
+      transformers:
+      - operator: uniq
+  required: false
+  description: IP address to block
+  playbookInputQuery:
+- key: AddressGroupName
+  value:
+    simple: Remediation - Static Address Group
+  required: false
+  description: Static address group name
+  playbookInputQuery:
+- key: AutoCommit
+  value:
+    simple: "No"
+  required: false
+  description: |-
+    This input establishes whether to commit the configuration automatically.
+    Yes - Commit automatically.
+    No - Commit manually.
+  playbookInputQuery:
+- key: IPDescription
+  value:
+    simple: Automatically created using "PAN-OS - Block IP - Static Address Group" playbook in Cortex XSIAM.
+  required: false
+  description: The description of the IP in case it will get created by the playbook.
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - IP
+  - AddressGroupName
+  - AutoCommit
+  - IPDescription
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+tests:
+- PAN-OS - Block IP - Static Address Group Test
+fromversion: 6.10.0

@@ -440,13 +440,13 @@ inputs:
   playbookInputQuery:
 - key: Interval
   value:
-    simple: "1"
+    simple: "60"
   required: false
   description: The duration for executing the polling (in seconds).
   playbookInputQuery:
 - key: Timeout
   value:
-    simple: "8"
+    simple: "480"
   required: false
   description: The duration after which to stop polling and to resume the playbook. (in seconds)
   playbookInputQuery:

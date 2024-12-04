@@ -12,3 +12,5 @@ ignore=BA108,BA109
 [file:README.md]
 ignore=RM104
 
+[file:incidenttype-Traps.json]
+ignore=GR107

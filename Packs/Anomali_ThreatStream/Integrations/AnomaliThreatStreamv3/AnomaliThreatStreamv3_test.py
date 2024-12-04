@@ -1084,6 +1084,38 @@ class TestGetIndicators:
 
         assert len(results.outputs) == 7000
 
+    @staticmethod
+    def test_pagination_without_credentials(mocker):
+        """
+        Given
+            - An on-prem user
+        When
+            - Calling the get_indicator command
+            - The 'next' url is expected to have credentials from the response
+        Then
+            - Verify the first API call is made with credentials
+            - Verify the second API call is made without credentials
+        """
+        http_request = mocker.patch.object(Client, 'http_request', side_effect=[
+            {'objects': INDICATOR * 1000, 'meta': {'next': '/api/v2/intelligence/?&search_after=test&api_key=test'}},
+            {'objects': INDICATOR * 1000, 'meta': {'next': None}},
+        ])
+        client = Client(
+            base_url='',
+            user_name='',
+            api_key='',
+            verify=False,
+            proxy=False,
+            reliability='B - Usually reliable',
+            should_create_relationships=False,
+            remote_api=False,
+        )
+
+        _ = get_indicators(client, limit='7000')
+
+        assert not http_request.call_args_list[0].kwargs.get("without_credentials")
+        assert http_request.call_args_list[1].kwargs["without_credentials"]
+
 
 def test_search_intelligence(mocker):
     """

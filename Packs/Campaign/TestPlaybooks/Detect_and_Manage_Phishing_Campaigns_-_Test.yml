@@ -5,7 +5,7 @@ description: |-
   Tests the scenario where similar phishing incidents should create a phishing campaign incident.
   It does that by creating fake phishing incidents which should run the Phishing - Generic v3 playbook, and in the process run the Detect & Manage Phishing Campaigns playbook.
 
-  The campaign incident should have 9 incidents when all incidents  have finished running.
+  The campaign incident should have 9 incidents when all incidents have finished running.
 starttaskid: "0"
 tasks:
   "0":

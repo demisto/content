@@ -61,7 +61,7 @@ tasks:
           transformers:
           - operator: FirstArrayElement
       protocol:
-        simple: ${alert.protocol}
+        simple: ${alert.asmprotocol}
     separatecontext: true
     continueonerrortype: ""
     loop:

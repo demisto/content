@@ -1,11 +1,8 @@
 BMC Discovery is a SaaS-based, cloud-native discovery and dependency modeling system that provides instant visibility into hardware, software, and service dependencies across multi-cloud, hybrid, and on-premises environments.
 This integration was integrated and tested with BMC Discovery v.22.1.
 
-## Configure BMC Discovery Integration on Cortex XSOAR
+## Configure BMC Discovery Integration in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for BMC Discovery.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter**                      | **Description**               | **Required** |
 | ---------------------------------- | ----------------------------- | ------------ |
@@ -16,10 +13,9 @@ This integration was integrated and tested with BMC Discovery v.22.1.
 
 * The BMC Discovery user must have the following permissions: **admin, api-access, discovery, system**
 
-4. Click **Test** to validate the URL and token.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 #### bmc-discovery-scan-status-list

@@ -1,30 +1,26 @@
 Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.
 
-## Configure Code42 on Cortex XSOAR
+## Configure Code42 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Code42.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Code42 Console URL for your Code42 environment | True |
-    | API Client ID | True |
-    | API Client Secret | True |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Alert severities to fetch when fetching incidents | False |
-    | First fetch time range (&lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes) | False |
-    | Alerts to fetch per run; note that increasing this value may result in slow performance if too many results are returned at once | False |
-    | Include the list of files in returned incidents. | False |
-    | Incidents Fetch Interval | False |
-    | Use v2 file events | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Code42 Console URL for your Code42 environment | True |
+| API Client ID | True |
+| API Client Secret | True |
+| Fetch incidents | False |
+| Incident type | False |
+| Alert severities to fetch when fetching incidents | False |
+| First fetch time range (&lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes) | False |
+| Alerts to fetch per run; note that increasing this value may result in slow performance if too many results are returned at once | False |
+| Include the list of files in returned incidents. | False |
+| Incidents Fetch Interval | False |
+| Use v2 file events | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### code42-file-events-search

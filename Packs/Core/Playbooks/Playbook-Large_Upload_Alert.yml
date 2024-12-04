@@ -506,7 +506,7 @@ tasks:
           accessor: username
           transformers:
           - operator: uniq
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -1383,7 +1383,7 @@ tasks:
         simple: Blocked Indicator In Systems
       UserVerification:
         simple: ${inputs.BlockIndicators_UserVerification}
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -1440,10 +1440,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: e42cdc09-90b7-4f4c-8932-f1cd98dbce53
+    taskid: f96c9d24-ae8d-4888-8f43-1827d644292b
     type: playbook
     task:
-      id: e42cdc09-90b7-4f4c-8932-f1cd98dbce53
+      id: f96c9d24-ae8d-4888-8f43-1827d644292b
       version: -1
       name: TIM - Indicator Relationships Analysis
       description: |-
@@ -1469,7 +1469,7 @@ tasks:
           - operator: uniq
       LimitResults:
         simple: "200"
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -1492,10 +1492,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 80ecf312-6088-4f9f-88b3-99c606b1c5dc
+    taskid: dfaff694-5e45-4cfe-84b4-c80c885026ec
     type: playbook
     task:
-      id: 80ecf312-6088-4f9f-88b3-99c606b1c5dc
+      id: dfaff694-5e45-4cfe-84b4-c80c885026ec
       version: -1
       name: User Investigation - Generic
       description: |-
@@ -1542,7 +1542,7 @@ tasks:
         simple: "True"
       XDRUsernameField:
         simple: actor_effective_username
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -1609,10 +1609,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: cc640258-7d81-4d75-8374-a9d7082bbf36
+    taskid: ed863d05-e3ef-409f-89d9-70fac8f65414
     type: playbook
     task:
-      id: cc640258-7d81-4d75-8374-a9d7082bbf36
+      id: ed863d05-e3ef-409f-89d9-70fac8f65414
       version: -1
       name: Endpoint Investigation Plan
       description: "This playbook handles all the endpoint investigation actions by performing the following tasks  on every alert associated with the alert:\n* Pre-defined MITRE Tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -1726,7 +1726,7 @@ tasks:
           accessor: Indicator
           transformers:
           - operator: uniq
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -1749,10 +1749,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 9a0966fc-2354-4a7f-84af-8408838bd539
+    taskid: c9c91b29-bca6-4a8e-8019-6293aa15fe02
     type: playbook
     task:
-      id: 9a0966fc-2354-4a7f-84af-8408838bd539
+      id: c9c91b29-bca6-4a8e-8019-6293aa15fe02
       version: -1
       name: Command-Line Analysis
       description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n\nNote: To run this playbook with a list of command lines, set this playbook to run in a loop. To do so, navigate to 'Loop'  and check \"For Each Input\"."
@@ -1778,7 +1778,7 @@ tasks:
           - operator: uniq
       StringSimilarityThreshold:
         simple: "0.5"
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -1835,7 +1835,7 @@ tasks:
         simple: "True"
       StringSimilarityThreshold:
         simple: "0.5"
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -1912,13 +1912,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: fab649a7-5152-441c-8975-0b21e8452278
+    taskid: e4b8a16c-1eb6-4f0e-8b8a-7b6ec5b8fceb
     type: condition
     task:
-      id: fab649a7-5152-441c-8975-0b21e8452278
+      id: e4b8a16c-1eb6-4f0e-8b8a-7b6ec5b8fceb
       version: -1
-      name: Has Command-Line to Investigate?
-      description: Checks whether an initiator command-line is available for investigation.
+      name: Has Command-Line Investigation Results?
+      description: Checks whether the command-line investigation produced any results.
       type: condition
       iscommand: false
       brand: ""
@@ -1937,6 +1937,8 @@ tasks:
               simple: Findings
             iscontext: true
           ignorecase: true
+          right:
+            value: {}
         - operator: isEqualString
           left:
             value:
@@ -2067,10 +2069,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: c32e7f2d-5b93-4f70-8305-43f704dfad02
+    taskid: 4e31d21d-f0e5-40d2-8333-750fd0973c3c
     type: condition
     task:
-      id: c32e7f2d-5b93-4f70-8305-43f704dfad02
+      id: 4e31d21d-f0e5-40d2-8333-750fd0973c3c
       version: -1
       name: Calculate Verdict
       description: Estimate the verdict for the large upload Cortex XDR alerts.
@@ -2103,7 +2105,7 @@ tasks:
               complex:
                 root: DBotScore
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2113,17 +2115,17 @@ tasks:
                         simple: Core.OriginalAlert._all_events.os_actor_process_image_sha256
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
                       iscontext: true
                     right:
                       value:
-                        simple: Core._all_events.actor_process_image_sha256
+                        simple: Core.OriginalAlert._all_events.actor_process_image_sha256
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2134,6 +2136,14 @@ tasks:
                       iscontext: true
                     ignorecase: true
                 accessor: Score
+                transformers:
+                - operator: uniq
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "false"
+                - operator: LastArrayElement
             iscontext: true
           right:
             value:
@@ -2144,7 +2154,7 @@ tasks:
               complex:
                 root: DBotScore
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2154,7 +2164,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.dst_action_external_hostname
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2164,7 +2174,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.ssl_req_chello_sni_sample
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2174,7 +2184,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.target_address
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2184,7 +2194,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.domain
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2195,6 +2205,14 @@ tasks:
                       iscontext: true
                     ignorecase: true
                 accessor: Score
+                transformers:
+                - operator: uniq
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "false"
+                - operator: LastArrayElement
             iscontext: true
           right:
             value:
@@ -2240,12 +2258,12 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.RiskyUser
+                root: Core.RiskyUser
                 filters:
                 - - operator: containsString
                     left:
                       value:
-                        simple: PaloAltoNetworksXDR.RiskyUser.id
+                        simple: Core.RiskyUser.id
                       iscontext: true
                     right:
                       value:
@@ -2253,6 +2271,8 @@ tasks:
                       iscontext: true
                     ignorecase: true
                 accessor: risk_level
+                transformers:
+                - operator: uniq
             iscontext: true
           right:
             value:
@@ -2262,19 +2282,21 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.RiskyHost
+                root: Core.RiskyHost
                 filters:
-                - - operator: isEqualString
+                - - operator: containsString
                     left:
                       value:
-                        simple: PaloAltoNetworksXDR.RiskyHost.id
+                        simple: Core.RiskyHost.id
                       iscontext: true
                     right:
                       value:
                         simple: alert.hostname
                       iscontext: true
                     ignorecase: true
-                accessor: 'risk_level '
+                accessor: 'risk_level'
+                transformers:
+                - operator: uniq
             iscontext: true
           right:
             value:
@@ -2446,100 +2468,62 @@ tasks:
             value:
               simple: inputs.InternalIPRanges
             iscontext: true
-        - operator: isEqualString
+        - operator: inList
           left:
             value:
               complex:
-                root: Core.Incident.alerts
+                root: Core.OriginalAlert
                 filters:
-                - - operator: inList
+                - - operator: isNotEmpty
                     left:
                       value:
-                        simple: Core.Incident.alerts.host_name
+                        simple: Core.OriginalAlert._all_events.agent_hostname
                       iscontext: true
-                    right:
-                      value:
-                        simple: Analysis.FTP_Server
-                      iscontext: true
-                    ignorecase: true
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: Core.Incident.alerts.name
+                        simple: Core.OriginalAlert.alert_name
                       iscontext: true
                     right:
                       value:
                         simple: Large Upload (FTP)
                     ignorecase: true
-                accessor: host_name
+                accessor: _all_events.agent_hostname
                 transformers:
                 - operator: uniq
             iscontext: true
           right:
             value:
-              complex:
-                root: Core.Endpoint
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Core.Endpoint.endpoint_type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: AGENT_TYPE_SERVER
-                    ignorecase: true
-                accessor: endpoint_name
-                transformers:
-                - operator: uniq
+              simple: Analysis.FTP_Server
             iscontext: true
           ignorecase: true
-        - operator: isEqualString
+        - operator: inList
           left:
             value:
               complex:
-                root: Core.Incident.alerts
+                root: Core.OriginalAlert
                 filters:
-                - - operator: inList
+                - - operator: isNotEmpty
                     left:
                       value:
-                        simple: Core.Incident.alerts.host_name
+                        simple: Core.OriginalAlert._all_events.agent_hostname
                       iscontext: true
-                    right:
-                      value:
-                        simple: Analysis.SMTP_Server
-                      iscontext: true
-                    ignorecase: true
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: Core.Incident.alerts.name
+                        simple: Core.OriginalAlert.alert_name
                       iscontext: true
                     right:
                       value:
                         simple: Large Upload (SMTP)
                     ignorecase: true
-                accessor: host_name
+                accessor: _all_events.agent_hostname
                 transformers:
                 - operator: uniq
             iscontext: true
           right:
             value:
-              complex:
-                root: Core.Endpoint
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Core.Endpoint.endpoint_type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: AGENT_TYPE_SERVER
-                    ignorecase: true
-                accessor: endpoint_name
-                transformers:
-                - operator: uniq
+              simple: Analysis.SMTP_Server
             iscontext: true
           ignorecase: true
       - - operator: lessThanOrEqual
@@ -2548,7 +2532,7 @@ tasks:
               complex:
                 root: DBotScore
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2558,7 +2542,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.dst_action_external_hostname
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2568,7 +2552,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.ssl_req_chello_sni_sample
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2578,7 +2562,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.target_address
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2588,7 +2572,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.target_address
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2598,7 +2582,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.domain
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2609,6 +2593,14 @@ tasks:
                       iscontext: true
                     ignorecase: true
                 accessor: Score
+                transformers:
+                - operator: uniq
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "true"
+                - operator: LastArrayElement
             iscontext: true
           right:
             value:
@@ -2651,7 +2643,7 @@ tasks:
               complex:
                 root: DBotScore
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2661,7 +2653,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.os_actor_process_image_sha256
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2671,7 +2663,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.actor_process_image_sha256
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2682,6 +2674,14 @@ tasks:
                       iscontext: true
                     ignorecase: true
                 accessor: Score
+                transformers:
+                - operator: uniq
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "true"
+                - operator: LastArrayElement
             iscontext: true
           right:
             value:
@@ -3643,7 +3643,7 @@ tasks:
     task:
       id: 370de85c-8fbc-4c5b-8fff-84a66629234c
       version: -1
-      name: Found Related Indicators to Hunt?
+      name: Endpoint auto-isolation enabled?
       description: Determine whether the endpoint should be isolated automatically.
       type: condition
       iscommand: false

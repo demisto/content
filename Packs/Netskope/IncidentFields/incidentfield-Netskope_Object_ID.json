@@ -20,7 +20,8 @@
     "associatedTypes": [
         "Netskope Behavior Analytics",
         "Netskope Compromised Credentials",
-        "Netskope DLP"
+        "Netskope DLP",
+        "Netskope DLP Incident"
     ],
     "associatedToAll": false,
     "unmapped": false,

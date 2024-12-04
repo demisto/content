@@ -27,3 +27,5 @@
 !jira-epic-issue-list epic_key=COMPANYSA-1 jql_query="status!=done"
 !jira-issue-link-type-get
 !jira-issue-to-issue-link inward_issue=COMPANYSA-31 outward_issue=XSOAR-19 link_type="Post-Incident Reviews" comment="Dummy Link"
+!jira-issue-get-forms issue_id=TES-2
+!jira-get-user-info key=JIRAUSER10000
