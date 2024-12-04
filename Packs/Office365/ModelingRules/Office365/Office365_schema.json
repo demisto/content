@@ -470,7 +470,7 @@
             "type": "int",
             "is_array": false
         }                                                                
-    },
+    } /*,
     "msft_o365_sharepoint_online_raw": {
         "Id": {
             "type": "string",
@@ -712,5 +712,5 @@
             "type": "string",
             "is_array": false
         }        
-    }            
+    }  */
 }        
