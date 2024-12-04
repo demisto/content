@@ -12,7 +12,7 @@
 	"itemVersion": "",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 30,
+	"logicalVersion": 40,
 	"mapping": {
 		"Gatewatcher Incident": {
 			"dontMapEventToLabels": true,
@@ -64,6 +64,24 @@
 				},
 				"Gatewatcher beacon.type": {
 					"simple": "beacon.type"
+				},
+				"Gatewatcher dcerpc.call_id": {
+					"simple": "dcerpc.call_id"
+				},
+				"Gatewatcher dcerpc.req": {
+					"simple": "dcerpc.req"
+				},
+				"Gatewatcher dcerpc.request": {
+					"simple": "dcerpc.request"
+				},
+				"Gatewatcher dcerpc.res": {
+					"simple": "dcerpc.res"
+				},
+				"Gatewatcher dcerpc.response": {
+					"simple": "dcerpc.response"
+				},
+				"Gatewatcher dcerpc.rpc_version": {
+					"simple": "dcerpc.rpc_version"
 				},
 				"Gatewatcher dga.dga_count": {
 					"simple": "dga.dga_count"
@@ -118,6 +136,24 @@
 				},
 				"Gatewatcher dhcp.type": {
 					"simple": "dhcp.type"
+				},
+				"Gatewatcher dnp3.application": {
+					"simple": "dnp3.application"
+				},
+				"Gatewatcher dnp3.control": {
+					"simple": "dnp3.control"
+				},
+				"Gatewatcher dnp3.dst": {
+					"simple": "dnp3.dst"
+				},
+				"Gatewatcher dnp3.iin": {
+					"simple": "dnp3.iin"
+				},
+				"Gatewatcher dnp3.src": {
+					"simple": "dnp3.src"
+				},
+				"Gatewatcher dnp3.type": {
+					"simple": "dnp3.type"
 				},
 				"Gatewatcher dns": {
 					"simple": "dns"
@@ -227,6 +263,126 @@
 				"Gatewatcher http2.version": {
 					"simple": "http2.version"
 				},
+				"Gatewatcher ikev2.alg_auth": {
+					"simple": "ikev2.alg_auth"
+				},
+				"Gatewatcher ikev2.alg_dh": {
+					"simple": "ikev2.alg_dh"
+				},
+				"Gatewatcher ikev2.alg_enc": {
+					"simple": "ikev2.alg_enc"
+				},
+				"Gatewatcher ikev2.alg_perf": {
+					"simple": "ikev2.alg_perf"
+				},
+				"Gatewatcher ikev2.errors": {
+					"simple": "ikev2.errors"
+				},
+				"Gatewatcher ikev2.esn": {
+					"simple": "ikev2.esn"
+				},
+				"Gatewatcher ikev2.exchange_type": {
+					"simple": "ikev2.exchange_type"
+				},
+				"Gatewatcher ikev2.init_spi": {
+					"simple": "ikev2.init_spi"
+				},
+				"Gatewatcher ikev2.message_id": {
+					"simple": "ikev2.message_id"
+				},
+				"Gatewatcher ikev2.notify": {
+					"simple": "ikev2.notify"
+				},
+				"Gatewatcher ikev2.payload": {
+					"simple": "ikev2.payload"
+				},
+				"Gatewatcher ikev2.resp_spi": {
+					"simple": "ikev2.resp_spi"
+				},
+				"Gatewatcher ikev2.role": {
+					"simple": "ikev2.role"
+				},
+				"Gatewatcher ikev2.version_major": {
+					"simple": "ikev2.version_major"
+				},
+				"Gatewatcher ikev2.version_minor": {
+					"simple": "ikev2.version_minor"
+				},
+				"Gatewatcher ioc.campaigns": {
+					"simple": "ioc.campaigns"
+				},
+				"Gatewatcher ioc.case_id": {
+					"simple": "ioc.case_id"
+				},
+				"Gatewatcher ioc.categories": {
+					"simple": "ioc.categories"
+				},
+				"Gatewatcher ioc.creation_date": {
+					"simple": "ioc.creation_date"
+				},
+				"Gatewatcher ioc.description": {
+					"simple": "ioc.description"
+				},
+				"Gatewatcher ioc.external_links": {
+					"simple": "ioc.external_links"
+				},
+				"Gatewatcher ioc.families": {
+					"simple": "ioc.families"
+				},
+				"Gatewatcher ioc.kill_chain_phases": {
+					"simple": "ioc.kill_chain_phases"
+				},
+				"Gatewatcher ioc.meta_data": {
+					"simple": "ioc.meta_data"
+				},
+				"Gatewatcher ioc.package_date": {
+					"simple": "ioc.package_date"
+				},
+				"Gatewatcher ioc.relations": {
+					"simple": "ioc.relations"
+				},
+				"Gatewatcher ioc.signature": {
+					"simple": "ioc.signature"
+				},
+				"Gatewatcher ioc.tags": {
+					"simple": "ioc.tags"
+				},
+				"Gatewatcher ioc.targeted_countries": {
+					"simple": "ioc.targeted_countries"
+				},
+				"Gatewatcher ioc.targeted_organizations": {
+					"simple": "ioc.targeted_organizations"
+				},
+				"Gatewatcher ioc.targeted_platforms": {
+					"simple": "ioc.targeted_platforms"
+				},
+				"Gatewatcher ioc.targeted_sectors": {
+					"simple": "ioc.targeted_sectors"
+				},
+				"Gatewatcher ioc.threat_actor": {
+					"simple": "ioc.threat_actor"
+				},
+				"Gatewatcher ioc.tlp": {
+					"simple": "ioc.tlp"
+				},
+				"Gatewatcher ioc.ttp": {
+					"simple": "ioc.ttp"
+				},
+				"Gatewatcher ioc.type": {
+					"simple": "ioc.type"
+				},
+				"Gatewatcher ioc.updated_date": {
+					"simple": "ioc.updated_date"
+				},
+				"Gatewatcher ioc.usage_mode": {
+					"simple": "ioc.usage_mode"
+				},
+				"Gatewatcher ioc.value": {
+					"simple": "ioc.value"
+				},
+				"Gatewatcher ioc.vulnerabilities": {
+					"simple": "ioc.vulnerabilities"
+				},
 				"Gatewatcher krb.cname": {
 					"simple": "krb.cname"
 				},
@@ -265,6 +421,42 @@
 				},
 				"Gatewatcher malicious_powershell.score": {
 					"simple": "malicious_powershell.score"
+				},
+				"Gatewatcher mqtt.connack": {
+					"simple": "mqtt.connack"
+				},
+				"Gatewatcher nba.action": {
+					"simple": "nba.action"
+				},
+				"Gatewatcher nba.category": {
+					"simple": "nba.category"
+				},
+				"Gatewatcher nba.gid": {
+					"simple": "nba.gid"
+				},
+				"Gatewatcher nba.metadata": {
+					"simple": "nba.metadata"
+				},
+				"Gatewatcher nba.packet": {
+					"simple": "nba.packet"
+				},
+				"Gatewatcher nba.payload": {
+					"simple": "nba.payload"
+				},
+				"Gatewatcher nba.payload_printable": {
+					"simple": "nba.payload_printable"
+				},
+				"Gatewatcher nba.rev": {
+					"simple": "nba.rev"
+				},
+				"Gatewatcher nba.signature": {
+					"simple": "nba.signature"
+				},
+				"Gatewatcher nba.signature_id": {
+					"simple": "nba.signature_id"
+				},
+				"Gatewatcher nba.stream": {
+					"simple": "nba.stream"
 				},
 				"Gatewatcher network.protocol": {
 					"simple": "network.protocol"
@@ -305,6 +497,30 @@
 				"Gatewatcher ransomware.session_score": {
 					"simple": "ransomware.session_score"
 				},
+				"Gatewatcher rdp.channels": {
+					"simple": "rdp.channels"
+				},
+				"Gatewatcher rdp.client": {
+					"simple": "rdp.client"
+				},
+				"Gatewatcher rdp.event_type": {
+					"simple": "rdp.event_type"
+				},
+				"Gatewatcher rdp.tx_id": {
+					"simple": "rdp.tx_id"
+				},
+				"Gatewatcher rfb.authentication": {
+					"simple": "rfb.authentication"
+				},
+				"Gatewatcher rfb.client_protocol_version": {
+					"simple": "rfb.client_protocol_version"
+				},
+				"Gatewatcher rfb.server_protocol_version": {
+					"simple": "rfb.server_protocol_version"
+				},
+				"Gatewatcher rfb.server_security_failure_reason": {
+					"simple": "rfb.server_security_failure_reason"
+				},
 				"Gatewatcher shellcode.encodings": {
 					"simple": "shellcode.encodings"
 				},
@@ -322,6 +538,18 @@
 				},
 				"Gatewatcher sigflow.payload_printable": {
 					"simple": "sigflow.payload_printable"
+				},
+				"Gatewatcher sip.code": {
+					"simple": "sip.code"
+				},
+				"Gatewatcher sip.reason": {
+					"simple": "sip.reason"
+				},
+				"Gatewatcher sip.response_line": {
+					"simple": "sip.response_line"
+				},
+				"Gatewatcher sip.version": {
+					"simple": "sip.version"
 				},
 				"Gatewatcher smb": {
 					"simple": "smb"
@@ -364,6 +592,18 @@
 				},
 				"Gatewatcher smtp.rcpt_to": {
 					"simple": "smtp.rcpt_to"
+				},
+				"Gatewatcher snmp.community": {
+					"simple": "snmp.community"
+				},
+				"Gatewatcher snmp.pdu_type": {
+					"simple": "snmp.pdu_type"
+				},
+				"Gatewatcher snmp.vars": {
+					"simple": "snmp.vars"
+				},
+				"Gatewatcher snmp.version": {
+					"simple": "snmp.version"
 				},
 				"Gatewatcher ssh.client": {
 					"simple": "ssh.client"

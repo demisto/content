@@ -378,6 +378,11 @@ def fetch_incidents():
         resA = retA.json()
         resM = retM.json()
         
+        if len(resA['hits']['hits']) or len(resM['hits']['hits']) == 0:
+            incidents = []
+            demisto.incidents(incidents)
+            return
+
         gwAlerts = resA['hits']['hits']
         gwMeta = resM['hits']['hits']
         
@@ -400,11 +405,13 @@ def fetch_incidents():
             resA = retA.json()
             resM = retM.json()
 
-            gwAlerts += resA['hits']['hits']
-            gwMeta += resM['hits']['hits']
+            if len(resA['hits']['hits']) or len(resM['hits']['hits']) > 0:
 
-            search_after_idA = gwAlerts[-1]['sort'][0]
-            search_after_idM = gwMeta[-1]['sort'][0]
+                gwAlerts += resA['hits']['hits']
+                gwMeta += resM['hits']['hits']
+
+                search_after_idA = gwAlerts[-1]['sort'][0]
+                search_after_idM = gwMeta[-1]['sort'][0]
            
             nbReq = nbReq - 1
         
@@ -468,6 +475,10 @@ def fetch_incidents():
 
         results = ret.json()
         gwAlerts = results['hits']['hits']
+        if len(results['hits']['hits']) == 0:
+            incidents = []
+            demisto.incidents(incidents)
+            return
 
         incidents = []
 
@@ -506,6 +517,10 @@ def fetch_incidents():
 
         results = ret.json()
         gwMeta = results['hits']['hits']
+        if len(results['hits']['hits']) == 0:
+            incidents = []
+            demisto.incidents(incidents)
+            return
 
         for i in range(0, len(gwMeta)):
 
@@ -527,10 +542,10 @@ def fetch_incidents():
 
             incidents.append(incident)
 
-        if len(incidents) > 0:
-            incidents = sorted(incidents, key=lambda d: d['occurred'])
-            last_incident = incidents[len(incidents)-1]
-            demisto.setLastRun({'start_time': str(last_incident['occurred'])})
+    if len(incidents) > 0:
+        incidents = sorted(incidents, key=lambda d: d['occurred'])
+        last_incident = incidents[len(incidents)-1]
+        demisto.setLastRun({'start_time': str(last_incident['occurred'])})
 
     demisto.incidents(incidents)
 

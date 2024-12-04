@@ -361,8 +361,8 @@
 						"name": "Malcore engine",
 						"static": false,
 						"w": 1,
-						"x": 1,
-						"y": 7
+						"x": 0,
+						"y": 8
 					},
 					{
 						"displayType": "CARD",
@@ -391,7 +391,7 @@
 					},
 					{
 						"displayType": "CARD",
-						"h": 2,
+						"h": 3,
 						"hideName": false,
 						"i": "caseinfoid-7bb942f0-acbd-11ef-9202-89fa98701c99",
 						"items": [
@@ -420,12 +420,12 @@
 						"name": "Malicious Powershell detect engine",
 						"static": false,
 						"w": 1,
-						"x": 0,
-						"y": 5
+						"x": 1,
+						"y": 8
 					},
 					{
 						"displayType": "CARD",
-						"h": 2,
+						"h": 3,
 						"hideName": false,
 						"i": "caseinfoid-d01c3280-acbd-11ef-9202-89fa98701c99",
 						"items": [
@@ -454,8 +454,8 @@
 						"name": "Shellcode detect engine",
 						"static": false,
 						"w": 1,
-						"x": 1,
-						"y": 5
+						"x": 0,
+						"y": 11
 					},
 					{
 						"displayType": "CARD",
@@ -497,8 +497,8 @@
 						"name": "file",
 						"static": false,
 						"w": 1,
-						"x": 2,
-						"y": 10
+						"x": 0,
+						"y": 17
 					},
 					{
 						"displayType": "CARD",
@@ -563,8 +563,8 @@
 						"name": "Sigflow engine",
 						"static": false,
 						"w": 1,
-						"x": 0,
-						"y": 7
+						"x": 1,
+						"y": 11
 					},
 					{
 						"displayType": "CARD",
@@ -692,12 +692,12 @@
 						"name": "http",
 						"static": false,
 						"w": 1,
-						"x": 0,
-						"y": 16
+						"x": 2,
+						"y": 17
 					},
 					{
 						"displayType": "CARD",
-						"h": 2,
+						"h": 3,
 						"hideName": false,
 						"i": "caseinfoid-adedd390-ad9d-11ef-9be1-5d2604062cce",
 						"items": [
@@ -752,7 +752,7 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "DGA engine",
+						"name": "DGA detect engine",
 						"static": false,
 						"w": 1,
 						"x": 2,
@@ -798,8 +798,8 @@
 						"name": "Ransomware detect engine",
 						"static": false,
 						"w": 1,
-						"x": 0,
-						"y": 10
+						"x": 2,
+						"y": 8
 					},
 					{
 						"displayType": "CARD",
@@ -879,8 +879,8 @@
 						"name": "Beacon detect engine",
 						"static": false,
 						"w": 1,
-						"x": 2,
-						"y": 7
+						"x": 1,
+						"y": 5
 					},
 					{
 						"displayType": "CARD",
@@ -940,8 +940,8 @@
 						"name": "dns",
 						"static": false,
 						"w": 1,
-						"x": 1,
-						"y": 10
+						"x": 2,
+						"y": 14
 					},
 					{
 						"displayType": "CARD",
@@ -1056,7 +1056,7 @@
 						"static": false,
 						"w": 1,
 						"x": 0,
-						"y": 19
+						"y": 29
 					},
 					{
 						"displayType": "CARD",
@@ -1152,8 +1152,8 @@
 						"name": "http2",
 						"static": false,
 						"w": 1,
-						"x": 1,
-						"y": 13
+						"x": 0,
+						"y": 20
 					},
 					{
 						"displayType": "CARD",
@@ -1236,7 +1236,7 @@
 						"static": false,
 						"w": 1,
 						"x": 2,
-						"y": 16
+						"y": 32
 					},
 					{
 						"displayType": "CARD",
@@ -1279,7 +1279,7 @@
 						"static": false,
 						"w": 1,
 						"x": 1,
-						"y": 16
+						"y": 29
 					},
 					{
 						"displayType": "CARD",
@@ -1367,7 +1367,7 @@
 						"static": false,
 						"w": 1,
 						"x": 2,
-						"y": 13
+						"y": 23
 					},
 					{
 						"displayType": "CARD",
@@ -1436,8 +1436,8 @@
 						"name": "ftp",
 						"static": false,
 						"w": 1,
-						"x": 0,
-						"y": 13
+						"x": 1,
+						"y": 17
 					},
 					{
 						"displayType": "CARD",
@@ -1480,7 +1480,7 @@
 						"static": false,
 						"w": 1,
 						"x": 1,
-						"y": 19
+						"y": 32
 					},
 					{
 						"displayType": "CARD",
@@ -1513,8 +1513,8 @@
 						"name": "ssh",
 						"static": false,
 						"w": 1,
-						"x": 2,
-						"y": 19
+						"x": 0,
+						"y": 32
 					},
 					{
 						"displayType": "CARD",
@@ -1583,8 +1583,8 @@
 						"name": "krb",
 						"static": false,
 						"w": 1,
-						"x": 0,
-						"y": 22
+						"x": 2,
+						"y": 20
 					},
 					{
 						"displayType": "CARD",
@@ -1689,7 +1689,7 @@
 								"fieldId": "gatewatcherdhcprouters",
 								"height": 53,
 								"id": "00480870-b19c-11ef-b835-73f24f516e16",
-								"index": 11,
+								"index": 10,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -1718,80 +1718,424 @@
 						"name": "dhcp",
 						"static": false,
 						"w": 1,
-						"x": 1,
-						"y": 22
-					},
-					{
-						"displayType": "ROW",
-						"h": 3,
-						"hideName": false,
-						"i": "caseinfoid-29564640-b198-11ef-b835-73f24f516e16",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "New Section",
-						"static": false,
-						"w": 1,
-						"x": 2,
-						"y": 22
+						"x": 0,
+						"y": 14
 					},
 					{
 						"displayType": "CARD",
 						"h": 3,
 						"hideName": false,
-						"i": "caseinfoid-edcc6f66-b19b-11ef-b835-73f24f516e16",
+						"i": "caseinfoid-29564640-b198-11ef-b835-73f24f516e16",
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "gatewatcherkrbcname",
+								"fieldId": "gatewatchersnmpcommunity",
 								"height": 53,
-								"id": "edcc6f60-b19b-11ef-b835-73f24f516e16",
+								"id": "af32ccc0-b229-11ef-b0c5-e3601920aa58",
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "gatewatcherkrbencryption",
+								"fieldId": "gatewatchersnmppdutype",
 								"height": 53,
-								"id": "edcc6f61-b19b-11ef-b835-73f24f516e16",
+								"id": "b0fbccf0-b229-11ef-b0c5-e3601920aa58",
 								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "gatewatcherkrbmsgtype",
+								"fieldId": "gatewatchersnmpvars",
 								"height": 53,
-								"id": "edcc6f62-b19b-11ef-b835-73f24f516e16",
+								"id": "b2879d10-b229-11ef-b0c5-e3601920aa58",
 								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "gatewatcherkrbrealm",
+								"fieldId": "gatewatchersnmpversion",
+								"height": 22,
+								"id": "b41fc940-b229-11ef-b0c5-e3601920aa58",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "snmp",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 29
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-8eb19260-b229-11ef-b0c5-e3601920aa58",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherikev2algauth",
 								"height": 53,
-								"id": "edcc6f63-b19b-11ef-b835-73f24f516e16",
+								"id": "f95bd190-b240-11ef-96ef-49b297a3cac2",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherikev2algdh",
+								"height": 53,
+								"id": "fac3c600-b240-11ef-96ef-49b297a3cac2",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherikev2algenc",
+								"height": 53,
+								"id": "fc433a10-b240-11ef-96ef-49b297a3cac2",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherikev2algperf",
+								"height": 53,
+								"id": "fdc5e270-b240-11ef-96ef-49b297a3cac2",
 								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "gatewatcherkrbsname",
+								"fieldId": "gatewatcherikev2errors",
 								"height": 53,
-								"id": "edcc6f64-b19b-11ef-b835-73f24f516e16",
+								"id": "ff627b70-b240-11ef-96ef-49b297a3cac2",
 								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "gatewatcherkrbweakencryption",
+								"fieldId": "gatewatcherikev2esn",
 								"height": 53,
-								"id": "edcc6f65-b19b-11ef-b835-73f24f516e16",
+								"id": "00ac1270-b241-11ef-96ef-49b297a3cac2",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherikev2exchangetype",
+								"height": 53,
+								"id": "03bb0020-b241-11ef-96ef-49b297a3cac2",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherikev2initspi",
+								"height": 53,
+								"id": "05d554a0-b241-11ef-96ef-49b297a3cac2",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherikev2messageid",
+								"height": 53,
+								"id": "08b12460-b241-11ef-96ef-49b297a3cac2",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherikev2notify",
+								"height": 53,
+								"id": "0afbd7b0-b241-11ef-96ef-49b297a3cac2",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherikev2payload",
+								"height": 53,
+								"id": "0dc24ab0-b241-11ef-96ef-49b297a3cac2",
+								"index": 10,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherikev2respspi",
+								"height": 53,
+								"id": "1063f7a0-b241-11ef-96ef-49b297a3cac2",
+								"index": 11,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherikev2role",
+								"height": 53,
+								"id": "12dc98c0-b241-11ef-96ef-49b297a3cac2",
+								"index": 12,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherikev2versionmajor",
+								"height": 53,
+								"id": "15f65be0-b241-11ef-96ef-49b297a3cac2",
+								"index": 13,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherikev2versionminor",
+								"height": 53,
+								"id": "186279e0-b241-11ef-96ef-49b297a3cac2",
+								"index": 14,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "ikev2",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 20
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-90f010b0-b229-11ef-b0c5-e3601920aa58",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherrfbauthentication",
+								"height": 53,
+								"id": "01acaf00-b240-11ef-96ef-49b297a3cac2",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherrfbclientprotocolversion",
+								"height": 53,
+								"id": "03716970-b240-11ef-96ef-49b297a3cac2",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherrfbserverprotocolversion",
+								"height": 53,
+								"id": "04bc38f0-b240-11ef-96ef-49b297a3cac2",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherrfbserversecurityfailurereason",
+								"height": 53,
+								"id": "060d22f0-b240-11ef-96ef-49b297a3cac2",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "rfb",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 26
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-97c0e860-b229-11ef-b0c5-e3601920aa58",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherrdpchannels",
+								"height": 53,
+								"id": "1faa4dc0-b22a-11ef-b0c5-e3601920aa58",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherrdpclient",
+								"height": 53,
+								"id": "2146e6c0-b22a-11ef-b0c5-e3601920aa58",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherrdpeventtype",
+								"height": 53,
+								"id": "22d241b0-b22a-11ef-b0c5-e3601920aa58",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherrdptxid",
+								"height": 53,
+								"id": "2481ed80-b22a-11ef-b0c5-e3601920aa58",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "rdp",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 26
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-9ad37f90-b229-11ef-b0c5-e3601920aa58",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersipcode",
+								"height": 53,
+								"id": "e58b6170-b241-11ef-96ef-49b297a3cac2",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersipreason",
+								"height": 53,
+								"id": "e69f9090-b241-11ef-96ef-49b297a3cac2",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersipresponseline",
+								"height": 53,
+								"id": "e7e026e0-b241-11ef-96ef-49b297a3cac2",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchersipversion",
+								"height": 53,
+								"id": "e98dfdf0-b241-11ef-96ef-49b297a3cac2",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "sip",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 26
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-9c8219f0-b229-11ef-b0c5-e3601920aa58",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdnp3application",
+								"height": 53,
+								"id": "70496aa0-b242-11ef-96ef-49b297a3cac2",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdnp3control",
+								"height": 53,
+								"id": "71791100-b242-11ef-96ef-49b297a3cac2",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdnp3dst",
+								"height": 53,
+								"id": "733dcb70-b242-11ef-96ef-49b297a3cac2",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdnp3iin",
+								"height": 53,
+								"id": "74bd1870-b242-11ef-96ef-49b297a3cac2",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdnp3src",
+								"height": 53,
+								"id": "76218a70-b242-11ef-96ef-49b297a3cac2",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdnp3type",
+								"height": 53,
+								"id": "77681430-b242-11ef-96ef-49b297a3cac2",
 								"index": 5,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -1800,11 +2144,462 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "krb",
+						"name": "dnp3",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 14
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-9e95b7b0-b229-11ef-b0c5-e3601920aa58",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdcerpccallid",
+								"height": 53,
+								"id": "04f59110-b243-11ef-96ef-49b297a3cac2",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdcerpcreq",
+								"height": 53,
+								"id": "06419910-b243-11ef-96ef-49b297a3cac2",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdcerpcrequest",
+								"height": 53,
+								"id": "08397170-b243-11ef-96ef-49b297a3cac2",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdcerpcres",
+								"height": 53,
+								"id": "09b2a3f0-b243-11ef-96ef-49b297a3cac2",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdcerpcresponse",
+								"height": 53,
+								"id": "0b073770-b243-11ef-96ef-49b297a3cac2",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherdcerpcrpcversion",
+								"height": 22,
+								"id": "0c9eee70-b243-11ef-96ef-49b297a3cac2",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "dcerpc",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 11
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-d70ebb60-b241-11ef-96ef-49b297a3cac2",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchermqttconnack",
+								"height": 53,
+								"id": "61ab1650-b243-11ef-96ef-49b297a3cac2",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "mqtt",
 						"static": false,
 						"w": 1,
 						"x": 0,
-						"y": 25
+						"y": 23
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-c13c2390-b24b-11ef-86fa-f531a86fa4b7",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherioccampaigns",
+								"height": 53,
+								"id": "ca8dab50-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherioccaseid",
+								"height": 53,
+								"id": "cbaadb20-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherioccategories",
+								"height": 53,
+								"id": "cc9eff20-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherioccreationdate",
+								"height": 53,
+								"id": "cda2da90-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcheriocdescription",
+								"height": 53,
+								"id": "cebeaad0-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcheriocexternallinks",
+								"height": 53,
+								"id": "cfc25f30-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcheriocfamilies",
+								"height": 53,
+								"id": "d1132220-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcheriockillchainphases",
+								"height": 53,
+								"id": "d26544a0-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcheriocmetadata",
+								"height": 53,
+								"id": "d39957d0-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcheriocpackagedate",
+								"height": 53,
+								"id": "d5cf2390-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcheriocrelations",
+								"height": 53,
+								"id": "d7dd6a20-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 10,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcheriocsignature",
+								"height": 53,
+								"id": "d99f6570-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 11,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherioctags",
+								"height": 53,
+								"id": "db9e1ba0-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 12,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherioctargetedcountries",
+								"height": 53,
+								"id": "de301120-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 13,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherioctargetedorganizations",
+								"height": 53,
+								"id": "e3742e50-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 14,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherioctargetedplatforms",
+								"height": 53,
+								"id": "e69851b0-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 15,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherioctargetedsectors",
+								"height": 53,
+								"id": "e8950c10-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 16,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcheriocthreatactor",
+								"height": 53,
+								"id": "f1d97bd0-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 17,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherioctlp",
+								"height": 53,
+								"id": "f3c06440-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 18,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcheriocttp",
+								"height": 53,
+								"id": "f5ffa5e0-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 19,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcherioctype",
+								"height": 53,
+								"id": "f83c9d90-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 20,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcheriocupdateddate",
+								"height": 53,
+								"id": "fa881430-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 21,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcheriocusagemode",
+								"height": 53,
+								"id": "ff6b9ad0-b24e-11ef-86fa-f531a86fa4b7",
+								"index": 22,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcheriocvalue",
+								"height": 53,
+								"id": "045059f0-b24f-11ef-86fa-f531a86fa4b7",
+								"index": 23,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatcheriocvulnerabilities",
+								"height": 53,
+								"id": "062e68c0-b24f-11ef-86fa-f531a86fa4b7",
+								"index": 24,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Active CTI engine",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 5
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-ed8c9740-b24b-11ef-86fa-f531a86fa4b7",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchernbaaction",
+								"height": 53,
+								"id": "78020940-b24d-11ef-86fa-f531a86fa4b7",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchernbacategory",
+								"height": 53,
+								"id": "79418e20-b24d-11ef-86fa-f531a86fa4b7",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchernbagid",
+								"height": 53,
+								"id": "7a8299a0-b24d-11ef-86fa-f531a86fa4b7",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchernbametadata",
+								"height": 53,
+								"id": "7bc775b0-b24d-11ef-86fa-f531a86fa4b7",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchernbapacket",
+								"height": 53,
+								"id": "7d2bc0a0-b24d-11ef-86fa-f531a86fa4b7",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchernbapayload",
+								"height": 53,
+								"id": "7edad030-b24d-11ef-86fa-f531a86fa4b7",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchernbapayloadprintable",
+								"height": 53,
+								"id": "80564ca0-b24d-11ef-86fa-f531a86fa4b7",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchernbarev",
+								"height": 53,
+								"id": "822a4950-b24d-11ef-86fa-f531a86fa4b7",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchernbasignature",
+								"height": 53,
+								"id": "842b7080-b24d-11ef-86fa-f531a86fa4b7",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchernbasignatureid",
+								"height": 53,
+								"id": "85dc2dc0-b24d-11ef-86fa-f531a86fa4b7",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gatewatchernbastream",
+								"height": 22,
+								"id": "88779920-b24d-11ef-86fa-f531a86fa4b7",
+								"index": 10,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "nba",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 23
 					}
 				],
 				"type": "custom"
