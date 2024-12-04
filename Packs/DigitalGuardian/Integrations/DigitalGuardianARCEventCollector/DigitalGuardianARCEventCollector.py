@@ -17,8 +17,8 @@ PRODUCT = 'ARC'
 
 class Client(BaseClient):
     """
-    Client class to interact with the service API
-    implements get_token and get_events functions
+    Client class to interact with the Digital Guardian service API
+    implements _get_access_token, export_events, and set_export_bookmark methods
     """
 
     def __init__(
@@ -180,8 +180,8 @@ def create_events_for_push(raw_response: dict, limit: int | None = None) -> list
         for field, value in zip(event_fields, event_data, strict=True):
             event[field] = value if value != "-" else None  # "-" mark an empty field in Digital Guardian
 
-        event_time: datetime = arg_to_datetime(arg=event['dg_time'], required=True)  # type: ignore[union-attr] - used required = True
-        event['_time'] = event_time.strftime(DATE_FORMAT)
+        event_time = arg_to_datetime(arg=event['dg_time'], required=True)
+        event['_time'] = event_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
 
         events.append(event)
 
@@ -254,26 +254,24 @@ def main() -> None:  # pragma: no cover
             export_profile=export_profile,
         )
 
-        match command:
-            case 'test-module':
-                # This is the call made when pressing the integration Test button.
-                result = test_module(client)
-                return_results(result)
+        if command == 'test-module':
+            # This is the call made when pressing the integration Test button.
+            result = test_module(client)
+            return_results(result)
 
-            case 'digital-guardian-get-events':
-                events, last_run, command_results = get_events_command(client, args)
-                return_results(command_results)
+        elif command == 'digital-guardian-get-events':
+            events, last_run, command_results = get_events_command(client, args)
+            return_results(command_results)
 
-                should_push_events = argToBoolean(args.pop('should_push_events'))
-                if should_push_events:
-                    push_and_set_last_run(client, events, last_run)
-
-            case 'fetch-events':
-                events, last_run = fetch_events(client)
+            if argToBoolean(args.pop('should_push_events')):
                 push_and_set_last_run(client, events, last_run)
 
-            case _:
-                raise DemistoException(f'Unknown command: {command}')
+        elif command == 'fetch-events':
+            events, last_run = fetch_events(client)
+            push_and_set_last_run(client, events, last_run)
+
+        else:
+            raise NotImplementedError(f'Unknown command: {command}')
 
     # Log exceptions and return errors
     except Exception as e:
