@@ -347,6 +347,23 @@ def build_filter(args: dict):
     return {args.get("operator"): filter_conditions}
 
 
+def consolidate_assets(asset_list):
+    """
+    Consolidates a list of dictionaries to ensure each 'xdm__asset_id' is unique.
+
+    Args:
+        asset_list (list): A list of dictionaries, each containing 'xdm__asset_id' and other keys.
+
+    Returns:
+        list: A new list with unique 'xdm__asset_id' values.
+    """
+    unique_assets = {}
+    for asset in asset_list:
+        asset_id = asset.get("xdm__asset__id")
+        unique_assets[asset_id] = asset
+    return list(unique_assets.values())
+
+
 def get_assets_list_command(client: Client, args: dict) -> CommandResults:
     client._base_url = "/api/webapp/get_data"
     filter = build_filter(args)
@@ -373,8 +390,9 @@ def get_assets_list_command(client: Client, args: dict) -> CommandResults:
     filter_count = response.get("FILTER_COUNT")
     total_count = response.get("TOTAL_COUNT")
     assets_list = response.get("DATA")
+    unique_assets_list = consolidate_assets(assets_list)
     return CommandResults(
-        readable_output=tableToMarkdown(f"Assets list - Found {filter_count} out of {total_count} results", assets_list, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown(f"Assets list - Found {filter_count} out of {total_count} results", unique_assets_list, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CoreAssetList",
         outputs=assets_list,
         outputs_key_field="xdm__asset__id",
