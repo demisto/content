@@ -1,4 +1,4 @@
-Script to convert a War Room output JSON File to a CSV file.
+Script to convert a War Room output JSON File that containing a list of jsons to a CSV file.
 
 ## Script Data
 ---

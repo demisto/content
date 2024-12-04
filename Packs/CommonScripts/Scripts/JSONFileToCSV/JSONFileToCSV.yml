@@ -9,7 +9,7 @@ args:
   defaultValue: ','
   description: CSV delimiter.
   name: delimiter
-comment: Script to convert a War Room output JSON File to a CSV file.
+comment: Script to convert a War Room output JSON File that containing a list of jsons to a CSV file.
 commonfields:
   id: JSONFileToCSV
   version: -1

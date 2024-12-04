@@ -30,13 +30,16 @@ def main(entry_id, out_filename, delimiter):
         file_info = demisto.getFilePath(entry_id)
 
     except Exception as e:
-        return_error(f"Failed to get the file path for entry: {entry_id} the error message was {str(e)}")
+        raise Exception(f"Failed to get the file path for entry: {entry_id} the error message was {str(e)}")
 
     file_path = file_info.get("path")
 
     # Open file and read data
-    with open(file_path, "r") as f:  # type: ignore
+    with open(file_path) as f:  # type: ignore
         dict_list = json.load(f)
+
+    if isinstance(dict_list, dict):
+        raise Exception("The input file must contain a list of JSON objects, not a single JSON object.")
 
     csv_string = json_to_csv(dict_list, delimiter)
 
@@ -46,4 +49,7 @@ def main(entry_id, out_filename, delimiter):
 
 if __name__ in ["__builtin__", "builtins", "__main__"]:
     args = demisto.args()
-    main(args.get("entryid"), args.get("filename"), args.get("delimiter", ","))
+    try:
+        main(args.get("entryid"), args.get("filename"), args.get("delimiter", ","))
+    except Exception as e:
+        return_error(f"Failed to execute JSONFileToCSV script:\n{str(e)}")
