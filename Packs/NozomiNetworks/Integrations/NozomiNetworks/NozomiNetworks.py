@@ -1,5 +1,3 @@
-from datetime import timezone
-
 from CommonServerPython import *
 
 ''' IMPORTS '''
@@ -71,7 +69,7 @@ def get_client():
 def parse_incident(i):
     return {
         'name': f"{i['name']}_{i['id']}",
-        'occurred': datetime.fromtimestamp(i['record_created_at'] / 1000, timezone.utc).isoformat(),
+        'occurred': datetime.fromtimestamp(i['record_created_at'] / 1000, timezone.utc).isoformat(),# noqa: UP017
         'severity': parse_severity(i),
         'rawJSON': json.dumps(clean_null_terms(i))
     }
