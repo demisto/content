@@ -61,7 +61,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets events from Hello World.
+    description: Gets events from the configured Digital Guardian ARC export profile.
     execution: false
     name: digital-guardian-get-events
   dockerimage: demisto/python3:3.11.10.116949

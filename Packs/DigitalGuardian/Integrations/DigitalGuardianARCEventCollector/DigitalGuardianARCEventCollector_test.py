@@ -33,12 +33,12 @@ def authenticated_client(requests_mock: RequestsMock) -> Client:
 
 
 @freeze_time("2024-11-30 12:12:12 UTC")
-def test_get_access_token(mocker: MockerFixture):
+def test_get_or_generate_access_token(mocker: MockerFixture):
     """
     Given:
         - A valid access token in the integration context
     When:
-        - Calling Client._get_access_token
+        - Calling Client._get_or_generate_access_token
     Then:
         - Ensure the token in the integration context is returned and no new token is requested.
     """
@@ -47,7 +47,7 @@ def test_get_access_token(mocker: MockerFixture):
     get_new_token_request = mocker.patch.object(Client, '_http_request')
 
     client = Client(**CLIENT_KWARGS)
-    access_token = client._get_access_token()
+    access_token = client._get_or_generate_access_token()
 
     assert access_token == integration_context_token['token']
     assert get_new_token_request.called is False
@@ -123,16 +123,16 @@ def test_get_events_command(mocker: MockerFixture, authenticated_client: Client)
     assert table_to_markdown_kwargs['t'] == expected_events
 
 
-def test_push_and_set_last_run(mocker: MockerFixture, authenticated_client: Client):
+def test_push_events(mocker: MockerFixture, authenticated_client: Client):
     """
     Given:
         - Digital Guardian ARC client and parsed events
     When:
-        - Calling push_and_set_last_run
+        - Calling push_events with set_export_bookmark = False
     Assert:
-        - Ensure events are sent to XSIAM and export bookmark is set via the API client.
+        - Ensure events are sent to XSIAM but API-managed export bookmark (pointer) is not moved.
     """
-    from DigitalGuardianARCEventCollector import push_and_set_last_run, VENDOR, PRODUCT
+    from DigitalGuardianARCEventCollector import push_events, VENDOR, PRODUCT
 
     last_run = {'bookmark_values': [], 'search_after_values': []}
     events = util_load_json('test_data/expected_events.json')
@@ -140,11 +140,11 @@ def test_push_and_set_last_run(mocker: MockerFixture, authenticated_client: Clie
     send_events_to_xsiam = mocker.patch('DigitalGuardianARCEventCollector.send_events_to_xsiam')
     set_export_bookmark = mocker.patch.object(authenticated_client, 'set_export_bookmark')
 
-    push_and_set_last_run(authenticated_client, events, last_run)
+    push_events(authenticated_client, events, last_run, set_export_bookmark=False)
     send_events_to_xsiam_kwargs: dict = send_events_to_xsiam.call_args.kwargs
 
     assert send_events_to_xsiam.call_count == 1
-    assert set_export_bookmark.call_count == 1
+    assert set_export_bookmark.call_count == 0  # set_export_bookmark is False
 
     assert send_events_to_xsiam_kwargs['events'] == events
     assert send_events_to_xsiam_kwargs['vendor'] == VENDOR

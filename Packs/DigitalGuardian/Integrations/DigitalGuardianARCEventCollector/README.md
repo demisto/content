@@ -4,6 +4,7 @@ This integration was integrated and tested with version 3.10.0 of DigitalGuardia
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## Known Limitations
+
 The integration fetch interval should be set to a minimum of "1 hour". If set to less, a quota error might be received.
 
 ## Configure Digital Guardian ARC Event Collector in Cortex
@@ -16,8 +17,6 @@ The integration fetch interval should be set to a minimum of "1 hour". If set to
 | Client ID |  | True |
 | Client Secret | Client Secret | True |
 | Export Profile |  | True |
-| First fetch time (Enter only number of days, integer) |  | False |
-| Number of events per fetch |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
@@ -30,7 +29,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### digital-guardian-get-events
 
 ***
-Gets events from Digital Guardian ARC product
+Gets events from the configured Digital Guardian ARC export profile.
 
 #### Base Command
 
@@ -41,8 +40,7 @@ Gets events from Digital Guardian ARC product
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum results to return. | Optional | 
-| days | Number of days to get data. Default is 7. | Optional | 
+| limit | Maximum results to return. Default is 1000. | Optional | 
 
 #### Context Output
 

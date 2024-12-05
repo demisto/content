@@ -18,7 +18,7 @@ PRODUCT = 'ARC'
 class Client(BaseClient):
     """
     Client class to interact with the Digital Guardian service API
-    implements _get_access_token, export_events, and set_export_bookmark methods
+    Implements _get_or_generate_access_token, export_events, and set_export_bookmark methods
     """
 
     def __init__(
@@ -36,10 +36,10 @@ class Client(BaseClient):
         self.__client_secret = client_secret
         self.export_profile = export_profile
 
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        self._headers = {'Authorization': f'Bearer {self._get_access_token()}'}
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)  # headers set below (requires Client)
+        self._headers = {'Authorization': f'Bearer {self._get_or_generate_access_token()}'}
 
-    def _get_access_token(self) -> str:
+    def _get_or_generate_access_token(self) -> str:
         """
         Tries to find a valid token in integration context. If not found or expired, generates a new token
         and sets it in the integration context.
@@ -68,9 +68,9 @@ class Client(BaseClient):
             },
             raise_on_status=True,
         )
-        demisto.debug(f'Requested new token from {VENDOR}')
+        demisto.debug('Requested new token')
 
-        valid_until = time_now + int(response['expires_in']) - 100
+        valid_until = time_now + int(response['expires_in']) - 30   # deducting 30 for extra safety
         integration_context = {'token': response['access_token'], 'valid_until': valid_until}
 
         demisto.debug(f'Setting new token in integration context, token valid until: {valid_until}')
@@ -150,13 +150,24 @@ def fetch_events(client: Client, limit: int | None = None) -> tuple[list[dict], 
     demisto.debug('Fetching events')
     raw_response = client.export_events()
 
-    demisto.info(f"Pulled {raw_response['total_hits']} events from {VENDOR}")
+    demisto.info(f"Got {raw_response['total_hits']} raw events")
     events = create_events_for_push(raw_response, limit)
 
     # Fields relating to the internal API bookmark (pointer); logged before pushing events to XSIAM (for debugging purposes)
     last_run = {key: value for key, value in raw_response.items() if key in ('bookmark_values', 'search_after_values')}
 
     return events, last_run
+
+
+def add_time_to_event(event: dict):
+    """
+    Add _time key to the event dictionary based on dg_time
+
+    Args:
+        event (dict): Event dictionary with _time field.
+    """
+    event_time = arg_to_datetime(arg=event['dg_time'], required=True)
+    event['_time'] = event_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
 
 
 def create_events_for_push(raw_response: dict, limit: int | None = None) -> list[dict]:
@@ -180,8 +191,7 @@ def create_events_for_push(raw_response: dict, limit: int | None = None) -> list
         for field, value in zip(event_fields, event_data, strict=True):
             event[field] = value if value != "-" else None  # "-" mark an empty field in Digital Guardian
 
-        event_time = arg_to_datetime(arg=event['dg_time'], required=True)
-        event['_time'] = event_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
+        add_time_to_event(event)
 
         events.append(event)
 
@@ -209,20 +219,24 @@ def get_events_command(client: Client, args: dict) -> tuple[list[dict], dict, Co
     return events, last_run, CommandResults(readable_output=human_readable)
 
 
-def push_and_set_last_run(client: Client, events: list[dict], last_run: dict) -> None:
+def push_events(client: Client, events: list[dict], last_run: dict, set_export_bookmark: bool) -> None:
     """
-    Pushes events to XSIAM and moves internal bookmark in the API for the next time fetch-events is invoked.
+    Pushes events to XSIAM and (optionally) moves internal bookmark in the API for the next time fetch-events is invoked.
 
     Args:
         client (Client): Digital Guardian client.
         events (list[dict]): Events get_events_command or fetch_events.
         last_run (dict): Dictionary with 'bookmark_values' and 'search_after_values' from raw API response.
+        set_export_bookmark (bool): Whether to set the API-managed bookmark (saves us the need to set `last run`).
     """
     demisto.debug(f'Sending {len(events)} events to XSIAM')
     send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
 
-    demisto.debug(f'Setting export bookmark after run: {last_run}.')
-    client.set_export_bookmark()  # API-managed bookmark (pointer) saves us the need to maintain `last run`
+    if set_export_bookmark:
+        demisto.debug(f'Setting export bookmark after run: {last_run}.')
+        client.set_export_bookmark()
+    else:
+        demisto.debug('Skipped setting export bookmark.')
 
 
 def main() -> None:  # pragma: no cover
@@ -264,11 +278,11 @@ def main() -> None:  # pragma: no cover
             return_results(command_results)
 
             if argToBoolean(args.pop('should_push_events')):
-                push_and_set_last_run(client, events, last_run)
+                push_events(client, events, last_run, set_export_bookmark=False)
 
         elif command == 'fetch-events':
             events, last_run = fetch_events(client)
-            push_and_set_last_run(client, events, last_run)
+            push_events(client, events, last_run, set_export_bookmark=True)
 
         else:
             raise NotImplementedError(f'Unknown command: {command}')
