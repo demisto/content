@@ -320,6 +320,8 @@ script:
       default: true
       description: The ID of the report to retrieve
     description: Retrieve the Falcon Intel Report PDF
+marketplaces:
+- xsoar
 tests:
 - No tests - deprecated
 fromversion: 5.0.0
