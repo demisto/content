@@ -325,10 +325,12 @@ def validate_response(client: Client, url, method='GET', body=None):
 
     if 500 <= raw_response.status_code <= 599:
         raise ValueError(
-            f'Internal server error occurred. Failed to execute request with 3 retries.\nMessage: {parse_error_message(raw_response.text, client.region)}')
+            f'Internal server error occurred. Failed to execute request with 3 retries.\n'
+            f'Message: {parse_error_message(raw_response.text, client.region)}')
     if raw_response.status_code == 429:
         raise ValueError(
-            f'API rate limit exceeded. Failed to execute request with 3 retries.\nMessage: {parse_error_message(raw_response.text, client.region)}')
+            f'API rate limit exceeded. Failed to execute request with 3 retries.\n'
+            f'Message: {parse_error_message(raw_response.text, client.region)}')
     if raw_response.status_code == 400 or raw_response.status_code == 404:
         raise ValueError(
             f'Status code: {raw_response.status_code}\nError: {parse_error_message(raw_response.text, client.region)}')
@@ -4037,7 +4039,8 @@ def gcb_list_asset_aliases(client_obj: Client, start_time: str, end_time: str, p
     :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
     :return: ec, json_data: Context data and raw response for asset aliases.
     """
-    request_url = f"{BACKSTORY_API_V1_URL}/alias/listassetaliases?asset.{asset_identifier_type}={asset_identifier}&start_time={start_time}&end_time={end_time}&page_size={page_size}"
+    request_url = (f"{BACKSTORY_API_V1_URL}/alias/listassetaliases?asset.{asset_identifier_type}={asset_identifier}"
+                   f"&start_time={start_time}&end_time={end_time}&page_size={page_size}")
     json_data = validate_response(client_obj, request_url, method='GET')
 
     # context data for the command
@@ -4108,7 +4111,8 @@ def gcb_list_user_aliases(client_obj: Client, start_time: str, end_time: str, pa
     :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
     :return: ec, json_data: Context data and raw response for user aliases.
     """
-    request_url = f"{BACKSTORY_API_V1_URL}/alias/listuseraliases?user.{user_identifier_type}={user_identifier}&start_time={start_time}&end_time={end_time}&page_size={page_size}"
+    request_url = (f"{BACKSTORY_API_V1_URL}/alias/listuseraliases?user.{user_identifier_type}={user_identifier}"
+                   f"&start_time={start_time}&end_time={end_time}&page_size={page_size}")
     json_data = validate_response(client_obj, request_url, method='GET')
 
     # context data for the command
@@ -4232,7 +4236,8 @@ def gcb_assets_command(client_obj, args: dict[str, str]):
 
     start_time, end_time, page_size, _ = get_default_command_args_value(args=args)
 
-    request_url = f'{BACKSTORY_API_V1_URL}/artifact/listassets?artifact.{artifact_type}={urllib.parse.quote(artifact_value)}&start_time={start_time}&end_time={end_time}&page_size={page_size}'
+    request_url = (f'{BACKSTORY_API_V1_URL}/artifact/listassets?artifact.{artifact_type}={urllib.parse.quote(artifact_value)}'
+                   f'&start_time={start_time}&end_time={end_time}&page_size={page_size}')
 
     response = validate_response(client_obj, request_url)
 
@@ -4551,7 +4556,8 @@ def gcb_list_events_command(client_obj, args: dict[str, str]):
         reference_time = args.get('reference_time', start_time)
 
     # Make a request URL
-    request_url = f'{BACKSTORY_API_V1_URL}/asset/listevents?asset.{asset_identifier_type}={asset_identifier}&start_time={start_time}&end_time={end_time}&page_size={page_size}&reference_time={reference_time}' \
+    request_url = (f'{BACKSTORY_API_V1_URL}/asset/listevents?asset.{asset_identifier_type}={asset_identifier}'
+                   f'&start_time={start_time}&end_time={end_time}&page_size={page_size}&reference_time={reference_time}')
         
     demisto.debug('Requested url : ' + request_url)
 
@@ -4605,7 +4611,8 @@ def gcb_udm_search_command(client_obj, args: dict[str, str]):
     start_time, end_time, limit, query = get_gcb_udm_search_command_args_value(args=args, date_range='3 days')
 
     # Make a request URL
-    request_url = f'{BACKSTORY_API_V1_URL}/events:udmSearch?time_range.start_time={start_time}&time_range.end_time={end_time}&limit={limit}&query={query}' \
+    request_url = (f'{BACKSTORY_API_V1_URL}/events:udmSearch?time_range.start_time={start_time}&time_range.end_time={end_time}'
+                   f'&limit={limit}&query={query}')
         
 
     # get list of events from Chronicle Backstory

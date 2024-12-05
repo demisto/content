@@ -205,7 +205,7 @@ def test_get_api_token_when_not_found_in_integration_context(mocker_get_context,
 
     api_token = client.get_api_token()
 
-    assert api_token == False
+    assert not api_token
 
 
 @patch('demistomock.getIntegrationContext')

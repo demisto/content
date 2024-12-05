@@ -470,7 +470,7 @@ def create_pull_request_body(title: str, source_branch: str, destination_branch:
     Returns:
         A dictionary - a body to the pull request commands.
     """
-    body: dict = {}
+    body = {}
     if title:
         body["title"] = title
     if source_branch:
