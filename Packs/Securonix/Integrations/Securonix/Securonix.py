@@ -2808,7 +2808,7 @@ def fetch_securonix_incident(client: Client, fetch_time: Optional[str], incident
             incident_id = str(incident.get('incidentId', 0))
             violator_id = str(incident.get('violatorId', 0))
             reasons = incident.get('reason', [])
-            policy_list: List[str] = []
+            policy_list: list[str] = []
             policy_stages_json = {}
             policy_stages_table = []
             if isinstance(reasons, list):
@@ -2828,7 +2828,7 @@ def fetch_securonix_incident(client: Client, fetch_time: Optional[str], incident
                             if not stage_dict or not isinstance(stage_dict, dict):
                                 continue
                             stage_name = list(stage_dict.keys())[0]
-                            stage_policies: List[str] = stage_dict.get(stage_name)  # type: ignore
+                            stage_policies: list[str] = stage_dict.get(stage_name)  # type: ignore
                             if not stage_policies or not isinstance(stage_policies, list):
                                 continue
                             stage_policies_str = ", ".join(
