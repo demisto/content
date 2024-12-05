@@ -1,28 +1,24 @@
 IRIS is a collaborative platform aiming to help incident responders to share technical details during investigations. It's free and open-source.
 This integration was integrated and tested with version v2.3.6 of IRIS DFIR
 
-## Configure IRIS DFIR on Cortex XSOAR
+## Configure IRIS DFIR in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for IRIS DFIR.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server IP or Host Name (e.g., https://192.168.0.1) |  | True |
-    | API Key for authentication |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Fetch incidents |  | False |
-    | Incidents Fetch Interval |  | False |
-    | Incident type |  | False |
-    | Incident Last Case ID | Fetch all the cases starting from this value, not including it. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server IP or Host Name (e.g., https://192.168.0.1) |  | True |
+| API Key for authentication |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Incidents Fetch Interval |  | False |
+| Incident type |  | False |
+| Incident Last Case ID | Fetch all the cases starting from this value, not including it. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### iris-get-last-case-id
@@ -1391,4 +1387,3 @@ Fetch the content of an ioc.
 >|ioc_description|ioc_id|ioc_tlp_id|ioc_type|ioc_type_id|ioc_uuid|ioc_value|user_id|
 >|---|---|---|---|---|---|---|---|
 >| This is an example | 5 | 2 | type_description: A github user name<br/>type_taxonomy: null<br/>type_id: 65<br/>type_name: github-username<br/>type_validation_regex: null<br/>type_validation_expect: null | 65 | 93ca5e50-13a5-4d59-8b92-b99bf4bb70fd | github-username-example | 1 |
-
