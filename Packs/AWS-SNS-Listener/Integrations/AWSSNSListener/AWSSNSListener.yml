@@ -18,7 +18,7 @@ configuration:
   display: Listen Port
   name: longRunningPort
   type: 0
-  required: false
+  required: true
   section: Connect
 - additionalinfo: Uses basic authentication for accessing the list. If empty, no authentication is enforced. (For Cortex XSOAR 8 and Cortex XSIAM) Optional for engines, otherwise mandatory.
   display: Username

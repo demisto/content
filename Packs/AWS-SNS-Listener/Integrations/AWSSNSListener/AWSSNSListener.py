@@ -12,7 +12,6 @@ from fastapi.openapi.models import APIKey
 import base64
 from M2Crypto import X509
 
-
 PARAMS: dict = demisto.params()
 sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
 
@@ -20,13 +19,11 @@ app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 basic_auth = HTTPBasic(auto_error=False)
 token_auth = APIKeyHeader(auto_error=False, name='Authorization')
 
-
 PROXIES, USE_SSL = handle_proxy_for_long_running()
 
 
 class AWS_SNS_CLIENT(BaseClient):  # pragma: no cover
     def __init__(self, base_url=None):
-        if PROXIES:
         if PROXIES:
             self.proxies = PROXIES
         elif PARAMS.get('proxy'):
@@ -124,7 +121,7 @@ def is_valid_integration_credentials(credentials, request_headers, token):
             if not token or not compare_digest(token, password):
                 auth_failed = True
         elif (not credentials) or (not (compare_digest(credentials.username, username)
-                                   and compare_digest(credentials.password, password))):
+                                        and compare_digest(credentials.password, password))):
             auth_failed = True
         if auth_failed:
             secret_header = (header_name or 'Authorization').lower()
@@ -169,10 +166,10 @@ def store_samples(incident):  # pragma: no cover
         demisto.error(f'Failed storing sample events - {e}')
 
 
-@app.post(f'/{PARAMS.get("endpoint","")}')
+@app.post(f'/{PARAMS.get("endpoint", "")}')
 async def handle_post(request: Request,
                       credentials: HTTPBasicCredentials = Depends(basic_auth),
-                      token: APIKey = Depends(token_auth)):   # pragma: no cover
+                      token: APIKey = Depends(token_auth)):  # pragma: no cover
     """
     Handles incoming AWS-SNS POST requests.
     Supports SubscriptionConfirmation, Notification and UnsubscribeConfirmation.
@@ -277,10 +274,12 @@ def setup_server():  # pragma: no cover
     return ServerConfig(log_config=log_config, ssl_args=ssl_args,
                         certificate_path=certificate_path, private_key_path=private_key_path)
 
-def test_module(port: str) -> str:
+
+def test_module(port: str):
     """
     Checks if a Listen Port is provided for a single engine configuration and returns 'ok' if valid.
     """
+    print('enter test_module')
     if not port:
         raise DemistoException('When selecting a single engine, you must specify a Listen Port. If no engine is selected,'
                                ' click "Save" before testing the configuration, as this may resolve the issue.')
@@ -294,13 +293,12 @@ def main():  # pragma: no cover
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         if demisto.command() == 'test-module':
-            return_results(test_module(PARAMS.get('longRunningPort')))
+            return return_results(test_module(PARAMS.get('longRunningPort')))
 
         try:
             port = PARAMS.get('longRunningPort')
         except ValueError as e:
             raise ValueError(f'Invalid listen port - {e}')
-
         if demisto.command() == 'long-running-execution':
             demisto.debug('Started long-running-execution.')
             while True:
