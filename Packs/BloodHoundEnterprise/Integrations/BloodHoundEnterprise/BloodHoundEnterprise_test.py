@@ -36,7 +36,7 @@ def test_fetch_events_first_time(mocker):
         - Validate that the next run metadata (`next_run`) is correctly updated with:
             - `last_event_date` timestamp.
             - `last_event_id` of the last fetched event.
-            - `prev_fetch_id` set to 1.
+            - `fetch_id` set to 1.
             - `skip` indicating the number of events fetched.
         - Verify that the first event in the fetched list has the correct ID (2051).
     """
@@ -59,7 +59,7 @@ def test_fetch_events_first_time(mocker):
     assert all(
         (
             next_run.get("last_event_id") == 2057,
-            next_run.get("prev_fetch_id") == 1,
+            next_run.get("fetch_id") == 1,
             next_run.get("offset") == 7,
         )
     )
@@ -75,7 +75,7 @@ def test_fetch_events_second_time(mocker):
         - The previous fetch history is simulated using `demisto.getLastRun`, with the following values:
             - `last_event_date` set to "2024-11-24T12:43:57.27948Z".
             - `last_event_id` set to 2072.
-            - `prev_fetch_id` set to 1.
+            - `fetch_id` set to 1.
 
     When:
         - The `fetch_events` function is called to retrieve events with the mock client,
@@ -87,7 +87,7 @@ def test_fetch_events_second_time(mocker):
         - Verify that the next run metadata (`next_run`) is correctly updated with:
             - `last_event_date` timestamp.
             - `last_event_id` of the last fetched event (2074).
-            - `prev_fetch_id` incremented to 2.
+            - `fetch_id` incremented to 2.
             - `skip` indicating the number of events fetched (2).
     """
     from BloodHoundEnterprise import fetch_events
@@ -98,7 +98,7 @@ def test_fetch_events_second_time(mocker):
         return_value={
             "last_event_date": "2024-11-24T12:43:57.27948Z",
             "last_event_id": 2072,
-            "prev_fetch_id": 1,
+            "fetch_id": 1,
         },
     )
     mocker.patch.object(demisto, "debug")
@@ -117,7 +117,7 @@ def test_fetch_events_second_time(mocker):
     assert all(
         (
             next_run.get("last_event_id") == 2074,
-            next_run.get("prev_fetch_id") == 2,
+            next_run.get("fetch_id") == 2,
             next_run.get("offset") == 2,
         )
     )

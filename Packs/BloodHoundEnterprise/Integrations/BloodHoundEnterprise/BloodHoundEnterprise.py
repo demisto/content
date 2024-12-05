@@ -214,7 +214,6 @@ def fetch_events(
     )
 
     fetch_id = int(last_run.get("fetch_id", 0)) + 1
-    
 
     demisto.debug(f"Fetched event id: {fetch_id}.")
     demisto.debug(f"Fetched {len(events)} events in fetch No: {fetch_id}")
