@@ -2534,14 +2534,10 @@ bot client id and secret id""")
             return_results(test_module(client=client, port=params.get('longRunningPort')))
 
         demisto.debug(f'Command being called is {command}')
-        try:
-            port = int(params.get('longRunningPort'))
-        except ValueError as e:
-            raise ValueError(f'Invalid listen port - {e}')
 
         '''CRUD commands'''
         if command == 'long-running-execution':
-            run_long_running(port)
+            run_long_running(int(params.get('longRunningPort')))
         elif command == 'mirror-investigation':
             results = mirror_investigation(client, **args)
         elif command == 'close-channel':
