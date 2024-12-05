@@ -1,0 +1,21 @@
+[
+    {"value": "value1", "found_in_lists": ["list1"
+        ], "not_found_in_lists": ["list2"
+        ], "overall_status": "Found","case_insensitive": true
+    },
+    {"value": "Value2", "found_in_lists": ["list1"
+        ], "not_found_in_lists": ["list2"
+        ], "overall_status": "Found","case_insensitive": true
+    },
+    {"value": "value4", "found_in_lists": [], "not_found_in_lists": ["list1", "list2"
+        ], "overall_status": "Not Found","case_insensitive": true
+    },
+    {"value": "[-\\{\\}\\^]", "found_in_lists": ["list2"
+        ], "not_found_in_lists": ["list1"
+        ], "overall_status": "Found","case_insensitive": true
+    },
+    {"value": "0.0.0.1/0", "found_in_lists": ["list1"
+        ], "not_found_in_lists": ["list2"
+        ], "overall_status": "Found","case_insensitive": true
+    }
+]
