@@ -1,0 +1,28 @@
+{
+    "autorun": true,
+    "color": "#F8E7A5",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "All"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "CybelAngel",
+    "layout": "CybelAngel",
+    "locked": false,
+    "name": "CybelAngel",
+    "onChangeRepAlg": 0,
+    "playbookId": "CybelAngel -  Display Report",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.10.0"
+}
