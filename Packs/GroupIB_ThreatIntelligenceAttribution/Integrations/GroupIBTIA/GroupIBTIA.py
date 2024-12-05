@@ -2061,10 +2061,10 @@ def test_module(client: Client) -> str:
     :param client: GIB_TI client
     :return: 'ok' if test passed, anything else will fail the test.
     """
-
-    for collection in client.poller.get_available_collections():
-        if collection not in MAPPING.keys():
-            return f"Test failed, some problems with getting available collections. Error in collection {str(collection)}"
+    for currently_available_collection in MAPPING.keys():
+        client_collections = client.poller.get_available_collections()
+        if currently_available_collection not in client_collections:
+            return f"Test failed, some problems with getting available collections. Error in collection {str(collection)}"            
     return "ok"
 
 
