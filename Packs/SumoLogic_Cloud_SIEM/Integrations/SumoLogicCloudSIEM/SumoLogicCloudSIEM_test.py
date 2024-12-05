@@ -4,6 +4,7 @@ More information about Unit Tests in Cortex XSOAR:
 https://xsoar.pan.dev/docs/integrations/unit-testing
 
 """
+import datetime as datetime_ # since importing everything from CSP includes datetime.datetime, but we need the outer datetime to use the UTC attribute
 from CommonServerPython import *
 from CommonServerUserPython import *
 
@@ -519,7 +520,7 @@ def test_fetch_incidents(requests_mock):
     assert incidents[1].get('name') == 'Defense Evasion with Persistence - INSIGHT-232'
     assert incidents[1].get('occurred') == '2021-05-18T14:46:47.000Z'
     latest_created_time = datetime.strptime(incidents[1].get('occurred'), '%Y-%m-%dT%H:%M:%S.%fZ')
-    assert next_run.get('last_fetch') == int(latest_created_time.replace(tzinfo=datetime.UTC).timestamp())
+    assert next_run.get('last_fetch') == int(latest_created_time.replace(tzinfo=datetime_.UTC).timestamp())
 
 
 def test_fetch_incidents_with_signals(requests_mock):
@@ -585,7 +586,7 @@ def test_fetch_incidents_with_signals(requests_mock):
     assert incidents[13].get('name') == 'Defense Evasion with Persistence - INSIGHT-232'
     assert incidents[13].get('occurred') == '2021-05-18T14:46:47.000Z'
     latest_created_time = datetime.strptime(incidents[13].get('occurred'), '%Y-%m-%dT%H:%M:%S.%fZ')
-    assert next_run.get('last_fetch') == int(latest_created_time.replace(tzinfo=datetime.UTC).timestamp())
+    assert next_run.get('last_fetch') == int(latest_created_time.replace(tzinfo=datetime_.UTC).timestamp())
 
 
 DEMISTO_ARGS = {'api_endpoint': MOCK_URL,
