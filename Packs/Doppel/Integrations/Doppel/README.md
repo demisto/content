@@ -1,0 +1,11 @@
+# Doppel XSOAR Pack
+
+## Overview
+Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively.
+
+## Features supported by the Doppel XSOAR pack
+1. Mirror Incidents- Alerts from Doppel are mirrored as per the configured schedule.
+2. Command: Create Alert- Command to create an alert in Doppel.
+3. Command: Get Alert- Command to fetch alert details from Doppel.
+4. Command: Update Alert- Command to update alert details from Doppel.
+5. Command: Create Abuse Alert-Command to create abuse alert details from Doppel.
