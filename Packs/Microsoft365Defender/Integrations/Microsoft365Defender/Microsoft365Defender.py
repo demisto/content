@@ -141,7 +141,7 @@ class Client:
             incident_id (int): incident's id
             status (str): Specifies the current status of the alert. Possible values are: (Active, Resolved or Redirected)
             assigned_to (str): Owner of the incident.
-            classification (str): Specification of the alert. Possible values are: Unknown, FalsePositive, TruePositive.
+            classification (str): Specification of the alert. Possible values are: InformationalExpectedActivity, FalsePositive, TruePositive.
             determination (str):  Specifies the determination of the alert. Possible values are: NotAvailable, Apt,
                                  Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, Other.
             tags (list): Custom tags associated with an incident. Separated by commas without spaces (CSV)
@@ -288,7 +288,7 @@ def _get_meta_data_for_incident(raw_incident: dict) -> dict:
             if entity.get('entityType') == 'Mailbox':
                 if entity.get('mailboxAddress', '') not in mailboxes_set:
                     mailboxes.append({'Mailbox': entity.get('mailboxAddress', ''),
-                                     'Display Name': entity.get('mailboxDisplayName', '')})
+                                      'Display Name': entity.get('mailboxDisplayName', '')})
                     mailboxes_set.add((entity.get('mailboxAddress', '')))
     return {
         'Categories': [alert.get('category', '') for alert in alerts_list],
@@ -469,7 +469,7 @@ def microsoft_365_defender_incident_get_command(client: Client, args: dict) -> C
 
 @logger
 def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: str, fetch_limit: int, timeout: int = None) -> List[
-        dict]:
+    dict]:
     """
     Uses to fetch incidents into Demisto
     Documentation: https://xsoar.pan.dev/docs/integrations/fetching-incidents#the-fetch-incidents-command
@@ -641,7 +641,7 @@ def fetch_modified_incident_ids(client: Client, last_update_time) -> List[str]:
             incidents.append(str(incident.get('incidentId')))
         # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
         if len(raw_incidents) < int(
-                MAX_ENTRIES):  # todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
+            MAX_ENTRIES):  # todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
             break
         offset += int(MAX_ENTRIES)
     return incidents
@@ -672,7 +672,7 @@ def fetch_modified_incidents(client: Client, last_update_time) -> List[dict]:
             incidents.append(incident)
         # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
         if len(raw_incidents) < int(
-                MAX_ENTRIES):  # todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
+            MAX_ENTRIES):  # todo: how to handle - Maximum rate of requests is 50 calls per minute and 1500 calls per hour
             break
         offset += int(MAX_ENTRIES)
     return incidents
@@ -741,7 +741,7 @@ def get_modified_remote_data_command(client: Client, args,
         demisto.debug(f"Error in Microsoft 365 defender incoming mirror \n"
                       f"Error message: {str(e)}")
         if "Rate limit exceeded" in str(
-                e):  # todo - check if this is the correct error message + on the server side what does is expect to ger
+            e):  # todo - check if this is the correct error message + on the server side what does is expect to ger
             return_error("API rate limit")
 
 
@@ -789,10 +789,9 @@ def get_mapping_fields_command():
     return GetMappingFieldsResponse(incident_type_scheme)
 
 
-def update_remote_incident(client: Client, updated_args) -> str:
+def update_remote_incident(client: Client, updated_args, remote_incident_id) -> str:
     demisto.debug(f"microsoft365::Starting update_remote_incident")
-    # todo - delta returns an empty dict
-    updated_incident = client.update_incident(incident_id=updated_args.remote_incident_id,
+    updated_incident = client.update_incident(incident_id=remote_incident_id,
                                               status=updated_args.get('status'),
                                               assigned_to=updated_args.get('assignedTo'),
                                               classification=updated_args.get('classification'),
@@ -804,8 +803,19 @@ def update_remote_incident(client: Client, updated_args) -> str:
     return ''
 
 
-def handle_incident_close_out():
-    pass
+def handle_incident_close_out(delta):
+    demisto.debug("microsoft365::Starting handle_incident_close_out")
+    if not argToBoolean(demisto.params().get('close_out', False)):
+        demisto.debug("microsoft365::Close out is not enabled")
+        return
+    demisto.debug("microsoft365::Close out is enabled")
+    if any(delta.get(key) for key in ['closeReason', 'closeNotes', 'closingUserId']):
+        delta['status'] = 'Resolved'
+        if delta.closeReason == 'FalsePositive' and delta.get('classification') != 'FalsePositive':
+            delta.update({'classification': 'FalsePositive', 'determination': 'Other'})
+        elif delta.closeReason == 'Other' or delta.closeReason == 'Other':
+            delta.update({'classification': 'Unknown', 'determination': 'NotAvailable'})
+
 
 
 def handle_mirror_out_entries(client, entries):
@@ -813,37 +823,47 @@ def handle_mirror_out_entries(client, entries):
         demisto.debug(f"Adding entry {entry}")
 
 
+def handle_incident_reopening(delta):
+    if any(delta.get(key) == '' for key in ['closeReason', 'closeNotes', 'closingUserId']):
+        delta['status'] = 'Active'
+
+
 def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
-    remote_args = UpdateRemoteSystemArgs(args)
-    incident_id = remote_args.remote_incident_id
-    remote_data = remote_args.data
-    remote_delta = remote_args.delta
+    update_remote_system_args = UpdateRemoteSystemArgs(args)
+    remote_incident_id = update_remote_system_args.remote_incident_id
+    data = update_remote_system_args.data
+    delta = update_remote_system_args.delta
 
     demisto.debug(
-        f"update_remote_system_command {incident_id=} \n {remote_delta=} \n {remote_data=} \n {remote_args.incident_changed=} \n {remote_args.inc_status=} \n {remote_args.entries=}")
+        f"update_remote_system_command {remote_incident_id=} \n {delta=} \n {data=} \n "
+        f"{update_remote_system_args.incident_changed=} \n {update_remote_system_args.inc_status=}"
+        f" \n {update_remote_system_args.entries=}")
 
     try:
-        # if remote_args.incident_changed and remote_args.delta:
-        #     demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
-        #                   f'incident {remote_args.remote_incident_id}')
-        #     if remote_args.inc_status == IncidentStatus.DONE:
-        #         handle_incident_close_out()
-        #
-        #     update_remote_incident(client, remote_args.data)
-        # else:
-        #     demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
-        #                   f'as it is not new nor changed')
-        #
-        # if remote_args.entries:
-        #     handle_mirror_out_entries()
+        if update_remote_system_args.incident_changed and delta:
+            demisto.debug(f'Got the following delta keys {str(list(update_remote_system_args.delta.keys()))} to update'
+                          f'incident {update_remote_system_args.remote_incident_id}')
+            if update_remote_system_args.inc_status == IncidentStatus.DONE:
+                handle_incident_close_out(delta)
+            else:
+                handle_incident_reopening(delta)
 
-        return remote_args.remote_incident_id
+            update_remote_incident(client, delta, remote_incident_id)
+        else:
+            demisto.debug(f'Skipping updating remote incident fields [{update_remote_system_args.remote_incident_id}] '
+                          f'as it is not new nor changed')
+
+        if update_remote_system_args.entries:
+            demisto.debug(f"Adding entries {str(update_remote_system_args.entries)}")
+            handle_mirror_out_entries(client, update_remote_system_args.entries)
+
+        return update_remote_system_args.remote_incident_id
 
     except Exception as e:
-        demisto.error(f"Error in outgoing mirror for incident {remote_args.remote_incident_id} \n"
+        demisto.error(f"Error in outgoing mirror for incident {update_remote_system_args.remote_incident_id} \n"
                       f"Error message: {str(e)}")
 
-        return remote_args.remote_incident_id
+        return update_remote_system_args.remote_incident_id
 
 
 ''' MAIN FUNCTION '''
@@ -871,7 +891,7 @@ def main() -> None:
     client_credentials = params.get('client_credentials', False)
     enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or \
-        params.get('certificate_thumbprint', '')
+                             params.get('certificate_thumbprint', '')
 
     private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
                    or params.get('private_key', ''))

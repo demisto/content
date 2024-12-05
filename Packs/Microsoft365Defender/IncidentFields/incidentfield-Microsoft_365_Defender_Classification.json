@@ -41,6 +41,6 @@
         "FalsePositive - Clean",
         "FalsePositive - NoEnoughDataToValidate",
         "FalsePositive - Other",
-        "Unknown"
+        "Unknown - NotAvailable"
     ]
 }
