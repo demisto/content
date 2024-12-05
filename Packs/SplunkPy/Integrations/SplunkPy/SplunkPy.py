@@ -3158,6 +3158,8 @@ def get_connection_args(params: dict) -> dict:
         'port': params['port'],
         'app': app or "-",
         'verify': VERIFY_CERTIFICATE,
+        'retries': 3,
+        'retryDelay': 3,
     }
 
 
