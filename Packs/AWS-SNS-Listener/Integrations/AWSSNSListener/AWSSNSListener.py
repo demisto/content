@@ -27,6 +27,7 @@ PROXIES, USE_SSL = handle_proxy_for_long_running()
 class AWS_SNS_CLIENT(BaseClient):  # pragma: no cover
     def __init__(self, base_url=None):
         if PROXIES:
+        if PROXIES:
             self.proxies = PROXIES
         elif PARAMS.get('proxy'):
             self.proxies = handle_proxy()
@@ -276,6 +277,15 @@ def setup_server():  # pragma: no cover
     return ServerConfig(log_config=log_config, ssl_args=ssl_args,
                         certificate_path=certificate_path, private_key_path=private_key_path)
 
+def test_module(port: str) -> str:
+    """
+    Checks if a Listen Port is provided for a single engine configuration and returns 'ok' if valid.
+    """
+    if not port:
+        raise DemistoException('When selecting a single engine, you must specify a Listen Port. If no engine is selected,'
+                               ' click "Save" before testing the configuration, as this may resolve the issue.')
+    return 'ok'
+
 
 ''' MAIN FUNCTION '''
 
@@ -283,13 +293,15 @@ def setup_server():  # pragma: no cover
 def main():  # pragma: no cover
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
+        if demisto.command() == 'test-module':
+            return_results(test_module(PARAMS.get('longRunningPort')))
+
         try:
             port = PARAMS.get('longRunningPort')
         except ValueError as e:
             raise ValueError(f'Invalid listen port - {e}')
-        if demisto.command() == 'test-module':
-            return_results("ok")
-        elif demisto.command() == 'long-running-execution':
+
+        if demisto.command() == 'long-running-execution':
             demisto.debug('Started long-running-execution.')
             while True:
                 server_config = setup_server()
