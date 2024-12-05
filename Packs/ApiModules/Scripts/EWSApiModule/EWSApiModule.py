@@ -123,8 +123,8 @@ class EWSClient:
         client_secret: str,
         access_type: str,
         default_target_mailbox: str,
-        ews_server: str,
         max_fetch: int,
+        ews_server: str = '',
         auth_type: str = '',
         version: str = 'O365',
         folder: str = 'Inbox',
@@ -147,10 +147,10 @@ class EWSClient:
 
         :param client_id: Application client ID
         :param client_secret: Application client secret
-        :param access_type: Access type for authentication
+        :param access_type: Access type for authentication (delegate or impersonation)
         :param default_target_mailbox: Email address from which to fetch incidents
-        :param ews_server: The EWS Server address.
         :param max_fetch: Max incidents per fetch
+        :param ews_server: The EWS Server address.
         :param auth_type: Authentication type (OAUTH2, BASIC, NTLM or DIGEST)
         :param version: Exchange version to use (O365, 2007, 2010, 2010_SP2, 2013, 2013_SP1, 2016, 2019)
         :param folder: Name of the folder from which to fetch incidents
@@ -168,7 +168,7 @@ class EWSClient:
         :param insecure: Trust any certificate (not secure)
         :param proxy: Whether to use a proxy for the connection
         """
-        if auth_type not in (OAUTH2, BASIC, NTLM, DIGEST):
+        if auth_type and auth_type not in (OAUTH2, BASIC, NTLM, DIGEST):
             raise ValueError(f'Invalid auth_type: {auth_type}')
 
         BaseProtocol.TIMEOUT = int(request_timeout)  # type: ignore
@@ -296,9 +296,13 @@ class EWSClient:
         else:
             config_args['server'] = self.ews_server
 
-        return Configuration(**config_args, retry_policy=FaultTolerance(max_wait=60)), credentials, get_on_prem_build(self.version)
+        return (
+            Configuration(**config_args, retry_policy=FaultTolerance(max_wait=60)),
+            credentials,
+            get_on_prem_build(self.version),
+        )
 
-    def get_autodiscover_server_params(self, credentials):
+    def get_autodiscover_server_params(self, credentials) -> tuple[str, Optional[Build]]:
         """
         Get the server parameters from the cached autodiscover results and update the integration context.
         If there are no cached results, attempt Account creation with autodiscover to get the parameters, and cache the results.
