@@ -157,9 +157,7 @@ Create new indicator.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenCTI.Indicator.id | String | New indicator ID. | 
-| OpenCTI.Indicator.value | String | New indicator value. | 
-| OpenCTI.Indicator.type | String | New indicator type. | 
+| OpenCTI.Indicator.id | String | New indicator ID. |
 
 
 #### Command Example

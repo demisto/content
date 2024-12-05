@@ -898,6 +898,8 @@ tasks:
         simple: Domain
       value:
         simple: TestPlaybookIncidentCreate
+      data:
+        simple: DataTest
     separatecontext: true
     loop:
       iscommand: false
