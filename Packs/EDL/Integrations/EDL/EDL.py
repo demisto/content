@@ -1361,9 +1361,10 @@ def test_module(_: dict, params: dict):
         2. Valid cache_refresh_rate
     """
     if not params.get('longRunningPort'):
-        # This is for the autogeneration port feature before port allocation.
-        params['longRunningPort'] = '1111'
+        raise DemistoException('When selecting a single engine, you must specify a Listen Port. If no engine is selected,'
+                               ' click "Save" before testing the configuration, as this may resolve the issue.')
     get_params_port(params)
+
     on_demand = params.get('on_demand', None)
     if not on_demand:
         try_parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG)  # validate EDL Size was set
@@ -1380,6 +1381,7 @@ def test_module(_: dict, params: dict):
                 'Invalid time unit for the Refresh Rate. Must be minutes, hours, days, months, or years.')
         parse_date_range(cache_refresh_rate, to_timestamp=True)
     run_long_running(params, is_test=True)
+
     return 'ok', {}, {}
 
 
