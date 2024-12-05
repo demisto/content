@@ -4,6 +4,7 @@
   "suggestion_reason": "Recommended for the 'Uncommon creation or access operation of sensitive shadow copy by a high-risk process' alert",
   "description": "This trigger is responsible for handling 'Uncommon creation or access operation of sensitive shadow copy by a high-risk process",
   "trigger_name": "Uncommon creation or access operation of sensitive shadow copy by a high-risk process",
+  "fromVersion": "8.8.0",
   "alerts_filter": {
     "filter": {
       "AND": [
