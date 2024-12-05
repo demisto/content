@@ -71,9 +71,10 @@ script:
     - description: Maximum time to wait for a page to load (in seconds).
       name: max_page_load_time
     - default: true
-      description: The URL to rasterize. Must be the full URL, including the http prefix.
+      description: A space-separated list of URLs to rasterize. Must be the full URL, including the http prefix.
       name: url
       required: true
+      isArray: true
     - defaultValue: 1024px
       description: The page width, for example, 1024px. Specify with or without the px suffix.
       name: width
