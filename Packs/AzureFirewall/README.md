@@ -1,6 +1,4 @@
 ## Azure Firewall Pack
-Azure Firewall is a cloud-native and intelligent network firewall security service that provides breed threat protection for cloud workloads running in Azure. It's a fully stateful, firewall as a service, with built-in high availability and unrestricted cloud scalability.
-This pack contains an integration with a main goal to manage Azure Firewall security service.
 
 ## What does this pack do
 
@@ -15,7 +13,7 @@ The Azure Firewall pack contains the following:
 * Data normalization capabilities: 
   * Rules for parsing and modeling [Azure Firewall Resource Logs](https://learn.microsoft.com/en-us/azure/firewall/monitor-firewall-reference#resource-logs) that are ingested via the [Azure Event Hub data source](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-from-Microsoft-Azure-Event-Hub) on Cortex XSIAM. 
     * When configuring the Azure Event Hub data source, mark the following checkbox under the *Enhanced Cloud Protection* section:
-      - [x] **`Use audit logs in analytics`** 
+      * **`Use audit logs in analytics`** 
     * The ingested Azure firewall resource logs can be queried in XQL Search using the *`msft_azure_firewall_raw`* dataset. 
     * Supported log categories:
 
