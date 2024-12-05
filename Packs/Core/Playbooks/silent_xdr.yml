@@ -224,5 +224,5 @@ tests:
 fromversion: 6.10.0
 marketplaces:
 - marketplacev2
-isSilent: false
+isSilent: true
 description: silent playbook with xdr commands.

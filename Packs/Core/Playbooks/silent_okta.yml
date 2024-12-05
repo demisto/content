@@ -1,6 +1,7 @@
 id: silent okta
 version: -1
 name: silent okta
+isSilent: true
 starttaskid: "0"
 tasks:
   "0":
@@ -222,5 +223,4 @@ tests:
 fromversion: 6.10.0
 marketplaces:
 - marketplacev2
-isSilent: false
 description: silent playbook with okta commands.
