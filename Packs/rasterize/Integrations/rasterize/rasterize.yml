@@ -71,7 +71,7 @@ script:
     - description: Maximum time to wait for a page to load (in seconds).
       name: max_page_load_time
     - default: true
-      description: A space-separated list of URLs to rasterize. Must be the full URL, including the http prefix.
+      description: A space-separated list of URLs to rasterize. Must be the full URLs, including the http prefix.
       name: url
       required: true
       isArray: true
@@ -98,8 +98,9 @@ script:
       - Headless CLI - Only
       deprecated: true
     - defaultValue: url
-      description: The name the file will be saved as.
+      description: A space-separated list of names the files will be saved as.
       name: file_name
+      isArray: true
     - auto: PREDEFINED
       defaultValue: "False"
       description: Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
