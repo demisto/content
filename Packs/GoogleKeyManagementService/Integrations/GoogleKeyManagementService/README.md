@@ -1,22 +1,18 @@
 Use the Google Key Management Service API for CryptoKey management and encrypt/decrypt functionality.
 
-## Configure Google Key Management Service on Cortex XSOAR
+## Configure Google Key Management Service in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Google Key Management Service.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | User's Service Account JSON | True |
-    | Project in Google Cloud KMS | True |
-    | Default Location | True |
-    | Default Key Ring | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| User's Service Account JSON | True |
+| Project in Google Cloud KMS | True |
+| Default Location | True |
+| Default Key Ring | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### google-kms-create-key
 ***
