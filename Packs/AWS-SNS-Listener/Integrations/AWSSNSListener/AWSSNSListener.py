@@ -12,12 +12,14 @@ from fastapi.openapi.models import APIKey
 import base64
 from M2Crypto import X509
 
+
 PARAMS: dict = demisto.params()
 sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 basic_auth = HTTPBasic(auto_error=False)
 token_auth = APIKeyHeader(auto_error=False, name='Authorization')
+
 
 PROXIES, USE_SSL = handle_proxy_for_long_running()
 
