@@ -8,6 +8,7 @@ from FeedUstaThreatStream import (
     search_malware_hashes_command,
     search_malicious_urls_command,
     search_phishing_site_command,
+    main
 )
 from CommonServerPython import tableToMarkdown
 
@@ -170,3 +171,45 @@ def test_fetch_indicators_command(mocker, ioc_type, indicator_json):
 
     assert len(indicators) == len(all_indicators)
     assert next_run[ioc_type]['created'] == all_indicators[0]["created"]
+
+
+def test_fetch_indicators_command_no_results(mocker):
+    mocker.patch.object(Client, "build_iterator", return_value=[])
+    params = {
+        'ioc_feed_type': 'phishing-sites',
+    }
+    next_run, indicators = fetch_indicators_command(
+        client=Client,
+        last_run={
+        },
+        params=params
+    )
+
+    assert len(indicators) == 0
+    assert next_run == {}
+
+
+def test_main_cmd_fetch_indicators(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'url': 'https://example.com',
+        'api_key': 'API_KEY',
+        'insecure': True,
+        'proxy': False,
+        'first_fetch': '3 days',
+        'status': 'open',
+        'max_fetch': 50
+    })
+
+    Client(
+        base_url='',
+        verify=False,
+        headers={},
+        proxy=False
+    )
+    mocker.patch.object(client, "build_iterator", return_value=[{}])
+    mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
+    mocker.patch.object(demisto, 'createIndicators')
+    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'setLastRun')
+    main()
+    demisto.setLastRun.assert_called_once()

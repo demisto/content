@@ -3,7 +3,7 @@
     "fromVersion": "6.10.0",
     "version": -1,
     "modified": "2024-11-12T12:32:34.163103234Z",
-    "name": "USTA Account Takeover Prevention Victim Details Computer Local Username",
+    "name": "ustaaccounttakeoverpreventionvictimdetailscomputerusername",
     "ownerOnly": false,
     "cliName": "ustaaccounttakeoverpreventionvictimdetailscomputerusername",
     "type": "shortText",

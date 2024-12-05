@@ -2,7 +2,7 @@
     "id": "USTA Account Takeover Prevention",
     "fromVersion": "6.10.0",
     "version": -1,
-    "playbookId": "USTA Account Takeover Prevention Employee Credential Playbook",
+    "playbookId": "USTA Account Takeover Prevention Employee Credential Incident",
     "vcShouldIgnore": false,
     "locked": false,
     "name": "USTA Account Takeover Prevention",

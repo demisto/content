@@ -36,5 +36,6 @@
     "devEmail": [
         "integration@prodaft.com"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "defaultDataSource": "USTA Account Takeover Prevention"
 }
