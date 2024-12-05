@@ -36,7 +36,6 @@ See the table below that lists these additional log types, along the relevant ma
 ***
 
 ## Data Collection
-To configure Microsoft Entra ID to send logs to Cortex XSIAM, follow the below steps.
 
 ### Azure Entra ID Logs 
 
