@@ -1181,6 +1181,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
                 "validFrom": indicator.get("valid_from"),
                 "validUntil": indicator.get("valid_until"),
                 "score": indicator.get("x_opencti_score"),
+                "confidence": indicator.get("confidence"),
                 "createdBy": indicator.get("createdBy")["name"] if indicator.get("createdBy") else "",
                 "creators": [label["name"] for label in indicator.get("creators", [])],
                 "labels": [label["value"] for label in indicator.get("objectLabel", [])],
@@ -1194,7 +1195,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
         readable_output = tableToMarkdown(
             "Indicators",
             indicators,
-            headers=["id", "name", "description", "pattern", "validFrom", "validUntil",
+            headers=["id", "name", "description", "pattern", "validFrom", "validUntil", "confidence",
                      "score", "createdBy", "creators", "labels", "indicatorTypes", "created", "updatedAt"],
             headerTransform=pascalToSpace
         )

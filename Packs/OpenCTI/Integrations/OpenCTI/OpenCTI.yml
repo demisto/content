@@ -566,6 +566,9 @@ script:
     - contextPath: OpenCTI.Indicators.IndicatorList.score
       description: Score of the indicator.
       type: number
+    - contextPath: OpenCTI.Indicators.IndicatorList.confidence
+      description: Confidence of the indicator.
+      type: number
     - contextPath: OpenCTI.Indicators.IndicatorList.createdBy
       description: Name of the entity that created the indicator.
       type: string
