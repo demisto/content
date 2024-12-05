@@ -43,9 +43,9 @@ To configure Microsoft Entra ID to send logs to Cortex XSIAM, follow the below s
 To collect Azure Entra ID logs and ingest them into the *`msft_azure_ad_raw`* and *`msft_azure_ad_audit_raw`* datasets, you will need to configure an instance of the **Office 365** data source as described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-from-Microsoft-Office-365).
 
 When configuring the Office 365 data source, mark the following checkboxes under the *Microsoft Graph API* section, as demonstrated in the screenshot below:
-* [x] **`Azure AD Authentication Logs`** 
-  * [x] **`Collect all sign-in event types`**
-* [x] **`Azure AD Audit Logs`**
+* **`Azure AD Authentication Logs`** 
+  * **`Collect all sign-in event types`**
+* **`Azure AD Audit Logs`**
 
 ![MicrosoftEntraID_Office_365](https://raw.githubusercontent.com/demisto/content/refs/heads/master/Packs/MicrosoftEntraID/doc_files/MicrosoftEntraID_Office_365.png)
 
@@ -54,7 +54,7 @@ When configuring the Office 365 data source, mark the following checkboxes under
 To collect Azure Logs from an Azure Event Hub and ingest them into the *`msft_azure_raw`* dataset, you will need to configure an instance of the **Azure Event Hub** data source as described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-from-Microsoft-Azure-Event-Hub).
 
 When configuring the Azure Event Hub data source, mark the following checkbox under the *Enhanced Cloud Protection* section, as demonstrated in the screenshot below:
-* [x] **`Use audit logs in analytics`** 
+* **`Use audit logs in analytics`** 
 
 ![MicrosoftEntraID_Azure_Event_Hub](https://raw.githubusercontent.com/demisto/content/refs/heads/master/Packs/MicrosoftEntraID/doc_files/MicrosoftEntraID_Azure_Event_Hub.png)
 
