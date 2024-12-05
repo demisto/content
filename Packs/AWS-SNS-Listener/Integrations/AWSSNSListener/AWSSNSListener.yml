@@ -14,12 +14,6 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use."
-  display: Listen Port
-  name: longRunningPort
-  type: 0
-  required: true
-  section: Connect
 - additionalinfo: Uses basic authentication for accessing the list. If empty, no authentication is enforced. (For Cortex XSOAR 8 and Cortex XSIAM) Optional for engines, otherwise mandatory.
   display: Username
   name: credentials
@@ -56,6 +50,12 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use."
+  display: Listen Port
+  name: longRunningPort
+  type: 0
+  required: true
+  section: Connect
 description: 'Amazon Simple Notification Service (SNS) is a managed service that provides message delivery from publishers to subscribers.'
 display: AWS-SNS-Listener
 name: AWS-SNS-Listener
