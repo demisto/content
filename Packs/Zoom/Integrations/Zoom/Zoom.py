@@ -2537,6 +2537,10 @@ bot client id and secret id""")
 
         '''CRUD commands'''
         if command == 'long-running-execution':
+            try:
+                int(params.get('longRunningPort'))
+            except ValueError as e:
+                raise ValueError(f'Invalid listen port - {e}')
             run_long_running(int(params.get('longRunningPort')))
         elif command == 'mirror-investigation':
             results = mirror_investigation(client, **args)
