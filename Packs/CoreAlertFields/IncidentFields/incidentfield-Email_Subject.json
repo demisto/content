@@ -28,5 +28,12 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "fw_email_subject"
+    "x2_fields": "fw_email_subject",
+    "Aliases": [
+        {
+            "cliName": "symantecescemailsubject",
+            "type": "shortText",
+            "name": "Symantec ESC Email Subject"
+        }
+    ]
 }
