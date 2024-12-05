@@ -813,7 +813,7 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "CIAC-11100-playbook-run-in-build"
-resolved_reference = "019abf9c8aedc3bb817b73e892073a522a51d68a"
+resolved_reference = "b15dc5203f7838d2bd8be3a040c78366b898076b"
 
 [[package]]
 name = "deprecated"
