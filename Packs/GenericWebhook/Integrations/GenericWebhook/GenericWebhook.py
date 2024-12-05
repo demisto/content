@@ -152,14 +152,14 @@ def test_module(port: str):
                                ' click "Save" before testing the configuration, as this may resolve the issue.')
     return_results('ok')
 
+
 def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         if demisto.command() == 'test-module':
             return test_module(demisto.params().get('longRunningPort'))
-
         try:
-            port = int()
+            port = int(demisto.params().get('longRunningPort'))
         except ValueError as e:
             raise ValueError(f'Invalid listen port - {e}')
         if demisto.command() == 'fetch-incidents':

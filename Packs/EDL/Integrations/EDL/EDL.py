@@ -1381,7 +1381,6 @@ def test_module(_: dict, params: dict):
                 'Invalid time unit for the Refresh Rate. Must be minutes, hours, days, months, or years.')
         parse_date_range(cache_refresh_rate, to_timestamp=True)
     run_long_running(params, is_test=True)
-
     return 'ok', {}, {}
 
 
