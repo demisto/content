@@ -516,6 +516,8 @@ script:
       name: value
     - description: The ID of the entity that created the indicator (use opencti-organization-list to find or create).
       name: created_by
+    - description: The ID of the indicator creator.
+      name: creator
     - description: "Created after date filter. Format: YYYY-MM-DDThh:mm:ss.sssZ"
       name: created_after
     - description: "Created before date filter. Format: YYYY-MM-DDThh:mm:ss.sssZ"

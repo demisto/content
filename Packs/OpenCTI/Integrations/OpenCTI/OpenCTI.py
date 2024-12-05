@@ -159,6 +159,7 @@ def get_indicators(
     client: OpenCTIApiClient,
     label: str = None,
     created_by: str = None,
+    creator: str = None,
     created_after: str = None,
     created_before: str = None,
     valid_from_after: str = None,
@@ -176,6 +177,13 @@ def get_indicators(
         client: OpenCTI Client object.
         label: The label to filter by.
         created_by: The creator of the indicator.
+        creator: The creator of the indicator.
+        created_after: The date and time after which the indicator was created.
+        created_before: The date and time before which the indicator was created.
+        valid_from_after: The date and time after which the indicator is valid from.
+        valid_from_before: The date and time before which the indicator is valid from.
+        valid_until_after: The date and time after which the indicator is valid until.
+        valid_until_before: The date and time before which the indicator is valid until.
         indicator_types: The types of indicator to filter by.
         limit: The maximum number of indicators to fetch (default 50).
         last_run_id: The last ID from the previous call for pagination.
@@ -203,6 +211,12 @@ def get_indicators(
             'values': [created_by],
             'operator': 'eq',
             'mode': 'or'
+        })
+    if creator:
+        filters["filters"].append({
+            'key': 'creator_id',
+            'values': [creator],
+            'operator': 'eq'
         })
     if indicator_types:
         filters["filters"].append({
@@ -1129,6 +1143,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
     last_run_id = args.get('last_run_id')
     label = args.get('label_id')
     created_by = args.get('created_by')
+    creator = args.get('creator')
     created_after = args.get('created_after')
     created_before = args.get('created_before')
     valid_until_after = args.get('valid_until_after')
@@ -1142,6 +1157,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
         client=client,
         label=label,
         created_by=created_by,
+        creator=creator,
         created_after=created_after,
         created_before=created_before,
         valid_until_after=valid_until_after,
