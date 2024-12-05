@@ -79,7 +79,7 @@ script:
     description: Gets events from Cohesity Helios.
     execution: false
     name: cohesity-helios-get-events
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.11.10.115186
   isfetchevents: true
   runonce: false
   script: '-'
