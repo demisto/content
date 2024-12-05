@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 '''IMPORTS'''
 import traceback
-from typing import Any, Dict
+from typing import Any
 import urllib3
 
 
@@ -86,7 +86,7 @@ class Client(BaseClient):
             'Authorization': 'Bearer ' + Authorization
         })
 
-        Data: Dict[str, Any] = {}
+        Data: dict[str, Any] = {}
 
         res = self._http_request('post', f'api/v1/incidents/{incidentId}/addAttachments', data=Data, file=file,
                                  headers=headers)
@@ -213,7 +213,7 @@ class Client(BaseClient):
                              f'\n\n{e.args[0]}')
 
     def get_parameters(self):
-        params: Dict[str, Any] = demisto.params()
+        params: dict[str, Any] = demisto.params()
         # previous_token2 = get_integration_context()
         # clientId = previous_token2.get('clientId')
         clientId = params.get('Client Id')
@@ -225,7 +225,7 @@ class Client(BaseClient):
 '''Command Functions'''
 
 
-def create_incident_requestv1_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_incident_requestv1_command(client: Client, args: dict[str, Any]) -> CommandResults:
     clientId, domain, serviceAccount = client.get_parameters()
     access_token = client.get_access_token()
     Authorization = access_token
@@ -299,7 +299,7 @@ def create_incident_requestv1_command(client: Client, args: Dict[str, Any]) -> C
     return command_results
 
 
-def add_internal_notes_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def add_internal_notes_command(client: Client, args: dict[str, Any]) -> CommandResults:
     clientId, domain, serviceAccount = client.get_parameters()
     access_token = client.get_access_token()
     Authorization = access_token
@@ -324,8 +324,8 @@ def add_internal_notes_command(client: Client, args: Dict[str, Any]) -> CommandR
     return command_results
 
 
-def get_access_token_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    params: Dict[str, Any] = demisto.params()
+def get_access_token_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    params: dict[str, Any] = demisto.params()
     Authorization = params.get('credentials', {}).get('password')
     domain = params.get('Domain')
     grant_type = str(args.get('grant_type', 'refresh_token'))
@@ -347,7 +347,7 @@ def get_access_token_command(client: Client, args: Dict[str, Any]) -> CommandRes
     return command_results
 
 
-def get_incident_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_incident_by_id_command(client: Client, args: dict[str, Any]) -> CommandResults:
     clientId, domain, serviceAccount = client.get_parameters()
     access_token = client.get_access_token()
     Authorization = access_token
@@ -368,7 +368,7 @@ def get_incident_by_id_command(client: Client, args: Dict[str, Any]) -> CommandR
     return command_results
 
 
-def post_api_v1_incidents_add_attachments_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def post_api_v1_incidents_add_attachments_command(client: Client, args: dict[str, Any]) -> CommandResults:
     clientId, domain, serviceAccount = client.get_parameters()
     access_token = client.get_access_token()
     Authorization = access_token
@@ -408,7 +408,7 @@ def post_api_v1_incidents_add_attachments_command(client: Client, args: Dict[str
     return command_results
 
 
-def post_api_v1_incidents_add_outbound_notes_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def post_api_v1_incidents_add_outbound_notes_command(client: Client, args: dict[str, Any]) -> CommandResults:
     clientId, domain, serviceAccount = client.get_parameters()
     access_token = client.get_access_token()
     Authorization = access_token
@@ -432,7 +432,7 @@ def post_api_v1_incidents_add_outbound_notes_command(client: Client, args: Dict[
     return command_results
 
 
-def post_api_v1_incidents_by_incident_id_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def post_api_v1_incidents_by_incident_id_command(client: Client, args: dict[str, Any]) -> CommandResults:
     incidentId = str(args.get('incidentId', ''))
     if incidentId.startswith('INC'):
         incidentId = incidentId[3:]
@@ -459,7 +459,7 @@ def post_api_v1_incidents_by_incident_id_command(client: Client, args: Dict[str,
     return command_results
 
 
-def post_api_v1_incidents_close_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def post_api_v1_incidents_close_command(client: Client, args: dict[str, Any]) -> CommandResults:
     incidentId = str(args.get('incidentId', ''))
     if incidentId.startswith('INC'):
         incidentId = incidentId[3:]
@@ -491,7 +491,7 @@ def post_api_v1_incidents_close_command(client: Client, args: Dict[str, Any]) ->
     return command_results
 
 
-def put_api_v1_incidents_cancel_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def put_api_v1_incidents_cancel_command(client: Client, args: dict[str, Any]) -> CommandResults:
     incidentId = str(args.get('incidentId', ''))
     clientId, domain, serviceAccount = client.get_parameters()
     access_token = client.get_access_token()
@@ -512,7 +512,7 @@ def put_api_v1_incidents_cancel_command(client: Client, args: Dict[str, Any]) ->
     return command_results
 
 
-def search_incidents_by_params_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def search_incidents_by_params_command(client: Client, args: dict[str, Any]) -> CommandResults:
     limit = str(args.get('limit', ''))
     offset = str(args.get('offset', ''))
     userPsNo = str(args.get('userPsNo', ''))
@@ -548,15 +548,15 @@ def search_incidents_by_params_command(client: Client, args: Dict[str, Any]) -> 
 
 
 def test_module(client: Client) -> None:
-    args: Dict[str, Any] = demisto.args()
+    args: dict[str, Any] = demisto.args()
     get_access_token_command(client, args)
     # Test functions here
     return_results('ok')
 
 
 def main() -> None:
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
     url = params.get('url')
     clientId = params.get('Client Id')
     serviceAccount = params.get('Service Account')

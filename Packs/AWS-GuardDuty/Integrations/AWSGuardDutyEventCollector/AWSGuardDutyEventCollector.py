@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from AWSApiModule import *  # noqa: E402
 
-from typing import TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING
 from datetime import datetime, date
 
 import json
@@ -55,7 +55,7 @@ def convert_events_with_datetime_to_str(events: list) -> list:
 
 def get_events(aws_client: "GuardDutyClient", collect_from: dict, collect_from_default: Optional[datetime], last_ids: dict,
                severity: str, limit: int = MAX_RESULTS, detectors_num: int = MAX_RESULTS,
-               max_ids_per_req: int = MAX_IDS_PER_REQ) -> Tuple[list, dict, dict]:
+               max_ids_per_req: int = MAX_IDS_PER_REQ) -> tuple[list, dict, dict]:
     """Get events from AWSGuardDuty.
 
     Args:

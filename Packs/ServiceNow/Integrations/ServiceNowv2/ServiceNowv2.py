@@ -255,7 +255,7 @@ def create_ticket_context(data: dict, additional_fields: list | None = None) -> 
     }
     if additional_fields:
         for additional_field in additional_fields:
-            if camelize_string(additional_field) not in context.keys():
+            if camelize_string(additional_field) not in context:
                 # in case of a nested additional field (in the form of field1.field2)
                 nested_additional_field_list = additional_field.split('.')
                 if value := dict_safe_get(data, nested_additional_field_list):

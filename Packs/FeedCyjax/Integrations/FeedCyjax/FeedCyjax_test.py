@@ -17,9 +17,9 @@ default_reputation = 'Suspicious'
 
 
 def test_constants():
-    assert 'last_fetch' == INDICATORS_LAST_FETCH_KEY
-    assert '%Y-%m-%dT%H:%M:%SZ' == DATE_FORMAT
-    assert 50 == INDICATORS_LIMIT
+    assert INDICATORS_LAST_FETCH_KEY == 'last_fetch'
+    assert DATE_FORMAT == '%Y-%m-%dT%H:%M:%SZ'
+    assert INDICATORS_LIMIT == 50
 
 
 def test_map_reputation_to_score():
@@ -179,7 +179,7 @@ def test_fetch_indicators_no_new_indicators(mocker):
     assert last_fetch_timestamp == next_run
 
     assert isinstance(incidents, list)
-    assert [] == incidents
+    assert incidents == []
     assert len(incidents) == 0
 
 
@@ -195,7 +195,7 @@ def test_fetch_indicators_when_skd_throws_error(mocker):
     assert last_fetch_timestamp == next_run
 
     assert isinstance(incidents, list)
-    assert [] == incidents
+    assert incidents == []
     assert len(incidents) == 0
 
 
@@ -536,7 +536,7 @@ def test_since_date_in_get_indicators_command_no_new_indicators_found(mocker):
     next_run, indicators = fetch_indicators_command(client_for_testing, last_fetch, 'good')
 
     fetch_indicators_spy.assert_called_with(since=expected_since.isoformat())
-    assert [] == indicators
+    assert indicators == []
     assert last_fetch_timestamp == next_run
 
 

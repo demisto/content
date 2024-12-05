@@ -67,7 +67,6 @@ class NoContentException(Exception):
     see `handle_error_no_content` method
     """
 
-    ...
 
 
 class Client(BaseClient):
@@ -380,7 +379,6 @@ def test_module(client: Client):
         # This type of error is raised when events are not returned, but the API call was successful,
         # therefore `ok` will be returned
         demisto.debug("test module: got no logs, but connection is successful")
-        pass
 
     return "ok"
 

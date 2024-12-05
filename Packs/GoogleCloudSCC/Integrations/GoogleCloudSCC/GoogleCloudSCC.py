@@ -2,7 +2,8 @@ from CommonServerPython import *
 
 """ IMPORTS """
 import json
-from typing import Any, Dict, List, Optional, Tuple, Callable, Union
+from typing import Any
+from collections.abc import Callable
 
 import urllib.parse
 import dateparser
@@ -43,7 +44,7 @@ TIMEOUT_TIME = 60  # in second
 MAX_ITERATION = 10
 DEFAULT_MAX_ITERATION = 2
 
-ERROR_MESSAGES: Dict[str, str] = {
+ERROR_MESSAGES: dict[str, str] = {
     "JSON_PARSE_ERROR": "Unable to parse json. Please check the {} parameter.",
     "INVALID_ORGANIZATION_ID": "Invalid Organization ID.",
     "INVALID_ORGANIZATION_OR_PERMISSION_DENIED_ERROR": "Organization Id is not valid or permission denied.",
@@ -62,7 +63,7 @@ ERROR_MESSAGES: Dict[str, str] = {
     "UNKNOWN_ERROR": "An error occurred. Status: {}. Reason: {}",
     "NO_RECORDS_FOUND": "No {} record(s) found for the given argument(s).",
     "MAX_INCIDENT_ERROR": "The parameter Max Incidents must be a positive integer."
-                          " Accepted values can be in the range of 1-{}.".format(MAX_FETCH_VALUE),
+                          f" Accepted values can be in the range of 1-{MAX_FETCH_VALUE}.",
     "INVALID_STATE_ERROR": "The state value must be ACTIVE or INACTIVE.",
     "INVALID_SEVERITY_ERROR": "The severity value must be LOW, MEDIUM, HIGH or CRITICAL.",
     "INVALID_PAGE_SIZE_ERROR": "Page size should be an integer between 1 to 1000.",
@@ -78,10 +79,10 @@ ERROR_MESSAGES: Dict[str, str] = {
     "INVALID_PROJECT_NAME_ERROR": "projectName should be in following format: "
                                   "\"projects/[project-number]\" or \"projects/[first-project-number], "
                                   "projects/[second-project-number]\".",
-    "INVALID_MAX_ITERATION_ERROR": "maxIteration should be an integer between 1 to {}.".format(MAX_ITERATION)
+    "INVALID_MAX_ITERATION_ERROR": f"maxIteration should be an integer between 1 to {MAX_ITERATION}."
 }
 
-OUTPUT_PREFIX: Dict[str, Any] = {
+OUTPUT_PREFIX: dict[str, Any] = {
     "LIST_ASSET": "GoogleCloudSCC.Asset(val.name && val.name == obj.name)",
     "LIST_FINDING": "GoogleCloudSCC.Finding(val.name && val.name == obj.name)",
     "TOKEN": "GoogleCloudSCC.Token(val.name && val.name == obj.name)",
@@ -90,11 +91,11 @@ OUTPUT_PREFIX: Dict[str, Any] = {
     "GET_OWNER": "GoogleCloudSCC.CloudAsset.IamPolicy"
 }
 
-GET_OUTPUT_MESSAGE: Dict[str, Any] = {
+GET_OUTPUT_MESSAGE: dict[str, Any] = {
     "HEADER_MESSAGE": "Total retrieved {0}: {1}"
 }
 
-COMMON_STRING: Dict[str, str] = {
+COMMON_STRING: dict[str, str] = {
     "RESOURCE_NAME": "Resource Name",
     "SECURITY_MARKS": "Security Marks",
     "SET_STATE_HR_STR": "The state of the finding has been updated successfully.",
@@ -241,7 +242,7 @@ class BaseGoogleClient:
         except exceptions.RefreshError as error:
             error_message = ERROR_MESSAGES["INVALID_SERVICE_ACCOUNT"]
             if error.args:
-                error_message += " Reason: {}".format(error.args[0])
+                error_message += f" Reason: {error.args[0]}"
             raise ValueError(error_message)
 
     @staticmethod
@@ -275,7 +276,7 @@ class BaseGoogleClient:
                              ca_certs=os.getenv('REQUESTS_CA_BUNDLE') or os.getenv('SSL_CERT_FILE'))
 
     @staticmethod
-    def execute_request(request) -> Dict[str, Any]:
+    def execute_request(request) -> dict[str, Any]:
         """
         Execute the request and handle error scenario.
 
@@ -320,10 +321,10 @@ class GoogleSccClient(BaseGoogleClient):
         super().__init__(**kwargs)
         self.organization_id = organization_id
 
-    def get_findings(self, parent: str, compare_duration: Optional[str] = None, field_mask: Optional[str] = None,
-                     filter_string: Optional[str] = None, order_by: Optional[str] = None,
-                     page_size: Optional[Union[str, int]] = DEFAULT_PAGE_SIZE, page_token: Optional[str] = None,
-                     read_time: Optional[str] = None) -> Dict[str, Any]:
+    def get_findings(self, parent: str, compare_duration: str | None = None, field_mask: str | None = None,
+                     filter_string: str | None = None, order_by: str | None = None,
+                     page_size: str | int | None = DEFAULT_PAGE_SIZE, page_token: str | None = None,
+                     read_time: str | None = None) -> dict[str, Any]:
         """
         Get an organization or source's findings.
 
@@ -345,7 +346,7 @@ class GoogleSccClient(BaseGoogleClient):
         return result
 
     def get_assets(self, parent: str, compare_duration: str, field_mask: str, filter_string: str, order_by: str,
-                   page_size: Union[str, int], page_token: str, read_time: str) -> Dict[str, Any]:
+                   page_size: str | int, page_token: str, read_time: str) -> dict[str, Any]:
         """
         Get an organization's assets.
 
@@ -366,7 +367,7 @@ class GoogleSccClient(BaseGoogleClient):
         result = self.execute_request(request)
         return result
 
-    def get_source(self, name: str) -> Dict[str, Any]:
+    def get_source(self, name: str) -> dict[str, Any]:
         """
         Gets a source.
 
@@ -377,9 +378,9 @@ class GoogleSccClient(BaseGoogleClient):
         result = self.execute_request(request)
         return result
 
-    def update_finding(self, name: str, event_time: Optional[str], severity: Optional[str],
-                       external_uri: Optional[str], source_properties: Optional[str],
-                       update_mask: List) -> Dict[str, Any]:
+    def update_finding(self, name: str, event_time: str | None, severity: str | None,
+                       external_uri: str | None, source_properties: str | None,
+                       update_mask: list) -> dict[str, Any]:
         """
         Updates a finding. The corresponding source must exist for a finding update to succeed.
 
@@ -400,7 +401,7 @@ class GoogleSccClient(BaseGoogleClient):
         result = self.execute_request(request)
         return result
 
-    def update_state(self, name: str, event_time: Optional[str], state: str, ) -> Dict[str, Any]:
+    def update_state(self, name: str, event_time: str | None, state: str, ) -> dict[str, Any]:
         """
         Updates a state.
 
@@ -430,7 +431,7 @@ class GooglePubSubClient(BaseGoogleClient):
         self.project_id = project_id or extract_project_id_from_service_account(service_account_json)
         self.subscription_id = subscription_id
 
-    def pull_messages(self, max_messages, ret_immediately=True) -> Dict[str, Any]:
+    def pull_messages(self, max_messages, ret_immediately=True) -> dict[str, Any]:
         """
         Pull messages for the subscription
 
@@ -445,7 +446,7 @@ class GooglePubSubClient(BaseGoogleClient):
         result = self.execute_request(request)
         return result
 
-    def acknowledge_messages(self, acks_list: List) -> Dict[str, Any]:
+    def acknowledge_messages(self, acks_list: list) -> dict[str, Any]:
         """
         Pull messages for the subscription
 
@@ -470,8 +471,8 @@ class GoogleCloudAssetClient(BaseGoogleClient):
         super().__init__(**kwargs)
         self.organization_id = organization_id
 
-    def get_assets(self, parent: str, asset_types: list, content_type: str, page_size: Union[str, int],
-                   page_token: str, read_time: Optional[str]) -> Dict[str, Any]:
+    def get_assets(self, parent: str, asset_types: list, content_type: str, page_size: str | int,
+                   page_token: str, read_time: str | None) -> dict[str, Any]:
         """
         Get a assets based on asset type and content type.
 
@@ -526,7 +527,7 @@ def init_google_cloud_assets_client(**kwargs) -> GoogleCloudAssetClient:
     return client
 
 
-def safe_load_non_strict_json(json_string: str) -> Dict[str, Any]:
+def safe_load_non_strict_json(json_string: str) -> dict[str, Any]:
     """
     Loads the JSON with non-strict mode.
 
@@ -543,7 +544,7 @@ def safe_load_non_strict_json(json_string: str) -> Dict[str, Any]:
         raise ValueError(ERROR_MESSAGES["JSON_PARSE_ERROR"].format("Service Account JSON"))
 
 
-def validate_get_int(max_results: Optional[str], message: str, limit: Union[int, str] = 0) -> Optional[int]:
+def validate_get_int(max_results: str | None, message: str, limit: int | str = 0) -> int | None:
     """
     Validate and convert string max_results to integer.
 
@@ -567,7 +568,7 @@ def validate_get_int(max_results: Optional[str], message: str, limit: Union[int,
     return None
 
 
-def validate_project_and_subscription_id(params: Dict[str, Any]) -> None:
+def validate_project_and_subscription_id(params: dict[str, Any]) -> None:
     """
     Validates parameters for fetch-incidents command.
 
@@ -579,7 +580,7 @@ def validate_project_and_subscription_id(params: Dict[str, Any]) -> None:
     pubsub_client.pull_messages(1)
 
 
-def validate_service_account_and_organization_name(params: Dict[str, str]) -> None:
+def validate_service_account_and_organization_name(params: dict[str, str]) -> None:
     """
     Validate Service Account JSON and Organization ID
 
@@ -596,7 +597,7 @@ def validate_service_account_and_organization_name(params: Dict[str, str]) -> No
     client.get_findings(parent, page_size=1)
 
 
-def validate_state_and_severity_list(state_list: List, severity_list: List) -> None:
+def validate_state_and_severity_list(state_list: list, severity_list: list) -> None:
     """
     Validate severity and state list values
 
@@ -615,7 +616,7 @@ def validate_state_and_severity_list(state_list: List, severity_list: List) -> N
             raise ValueError(ERROR_MESSAGES["INVALID_SEVERITY_ERROR"])
 
 
-def validate_configuration_param(params: Dict[str, Any]) -> None:
+def validate_configuration_param(params: dict[str, Any]) -> None:
     """
     validate configuration parameter through API call.
 
@@ -673,11 +674,11 @@ def add_filter(label, filter_string, values) -> str:
     if filter_string:
         filter_string = filter_string + " AND "
 
-    filter_string += "({})".format(" OR ".join(['{}="{}"'.format(label, value.strip()) for value in values]))
+    filter_string += "({})".format(" OR ".join([f'{label}="{value.strip()}"' for value in values]))
     return filter_string
 
 
-def prepare_markdown_fields_for_fetch_incidents(fields: Dict[str, Any]) -> Dict[str, str]:
+def prepare_markdown_fields_for_fetch_incidents(fields: dict[str, Any]) -> dict[str, str]:
     """
     Prepares markdown fields for incident.
 
@@ -691,7 +692,7 @@ def prepare_markdown_fields_for_fetch_incidents(fields: Dict[str, Any]) -> Dict[
     return {"securityMarks": security_marks_hr, "MfaDetails": mfa_details_hr}
 
 
-def strip_dict(args: Dict[str, str]) -> Dict[str, str]:
+def strip_dict(args: dict[str, str]) -> dict[str, str]:
     """
     Remove leading and trailing white spaces from dictionary values and remove empty entries.
     :param args: Arguments dict.
@@ -722,7 +723,7 @@ def create_filter_list_assets(asset_type: str, project: str, filter_string: str,
     return filter_string
 
 
-def prepare_human_readable_dict_for_list_asset(asset: Dict[str, Any]) -> Dict[str, Any]:
+def prepare_human_readable_dict_for_list_asset(asset: dict[str, Any]) -> dict[str, Any]:
     """
     Prepare human-readable dictionary for list asset command.
     :param asset: asset information
@@ -741,7 +742,7 @@ def prepare_human_readable_dict_for_list_asset(asset: Dict[str, Any]) -> Dict[st
     }
 
 
-def prepare_outputs_for_list_assets(result) -> Tuple[Dict[str, Any], str]:
+def prepare_outputs_for_list_assets(result) -> tuple[dict[str, Any], str]:
     """
     Preparing context output and human-readable for list-assets command.
 
@@ -771,7 +772,7 @@ def prepare_outputs_for_list_assets(result) -> Tuple[Dict[str, Any], str]:
                                       t=hr_asset_list, headers=headers, removeNull=True)
 
     # preparing context
-    ec_asset_dict: Dict[str, Any] = {
+    ec_asset_dict: dict[str, Any] = {
         OUTPUT_PREFIX["LIST_ASSET"]: ec_asset_list
     }
 
@@ -784,7 +785,7 @@ def prepare_outputs_for_list_assets(result) -> Tuple[Dict[str, Any], str]:
     return remove_empty_elements(ec_asset_dict), readable_output
 
 
-def flatten_keys_to_root(data_dict: Dict[str, Any], keys: List, update_dict: Dict[str, Any]):
+def flatten_keys_to_root(data_dict: dict[str, Any], keys: list, update_dict: dict[str, Any]):
     """
     Add list of keys to root level in dict
 
@@ -802,7 +803,7 @@ def flatten_keys_to_root(data_dict: Dict[str, Any], keys: List, update_dict: Dic
     data_dict.update(update_dict)
 
 
-def convert_string_to_date_format(date: str, date_format: str = DATE_FORMAT) -> Optional[str]:
+def convert_string_to_date_format(date: str, date_format: str = DATE_FORMAT) -> str | None:
     """
     Convert date into given format
 
@@ -817,7 +818,7 @@ def convert_string_to_date_format(date: str, date_format: str = DATE_FORMAT) -> 
     return None
 
 
-def prepare_hr_and_ec_for_list_findings(result: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
+def prepare_hr_and_ec_for_list_findings(result: dict[str, Any]) -> tuple[str, dict[str, Any]]:
     """
     Prepare human readable output
 
@@ -858,7 +859,7 @@ def prepare_hr_and_ec_for_list_findings(result: Dict[str, Any]) -> Tuple[str, Di
                                       t=hr_finding_list, headers=headers, removeNull=True)
 
     # preparing context
-    ec_dict: Dict[str, Any] = {
+    ec_dict: dict[str, Any] = {
         OUTPUT_PREFIX["LIST_FINDING"]: ec_finding_list
     }
     next_page_token = result.get("nextPageToken", "")
@@ -870,7 +871,7 @@ def prepare_hr_and_ec_for_list_findings(result: Dict[str, Any]) -> Tuple[str, Di
     return readable_output, remove_empty_elements(ec_dict)
 
 
-def get_and_validate_args_finding_update(args: Dict[str, Any]) -> Tuple:
+def get_and_validate_args_finding_update(args: dict[str, Any]) -> tuple:
     """
     Get and validate arguments of finding update command.
 
@@ -898,7 +899,7 @@ def get_and_validate_args_finding_update(args: Dict[str, Any]) -> Tuple:
     return name, event_time, severity, external_uri, source_properties, update_mask
 
 
-def get_and_validate_args_finding_state_update(args: Dict[str, Any]) -> Tuple:
+def get_and_validate_args_finding_state_update(args: dict[str, Any]) -> tuple:
     """
     Get and validate arguments of finding state update command.
 
@@ -916,7 +917,7 @@ def get_and_validate_args_finding_state_update(args: Dict[str, Any]) -> Tuple:
     return name, event_time, state
 
 
-def prepare_hr_and_ec_for_update_finding(result: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
+def prepare_hr_and_ec_for_update_finding(result: dict[str, Any]) -> tuple[str, dict[str, Any]]:
     """
     Prepare human readable output
 
@@ -960,7 +961,7 @@ def validate_with_regex(validation_message: str, pattern: str, string: str, flag
         raise ValueError(validation_message)
 
 
-def prepare_hr_and_ec_for_cloud_asset_list(result: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
+def prepare_hr_and_ec_for_cloud_asset_list(result: dict[str, Any]) -> tuple[str, dict[str, Any]]:
     """
     Prepare human readable output
 
@@ -997,7 +998,7 @@ def prepare_hr_and_ec_for_cloud_asset_list(result: Dict[str, Any]) -> Tuple[str,
     readable_output = tableToMarkdown("", t=hr_asset_list, headers=headers, removeNull=True)
 
     # preparing context
-    ec_dict: Dict[str, Any] = {OUTPUT_PREFIX["LIST_RESOURCE"]: ec_asset_list}
+    ec_dict: dict[str, Any] = {OUTPUT_PREFIX["LIST_RESOURCE"]: ec_asset_list}
     next_page_token = result.get("nextPageToken", "")
     if next_page_token:
         token_ec = {"name": "google-cloud-scc-asset-resource-list", "nextPageToken": next_page_token}
@@ -1007,7 +1008,7 @@ def prepare_hr_and_ec_for_cloud_asset_list(result: Dict[str, Any]) -> Tuple[str,
     return readable_output, remove_empty_elements(ec_dict)
 
 
-def prepare_hr_and_ec_for_cloud_asset_owners_get(assets: list, read_time: str) -> Tuple[str, list]:
+def prepare_hr_and_ec_for_cloud_asset_owners_get(assets: list, read_time: str) -> tuple[str, list]:
     """
         Prepare human readable output
 
@@ -1054,7 +1055,7 @@ def find_asset_owners(asset: dict) -> list:
     return []
 
 
-def get_update_mask_for_update_finding(body: Dict[str, Any], update_mask: List) -> str:
+def get_update_mask_for_update_finding(body: dict[str, Any], update_mask: list) -> str:
     """
     Get updateMask for finding update API call.
 
@@ -1071,7 +1072,7 @@ def get_update_mask_for_update_finding(body: Dict[str, Any], update_mask: List) 
     return ",".join(update_mask)
 
 
-def split_and_escape(key: str, delimiter) -> List[str]:
+def split_and_escape(key: str, delimiter) -> list[str]:
     """
     Split key by delimiter with escape support.
 
@@ -1080,12 +1081,12 @@ def split_and_escape(key: str, delimiter) -> List[str]:
     :return: a list of the extract keys
     """
     regex = r"(?<!\\)" + re.escape(delimiter)
-    split_keys = map(lambda x: x.replace(r"\{}".format(delimiter), delimiter), re.split(regex, key))
+    split_keys = map(lambda x: x.replace(rf"\{delimiter}", delimiter), re.split(regex, key))
     keys = [split_key.strip() for split_key in list(split_keys)]
     return keys
 
 
-def get_markdown_link(name: str, link: str) -> Optional[str]:
+def get_markdown_link(name: str, link: str) -> str | None:
     """
     Prepare markdown supported link.
 
@@ -1127,7 +1128,7 @@ def get_finding_id_from_path(finding_path: str) -> str:
     return ""
 
 
-def convert_messages_to_incidents(messages: Dict[str, Any]) -> Tuple[List, List]:
+def convert_messages_to_incidents(messages: dict[str, Any]) -> tuple[list, list]:
     """
     convert pub/sub messages to incidents
 
@@ -1158,7 +1159,7 @@ def convert_messages_to_incidents(messages: Dict[str, Any]) -> Tuple[List, List]
             json_data["finding_url"] = GoogleNameParser.get_finding_url(finding_name)
 
             incidents.append({
-                "name": "{} - {}".format(INCIDENT_NAME_PREFIX, incident_name),
+                "name": f"{INCIDENT_NAME_PREFIX} - {incident_name}",
                 "occurred": create_time,
                 "rawJSON": json.dumps(json_data),
                 "details": json.dumps(json_data)
@@ -1173,7 +1174,7 @@ def convert_messages_to_incidents(messages: Dict[str, Any]) -> Tuple[List, List]
 """ COMMANDS """
 
 
-def test_module(params: Dict[str, Any]) -> None:
+def test_module(params: dict[str, Any]) -> None:
     """
     Test authentication using service json
     """
@@ -1188,7 +1189,7 @@ def test_module(params: Dict[str, Any]) -> None:
     demisto.results("ok")
 
 
-def fetch_incidents(client: GooglePubSubClient, params: Dict[str, Any]) -> Optional[list]:
+def fetch_incidents(client: GooglePubSubClient, params: dict[str, Any]) -> list | None:
     """
     Prepares incidents from past activity in Google Drive.
 
@@ -1208,7 +1209,7 @@ def fetch_incidents(client: GooglePubSubClient, params: Dict[str, Any]) -> Optio
 
 
 @logger
-def asset_list_command(client: GoogleSccClient, args: Dict) -> CommandResults:
+def asset_list_command(client: GoogleSccClient, args: dict) -> CommandResults:
     """
     Lists an organization's assets.
     :param client: SccClient Object.
@@ -1246,7 +1247,7 @@ def asset_list_command(client: GoogleSccClient, args: Dict) -> CommandResults:
 
 
 @logger
-def finding_list_command(client: GoogleSccClient, args: Dict) -> CommandResults:
+def finding_list_command(client: GoogleSccClient, args: dict) -> CommandResults:
     """
     Lists an organization or source's findings.
 
@@ -1287,7 +1288,7 @@ def finding_list_command(client: GoogleSccClient, args: Dict) -> CommandResults:
 
 
 @logger
-def finding_update_command(client: GoogleSccClient, args: Dict) -> CommandResults:
+def finding_update_command(client: GoogleSccClient, args: dict) -> CommandResults:
     """
     Lists an organization or source's findings.
 
@@ -1309,7 +1310,7 @@ def finding_update_command(client: GoogleSccClient, args: Dict) -> CommandResult
 
 
 @logger
-def finding_state_update_command(client: GoogleSccClient, args: Dict) -> CommandResults:
+def finding_state_update_command(client: GoogleSccClient, args: dict) -> CommandResults:
     """
     Update the state of organization's or source's finding.
 
@@ -1331,7 +1332,7 @@ def finding_state_update_command(client: GoogleSccClient, args: Dict) -> Command
 
 
 @logger
-def cloud_asset_list_command(client: GoogleCloudAssetClient, args: Dict) -> CommandResults:
+def cloud_asset_list_command(client: GoogleCloudAssetClient, args: dict) -> CommandResults:
     """
     Lists assets with time and resource types.
 
@@ -1364,7 +1365,7 @@ def cloud_asset_list_command(client: GoogleCloudAssetClient, args: Dict) -> Comm
 
 
 @logger
-def cloud_asset_owner_get_command(client: GoogleCloudAssetClient, args: Dict) -> CommandResults:
+def cloud_asset_owner_get_command(client: GoogleCloudAssetClient, args: dict) -> CommandResults:
     """
     Gets the owner information for the provided projects
     Lists assets with time and resource types.
@@ -1421,7 +1422,7 @@ def main() -> None:
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     # Commands dictionary
-    commands: Dict[str, Callable] = {
+    commands: dict[str, Callable] = {
         "google-cloud-scc-asset-list": asset_list_command,
         "google-cloud-scc-finding-list": finding_list_command,
         "google-cloud-scc-finding-update": finding_update_command,
@@ -1433,7 +1434,7 @@ def main() -> None:
     try:
         # Trim the arguments
         args = strip_dict(demisto.args())
-        client: Optional[Union[GoogleSccClient, GooglePubSubClient, GoogleCloudAssetClient]] = None
+        client: GoogleSccClient | GooglePubSubClient | GoogleCloudAssetClient | None = None
         if command == "test-module":
             # This is the call made when pressing the integration test button.
             test_module(params)
@@ -1452,7 +1453,7 @@ def main() -> None:
             return_results(commands[command](client, args))
     # Log exceptions
     except Exception as e:
-        return_error("Failed to execute {} command. Error: {}".format(demisto.command(), str(e)))
+        return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

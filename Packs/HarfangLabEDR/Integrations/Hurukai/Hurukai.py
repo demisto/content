@@ -14,7 +14,7 @@ import typing
 import urllib3
 
 from collections.abc import Callable, Mapping, MutableMapping
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from typing import Any, Generic, Literal, TypeAlias, TypeVar
 
 import dateutil.parser
@@ -164,7 +164,7 @@ def _construct_output(results: list, keys: list):
 
 
 def utcnow() -> datetime:
-    return datetime.now(tz=timezone.utc)
+    return datetime.now(tz=datetime.UTC)
 
 
 class Client(BaseClient):
@@ -694,7 +694,7 @@ def _get_fetching_cursor(fetch_history: FetchHistory) -> datetime:
     return datetime.fromtimestamp(
         # minus 1sec to overlap with previous fetch and ensure to miss nothing
         fetch_history.last_fetch - 1,
-        tz=timezone.utc,
+        tz=datetime.UTC,
     )
 
 
@@ -756,7 +756,7 @@ def _incident_should_be_fetched(
             f"'{incident_id}' has been created before the given timestamp: "
             f"expected only {incident_type}s created after {fetching_cursor}, "
             f"get one created at "
-            f"{datetime.fromtimestamp(incident_timestamp, tz=timezone.utc)}"
+            f"{datetime.fromtimestamp(incident_timestamp, tz=datetime.UTC)}"
         )
         return False
 
@@ -1451,7 +1451,7 @@ def job_info(client, args):
 
 
 def find_previous_job(client, action, agent_id):
-    starttime = (datetime.now(timezone.utc) - timedelta(minutes=5)).strftime(
+    starttime = (datetime.now(datetime.UTC) - timedelta(minutes=5)).strftime(
         "%Y-%m-%d %H:%M"
     )
     args = {

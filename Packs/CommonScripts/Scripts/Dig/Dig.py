@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import re
 import subprocess
 import traceback
-from typing import Any, Dict
+from typing import Any
 
 
 ''' STANDALONE FUNCTION '''
@@ -132,7 +132,7 @@ def regex_result(dig_output: str, reverse_lookup: bool):
 ''' COMMAND FUNCTION '''
 
 
-def dig_command(args: Dict[str, Any]) -> CommandResults:
+def dig_command(args: dict[str, Any]) -> CommandResults:
     """Run Dig command on the server and get A record for the specified host
 
     Args:

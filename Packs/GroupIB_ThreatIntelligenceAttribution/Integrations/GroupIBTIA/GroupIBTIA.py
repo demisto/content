@@ -754,7 +754,7 @@ def test_module(client: Client) -> str:
 
     collections_list, _ = client.get_available_collections()
     for collection in collections_list.get("collections"):
-        if collection not in MAPPING.keys():
+        if collection not in MAPPING:
             return "Test failed, some problems with getting available collections."
     return "ok"
 

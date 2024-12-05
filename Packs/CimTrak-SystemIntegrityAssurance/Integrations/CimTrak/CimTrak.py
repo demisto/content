@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import urllib3
 import dateparser
 import traceback
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 ################################################################
 # CimTrak Python API Begin
@@ -1263,8 +1263,8 @@ class CimTrak:
         if target_gen != 0:
             return self.deploy(agent_objectId, target_gen)
         else:
-            ret_data: Dict[str, Any] = {}
-            ret_results: List[Dict[str, Any]] = []
+            ret_data: dict[str, Any] = {}
+            ret_results: list[dict[str, Any]] = []
             ret_data['status'] = 'success'
             ret_data['errorCode'] = ''
             ret_data['errorDescription'] = ''
@@ -1280,8 +1280,8 @@ class CimTrak:
                 if self.debug >= 4:
                     self.debug_print("Scanning compliance object:" + str(object["objectId"]))
                 self.force_sync(object["objectId"])
-        ret_data: Dict[str, Any] = {}
-        ret_results: List[Dict[str, Any]] = []
+        ret_data: dict[str, Any] = {}
+        ret_results: list[dict[str, Any]] = []
         ret_data['status'] = 'success'
         ret_data['errorCode'] = ''
         ret_data['errorDescription'] = ''
@@ -1352,8 +1352,8 @@ class CimTrak:
 
         request_response = self.get_objects(object_path_and_name=agent_name, object_type=self.OBJECT_TYPE_AGENT)
         results = request_response["results"]
-        ret_data: Dict[str, Any] = {}
-        ret_results: List[Dict[str, Any]] = []
+        ret_data: dict[str, Any] = {}
+        ret_results: list[dict[str, Any]] = []
         for object in results:
             if object['name'] == agent_name:
                 ret_results.append(object)
@@ -1372,8 +1372,8 @@ class CimTrak:
 
         request_response = self.get_agent_object_id_by_alternate_system_id(alternate_system_id=alternate_system_id)
         results = request_response["results"]
-        ret_data: Dict[str, Any] = {}
-        ret_results: List[Dict[str, Any]] = []
+        ret_data: dict[str, Any] = {}
+        ret_results: list[dict[str, Any]] = []
         for result in results:
             if result['agentObjectId'] > 0:
                 request_response_object = self.get_object(result['agentObjectId'])
@@ -1412,8 +1412,8 @@ class CimTrak:
         ]
         request_response = self.get_objects(object_type=self.OBJECT_TYPE_AGENT, filter=filter)
         results = request_response["results"]
-        ret_data: Dict[str, Any] = {}
-        ret_results: List[Dict[str, Any]] = []
+        ret_data: dict[str, Any] = {}
+        ret_results: list[dict[str, Any]] = []
         for object in results:
             ret_results.append(object)
         ret_data['status'] = 'success'
@@ -1459,7 +1459,7 @@ class Client(BaseClient, CimTrak):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def test(self) -> Dict[str, Any]:
+    def test(self) -> dict[str, Any]:
         request_response = self.get_unreconciled_items(1, MAX_INCIDENTS_TO_FETCH)
         return request_response
 
@@ -1468,8 +1468,8 @@ class Client(BaseClient, CimTrak):
 
 
 def parse_domain_date(
-    domain_date: Union[List[str], str], date_format: str = "%Y-%m-%dT%H:%M:%S.000Z"
-) -> Optional[str]:
+    domain_date: list[str] | str, date_format: str = "%Y-%m-%dT%H:%M:%S.000Z"
+) -> str | None:
     """Converts whois date format to an ISO8601 string
 
     Converts the HelloWorld domain WHOIS date (YYYY-mm-dd HH:MM:SS) format
@@ -1537,11 +1537,11 @@ def test_module(client: Client, first_fetch_time: int) -> str:
 def fetch_incidents(
     client: Client,
     max_results: int,
-    last_run: Dict[str, int],
-    first_fetch_time: Optional[int],
-    alert_status: Optional[str],
+    last_run: dict[str, int],
+    first_fetch_time: int | None,
+    alert_status: str | None,
     min_severity: str,
-    alert_type: Optional[str],
+    alert_type: str | None,
 ):
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
@@ -1557,7 +1557,7 @@ def fetch_incidents(
 
     # Initialize an empty list of incidents to return
     # Each incident is a dict with a string as a key
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
     # Get the CSV list of severities from min_severity
     # severity = ',Low'
     request_response = client.get_unreconciled_items(1, MAX_INCIDENTS_TO_FETCH)
@@ -1623,8 +1623,8 @@ def ResolveJson(value):
         return json.loads(value)
 
 
-def get_events_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_events_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     start = int(ResolveString(args.get('Start')))
     end = int(ResolveString(args.get('End')))
@@ -1706,8 +1706,8 @@ def get_events_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     return command_results
 
 
-def file_analysis_by_hash_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def file_analysis_by_hash_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     hash = ResolveString(args.get('Hash'))
     response = client.file_analysis_by_hash(
@@ -1747,8 +1747,8 @@ def file_analysis_by_hash_command(client: Client, args: Dict[str, Any]) -> List[
     return command_results
 
 
-def file_analysis_by_object_detail_id_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def file_analysis_by_object_detail_id_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_detail_id = int(ResolveString(args.get('ObjectDetailId')))
     response = client.file_analysis_by_object_detail_id(
@@ -1788,8 +1788,8 @@ def file_analysis_by_object_detail_id_command(client: Client, args: Dict[str, An
     return command_results
 
 
-def check_file_against_trusted_file_registry_by_hash_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def check_file_against_trusted_file_registry_by_hash_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     hashes = ResolveString(args.get('Hashes')).split(',')
     response = client.check_file_against_trusted_file_registry_by_hash(
@@ -1827,8 +1827,8 @@ def check_file_against_trusted_file_registry_by_hash_command(client: Client, arg
     return command_results
 
 
-def promote_authoritative_baseline_files_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def promote_authoritative_baseline_files_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_detail_ids = ResolveString(args.get('ObjectDetaildIds')).split(',')
     response = client.promote_authoritative_baseline_files(
@@ -1869,8 +1869,8 @@ def promote_authoritative_baseline_files_command(client: Client, args: Dict[str,
     return command_results
 
 
-def demote_authoritative_baseline_files_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def demote_authoritative_baseline_files_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_detail_ids = ResolveString(args.get('ObjectDetaildIds')).split(',')
     response = client.demote_authoritative_baseline_files(
@@ -1909,8 +1909,8 @@ def demote_authoritative_baseline_files_command(client: Client, args: Dict[str, 
     return command_results
 
 
-def update_task_disposition_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def update_task_disposition_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     task_id = int(ResolveString(args.get('taskId')))
     disposition = ResolveString(args.get('Disposition'))
@@ -1951,8 +1951,8 @@ def update_task_disposition_command(client: Client, args: Dict[str, Any]) -> Lis
     return command_results
 
 
-def get_tickets_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_tickets_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     response = client.get_tickets(
 
@@ -2015,8 +2015,8 @@ def get_tickets_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
     return command_results
 
 
-def get_ticket_tasks_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_ticket_tasks_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     response = client.get_ticket_tasks(
 
@@ -2080,8 +2080,8 @@ def get_ticket_tasks_command(client: Client, args: Dict[str, Any]) -> List[Comma
     return command_results
 
 
-def add_ticket_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def add_ticket_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     title = ResolveString(args.get('title'))
     priority = int(ResolveString(args.get('priority')))
@@ -2175,8 +2175,8 @@ def add_ticket_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     return command_results
 
 
-def update_ticket_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def update_ticket_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     ticket_id = int(ResolveString(args.get('ticketId')))
     title = ResolveString(args.get('title'))
@@ -2272,8 +2272,8 @@ def update_ticket_command(client: Client, args: Dict[str, Any]) -> List[CommandR
     return command_results
 
 
-def add_ticket_comment_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def add_ticket_comment_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     ticket_id = int(ResolveString(args.get('ticketId')))
     comment = ResolveString(args.get('comment'))
@@ -2297,8 +2297,8 @@ def add_ticket_comment_command(client: Client, args: Dict[str, Any]) -> List[Com
     return command_results
 
 
-def add_hash_allow_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def add_hash_allow_list_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     hash = ResolveString(args.get('hash'))
     filename = ResolveString(args.get('filename'))
@@ -2346,8 +2346,8 @@ def add_hash_allow_list_command(client: Client, args: Dict[str, Any]) -> List[Co
     return command_results
 
 
-def add_hash_deny_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def add_hash_deny_list_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     hash = ResolveString(args.get('hash'))
     filename = ResolveString(args.get('filename'))
@@ -2395,8 +2395,8 @@ def add_hash_deny_list_command(client: Client, args: Dict[str, Any]) -> List[Com
     return command_results
 
 
-def delete_hash_allow_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def delete_hash_allow_list_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     hash = ResolveString(args.get('hash'))
     reason = ResolveString(args.get('reason'))
@@ -2438,8 +2438,8 @@ def delete_hash_allow_list_command(client: Client, args: Dict[str, Any]) -> List
     return command_results
 
 
-def delete_hash_deny_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def delete_hash_deny_list_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     hash = ResolveString(args.get('hash'))
     reason = ResolveString(args.get('reason'))
@@ -2481,8 +2481,8 @@ def delete_hash_deny_list_command(client: Client, args: Dict[str, Any]) -> List[
     return command_results
 
 
-def get_sub_generations_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_sub_generations_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('objectId')))
     response = client.get_sub_generations(
@@ -2532,8 +2532,8 @@ def get_sub_generations_command(client: Client, args: Dict[str, Any]) -> List[Co
     return command_results
 
 
-def deploy_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def deploy_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     agent_object_id = int(ResolveString(args.get('agentObjectId')))
     sub_generation_id = int(ResolveString(args.get('subGenerationId')))
@@ -2559,8 +2559,8 @@ def deploy_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
     return command_results
 
 
-def get_object_group_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_object_group_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('objectId')))
     response = client.get_object_group(
@@ -2632,8 +2632,8 @@ def get_object_group_command(client: Client, args: Dict[str, Any]) -> List[Comma
     return command_results
 
 
-def unlock_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def unlock_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('objectId')))
     response = client.unlock(
@@ -2655,8 +2655,8 @@ def unlock_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
     return command_results
 
 
-def lock_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def lock_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('objectId')))
     response = client.lock(
@@ -2678,8 +2678,8 @@ def lock_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return command_results
 
 
-def get_object_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_object_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('objectId')))
     response = client.get_object(
@@ -2748,8 +2748,8 @@ def get_object_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     return command_results
 
 
-def force_sync_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def force_sync_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('objectId')))
     response = client.force_sync(
@@ -2771,8 +2771,8 @@ def force_sync_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     return command_results
 
 
-def view_file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def view_file_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_detail_id = int(ResolveString(args.get('objectDetailId')))
     response = client.view_file(
@@ -2810,8 +2810,8 @@ def view_file_command(client: Client, args: Dict[str, Any]) -> List[CommandResul
     return command_results
 
 
-def run_report_by_name_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def run_report_by_name_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     name = ResolveString(args.get('name'))
     object_id = int(ResolveString(args.get('objectId')))
@@ -2853,8 +2853,8 @@ def run_report_by_name_command(client: Client, args: Dict[str, Any]) -> List[Com
     return command_results
 
 
-def deploy_by_date_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def deploy_by_date_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     date = ResolveString(args.get('date'))
     object_id = int(ResolveString(args.get('objectId')))
@@ -2878,8 +2878,8 @@ def deploy_by_date_command(client: Client, args: Dict[str, Any]) -> List[Command
     return command_results
 
 
-def get_current_compliance_items_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_current_compliance_items_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('ObjectId')))
     compliance_scan_id = int(ResolveString(args.get('ComplianceScanId')))
@@ -2927,8 +2927,8 @@ def get_current_compliance_items_command(client: Client, args: Dict[str, Any]) -
     return command_results
 
 
-def get_objects_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_objects_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_type = int(ResolveString(args.get('ObjectType')))
     object_subtype = int(ResolveString(args.get('ObjectSubType')))
@@ -3015,8 +3015,8 @@ def get_objects_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
     return command_results
 
 
-def get_agent_info_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_agent_info_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('ObjectId')))
     response = client.get_agent_info(
@@ -3057,8 +3057,8 @@ def get_agent_info_command(client: Client, args: Dict[str, Any]) -> List[Command
     return command_results
 
 
-def get_compliance_archive_details_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_compliance_archive_details_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('ObjectId')))
     compliance_scan_id = int(ResolveString(args.get('ComplianceScanId')))
@@ -3146,8 +3146,8 @@ def get_compliance_archive_details_command(client: Client, args: Dict[str, Any])
     return command_results
 
 
-def get_compliance_archive_summary_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_compliance_archive_summary_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('ObjectId')))
     compliance_scan_id = int(ResolveString(args.get('ComplianceScanId')))
@@ -3220,8 +3220,8 @@ def get_compliance_archive_summary_command(client: Client, args: Dict[str, Any])
     return command_results
 
 
-def compliance_scan_children_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def compliance_scan_children_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_parent_id = int(ResolveString(args.get('objectParentId')))
     response = client.compliance_scan_children(
@@ -3243,8 +3243,8 @@ def compliance_scan_children_command(client: Client, args: Dict[str, Any]) -> Li
     return command_results
 
 
-def compliance_scan_with_summary_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def compliance_scan_with_summary_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('objectId')))
     retry_count = int(ResolveString(args.get('retryCount')))
@@ -3313,8 +3313,8 @@ def compliance_scan_with_summary_command(client: Client, args: Dict[str, Any]) -
     return command_results
 
 
-def get_agent_object_id_by_alternate_system_id_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_agent_object_id_by_alternate_system_id_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     alternate_system_id = ResolveString(args.get('alternateSystemId'))
     response = client.get_agent_object_id_by_alternate_system_id(
@@ -3352,8 +3352,8 @@ def get_agent_object_id_by_alternate_system_id_command(client: Client, args: Dic
     return command_results
 
 
-def get_agent_object_by_name_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_agent_object_by_name_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     agent_name = ResolveString(args.get('agentName'))
     response = client.get_agent_object_by_name(
@@ -3422,8 +3422,8 @@ def get_agent_object_by_name_command(client: Client, args: Dict[str, Any]) -> Li
     return command_results
 
 
-def get_agent_object_by_alternate_id_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_agent_object_by_alternate_id_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     alternate_system_id = ResolveString(args.get('alternateSystemId'))
     response = client.get_agent_object_by_alternate_id(
@@ -3492,8 +3492,8 @@ def get_agent_object_by_alternate_id_command(client: Client, args: Dict[str, Any
     return command_results
 
 
-def get_agent_object_by_ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_agent_object_by_ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     ip = ResolveString(args.get('ip'))
     response = client.get_agent_object_by_ip(

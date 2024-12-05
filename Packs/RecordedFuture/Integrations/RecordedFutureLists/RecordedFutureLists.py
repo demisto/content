@@ -35,7 +35,7 @@ class Client(BaseClient):
             'demisto_command': demisto.command(),
             'demisto_args': demisto.args(),
         }
-        if 'demisto_args' in kwargs.keys():
+        if 'demisto_args' in kwargs:
             if args := kwargs.get('demisto_args'):
                 json_data.update({'demisto_args': args})
             kwargs.pop('demisto_args')

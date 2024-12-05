@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-from typing import Dict
 
 import urllib3
 
@@ -15,7 +14,7 @@ class Client(BaseClient):
         self.headers = headers
         super().__init__(base_url, verify_certificate, proxy)
 
-    def get_jwt_token(self, api_key: str, scopes: list) -> Dict[str, Any]:
+    def get_jwt_token(self, api_key: str, scopes: list) -> dict[str, Any]:
         jwt_key = self._http_request(
             method="POST",
             url_suffix="/get-token/",
@@ -23,7 +22,7 @@ class Client(BaseClient):
         )
         return {"Authorization": f'JWT {jwt_key["jwt"]}'}
 
-    def get_incident(self, incident_id: str, company_id=None) -> Dict[str, Any]:
+    def get_incident(self, incident_id: str, company_id=None) -> dict[str, Any]:
         """Gets a specific Incident
 
         :type incident_id: ``str``
@@ -73,7 +72,7 @@ class Client(BaseClient):
     def get_open_incidents(
             self,
             company_id=None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
 
         if not company_id:
             company_id = self.company_id
@@ -85,7 +84,7 @@ class Client(BaseClient):
         )
 
 
-def get_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_incident_command(client: Client, args: dict[str, Any]) -> CommandResults:
     incident_id = args.get("incident_id")
     company_id = args.get("company_id")
 
@@ -110,7 +109,7 @@ def get_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
 
 
-def classify_incident_command(client: Client, args: Dict[str, Any]) -> str:
+def classify_incident_command(client: Client, args: dict[str, Any]) -> str:
     incident_id = args.get("incident_id")
     company_id = args.get("company_id")
     classification = args.get("classification")
@@ -130,7 +129,7 @@ def classify_incident_command(client: Client, args: Dict[str, Any]) -> str:
         return "Classification Failed!"
 
 
-def get_open_incidents_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, str]:
+def get_open_incidents_command(client: Client, args: dict[str, Any]) -> Union[CommandResults, str]:
     company_id = args.get("company_id")
 
     open_incidents = client.get_open_incidents(company_id)
@@ -172,7 +171,7 @@ def test_module(client: Client, api_key, scopes) -> str:
     return "ok"
 
 
-def fetch_incidents(client: Client, last_run: Dict[str, Any]):
+def fetch_incidents(client: Client, last_run: dict[str, Any]):
     last_run = last_run.get("data")
     if last_run is None:
         last_run = set()

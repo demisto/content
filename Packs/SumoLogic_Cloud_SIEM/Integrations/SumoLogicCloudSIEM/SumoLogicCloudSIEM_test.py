@@ -10,7 +10,6 @@ from CommonServerUserPython import *
 import json
 
 from datetime import datetime
-from datetime import timezone
 
 MOCK_URL = 'https://test.com/api'
 RECORD_SUMMARY_FIELDS_DEFAULT = (
@@ -34,11 +33,10 @@ def test_insight_get_details(requests_mock):
     insight = insight_signal_to_readable(mock_response.get('data'))
 
     requests_mock.get(
-        '{}/sec/v1/insights/{}?exclude=signals.allRecords&recordSummaryFields=action%2C'
+        f'{MOCK_URL}/sec/v1/insights/{insight_id}?exclude=signals.allRecords&recordSummaryFields=action%2C'
         'description%2Cdevice_hostname%2Cdevice_ip%2CdstDevice_hostname%2CdstDevice_ip%2Cemail_sender%2C'
         'file_basename%2Cfile_hash_md5%2Cfile_hash_sha1%2Cfile_hash_sha256%2CsrcDevice_hostname%2C'
-        'srcDevice_ip%2Cthreat_name%2Cthreat_category%2Cthreat_identifier%2Cuser_username%2Cthreat_url%2ClistMatches'.format(
-            MOCK_URL, insight_id),
+        'srcDevice_ip%2Cthreat_name%2Cthreat_category%2Cthreat_identifier%2Cuser_username%2Cthreat_url%2ClistMatches',
         json=mock_response)
 
     client = Client(
@@ -486,20 +484,20 @@ def test_fetch_incidents(requests_mock):
 
     mock_response1 = util_load_json('test_data/insight_list_page1.json')
     requests_mock.get(
-        '{}/sec/v1/insights?q=created%3A%3E%3D2021-05-18T00%3A00%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29'
+        f'{MOCK_URL}/sec/v1/insights?q=created%3A%3E%3D2021-05-18T00%3A00%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29'
         '&limit=20&recordSummaryFields=action%2Cdescription%2Cdevice_hostname%2Cdevice_ip%2CdstDevice_hostname'
         '%2CdstDevice_ip%2Cemail_sender%2Cfile_basename%2Cfile_hash_md5%2Cfile_hash_sha1%2Cfile_hash_sha256'
         '%2CsrcDevice_hostname%2CsrcDevice_ip%2Cthreat_name%2Cthreat_category%2Cthreat_identifier%2Cuser_username'
-        '%2Cthreat_url%2ClistMatches'.format(MOCK_URL),
+        '%2Cthreat_url%2ClistMatches',
         json=mock_response1)
 
     mock_response2 = util_load_json('test_data/insight_list_page2.json')
     requests_mock.get(
-        '{}/sec/v1/insights?q=created%3A%3E%3D2021-05-18T00%3A00%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29'
+        f'{MOCK_URL}/sec/v1/insights?q=created%3A%3E%3D2021-05-18T00%3A00%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29'
         '&limit=20&recordSummaryFields=action%2Cdescription%2Cdevice_hostname%2Cdevice_ip%2CdstDevice_hostname'
         '%2CdstDevice_ip%2Cemail_sender%2Cfile_basename%2Cfile_hash_md5%2Cfile_hash_sha1%2Cfile_hash_sha256'
         '%2CsrcDevice_hostname%2CsrcDevice_ip%2Cthreat_name%2Cthreat_category%2Cthreat_identifier%2Cuser_username'
-        '%2Cthreat_url%2ClistMatches&offset=1'.format(MOCK_URL),
+        '%2Cthreat_url%2ClistMatches&offset=1',
         json=mock_response2)
 
     client = Client(
@@ -521,7 +519,7 @@ def test_fetch_incidents(requests_mock):
     assert incidents[1].get('name') == 'Defense Evasion with Persistence - INSIGHT-232'
     assert incidents[1].get('occurred') == '2021-05-18T14:46:47.000Z'
     latest_created_time = datetime.strptime(incidents[1].get('occurred'), '%Y-%m-%dT%H:%M:%S.%fZ')
-    assert next_run.get('last_fetch') == int(latest_created_time.replace(tzinfo=timezone.utc).timestamp())
+    assert next_run.get('last_fetch') == int(latest_created_time.replace(tzinfo=datetime.UTC).timestamp())
 
 
 def test_fetch_incidents_with_signals(requests_mock):
@@ -531,20 +529,20 @@ def test_fetch_incidents_with_signals(requests_mock):
 
     mock_response1 = util_load_json('test_data/insight_list_page1.json')
     requests_mock.get(
-        '{}/sec/v1/insights?q=created%3A%3E%3D2021-05-18T00%3A00%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29'
+        f'{MOCK_URL}/sec/v1/insights?q=created%3A%3E%3D2021-05-18T00%3A00%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29'
         '&limit=20&recordSummaryFields=action%2Cdescription%2Cdevice_hostname%2Cdevice_ip%2CdstDevice_hostname'
         '%2CdstDevice_ip%2Cemail_sender%2Cfile_basename%2Cfile_hash_md5%2Cfile_hash_sha1%2Cfile_hash_sha256'
         '%2CsrcDevice_hostname%2CsrcDevice_ip%2Cthreat_name%2Cthreat_category%2Cthreat_identifier%2Cuser_username'
-        '%2Cthreat_url%2ClistMatches'.format(MOCK_URL),
+        '%2Cthreat_url%2ClistMatches',
         json=mock_response1)
 
     mock_response2 = util_load_json('test_data/insight_list_page2.json')
     requests_mock.get(
-        '{}/sec/v1/insights?q=created%3A%3E%3D2021-05-18T00%3A00%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29'
+        f'{MOCK_URL}/sec/v1/insights?q=created%3A%3E%3D2021-05-18T00%3A00%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29'
         '&limit=20&recordSummaryFields=action%2Cdescription%2Cdevice_hostname%2Cdevice_ip%2CdstDevice_hostname'
         '%2CdstDevice_ip%2Cemail_sender%2Cfile_basename%2Cfile_hash_md5%2Cfile_hash_sha1%2Cfile_hash_sha256'
         '%2CsrcDevice_hostname%2CsrcDevice_ip%2Cthreat_name%2Cthreat_category%2Cthreat_identifier%2Cuser_username'
-        '%2Cthreat_url%2ClistMatches&offset=1'.format(MOCK_URL),
+        '%2Cthreat_url%2ClistMatches&offset=1',
         json=mock_response2)
 
     mock_response3 = util_load_json('test_data/insight_signal_list1.json')
@@ -587,7 +585,7 @@ def test_fetch_incidents_with_signals(requests_mock):
     assert incidents[13].get('name') == 'Defense Evasion with Persistence - INSIGHT-232'
     assert incidents[13].get('occurred') == '2021-05-18T14:46:47.000Z'
     latest_created_time = datetime.strptime(incidents[13].get('occurred'), '%Y-%m-%dT%H:%M:%S.%fZ')
-    assert next_run.get('last_fetch') == int(latest_created_time.replace(tzinfo=timezone.utc).timestamp())
+    assert next_run.get('last_fetch') == int(latest_created_time.replace(tzinfo=datetime.UTC).timestamp())
 
 
 DEMISTO_ARGS = {'api_endpoint': MOCK_URL,

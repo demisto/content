@@ -12,7 +12,7 @@ For API reference, visit: https://developer.automox.com/
 
 import time
 import traceback
-from typing import Any, Dict, List
+from typing import Any
 
 import urllib3
 from CommonServerUserPython import *  # noqa
@@ -51,7 +51,7 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def _get_list_results(self, method: str, url_suffix: str, params: dict) -> List[Dict]:
+    def _get_list_results(self, method: str, url_suffix: str, params: dict) -> list[dict]:
         results = []
 
         result_limit = int(params['limit'])
@@ -135,7 +135,7 @@ class Client(BaseClient):
             resp_type="response",
         )
 
-    def delete_device(self, org_id: int, device_id: int) -> List[Dict]:
+    def delete_device(self, org_id: int, device_id: int) -> list[dict]:
         params = {
             "o": org_id,
         }
@@ -147,7 +147,7 @@ class Client(BaseClient):
             resp_type="response",
         )
 
-    def delete_group(self, org_id: int, group_id: int) -> List[Dict]:
+    def delete_group(self, org_id: int, group_id: int) -> list[dict]:
         params = {
             "o": org_id,
         }
@@ -159,13 +159,13 @@ class Client(BaseClient):
             resp_type="response",
         )
 
-    def get_vulnerability_sync_batch(self, org_id: int, batch_id: int) -> List[Dict]:
+    def get_vulnerability_sync_batch(self, org_id: int, batch_id: int) -> list[dict]:
         return self._http_request(
             method="GET",
             url_suffix=f"/orgs/{org_id}/tasks/batches/{batch_id}",
         )
 
-    def list_devices(self, org_id: int, group_id: int, limit: int, page: int) -> List[Dict]:
+    def list_devices(self, org_id: int, group_id: int, limit: int, page: int) -> list[dict]:
         params = {
             "o": org_id,
             "groupId": group_id,
@@ -181,7 +181,7 @@ class Client(BaseClient):
 
         return results
 
-    def list_groups(self, org_id: int, limit: int, page: int) -> List[Dict]:
+    def list_groups(self, org_id: int, limit: int, page: int) -> list[dict]:
         params = {
             "o": org_id,
             "limit": limit,
@@ -196,7 +196,7 @@ class Client(BaseClient):
 
         return results
 
-    def list_organization_users(self, org_id: int, limit: int, page: int) -> List[Dict]:
+    def list_organization_users(self, org_id: int, limit: int, page: int) -> list[dict]:
         params = {
             "o": org_id,
             "limit": limit,
@@ -211,7 +211,7 @@ class Client(BaseClient):
 
         return results
 
-    def list_organizations(self, limit: int, page: int) -> List[Dict]:
+    def list_organizations(self, limit: int, page: int) -> list[dict]:
         params = {
             "limit": limit,
             "page": page,
@@ -225,7 +225,7 @@ class Client(BaseClient):
 
         return results
 
-    def list_policies(self, org_id, limit, page) -> List[Dict]:
+    def list_policies(self, org_id, limit, page) -> list[dict]:
         params = {
             "limit": limit,
             "page": page,
@@ -240,7 +240,7 @@ class Client(BaseClient):
 
         return results
 
-    def list_vulnerability_sync_batches(self, org_id, limit, page) -> List[Dict]:
+    def list_vulnerability_sync_batches(self, org_id, limit, page) -> list[dict]:
         params = {
             "limit": limit,
             "page": page,
@@ -254,7 +254,7 @@ class Client(BaseClient):
 
         return results
 
-    def list_vulnerability_sync_tasks(self, org_id, batch_id, status, limit, page) -> List[Dict]:
+    def list_vulnerability_sync_tasks(self, org_id, batch_id, status, limit, page) -> list[dict]:
         params = {
             "limit": limit,
             "page": page,
@@ -270,7 +270,7 @@ class Client(BaseClient):
 
         return results
 
-    def run_command(self, org_id, device_id, payload) -> List[Dict]:
+    def run_command(self, org_id, device_id, payload) -> list[dict]:
         params = {
             "o": org_id,
         }
@@ -282,7 +282,7 @@ class Client(BaseClient):
             data=payload,
         )
 
-    def update_device(self, org_id, device_id, payload) -> List[Dict]:
+    def update_device(self, org_id, device_id, payload) -> list[dict]:
         params = {
             "o": org_id,
         }
@@ -295,7 +295,7 @@ class Client(BaseClient):
             resp_type="response",
         )
 
-    def update_group(self, org_id, group_id, payload) -> List[Dict]:
+    def update_group(self, org_id, group_id, payload) -> list[dict]:
         params = {
             "o": org_id,
         }
@@ -308,7 +308,7 @@ class Client(BaseClient):
             resp_type="response",
         )
 
-    def upload_vulnerability_sync_file(self, org_id, type, payload, files) -> Dict[str, Any]:
+    def upload_vulnerability_sync_file(self, org_id, type, payload, files) -> dict[str, Any]:
         return self._http_request(
             method="POST",
             url_suffix=f"/orgs/{org_id}/tasks/{type}/batches/upload",
@@ -316,7 +316,7 @@ class Client(BaseClient):
             files=files,
         )
 
-    def get_group(self, org_id, group_id) -> Dict[str, Any]:
+    def get_group(self, org_id, group_id) -> dict[str, Any]:
         params = {
             "o": org_id,
         }
@@ -327,7 +327,7 @@ class Client(BaseClient):
             params=params
         )
 
-    def get_device(self, org_id, device_id) -> Dict[str, Any]:
+    def get_device(self, org_id, device_id) -> dict[str, Any]:
         params = {
             "o": org_id,
         }
@@ -338,7 +338,7 @@ class Client(BaseClient):
             params=params
         )
 
-    def create_group(self, org_id, payload) -> List[Dict]:
+    def create_group(self, org_id, payload) -> list[dict]:
         params = {
             "o": org_id,
         }
@@ -354,7 +354,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def remove_keys(excluded_keys_list: List[str], data: Dict[str, Any]) -> Dict[str, Any]:
+def remove_keys(excluded_keys_list: list[str], data: dict[str, Any]) -> dict[str, Any]:
     for key_string in excluded_keys_list:
         keys = key_string.split(".")
         data = remove_key(keys, data)
@@ -362,7 +362,7 @@ def remove_keys(excluded_keys_list: List[str], data: Dict[str, Any]) -> Dict[str
     return data
 
 
-def remove_key(keys_to_traverse: List[str], data: Dict[str, Any]) -> Dict[str, Any]:
+def remove_key(keys_to_traverse: list[str], data: dict[str, Any]) -> dict[str, Any]:
     try:
         key = keys_to_traverse[0]
 
@@ -445,7 +445,7 @@ def test_module(client: Client) -> str:
     return message
 
 
-def action_on_vulnerability_sync_batch(client: Client, args: Dict[str, Any]) -> CommandResults:
+def action_on_vulnerability_sync_batch(client: Client, args: dict[str, Any]) -> CommandResults:
     org_id = args.get(ORG_IDENTIFIER) or DEFAULT_ORG_ID
     batch_id = args.get('batch_id')
     action = args.get('action')
@@ -458,7 +458,7 @@ def action_on_vulnerability_sync_batch(client: Client, args: Dict[str, Any]) -> 
     )
 
 
-def action_on_vulnerability_sync_task(client: Client, args: Dict[str, Any]) -> CommandResults:
+def action_on_vulnerability_sync_task(client: Client, args: dict[str, Any]) -> CommandResults:
     org_id = args.get(ORG_IDENTIFIER) or DEFAULT_ORG_ID
     task_id = args.get('task_id')
     action = args.get('action')
@@ -471,7 +471,7 @@ def action_on_vulnerability_sync_task(client: Client, args: Dict[str, Any]) -> C
     )
 
 
-def create_group(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_group(client: Client, args: dict[str, Any]) -> CommandResults:
     org_id = args.get(ORG_IDENTIFIER) or DEFAULT_ORG_ID
 
     color = args.get('color')
@@ -501,7 +501,7 @@ def create_group(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def delete_device(client: Client, args: Dict[str, Any]) -> CommandResults:
+def delete_device(client: Client, args: dict[str, Any]) -> CommandResults:
     org_id = args.get(ORG_IDENTIFIER) or DEFAULT_ORG_ID
     device_id = args.get(DEVICE_IDENTIFIER)
 
@@ -521,7 +521,7 @@ def delete_device(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def delete_group(client: Client, args: Dict[str, Any]) -> CommandResults:
+def delete_group(client: Client, args: dict[str, Any]) -> CommandResults:
     org_id = args.get(ORG_IDENTIFIER) or DEFAULT_ORG_ID
     group_id = args.get(GROUP_IDENTIFIER)
 
@@ -541,7 +541,7 @@ def delete_group(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_vulnerability_sync_batch(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_vulnerability_sync_batch(client: Client, args: dict[str, Any]) -> CommandResults:
     org_id = args.get(ORG_IDENTIFIER) or DEFAULT_ORG_ID
     batch_id = args.get('batch_id')
 
@@ -554,7 +554,7 @@ def get_vulnerability_sync_batch(client: Client, args: Dict[str, Any]) -> Comman
     )
 
 
-def list_devices(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_devices(client: Client, args: dict[str, Any]) -> CommandResults:
     org_id = args.get(ORG_IDENTIFIER) or DEFAULT_ORG_ID
     group_id = args.get(GROUP_IDENTIFIER)
     limit = int(args.get(LIMIT_IDENTIFIER))
@@ -580,7 +580,7 @@ def list_devices(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def list_groups(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_groups(client: Client, args: dict[str, Any]) -> CommandResults:
     org_id = args.get(ORG_IDENTIFIER) or DEFAULT_ORG_ID
     limit = int(args.get(LIMIT_IDENTIFIER))
     page = int(args.get(PAGE_IDENTIFIER))
@@ -602,7 +602,7 @@ def list_groups(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def list_organization_users(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_organization_users(client: Client, args: dict[str, Any]) -> CommandResults:
     org_id = args.get(ORG_IDENTIFIER) or DEFAULT_ORG_ID
     limit = int(args.get(LIMIT_IDENTIFIER))
     page = int(args.get(PAGE_IDENTIFIER))
@@ -627,7 +627,7 @@ def list_organization_users(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def list_organizations(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_organizations(client: Client, args: dict[str, Any]) -> CommandResults:
     limit = int(args.get(LIMIT_IDENTIFIER))
     page = int(args.get(PAGE_IDENTIFIER))
     result = client.list_organizations(limit, page)
@@ -673,7 +673,7 @@ def list_organizations(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def list_policies(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_policies(client: Client, args: dict[str, Any]) -> CommandResults:
     org_id = args.get(ORG_IDENTIFIER) or DEFAULT_ORG_ID
     limit = int(args.get(LIMIT_IDENTIFIER))
     page = int(args.get(PAGE_IDENTIFIER))
@@ -698,7 +698,7 @@ def list_policies(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def list_vulnerability_sync_batches(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_vulnerability_sync_batches(client: Client, args: dict[str, Any]) -> CommandResults:
     org_id = args.get(ORG_IDENTIFIER) or DEFAULT_ORG_ID
     limit = int(args.get(LIMIT_IDENTIFIER))
     page = int(args.get(PAGE_IDENTIFIER))
@@ -712,7 +712,7 @@ def list_vulnerability_sync_batches(client: Client, args: Dict[str, Any]) -> Com
     )
 
 
-def list_vulnerability_sync_tasks(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_vulnerability_sync_tasks(client: Client, args: dict[str, Any]) -> CommandResults:
     org_id = args.get(ORG_IDENTIFIER) or DEFAULT_ORG_ID
     batch_id = args.get('batch_id')
     status = args.get('status')
@@ -735,7 +735,7 @@ def list_vulnerability_sync_tasks(client: Client, args: Dict[str, Any]) -> Comma
     )
 
 
-def run_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def run_command(client: Client, args: dict[str, Any]) -> CommandResults:
     org_id = args.get(ORG_IDENTIFIER) or DEFAULT_ORG_ID
     device_id = args.get(DEVICE_IDENTIFIER)
     command_type_name = args.get('command')
@@ -754,7 +754,7 @@ def run_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def update_device(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_device(client: Client, args: dict[str, Any]) -> CommandResults:
     org_id = args.get(ORG_IDENTIFIER) or DEFAULT_ORG_ID
     device_id = args.get(DEVICE_IDENTIFIER)
 
@@ -793,7 +793,7 @@ def update_device(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def update_group(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_group(client: Client, args: dict[str, Any]) -> CommandResults:
     org_id = args.get(ORG_IDENTIFIER) or DEFAULT_ORG_ID
     group_id = args.get(GROUP_IDENTIFIER)
 
@@ -829,7 +829,7 @@ def update_group(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def upload_vulnerability_sync_file(client: Client, args: Dict[str, Any]) -> CommandResults:
+def upload_vulnerability_sync_file(client: Client, args: dict[str, Any]) -> CommandResults:
     org_id = args.get(ORG_IDENTIFIER) or DEFAULT_ORG_ID
     report_source = args.get('reports_source')
     entry_id = args.get('entry_id')
@@ -889,7 +889,7 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        headers: Dict = {
+        headers: dict = {
             "Authorization": f"Bearer {api_key}",
             "User-Agent": USER_AGENT
         }

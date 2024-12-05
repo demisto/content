@@ -1053,8 +1053,7 @@ def main():  # pragma: no cover
             role_session_duration=args.get('roleSessionDuration')
         )
 
-        LOG('Command being called is {command}'.format(
-            command=command))
+        LOG(f'Command being called is {command}')
 
         if command == 'test-module':
             # This is the call made when pressing the integration test button.
@@ -1092,8 +1091,7 @@ def main():  # pragma: no cover
         return_outputs(human_readable, outputs, response)
 
     except Exception as e:
-        return_error('Error has occurred in the AWS securityhub Integration: {code} {message}'.format(
-            code=type(e), message=e), error=e)
+        return_error(f'Error has occurred in the AWS securityhub Integration: {type(e)} {e}', error=e)
 
 
 from AWSApiModule import *  # noqa: E402
