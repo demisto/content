@@ -164,11 +164,11 @@ tasks:
     nexttasks:
       '#default#':
       - "10"
-      (powershell.exe | ntdsutil.exe | esentutl.exe | cmd.exe:
+      powershell.exe|ntdsutil.exe|esentutl.exe|cmd.exe:
       - "11"
     separatecontext: false
     conditions:
-    - label: (powershell.exe | ntdsutil.exe | esentutl.exe | cmd.exe
+    - label: powershell.exe|ntdsutil.exe|esentutl.exe|cmd.exe
       condition:
       - - operator: isEqualString
           left:
@@ -953,7 +953,7 @@ view: |-
       "7_10_cmd.exe|rundll32.exe": 0.42,
       "7_13_#default#": 0.51,
       "7_9_powershell.exe": 0.65,
-      "9_11_(powershell.exe | ntdsutil.exe | esentutl.exe | cmd.exe": 0.34
+      "9_11_powershell.exe|ntdsutil.exe|esentutl.exe|cmd.exe": 0.34
     },
     "paper": {
       "dimensions": {
@@ -968,4 +968,4 @@ inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.10.0
+fromversion: 8.8.0
