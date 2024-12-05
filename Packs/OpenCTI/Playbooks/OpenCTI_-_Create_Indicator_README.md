@@ -45,7 +45,6 @@ This playbook does not use any scripts.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | OpenCTI.Indicator.id | New indicator id. | string |
-| OpenCTI.Indicator.data | New indicator data. | unknown |
 
 ## Playbook Image
 

@@ -268,8 +268,6 @@ tasks:
     scriptarguments:
       created_by:
         simple: ${inputs.created_by_id}
-      data:
-        simple: ${inputs.data}
       description:
         simple: ${inputs.description}
       external_references_id:
@@ -420,8 +418,6 @@ outputs:
 - contextPath: OpenCTI.Indicator.id
   description: New indicator ID.
   type: string
-- contextPath: OpenCTI.Indicator.data
-  description: New indicator data.
 fromversion: 5.0.0
 tests:
 - OpenCTI Test
