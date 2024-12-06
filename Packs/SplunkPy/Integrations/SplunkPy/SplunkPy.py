@@ -2528,7 +2528,7 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
 def splunk_job_create_command(service: client.Service, args: dict):
     query = args['query']
     app = args.get('app', '')
-    if not query.startswith('search'):
+    if not query.startswith('search') and not query.startswith('|'):
         query = f'search {query}'
     search_kwargs = {
         "exec_mode": "normal",
