@@ -1,13 +1,12 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *
+from CommonServerUserPython import *  # noqa
 import dateparser
 import requests
 import traceback
 from typing import Any
 from bs4 import BeautifulSoup
 import urllib3
-
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
