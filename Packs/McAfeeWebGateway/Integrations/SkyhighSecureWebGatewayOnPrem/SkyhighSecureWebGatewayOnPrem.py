@@ -244,15 +244,12 @@ def get_list_entry_command(client: Client, args: Dict[str, Any]) -> CommandResul
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains the list entry.
     """
-    demisto.debug(f'Skyhigh Secure Web Gateway get_list_entry_command with args: {args}')
     list_id: str = args.get("list_id", "")
     entry_pos: str = args.get("entry_pos", "")
 
     result = client.get_list_entry(list_id, entry_pos)
-    demisto.debug(f'Skyhigh Secure Web Gateway result: {result}')
 
     data = json.loads(xml2json(result))
-    demisto.debug(f'Skyhigh Secure Web Gateway data: {data}')
     title = demisto.get(data, "entry.title")
 
     entry = demisto.get(data, "entry.content.listEntry", {})
@@ -364,7 +361,6 @@ def insert_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
                         that contains the inserted list entry.
     """
-    demisto.debug(f'Skyhigh Secure Web Gateway insert_entry_command called with args: {args}')
     list_id: str = args.get("list_id", "")
     entry_pos: str = args.get("entry_pos", "")
     name: str = args.get("name", "")
@@ -373,24 +369,21 @@ def insert_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults
     entry = f"<listEntry><entry>{name}</entry><description>{description}</description></listEntry>"
 
     result = client.insert_entry(list_id, entry_pos, entry)
-    demisto.debug(f'Skyhigh Secure Web Gateway result: {result}')
     client.commit()
 
     data = json.loads(xml2json(result))
-    demisto.debug(f'Skyhigh Secure Web Gateway data: {data}')
     title = f'Added {demisto.get(data, "entry.title")}'
 
     entry = demisto.get(data, "entry.content.listEntry", {})
-    description = entry.get("description")
-    if not description:
-        description = ""
+    description = entry.get("description", "")
+    entry_name = entry.get("name", "")
     res = {
         "ID": list_id,
         "ListEntries": [
             {
                 "ListID": list_id,
                 "Position": entry_pos,
-                "Name": entry.get("entry", ""),
+                "Name": entry_name,
                 "Description": description,
             }
         ]
@@ -401,7 +394,7 @@ def insert_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults
             title, res["ListEntries"], headers=["ListID", "Position", "Name", "Description"]
         ),
         outputs_prefix="SWG.List",
-        outputs_key_field=["ID"],
+        outputs_key_field=entry_name,
         outputs=res,
         raw_response=result
     )
@@ -420,16 +413,13 @@ def delete_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains the list entry.
     """
-    demisto.debug(f'Skyhigh Secure Web Gateway delete_entry_command called with args: {args}')
     list_id: str = args.get("list_id", "")
     entry_pos: str = args.get("entry_pos", "")
 
     result = client.delete_entry(list_id, entry_pos)
-    demisto.debug(f'Skyhigh Secure Web Gateway result: {result}')
     client.commit()
 
     data = json.loads(xml2json(result))
-    demisto.debug(f'Skyhigh Secure Web Gateway data: {data}')
     title = f'Deleted {demisto.get(data, "entry.title")}'
 
     entry = demisto.get(data, "entry.content.listEntry", {})
