@@ -601,7 +601,8 @@ def test_get_computer_configuration_profiles_by_id(mocker):
     mocker.patch.object(Client, '_get_token')
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'id': 1}
-    mock_response = util_load_json('test_data/get_computer_configuration_profiles/get_computer_configuration_profiles_by_id_raw_response.json')
+    mock_response = util_load_json('test_data/get_computer_configuration_profiles/'
+                                   'get_computer_configuration_profiles_by_id_raw_response.json')
     mocker.patch.object(client, 'get_osxconfigurationprofiles_by_id', return_value=mock_response)
 
     outputs = get_profile_configuration_osx(client, args)
@@ -621,7 +622,8 @@ def test_get_mobile_configuration_profiles_by_id(mocker):
     mocker.patch.object(Client, '_get_token')
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'id': 1}
-    mock_response = util_load_json('test_data/get_mobile_configuration_profiles/get_mobile_configuration_profiles_by_id_raw_response.json')
+    mock_response = util_load_json('test_data/get_mobile_configuration_profiles/'
+                                   'get_mobile_configuration_profiles_by_id_raw_response.json')
     mocker.patch.object(client, 'get_mobiledeviceconfigurationprofiles_by_id', return_value=mock_response)
 
     outputs = get_profile_configuration_mobile(client, args)

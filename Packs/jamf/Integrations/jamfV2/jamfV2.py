@@ -8,7 +8,6 @@ from typing import Any
 from bs4 import BeautifulSoup
 import urllib3
 
-from Packs.XSOAR_EDL_Checker.Scripts.XSOARAllEDLCheckerAutomation.XSOARAllEDLCheckerAutomation import readable
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -403,23 +402,21 @@ class Client(BaseClient):
         json_response = json.loads(xml2json(res.content))
         return json_response
 
-    def get_mobiledeviceconfigurationprofiles_by_id(self, id):
+    def get_mobiledeviceconfigurationprofiles_by_id(self, jamf_id):
         """
         API link: https://developer.jamf.com/jamf-pro/reference/findmobiledeviceconfigurationprofilesbyid
         """
-        uri = f'/mobiledeviceconfigurationprofiles/id/{id}'
+        uri = f'/mobiledeviceconfigurationprofiles/id/{jamf_id}'
         res = self._classic_api_get(url_suffix=uri, error_handler=self._generic_error_handler)
         return res
 
-
-    def get_osxconfigurationprofiles_by_id(self, id):
+    def get_osxconfigurationprofiles_by_id(self, jamf_id):
         """
         API link: https://developer.jamf.com/jamf-pro/reference/findosxconfigurationprofilesbyid
         """
-        uri = f'/osxconfigurationprofiles/id/{id}'
+        uri = f'/osxconfigurationprofiles/id/{jamf_id}'
         res = self._classic_api_get(url_suffix=uri, error_handler=self._generic_error_handler)
         return res
-
 
 
 ''' HELPER FUNCTIONS '''
@@ -1356,7 +1353,7 @@ def check_authentication_parameters(client_id: str | None, client_secret: str | 
     return None
 
 
-def get_profile_configuration_osx( client: Client, args: dict[str, Any]) -> CommandResults:
+def get_profile_configuration_osx(client: Client, args: dict[str, Any]) -> CommandResults:
     profile_id = args.get('id')
     profile_response = client.get_osxconfigurationprofiles_by_id(profile_id)
     readable_output = profile_response.get('os_x_configuration_profile')
