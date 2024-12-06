@@ -33,8 +33,8 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
     
-    def __init__(self, base_url, api_key, verify=True, proxy=False, ok_codes=..., auth=None, timeout=...):
-        super().__init__(base_url, verify, proxy, ok_codes, auth, timeout)
+    def __init__(self, base_url, api_key):
+        super().__init__(base_url)
 
         self._headers = dict()
         self._headers["accept"] = "application/json"
@@ -139,15 +139,6 @@ def main() -> None:
     # get the service API url
     base_url = urljoin(demisto.params()['url'], '/v1')
 
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
-
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
@@ -157,11 +148,12 @@ def main() -> None:
             base_url=base_url,
             api_key=api_key)
 
-        if demisto.command() == 'test-module':
+        current_command: str = demisto.command()
+        if current_command == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
-        elif demisto.command() == 'get-alert':
+        elif current_command == 'get-alert':
             return_results(get_alert_command(client, demisto.args()))
 
     # Log exceptions and return errors
