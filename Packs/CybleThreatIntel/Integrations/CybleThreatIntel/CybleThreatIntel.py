@@ -160,35 +160,39 @@ class Client(object):
                 raise ValueError("Last fetch time retrieval failed.")
 
             for data in self.fetch(args.get('begin'), args.get('end'), args.get('collection')):
-                skip = False
-                response = self.parse_to_json(data)
+                try:
+                    skip = False
+                    response = self.parse_to_json(data)
 
-                if response.get('indicators') or False:
-                    content = response.get('indicators')
-                elif response.get('ttps') or False:
-                    content = response.get('ttps').get('ttps')
-                else:
+                    if response.get('indicators') or False:
+                        content = response.get('indicators')
+                    elif response.get('ttps') or False:
+                        content = response.get('ttps').get('ttps')
+                    else:
+                        continue
+
+                    for eachone in content:
+                        if eachone.get('confidence'):
+                            current_timestamp = parser.parse(
+                                eachone['confidence']['timestamp']).replace(tzinfo=pytz.UTC).strftime(DATETIME_FORMAT)
+                            if is_first_fetch or datetime.fromisoformat(current_timestamp) > datetime.fromisoformat(save_fetch_time):
+                                save_fetch_time = current_timestamp
+                            else:
+                                skip = True
+
+                    if not skip:
+                        taxii_data.append(response)
+
+                        count += 1
+                        if count == args.get('limit'):
+                            break
+                except Exception as e:
+                    demisto.debug("Error with formatting feeds, exception:{}".format(e))
                     continue
 
-                for eachone in content:
-                    if eachone.get('confidence'):
-                        current_timestamp = parser.parse(
-                            eachone['confidence']['timestamp']).replace(tzinfo=pytz.UTC).strftime(DATETIME_FORMAT)
-                        if is_first_fetch or datetime.fromisoformat(current_timestamp) > datetime.fromisoformat(save_fetch_time):
-                            save_fetch_time = current_timestamp
-                        else:
-                            skip = True
-
-                if not skip:
-                    taxii_data.append(response)
-
-                    count += 1
-                    if count == args.get('limit'):
-                        break
-
         except Exception as e:
-            demisto.error("Failed to fetch feed details, exception:{}".format(e))
-            raise e
+            demisto.debug("Failed to fetch feed details, exception:{}".format(e))
+            return taxii_data, save_fetch_time
 
         return taxii_data, save_fetch_time
 
