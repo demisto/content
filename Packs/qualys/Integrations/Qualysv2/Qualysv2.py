@@ -9,7 +9,9 @@ import requests
 
 from urllib3 import disable_warnings
 
+
 disable_warnings()  # pylint: disable=no-member
+
 
 """ CONSTANTS """
 
@@ -29,7 +31,7 @@ HOST_DETECTIONS_SINCE_DATETIME_PREV_RUN = 'host_detections_since_datetime_prev_r
 HOST_LAST_FETCH = 'host_last_fetch'
 ASSETS_FETCH_FROM = '90 days'
 HOST_LIMIT = 2000
-ASSET_SIZE_LIMIT = 10 ** 6  # 1MB
+ASSET_SIZE_LIMIT = 10 ** 6   # 1MB
 TEST_FROM_DATE = 'one day'
 FETCH_ASSETS_COMMAND_TIME_OUT = 180
 
@@ -39,7 +41,6 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 API_SUFFIX = "/api/2.0/fo/"
 TAG_API_SUFFIX = "/qps/rest/2.0/"
 
-EXECUTION_START_TIME = time.time()
 FETCH_COMMAND = {
     'events': 0,
     'assets': 1
@@ -1088,8 +1089,7 @@ COMMANDS_ARGS_DATA: dict[str, Any] = {
         "inner_args": ["limit"],
     },
     "qualys-group-list": {
-        "args": ["ids", "id_min", "id_max", "truncation_limit", "network_ids", "unit_id", "user_id", "title",
-                 "show_attributes"],
+        "args": ["ids", "id_min", "id_max", "truncation_limit", "network_ids", "unit_id", "user_id", "title", "show_attributes"],
         "inner_args": ["limit"],
     },
     "qualys-report-fetch": {
@@ -1201,12 +1201,10 @@ COMMANDS_ARGS_DATA: dict[str, Any] = {
         "args": ["action", "scan_ref"],
     },
     "qualys-ip-add": {
-        "args": ["ips", "tracking_method", "enable_vm", "enable_pc", "owner", "ud1", "ud2", "ud3", "comment",
-                 "ag_title"],
+        "args": ["ips", "tracking_method", "enable_vm", "enable_pc", "owner", "ud1", "ud2", "ud3", "comment", "ag_title"],
     },
     "qualys-ip-update": {
-        "args": ["ips", "network_id", "tracking_method", "host_dns", "host_netbios", "owner", "ud1", "ud2", "ud3",
-                 "comment"],
+        "args": ["ips", "network_id", "tracking_method", "host_dns", "host_netbios", "owner", "ud1", "ud2", "ud3", "comment"],
     },
     "qualys-host-excluded-manage": {
         "args": ["action", "ips", "expiry_days", "dg_names", "comment", "network_id"],
@@ -1579,8 +1577,7 @@ COMMANDS_ARGS_DATA: dict[str, Any] = {
     },
     "qualys-time-zone-code": {"args": []},
     "qualys-asset-tag-create": {"args": ["name", "child_name", "rule_type", "rule_text", "criticality_score"]},
-    "qualys-asset-tag-update": {
-        "args": ["id", "name", "rule_type", "rule_text", "child_to_remove", "criticality_score"]},
+    "qualys-asset-tag-update": {"args": ["id", "name", "rule_type", "rule_text", "child_to_remove", "criticality_score"]},
     "qualys-asset-tag-delete": {"args": ["id"]},
     "qualys-asset-tag-list": {"args": ["criteria", "operator", "search_data", "limit"]},
 }
@@ -1672,8 +1669,7 @@ class Client(BaseClient):
 
         return response.text
 
-    def get_host_list_detection(self, since_datetime, next_page=None, limit=HOST_LIMIT) -> tuple[
-        Union[str, bytes], bool]:
+    def get_host_list_detection(self, since_datetime, next_page=None, limit=HOST_LIMIT) -> tuple[Union[str, bytes], bool]:
         """
         Make a http request to Qualys API to get assets
         Args:
@@ -2021,8 +2017,7 @@ def validate_depended_args(command_data: dict) -> None:
         if depended_on_arg not in args_values and depended_on_arg not in inner_args_values:
             continue
         if required_depended_arg not in args_values and required_depended_arg not in inner_args_values:
-            raise DemistoException(
-                f"Argument {required_depended_arg} is required when argument {depended_on_arg} is given.")
+            raise DemistoException(f"Argument {required_depended_arg} is required when argument {depended_on_arg} is given.")
 
 
 @logger
@@ -2099,7 +2094,7 @@ def generate_asset_tag_xml_request_body(args: dict[str, str], command_name: str)
             rule_type_arg = args.get("rule_type", "")
             if rule_type_arg != "STATIC" and not rule_text_arg:
                 raise DemistoException(message="Rule Type argument is passed but Rule Text argument is missing."
-                                               + " Rule Text is optional only when Rule Type is 'STATIC'.")
+                                       + " Rule Text is optional only when Rule Type is 'STATIC'.")
 
             ServiceRequest = ET.Element("ServiceRequest")
             data = ET.SubElement(ServiceRequest, "data")
@@ -2155,8 +2150,7 @@ def handle_asset_tag_request_parameters(args: dict[str, str], command_name: str)
 
     # generate request body if required by the command
     if TAG_ASSET_COMMANDS_API_DATA[command_name].get("request_body"):
-        TAG_ASSET_COMMANDS_API_DATA[command_name]["request_body"] = generate_asset_tag_xml_request_body(args,
-                                                                                                        command_name)
+        TAG_ASSET_COMMANDS_API_DATA[command_name]["request_body"] = generate_asset_tag_xml_request_body(args, command_name)
 
 
 """ PARSERS """
@@ -2181,8 +2175,7 @@ def change_dict_keys(new_names_dict: dict[str, str], output_dict: dict[str, Any]
 
 
 @logger
-def change_list_dicts_names(command_parse_and_output_data: dict[str, Any], output: List[dict[str, Any]]) -> List[
-    dict[str, Any]]:
+def change_list_dicts_names(command_parse_and_output_data: dict[str, Any], output: List[dict[str, Any]]) -> List[dict[str, Any]]:
     """
     Changing keys names of a list of dicts
     Args:
@@ -2458,8 +2451,7 @@ def build_unparsed_output(**kwargs) -> tuple[dict[str, Any], str]:
         unparsed_output = limit_result(unparsed_output, inner_args_values["limit"])
     if original_amount and original_amount > int(inner_args_values["limit"]):
         limit_msg = f"Currently displaying {inner_args_values['limit']} out of {original_amount} results."
-    readable_output = tableToMarkdown(name=f"{command_parse_and_output_data['table_name']}\n{limit_msg}",
-                                      t=unparsed_output)
+    readable_output = tableToMarkdown(name=f"{command_parse_and_output_data['table_name']}\n{limit_msg}", t=unparsed_output)
 
     return unparsed_output, readable_output
 
@@ -2536,8 +2528,7 @@ def build_multiple_values_parsed_output(**kwargs) -> tuple[List[Any], str]:
 
     if original_amount and original_amount > int(inner_args_values["limit"]):
         limit_msg = f"Currently displaying {inner_args_values['limit']} out of {original_amount} results."
-    headers = command_parse_and_output_data.get("table_headers") if command_parse_and_output_data.get(
-        "table_headers") else None
+    headers = command_parse_and_output_data.get("table_headers") if command_parse_and_output_data.get("table_headers") else None
     readable_output = tableToMarkdown(
         name=f"{command_parse_and_output_data['table_name']}\n{limit_msg}", t=parsed_output, headers=headers
     )
@@ -2585,8 +2576,7 @@ def build_host_list_detection_outputs(**kwargs) -> tuple[List[Any], str]:
                 qid = "QID: " + detection.get("QID")
                 headers.append(qid)
                 readable_output[qid] = detection.get("RESULTS")
-        readable += tableToMarkdown(f"Host Detection List - {ip}\n{limit_msg}", readable_output, removeNull=True,
-                                    headers=headers)
+        readable += tableToMarkdown(f"Host Detection List - {ip}\n{limit_msg}", readable_output, removeNull=True, headers=headers)
     return parsed_output, readable
 
 
@@ -2684,8 +2674,7 @@ def build_tag_asset_output(**kwargs) -> tuple[List[Any], str]:
         readable_output = human_readable_massage
         return handled_result, readable_output
 
-    if type(handled_result) == dict and (
-            children_list := handled_result.get("children", {}).get("list", {}).get("TagSimple")):
+    if type(handled_result) == dict and (children_list := handled_result.get("children", {}).get("list", {}).get("TagSimple")):
         handled_result["childTags"] = children_list
         handled_result.pop("children")
 
@@ -2760,11 +2749,9 @@ def handle_host_list_detection_result(raw_response: requests.Response) -> tuple[
         raise DemistoException(f"\n{simple_response.get('TEXT')} \nCode: {simple_response.get('CODE')}")
 
     response_requested_value = dict_safe_get(formatted_response,
-                                             ["HOST_LIST_VM_DETECTION_OUTPUT", "RESPONSE", "HOST_LIST", "HOST"],
-                                             default_return_value=[]) or []
+                                             ["HOST_LIST_VM_DETECTION_OUTPUT", "RESPONSE", "HOST_LIST", "HOST"])
     response_next_url = dict_safe_get(formatted_response,
-                                      ["HOST_LIST_VM_DETECTION_OUTPUT", "RESPONSE", "WARNING", "URL"],
-                                      default_return_value='') or ''
+                                      ["HOST_LIST_VM_DETECTION_OUTPUT", "RESPONSE", "WARNING", "URL"], default_return_value='')
     if isinstance(response_requested_value, dict):
         response_requested_value = [response_requested_value]
 
@@ -2783,8 +2770,7 @@ def handle_vulnerabilities_result(raw_response: requests.Response) -> list:
     """
     formatted_response = parse_raw_response(raw_response)
 
-    vulnerabilities = dict_safe_get(formatted_response,
-                                    ['KNOWLEDGE_BASE_VULN_LIST_OUTPUT', 'RESPONSE', 'VULN_LIST', 'VULN'])
+    vulnerabilities = dict_safe_get(formatted_response, ['KNOWLEDGE_BASE_VULN_LIST_OUTPUT', 'RESPONSE', 'VULN_LIST', 'VULN'])
     if isinstance(vulnerabilities, dict):
         vulnerabilities = [vulnerabilities]
 
@@ -2932,8 +2918,7 @@ def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) 
         Logs activity events, Next run datetime
     """
     demisto.debug(f'Starting to fetch activity logs events: since_datetime={since_datetime}, next_page={next_page}')
-    activity_logs = client.get_user_activity_logs(since_datetime=since_datetime, max_fetch=max_fetch,
-                                                  next_page=next_page)
+    activity_logs = client.get_user_activity_logs(since_datetime=since_datetime, max_fetch=max_fetch, next_page=next_page)
     activity_logs_events = csv2json(get_partial_response(activity_logs, BEGIN_RESPONSE_LOGS_CSV,
                                                          END_RESPONSE_LOGS_CSV) or activity_logs) or []
     footer_json = csv2json(get_partial_response(activity_logs, BEGIN_RESPONSE_FOOTER_CSV,
@@ -3185,7 +3170,7 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -
 
 @logger
 def qualys_command_flow_manager(
-        client: Client, args: dict[str, str], command_name: str, command_methods: dict[str, Callable]
+    client: Client, args: dict[str, str], command_name: str, command_methods: dict[str, Callable]
 ) -> Optional[CommandResults]:
     """
     Args:
@@ -3253,7 +3238,7 @@ def main():  # pragma: no cover
     command = demisto.command()
 
     # We start a counter mainly for fetch assets as it is might be long. It can be used in other commands as well
-    # start_time = time.time()
+    start_time = time.time()
 
     base_url = params.get('url')
     verify_certificate = not params.get("insecure", False)
@@ -3506,8 +3491,7 @@ def main():  # pragma: no cover
     try:
         headers: dict = {"X-Requested-With": "Cortex"}
         client = Client(
-            base_url=base_url, username=username, password=password, verify=verify_certificate, headers=headers,
-            proxy=proxy
+            base_url=base_url, username=username, password=password, verify=verify_certificate, headers=headers, proxy=proxy
         )
 
         first_fetch_datetime: datetime = arg_to_datetime(  # type: ignore[assignment]
