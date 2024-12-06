@@ -64,5 +64,3 @@ script:
   dockerimage: demisto/python3:3.10.14.91134
   isfetch: true
 fromversion: 6.2.0
-tests:
-- Gcenter Test Playbook
