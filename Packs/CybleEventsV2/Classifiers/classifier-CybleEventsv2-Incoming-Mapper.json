@@ -36,6 +36,9 @@
                 "CybleEventsV2 Card Type": {
                     "simple": "card_type"
                 },
+                "CybleEventsV2 Status": {
+                    "simple": "status"
+                },
                 "Event ID": {
                     "complex": {
                         "filters": [],
@@ -60,7 +63,7 @@
                     "simple": "url"
                 },
                 "dbotMirrorDirection": {
-                    "simple": ".='Out'"
+                    "simple": ".='Both'"
                 },
                 "dbotMirrorId": {
                     "simple": "event_id"
@@ -69,7 +72,7 @@
                     "simple": "mirrorInstance"
                 },
                 "dbotMirrorTags": {
-                    "simple": ".=['severity','status']"
+                    "simple": ".=['user_severity','status']"
                 },
                 "name": {
                     "complex": {
@@ -84,7 +87,7 @@
                 "severity": {
                     "complex": {
                         "filters": [],
-                        "root": "severity",
+                        "root": "user_severity",
                         "transformers": []
                     }
                 }
