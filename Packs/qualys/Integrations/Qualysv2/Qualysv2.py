@@ -9,9 +9,7 @@ import requests
 
 from urllib3 import disable_warnings
 
-
 disable_warnings()  # pylint: disable=no-member
-
 
 """ CONSTANTS """
 
@@ -31,7 +29,7 @@ HOST_DETECTIONS_SINCE_DATETIME_PREV_RUN = 'host_detections_since_datetime_prev_r
 HOST_LAST_FETCH = 'host_last_fetch'
 ASSETS_FETCH_FROM = '90 days'
 HOST_LIMIT = 2000
-ASSET_SIZE_LIMIT = 10 ** 6   # 1MB
+ASSET_SIZE_LIMIT = 10 ** 6  # 1MB
 TEST_FROM_DATE = 'one day'
 FETCH_ASSETS_COMMAND_TIME_OUT = 180
 
@@ -41,6 +39,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 API_SUFFIX = "/api/2.0/fo/"
 TAG_API_SUFFIX = "/qps/rest/2.0/"
 
+EXECUTION_START_TIME = time.time()
 FETCH_COMMAND = {
     'events': 0,
     'assets': 1
@@ -1089,7 +1088,8 @@ COMMANDS_ARGS_DATA: dict[str, Any] = {
         "inner_args": ["limit"],
     },
     "qualys-group-list": {
-        "args": ["ids", "id_min", "id_max", "truncation_limit", "network_ids", "unit_id", "user_id", "title", "show_attributes"],
+        "args": ["ids", "id_min", "id_max", "truncation_limit", "network_ids", "unit_id", "user_id", "title",
+                 "show_attributes"],
         "inner_args": ["limit"],
     },
     "qualys-report-fetch": {
@@ -1201,10 +1201,12 @@ COMMANDS_ARGS_DATA: dict[str, Any] = {
         "args": ["action", "scan_ref"],
     },
     "qualys-ip-add": {
-        "args": ["ips", "tracking_method", "enable_vm", "enable_pc", "owner", "ud1", "ud2", "ud3", "comment", "ag_title"],
+        "args": ["ips", "tracking_method", "enable_vm", "enable_pc", "owner", "ud1", "ud2", "ud3", "comment",
+                 "ag_title"],
     },
     "qualys-ip-update": {
-        "args": ["ips", "network_id", "tracking_method", "host_dns", "host_netbios", "owner", "ud1", "ud2", "ud3", "comment"],
+        "args": ["ips", "network_id", "tracking_method", "host_dns", "host_netbios", "owner", "ud1", "ud2", "ud3",
+                 "comment"],
     },
     "qualys-host-excluded-manage": {
         "args": ["action", "ips", "expiry_days", "dg_names", "comment", "network_id"],
@@ -1577,7 +1579,8 @@ COMMANDS_ARGS_DATA: dict[str, Any] = {
     },
     "qualys-time-zone-code": {"args": []},
     "qualys-asset-tag-create": {"args": ["name", "child_name", "rule_type", "rule_text", "criticality_score"]},
-    "qualys-asset-tag-update": {"args": ["id", "name", "rule_type", "rule_text", "child_to_remove", "criticality_score"]},
+    "qualys-asset-tag-update": {
+        "args": ["id", "name", "rule_type", "rule_text", "child_to_remove", "criticality_score"]},
     "qualys-asset-tag-delete": {"args": ["id"]},
     "qualys-asset-tag-list": {"args": ["criteria", "operator", "search_data", "limit"]},
 }
@@ -1669,7 +1672,8 @@ class Client(BaseClient):
 
         return response.text
 
-    def get_host_list_detection(self, since_datetime, next_page=None, limit=HOST_LIMIT) -> tuple[Union[str, bytes], bool]:
+    def get_host_list_detection(self, since_datetime, next_page=None, limit=HOST_LIMIT) -> tuple[
+        Union[str, bytes], bool]:
         """
         Make a http request to Qualys API to get assets
         Args:
@@ -1684,7 +1688,7 @@ class Client(BaseClient):
             "truncation_limit": limit,
             "vm_scan_date_after": since_datetime,
         }
-        timeout = 150
+        timeout = 120
         if next_page:
             params["id_min"] = next_page
         try:
@@ -2017,7 +2021,8 @@ def validate_depended_args(command_data: dict) -> None:
         if depended_on_arg not in args_values and depended_on_arg not in inner_args_values:
             continue
         if required_depended_arg not in args_values and required_depended_arg not in inner_args_values:
-            raise DemistoException(f"Argument {required_depended_arg} is required when argument {depended_on_arg} is given.")
+            raise DemistoException(
+                f"Argument {required_depended_arg} is required when argument {depended_on_arg} is given.")
 
 
 @logger
@@ -2094,7 +2099,7 @@ def generate_asset_tag_xml_request_body(args: dict[str, str], command_name: str)
             rule_type_arg = args.get("rule_type", "")
             if rule_type_arg != "STATIC" and not rule_text_arg:
                 raise DemistoException(message="Rule Type argument is passed but Rule Text argument is missing."
-                                       + " Rule Text is optional only when Rule Type is 'STATIC'.")
+                                               + " Rule Text is optional only when Rule Type is 'STATIC'.")
 
             ServiceRequest = ET.Element("ServiceRequest")
             data = ET.SubElement(ServiceRequest, "data")
@@ -2150,7 +2155,8 @@ def handle_asset_tag_request_parameters(args: dict[str, str], command_name: str)
 
     # generate request body if required by the command
     if TAG_ASSET_COMMANDS_API_DATA[command_name].get("request_body"):
-        TAG_ASSET_COMMANDS_API_DATA[command_name]["request_body"] = generate_asset_tag_xml_request_body(args, command_name)
+        TAG_ASSET_COMMANDS_API_DATA[command_name]["request_body"] = generate_asset_tag_xml_request_body(args,
+                                                                                                        command_name)
 
 
 """ PARSERS """
@@ -2175,7 +2181,8 @@ def change_dict_keys(new_names_dict: dict[str, str], output_dict: dict[str, Any]
 
 
 @logger
-def change_list_dicts_names(command_parse_and_output_data: dict[str, Any], output: List[dict[str, Any]]) -> List[dict[str, Any]]:
+def change_list_dicts_names(command_parse_and_output_data: dict[str, Any], output: List[dict[str, Any]]) -> List[
+    dict[str, Any]]:
     """
     Changing keys names of a list of dicts
     Args:
@@ -2451,7 +2458,8 @@ def build_unparsed_output(**kwargs) -> tuple[dict[str, Any], str]:
         unparsed_output = limit_result(unparsed_output, inner_args_values["limit"])
     if original_amount and original_amount > int(inner_args_values["limit"]):
         limit_msg = f"Currently displaying {inner_args_values['limit']} out of {original_amount} results."
-    readable_output = tableToMarkdown(name=f"{command_parse_and_output_data['table_name']}\n{limit_msg}", t=unparsed_output)
+    readable_output = tableToMarkdown(name=f"{command_parse_and_output_data['table_name']}\n{limit_msg}",
+                                      t=unparsed_output)
 
     return unparsed_output, readable_output
 
@@ -2528,7 +2536,8 @@ def build_multiple_values_parsed_output(**kwargs) -> tuple[List[Any], str]:
 
     if original_amount and original_amount > int(inner_args_values["limit"]):
         limit_msg = f"Currently displaying {inner_args_values['limit']} out of {original_amount} results."
-    headers = command_parse_and_output_data.get("table_headers") if command_parse_and_output_data.get("table_headers") else None
+    headers = command_parse_and_output_data.get("table_headers") if command_parse_and_output_data.get(
+        "table_headers") else None
     readable_output = tableToMarkdown(
         name=f"{command_parse_and_output_data['table_name']}\n{limit_msg}", t=parsed_output, headers=headers
     )
@@ -2576,7 +2585,8 @@ def build_host_list_detection_outputs(**kwargs) -> tuple[List[Any], str]:
                 qid = "QID: " + detection.get("QID")
                 headers.append(qid)
                 readable_output[qid] = detection.get("RESULTS")
-        readable += tableToMarkdown(f"Host Detection List - {ip}\n{limit_msg}", readable_output, removeNull=True, headers=headers)
+        readable += tableToMarkdown(f"Host Detection List - {ip}\n{limit_msg}", readable_output, removeNull=True,
+                                    headers=headers)
     return parsed_output, readable
 
 
@@ -2674,7 +2684,8 @@ def build_tag_asset_output(**kwargs) -> tuple[List[Any], str]:
         readable_output = human_readable_massage
         return handled_result, readable_output
 
-    if type(handled_result) == dict and (children_list := handled_result.get("children", {}).get("list", {}).get("TagSimple")):
+    if type(handled_result) == dict and (
+            children_list := handled_result.get("children", {}).get("list", {}).get("TagSimple")):
         handled_result["childTags"] = children_list
         handled_result.pop("children")
 
@@ -2742,17 +2753,22 @@ def handle_host_list_detection_result(raw_response: requests.Response) -> tuple[
     Returns:
         List with data generated for the result given
     """
+    demisto.debug('Going to parse raw_response into the hosts list')
     formatted_response = parse_raw_response(raw_response)
     simple_response = get_simple_response_from_raw(formatted_response)
     if simple_response and simple_response.get("CODE"):
         raise DemistoException(f"\n{simple_response.get('TEXT')} \nCode: {simple_response.get('CODE')}")
 
     response_requested_value = dict_safe_get(formatted_response,
-                                             ["HOST_LIST_VM_DETECTION_OUTPUT", "RESPONSE", "HOST_LIST", "HOST"])
+                                             ["HOST_LIST_VM_DETECTION_OUTPUT", "RESPONSE", "HOST_LIST", "HOST"],
+                                             default_return_value=[]) or []
     response_next_url = dict_safe_get(formatted_response,
-                                      ["HOST_LIST_VM_DETECTION_OUTPUT", "RESPONSE", "WARNING", "URL"], default_return_value='')
+                                      ["HOST_LIST_VM_DETECTION_OUTPUT", "RESPONSE", "WARNING", "URL"],
+                                      default_return_value='') or ''
     if isinstance(response_requested_value, dict):
         response_requested_value = [response_requested_value]
+
+    demisto.debug(f'Extracted a list of {len(response_requested_value)} hosts, and next url - {response_next_url}')
 
     return response_requested_value, str(response_next_url)
 
@@ -2767,7 +2783,8 @@ def handle_vulnerabilities_result(raw_response: requests.Response) -> list:
     """
     formatted_response = parse_raw_response(raw_response)
 
-    vulnerabilities = dict_safe_get(formatted_response, ['KNOWLEDGE_BASE_VULN_LIST_OUTPUT', 'RESPONSE', 'VULN_LIST', 'VULN'])
+    vulnerabilities = dict_safe_get(formatted_response,
+                                    ['KNOWLEDGE_BASE_VULN_LIST_OUTPUT', 'RESPONSE', 'VULN_LIST', 'VULN'])
     if isinstance(vulnerabilities, dict):
         vulnerabilities = [vulnerabilities]
 
@@ -2830,6 +2847,27 @@ def truncate_asset_size(asset):
                               f'{str(val)[:10000]}...')
 
 
+def truncate_asset_size_2(asset):
+    host_id = asset.get('ID') or 'NO_ID'
+    detection_id = asset.get('DETECTION', {}).get('UNIQUE_VULN_ID', 'No detection')
+    detection_str = f' detection ID: {detection_id}' if detection_id else ''
+
+    results_characters_lim = 10000
+    if results := asset.get('DETECTION', {}).get('RESULTS'):
+        results_size = get_size_of_object(results)
+        if results_size > ASSET_SIZE_LIMIT:
+            asset['DETECTION']['RESULTS'] = results[:results_characters_lim]
+            asset['isTruncated'] = True
+            demisto.debug(f'Truncated Asset ID: {host_id}{detection_str} to {results_characters_lim}')
+            demisto.debug(json.dumps(asset))
+
+        # For extra debugging in case other/additional keys has oversize data
+        # for key, val in asset.items():
+        #     if (val_size := get_size_of_object(val)) > ASSET_SIZE_LIMIT:  # 1 MB
+        #         demisto.debug(f'Data under key "{key}" has size of {val_size}:\n'
+        #                       f'{str(val)[:10000]}...')
+
+
 def get_detections_from_hosts(hosts):
     """
     Parses detections from hosts.
@@ -2859,21 +2897,25 @@ def get_detections_from_hosts(hosts):
     :param hosts: list of hosts that contains detections.
     :return: parsed events.
     """
-    fetched_events = []
+    demisto.debug(f'Received {len(hosts)} hosts for extraction')
+    fetched_assets = []
     for host in hosts:
+        if check_fetch_duration_time_exceeded(EXECUTION_START_TIME):
+            return [], True
         detections_list = host.get('DETECTION_LIST', {}).get('DETECTION') or [{}]
 
-        if not isinstance(detections_list, list):   # In case detections_list = {}
+        if not isinstance(detections_list, list):  # In case detections_list = {}
             detections_list = [detections_list]
 
         for detection in detections_list:
             new_detection = copy.deepcopy(host)
             del new_detection['DETECTION_LIST']
             new_detection['DETECTION'] = detection
-            fetched_events.append(new_detection)
-            truncate_asset_size(new_detection)
+            fetched_assets.append(new_detection)
+            truncate_asset_size_2(new_detection)
 
-    return fetched_events
+    demisto.debug(f'Extracted {len(fetched_assets)} assets from hosts')
+    return fetched_assets, False
 
 
 def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) -> tuple[Optional[list], dict]:
@@ -2890,7 +2932,8 @@ def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) 
         Logs activity events, Next run datetime
     """
     demisto.debug(f'Starting to fetch activity logs events: since_datetime={since_datetime}, next_page={next_page}')
-    activity_logs = client.get_user_activity_logs(since_datetime=since_datetime, max_fetch=max_fetch, next_page=next_page)
+    activity_logs = client.get_user_activity_logs(since_datetime=since_datetime, max_fetch=max_fetch,
+                                                  next_page=next_page)
     activity_logs_events = csv2json(get_partial_response(activity_logs, BEGIN_RESPONSE_LOGS_CSV,
                                                          END_RESPONSE_LOGS_CSV) or activity_logs) or []
     footer_json = csv2json(get_partial_response(activity_logs, BEGIN_RESPONSE_FOOTER_CSV,
@@ -2930,13 +2973,15 @@ def get_host_list_detections_events(client, since_datetime, next_page='', limit=
                                                                          next_page=next_page,
                                                                          limit=limit)
     if not set_new_limit:
-        host_list_assets, next_url = handle_host_list_detection_result(host_list_detections) or []
+        host_list_assets, next_url = handle_host_list_detection_result(host_list_detections)
 
-        next_page = get_next_page_from_url(next_url, 'id_min')
+        assets, set_new_limit = get_detections_from_hosts(host_list_assets) if (
+                host_list_assets and not is_test) else []
+        demisto.debug(f'Parsed detections from hosts, created {len(assets)=} assets.')
 
-        assets = get_detections_from_hosts(host_list_assets) if host_list_assets and not is_test else []
-        demisto.debug(f'Parsed detections from hosts, got {len(assets)=} assets.')
-        add_fields_to_events(assets, ['DETECTION', 'FIRST_FOUND_DATETIME'], 'host_list_detection')
+        if not set_new_limit:
+            add_fields_to_events(assets, ['DETECTION', 'FIRST_FOUND_DATETIME'], 'host_list_detection')
+            next_page = get_next_page_from_url(next_url, 'id_min')
 
     return assets, next_page, set_new_limit
 
@@ -2991,7 +3036,9 @@ def fetch_assets(client, assets_last_run):
 
 
 def check_fetch_duration_time_exceeded(start_time):
-    if (time.time() - start_time) > FETCH_ASSETS_COMMAND_TIME_OUT:
+    elapsed_time = time.time() - start_time
+    # demisto.debug(f'Execution elapsed time: {elapsed_time=}')
+    if elapsed_time > FETCH_ASSETS_COMMAND_TIME_OUT:
         demisto.debug('We passed the defined timeout, so we will not send the results to XSIAM,'
                       'because there is not enough time left, and we will lower the limit for the next time')
         return True
@@ -3138,7 +3185,7 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -
 
 @logger
 def qualys_command_flow_manager(
-    client: Client, args: dict[str, str], command_name: str, command_methods: dict[str, Callable]
+        client: Client, args: dict[str, str], command_name: str, command_methods: dict[str, Callable]
 ) -> Optional[CommandResults]:
     """
     Args:
@@ -3206,7 +3253,7 @@ def main():  # pragma: no cover
     command = demisto.command()
 
     # We start a counter mainly for fetch assets as it is might be long. It can be used in other commands as well
-    start_time = time.time()
+    # start_time = time.time()
 
     base_url = params.get('url')
     verify_certificate = not params.get("insecure", False)
@@ -3459,7 +3506,8 @@ def main():  # pragma: no cover
     try:
         headers: dict = {"X-Requested-With": "Cortex"}
         client = Client(
-            base_url=base_url, username=username, password=password, verify=verify_certificate, headers=headers, proxy=proxy
+            base_url=base_url, username=username, password=password, verify=verify_certificate, headers=headers,
+            proxy=proxy
         )
 
         first_fetch_datetime: datetime = arg_to_datetime(  # type: ignore[assignment]
@@ -3513,18 +3561,22 @@ def main():  # pragma: no cover
 
             if fetch_stage == 'assets':
 
-                demisto.debug(f'Starting fetch for assets, {start_time=}')
-                assets, new_last_run, total_assets, snapshot_id, set_new_limit = fetch_assets(client=client,
+                demisto.debug(f'Starting fetch for assets, {EXECUTION_START_TIME=}')
+                assets, new_last_run, total_assets_to_report, snapshot_id, set_new_limit = fetch_assets(client=client,
                                                                                               assets_last_run=last_run)
-                if set_new_limit or check_fetch_duration_time_exceeded(start_time):
+                real_amount_of_assets = new_last_run.get("total_assets")
+                if set_new_limit or check_fetch_duration_time_exceeded(EXECUTION_START_TIME):
                     new_last_run = set_last_run_with_new_limit(last_run, last_run.get('limit', HOST_LIMIT))
                     last_run['nextTrigger'] = '0'
                 else:
-                    demisto.debug(f'sending {len(assets)} assets to XSIAM. Total assets collected so far: {total_assets}')
+                    demisto.debug(f'sending {len(assets)} assets to XSIAM. Total assets collected so far: '
+                                  f'{real_amount_of_assets}')
                     send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
-                                       snapshot_id=snapshot_id, items_count=str(total_assets), should_update_health_module=False)
+                                       snapshot_id=snapshot_id, items_count=str(total_assets_to_report),
+                                       should_update_health_module=False)
+                    
                 demisto.setAssetsLastRun(new_last_run)
-                demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type='assets'): total_assets})
+                demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type='assets'): real_amount_of_assets})
 
             elif fetch_stage == 'vulnerabilities':
                 vulnerabilities, new_last_run = fetch_vulnerabilities(client=client, last_run=last_run)
