@@ -5,7 +5,7 @@
 	"description": "",
 	"feed": false,
 	"fromServerVersion": "",
-	"id": "17a7dc70-6fbe-4a95-8a0a-8104e2e368bf",
+	"id": "Gatewatcher Mapper Incoming",
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"instanceIds": null,
@@ -660,5 +660,6 @@
 	"transformer": {},
 	"type": "mapping-incoming",
 	"unclassifiedCases": null,
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.0.0"
 }
