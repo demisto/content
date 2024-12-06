@@ -14,7 +14,7 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
-- display: Colletions to fetch
+- display: Collections to fetch
   name: incident_collections
   type: 16
   required: false
@@ -80,6 +80,9 @@ display: CybleEvents v2
 name: cybleeventsv2
 script:
   commands:
+  - description: Fetch and update existing incidents from a remote source
+    name: update-alerts
+    enabled: true
   - description: Get list of Subscribed services.
     name: cyble-vision-subscribed-services
     outputs:
@@ -202,6 +205,21 @@ script:
       type: String
   - description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
+  - arguments:
+    - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
+      name: lastUpdate
+      required: true
+    description: Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes.
+    name: get-modified-remote-data
+  - arguments:
+        - description: The remote incident ID.
+          name: id
+          required: true
+        - defaultValue: '0'
+          description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
+          name: lastUpdate
+    description: Gets data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
+    name: get-remote-data
   dockerimage: demisto/python3:3.11.9.107902
   isfetch: true
   runonce: false
