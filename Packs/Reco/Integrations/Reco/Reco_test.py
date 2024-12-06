@@ -717,8 +717,8 @@ def test_add_risky_user_label(requests_mock, reco_client: RecoClient) -> None:
 
 def test_get_assets_user_has_access_to(requests_mock, reco_client: RecoClient) -> None:
     raw_result = get_random_assets_user_has_access_to_response()
-    requests_mock.post(
-        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json=raw_result, status_code=200
     )
     actual_result = get_assets_user_has_access(
         reco_client=reco_client,
@@ -732,8 +732,8 @@ def test_get_assets_user_has_access_to(requests_mock, reco_client: RecoClient) -
 def test_get_assets_user_bad_response(
     capfd, requests_mock, reco_client: RecoClient
 ) -> None:
-    requests_mock.post(
-        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json={}, status_code=200
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json={}, status_code=200
     )
     with capfd.disabled(), pytest.raises(Exception):
         get_assets_user_has_access(
@@ -743,8 +743,8 @@ def test_get_assets_user_bad_response(
 
 def test_get_sensitive_assets_by_name(requests_mock, reco_client: RecoClient) -> None:
     raw_result = get_random_assets_user_has_access_to_response()
-    requests_mock.post(
-        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json=raw_result, status_code=200
     )
     actual_result = get_sensitive_assets_by_name(
         reco_client=reco_client, asset_name="test", regex_search=True
@@ -755,8 +755,8 @@ def test_get_sensitive_assets_by_name(requests_mock, reco_client: RecoClient) ->
 
 def test_get_sensitive_assets_by_id(requests_mock, reco_client: RecoClient) -> None:
     raw_result = get_random_assets_user_has_access_to_response()
-    requests_mock.post(
-        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json=raw_result, status_code=200
     )
     actual_result = get_sensitive_assets_by_id(
         reco_client=reco_client, asset_id="asset-id"
@@ -817,8 +817,8 @@ def test_get_private_email_list_with_access(requests_mock, reco_client: RecoClie
 
 def test_get_assets_shared_externally_command(requests_mock, reco_client: RecoClient) -> None:
     raw_result = get_random_assets_user_has_access_to_response()
-    requests_mock.post(
-        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json=raw_result, status_code=200
     )
     actual_result = get_assets_shared_externally_command(
         reco_client=reco_client,
