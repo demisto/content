@@ -2064,7 +2064,7 @@ def test_module(client: Client) -> str:
     for currently_available_collection in MAPPING.keys():
         client_collections = client.poller.get_available_collections()
         if currently_available_collection not in client_collections:
-            return f"Test failed, some problems with getting available collections. Error in collection {str(collection)}"            
+            return f"Test failed, some problems with getting available collections. Error in collection {str(currently_available_collection)}"            
     return "ok"
 
 
