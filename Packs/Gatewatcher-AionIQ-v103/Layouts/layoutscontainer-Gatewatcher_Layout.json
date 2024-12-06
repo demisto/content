@@ -2634,13 +2634,13 @@
 	"edit": null,
 	"fromServerVersion": "",
 	"group": "incident",
-	"id": "3fdbb020-65c6-4134-8f7a-9865c0f786ec",
+	"id": "Gatewatcher Layout",
 	"indicatorsDetails": null,
 	"indicatorsQuickView": null,
 	"itemVersion": "",
 	"locked": false,
 	"mobile": null,
-	"name": "Gatewatcher Incident",
+	"name": "Gatewatcher Layout",
 	"packID": "",
 	"propagationLabels": [
 		"all"
@@ -2649,5 +2649,6 @@
 	"quickViewV2": null,
 	"system": false,
 	"toServerVersion": "",
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.0.0"
 }
