@@ -402,6 +402,7 @@ exampleUsers = [
         "Version": 0,
     }
 ]
+exampleDebugCmd = [{"Type": 4}, {"Type": 16}]
 exampleDemistoUrls = {
     "evidenceBoard": "https://test-address:8443/#/EvidenceBoard/7ab2ac46-4142-4af8-8cbe-538efb4e63d6",
     "investigation": "https://test-address:8443/#/Details/7ab2ac46-4142-4af8-8cbe-538efb4e63d6",
@@ -714,6 +715,7 @@ def executeCommand(command, args):
         "getIncidents": exampleIncidents,
         "getContext": exampleContext,
         "getUsers": exampleUsers,
+        "debugCmd": exampleDebugCmd,
     }
     if commands.get(command):
         return commands.get(command)
@@ -1367,3 +1369,11 @@ def isTimeSensitive():
     So for default the function return False.
     """
     return False
+
+
+def goodMethod():
+    return True
+
+
+def badMethod():
+    raise ValueError("oh no")
