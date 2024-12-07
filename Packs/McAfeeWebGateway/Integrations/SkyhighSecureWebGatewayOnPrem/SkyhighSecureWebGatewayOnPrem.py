@@ -394,7 +394,7 @@ def insert_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults
         outputs_key_field = "ID"
         res = {
             "ID": list_id,
-            "ListEntries": list_entry
+            "ListEntries": [list_entry]
         }
     else:
         outputs_prefix = f'SWG.List(val.ID && val.ID == "{list_id}").ListEntries'
