@@ -548,7 +548,7 @@ script:
       - 'no'
     - description: If empty, will use the default mailbox. If you specify a different mailbox, you might need impersonation rights to the mailbox.
       name: target-mailbox
-    description: 'Marks an item as junk. This is commonly used to block an email address. For more information, see the Microsoft documentation: https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx.'
+    description: 'Marks an item as junk. This is commonly used to block an email address (meaning all future emails from this sender will be sent to the junk folder). For more information, see the Microsoft documentation: https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx.'
     name: ews-mark-item-as-junk
   - arguments:
     - description: The mailbox on which to apply the command.

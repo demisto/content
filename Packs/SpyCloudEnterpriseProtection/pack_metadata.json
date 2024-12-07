@@ -2,7 +2,7 @@
     "name": "SpyCloud Enterprise Protection",
     "description": "Create breach and malware incidents in Cortex® XSOAR™ using the SpyCloud Enterprise Protection API. Provide enrichment for domains, IPs, emails, usernames, and passwords.",
     "support": "partner",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "SpyCloud",
     "url": "https://portal.spycloud.com",
     "email": "integrations@spycloud.com",
