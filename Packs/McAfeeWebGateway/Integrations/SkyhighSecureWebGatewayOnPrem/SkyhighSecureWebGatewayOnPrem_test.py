@@ -1,6 +1,5 @@
 import demistomock as demisto
 import json
-import io
 from SkyhighSecureWebGatewayOnPrem import Client
 
 client = Client(username="user",
@@ -12,7 +11,7 @@ client = Client(username="user",
 
 
 def util_load_file(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return f.read()
 
 
@@ -211,15 +210,14 @@ def test_delete_list(mocker):
 
     args = {"list_id": "com.scur.type.regex.460"}
     raw_response = util_load_file("test_data/delete_list/raw_response.xml")
-    expected_results = json.loads(util_load_file("test_data/delete_list/parsed_result.json"))
+    json.loads(util_load_file("test_data/delete_list/parsed_result.json"))
 
     mocker.patch.object(client, 'delete_list', return_value=raw_response)
     mocker.patch.object(client, 'commit', return_value=True)
-    command_result = delete_list_command(client, args)
+    delete_list_command(client, args)
 
 
 def test_insert_entry_command_new_list(mocker):
-
     """
     Given
     - valid arguments for insert entry command
@@ -240,7 +238,7 @@ def test_insert_entry_command_new_list(mocker):
         "description": "New evil domain"
     }
     mock_raw_response = ('<entry><title>Added Entry</title><content><listEntry><entry>http*://new.evil.com/*</entry><description>'
-                    'New evil domain</description></listEntry></content></entry>')
+                         'New evil domain</description></listEntry></content></entry>')
 
     mocker.patch.object(client, 'insert_entry', return_value=mock_raw_response)
     mocker.patch.object(client, 'commit', return_value=True)
@@ -320,11 +318,14 @@ def test_insert_entry_command_multiple_existing_lists(mocker):
         "name": "http*://multiple.lists.com/*",
         "description": "Entry for multiple lists test"
     }
-    raw_response = '<entry><title>Added Entry</title><content><listEntry><entry>http*://multiple.lists.com/*</entry><description>Entry for multiple lists test</description></listEntry></content></entry>'
+    raw_response = ('<entry><title>Added Entry</title><content><listEntry><entry>http*://multiple.lists.com/*</entry>'
+                    '<description>Entry for multiple lists test</description></listEntry></content></entry>')
 
     mocker.patch.object(client, 'insert_entry', return_value=raw_response)
     mocker.patch.object(client, 'commit', return_value=True)
-    mocker.patch.object(demisto, 'context', return_value={"SWG": {"List": [{"ID": "com.scur.type.regex.111"}, {"ID": "com.scur.type.regex.222"}]}})
+    mocker.patch.object(demisto, 'context', return_value={
+                        "SWG": {"List": [{"ID": "com.scur.type.regex.111"}, {"ID": "com.scur.type.regex.222"}]}
+    })
 
     command_result = insert_entry_command(client, args)
 
