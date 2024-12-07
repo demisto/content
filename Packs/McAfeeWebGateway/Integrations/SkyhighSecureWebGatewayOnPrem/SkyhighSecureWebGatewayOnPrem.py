@@ -375,26 +375,38 @@ def insert_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults
     title = f'Added {demisto.get(data, "entry.title")}'
 
     entry = demisto.get(data, "entry.content.listEntry", {})
-    description = entry.get("description", "")
-    entry_name = entry.get("name", "")
-    res = {
-        "ID": list_id,
-        "ListEntries": [
-            {
-                "ListID": list_id,
-                "Position": entry_pos,
-                "Name": entry_name,
-                "Description": description,
-            }
-        ]
+    description = entry.get("description")
+    if not description:
+        description = ""
+    entry_name = entry.get("entry", "")
+    list_entry = {
+        "ListID": list_id,
+        "Position": entry_pos,
+        "Name": entry_name,
+        "Description": description,
     }
+
+    swg_lists = demisto.get(demisto.context(), "SWG.List", [])
+    if isinstance(swg_lists, dict):
+        swg_lists = [swg_lists]
+    if len(list(filter(lambda x: x["ID"] == list_id, swg_lists))) == 0:
+        outputs_prefix = f'SWG.List'
+        outputs_key_field = "ID"
+        res = {
+            "ID": list_id,
+            "ListEntries": list_entry
+        }
+    else:
+        outputs_prefix = f'SWG.List(val.ID && val.ID == "{list_id}").ListEntries'
+        outputs_key_field = "Name"
+        res = list_entry
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            title, res["ListEntries"], headers=["ListID", "Position", "Name", "Description"]
+            title, list_entry, headers=["ListID", "Position", "Name", "Description"]
         ),
-        outputs_prefix="SWG.List",
-        outputs_key_field=entry_name,
+        outputs_prefix=outputs_prefix,
+        outputs_key_field=outputs_key_field,
         outputs=res,
         raw_response=result
     )
