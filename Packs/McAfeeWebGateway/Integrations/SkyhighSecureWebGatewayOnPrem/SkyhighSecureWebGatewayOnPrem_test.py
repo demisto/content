@@ -325,7 +325,7 @@ def test_insert_entry_command_multiple_existing_lists(mocker):
     mocker.patch.object(client, 'commit', return_value=True)
     mocker.patch.object(demisto, 'context', return_value={
                         "SWG": {"List": [{"ID": "com.scur.type.regex.111"}, {"ID": "com.scur.type.regex.222"}]}
-    })
+                        })
 
     command_result = insert_entry_command(client, args)
 

@@ -389,17 +389,17 @@ def insert_entry_command(client: Client, args: dict[str, Any]) -> CommandResults
     swg_lists = demisto.get(demisto.context(), "SWG.List", [])
     if isinstance(swg_lists, dict):
         swg_lists = [swg_lists]
-    if len(list(filter(lambda x: x["ID"] == list_id, swg_lists))) == 0:
+    if any(item["ID"] == list_id for item in swg_lists):
+        outputs_prefix = f'SWG.List(val.ID && val.ID == "{list_id}").ListEntries'
+        outputs_key_field = "Name"
+        res = list_entry
+    else:
         outputs_prefix = 'SWG.List'
         outputs_key_field = "ID"
         res = {
             "ID": list_id,
             "ListEntries": [list_entry]
         }
-    else:
-        outputs_prefix = f'SWG.List(val.ID && val.ID == "{list_id}").ListEntries'
-        outputs_key_field = "Name"
-        res = list_entry
 
     return CommandResults(
         readable_output=tableToMarkdown(
