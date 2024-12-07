@@ -74,7 +74,7 @@ def test_log_execution_details(mocker):
     import demistomock as demisto
     mocker.patch.object(demisto, "debug")
     demisto.callingContext = command_context()
-    demisto.is_debug=True
+    demisto.is_debug = True
     demisto = set_demisto_class()
     assert demisto.is_debug
     demisto.debug.assert_called_with(
@@ -190,7 +190,7 @@ def test_get_last_run(mocker, last_run, expected_log):
     assert res == last_run
     assert get_lr_cmd.called_once()
     assert debug_logs_sent(demisto, [expected_log])
-    
+
 
 @pytest.mark.parametrize(
     "last_run, expected_log",

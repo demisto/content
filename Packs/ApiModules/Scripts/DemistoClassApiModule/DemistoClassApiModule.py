@@ -179,7 +179,6 @@ if sys.version_info[0] >= 3:  # and is_xsiam_or_xsoar_saas():  # type:ignore
                 if not completed:
                     self._demisto.createIndicators(indicators_batch, noUpdate)
 
-
     def set_demisto_class():
         if demisto.callingContext.get('context', {}).get('IntegrationBrand'):
             return DemistoIntegration(demisto)

@@ -1369,11 +1369,3 @@ def isTimeSensitive():
     So for default the function return False.
     """
     return False
-
-
-def goodMethod():
-    return True
-
-
-def badMethod():
-    raise ValueError("oh no")
