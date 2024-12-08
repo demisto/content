@@ -84,6 +84,11 @@ def is_valid_sns_message(sns_payload):
 
     # Verify the signature
     decoded_signature = base64.b64decode(sns_payload["Signature"])
+    integration_context = demisto.getIntegrationContext()
+    if (integration_context.get("SigningCertURL", None) and\
+        integration_context.get("SigningCertURL", "") == sns_payload["SigningCertURL"]):
+        demisto.debug("Current SigningCertURL was verified already.")
+        return True
     try:
         demisto.debug(f'sns_payload["SigningCertURL"] = {sns_payload["SigningCertURL"]}')
         response: requests.models.Response = client.get(full_url=sns_payload["SigningCertURL"], resp_type='response')
@@ -97,6 +102,8 @@ def is_valid_sns_message(sns_payload):
             demisto.error(f'client base url: {client._base_url}')
         elif "Proxy Error" in str(e):
             demisto.error(f'PROXIES = {PROXIES}')
+        demisto.debug("SigningCertURL failed. Deleting it from data context.")
+        demisto.setIntegrationContext({"SigningCertURL": ""})
         return False
 
     public_key = certificate.get_pubkey()
@@ -112,9 +119,12 @@ def is_valid_sns_message(sns_payload):
 
     if verification_result != 1:
         demisto.error('Signature verification failed.')
+        demisto.debug("SigningCertURL failed. Deleting it from data context.")
+        demisto.setIntegrationContext({"SigningCertURL": ""})
         return False
 
     demisto.debug('Signature verification succeeded.')
+    demisto.setIntegrationContext({"SigningCertURL": sns_payload["SigningCertURL"]})
     return True
 
 
