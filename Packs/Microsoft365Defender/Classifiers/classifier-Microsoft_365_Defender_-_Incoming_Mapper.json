@@ -6,14 +6,14 @@
 	"description": "Classifies Microsoft 365 Defender's events",
 	"feed": false,
 	"fromServerVersion": "6.0.0",
-	"id": "3af2ab0e-95c5-4d44-8e36-ea5f44fbef79",
+	"id": "08f9afdb-41f1-418a-8b41-9ea4622da955",
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"instanceIds": null,
 	"itemVersion": "4.5.35",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 3,
+	"logicalVersion": 4,
 	"mapping": {
 		"Microsoft 365 Defender Incident": {
 			"dontMapEventToLabels": true,
@@ -28,7 +28,11 @@
 					"complex": {
 						"filters": [],
 						"root": "comments",
-						"transformers": []
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
 					}
 				},
 				"Microsoft 365 Defender A": {
