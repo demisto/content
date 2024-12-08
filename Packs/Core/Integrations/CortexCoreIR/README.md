@@ -2901,7 +2901,7 @@ Stops a process by its causality ID.
 ### core-get-asset-details
 
 ***
-Get UAI asset info
+Get asset information.
 
 #### Base Command
 
@@ -2911,7 +2911,7 @@ Get UAI asset info
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_id | asset unique identifier. | Required | 
+| asset_id | Asset unique identifier. | Required | 
 
 #### Context Output
 

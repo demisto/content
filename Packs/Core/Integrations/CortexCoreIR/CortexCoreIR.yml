@@ -3095,7 +3095,7 @@ script:
       description: The action id.
       type: String 
   - arguments:
-    - description: asset unique identifier.
+    - description: Asset unique identifier.
       name: asset_id
       required: true
     name: core-get-asset-details
