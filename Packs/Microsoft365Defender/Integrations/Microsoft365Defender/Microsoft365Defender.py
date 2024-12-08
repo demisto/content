@@ -839,9 +839,9 @@ def handle_incident_close_out(delta):
     demisto.debug("microsoft365::Close out is enabled")
     if any(delta.get(key) for key in ['closeReason', 'closeNotes', 'closingUserId']):
         delta['status'] = 'Resolved'
-        if delta.closeReason == 'FalsePositive' and delta.get('classification') != 'FalsePositive':
+        if delta.get('closeReason') == 'FalsePositive' and delta.get('classification') != 'FalsePositive':
             delta.update({'classification': 'FalsePositive', 'determination': 'Other'})
-        elif delta.closeReason == 'Other' or delta.closeReason == 'Other':
+        elif delta.get('closeReason') == 'Other' or delta.get('closeReason') == 'Duplicate':
             delta.update({'classification': 'Unknown', 'determination': 'NotAvailable'})
 
 
