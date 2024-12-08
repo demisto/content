@@ -17,7 +17,7 @@ ignore=SC105,BA109,BA124
 ignore=SC105,BA124
 
 [file:DBotPredictPhishingWords.yml]
-ignore=BA109,BA124
+ignore=BA109,BA124,DO101
 
 [file:DBotPreprocessTextData.yml]
 ignore=BA109,BA124
@@ -55,10 +55,10 @@ ignore=BA124
 [file:CommonServer_6_10.yml]
 ignore=BA108,BA109
 
-[file:DBotPredictPhishingWords/DBotPredictPhishingWords.yml]
+[file:DBotPredictPhishingWords.yml]
 ignore=DO101
 
-[file:DBotPreprocessTextData/DBotPreprocessTextData.yml]
+[file:DBotPreprocessTextData.yml]
 ignore=DO101
 
 [file:GetMLModelEvaluation.yml]
