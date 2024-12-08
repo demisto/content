@@ -3099,7 +3099,7 @@ script:
       name: asset_id
       required: true
     name: core-get-asset-details
-    description: Get UAI asset info
+    description: Get asset information.
     outputs: 
     - contextPath: Core.CoreAsset
       description: Asset additional information.
