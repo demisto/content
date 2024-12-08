@@ -59,6 +59,7 @@ def test_set_demisto_class_script_context(mocker):
     demisto = set_demisto_class()
     assert type(demisto) == DemistoScript
 
+
 @pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
 def test_set_demisto_class_command_context(mocker):
     """
@@ -75,7 +76,6 @@ def test_set_demisto_class_command_context(mocker):
     assert type(demisto) == types.ModuleType  # demistomock is a module
     demisto = set_demisto_class()
     assert type(demisto) == DemistoIntegration
-
 
 
 @pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
