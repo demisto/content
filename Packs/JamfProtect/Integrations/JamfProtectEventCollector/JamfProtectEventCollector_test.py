@@ -265,6 +265,7 @@ def test_alerts_and_next_page_audits_and_next_page(mocker):
         (parse_response(util_load_json('test_data/raw_alerts.json'))[1], 'next_page_alerts'),
         (parse_response(util_load_json('test_data/raw_audits.json'))[1], 'next_page_audits'),
     ])
+    mocker.patch.object(demisto, 'params', return_value={'fetch_all_computers': False})
     mocker.patch.object(demisto, 'command', return_value='fetch-events')
     mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
     mock_next_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
@@ -306,6 +307,7 @@ def test_no_alerts_and_no_next_page_no_audits_and_no_next_page(mocker):
         ([], ''),
         ([], ''),
     ])
+    mocker.patch.object(demisto, 'params', return_value={'fetch_all_computers': False})
     mocker.patch.object(demisto, 'command', return_value='fetch-events')
     mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
     mock_next_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
@@ -346,6 +348,7 @@ def test_alerts_and_no_next_page_audits_and_no_next_page(mocker):
         (parse_response(util_load_json('test_data/raw_alerts.json'))[1], ''),
         (parse_response(util_load_json('test_data/raw_audits.json'))[1], ''),
     ])
+    mocker.patch.object(demisto, 'params', return_value={'fetch_all_computers': False})
     mocker.patch.object(demisto, 'command', return_value='fetch-events')
     mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
     mock_next_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
@@ -386,6 +389,7 @@ def test_no_alerts_and_next_page_no_audits_and_no_next_page(mocker):
         ([], 'next_page_alerts'),
         ([], ''),
     ])
+    mocker.patch.object(demisto, 'params', return_value={'fetch_all_computers': False})
     mocker.patch.object(demisto, 'command', return_value='fetch-events')
     mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
     mock_next_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
