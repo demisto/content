@@ -201,7 +201,7 @@ configuration:
   required: false
 - additionalinfo: Choose a tag to add to an entry to mirror it as a comment into Microsoft 365 Defender.
   defaultvalue: CommentToMicrosoft365Defender
-  display: Comment Entry Tag To ServiceNow
+  display: Comment Entry Tag To Microsoft 365 Defender
   name: comment_tag
   type: 0
   section: Collect
@@ -209,7 +209,7 @@ configuration:
   hidden:
   - marketplacev2
   required: false
-- additionalinfo: Choose a tag to add to an entry to mirror it as a comment from Microsoft 365 Defender
+- additionalinfo: Choose a tag to add to an entry to mirror it as a comment from Microsoft 365 Defender.
   defaultvalue: CommentFromMicrosoft365Defender
   display: Comment Entry Tag From Microsoft 365 Defender
   name: comment_tag_from_microsoft365defender
