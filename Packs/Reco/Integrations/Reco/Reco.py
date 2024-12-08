@@ -705,8 +705,8 @@ class RecoClient(BaseClient):
             )
         try:
             response = self._http_request(
-                method="POST",
-                url_suffix="/asset-management",
+                method="PUT",
+                url_suffix="/asset-management/query",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS * 2,
                 data=json.dumps(params),
             )
@@ -767,8 +767,8 @@ class RecoClient(BaseClient):
         }
         try:
             response = self._http_request(
-                method="POST",
-                url_suffix="/asset-management",
+                method="PUT",
+                url_suffix="/asset-management/query",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS * 2,
                 data=json.dumps(params),
             )
@@ -882,8 +882,8 @@ class RecoClient(BaseClient):
             )
         try:
             response = self._http_request(
-                method="POST",
-                url_suffix="/asset-management",
+                method="PUT",
+                url_suffix="/asset-management/query",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS * 2,
                 data=json.dumps(params),
             )
