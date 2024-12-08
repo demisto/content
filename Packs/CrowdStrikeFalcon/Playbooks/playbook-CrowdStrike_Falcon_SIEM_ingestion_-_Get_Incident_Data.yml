@@ -870,3 +870,5 @@ tests:
 contentitemexportablefields:
   contentitemfields: {}
 system: true
+marketplaces:
+- xsoar

@@ -1,24 +1,20 @@
 Provides commands for interaction with Prisma SASE API.
 This integration was integrated and tested with version v1 of Palo Alto Networks - Prisma SASE
 
-## Configure Palo Alto Networks - Strata Cloud Manager on Cortex XSOAR
+## Configure Palo Alto Networks - Strata Cloud Manager in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Palo Alto Networks - Strata Cloud Manager.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | API Client ID |  | True |
-    | API Client Secret |  | True |
-    | Tenant Services Group ID | Default Tenant Services Group ID to use for API calls. Example: 1234567890. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| API Client ID |  | True |
+| API Client Secret |  | True |
+| Tenant Services Group ID | Default Tenant Services Group ID to use for API calls. Example: 1234567890. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### prisma-sase-security-rule-create
 ***

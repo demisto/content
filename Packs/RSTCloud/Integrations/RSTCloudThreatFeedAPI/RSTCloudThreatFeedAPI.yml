@@ -511,7 +511,7 @@ script:
       name: description
     description: Submits a potential False Positive to RST Threat Feed.
     name: rst-submit-fp
-  dockerimage: demisto/python3:3.10.14.99865
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3
