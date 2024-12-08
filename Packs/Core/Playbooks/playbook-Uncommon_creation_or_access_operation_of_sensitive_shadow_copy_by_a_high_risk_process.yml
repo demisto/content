@@ -9,10 +9,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 428b5718-7175-42a6-8bef-53a30125d97c
+    taskid: 702ceef5-880a-4344-8843-15c70b9f776f
     type: start
     task:
-      id: 428b5718-7175-42a6-8bef-53a30125d97c
+      id: 702ceef5-880a-4344-8843-15c70b9f776f
       version: -1
       name: ""
       iscommand: false
@@ -39,10 +39,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: c6089b52-e788-4593-8d95-00223f919652
+    taskid: 8c57cacd-97c2-424a-827d-c38fb9eaf53d
     type: condition
     task:
-      id: c6089b52-e788-4593-8d95-00223f919652
+      id: 8c57cacd-97c2-424a-827d-c38fb9eaf53d
       version: -1
       name: Check if CGO is signed
       description: ""
@@ -84,10 +84,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: f0154772-d5ec-42cc-8053-0cf4f57da493
+    taskid: a297376c-f25a-4276-8808-f4d82539a7a9
     type: condition
     task:
-      id: f0154772-d5ec-42cc-8053-0cf4f57da493
+      id: a297376c-f25a-4276-8808-f4d82539a7a9
       version: -1
       name: Check CGO image name
       description: ""
@@ -151,10 +151,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 3538379b-1a77-4f01-8688-2fe1caa4c8ec
+    taskid: 972c8b30-67cc-4544-8206-347b4eae0170
     type: condition
     task:
-      id: 3538379b-1a77-4f01-8688-2fe1caa4c8ec
+      id: 972c8b30-67cc-4544-8206-347b4eae0170
       version: -1
       name: Check actor_process_image_name
       description: ""
@@ -223,10 +223,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: cc7e9e61-7560-48b8-8ca4-cab430695e9e
+    taskid: 94c093a8-954a-4f10-85ef-1d1d6722367c
     type: condition
     task:
-      id: cc7e9e61-7560-48b8-8ca4-cab430695e9e
+      id: 94c093a8-954a-4f10-85ef-1d1d6722367c
       version: -1
       name: Check actor_process_image_name VSSVC.exe & username SYSTEM
       description: ""
@@ -277,10 +277,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 91d336ec-f65c-49d8-8478-2db259fda538
+    taskid: d79d5426-6060-414b-8771-82dab80acfb8
     type: title
     task:
-      id: 91d336ec-f65c-49d8-8478-2db259fda538
+      id: d79d5426-6060-414b-8771-82dab80acfb8
       version: -1
       name: Remediation
       type: title
@@ -296,7 +296,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": 1100
+          "y": 1110
         }
       }
     note: false
@@ -308,10 +308,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 8dfc4320-e1fd-43ce-8c00-2603050d46c8
+    taskid: fa876d07-2376-4c1b-8c18-65a7cd3d512e
     type: title
     task:
-      id: 8dfc4320-e1fd-43ce-8c00-2603050d46c8
+      id: fa876d07-2376-4c1b-8c18-65a7cd3d512e
       version: -1
       name: Inconclusive
       type: title
@@ -339,10 +339,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: e2b5323d-2924-4bf6-8439-041c85b45852
+    taskid: b6775c20-09f1-42a1-86dd-edcf030bf185
     type: condition
     task:
-      id: e2b5323d-2924-4bf6-8439-041c85b45852
+      id: b6775c20-09f1-42a1-86dd-edcf030bf185
       version: -1
       name: Check CGO image name is mmc.exe & OS is server
       description: ""
@@ -393,10 +393,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: da277d21-3e93-4c1c-8ee9-7154a9ce95a3
+    taskid: 4e71e24a-0071-4d1c-8b0e-aba35683d33f
     type: title
     task:
-      id: da277d21-3e93-4c1c-8ee9-7154a9ce95a3
+      id: 4e71e24a-0071-4d1c-8b0e-aba35683d33f
       version: -1
       name: Common False Positive behavior
       type: title
@@ -424,10 +424,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 6caefd22-63e0-4214-8338-c82a251bf75d
+    taskid: e2cb2f95-a439-4b77-871b-5104add62100
     type: title
     task:
-      id: 6caefd22-63e0-4214-8338-c82a251bf75d
+      id: e2cb2f95-a439-4b77-871b-5104add62100
       version: -1
       name: Inconclusive
       type: title
@@ -455,10 +455,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: cd2d9a39-7e2d-4c76-8ee1-c21683bdc9c5
+    taskid: a1588134-cd1e-4479-884a-66526f8f2604
     type: title
     task:
-      id: cd2d9a39-7e2d-4c76-8ee1-c21683bdc9c5
+      id: a1588134-cd1e-4479-884a-66526f8f2604
       version: -1
       name: Remediation
       type: title
@@ -486,10 +486,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 62314706-1001-4f0d-85cd-31f8a5e87266
+    taskid: 4716fbae-6a4a-44ff-8abd-46cc28455231
     type: title
     task:
-      id: 62314706-1001-4f0d-85cd-31f8a5e87266
+      id: 4716fbae-6a4a-44ff-8abd-46cc28455231
       version: -1
       name: Investigation
       description: Get the prevalence of a process, identified by process_name.
@@ -517,10 +517,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: bf2b6360-6501-409f-88c5-93623524e48c
+    taskid: 654152a7-b8e4-4d43-8a75-fc1153122d9f
     type: regular
     task:
-      id: bf2b6360-6501-409f-88c5-93623524e48c
+      id: 654152a7-b8e4-4d43-8a75-fc1153122d9f
       version: -1
       name: Close Alert - False Positive
       description: commands.local.cmd.close.inv
@@ -556,10 +556,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 8b07b7af-d903-41ac-895e-8bd498bc4288
+    taskid: 483ab1ce-e4ce-4a97-8952-22d5be91e79e
     type: title
     task:
-      id: 8b07b7af-d903-41ac-895e-8bd498bc4288
+      id: 483ab1ce-e4ce-4a97-8952-22d5be91e79e
       version: -1
       name: Done
       type: title
@@ -572,7 +572,7 @@ tasks:
       {
         "position": {
           "x": 512.5,
-          "y": 1750
+          "y": 1760
         }
       }
     note: false
@@ -584,10 +584,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 92e9595e-122b-4c9b-8190-44e377c737d9
+    taskid: 3dc743ae-6b2f-40e2-8186-3cc1c120a50d
     type: regular
     task:
-      id: 92e9595e-122b-4c9b-8190-44e377c737d9
+      id: 3dc743ae-6b2f-40e2-8186-3cc1c120a50d
       version: -1
       name: Close Alert - True Positive
       description: Close the current alert.
@@ -611,7 +611,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": 1580
+          "y": 1590
         }
       }
     note: false
@@ -623,10 +623,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: e1ce75c2-ed9d-4709-8878-1f305495eccc
+    taskid: 17338ce2-c9a1-4e55-89d8-c380573be240
     type: regular
     task:
-      id: e1ce75c2-ed9d-4709-8878-1f305495eccc
+      id: 17338ce2-c9a1-4e55-89d8-c380573be240
       version: -1
       name: Terminate Causality (CGO)
       description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4.
@@ -653,7 +653,7 @@ tasks:
       {
         "position": {
           "x": 107.5,
-          "y": 1230
+          "y": 1240
         }
       }
     note: false
@@ -665,10 +665,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 4a8f2186-267b-46bd-8abe-ad82434463a2
+    taskid: 2ed915fc-31b3-4f83-84d2-e9a0e2f08c83
     type: regular
     task:
-      id: 4a8f2186-267b-46bd-8abe-ad82434463a2
+      id: 2ed915fc-31b3-4f83-84d2-e9a0e2f08c83
       version: -1
       name: Terminate Causality Process Manually
       description: |
@@ -688,7 +688,7 @@ tasks:
       {
         "position": {
           "x": -110,
-          "y": 1410
+          "y": 1420
         }
       }
     note: false
@@ -700,10 +700,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: ed439778-6001-42b4-8be1-05769f1a1122
+    taskid: cf4eaf8d-b284-4184-82b0-c23a4e624c86
     type: condition
     task:
-      id: ed439778-6001-42b4-8be1-05769f1a1122
+      id: cf4eaf8d-b284-4184-82b0-c23a4e624c86
       version: -1
       name: Check if process path is common & causality process is prevalent
       description: ""
@@ -763,10 +763,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 567766c6-1d5a-4503-8d90-381bc56f626a
+    taskid: 9f7dc92f-e3a0-4293-83e8-9a3c8151ebc9
     type: regular
     task:
-      id: 567766c6-1d5a-4503-8d90-381bc56f626a
+      id: 9f7dc92f-e3a0-4293-83e8-9a3c8151ebc9
       version: -1
       name: Check if Previous Similar Alerts
       description: |
@@ -784,9 +784,7 @@ tasks:
       name:
         simple: ${alert.name}
       query:
-        simple: name:"Uncommon creation or access operation of sensitive shadow copy
-          by a high-risk process" and resolution_status:*False*Positive* and cgo_name:${alert.cgoname.[0]}
-          and initiatedby:${alert.initiatedby.[0]}
+        simple: name:"Uncommon creation or access operation of sensitive shadow copy by a high-risk process" and resolution_status:*False*Positive* and cgo_name:${alert.cgoname.[0]} and initiatedby:${alert.initiatedby.[0]}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -805,10 +803,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 2c5471f8-5841-4359-8960-f2273ec3cbff
+    taskid: 21611b1a-4209-446e-83c9-26a2765062b1
     type: condition
     task:
-      id: 2c5471f8-5841-4359-8960-f2273ec3cbff
+      id: 21611b1a-4209-446e-83c9-26a2765062b1
       version: -1
       name: Check if Previous Alerts Closed as False Positive
       description: ""
@@ -848,10 +846,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: a5c00bd3-eda3-4a80-8db7-160828d6bc8b
+    taskid: b9a90c8e-ca78-4778-80ff-a9d845994475
     type: title
     task:
-      id: a5c00bd3-eda3-4a80-8db7-160828d6bc8b
+      id: b9a90c8e-ca78-4778-80ff-a9d845994475
       version: -1
       name: Triage
       type: title
@@ -879,10 +877,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 84fdb0e0-163f-4ecf-8545-b41727f8c970
+    taskid: fca6bd1f-3bac-4832-8590-38184d577db3
     type: regular
     task:
-      id: 84fdb0e0-163f-4ecf-8545-b41727f8c970
+      id: fca6bd1f-3bac-4832-8590-38184d577db3
       version: -1
       name: Get Causality process prevalence
       description: Get the prevalence of a process, identified by process_name.
@@ -914,10 +912,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: db0e4684-aeb5-4d83-8279-e9ab7dcd5da7
+    taskid: b289c1f0-975c-4375-8359-6da2b9599a77
     type: title
     task:
-      id: db0e4684-aeb5-4d83-8279-e9ab7dcd5da7
+      id: b289c1f0-975c-4375-8359-6da2b9599a77
       version: -1
       name: Investigation
       type: title
@@ -957,7 +955,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2200,
+        "height": 2210,
         "width": 1920,
         "x": -210,
         "y": -385
