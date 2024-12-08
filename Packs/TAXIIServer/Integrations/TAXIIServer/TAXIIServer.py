@@ -857,11 +857,7 @@ def taxii_poll_service() -> Response:
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(taxii_server: TAXIIServer, port: str):
-    if not port:
-        raise DemistoException('When selecting a single engine, you must specify a Listen Port. If no engine is selected,'
-                               ' click "Save" before testing the configuration, as this may resolve the issue.')
-
+def test_module(taxii_server: TAXIIServer):
     run_server(taxii_server, is_test=True)
     return 'ok'
 
@@ -951,7 +947,7 @@ def main():
         SERVER = TAXIIServer(scheme, str(host_name), port, collections,
                              certificate, private_key, http_server, credentials, service_address)
         if command == 'test-module':
-            return_results(test_module(SERVER, params.get('longRunningPort')))
+            return_results(test_module(SERVER))
         elif command == 'long-running-execution':
             run_server(SERVER)
     except Exception as e:
