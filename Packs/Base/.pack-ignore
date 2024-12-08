@@ -55,9 +55,6 @@ ignore=BA124
 [file:CommonServer_6_10.yml]
 ignore=BA108,BA109
 
-[file:DBotPredictPhishingWords.yml]
-ignore=DO101
-
 [file:DBotPreprocessTextData.yml]
 ignore=DO101
 
