@@ -1,3 +1,4 @@
+import sys
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 """ IMPORTS """
@@ -658,7 +659,11 @@ def decode_url(headers: str) -> dict:
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-def main():  # pragma: no cover
+def main():
+    demisto.info('before smt')
+    support_multithreading()# pragma: no cover
+    demisto.info('after smt')
+
     params = demisto.params()
     client = Client(
         base_url=urljoin(params.get('host'), '/siem/v1/configs'),
@@ -732,26 +737,29 @@ def main():  # pragma: no cover
                     
                     import concurrent.futures
 
-
+                    num_to_split = 20
                     # Step 2: Split the Data into 5 Requests
-                    split_data = [events[i:i + len(events)//5] for i in range(0, len(events), len(events)//5)]
-
+                    split_data = [events[i:i + len(events)//num_to_split] for i in range(0, len(events), len(events)//num_to_split)]
+                    demisto.info(f'[test] {num_to_split=}')
+                    for segment in split_data:
+                        demisto.info(f'[test] {len(segment)=} {sys.getsizeof(segment)=}')
                     # Step 3: Create a ThreadPool
-                    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+                    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
                         # Step 4: Define a Function for Sending Data to the Second API
                         def send_data_to_second_api(segment):
+                            demisto.info('[test] sending to xsiam inside executor')
                             send_events_to_xsiam(segment, VENDOR, PRODUCT, should_update_health_module=False,
                                                 chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE)
+                            demisto.info('[test]')
                             return "Done."
 
                         # Step 5: Submit Tasks to the ThreadPool
-                        future_to_data = {executor.submit(send_data_to_second_api, segment): segment for segment in split_data}
-
+                        future_to_data = [executor.submit(send_data_to_second_api, segment) for segment in split_data]
+                        demisto.info('[test] submitted all the futures')
                         # Step 6: Handle Responses (Optional)
                         for future in concurrent.futures.as_completed(future_to_data):
-                            data_segment = future_to_data[future]
-                            result = future.result()
-
+                            demisto.info(f'[test] printing result {future.result()}')
+                        demisto.info('[test] should be done sending events')
                     # send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
                     #                      chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE)
                     demisto.info(f"[test] Done sending {len(events)} events to xsiam."
