@@ -264,7 +264,31 @@
           "operator": "uniq",
           "args": {}
         }]
-      }
+        }
+    },
+    "organizationprevalence": {
+        "simple": "URL.OrganizationPrevalence",
+        "complex": null
+    },
+    "globalprevalence": {
+        "simple": "URL.GlobalPrevalence",
+        "complex": null
+    },
+    "organizationfirstseen": {
+        "simple": "URL.OrganizationFirstSeen",
+        "complex": null
+    },
+    "organizationlastseen": {
+        "simple": "URL.OrganizationLastSeen",
+        "complex": null
+    },
+    "firstseenbysource": {
+        "simple": "URL.FirstSeenBySource",
+        "complex": null
+    },
+    "lastseenbysource": {
+        "simple": "URL.LastSeenBySource",
+        "complex": null
     }
   },
   "manualMapping": null,

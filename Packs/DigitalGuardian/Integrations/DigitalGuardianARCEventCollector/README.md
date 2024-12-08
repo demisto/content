@@ -6,29 +6,25 @@ This is the default integration for this content pack when configured by the Dat
 ## Known Limitations
 The integration fetch interval should be set to a minimum of "1 hour". If set to less, a quota error might be received.
 
-## Configure Digital Guardian ARC Event Collector on Cortex XSOAR
+## Configure Digital Guardian ARC Event Collector in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Digital Guardian ARC Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Auth Server URL (e.g. https://some_url.com) |  | True |
-    | Gateway Base URL (e.g. https://some_url.com) |  | True |
-    | Client ID |  | True |
-    | Client Secret | Client Secret | True |
-    | Export Profile |  | True |
-    | First fetch time (Enter only number of days, integer) |  | False |
-    | Number of events per fetch |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Auth Server URL (e.g. https://some_url.com) |  | True |
+| Gateway Base URL (e.g. https://some_url.com) |  | True |
+| Client ID |  | True |
+| Client Secret | Client Secret | True |
+| Export Profile |  | True |
+| First fetch time (Enter only number of days, integer) |  | False |
+| Number of events per fetch |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### digital-guardian-get-events
