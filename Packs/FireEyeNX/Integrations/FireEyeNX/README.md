@@ -1,11 +1,8 @@
 FireEye Network Security is an effective cyber threat protection solution that helps organizations minimize the risk of costly breaches by accurately detecting and immediately stopping advanced, targeted, and other evasive attacks hiding in internet traffic.
 This integration was integrated and tested with version 2.0.0 of FireEyeNX APIs.
 
-## Configure FireEyeNX on Cortex XSOAR
+## Configure FireEyeNX in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for FireEyeNX.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -24,9 +21,8 @@ This integration was integrated and tested with version 2.0.0 of FireEyeNX APIs.
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fireeye-nx-get-alerts
 ***
@@ -642,5 +638,4 @@ Search and retrieve FireEye events based on several filters.
 >|Event ID|Time (UTC)|Victim IP|Attacker IP|CVE ID|Severity|Rule|Protocol|
 >|---|---|---|---|---|---|---|---|
 >| 1 | 2020-08-10T06:31:00Z | 1.1.1.1 | 1.1.1.1 | CVE-123 | 1 | dummy | 1 |
-
 
