@@ -1,4 +1,5 @@
 {
+	"cacheVersn": 0,
 	"close": {
 		"sections": [
 			{
@@ -656,21 +657,10 @@
 							}
 						],
 						"displayType": "ROW",
-						"h": 4,
-						"hideName": false,
+						"h": 1,
+						"hideName": true,
 						"i": "caseinfoid-fc96d6a9-447c-4f5f-b292-f1c4a59a828e",
 						"items": [
-							{
-								"dropEffect": "move",
-								"endCol": 6,
-								"fieldId": "microsoft365comments",
-								"height": 106,
-								"id": "430bc43d-ac6d-46c2-8786-2c9e1c33c6b4",
-								"index": 0,
-								"listId": "caseinfoid-fc96d6a9-447c-4f5f-b292-f1c4a59a828e",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
 							{
 								"args": {},
 								"buttonClass": null,
@@ -691,9 +681,33 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": " Microsoft 365 Defender ",
+						"name": " Microsoft 365 Defender Add Comment",
 						"static": false,
-						"w": 3,
+						"w": 1,
+						"x": 2,
+						"y": 15
+					},
+					{
+						"description": "",
+						"h": 5,
+						"i": "caseinfoid-0389dbf0-b58c-11ef-ad76-3b71fb7d3507",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Microsoft 365 Defender Comments",
+						"query": {
+							"categories": [],
+							"notTags": [],
+							"tags": [
+								"CommentToMicrosoft365Defender",
+								"CommentFromMicrosoft365Defender"
+							]
+						},
+						"queryType": "warRoomFilter",
+						"static": false,
+						"type": "invTimeline",
+						"w": 2,
 						"x": 0,
 						"y": 15
 					}
@@ -1010,10 +1024,6 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_analysisreport",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_app",
 						"isVisible": true
 					},
@@ -1142,14 +1152,6 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_dbotprediction",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_dbotpredictionprobability",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_description",
 						"isVisible": true
 					},
@@ -1255,26 +1257,6 @@
 					},
 					{
 						"fieldId": "incident_dsts",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_emaildeletefrombrand",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_emaildeletereason",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_emaildeleteresult",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_emaildeletetype",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_emailkeywordsfound",
 						"isVisible": true
 					},
 					{
@@ -1426,10 +1408,6 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_identitytable",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_identitytype",
 						"isVisible": true
 					},
@@ -1458,10 +1436,6 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_lastmirroredintime",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_lastmirroredtimestamp",
 						"isVisible": true
 					},
@@ -1482,55 +1456,7 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_maliciousurlviewed",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_mayafieldfor365defender",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_md5",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_microsoft365defenderstatusnew",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_microsoftsentinelalertcount",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_microsoftsentinelalerts",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_microsoftsentinelclassificationcomment",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_microsoftsentinelcomments",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_microsoftsentinelentities",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_microsoftsentinelincidentnumber",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_microsoftsentinelowner",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_microsoftsentinelrelations",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_microsoftsentinelruleid",
 						"isVisible": true
 					},
 					{
@@ -1782,106 +1708,6 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_servicenowassignedto",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowassignmentgroup",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowattackvector",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowbusinessimpact",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowcaller",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowcallerid",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowcategory",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowclosedby",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowcloseddate",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowdescription",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowduedate",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowescalation",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowimpact",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenownotify",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowopeneddate",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowpriority",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowresolutioncode",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowresolutionnotes",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowresolvedtime",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowseverity",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowsircategory",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowsirstate",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowstate",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowticketnumber",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowurgency",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_sha1",
 						"isVisible": true
 					},
@@ -2120,26 +1946,6 @@
 					{
 						"fieldId": "incident_vulnerableproduct",
 						"isVisible": true
-					},
-					{
-						"fieldId": "incident_xdralertsearchresults",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_xdrinvestigationresults",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_xdrmanualseverity",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_xdrmodificationtime",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_xdrstarred",
-						"isVisible": true
 					}
 				],
 				"isVisible": true,
@@ -2153,7 +1959,7 @@
 	},
 	"fromServerVersion": "0.0.0",
 	"group": "incident",
-	"id": "2856d6b7-ff33-4482-89a2-046962245db0",
+	"id": "d71853d3-a500-4e99-8648-266b9eb3d312",
 	"indicatorsDetails": null,
 	"indicatorsQuickView": null,
 	"itemVersion": "4.5.35",
@@ -2315,10 +2121,6 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_analysisreport",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_app",
 						"isVisible": true
 					},
@@ -2451,14 +2253,6 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_dbotprediction",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_dbotpredictionprobability",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_description",
 						"isVisible": true
 					},
@@ -2568,26 +2362,6 @@
 					},
 					{
 						"fieldId": "incident_dsts",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_emaildeletefrombrand",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_emaildeletereason",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_emaildeleteresult",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_emaildeletetype",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_emailkeywordsfound",
 						"isVisible": true
 					},
 					{
@@ -2739,10 +2513,6 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_identitytable",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_identitytype",
 						"isVisible": true
 					},
@@ -2775,10 +2545,6 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_lastmirroredintime",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_lastmirroredtimestamp",
 						"isVisible": true
 					},
@@ -2799,55 +2565,7 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_maliciousurlviewed",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_mayafieldfor365defender",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_md5",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_microsoft365defenderstatusnew",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_microsoftsentinelalertcount",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_microsoftsentinelalerts",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_microsoftsentinelclassificationcomment",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_microsoftsentinelcomments",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_microsoftsentinelentities",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_microsoftsentinelincidentnumber",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_microsoftsentinelowner",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_microsoftsentinelrelations",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_microsoftsentinelruleid",
 						"isVisible": true
 					},
 					{
@@ -3103,106 +2821,6 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_servicenowassignedto",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowassignmentgroup",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowattackvector",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowbusinessimpact",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowcaller",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowcallerid",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowcategory",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowclosedby",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowcloseddate",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowdescription",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowduedate",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowescalation",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowimpact",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenownotify",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowopeneddate",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowpriority",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowresolutioncode",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowresolutionnotes",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowresolvedtime",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowseverity",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowsircategory",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowsirstate",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowstate",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowticketnumber",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_servicenowurgency",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_sha1",
 						"isVisible": true
 					},
@@ -3448,26 +3066,6 @@
 					},
 					{
 						"fieldId": "incident_vulnerableproduct",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_xdralertsearchresults",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_xdrinvestigationresults",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_xdrmanualseverity",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_xdrmodificationtime",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_xdrstarred",
 						"isVisible": true
 					}
 				],
