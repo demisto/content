@@ -12410,6 +12410,7 @@ def content_profiler(func):
     :type func: ``function``
     :param func: The function to be profiled.
     :return: The profiled function.
+    :rtype: ``any``
     """
     import cProfile
     import threading
