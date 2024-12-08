@@ -28,6 +28,6 @@ The Azure Firewall pack contains the following:
     | [AZFWIdpsSignature](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwidpssignature) | Azure Firewall IDPS Signature|
     | [AZFWNatRule](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwnatrule) | Azure Firewall Nat Rule|
     | [AZFWNatRuleAggregation](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwnatruleaggregation)| Azure Firewall Nat Rule Aggregation (Policy Analytics)|
-    | [AZFWNetworkRule](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwnetworkruleaggregation) | Azure Firewall Network Rule|
+    | [AZFWNetworkRule](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwnetworkrule) | Azure Firewall Network Rule|
     | [AZFWNetworkRuleAggregation](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwnetworkruleaggregation) | Azure Firewall Network Rule Aggregation (Policy Analytics)|
     | [AZFWThreatIntel](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwthreatintel) | Azure Firewall Threat Intelligence|
