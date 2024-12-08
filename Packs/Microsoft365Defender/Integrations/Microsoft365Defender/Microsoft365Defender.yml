@@ -314,20 +314,26 @@ script:
       description: The specification for the incident.
       name: classification
       predefined:
-      - TruePositive - MultiStagedAttack
-      - TruePositive - MaliciousUserActivity
-      - TruePositive - Malware
-      - TruePositive - Phishing
-      - TruePositive - CompromisedAccount
-      - TruePositive - UnwantedSoftware
-      - TruePositive - Other
-      - InformationalExpectedActivity - SecurityTesting
-      - InformationalExpectedActivity - LineOfBusinessApplication
-      - InformationalExpectedActivity - ConfirmedActivity
-      - InformationalExpectedActivity - Other
-      - FalsePositive - Clean
-      - FalsePositive - NoEnoughDataToValidate
-      - FalsePositive - Other
+        - Unknown
+        - FalsePositive
+        - TruePositive
+        - InformationalExpectedActivity
+    - auto: PREDEFINED
+      description: 'Determination of the incident. Must be used with the classification field. Possible values depend on the classification field: TruePositive - MultiStagedAttack, MaliciousUserActivity, Malware, Phishing, CompromisedAccount, UnwantedSoftware, Other (default), InformationalExpectedActivity- SecurityTesting, LineOfBusinessApplication, ConfirmedActivity, Other (default), FalsePositive - Clean, NoEnoughDataToValidate, Other (default), Unknown - NotAvailable.'
+      name: determination
+      predefined:
+        - NotAvailable
+        - Malware
+        - SecurityTesting
+        - UnwantedSoftware
+        - MultiStagedAttack
+        - MaliciousUserActivity
+        - CompromisedAccount
+        - Phishing
+        - LineOfBusinessApplication
+        - ConfirmedActivity
+        - NotMalicious
+        - Other
     - description: Comment to be added to the incident.
       name: comment
     - description: 'A comma-separated list of custom tags associated with an incident. For example: tag1,tag2,tag3.'

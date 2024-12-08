@@ -29,6 +29,14 @@ OUTGOING_MIRRORED_FIELDS = {
     'tags': 'List of Incident tags.',
     'comment': 'Comment to be added to the incident.'
 }
+
+
+CLASSIFICATION_DETERMINATION_MAPPING = {
+    'TruePositive' : ['MultiStagedAttack', 'MaliciousUserActivity', 'Malware', 'Phishing', 'CompromisedAccount', 'UnwantedSoftware', 'Other'],
+    'InformationalExpectedActivity': ['SecurityTesting', 'LineOfBusinessApplication', 'ConfirmedActivity', 'Other'],
+    'FalsePositive': ['Clean', 'NoEnoughDataToValidate', 'Other'],
+    'Unknown': ['NotAvailable']}
+
 ''' CLIENT CLASS '''
 
 
@@ -397,6 +405,26 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: dict) ->
                           outputs=raw_incidents, readable_output=human_readable)
 
 
+def get_determination_value(classification: Optional[str], determination: Optional[str]) -> Optional[str]:
+    if classification is None and determination is None:
+        return None
+
+    if not classification or classification not in CLASSIFICATION_DETERMINATION_MAPPING:
+        raise DemistoException("Please provide a valid classification")
+
+    if not determination:
+        return 'NotAvailable' if classification == 'Unknown' else 'Other'
+
+    if determination not in CLASSIFICATION_DETERMINATION_MAPPING[classification]:
+        raise DemistoException(
+            f"Invalid determination. "
+            f"Please provide one of the following: {CLASSIFICATION_DETERMINATION_MAPPING[classification]}"
+        )
+
+    return determination
+
+
+
 @logger
 def microsoft_365_defender_incident_update_command(client: Client, args: dict) -> CommandResults:
     """
@@ -420,11 +448,11 @@ def microsoft_365_defender_incident_update_command(client: Client, args: dict) -
     status = args.get('status')
     assigned_to = args.get('assigned_to')
     classification = args.get('classification')
+    determination = get_determination_value(classification , args.get('determination'))
     incident_id = arg_to_number(args.get('id'))
     timeout = arg_to_number(args.get('timeout', TIMEOUT))
     comment = args.get('comment')
 
-    classification, determination = classification.split(' - ') if classification else (None, None)
 
     updated_incident = client.update_incident(incident_id=incident_id, status=status, assigned_to=assigned_to,
                                               classification=classification, determination=determination, tags=tags,
