@@ -4,6 +4,9 @@ import sys
 import traceback
 
 from datetime import datetime
+from packaging.version import Version
+
+IS_PY3 = sys.version_info[0] == 3
 
 LAST_RUN_TRUNCATE_SIZE = 1024
 LAST_RUN_SIZE_RECOMMENDATION = 1024 ** 2  # 1MB
@@ -23,7 +26,7 @@ CREATING_INCIDENTS_SUFFIX = " with source IDs [{}]"
 CREATING_INDICATORS_LOG = "Creating {} indicators"
 CREATE_INDICATORS_DURATION_LOG = "createIndicators took {} seconds"
 
-if sys.version_info[0] >= 3:  # and is_xsiam_or_xsoar_saas():  # type:ignore
+if IS_PY3:
     class DemistoWrapper(object):
         """A content-side wrapper to the builtin Demisto class.
         All methods of this class can be executed in both scripts and integrations
@@ -180,10 +183,13 @@ if sys.version_info[0] >= 3:  # and is_xsiam_or_xsoar_saas():  # type:ignore
                     self._demisto.createIndicators(indicators_batch, noUpdate)
 
     def set_demisto_class():
-        if demisto.callingContext.get('context', {}).get('IntegrationBrand'):
-            return DemistoIntegration(demisto)
-        elif demisto.callingContext.get('context', {}).get('ScriptName'):
-            return DemistoScript(demisto)
+        platform_version = Version(demisto.demistoVersion().get("version"))
+        if platform_version > Version("8.0.0"):
+            if demisto.callingContext.get('context', {}).get('IntegrationBrand'):
+                return DemistoIntegration(demisto)
+            elif demisto.callingContext.get('context', {}).get('ScriptName'):
+                return DemistoScript(demisto)
+        return demisto
 
     if "pytest" not in sys.modules:
         demisto = set_demisto_class()

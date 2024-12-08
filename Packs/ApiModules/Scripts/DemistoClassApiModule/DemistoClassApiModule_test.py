@@ -42,26 +42,38 @@ def debug_logs_sent(demisto, msgs):
     return res
 
 
+@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
 @pytest.mark.parametrize(
-    "callingContext, expected_class",
-    [(command_context(), DemistoIntegration), (script_context(), DemistoScript)]
+    "callingContext, version, expected_class",
+    [
+        (command_context(), "8.5.0", DemistoIntegration),
+        (script_context(), "8.5.0", DemistoScript),
+        (command_context(), "6.10.0", types.ModuleType)  # demistomock is a module
+    ]
 )
-def test_set_demisto_class(callingContext, expected_class):
+def test_set_demisto_class(mocker, callingContext, version, expected_class):
     """
     Given:
-    - A mock `demisto` object with varying calling contexts.
+    - A mock `demisto` object with varying calling contexts
+        - Case 1: A command context, version = 8.5.0.
+        - Case 2: A script context, version = 8.5.0
+        - Case 3: version = 6.10.0
     When:
     - Setting the appropriate class for `demisto` based on the calling context.
     Then:
-    - Ensure the correct class (DemistoIntegration or DemistoScript) is set for `demisto`.
+    - Case 1: Ensure a DemistoIntegration class is set for `demisto`.
+    - Case 2: Ensure a DemistoScript class is set for `demisto`.
+    - Case 3: Ensure the demisto class is not changed.
     """
     import demistomock as demisto
     demisto.callingContext = callingContext
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": version})
     assert type(demisto) == types.ModuleType  # demistomock is a module
     demisto = set_demisto_class()
     assert type(demisto) == expected_class
 
 
+@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
 def test_log_execution_details(mocker):
     """
     Given:
@@ -72,6 +84,7 @@ def test_log_execution_details(mocker):
     - Ensure the correct debug log message is sent.
     """
     import demistomock as demisto
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "8.5.0"})
     mocker.patch.object(demisto, "debug")
     demisto.callingContext = command_context()
     demisto.is_debug = True
@@ -85,6 +98,7 @@ def test_log_execution_details(mocker):
     )
 
 
+@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
 @pytest.mark.parametrize(
     "get_fp_result, expected_log",
     [
@@ -103,6 +117,7 @@ def test_get_file_path(mocker, get_fp_result, expected_log):
     - Case 2: Ensure that if an error occurs in DemistoScript.getFilePath(), log the error and skip it.
     """
     import demistomock as demisto
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "8.5.0"})
     mocker.patch.object(demisto, "debug")
     get_fp_cmd = mocker.patch.object(demisto, "getFilePath", return_value=get_fp_result)
 
@@ -115,8 +130,9 @@ def test_get_file_path(mocker, get_fp_result, expected_log):
     assert debug_logs_sent(demisto, [expected_log])
 
 
+@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
 @pytest.mark.parametrize("is_debug, expected_entries_length", [(False, 2), (True, 1)])
-def test_execute_command(is_debug, expected_entries_length):
+def test_execute_command(mocker, is_debug, expected_entries_length):
     """
     Given:
     - A `demisto` object with debug mode either enabled or disabled.
@@ -128,6 +144,7 @@ def test_execute_command(is_debug, expected_entries_length):
         - Case 2: One entry is returned when debug mode is enabled.
     """
     import demistomock as demisto
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "8.5.0"})
     demisto.callingContext = script_context()
     demisto.is_debug = is_debug
     demisto = set_demisto_class()
@@ -136,6 +153,7 @@ def test_execute_command(is_debug, expected_entries_length):
     assert demisto.is_debug or any(entry["Type"] == 16 for entry in res)
 
 
+@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
 def test_execute_command_bad(mocker):
     """
     Given:
@@ -148,6 +166,7 @@ def test_execute_command_bad(mocker):
         - Debug logs include failure information when invalid entries are encountered.
     """
     import demistomock as demisto
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "8.5.0"})
     mocker.patch.object(demisto, "debug")
     entries = [{"Contents": "oy vey no entry type"}, {"Type": 16}]
     exec_cmd_func = mocker.patch.object(demisto, "executeCommand", return_value=entries)
@@ -162,6 +181,7 @@ def test_execute_command_bad(mocker):
     assert debug_logs_sent(demisto, [DEMISTO_WRAPPER_FAILED])
 
 
+@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
 @pytest.mark.parametrize(
     "last_run, expected_log",
     [
@@ -180,6 +200,7 @@ def test_get_last_run(mocker, last_run, expected_log):
     - Case 2: Log an error if fetching the last run fails.
     """
     import demistomock as demisto
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "8.5.0"})
     mocker.patch.object(demisto, "debug")
     get_lr_cmd = mocker.patch.object(demisto, "getLastRun", return_value=last_run)
 
@@ -192,6 +213,7 @@ def test_get_last_run(mocker, last_run, expected_log):
     assert debug_logs_sent(demisto, [expected_log])
 
 
+@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
 @pytest.mark.parametrize(
     "last_run, expected_log",
     [
@@ -210,6 +232,7 @@ def test_set_last_run(mocker, last_run, expected_log):
     - Case 2: Log an error if setting the last run fails.
     """
     import demistomock as demisto
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "8.5.0"})
     mocker.patch.object(demisto, "debug")
     set_last_run_cmd = mocker.patch.object(demisto, "setLastRun")
 
@@ -221,6 +244,7 @@ def test_set_last_run(mocker, last_run, expected_log):
     assert debug_logs_sent(demisto, [expected_log])
 
 
+@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
 def test_set_last_run_truncated(mocker):
     """
     Given:
@@ -231,6 +255,7 @@ def test_set_last_run_truncated(mocker):
     - Ensure the last run data is truncated and the truncation is logged.
     """
     import demistomock as demisto
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "8.5.0"})
     mocker.patch.object(demisto, "debug")
 
     demisto.callingContext = command_context()
@@ -241,6 +266,7 @@ def test_set_last_run_truncated(mocker):
     assert debug_logs_sent(demisto, [TRUNCATED_SUFFIX])
 
 
+@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
 def test_set_last_run_exceeds_recommendation(mocker):
     """
     Given:
@@ -251,6 +277,7 @@ def test_set_last_run_exceeds_recommendation(mocker):
     - Ensure a warning is logged indicating the size exceeds the recommendation.
     """
     import demistomock as demisto
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "8.5.0"})
     mocker.patch.object(demisto, "debug")
 
     demisto.callingContext = command_context()
@@ -265,6 +292,7 @@ def test_set_last_run_exceeds_recommendation(mocker):
     assert debug_logs_sent(demisto, [LAST_RUN_SIZE_LOG.format(last_run_size)])
 
 
+@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
 @pytest.mark.parametrize(
     "incidents, expected_log",
     [
@@ -297,6 +325,7 @@ def test_incidents(mocker, incidents, expected_log):
     - Case 3: Log an error if invalid data is encountered.
     """
     import demistomock as demisto
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "8.5.0"})
     mocker.patch.object(demisto, "debug")
     create_incidents = mocker.patch.object(demisto, "incidents")
 
@@ -307,6 +336,7 @@ def test_incidents(mocker, incidents, expected_log):
     assert debug_logs_sent(demisto, [expected_log])
 
 
+@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
 def test_create_indicators(mocker):
     """
     Given:
@@ -317,6 +347,7 @@ def test_create_indicators(mocker):
     - Ensure the method is called and debug logs include the correct number of indicators.
     """
     import demistomock as demisto
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "8.5.0"})
     mocker.patch.object(demisto, "debug")
     create_indciators = mocker.patch.object(demisto, "createIndicators")
     demisto.is_debug = True
