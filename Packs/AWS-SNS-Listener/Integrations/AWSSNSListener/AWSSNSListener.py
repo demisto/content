@@ -168,7 +168,7 @@ def store_samples(incident):  # pragma: no cover
         demisto.error(f'Failed storing sample events - {e}')
 
 
-@app.post(f'/{PARAMS.get("endpoint", "")}')
+@app.post(f'/{PARAMS.get("endpoint","")}')
 async def handle_post(request: Request,
                       credentials: HTTPBasicCredentials = Depends(basic_auth),
                       token: APIKey = Depends(token_auth)):   # pragma: no cover
