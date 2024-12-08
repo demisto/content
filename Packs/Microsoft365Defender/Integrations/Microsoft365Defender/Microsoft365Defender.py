@@ -30,9 +30,9 @@ OUTGOING_MIRRORED_FIELDS = {
     'comment': 'Comment to be added to the incident.'
 }
 
-
 CLASSIFICATION_DETERMINATION_MAPPING = {
-    'TruePositive' : ['MultiStagedAttack', 'MaliciousUserActivity', 'Malware', 'Phishing', 'CompromisedAccount', 'UnwantedSoftware', 'Other'],
+    'TruePositive': ['MultiStagedAttack', 'MaliciousUserActivity', 'Malware', 'Phishing', 'CompromisedAccount',
+                     'UnwantedSoftware', 'Other'],
     'InformationalExpectedActivity': ['SecurityTesting', 'LineOfBusinessApplication', 'ConfirmedActivity', 'Other'],
     'FalsePositive': ['Clean', 'NoEnoughDataToValidate', 'Other'],
     'Unknown': ['NotAvailable']}
@@ -424,7 +424,6 @@ def get_determination_value(classification: Optional[str], determination: Option
     return determination
 
 
-
 @logger
 def microsoft_365_defender_incident_update_command(client: Client, args: dict) -> CommandResults:
     """
@@ -448,11 +447,10 @@ def microsoft_365_defender_incident_update_command(client: Client, args: dict) -
     status = args.get('status')
     assigned_to = args.get('assigned_to')
     classification = args.get('classification')
-    determination = get_determination_value(classification , args.get('determination'))
+    determination = get_determination_value(classification, args.get('determination'))
     incident_id = arg_to_number(args.get('id'))
     timeout = arg_to_number(args.get('timeout', TIMEOUT))
     comment = args.get('comment')
-
 
     updated_incident = client.update_incident(incident_id=incident_id, status=status, assigned_to=assigned_to,
                                               classification=classification, determination=determination, tags=tags,
@@ -714,6 +712,26 @@ MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON = {
 }
 
 
+def is_new_incident(incident_id: str) -> bool:
+    """
+    Returns whether the ticket id is a new fetched incident in XSOAR which should mirror existing comments.
+
+    Args:
+        incident_id (str): The incident ID.
+
+    Returns:
+        bool: Whether its a new incident in XSOAR.
+    """
+    int_context = get_integration_context()
+    last_fetched_ids = int_context.get("last_fetched_incident_ids") or []
+    demisto.debug(f"Microsoft Defender 365 - Last fetched incident ids are: {last_fetched_ids}")
+    if id_in_last_fetch := incident_id in last_fetched_ids:
+        last_fetched_ids.remove(incident_id)
+        int_context["last_fetched_incident_ids"] = last_fetched_ids
+        set_integration_context(int_context)
+    return id_in_last_fetch
+
+
 def get_modified_incidents_close_or_repopen_entries_content(modified_incidents: List[dict], close_incident: bool) -> List[dict]:
     demisto.debug("microsoft365::Starting get_modified_incidents_close_or_repopen_entries_content")
     entries_content = []
@@ -749,19 +767,19 @@ def get_modified_remote_data_command(client: Client, args,
     last_update = parsed_date.strftime(DATE_FORMAT)
     demisto.debug(f"microsoft365::Last update: {last_update}")
     try:
-        # if return_entire_data:
-        #     modified_incidents = fetch_modified_incidents(client, last_update)
-        #     demisto.debug(f"microsoft365::Found {len(modified_incidents)} modified incidents")
-        #     demisto.debug(f"microsoft365::{str(modified_incidents)}")
-        #     modified_incidents_entries_content = get_modified_incidents_entries_content(modified_incidents, close_incident)
-        #
-        #     # todo - handle incident reopen and closing
-        #     # skip update: In case of a failure. In order to notify the server that the command failed and prevent execution of the get-remote-data commands, returns an error that contains the string "skip update".?
-        #     return GetModifiedRemoteDataResponse(modified_incidents_data=modified_incidents + modified_incidents_entries_content)
-        # else:
-        modified_incident_ids = fetch_modified_incident_ids(client, last_update)
-        demisto.debug(f"microsoft365::Found {len(modified_incident_ids)} modified incidents")
-        demisto.debug(f"microsoft365::{str(modified_incident_ids)}")
+        if return_entire_data:
+            modified_incidents = fetch_modified_incidents(client, last_update)
+            demisto.debug(f"microsoft365::Found {len(modified_incidents)} modified incidents")
+            demisto.debug(f"microsoft365::{str(modified_incidents)}")
+            modified_incidents_entries_content = get_modified_incidents_close_or_repopen_entries_content(modified_incidents, close_incident)
+
+            # todo - handle incident reopen and closing
+            # skip update: In case of a failure. In order to notify the server that the command failed and prevent execution of the get-remote-data commands, returns an error that contains the string "skip update".?
+            return GetModifiedRemoteDataResponse(modified_incidents_data=modified_incidents + modified_incidents_entries_content)
+        else:
+            modified_incident_ids = fetch_modified_incident_ids(client, last_update)
+            demisto.debug(f"microsoft365::Found {len(modified_incident_ids)} modified incidents")
+            demisto.debug(f"microsoft365::{str(modified_incident_ids)}")
 
         # skip update: In case of a failure. In order to notify the server that the command failed and prevent execution of the get-remote-data commands, returns an error that contains the string "skip update".?
         return GetModifiedRemoteDataResponse(modified_incident_ids=modified_incident_ids)
@@ -783,8 +801,59 @@ def fetch_modified_incident(client: Client, incident_id: str) -> dict:
     return incident
 
 
+def get_entries_for_comments(incident_id: str, comments: List[dict], last_update: datetime, comment_tag: str) -> List[dict]:
+    """
+    Get the entries for the comments of the incident.
+    Args:
+        incident_id (str): The incident ID.
+        comments (List[dict]): The comments of the incident.
+        last_update (datetime): The last update time.
+
+    Returns:
+        List[dict]: The entries for the comments.
+    """
+    new_incident = is_new_incident(incident_id)
+    entries = []
+    for comment in comments:
+        if 'Mirrored from Cortex XSOAR' not in comment.get('comment', ''):
+            demisto.debug(f"microsoft365::comment {str(comment)}")
+            comment_time = dateparser.parse(comment.get('createdTime'))
+            if new_incident or comment_time > last_update:
+                entries.append({
+                    'Type': EntryType.NOTE,
+                    'Contents': f"Created By: {comment.get('createdBy')}\n"
+                                f"Created On: {comment.get('createdTime')}\n"
+                                f"{comment.get('comment')}",
+                    'ContentsFormat': EntryFormat.TEXT,
+                    'Tags': [comment_tag],
+                    'Note': True,
+                    'EntryContext': {
+                        'comments': comment
+                    },
+                })
+    return entries
+
+
+def get_incident_entries(remote_incident_id: str, mirrored_object: dict, last_update: datetime, comment_tag : str, close_incident: bool = False) -> \
+List[dict]:
+    close_or_repopen_entry_contents = get_modified_incidents_close_or_repopen_entries_content([mirrored_object],
+                                                                                              close_incident=close_incident)
+    entries = [{
+        'Type': EntryType.NOTE,
+        'Contents': entry_content,
+        'ContentsFormat': EntryFormat.JSON,
+
+    } for entry_content in close_or_repopen_entry_contents]
+
+    entries.extend(get_entries_for_comments(remote_incident_id, mirrored_object.get('comments', []), last_update, comment_tag))
+    return entries
+
+
 def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDataResponse:
     remote_args = GetRemoteDataArgs(args)
+    comment_tag = demisto.params().get('comment_tag_from_microsoft365defender', 'CommentFromMicrosoft365Defender')
+    last_update = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})
+    assert last_update is not None, f'could not parse {remote_args.last_update}'
     close_incident = argToBoolean(demisto.params().get('close_incident', False))
     mirrored_object = {}
     demisto.debug(
@@ -792,13 +861,8 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
     try:
         mirrored_object: Dict = fetch_modified_incident(client, remote_args.remote_incident_id)
         demisto.debug(f"microsoft365::Fetched incident {str(mirrored_object)}")
-        entry_contents = get_modified_incidents_close_or_repopen_entries_content([mirrored_object], close_incident=close_incident)
-        entries = [{
-            'Type': EntryType.NOTE,
-            'Contents': entry_content,
-            'ContentsFormat': EntryFormat.JSON,
-
-        } for entry_content in entry_contents]
+        entries = get_incident_entries(remote_args.remote_incident_id, mirrored_object, last_update, comment_tag, close_incident=close_incident)
+        demisto.debug(f"microsoft365::Fetched entries {str(entries)}")
         return GetRemoteDataResponse(mirrored_object, entries)
     except Exception as e:
         demisto.debug(f"Error in Microsoft incoming mirror for incident: {remote_args.remote_incident_id}\n"
@@ -817,7 +881,7 @@ def get_mapping_fields_command():
     return GetMappingFieldsResponse(incident_type_scheme)
 
 
-def update_remote_incident(client: Client, updated_args, remote_incident_id) -> str:
+def update_remote_incident(client: Client, updated_args:dict, remote_incident_id:int) :
     demisto.debug(f"microsoft365::Starting update_remote_incident")
     updated_incident = client.update_incident(incident_id=remote_incident_id,
                                               status=updated_args.get('status'),
@@ -828,7 +892,7 @@ def update_remote_incident(client: Client, updated_args, remote_incident_id) -> 
                                               timeout=50,
                                               comment=updated_args.get('comment'))
     demisto.debug(f"microsoft365::Updated incident {str(updated_incident)}")
-    return ''
+
 
 
 def handle_incident_close_out(delta):
@@ -845,10 +909,23 @@ def handle_incident_close_out(delta):
             delta.update({'classification': 'Unknown', 'determination': 'NotAvailable'})
 
 
-
-def handle_mirror_out_entries(client, entries):
+def handle_mirror_out_entries(client, entries, comment_tag, remote_incident_id):
     for entry in entries:
-        demisto.debug(f"Adding entry {entry}")
+        demisto.debug(f'handling entry {entry.get("id")}, type: {entry.get("type")}')
+        tags = entry.get('tags', [])
+        user = entry.get('user', 'dbot') or 'dbot'
+        if comment_tag in tags:
+            if str(entry.get('format')) == 'html':
+                contents = str(entry.get('contents', ''))
+                text = f"({user}): <br/><br/>[code]{contents} <br/><br/>[/code] Mirrored from Cortex XSOAR"
+            else:
+                text = f"({user}): {str(entry.get('contents', ''))}\n\n Mirrored from Cortex XSOAR"
+
+            update_remote_incident(client, {'comment': text}, remote_incident_id)
+        else:
+            demisto.debug(f"Skipping entry {entry.get('id')} as it does not contain the comment tag")
+
+
 
 
 def handle_incident_reopening(delta):
@@ -861,6 +938,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     remote_incident_id = update_remote_system_args.remote_incident_id
     data = update_remote_system_args.data
     delta = update_remote_system_args.delta
+    comment_tag = demisto.params().get('comment_tag', 'CommentToMicrosoft365Defender')
 
     demisto.debug(
         f"update_remote_system_command {remote_incident_id=} \n {delta=} \n {data=} \n "
@@ -870,7 +948,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     try:
         if update_remote_system_args.incident_changed and delta:
             demisto.debug(f'Got the following delta keys {str(list(update_remote_system_args.delta.keys()))} to update'
-                          f'incident {update_remote_system_args.remote_incident_id}')
+                          f'incident {remote_incident_id}')
             if update_remote_system_args.inc_status == IncidentStatus.DONE:
                 handle_incident_close_out(delta)
             else:
@@ -878,20 +956,19 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
             update_remote_incident(client, delta, remote_incident_id)
         else:
-            demisto.debug(f'Skipping updating remote incident fields [{update_remote_system_args.remote_incident_id}] '
+            demisto.debug(f'Skipping updating remote incident fields [{remote_incident_id}] '
                           f'as it is not new nor changed')
 
         if update_remote_system_args.entries:
             demisto.debug(f"Adding entries {str(update_remote_system_args.entries)}")
-            handle_mirror_out_entries(client, update_remote_system_args.entries)
+            handle_mirror_out_entries(client, update_remote_system_args.entries, comment_tag, remote_incident_id)
 
-        return update_remote_system_args.remote_incident_id
+        return remote_incident_id
 
     except Exception as e:
-        demisto.error(f"Error in outgoing mirror for incident {update_remote_system_args.remote_incident_id} \n"
+        demisto.error(f"Error in outgoing mirror for incident {remote_incident_id} \n"
                       f"Error message: {str(e)}")
-
-        return update_remote_system_args.remote_incident_id
+        return remote_incident_id
 
 
 ''' MAIN FUNCTION '''
@@ -1002,9 +1079,7 @@ def main() -> None:
 
         elif command == 'get-modified-remote-data':
             test_context_for_token(client)
-            modified_incidents = get_modified_remote_data_command(client, args)
-            demisto.debug(
-                f"microsoft365::returning {len(modified_incidents.modified_incident_ids)} incidents to the server. {str(modified_incidents.modified_incident_ids)}")
+            modified_incidents = get_modified_remote_data_command(client, args, return_entire_data=True)
             return_results(modified_incidents)
 
         elif command == 'update-remote-system':
