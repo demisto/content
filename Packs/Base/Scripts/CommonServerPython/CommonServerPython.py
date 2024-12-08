@@ -12407,6 +12407,7 @@ def content_profiler(func):
 
     **Tested with Python 3.10**
 
+    :type func: ``function``
     :param func: The function to be profiled.
     :return: The profiled function.
     """
