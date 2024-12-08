@@ -1008,7 +1008,6 @@ def main():  # pragma: no cover
             integration_context['server_info'] = SERVER.get_discovery_service(instance_execute=True)
 
             set_integration_context(integration_context)
-
             run_long_running(params)
 
         elif command == 'taxii-server-list-collections':
