@@ -20,7 +20,7 @@ ignore=SC105,BA124
 ignore=BA109,BA124,DO101
 
 [file:DBotPreprocessTextData.yml]
-ignore=BA109,BA124
+ignore=BA109,BA124,DO101
 
 [file:DBotTrainTextClassifierV2.yml]
 ignore=BA109,BA124,DO101
@@ -54,9 +54,6 @@ ignore=BA124
 
 [file:CommonServer_6_10.yml]
 ignore=BA108,BA109
-
-[file:DBotPreprocessTextData.yml]
-ignore=DO101
 
 [file:GetMLModelEvaluation.yml]
 ignore=DO101
