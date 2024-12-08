@@ -114,7 +114,6 @@ def test_set_demisto_class_python_2(mocker):
     assert type(demisto) == types.ModuleType
 
 
-
 @pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
 def test_set_demisto_class_init_error(mocker):
     """
