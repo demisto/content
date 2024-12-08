@@ -4,7 +4,7 @@
 
 The Azure Firewall pack contains the following: 
 * Integration capabilities:
-  * Retrieve, delete firewalls. 
+  * Retrieve or delete firewalls. 
   * Create, delete and retrieve firewall rule collections.
   * Create, delete and retrieve firewall network rules.
   * Create, delete and retrieve firewall policies.
