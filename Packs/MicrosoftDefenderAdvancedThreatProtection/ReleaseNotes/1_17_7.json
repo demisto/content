@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "The raw response for the ***endpoint*** command was reverted to its behavior prior to version 1.16.34."
-}
