@@ -5218,15 +5218,15 @@ def get_machine_by_ip_command(client: MsClient, args: dict) -> list[CommandResul
 
     filter = f"(ip='{ip}',timestamp={timestamp})"
 
-    machines_response = client.get_machines_for_get_machine_by_ip_command(filter)
-    machines_response = machines_response.get('value', [])
+    raw_machines_response = client.get_machines_for_get_machine_by_ip_command(filter)
+    machines_response = raw_machines_response.get('value', [])
 
     demisto.debug(f'limit is set to: {limit}')
     limited_machines_response = machines_response[:limit] if should_limit_result else machines_response
-    machines_response["value"] = limited_machines_response
+    raw_machines_response["value"] = limited_machines_response
 
     demisto.debug('Calling handle_machines function to convert raw response to CommandResults list')
-    return handle_machines(machines_response)
+    return handle_machines(raw_machines_response)
 
 
 def endpoint_command(client: MsClient, args: dict) -> list[CommandResults]:
