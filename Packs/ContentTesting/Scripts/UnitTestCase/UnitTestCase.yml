@@ -11,7 +11,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.13.72123
+dockerimage: demisto/python3:3.11.10.116439
 enabled: true
 name: UnitTestCase
 comment: ""

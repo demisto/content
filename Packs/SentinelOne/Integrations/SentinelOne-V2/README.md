@@ -4,40 +4,36 @@ This integration was integrated and tested with versions 2.0 and 2.1 of Sentinel
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-sentinelone-v2).
 
-## Configure SentinelOne v2 on Cortex XSOAR
+## Configure SentinelOne v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SentinelOne v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g., https://usea1.sentinelone.net) |  | True |
-    | API Token |  | False |
-    | API Version |  | True |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Fetch incidents from type |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) |  | False |
-    | Minimum risk score for importing incidents (0-10), where 0 is low risk and 10 is high risk. Relevant for API version 2.0. |  | False |
-    | Defines Alert severity to fetch. |  | False |
-    | Define which Alerts should be fetched. |  | False |
-    | Define which Threats should be fetched. |  | False |
-    | Fetch limit: The maximum number of threats or alerts to fetch |  | False |
-    | Site IDs | Comma-separated list of site IDs to fetch incidents for. Leave blank to fetch all sites. | False |
-    | Block Site IDs | Comma-separated list of site IDs for where hashes should be blocked. If left blank all hashes will be blocked globally. If filled out with site ids all hashes will be no longer be blocked globally, they will now be blocked in the scope of those sites. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | API Token (Deprecated) | Use the "API Token \(Recommended\)" parameter instead. | False |
-    | Incidents Fetch Interval |  | False |
-    | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from SentinelOne to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to SentinelOne\), or Incoming and Outgoing \(from/to Cortex XSOAR and SentinelOne\). | False |
-    | Close Mirrored XSOAR Incident | When selected, closing the SentinelOne ticket is mirrored in Cortex XSOAR. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g., https://usea1.sentinelone.net) |  | True |
+| API Token |  | False |
+| API Version |  | True |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Fetch incidents from type |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) |  | False |
+| Minimum risk score for importing incidents (0-10), where 0 is low risk and 10 is high risk. Relevant for API version 2.0. |  | False |
+| Defines Alert severity to fetch. |  | False |
+| Define which Alerts should be fetched. |  | False |
+| Define which Threats should be fetched. |  | False |
+| Fetch limit: The maximum number of threats or alerts to fetch |  | False |
+| Site IDs | Comma-separated list of site IDs to fetch incidents for. Leave blank to fetch all sites. | False |
+| Block Site IDs | Comma-separated list of site IDs for where hashes should be blocked. If left blank all hashes will be blocked globally. If filled out with site ids all hashes will be no longer be blocked globally, they will now be blocked in the scope of those sites. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| API Token (Deprecated) | Use the "API Token \(Recommended\)" parameter instead. | False |
+| Incidents Fetch Interval |  | False |
+| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from SentinelOne to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to SentinelOne\), or Incoming and Outgoing \(from/to Cortex XSOAR and SentinelOne\). | False |
+| Close Mirrored XSOAR Incident | When selected, closing the SentinelOne ticket is mirrored in Cortex XSOAR. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### sentinelone-list-agents

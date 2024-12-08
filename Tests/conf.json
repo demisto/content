@@ -53,6 +53,7 @@
         },
         {
             "playbookID": "Endpoint Investigation Plan - Test",
+            "integrations": "Cortex Core - IR",
             "timeout": 600
         },
         {
@@ -114,7 +115,8 @@
             "timeout": 500,
             "integrations": [
                 "Active Directory Query v2",
-                "VirusTotal (API v3)"
+                "VirusTotal (API v3)",
+                "Cortex Core - IR"
             ],
             "instance_names": [
                 "active_directory_80k",
@@ -5707,6 +5709,11 @@
             "integrations": "CiscoESA",
             "playbookID": "CiscoESA",
             "fromversion": "6.2.0"
+        },
+        {
+            "integrations": "CiscoESA",
+            "playbookID": "CiscoESA_dictionary_commands_tpb",
+            "fromversion": "6.10.0"
         },
         {
             "integrations": "CiscoSMA",

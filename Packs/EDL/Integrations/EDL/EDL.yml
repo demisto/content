@@ -62,8 +62,6 @@ configuration:
   type: 0
   section: Connect
   required: false
-  hidden:
-  - marketplacev2
 - additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported.
   display: Certificate (Required for HTTPS)
   name: certificate

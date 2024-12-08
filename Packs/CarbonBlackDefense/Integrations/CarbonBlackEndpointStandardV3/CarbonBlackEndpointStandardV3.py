@@ -354,7 +354,7 @@ def module_test_command(client: Client, params: dict) -> str:
     message = "Missing parameters Error: At least one complete set of API keys " \
               "(Custom API keys or Api/Live-Response API keys) is required."
 
-    # if all of the custom API key's is provided
+    # If all the custom API keys are provided.
     if client.api_key and client.api_secret_key:
         try:
             client.module_test_request()
@@ -1614,10 +1614,10 @@ def main() -> None:  # pragma: no cover
 
     params = demisto.params()
     base_url = params.get('url')
-    api_key = params['custom_credentials'].get('identifier')
-    api_secret_key = params['custom_credentials'].get('password')
-    policy_api_key = params['live_response_credentials'].get('identifier')
-    policy_api_secret_key = params['live_response_credentials'].get('password')
+    api_key = params.get('custom_credentials', {}).get('identifier')
+    api_secret_key = params.get('custom_credentials', {}).get('password')
+    policy_api_key = params.get('live_response_credentials', {}).get('identifier')
+    policy_api_secret_key = params.get('live_response_credentials', {}).get('password')
     organization_key = params.get('organization_key')
 
     verify_certificate = not params.get('insecure', False)

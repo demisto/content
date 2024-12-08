@@ -2,7 +2,7 @@
     "name": "SailPoint IdentityIQ",
     "description": "SailPoint IdentityIQ context pack enables XSOAR customers to utilize the deep, enriched contextual data in the SailPoint predictive identity platform to better drive identity-aware security practices.",
     "support": "partner",
-    "currentVersion": "1.0.15",
+    "currentVersion": "1.0.16",
     "author": "SailPoint",
     "url": "https://support.sailpoint.com/hc/en-us/requests/new",
     "email": "support.idplusa@sailpoint.com",

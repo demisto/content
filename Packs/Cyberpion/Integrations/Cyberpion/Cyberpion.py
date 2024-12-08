@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 from typing import Dict, Tuple, List
-from datetime import timezone
+from datetime import UTC
 import urllib3
 
 urllib3.disable_warnings()
@@ -272,7 +272,7 @@ def fetch_incidents(client: Client,
     for action_item in action_items:
         creation_date = action_item['creation_time']  # must be string of a DATE_FORMAT
         iso_format_data = datetime.strptime(creation_date, DATE_FORMAT).replace(
-            tzinfo=timezone.utc).isoformat()
+            tzinfo=UTC).isoformat()
         incident = {
             'name': '{} - {}'.format(action_item['title'], action_item['domain']),
             # name is required field, must be set

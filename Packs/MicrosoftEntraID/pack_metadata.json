@@ -1,8 +1,8 @@
 {
-    "name": "Microsoft Entra ID (formerly Azure Active Directory)",
-    "description": "Microsoft Entra ID (formerly Azure Active Directory) is a cloud-based identity and access management service, that can be used to access both internal and external resources.",
+    "name": "Azure Logs",
+    "description": "This pack use the Azure Event Hub Integration, providing XDM mapping for tenant logs (audit & sign-in), EntraID and a default mapping for resource logs. In addition, the same cover is provided with the equivalent checkboxes under the O365 collector",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -11,7 +11,13 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": ["EntraID", "AAD", "Azure", "Active Directory"],
+    "keywords": [
+        "Entra",
+        "EntraID",
+        "AAD",
+        "Azure",
+        "Active Directory"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]

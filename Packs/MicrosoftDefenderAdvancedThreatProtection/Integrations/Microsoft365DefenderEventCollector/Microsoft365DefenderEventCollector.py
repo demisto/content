@@ -207,6 +207,7 @@ class DefenderAuthenticator(BaseModel):
             if not self.ms_client:
                 demisto.debug(f"try init the ms client for the first time, {self.url=}")
                 self.ms_client = MicrosoftClient(
+                    endpoint=self.endpoint_type,
                     base_url=self.url,
                     tenant_id=self.tenant_id,
                     auth_id=self.client_id,
