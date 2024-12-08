@@ -964,6 +964,8 @@ view: |-
   }
 inputs: []
 outputs: []
+marketplaces:
+- marketplacev2
 tests:
 - No tests (auto formatted)
 fromversion: 8.8.0
