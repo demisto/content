@@ -19,3 +19,5 @@ ignore=BA124
 [file:HashIncidentsFields.yml]
 ignore=BA124
 
+[file:DBotPredictOutOfTheBoxV2/DBotPredictOutOfTheBoxV2.yml]
+ignore=DO101

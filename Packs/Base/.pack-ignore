@@ -5,10 +5,10 @@ ignore=BA101
 ignore=SC105
 
 [file:DBotFindSimilarIncidentsByIndicators.yml]
-ignore=SC105,BA109
+ignore=SC105,BA109,DO101
 
 [file:DBotFindSimilarIncidents.yml]
-ignore=SC105,BA109
+ignore=SC105,BA109,DO101
 
 [file:GetIncidentsByQuery.yml]
 ignore=SC105,BA109,BA124
@@ -23,7 +23,7 @@ ignore=BA109,BA124
 ignore=BA109,BA124
 
 [file:DBotTrainTextClassifierV2.yml]
-ignore=BA109,BA124
+ignore=BA109,BA124,DO101
 
 [file:FindSimilarIncidentsByText.yml]
 ignore=BA109
@@ -54,6 +54,15 @@ ignore=BA124
 
 [file:CommonServer_6_10.yml]
 ignore=BA108,BA109
+
+[file:DBotPredictPhishingWords/DBotPredictPhishingWords.yml]
+ignore=DO101
+
+[file:DBotPreprocessTextData/DBotPreprocessTextData.yml]
+ignore=DO101
+
+[file:GetMLModelEvaluation.yml]
+ignore=DO101
 
 [known_words]
 createindicatorrelationship
