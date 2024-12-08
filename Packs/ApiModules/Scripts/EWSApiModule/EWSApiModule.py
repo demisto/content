@@ -126,7 +126,7 @@ class EWSClient:
         max_fetch: int,
         ews_server: str = '',
         auth_type: str = '',
-        version: str = 'O365',
+        version: str = '',
         folder: str = 'Inbox',
         is_public_folder: bool = False,
         request_timeout: str = '120',
@@ -171,6 +171,9 @@ class EWSClient:
         if auth_type and auth_type not in (OAUTH2, BASIC, NTLM, DIGEST):
             raise ValueError(f'Invalid auth_type: {auth_type}')
 
+        if ews_server and not version:
+            raise ValueError('Version must be provided if EWS Server is specified.')
+
         BaseProtocol.TIMEOUT = int(request_timeout)  # type: ignore
         self.client_id = client_id
         self.client_secret = client_secret
@@ -195,6 +198,7 @@ class EWSClient:
         self.proxy = proxy
 
         self.auto_discover = not ews_server
+
         self.config, self.credentials, self.server_build = self.configure_auth()
 
 
@@ -340,7 +344,7 @@ class EWSClient:
         if self.auto_discover:
             return self.get_account_autodiscover(self.account_email).protocol
 
-        return Protocol(self.config)
+        return Protocol(config=self.config)
 
     def get_account(self, target_mailbox: Optional[str]=None, time_zone=None) -> Account:
         """
