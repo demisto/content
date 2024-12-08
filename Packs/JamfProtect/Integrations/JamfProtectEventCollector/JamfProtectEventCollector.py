@@ -513,7 +513,7 @@ def get_events_computer_type(
     demisto.debug(f"{latest_event=}")
     demisto.debug(f"{new_last_fetch_date=}")
 
-    if next_page:
+    if next_page and events:
         new_last_run["next_page"] = next_page
         demisto.debug(
             f"Fetched the maximal number of computers. "
