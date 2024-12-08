@@ -6,6 +6,7 @@
     "default": false,
     "detached": false,
     "disabled": false,
+    "description": "Cortex XDR incident containing a Cloud Cryptojacking related alert.",
     "extractSettings": {
         "fieldCliNameToExtractSettings": {},
         "mode": "Specific"

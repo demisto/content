@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Cortex XDR - IR
+  id: Cortex XDR - IR1
   version: -1
 configuration:
 - display: Fetch incidents
@@ -20,7 +20,8 @@ configuration:
   defaultvalue: 'Cortex XDR - Lite'
 - name: url
   type: 0
-  display: 'Server URL (copy URL from XDR)'
+  display: Server URL
+  additionalinfo: Copy the API URL from Cortex XDR
   section: Connect
   required: true
 - displaypassword: API Key ID
@@ -29,12 +30,12 @@ configuration:
   hiddenusername: true
   display: ''
   section: Connect
-  required: false
+  required: true
 - display: ''
   name: apikey_creds
   type: 9
   section: Connect
-  required: false
+  required: true
   displaypassword: API Key
   hiddenusername: true
 - defaultvalue: 'false'
@@ -42,6 +43,7 @@ configuration:
   name: dont_format_sublists
   type: 8
   section: Collect
+  advanced: true
   required: false
   additionalinfo: Not selected for backwards compatibility. Recommended to select. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid.)
 - display: Incident Mirroring Direction
@@ -57,10 +59,10 @@ configuration:
   - Both
 - additionalinfo: When selected, closing the Cortex XDR incident is mirrored in Cortex XSOAR.
   defaultvalue: 'true'
-  display: Close Mirrored XSOAR Incident
+  display: Close Mirrored Cortex XSOAR Incident
   name: close_xsoar_incident
   type: 8
-  section: Collect
+  section: Mirroring
   advanced: true
   required: false
 - additionalinfo: "When selected, closing the Cortex XSOAR incident is mirrored in Cortex XDR. Notice: If not selected, but 'Close all related alerts in XDR' is selected, the incident will automatically be closed in Cortex XDR."
@@ -68,29 +70,29 @@ configuration:
   display: Close Mirrored Cortex XDR Incident
   name: close_xdr_incident
   type: 8
-  section: Collect
+  section: Mirroring
   advanced: true
   required: false
 - defaultvalue: '1'
   display: XDR mirroring delay in minutes
   name: xdr_delay
   type: 0
-  section: Collect
+  section: Mirroring
   required: false
   advanced: true
   additionalinfo: "In the event of a delay in mirroring incoming changes from XDR, use the xdr_delay parameter to extend the look-back period. However, be aware that this may result in increased latency when updating incidents."
-- display: Custom close-reason mapping (XSOAR -> XDR mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR)
+- display: Custom close-reason mapping Cortex XSOAR -> Cortex XDR
   section: Collect
   advanced: true
-  additionalinfo: 'Define how to close the mirrored incidents from Cortex XSOAR into Cortex XDR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XSOAR close reason}={Cortex XDR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=Other,Duplicate=Other". Refer to ../README.md for possible close-reasons - `XDR Incident Mirroring`.'
+  additionalinfo: Override the default close reason mapping defined by Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons. Acceptable format {Cortex XSOAR close reason}={Cortex XDR close reason}. 
   name: custom_xsoar_to_xdr_close_reason_mapping
   defaultvalue: ''
   type: 0
   required: false
-- display: Custom close-reason mapping (XDR -> XSOAR mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR)
+- display: Custom close-reason mapping Cortex XDR -> Cortex XSOAR
   section: Collect
   advanced: true
-  additionalinfo: 'Define how to close the mirrored incidents from Cortex XDR into Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XDR close reason}={Cortex XSOAR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved, Duplicate Incident=Other". Refer to ../README.md for possible close-reasons - `XDR Incident Mirroring`.'
+  additionalinfo: Override the default close reason mapping defined by Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons. Acceptable format {Cortex XDR close reason}={Cortex XSOAR close reason}.
   name: custom_xdr_to_xsoar_close_reason_mapping
   defaultvalue: ''
   type: 0
@@ -122,21 +124,8 @@ configuration:
   required: false
   additionalinfo: The maximum number of incidents per fetch. Cannot exceed 100.
   defaultvalue: '10'
-- display: Only fetch starred incidents
-  name: starred
-  type: 8
-  section: Collect
-  advanced: true
-  required: false
-- defaultvalue: 3 days
-  display: Starred incidents fetch window
-  name: starred_incidents_fetch_window
-  type: 0
-  section: Collect
-  required: false
-  additionalinfo: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours, 7 days). Fetches only starred incidents within the specified time range.
-  advanced: true
-- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+- display: First fetch timestamp
+  additionalinfo: 'The format should be: <number> <time unit>. e.g., 12 hours, 7 days'
   name: fetch_time
   type: 0
   section: Collect
@@ -161,7 +150,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: 'Whether the XDR tenant mode is prevent only'
+- additionalinfo: Whether the Cortex XDR tenant is prevented only.
   display: Prevent Only Mode
   name: prevent_only
   type: 8
@@ -199,9 +188,23 @@ configuration:
   advanced: true
   type: 8
   section: Collect
-description: Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
-display: Palo Alto Networks Cortex XDR - Investigation and Response
-name: Cortex XDR - IR
+- display: Only fetch starred incidents
+  name: starred
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+- defaultvalue: 3 days
+  display: Starred incidents fetch window
+  name: starred_incidents_fetch_window
+  type: 0
+  section: Collect
+  required: false
+  additionalinfo: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours, 7 days). Fetches only starred incidents within the specified time range.
+  advanced: true
+description: The integration enables direct execution of Cortex XDR actions within Cortex XSOAR.
+display: Palo Alto Networks Cortex XDR - Investigation and Response - Tal
+name: Cortex XDR - IR1
 script:
   commands:
   - arguments:

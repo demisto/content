@@ -632,5 +632,5 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.2.0",
-    "description": ""
+    "description": "Designed to display data of Cortex XDR Cloud alerts."
 }

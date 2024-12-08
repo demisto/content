@@ -6,6 +6,7 @@
 	"daysR": 0,
 	"default": false,
 	"disabled": false,
+    "description": "Cortex XDR incident containing internal port scan alerts.",
 	"hours": 0,
 	"hoursR": 0,
 	"id": "Cortex XDR Port Scan",

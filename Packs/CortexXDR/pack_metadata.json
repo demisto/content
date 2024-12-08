@@ -17,10 +17,17 @@
         "Endpoint"
     ],
     "tags": [
-        "Palo Alto Networks Products"
+        "Palo Alto Networks Products",
+        "Alerts",
+        "Attack",
+        "Incident Handling",
+        "Incident Response",
+        "Malware"
     ],
     "useCases": [
-        "Malware"
+        "Malware",
+        "Incident Response",
+        "Hunting"
     ],
     "keywords": [
         "adaptive cyber protection",

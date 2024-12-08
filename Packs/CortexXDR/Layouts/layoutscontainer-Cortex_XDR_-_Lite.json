@@ -1562,5 +1562,5 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.9.0",
-    "description": ""
+    "description": "Designed for displaying and interacting with minimal but core Cortex XDR data, suitable for environments where quick, high-level overviews are needed."
 }

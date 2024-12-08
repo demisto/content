@@ -1,4 +1,3 @@
-## Palo Alto Networks Cortex XDR - IR
 [Cortex XDR](https://www.paloaltonetworks.com/cortex/cortex-xdr) is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
 
 ### Generate an API Key and API Key ID

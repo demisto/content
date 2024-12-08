@@ -4,6 +4,7 @@
     "days": 0,
     "daysR": 0,
     "default": false,
+    "description": "Cortex XDR incident containing the core related data.",
     "detached": false,
     "disabled": false,
     "extractSettings": {
