@@ -43,34 +43,76 @@ def debug_logs_sent(demisto, msgs):
 
 
 @pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
-@pytest.mark.parametrize(
-    "callingContext, version, expected_class",
-    [
-        (command_context(), "8.5.0", DemistoIntegration),
-        (script_context(), "8.5.0", DemistoScript),
-        (command_context(), "6.10.0", types.ModuleType)  # demistomock is a module
-    ]
-)
-def test_set_demisto_class(mocker, callingContext, version, expected_class):
+def test_set_demisto_class_script_context(mocker):
     """
     Given:
-    - A mock `demisto` object with varying calling contexts
-        - Case 1: A command context, version = 8.5.0.
-        - Case 2: A script context, version = 8.5.0
-        - Case 3: version = 6.10.0
+    - A mock `demisto` object with a script context, version = 8.5.0
     When:
     - Setting the appropriate class for `demisto` based on the calling context.
     Then:
-    - Case 1: Ensure a DemistoIntegration class is set for `demisto`.
-    - Case 2: Ensure a DemistoScript class is set for `demisto`.
-    - Case 3: Ensure the demisto class is not changed.
+    - Ensure a DemistoScript class is set for `demisto`.
     """
     import demistomock as demisto
-    demisto.callingContext = callingContext
-    mocker.patch.object(demisto, "demistoVersion", return_value={"version": version})
+    demisto.callingContext = script_context()
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "8.5.0"})
     assert type(demisto) == types.ModuleType  # demistomock is a module
     demisto = set_demisto_class()
-    assert type(demisto) == expected_class
+    assert type(demisto) == DemistoScript
+
+@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
+def test_set_demisto_class_command_context(mocker):
+    """
+    Given:
+    - A mock `demisto` object with a command context, version = 8.5.0.
+    When:
+    - Setting the appropriate class for `demisto` based on the calling context.
+    Then:
+    - Ensure a DemistoIntegration class is set for `demisto`.
+    """
+    import demistomock as demisto
+    demisto.callingContext = command_context()
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "8.5.0"})
+    assert type(demisto) == types.ModuleType  # demistomock is a module
+    demisto = set_demisto_class()
+    assert type(demisto) == DemistoIntegration
+
+
+
+@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
+def test_set_demisto_class_not_saas(mocker):
+    """
+    Given:
+    - A mock `demisto` object with a command context, version = 6.10.0
+    When:
+    - Setting the appropriate class for `demisto` based on the calling context.
+    Then:
+    - Ensure the demisto class is not changed.
+    """
+    import demistomock as demisto
+    demisto.callingContext = command_context()
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "6.10.0"})
+    assert type(demisto) == types.ModuleType  # demistomock is a module
+    demisto = set_demisto_class()
+    assert type(demisto) == types.ModuleType
+
+
+@pytest.mark.skipif(IS_PY3, reason="DemistoWrapper is not supported for python 2")
+def test_set_demisto_class_python_2(mocker):
+    """
+    Given:
+    - Python 2
+    - A mock `demisto` object with a command context, version = 8.5.0
+    When:
+    - Setting the appropriate class for `demisto` based on the calling context.
+    Then:
+    - Ensure the demisto class is not changed.
+    """
+    import demistomock as demisto
+    demisto.callingContext = command_context()
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "8.5.0"})
+    assert type(demisto) == types.ModuleType  # demistomock is a module
+    demisto = set_demisto_class()
+    assert type(demisto) == types.ModuleType
 
 
 @pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
