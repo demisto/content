@@ -8,7 +8,7 @@ ignore=PB105
 ignore=BA124
 
 [file:DBotPredictOutOfTheBoxV2.yml]
-ignore=BA124
+ignore=BA124,DO101
 
 [file:DBotPredictIncidentsBatch.yml]
 ignore=BA124
@@ -18,6 +18,3 @@ ignore=BA124
 
 [file:HashIncidentsFields.yml]
 ignore=BA124
-
-[file:DBotPredictOutOfTheBoxV2/DBotPredictOutOfTheBoxV2.yml]
-ignore=DO101
