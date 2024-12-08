@@ -12,19 +12,13 @@ configuration:
   required: true
   type: 0
   section: Connect
-- displaypassword: API Token Key
-  name: api_token_key
+- additionalinfo: The password for the client application. This is used to authenticate the client with the BloodHound Enterprise server.
+  displaypassword: Password
+  name: client
+  display: Token ID
   required: true
-  hiddenusername: true
   type: 9
   section: Connect
-- displaypassword: API Token ID
-  name: api_token_id
-  required: true
-  hiddenusername: true
-  type: 9
-
-  section: Collect
 - defaultvalue: 250
   section: Collect
   advanced: true
@@ -42,7 +36,7 @@ configuration:
   required: false
   type: 8
   section: Connect
-description: This is the Hello World event collector integration for Cortex XSIAM.
+description: This is the BloodHound Enterprise event collector integration for Cortex XSIAM.
 display: BloodHoundEnterprise
 name: BloodHoundEnterprise
 script:

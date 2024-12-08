@@ -12,8 +12,8 @@ This integration was integrated and tested with version 1.0.0 of BloodHound Ente
     | **Parameter**                              | **Required** | **Description**                                                                      |
     |--------------------------------------------|---------------|--------------------------------------------------------------------------------------|
     | Server URL                                 | Yes           | The URL of your BloodHound Enterprise server.                                        |
-    | API Token Key                              | Yes           | The key used for authentication with the BloodHound Enterprise API.                  |
-    | API Token ID                               | Yes           | The ID associated with the API Token Key.                                            |
+    | Token ID                               | Yes           | The ID associated with the API Token Key.                                            |
+    | Password                              | Yes           | The key used for authentication with the BloodHound Enterprise API.                  |
     | Fetch events                               | No            | Enable this to fetch events automatically.                                           |
     | Maximum number of events per fetch         | No            | Limits the number of events fetched in each cycle. Default is 250.                   |
     | Trust any certificate (not secure)         | No            | Allow the integration to trust any SSL certificate, even if it's not secure.         |

@@ -310,8 +310,8 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
     credentials = Credentials(
-        token_id=(params.get("api_token_id") or {}).get("password", ""),
-        token_key=(params.get("api_token_key") or {}).get("password", ""),
+        token_id=params.get('client', {}).get('identifier', ''),
+        token_key=params.get('client', {}).get('password', ''),
     )
     server_url = params.get("server_url")
     base_url = f"https://{server_url}"
