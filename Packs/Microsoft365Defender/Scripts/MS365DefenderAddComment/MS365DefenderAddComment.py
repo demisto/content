@@ -20,24 +20,13 @@ def add_comment(args: Dict[str, Any]) -> CommandResults:
         demisto.debug(f'Calling microsoft-365-defender-incident-update , {command_args=}')
         command_res = demisto.executeCommand("microsoft-365-defender-incident-update", command_args)
         demisto.debug(f'After calling microsoft-365-defender-incident-update, {command_res=}')
-        # resp = command_res[0]
-        # if isError(resp):
-        #     raise Exception(resp['Contents'])
-        # else:
-        #     if 'result' not in resp['Contents'] or not resp['Contents']['result']:
-        #         message = "Empty result. Please check your input. e.g. the ticket_id, or table_name"
-        #         demisto.info(message)
-        #         return_error(message)
-        #
-        #     result = resp['Contents']['result']
-        #     output_results = {}
-        #     md = tableToMarkdown("ServiceNow Comment Added", [output_results])
+        return command_res
+
+
 
     except Exception as ex1:
         demisto.info(f"Failed to add comment to incident. {type(ex1)}: {ex1}, Trace:\n{traceback.format_exc()}")
         return_error(str(ex1))
-    # return CommandResults(readable_output=md)
-
 
 def main():
     try:

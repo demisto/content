@@ -6,7 +6,7 @@
 	"description": "Classifies Microsoft 365 Defender's events",
 	"feed": false,
 	"fromServerVersion": "6.0.0",
-	"id": "08f9afdb-41f1-418a-8b41-9ea4622da955",
+	"id": "1f102eee-3a5d-4d84-8f94-d87d83b354ed",
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"instanceIds": null,

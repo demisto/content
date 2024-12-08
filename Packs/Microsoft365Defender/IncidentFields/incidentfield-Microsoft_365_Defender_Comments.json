@@ -53,8 +53,8 @@
             "selectValues": null
         },
         {
-            "key": "createtime",
-            "displayName": "Create Time",
+            "key": "createdtime",
+            "displayName": "Created Time",
             "type": "date",
             "orgType": "",
             "required": false,
