@@ -7194,9 +7194,11 @@ def return_results(results):
         demisto.results(results.extract_for_local())
 
     elif isinstance(results, GetModifiedRemoteDataResponse):
-        for entry in results.to_entry():
-            demisto.debug('returning entry: {}'.format(entry))
-            demisto.results(entry)
+            demisto.results({
+                'Contents': results.modified_incident_ids,
+                'Type': EntryType.NOTE,
+                'ContentsFormat': EntryFormat.JSON
+            })
 
     elif hasattr(results, 'to_entry'):
         entry = results.to_entry()
@@ -9809,43 +9811,9 @@ class GetModifiedRemoteDataResponse:
     :rtype: ``None``
     """
 
-    def __init__(self, modified_incident_ids: Optional[List[str]] = None, modified_incidents_data: Optional[List[dict]] = None):
+    def __init__(self, modified_incident_ids: List[str]):
         self.modified_incident_ids = modified_incident_ids
-        self.modified_incidents_data = modified_incidents_data
 
-    def to_entry(self):
-        """Extracts the response
-        :return: List of incidents to run the get-remote-data command on.
-        :rtype: ``list``
-        """
-        entries = []
-        if self.modified_incidents_data:
-            demisto.info(f'Modified incidents: {[incident.get("mirrorRemoteId") for incident in self.modified_incidents_data]}')
-            for incident_data in self.modified_incidents_data:
-                entries.append({
-                    'Contents': incident_data,
-                    'Type': EntryType.NOTE,
-                    'ContentsFormat': EntryFormat.JSON,
-                    'EntryContext': {'mirrorRemoteId': incident_data.get('mirrorRemoteId')}
-                })
-                incident_data.pop('mirrorRemoteId', None)
-            return entries
-
-        if self.modified_incident_ids:
-            demisto.info(f'Modified incident IDs: {self.modified_incident_ids}')
-            return [{
-                'Contents': self.modified_incident_ids,
-                'Type': EntryType.NOTE,
-                'ContentsFormat': EntryFormat.JSON
-            }]
-
-        # Default case: No modified incidents or IDs
-        demisto.info('No modified incidents or incident IDs found.')
-        return [{
-            'Contents': [],
-            'Type': EntryType.NOTE,
-            'ContentsFormat': EntryFormat.JSON
-        }]
 
 
 class SchemeTypeMapping:

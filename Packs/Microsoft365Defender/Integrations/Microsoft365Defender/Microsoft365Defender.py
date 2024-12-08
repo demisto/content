@@ -756,32 +756,17 @@ def get_modified_incidents_close_or_repopen_entries_content(modified_incidents: 
     return entries_content
 
 
-def get_modified_remote_data_command(client: Client, args,
-                                     return_entire_data=False) -> GetModifiedRemoteDataResponse:
-    # todo - do we want to sync assignedto like in xdr?
+def get_modified_remote_data_command(client: Client, args) -> GetModifiedRemoteDataResponse:
     demisto.debug("microsoft365::Starting get_modified_remote_data_command")
-    close_incident = argToBoolean(demisto.params().get('close_incident', False))
     remote_args = GetModifiedRemoteDataArgs(args)
     parsed_date = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})
     assert parsed_date is not None, f'could not parse {remote_args.last_update}'
     last_update = parsed_date.strftime(DATE_FORMAT)
     demisto.debug(f"microsoft365::Last update: {last_update}")
     try:
-        if return_entire_data:
-            modified_incidents = fetch_modified_incidents(client, last_update)
-            demisto.debug(f"microsoft365::Found {len(modified_incidents)} modified incidents")
-            demisto.debug(f"microsoft365::{str(modified_incidents)}")
-            modified_incidents_entries_content = get_modified_incidents_close_or_repopen_entries_content(modified_incidents, close_incident)
-
-            # todo - handle incident reopen and closing
-            # skip update: In case of a failure. In order to notify the server that the command failed and prevent execution of the get-remote-data commands, returns an error that contains the string "skip update".?
-            return GetModifiedRemoteDataResponse(modified_incidents_data=modified_incidents + modified_incidents_entries_content)
-        else:
-            modified_incident_ids = fetch_modified_incident_ids(client, last_update)
-            demisto.debug(f"microsoft365::Found {len(modified_incident_ids)} modified incidents")
-            demisto.debug(f"microsoft365::{str(modified_incident_ids)}")
-
-        # skip update: In case of a failure. In order to notify the server that the command failed and prevent execution of the get-remote-data commands, returns an error that contains the string "skip update".?
+        modified_incident_ids = fetch_modified_incident_ids(client, last_update)
+        demisto.debug(f"microsoft365::Found {len(modified_incident_ids)} modified incidents")
+        demisto.debug(f"microsoft365::{str(modified_incident_ids)}")
         return GetModifiedRemoteDataResponse(modified_incident_ids=modified_incident_ids)
     except Exception as e:
         demisto.debug(f"Error in Microsoft 365 defender incoming mirror \n"
@@ -1079,7 +1064,7 @@ def main() -> None:
 
         elif command == 'get-modified-remote-data':
             test_context_for_token(client)
-            modified_incidents = get_modified_remote_data_command(client, args, return_entire_data=True)
+            modified_incidents = get_modified_remote_data_command(client, args)
             return_results(modified_incidents)
 
         elif command == 'update-remote-system':
