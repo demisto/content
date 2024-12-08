@@ -1,0 +1,20 @@
+{
+  "trigger_id": "abfa084a92abfb031de08b57b3f78mk5",
+  "playbook_id": "silent-test-playbook",
+  "suggestion_reason": "Recommended for multiple unauthorized action_attempts detected by a user related alerts",
+  "description": "This trigger is responsible for handling 'Alibaba ActionTrail - multiple unauthorized action_attempts detected by a user' alerts",
+  "trigger_name": "silent-test-trigger",
+  "isSilent": true,
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "Alibaba ActionTrail - multiple unauthorized action attempts detected by a user"
+        }
+      ]
+    }
+  }
+}
+
