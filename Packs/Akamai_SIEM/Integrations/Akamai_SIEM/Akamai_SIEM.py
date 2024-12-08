@@ -569,7 +569,6 @@ def fetch_events_command(
     total_events_count = 0
     from_epoch, _ = parse_date_range(date_range=fetch_time, date_format='%s')
     offset = ctx.get("offset")
-    hashed_events_from_previous_run = set(ctx.get("hashed_events_from_previous_run", set()))
     auto_trigger_next_run = False
     worst_case_time: float = 0
     execution_counter = 0
@@ -607,7 +606,6 @@ def fetch_events_command(
             demisto.info("Didn't receive any events, breaking.")
             break
         demisto.info(f"got {len(events)} events, moving to processing events data.")
-        hashed_events_mapping = {}
         for event in events:
             try:
                 event["_time"] = event["httpMessage"]["start"]
@@ -617,24 +615,16 @@ def fetch_events_command(
                         event['attackData'][attack_data_key] = decode_message(event.get('attackData', {}).get(attack_data_key,
                                                                                                               ""))
                 if "httpMessage" in event:
-                    hashed_events_mapping[(hashlib.sha256(json.dumps(event['httpMessage'],
-                                                                     sort_keys=True).encode('utf-8'))).hexdigest()] = event
                     event['httpMessage']['requestHeaders'] = decode_url(event.get('httpMessage', {}).get('requestHeaders', ""))
                     event['httpMessage']['responseHeaders'] = decode_url(event.get('httpMessage', {}).get('responseHeaders', ""))
             except Exception as e:
                 config_id = event.get('attackData', {}).get('configId', "")
                 policy_id = event.get('attackData', {}).get('policyId', "")
                 demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
-        demisto.info(f"Preparing to deduplicate events, currently got {len(events)} events.")
-        hashed_events_from_current_run = {}
-        deduped_events = events
-        # deduped_events, hashed_events_from_current_run = dedup_events(hashed_events_mapping, hashed_events_from_previous_run)
-        total_events_count += len(deduped_events)
-        demisto.info(f"After deduplicate events, Got {len(deduped_events)} events, and {offset=}")
-        hashed_events_from_previous_run = hashed_events_from_current_run
+        total_events_count += len(events)
         execution_counter += 1
-        yield deduped_events, offset, total_events_count, hashed_events_from_previous_run, auto_trigger_next_run
-    yield [], offset, total_events_count, hashed_events_from_previous_run, auto_trigger_next_run
+        yield events, offset, total_events_count, auto_trigger_next_run
+    yield [], offset, total_events_count, auto_trigger_next_run
 
 
 def decode_url(headers: str) -> dict:
@@ -659,11 +649,7 @@ def decode_url(headers: str) -> dict:
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-def main():
-    demisto.info('before smt')
-    support_multithreading()# pragma: no cover
-    demisto.info('after smt')
-
+def main():  # pragma: no cover
     params = demisto.params()
     client = Client(
         base_url=urljoin(params.get('host'), '/siem/v1/configs'),
@@ -704,7 +690,7 @@ def main():
             if limit < page_size:
                 demisto.info(f"Got {limit=} lower than {page_size=}, lowering page_size to {limit}.")
                 page_size = limit
-            for events, offset, total_events_count, hashed_events_from_current_run, auto_trigger_next_run in (  # noqa: B007
+            for events, offset, total_events_count, auto_trigger_next_run in (  # noqa: B007
             fetch_events_command(
                 client,
                 "5 minutes",
@@ -714,58 +700,15 @@ def main():
                 page_size=page_size
             )):
                 if events:
-                    demisto.info(f"[test] Sending {len(events)} events to xsiam with latest event time is: {events[-1]['_time']}")
-
-                    # chunk_size = 20000  # Assuming 20k events
-
-                    # def send_events_chunk(chunk):
-                    #     send_events_to_xsiam(chunk, VENDOR, PRODUCT, should_update_health_module=False,
-                    #                      chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE)
-                    #     demisto.info("[test] Finished sending events to xsiam on current thread.")
-
-                    # # Divide events into chunks
-                    # chunks = [events[i:i + chunk_size] for i in range(0, len(events), chunk_size)]
-
-                    # # Create a ThreadPoolExecutor
-                    # from multiprocessing.pool import ThreadPool
-
-                    # with ThreadPool(len(chunks)) as pool:
-                    #     # Submit tasks for each chunk
-                    #     result = pool.map_async(send_events_chunk, chunks)
-                    #     # wait for tasks to complete
-                    #     result.wait()
-                    
-                    import concurrent.futures
-
-                    num_to_split = 20
-                    # Step 2: Split the Data into 5 Requests
-                    split_data = [events[i:i + len(events)//num_to_split] for i in range(0, len(events), len(events)//num_to_split)]
-                    demisto.info(f'[test] {num_to_split=}')
-                    for segment in split_data:
-                        demisto.info(f'[test] {len(segment)=} {sys.getsizeof(segment)=}')
-                    # Step 3: Create a ThreadPool
-                    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-                        # Step 4: Define a Function for Sending Data to the Second API
-                        def send_data_to_second_api(segment):
-                            demisto.info('[test] sending to xsiam inside executor')
-                            send_events_to_xsiam(segment, VENDOR, PRODUCT, should_update_health_module=False,
-                                                chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE)
-                            demisto.info('[test]')
-                            return "Done."
-
-                        # Step 5: Submit Tasks to the ThreadPool
-                        future_to_data = [executor.submit(send_data_to_second_api, segment) for segment in split_data]
-                        demisto.info('[test] submitted all the futures')
-                        # Step 6: Handle Responses (Optional)
-                        for future in concurrent.futures.as_completed(future_to_data):
-                            demisto.info(f'[test] printing result {future.result()}')
-                        demisto.info('[test] should be done sending events')
-                    # send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
-                    #                      chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE)
+                    send_events_to_xsiam_multi_threaded = params.get('proxy')
+                    demisto.info(f"[test] Sending {len(events)} events to xsiam with {send_events_to_xsiam_multi_threaded=} and" \
+                                 f"latest event time is: {events[-1]['_time']}")
+                    send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
+                                         chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE,
+                                         multiple_threads=send_events_to_xsiam_multi_threaded)
                     demisto.info(f"[test] Done sending {len(events)} events to xsiam."
                                  f"sent {total_events_count} events to xsiam in total during this interval.")
-                set_integration_context({"offset": offset,
-                                         "hashed_events_from_previous_run": list(hashed_events_from_current_run)})
+                set_integration_context({"offset": offset})
             demisto.updateModuleHealth({'eventsPulled': (total_events_count or 0)})
             next_run = {}
             if auto_trigger_next_run or total_events_count >= limit:

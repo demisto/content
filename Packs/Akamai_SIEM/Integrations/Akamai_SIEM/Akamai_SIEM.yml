@@ -123,6 +123,13 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+- display: Send events to xsiam in multiple threads
+  name: send_events_to_xsiam_multi_threaded
+  type: 8
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
 description: Use the Akamai WAF SIEM integration to retrieve security events from Akamai Web Application Firewall (WAF) service.
 display: Akamai WAF SIEM
 name: Akamai WAF SIEM
