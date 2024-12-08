@@ -804,6 +804,7 @@ def main() -> None:  # pragma: no cover
         max_fetch_audits = arg_to_number(params.get('max_fetch_audits')) or DEFAULT_MAX_FETCH_AUDIT
         max_fetch_alerts = arg_to_number(params.get('max_fetch_alerts')) or DEFAULT_MAX_FETCH_ALERT
         max_fetch_computer = arg_to_number(params.get('max_fetch_computer')) or DEFAULT_MAX_FETCH_COMPUTER
+        fetch_all_computers = argToBoolean(params.get('fetch_all_computers')) or False
 
         demisto.debug(f'Command being called is {command}')
 
