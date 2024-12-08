@@ -4,7 +4,6 @@ import sys
 import traceback
 
 from datetime import datetime
-from packaging.version import Version
 
 IS_PY3 = sys.version_info[0] == 3
 
@@ -182,12 +181,14 @@ if IS_PY3:
                     self._demisto.createIndicators(indicators_batch, noUpdate)
 
     def set_demisto_class():
-        platform_version = Version(demisto.demistoVersion().get("version"))
-        if platform_version > Version("8.0.0"):
-            if demisto.callingContext.get('context', {}).get('IntegrationBrand'):
-                return DemistoIntegration(demisto)
-            elif demisto.callingContext.get('context', {}).get('ScriptName'):
-                return DemistoScript(demisto)
+        platform_version = demisto.demistoVersion().get("version")
+        if isinstance(platform_version, str):
+            major = platform_version.split(".")[0]
+            if major.isnumeric() and int(major) >= 8:  # version >= 8.0.0
+                if demisto.callingContext.get('context', {}).get('IntegrationBrand'):
+                    return DemistoIntegration(demisto)
+                elif demisto.callingContext.get('context', {}).get('ScriptName'):
+                    return DemistoScript(demisto)
         return demisto
 
     if "pytest" not in sys.modules:
