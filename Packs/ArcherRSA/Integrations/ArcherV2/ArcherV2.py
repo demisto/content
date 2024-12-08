@@ -231,8 +231,10 @@ def search_records_soap_request(
     field_to_search_by_id="",
     numeric_operator="",
     max_results=10,
-    level_id="",
+    level_id: str = "",
     sort_type: str = "Ascending",
+    xml_filter_condition: str = "",
+    advanced_operator_logic: str = "",
 ):
     # CDATA is not supported in Element Tree, therefore keeping original structure.
     request_body = (
@@ -308,7 +310,9 @@ def search_records_soap_request(
             + "        <TimeZoneId>UTC Standard Time</TimeZoneId>"
             + "        <IsTimeIncluded>TRUE</IsTimeIncluded>"
             + "    </DateComparisonFilterCondition >"
+            + xml_filter_condition if xml_filter_condition else ""
             + "</Conditions>"
+            + f"<OperatorLogic>{advanced_operator_logic}</OperatorLogic>" if advanced_operator_logic else ""
             + "</Filter>"
         )
 
@@ -604,7 +608,7 @@ class Client(BaseClient):
             kwargs: (dict) dict of additional parameters relevant to the soap request.
 
         Returns:
-            requets.Response: the response object
+            requests.Response: the response object
         """
         headers = {
             "SOAPAction": req_data["soapAction"],
@@ -826,6 +830,8 @@ class Client(BaseClient):
         date_operator="",
         max_results=10,
         sort_type: str = "Ascending",
+        xml_filter_condition: str = "",
+        advanced_operator_logic: str = "",
     ):
         demisto.debug(f"searching for records {field_to_search}:{search_value}")
         if fields_to_display is None:
@@ -865,6 +871,8 @@ class Client(BaseClient):
             max_results=max_results,
             sort_type=sort_type,
             level_id=level_id,
+            xml_filter_condition=xml_filter_condition,
+            advanced_operator_logic=advanced_operator_logic,
         )
 
         if not res:
@@ -1553,6 +1561,23 @@ def list_users_command(client: Client, args: dict[str, str]):
     return_outputs(markdown, context, res)
 
 
+def is_valid_xml(xml_document: str) -> bool:
+    """Checks if the string is valid XML document
+
+    Args:
+        xml_document (str): String for checking.
+
+    Returns:
+        bool: True if valid, otherwise False.
+    """
+    try:
+        ET.fromstring(xml_document)
+        return True
+    except ET.ParseError as err:
+        demisto.debug(err)
+        return False
+
+
 def search_records_command(client: Client, args: dict[str, str]):
     app_id = args.get("applicationId")
     field_to_search = args.get("fieldToSearchOn")
@@ -1568,6 +1593,10 @@ def search_records_command(client: Client, args: dict[str, str]):
         "Descending" if argToBoolean(args.get("isDescending", "false")) else "Ascending"
     )
     level_id = args.get("levelId")
+
+    xml_filter_condition = args.get("xml_for_filtering", "")
+    if xml_filter_condition and not is_valid_xml(xml_filter_condition):
+        raise DemistoException(f'Invalid XML filter: {xml_filter_condition}.')
 
     if fields_to_get and "Id" not in fields_to_get:
         fields_to_get.append("Id")
@@ -1592,6 +1621,7 @@ def search_records_command(client: Client, args: dict[str, str]):
         date_operator,
         max_results=max_results,
         sort_type=sort_type,
+        xml_filter_condition=xml_filter_condition,
     )
 
     records = [x["record"] for x in records]
@@ -1692,6 +1722,8 @@ def fetch_incidents(
     # Not using get method as those params are a must
     app_id = params["applicationId"]
     date_field = params["applicationDateField"]
+    xml_filter_condition = params.get("fetchXml", "")
+    advanced_operator_logic = params.get("advancedOperatorLogic", "")
     max_results = params.get("fetch_limit", 10)
     fields_to_display = argToList(params.get("fields_to_fetch"))
     fields_to_display.append(date_field)
@@ -1703,6 +1735,8 @@ def fetch_incidents(
         from_time.strftime(OCCURRED_FORMAT),
         date_operator="GreaterThan",
         max_results=max_results,
+        xml_filter_condition=xml_filter_condition,
+        advanced_operator_logic=advanced_operator_logic,
     )
     demisto.debug(f"Found {len(records)=}.")
     # Build incidents
