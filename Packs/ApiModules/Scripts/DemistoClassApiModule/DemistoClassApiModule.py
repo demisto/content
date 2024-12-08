@@ -46,7 +46,7 @@ if sys.version_info[0] >= 3:  # and is_xsiam_or_xsoar_saas():  # type:ignore
             return getattr(self._demisto, name)
 
         def log_failure(self):
-            self.debug(DEMISTO_WRAPPER_FAILED.format(traceback.format_exc()))
+            self.debug("{} {}".format(DEMISTO_WRAPPER_FAILED, traceback.format_exc()))
 
         def in_execute_command_call(self):
             """Returns true if this command / script was executed using demisto.executeCommand()
