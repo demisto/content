@@ -23,7 +23,7 @@ This playbook helps perform the following actions:
 * If the threshold is breached, the playbook fetches all accounts associated with the Identity that are represented in IdentityIQ.
 * For each account, a provisioning request is made to disable that users access.
 
-![SailPoint IdentityIQ Disable User Account Access Playbook](doc_files/SailPoint_IdentityIQ_Disable_User_Account_Access.png)
+![SailPoint IdentityIQ Disable User Account Access Playbook](doc_files/sailpoint_identityiq_disable_user_account_access.png)
 
 #### IdentityIQ Screenshots
 
