@@ -50,4 +50,3 @@ type: python
 dockerimage: demisto/python3:3.10.12.66339
 runas: DBotWeakRole
 fromversion: 5.0.0
-
