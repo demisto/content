@@ -71,7 +71,7 @@ script:
     - description: Maximum time to wait for a page to load (in seconds).
       name: max_page_load_time
     - default: true
-      description: A space-separated list of URLs to rasterize. Must be the full URLs, including the http prefix.
+      description: The URL to rasterize. Must be the full URL, including the http prefix.
       name: url
       required: true
       isArray: true
@@ -98,7 +98,7 @@ script:
       - Headless CLI - Only
       deprecated: true
     - defaultValue: url
-      description: A space-separated list of names the files will be saved as.
+      description: The name the file will be saved as.
       name: file_name
       isArray: true
     - auto: PREDEFINED

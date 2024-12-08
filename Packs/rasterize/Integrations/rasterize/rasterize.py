@@ -874,7 +874,7 @@ def perform_rasterize(path: str | list[str],
     """
 
     # convert the path param to list in case we have only one string
-    paths = argToList(path, separator=' ')
+    paths = argToList(path)
 
     # create a list with all the paths that start with "mailto:"
     mailto_paths = [path_value for path_value in paths if path_value.startswith('mailto:')]
@@ -1128,7 +1128,7 @@ def add_filename_suffix(file_names: list, file_extension: str):
 def rasterize_command():  # pragma: no cover
     urls = demisto.getArg('url')
     # Do not remove this line, as rasterize does not support array in `url`.
-    urls = argToList(urls, separator=' ')
+    urls = [urls] if isinstance(urls, str) else urls
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
     rasterize_type = RasterizeType(demisto.args().get('type', 'png').lower())
@@ -1142,7 +1142,7 @@ def rasterize_command():  # pragma: no cover
         file_extension = "pdf"
 
     demisto.debug(f'file_name type is: {type(file_name)}')
-    file_names = argToList(file_name, separator=' ')
+    file_names = argToList(file_name)
     file_names = add_filename_suffix(file_names, file_extension)
 
     rasterize_output = perform_rasterize(path=urls, rasterize_type=rasterize_type, wait_time=wait_time,
