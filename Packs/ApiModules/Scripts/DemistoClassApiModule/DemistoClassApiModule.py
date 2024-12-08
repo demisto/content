@@ -84,13 +84,12 @@ if IS_PY3:
             """Given a list of executeCommand results, sends the log file entry to demisto.results()
             and returns only non-log file entries.
             """
-            entries = [entries] if isinstance(entries, dict) else entries
             if isinstance(entries, list):
                 for idx, entry in enumerate(entries):
                     if entry["Type"] == 16:
                         self.results(entry)
                         return entries[:idx] + entries[idx + 1:]
-            return entries[0] if len(entries) == 1 else entries
+            return entries
 
         def executeCommand(self, command, args):
             """A wrapper for demisto.executeCommand.

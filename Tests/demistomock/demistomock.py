@@ -402,6 +402,7 @@ exampleUsers = [
         "Version": 0,
     }
 ]
+exampleNoDebugCmd = [{"Type": 4}]
 exampleDebugCmd = [{"Type": 4}, {"Type": 16}]
 exampleDemistoUrls = {
     "evidenceBoard": "https://test-address:8443/#/EvidenceBoard/7ab2ac46-4142-4af8-8cbe-538efb4e63d6",
@@ -715,7 +716,9 @@ def executeCommand(command, args):
         "getIncidents": exampleIncidents,
         "getContext": exampleContext,
         "getUsers": exampleUsers,
-        "debugCmd": exampleDebugCmd,
+        "cmdWithDebugFile": exampleDebugCmd,
+        "cmdWithoutDebugFile": exampleNoDebugCmd,
+        "cmdWithoutDebugFile_DictResult": exampleNoDebugCmd[0],
     }
     if commands.get(command):
         return commands.get(command)
