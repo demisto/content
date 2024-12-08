@@ -123,7 +123,7 @@ def is_valid_integration_credentials(credentials, request_headers, token):
             if not token or not compare_digest(token, password):
                 auth_failed = True
         elif (not credentials) or (not (compare_digest(credentials.username, username)
-                                        and compare_digest(credentials.password, password))):
+                                   and compare_digest(credentials.password, password))):
             auth_failed = True
         if auth_failed:
             secret_header = (header_name or 'Authorization').lower()
@@ -171,7 +171,7 @@ def store_samples(incident):  # pragma: no cover
 @app.post(f'/{PARAMS.get("endpoint", "")}')
 async def handle_post(request: Request,
                       credentials: HTTPBasicCredentials = Depends(basic_auth),
-                      token: APIKey = Depends(token_auth)):  # pragma: no cover
+                      token: APIKey = Depends(token_auth)):   # pragma: no cover
     """
     Handles incoming AWS-SNS POST requests.
     Supports SubscriptionConfirmation, Notification and UnsubscribeConfirmation.
