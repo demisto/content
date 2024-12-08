@@ -55,16 +55,16 @@ outputs:
   description: The date on which the indicator will become inactive.
   type: String
 - contextPath: TransformIndicatorToCSFalconIOC.Indicators.description
-  description: Descriptive label for the indicator
+  description: Descriptive label for the indicator.
   type: String
 - contextPath: TransformIndicatorToCSFalconIOC.Indicators.tags
-  description: List of tags of the indicator
+  description: List of tags of the indicator.
   type: Unknown
 - contextPath: TransformIndicatorToCSFalconIOC.Indicators.source
   description: 'The source where this indicator originated. '
   type: String
 - contextPath: TransformIndicatorToCSFalconIOC.Indicators.id
-  description: The ID of the indicator
+  description: The ID of the indicator.
   type: String
 - contextPath: TransformIndicatorToCSFalconIOC.Indicators.type
   description: 'Type of the indicator. Possible values are: md5, sha256, ipv4, ipv6 and domain.'
