@@ -1,0 +1,24 @@
+commonfields:
+  id: CommandLine_Analysis
+  version: -1
+name: CommandLine_Analysis
+script: ''
+type: python
+tags: []
+comment: This script analyses a command line and provide a score based on the matched profiles.
+enabled: true
+args:
+- name: command_line
+  required: true
+  description: The command line to be analyzed.
+- name: custom_patterns
+  description:  Custom patterns to use in the analysis. 
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.14.96411
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
