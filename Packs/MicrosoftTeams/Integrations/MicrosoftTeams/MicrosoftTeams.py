@@ -2858,6 +2858,11 @@ def create_messaging_endpoint_command():
         messaging_endpoint = urljoin(urljoin(xsoar_url, 'instance/execute'), instance_name)
 
     else:  # XSIAM or XSOAR SAAS
+        if is_xsiam():
+            # Replace the 'xdr' with 'crtx' in the hostname of XSIAM tenants
+            # This substitution is related to this platform ticket: https://jira-dc.paloaltonetworks.com/browse/CIAC-12256.
+            xsoar_url = xsoar_url.replace('xdr', 'crtx', 1)
+
         # Add the 'ext-' prefix to the xsoar url
         if xsoar_url.startswith('http://'):
             server_address = xsoar_url.replace('http://', 'http://ext-', 1)
@@ -2866,18 +2871,13 @@ def create_messaging_endpoint_command():
 
         messaging_endpoint = urljoin(urljoin(server_address, 'xsoar/instance/execute'), instance_name)
 
-        if is_xsiam():
-            # Replace the '.xdr-' with '.crtx-' for XSIAM tenants
-            # This substitution is related to this platform ticket: https://jira-dc.paloaltonetworks.com/browse/CIAC-12256.
-            messaging_endpoint = messaging_endpoint.replace('.xdr-', '.crtx-', 1)
-
     hr = f"The messaging endpoint is:\n `{messaging_endpoint}`\n\n The messaging endpoint should be added to the Demisto bot"\
          f" configuration in Microsoft Teams as part of the prerequisites of the integration's setup.\n"\
          f"For more information see: [Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#create-the-demisto-bot-in-microsoft-teams)."
 
     demisto.debug(
         f"The messaging endpoint that should be added to the Demisto bot configuration in Microsoft Teams is:"
-        f"{messaging_endpoint}")
+        f" {messaging_endpoint}")
 
     result = CommandResults(
         readable_output=hr
