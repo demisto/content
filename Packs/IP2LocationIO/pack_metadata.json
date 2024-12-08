@@ -2,12 +2,14 @@
     "name": "IP2LocationIO",
     "description": "IP2Location.io API integration to query IP geolocation.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "ip2location",
     "url": "https://www.ip2location.io/",
     "email": "support@ip2location.io",
     "created": "2023-12-05T03:03:31Z",
-    "categories": ["Utilities"],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
