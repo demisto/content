@@ -683,7 +683,7 @@
 								"index": 0,
 								"listId": "caseinfoid-fc96d6a9-447c-4f5f-b292-f1c4a59a828e",
 								"name": "Add comment to Microsoft 365 Defender",
-								"scriptId": "M365DefenderAddComment",
+								"scriptId": "MS365DefenderAddComment",
 								"sectionItemType": "button",
 								"startCol": 4
 							}
