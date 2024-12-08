@@ -222,5 +222,5 @@ tests:
 fromversion: 6.10.0
 marketplaces:
 - marketplacev2
-isSilent: false
+issilent: false
 description: silent playbook with okta commands.
