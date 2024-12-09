@@ -220,7 +220,7 @@ script:
       description: Content version.
       type: String
     description: 'Fetches a list of content using the Confluence Query Language (CQL). For more information about CQL syntax, see https://developer.atlassian.com/server/confluence/advanced-searching-using-cql/'
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.115186
 tests:
 - No test - the test requires personal credentials to the confluence account
 fromversion: 5.0.0

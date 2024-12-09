@@ -9,11 +9,11 @@ from CommonServerUserPython import *
 VENDOR = 'Jamf'
 PRODUCT = 'Protect'
 ALERT_PAGE_SIZE = 200
-COMPUTER_PAGE_SIZE = 200
+COMPUTER_PAGE_SIZE = 100
 AUDIT_PAGE_SIZE = 5000
 DEFAULT_MAX_FETCH_ALERT = 1000
 DEFAULT_MAX_FETCH_AUDIT = 20000
-DEFAULT_MAX_FETCH_COMPUTER = 1000
+DEFAULT_MAX_FETCH_COMPUTER = 500
 DEFAULT_LIMIT = 10
 MINUTES_BEFORE_TOKEN_EXPIRED = 2
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -445,13 +445,13 @@ def get_events_alert_type(client: Client, start_date: str, max_fetch: int, last_
     client_event_type_func = client.get_alerts
     next_page = last_run.get("alert", {}).get("next_page", "")
 
-    demisto.debug(f"Jamf Protect- Fetching alerts from {created}")
+    demisto.debug(f"Fetching alerts from {created} with next page: {next_page}")
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     for event in events:
         event["source_log_type"] = "alert"
-    if next_page:
+    if next_page and events:
         demisto.debug(
-            f"Jamf Protect- Fetched {len(events)} which is the maximum number of alerts."
+            f"Fetched {len(events)} which is the maximum number of alerts."
             f" Will keep the fetching in the next fetch.")
         new_last_run_with_next_page = {"next_page": next_page, "last_fetch": created}
         return events, new_last_run_with_next_page
@@ -460,7 +460,7 @@ def get_events_alert_type(client: Client, start_date: str, max_fetch: int, last_
                                              for event in events) if dt is not None]).strftime(
         DATE_FORMAT) if events else current_date
     new_last_run_without_next_page = {"last_fetch": new_last_fetch_date}
-    demisto.debug(f"Jamf Protect- Fetched {len(events)} alerts")
+    demisto.debug(f"Fetched {len(events)} alerts with new last fetch {new_last_run_without_next_page}.")
     return events, new_last_run_without_next_page
 
 
@@ -490,8 +490,13 @@ def get_events_computer_type(
     command_args = {"created": created, 'use_date_filter': bool(last_run or not fetch_all_computers)}
     next_page = last_run.get("computer", {}).get("next_page", "")
 
-    debug_message = "Fetching all computers" if fetch_all_computers and not last_run else f"Fetching computers since {created}"
-    demisto.debug(debug_message)
+    if next_page:
+        demisto.debug(f"last_fetch {created}")
+        demisto.debug(f"fetching computers using {next_page=}")
+    elif fetch_all_computers and not last_run:
+        demisto.debug("Fetching all computers")
+    else:
+        demisto.debug(f"Fetching computers since {created}")
 
     client_event_type_func = client.get_computers
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
@@ -508,7 +513,7 @@ def get_events_computer_type(
     demisto.debug(f"{latest_event=}")
     demisto.debug(f"{new_last_fetch_date=}")
 
-    if next_page:
+    if next_page and events:
         new_last_run["next_page"] = next_page
         demisto.debug(
             f"Fetched the maximal number of computers. "
@@ -543,13 +548,13 @@ def get_events_audit_type(client: Client, start_date: str, end_date: str, max_fe
     client_event_type_func = client.get_audits
     next_page = last_run.get("audit", {}).get("next_page", "")
 
-    demisto.debug(f"Jamf Protect- Fetching audits from {start_date} to {end_date}")
+    demisto.debug(f"Fetching audits from {start_date} to {end_date} with next page: {next_page}")
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     for event in events:
         event["source_log_type"] = "audit"
-    if next_page:
+    if next_page and events:
         demisto.debug(
-            f" Jamf Protect - Fetched {len(events)}"
+            f" Fetched {len(events)}"
             f" which is the maximum number of audits. Will keep the fetching in the next fetch.")
         new_last_run_with_next_page = {"next_page": next_page, "last_fetch": start_date}
         return events, new_last_run_with_next_page
@@ -559,7 +564,7 @@ def get_events_audit_type(client: Client, start_date: str, end_date: str, max_fe
                                              for event in events) if dt is not None]).strftime(
         DATE_FORMAT) if events else end_date
     new_last_run_without_next_page = {"last_fetch": new_last_fetch_date}
-    demisto.debug(f"Jamf Protect- Fetched {len(events)} audits")
+    demisto.debug(f"Fetched {len(events)} audits  with new last fetch {new_last_run_without_next_page}")
     return events, new_last_run_without_next_page
 
 
@@ -590,12 +595,17 @@ def get_events(
     while has_next:
         has_next = False
         if len(events) >= max_fetch:
+            demisto.debug(f"Fetched {len(events)} and returned next page {next_page} "
+                          f"since we reached the max fetch {max_fetch}")
             return events, next_page
         response = client_event_type_func(command_args, next_page)
         page_info, parsed_data = parse_response(response=response)
         if next_page := page_info.get("next"):
             has_next = True
         events.extend(parsed_data)
+    demisto.debug(
+        f'Fetched {len(events)} events with no next page since we do not reached the max fetch: {max_fetch}'
+    )
     return events, ""
 
 
@@ -643,13 +653,16 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
         EventResult: A NamedTuple containing four elements
     """
     last_run = demisto.getLastRun()
-    alert_events, alert_next_run = [], {}
-    audit_events, audit_next_run = [], {}
+    demisto.debug(f'Starting to fetch events, last_run is: {last_run}')
+    alert_events: list = []
+    alert_next_run: dict = last_run.get('alert', {})
+    alert_next_page = alert_next_run.get("next_page", "")
+    audit_events: list = []
+    audit_next_run: dict = last_run.get('audit', {})
+    audit_next_page = audit_next_run.get("next_page", "")
     computer_events: list = []
-    computer_next_run: dict = {}
-    alert_next_page = last_run.get("alert", {}).get("next_page", "")
-    audit_next_page = last_run.get("audit", {}).get("next_page", "")
-    computer_next_page = last_run.get("computer", {}).get("next_page", "")
+    computer_next_run: dict = last_run.get("computer", {})
+    computer_next_page = computer_next_run.get("next_page", "")
 
     no_next_pages = not (any((alert_next_page, audit_next_page, computer_next_page)))
 
@@ -668,6 +681,10 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
     if "next_page" in (alert_next_run | audit_next_run | computer_next_run):
         # Will instantly re-trigger the fetch command.
         next_run["nextTrigger"] = "0"
+    demisto.debug(
+        f'Finish fetching events, next_run is: {next_run}, length of alerts: {len(alert_events)}, '
+        f'length of audits: {len(audit_events)}, length of computer: {len(computer_events)}'
+    )
     return EventResult(alert_events, audit_events, computer_events, next_run)
 
 
@@ -817,9 +834,9 @@ def main() -> None:  # pragma: no cover
             events = alert_events + audit_events + computer_events
             if events:
                 add_time_field(events)
+                demisto.debug(f'Sending {len(events)} events to XSIAM API')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
-                if new_last_run:
-                    demisto.setLastRun(new_last_run)
+            demisto.setLastRun(new_last_run)
 
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')

@@ -17,13 +17,18 @@ def list_languages() -> list[str]:
     return sorted(lines[1:])  # ignore first line
 
 
-def extract_text(image_path: str, languages: list[str] = None) -> str:
-    exe_params = [TESSERACT_EXE, "-v", image_path, 'stdout']
+def extract_text(image_path: str, languages: list[str] = [], verbose: bool = False) -> str:
+    exe_params = [TESSERACT_EXE, image_path, 'stdout']
+    if verbose:
+        exe_params.extend(["-v"])
+
     if languages:
         exe_params.extend(['-l', '+'.join(languages)])
+
     res = subprocess.run(exe_params, capture_output=True, check=True, text=True)
     if res.stderr:
         demisto.debug(f'tesseract returned ok but stderr contains warnings: {res.stderr}')
+
     return res.stdout
 
 
@@ -37,6 +42,7 @@ def list_languages_command() -> CommandResults:
 
 def extract_text_command(args: dict, instance_languages: list, skip_corrupted: bool) -> tuple[list, list]:
     langs = argToList(args.get('langs')) or instance_languages
+    verbose = argToBoolean(args.get('verbose', False))
     demisto.debug(f"Using langs settings: {langs}")
     results, errors = [], []
 
@@ -48,7 +54,7 @@ def extract_text_command(args: dict, instance_languages: list, skip_corrupted: b
                 raise DemistoException(f"Couldn't find entry id: {entry_id}")
 
             demisto.debug(f'Extracting text from file: {file_path}')
-            res = extract_text(file_path['path'], langs)
+            res = extract_text(file_path['path'], langs, verbose)
             file_entry = {'EntryID': entry_id, 'Text': res}
             results.append(
                 CommandResults(
