@@ -6,34 +6,39 @@ from DemistoClassApiModule import *
 TEST_SKIP_REASON = "DemistoWrapper is not supported for python 2"
 
 
-def command_context(
+def prepare_demistomock(
     mocker,
+    exec_type,
     version=MIN_SUPPORTED_VERSION,
+    is_debug=False,
+    mock_cmd=None,
+    mock_val=None,
 ):
     mocker.patch.object(demisto, "demistoVersion", return_value={"version": version})
-    return {
-        "command": "cmd",
-        "context": {
-            "IntegrationBrand": "int",
-            "CommandsExecuted": {"CurrLevel": 1},
-            "ExecutedCommands": [{"name": "caller"}]
-        },
-    }
-
-
-def script_context(
-    mocker,
-    version=MIN_SUPPORTED_VERSION,
-):
-    mocker.patch.object(demisto, "demistoVersion", return_value={"version": version})
-    return {
-        "command": "",
-        "context": {
-            "ScriptName": "script",
-            "CommandsExecuted": {"CurrLevel": 0},
-            "ExecutedCommands": []
-        },
-    }
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "info")
+    if exec_type == "script":
+        demisto.callingContext = {
+            "command": "",
+            "context": {
+                "ScriptName": "script",
+                "CommandsExecuted": {"CurrLevel": 0},
+                "ExecutedCommands": []
+            },
+        }
+    else:
+        demisto.callingContext = {
+            "command": "cmd",
+            "context": {
+                "IntegrationBrand": "int",
+                "CommandsExecuted": {"CurrLevel": 1},
+                "ExecutedCommands": [{"name": "caller"}]
+            },
+        }
+    demisto.is_debug = is_debug
+    if mock_cmd:
+        return mocker.patch.object(demisto, mock_cmd, return_value=mock_val)
+    return None
 
 
 def debug_logs_sent(demisto, msgs):
@@ -57,7 +62,7 @@ def test_set_demisto_class_script_context(mocker):
     - Ensure a DemistoScript class is set for `demisto`.
     """
     import demistomock as demisto
-    demisto.callingContext = script_context(mocker)
+    prepare_demistomock(mocker, exec_type="script")
     assert type(demisto) == types.ModuleType  # demistomock is a module
     demisto = set_demisto_class()
     assert type(demisto) == DemistoScript
@@ -74,7 +79,7 @@ def test_set_demisto_class_command_context(mocker):
     - Ensure a DemistoIntegration class is set for `demisto`.
     """
     import demistomock as demisto
-    demisto.callingContext = command_context(mocker)
+    prepare_demistomock(mocker, exec_type="command")
     assert type(demisto) == types.ModuleType  # demistomock is a module
     demisto = set_demisto_class()
     assert type(demisto) == DemistoIntegration
@@ -88,11 +93,10 @@ def test_set_demisto_class_is_debug(mocker):
     When:
     - Setting the appropriate class for `demisto` based on the calling context.
     Then:
-    - Ensure the `is_debug` field is available from the `demisto` object.
+    - Ensure the `is_debug` attribute is available from the `demisto` object.
     """
     import demistomock as demisto
-    demisto.is_debug = True
-    demisto.callingContext = command_context(mocker)
+    prepare_demistomock(mocker, exec_type="command", is_debug=True)
     assert type(demisto) == types.ModuleType  # demistomock is a module
     demisto = set_demisto_class()
     assert type(demisto) == DemistoIntegration
@@ -111,7 +115,7 @@ def test_set_demisto_class_python_2(mocker):
     - Ensure set_demisto_class() is not defined, thus demisto class is not changed.
     """
     import demistomock as demisto
-    demisto.callingContext = command_context(mocker)
+    prepare_demistomock(mocker, exec_type="command")
     assert type(demisto) == types.ModuleType  # demistomock is a module
     with pytest.raises(NameError):
         demisto = set_demisto_class()
@@ -138,7 +142,7 @@ def test_is_supported_version(mocker, platform_version, is_supported):
     Then:
     - Ensure the response is as expected
     """
-    mocker.patch.object(demisto, "demistoVersion", return_value={"version": platform_version})
+    prepare_demistomock(mocker, exec_type="command", version=platform_version)
     assert is_supported_version() == is_supported
 
 
@@ -146,14 +150,14 @@ def test_is_supported_version(mocker, platform_version, is_supported):
 def test_set_demisto_class_not_supported_version(mocker):
     """
     Given:
-    - A mock `demisto` object with a command context, version = 8.5.0
+    - A mock `demisto` object with version = 8.5.0
     When:
     - Setting the appropriate class for `demisto` based on the calling context.
     Then:
     - Ensure the demisto class is not changed.
     """
     import demistomock as demisto
-    demisto.callingContext = command_context(mocker, version="8.5.0")
+    prepare_demistomock(mocker, exec_type="command", version="8.5.0")
     assert type(demisto) == types.ModuleType  # demistomock is a module
     demisto = set_demisto_class()
     assert type(demisto) == types.ModuleType
@@ -163,7 +167,7 @@ def test_set_demisto_class_not_supported_version(mocker):
 def test_set_demisto_class_malformed_version(mocker):
     """
     Given:
-    - A `demisto` object and a command context with a malformed version from the server.
+    - A `demisto` object with a malformed version from the server.
     When:
     - Setting the appropriate class for `demisto` based on the calling context.
     Then:
@@ -171,8 +175,7 @@ def test_set_demisto_class_malformed_version(mocker):
     - Ensure the warning debug log message is sent.
     """
     import demistomock as demisto
-    mocker.patch.object(demisto, "debug")
-    demisto.callingContext = command_context(mocker, version="asdsadasdsad")
+    prepare_demistomock(mocker, exec_type="command", version="asdsadasdsad")
     assert type(demisto) == types.ModuleType  # demistomock is a module
     demisto = set_demisto_class()
     assert type(demisto) == types.ModuleType
@@ -180,7 +183,7 @@ def test_set_demisto_class_malformed_version(mocker):
 
 
 @pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
-def test_init(mocker):
+def test_init_log_execution_details(mocker):
     """
     Given:
     - A `demisto` object with a command context.
@@ -190,10 +193,9 @@ def test_init(mocker):
     - Ensure the execution details log is sent.
     """
     import demistomock as demisto
-    mocker.patch.object(demisto, "debug")
-    demisto.callingContext = command_context(mocker)
+    prepare_demistomock(mocker, exec_type="command")
     demisto = set_demisto_class()
-    demisto.debug.assert_called_with(
+    demisto.info.assert_called_with(
         "{}{}".format(
             EXECUTING_LOG.format(demisto.exec_type, demisto.exec_name),
             EXECUTING_ROOT_CALLER_SUFFIX.format(demisto.root_caller)
@@ -205,7 +207,7 @@ def test_init(mocker):
 def test_set_demisto_class_init_error(mocker):
     """
     Given:
-    - A `demisto` object and a command context with a missing `context.command` field.
+    - A `demisto` object and a malformed command context with a missing `context.command` field.
     When:
     - Setting the appropriate class for `demisto` based on the calling context.
     Then:
@@ -213,8 +215,7 @@ def test_set_demisto_class_init_error(mocker):
     - Ensure the warning debug log message is sent during __init__(), but no exception is returned.
     """
     import demistomock as demisto
-    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "8.9.0"})
-    mocker.patch.object(demisto, "debug")
+    prepare_demistomock(mocker, exec_type="command")
     demisto.callingContext = {"context": {"IntegrationBrand": "hello"}}
     demisto = set_demisto_class()
     assert type(demisto) == DemistoIntegration
@@ -243,10 +244,7 @@ def test_get_file_path(mocker, get_fp_response, expected_log):
     - Case 2: Ensure that if an error occurs in DemistoScript.getFilePath(), log the error and skip it.
     """
     import demistomock as demisto
-    mocker.patch.object(demisto, "debug")
-    get_fp_cmd = mocker.patch.object(demisto, "getFilePath", return_value=get_fp_response)
-
-    demisto.callingContext = script_context(mocker)
+    get_fp_cmd = prepare_demistomock(mocker, exec_type="script", mock_cmd="getFilePath", mock_val=get_fp_response)
     demisto = set_demisto_class()
 
     res = demisto.getFilePath("test")
@@ -269,8 +267,7 @@ def test_execute_command(mocker, is_debug, expected_entries_length):
         - Case 2: One entry is returned when debug mode is enabled.
     """
     import demistomock as demisto
-    demisto.callingContext = script_context(mocker)
-    demisto.is_debug = is_debug
+    prepare_demistomock(mocker, exec_type="script", is_debug=is_debug)
     demisto = set_demisto_class()
     res = demisto.executeCommand("cmdWithDebugFile", {})
     assert len(res) == expected_entries_length
@@ -296,7 +293,7 @@ def test_execute_command_without_debug_log_output(mocker):
     res = demisto.executeCommand("cmdWithoutDebugFile_DictResult", {})
     assert res == entries[0]
 
-    demisto.callingContext = script_context(mocker)
+    prepare_demistomock(mocker, exec_type="script")
     demisto.is_debug = True
     demisto = set_demisto_class()
 
@@ -319,12 +316,8 @@ def test_execute_command_bad(mocker):
         - Debug logs include failure information when invalid entries are encountered.
     """
     import demistomock as demisto
-    mocker.patch.object(demisto, "debug")
     entries = [{"Contents": "oy vey no entry type"}, {"Type": 16}]
-    exec_cmd_func = mocker.patch.object(demisto, "executeCommand", return_value=entries)
-
-    demisto.callingContext = script_context(mocker)
-    demisto.is_debug = True
+    exec_cmd_func = prepare_demistomock(mocker, exec_type="script", is_debug=True, mock_cmd="executeCommand", mock_val=entries)
     demisto = set_demisto_class()
 
     res = demisto.executeCommand("cmdWithDebugFile", {})
@@ -352,10 +345,7 @@ def test_get_last_run(mocker, last_run, expected_log):
     - Case 2: Log an error if fetching the last run fails.
     """
     import demistomock as demisto
-    mocker.patch.object(demisto, "debug")
-    get_lr_cmd = mocker.patch.object(demisto, "getLastRun", return_value=last_run)
-
-    demisto.callingContext = command_context(mocker)
+    get_lr_cmd = prepare_demistomock(mocker, exec_type="command", mock_cmd="getLastRun", mock_val=last_run)
     demisto = set_demisto_class()
 
     res = demisto.getLastRun()
@@ -383,10 +373,7 @@ def test_set_last_run(mocker, last_run, expected_log):
     - Case 2: Log an error if setting the last run fails.
     """
     import demistomock as demisto
-    mocker.patch.object(demisto, "debug")
-    set_last_run_cmd = mocker.patch.object(demisto, "setLastRun")
-
-    demisto.callingContext = command_context(mocker)
+    set_last_run_cmd = prepare_demistomock(mocker, exec_type="command", mock_cmd="setLastRun")
     demisto = set_demisto_class()
 
     demisto.setLastRun(last_run)
@@ -405,9 +392,7 @@ def test_set_last_run_truncated(mocker):
     - Ensure the last run data is truncated and the truncation is logged.
     """
     import demistomock as demisto
-    mocker.patch.object(demisto, "debug")
-
-    demisto.callingContext = command_context(mocker)
+    prepare_demistomock(mocker, exec_type="command")
     demisto = set_demisto_class()
 
     last_run = "aa" * 1024
@@ -426,9 +411,7 @@ def test_set_last_run_exceeds_recommendation(mocker):
     - Ensure a warning is logged indicating the size exceeds the recommendation.
     """
     import demistomock as demisto
-    mocker.patch.object(demisto, "debug")
-
-    demisto.callingContext = command_context(mocker)
+    prepare_demistomock(mocker, exec_type="command")
     demisto = set_demisto_class()
 
     last_run = "aa" * 1024 ** 2
@@ -436,6 +419,7 @@ def test_set_last_run_exceeds_recommendation(mocker):
         len(json.dumps(last_run, indent=4).encode('utf-8')) / LAST_RUN_SIZE_RECOMMENDATION,
         1,
     )
+
     demisto.setLastRun(last_run)
     assert debug_logs_sent(demisto, [LAST_RUN_SIZE_LOG.format(last_run_size)])
 
@@ -473,13 +457,11 @@ def test_incidents(mocker, incidents, expected_log):
     - Case 3: Log an error if invalid data is encountered.
     """
     import demistomock as demisto
-    mocker.patch.object(demisto, "debug")
-    create_incidents = mocker.patch.object(demisto, "incidents")
-
-    demisto.callingContext = command_context(mocker)
+    incidents_cmd = prepare_demistomock(mocker, exec_type="command", mock_cmd="incidents")
     demisto = set_demisto_class()
+
     demisto.incidents(incidents)
-    assert create_incidents.called_once()
+    assert incidents_cmd.called_once()
     assert debug_logs_sent(demisto, [expected_log])
 
 
@@ -494,15 +476,11 @@ def test_create_indicators(mocker):
     - Ensure the method is called and debug logs include the correct number of indicators.
     """
     import demistomock as demisto
-    mocker.patch.object(demisto, "debug")
-    create_indciators = mocker.patch.object(demisto, "createIndicators")
-    demisto.is_debug = True
-
-    demisto.callingContext = command_context(mocker)
+    create_indciators_cmd = prepare_demistomock(mocker, exec_type="command", is_debug=True, mock_cmd="createIndicators")
     demisto = set_demisto_class()
-    demisto.createIndicators([])
-    assert create_indciators.called_once()
 
+    demisto.createIndicators([])
+    assert create_indciators_cmd.called_once()
     assert debug_logs_sent(demisto, [CREATING_INDICATORS_LOG.format(0), "createIndicators took"])
 
 
@@ -518,13 +496,9 @@ def test_create_indicators_failure(mocker):
     - Ensure the method is called and debug logs include the correct number of indicators.
     """
     import demistomock as demisto
-    mocker.patch.object(demisto, "debug")
-    create_indciators = mocker.patch.object(demisto, "createIndicators")
-    demisto.is_debug = True
-
-    demisto.callingContext = command_context(mocker)
+    create_indciators_cmd = prepare_demistomock(mocker, exec_type="command", is_debug=True, mock_cmd="createIndicators")
     demisto = set_demisto_class()
-    demisto.createIndicators(None)
-    assert create_indciators.called_once()
 
+    demisto.createIndicators(None)
+    assert create_indciators_cmd.called_once()
     assert debug_logs_sent(demisto, [DEMISTO_WRAPPER_FAILED])

@@ -64,12 +64,12 @@ if IS_PY3:
             return executed_commands[0]["name"] if executed_commands else None
 
         def _log_execution_details(self):
-            """Adds a debug log of the name of the command / script currently being executed.
+            """Adds an info log of the name of the command / script currently being executed.
             """
             msg = EXECUTING_LOG.format(self.exec_type, self.exec_name)
             if self.in_execute_command_call() and self.root_caller:
                 msg += EXECUTING_ROOT_CALLER_SUFFIX.format(self.root_caller)
-            self.debug(msg)
+            self.info(msg)
 
     class DemistoScript(DemistoWrapper):
         def getFilePath(self, id):
