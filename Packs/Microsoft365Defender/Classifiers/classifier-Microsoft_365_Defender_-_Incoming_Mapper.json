@@ -35,7 +35,7 @@
 						]
 					}
 				},
-				"Microsoft 365 Defender A": {
+				"Microsoft 365 Defender Alerts": {
 					"complex": {
 						"filters": [],
 						"root": "alerts",
@@ -46,7 +46,7 @@
 						]
 					}
 				},
-				"Microsoft 365 Defender Active": {
+				"Microsoft 365 Defender Active Alerts": {
 					"simple": "Active alerts"
 				},
 				"Microsoft 365 Defender Categories count": {
