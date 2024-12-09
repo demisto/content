@@ -35,8 +35,8 @@ if IS_PY3:
         def __init__(self, demisto):
             self._demisto = demisto
             try:
-                command_name = self.callingContext["command"] or ""
                 script_name = self.callingContext["context"].get("ScriptName") or ""
+                command_name = self.callingContext["command"] or ""
                 self.exec_type = "command" if command_name else "script"
                 self.exec_name = command_name or script_name
                 self.root_caller = self._get_root_caller()
@@ -69,7 +69,7 @@ if IS_PY3:
             msg = EXECUTING_LOG.format(self.exec_type, self.exec_name)
             if self.in_execute_command_call() and self.root_caller:
                 msg += EXECUTING_ROOT_CALLER_SUFFIX.format(self.root_caller)
-            self.info(msg)
+            self.info(msg) if self.exec_type == "command" else self.debug(msg)
 
     class DemistoScript(DemistoWrapper):
         def getFilePath(self, id):
@@ -110,7 +110,7 @@ if IS_PY3:
             res = self._demisto.executeCommand(command, args)
 
             try:
-                if start_time and self.is_debug:
+                if start_time:
                     duration = (datetime.now() - start_time).total_seconds()
                     self.debug(EXECUTE_COMMAND_DURATION_LOG.format(command, duration))
                     return self._drop_debug_log_entry(res)
