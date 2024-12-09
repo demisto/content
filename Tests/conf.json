@@ -6068,7 +6068,7 @@
         "Generic Webhook - Test": "CIAC-11234",
         "Netskope_V2_Test": "No instance - developed by Qmasters",
         "IAMInitOktaUser - Test": "CIAC-12093",
-        "TAXII2 Server Performance Test": "CIAC-9768",
+        "TAXII2 Server Performance Test": "CIAC-9768"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
