@@ -319,7 +319,6 @@ select = [
     "SIM223", # expr-and-false
     "SIM300", # yoda-conditions
     "SIM401", # if-else-block-instead-of-dict-get
-    "SIM910", # dict-get-with-none-default
 
     "T201", # print
     "T203", # p-print

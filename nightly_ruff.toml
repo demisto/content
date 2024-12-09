@@ -163,7 +163,6 @@ lint.select = [
     "SIM220", # expr-and-not-expr
     "SIM221", # expr-or-not-expr
     "SIM223", # expr-and-false
-    "SIM910", # dict-get-with-none-default
 
     "T203", # p-print
 
