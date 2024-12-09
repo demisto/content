@@ -2137,38 +2137,25 @@ def prepare_score_and_hr_for_reputation_command(response: dict, indicator_value:
     general_info = response.get(GENERAL_INFO_KEY, {})
     severity_str = severity_str.replace(' risk', '')
     human_readable = tableToMarkdown(f'General Information for the given {severity_str} risk {indicator_type}: {indicator_value}',
-                                     general_info, removeNull=True, headerTransform=header_transform_to_title_case,
+                                     general_info, removeNull=True, headerTransform=pascalToSpace,
                                      url_keys=["redirectLink"])
     human_readable += '\n' + tableToMarkdown(
-        'Sensitive Information', sensitive_info, headerTransform=header_transform_to_title_case,
+        'Sensitive Information', sensitive_info, headerTransform=pascalToSpace,
         removeNull=True, url_keys=["redirectLink"]) if sensitive_info else ''
     anomalies_info = response.get(ANOMALY_INFO_KEY, {})
     human_readable += '\n' + tableToMarkdown(
         'Anomaly Information', anomalies_info,
-        headerTransform=header_transform_to_title_case, removeNull=True, url_keys=["redirectLink"]) if anomalies_info else ''
+        headerTransform=pascalToSpace, removeNull=True, url_keys=["redirectLink"]) if anomalies_info else ''
     threat_hunt_info = response.get(THREAT_HUNT_INFO_KEY, {})
     human_readable += '\n' + tableToMarkdown(
         'Threat Hunt Information', threat_hunt_info,
-        headerTransform=header_transform_to_title_case, removeNull=True, url_keys=["redirectLink"]) if threat_hunt_info else ''
+        headerTransform=pascalToSpace, removeNull=True, url_keys=["redirectLink"]) if threat_hunt_info else ''
     threat_monitoring_info = response.get(THREAT_MONITORING_INFO_KEY, {})
     human_readable += '\n' + tableToMarkdown(
-        'Threat Monitoring Information', threat_monitoring_info, headerTransform=header_transform_to_title_case,
+        'Threat Monitoring Information', threat_monitoring_info, headerTransform=pascalToSpace,
         removeNull=True, url_keys=["redirectLink"]) if threat_monitoring_info else ''
 
     return severity_score, human_readable
-
-
-def header_transform_to_title_case(string: str) -> str:
-    '''
-    Header transform function to convert given string to title case with the spaces between words.
-
-    :type string: ``str``
-    :param string: The string to convert to title case.
-
-    :return: The string in title case.
-    '''
-    transformed = re.sub(r'(?<=[a-z])([A-Z])', r' \1', string)
-    return transformed.title()
 
 
 def validate_ip_addresses(ips_list: List[str]) -> Tuple[List[str], List[str]]:
@@ -2184,7 +2171,6 @@ def validate_ip_addresses(ips_list: List[str]) -> Tuple[List[str], List[str]]:
     invalid_ip_addresses = []
     valid_ip_addresses = []
     for ip in ips_list:
-        ip = ip.strip('\"')
         if is_ip_valid(ip, accept_v6_ips=True):
             valid_ip_addresses.append(ip)
         else:
@@ -4126,7 +4112,12 @@ def ip_command(client: PolarisClient, args: Dict[str, Any]) -> List[CommandResul
     :return: List of standard command result.
     '''
     ips_list = argToList(args.get('ip'))
-    ips = [ip for ip in ips_list if ip.strip()]
+    ips = []
+
+    for raw_ip in ips_list:
+        ip = raw_ip.strip('\"').strip()
+        if ip:
+            ips.append(ip)
 
     if not ips:
         raise ValueError(ERROR_MESSAGES['MISSING_REQUIRED_FIELD'].format('ip'))
@@ -4203,7 +4194,12 @@ def domain_command(client: PolarisClient, args: Dict[str, Any]) -> List[CommandR
     :return: List of standard command result.
     '''
     domain_list = argToList(args.get('domain'))
-    domains = [domain for domain in domain_list if domain.strip()]
+    domains = []
+
+    for raw_domain in domain_list:
+        domain = raw_domain.strip('\"').strip()
+        if domain:
+            domains.append(domain)
 
     if not domains:
         raise ValueError(ERROR_MESSAGES['MISSING_REQUIRED_FIELD'].format('domain'))

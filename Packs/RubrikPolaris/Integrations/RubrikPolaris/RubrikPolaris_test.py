@@ -2832,7 +2832,7 @@ def test_ip_command_success(mock_return, client, requests_mock, capfd):
                       json=response, status_code=200)
     requests_mock.get(f'{BASE_URL}/thirdparty/workload_summary?search_string=0.0.0.2&search_type=ipv4', json={}, status_code=200)
 
-    args = {"ip": "0.0.0.1,0.0.0.2,0.0.0.256"}
+    args = {"ip": "0.0.0.1,\"  0.0.0.2  \",0.0.0.256"}
 
     capfd.close()
     from RubrikPolaris import ip_command
@@ -2860,7 +2860,7 @@ def test_ip_command_when_all_ips_invalid(client, capfd):
     '''
     from RubrikPolaris import ip_command
 
-    args = {'ip': '0: 0: 85a3: 0000: asv: 8a2e: 0370: 7334, 2.2.2'}
+    args = {'ip': '0: 0: 85a3: 0000: asv: 8a2e: 0370: 7334, 2.2.2, \" a.b.c.d \"'}
     capfd.close()
     with pytest.raises(SystemExit) as err:
         ip_command(client, args)
