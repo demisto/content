@@ -239,9 +239,9 @@ class Client(BaseClient):
 
 
 def get_triggered_alarms_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    Offset = args.get('Offset')
+    Offset = args.get('Offset', None)
     try_cast_to_int(Offset)
-    Limit = args.get('Limit')
+    Limit = args.get('Limit', None)
     try_cast_to_int(Limit)
     Filter = str(args.get('Filter', ''))
     Sort = str(args.get('Sort', ''))
@@ -476,7 +476,7 @@ def fetch_incidents(
 ) -> tuple[dict, list[dict]]:
 
     demisto.debug(f'Last run: {json.dumps(last_run)}')
-    last_fetch = last_run.get('last_fetch')
+    last_fetch = last_run.get('last_fetch', None)
 
     # Handle first fetch time
     if last_fetch is None:

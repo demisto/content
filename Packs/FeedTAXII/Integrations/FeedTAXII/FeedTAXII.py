@@ -554,12 +554,12 @@ class TAXIIClient:
 
         # authentication
         if credentials:
-            if '_header:' in credentials.get('identifier'):
-                self.api_header = credentials.get('identifier').split('_header:')[1]
-                self.api_key = credentials.get('password')
+            if '_header:' in credentials.get('identifier', None):
+                self.api_header = credentials.get('identifier', None).split('_header:')[1]
+                self.api_key = credentials.get('password', None)
             else:
-                self.username = credentials.get('identifier')
-                self.password = credentials.get('password')
+                self.username = credentials.get('identifier', None)
+                self.password = credentials.get('password', None)
 
         cert_text = replace_spaces_in_credential(creds_certificate.get('identifier')) or cert_text
         key_text = creds_certificate.get('password') or key_text

@@ -72,412 +72,412 @@ def generate_kwargs_for_get_findings(args: dict) -> dict:
     kwargs = {
         'Filters': {
             'ProductArn': [{
-                'Value': args.get('product_arn_value'),
-                'Comparison': args.get('product_arn_comparison'),
+                'Value': args.get('product_arn_value', None),
+                'Comparison': args.get('product_arn_comparison', None),
 
             }],
             'AwsAccountId': [{
-                'Value': args.get('aws_account_id_value'),
-                'Comparison': args.get('aws_account_id_comparison'),
+                'Value': args.get('aws_account_id_value', None),
+                'Comparison': args.get('aws_account_id_comparison', None),
 
             }],
             'Id': [{
-                'Value': args.get('id_value'),
-                'Comparison': args.get('id_comparison'),
+                'Value': args.get('id_value', None),
+                'Comparison': args.get('id_comparison', None),
 
             }],
             'GeneratorId': [{
-                'Value': args.get('generator_id_value'),
-                'Comparison': args.get('generator_id_comparison'),
+                'Value': args.get('generator_id_value', None),
+                'Comparison': args.get('generator_id_comparison', None),
 
             }],
             'Type': [{
-                'Value': args.get('type_value'),
-                'Comparison': args.get('type_comparison'),
+                'Value': args.get('type_value', None),
+                'Comparison': args.get('type_comparison', None),
 
             }],
             'FirstObservedAt': [{
-                'Start': args.get('first_observed_at_start'),
-                'End': args.get('first_observed_at_end'),
+                'Start': args.get('first_observed_at_start', None),
+                'End': args.get('first_observed_at_end', None),
                 'DateRange': {
-                    'Unit': args.get('date_range_unit'),
+                    'Unit': args.get('date_range_unit', None),
 
                 },
 
             }],
             'LastObservedAt': [{
-                'Start': args.get('last_observed_at_start'),
-                'End': args.get('last_observed_at_end'),
+                'Start': args.get('last_observed_at_start', None),
+                'End': args.get('last_observed_at_end', None),
                 'DateRange': {
-                    'Unit': args.get('date_range_unit'),
+                    'Unit': args.get('date_range_unit', None),
                 },
             }],
             'CreatedAt': [{
-                'Start': args.get('created_at_start'),
-                'End': args.get('created_at_end'),
+                'Start': args.get('created_at_start', None),
+                'End': args.get('created_at_end', None),
                 'DateRange': {
-                    'Unit': args.get('date_range_unit'),
+                    'Unit': args.get('date_range_unit', None),
                 },
             }],
             'UpdatedAt': [{
-                'Start': args.get('updated_at_start'),
-                'End': args.get('updated_at_end'),
+                'Start': args.get('updated_at_start', None),
+                'End': args.get('updated_at_end', None),
                 'DateRange': {
-                    'Unit': args.get('date_range_unit'),
+                    'Unit': args.get('date_range_unit', None),
                 },
             }],
             'SeverityLabel': [{
-                'Value': args.get('severity_label_value'),
-                'Comparison': args.get('severity_label_comparison'),
+                'Value': args.get('severity_label_value', None),
+                'Comparison': args.get('severity_label_comparison', None),
 
             }],
             'Title': [{
-                'Value': args.get('title_value'),
-                'Comparison': args.get('title_comparison'),
+                'Value': args.get('title_value', None),
+                'Comparison': args.get('title_comparison', None),
 
             }],
             'Description': [{
-                'Value': args.get('description_value'),
-                'Comparison': args.get('description_comparison'),
+                'Value': args.get('description_value', None),
+                'Comparison': args.get('description_comparison', None),
 
             }],
             'RecommendationText': [{
-                'Value': args.get('recommendation_text_value'),
-                'Comparison': args.get('recommendation_text_comparison'),
+                'Value': args.get('recommendation_text_value', None),
+                'Comparison': args.get('recommendation_text_comparison', None),
 
             }],
             'SourceUrl': [{
-                'Value': args.get('source_url_value'),
-                'Comparison': args.get('source_url_comparison'),
+                'Value': args.get('source_url_value', None),
+                'Comparison': args.get('source_url_comparison', None),
 
             }],
             'ProductFields': [{
-                'Key': args.get('product_fields_key'),
-                'Value': args.get('product_fields_value'),
-                'Comparison': args.get('product_fields_comparison'),
+                'Key': args.get('product_fields_key', None),
+                'Value': args.get('product_fields_value', None),
+                'Comparison': args.get('product_fields_comparison', None),
 
             }],
             'ProductName': [{
-                'Value': args.get('product_name_value'),
-                'Comparison': args.get('product_name_comparison'),
+                'Value': args.get('product_name_value', None),
+                'Comparison': args.get('product_name_comparison', None),
 
             }],
             'CompanyName': [{
-                'Value': args.get('company_name_value'),
-                'Comparison': args.get('company_name_comparison'),
+                'Value': args.get('company_name_value', None),
+                'Comparison': args.get('company_name_comparison', None),
 
             }],
             'UserDefinedFields': [{
-                'Key': args.get('user_defined_fields_key'),
-                'Value': args.get('user_defined_fields_value'),
-                'Comparison': args.get('user_defined_fields_comparison'),
+                'Key': args.get('user_defined_fields_key', None),
+                'Value': args.get('user_defined_fields_value', None),
+                'Comparison': args.get('user_defined_fields_comparison', None),
 
             }],
             'MalwareName': [{
-                'Value': args.get('malware_name_value'),
-                'Comparison': args.get('malware_name_comparison'),
+                'Value': args.get('malware_name_value', None),
+                'Comparison': args.get('malware_name_comparison', None),
 
             }],
             'MalwareType': [{
-                'Value': args.get('malware_type_value'),
-                'Comparison': args.get('malware_type_comparison'),
+                'Value': args.get('malware_type_value', None),
+                'Comparison': args.get('malware_type_comparison', None),
 
             }],
             'MalwarePath': [{
-                'Value': args.get('malware_path_value'),
-                'Comparison': args.get('malware_path_comparison'),
+                'Value': args.get('malware_path_value', None),
+                'Comparison': args.get('malware_path_comparison', None),
 
             }],
             'MalwareState': [{
-                'Value': args.get('malware_state_value'),
-                'Comparison': args.get('malware_state_comparison'),
+                'Value': args.get('malware_state_value', None),
+                'Comparison': args.get('malware_state_comparison', None),
 
             }],
             'NetworkDirection': [{
-                'Value': args.get('network_direction_value'),
-                'Comparison': args.get('network_direction_comparison'),
+                'Value': args.get('network_direction_value', None),
+                'Comparison': args.get('network_direction_comparison', None),
 
             }],
             'NetworkProtocol': [{
-                'Value': args.get('network_protocol_value'),
-                'Comparison': args.get('network_protocol_comparison'),
+                'Value': args.get('network_protocol_value', None),
+                'Comparison': args.get('network_protocol_comparison', None),
 
             }],
             'NetworkSourceIpV4': [{
-                'Cidr': args.get('network_source_ip_v4_cidr'),
+                'Cidr': args.get('network_source_ip_v4_cidr', None),
 
             }],
             'NetworkSourceIpV6': [{
-                'Cidr': args.get('network_source_ip_v6_cidr'),
+                'Cidr': args.get('network_source_ip_v6_cidr', None),
 
             }],
             'NetworkSourceDomain': [{
-                'Value': args.get('network_source_domain_value'),
-                'Comparison': args.get('network_source_domain_comparison'),
+                'Value': args.get('network_source_domain_value', None),
+                'Comparison': args.get('network_source_domain_comparison', None),
 
             }],
             'NetworkSourceMac': [{
-                'Value': args.get('network_source_mac_value'),
-                'Comparison': args.get('network_source_mac_comparison'),
+                'Value': args.get('network_source_mac_value', None),
+                'Comparison': args.get('network_source_mac_comparison', None),
 
             }],
             'NetworkDestinationIpV4': [{
-                'Cidr': args.get('network_destination_ip_v4_cidr'),
+                'Cidr': args.get('network_destination_ip_v4_cidr', None),
 
             }],
             'NetworkDestinationIpV6': [{
-                'Cidr': args.get('network_destination_ip_v6_cidr'),
+                'Cidr': args.get('network_destination_ip_v6_cidr', None),
 
             }],
             'NetworkDestinationDomain': [{
-                'Value': args.get('network_destination_domain_value'),
-                'Comparison': args.get('network_destination_domain_comparison'),
+                'Value': args.get('network_destination_domain_value', None),
+                'Comparison': args.get('network_destination_domain_comparison', None),
 
             }],
             'ProcessName': [{
-                'Value': args.get('process_name_value'),
-                'Comparison': args.get('process_name_comparison'),
+                'Value': args.get('process_name_value', None),
+                'Comparison': args.get('process_name_comparison', None),
 
             }],
             'ProcessPath': [{
-                'Value': args.get('process_path_value'),
-                'Comparison': args.get('process_path_comparison'),
+                'Value': args.get('process_path_value', None),
+                'Comparison': args.get('process_path_comparison', None),
 
             }],
 
             'ProcessLaunchedAt': [{
-                'Start': args.get('process_launched_at_start'),
-                'End': args.get('process_launched_at_end'),
+                'Start': args.get('process_launched_at_start', None),
+                'End': args.get('process_launched_at_end', None),
                 'DateRange': {
-                    'Unit': args.get('date_range_unit'),
+                    'Unit': args.get('date_range_unit', None),
                 },
             }],
             'ProcessTerminatedAt': [{
-                'Start': args.get('process_terminated_at_start'),
-                'End': args.get('process_terminated_at_end'),
+                'Start': args.get('process_terminated_at_start', None),
+                'End': args.get('process_terminated_at_end', None),
                 'DateRange': {
-                    'Unit': args.get('date_range_unit'),
+                    'Unit': args.get('date_range_unit', None),
                 },
             }],
             'ThreatIntelIndicatorType': [{
-                'Value': args.get('threat_intel_indicator_type_value'),
-                'Comparison': args.get('threat_intel_indicator_type_comparison'),
+                'Value': args.get('threat_intel_indicator_type_value', None),
+                'Comparison': args.get('threat_intel_indicator_type_comparison', None),
 
             }],
             'ThreatIntelIndicatorValue': [{
-                'Value': args.get('threat_intel_indicator_value_value'),
-                'Comparison': args.get('threat_intel_indicator_value_comparison'),
+                'Value': args.get('threat_intel_indicator_value_value', None),
+                'Comparison': args.get('threat_intel_indicator_value_comparison', None),
 
             }],
             'ThreatIntelIndicatorCategory': [{
-                'Value': args.get('threat_intel_indicator_category_value'),
-                'Comparison': args.get('threat_intel_indicator_category_comparison'),
+                'Value': args.get('threat_intel_indicator_category_value', None),
+                'Comparison': args.get('threat_intel_indicator_category_comparison', None),
 
             }],
             'ThreatIntelIndicatorLastObservedAt': [{
-                'Start': args.get('threat_intel_indicator_last_observed_at_start'),
-                'End': args.get('threat_intel_indicator_last_observed_at_end'),
+                'Start': args.get('threat_intel_indicator_last_observed_at_start', None),
+                'End': args.get('threat_intel_indicator_last_observed_at_end', None),
                 'DateRange': {
-                    'Unit': args.get('date_range_unit'),
+                    'Unit': args.get('date_range_unit', None),
 
                 },
 
             }],
             'ThreatIntelIndicatorSource': [{
-                'Value': args.get('threat_intel_indicator_source_value'),
-                'Comparison': args.get('threat_intel_indicator_source_comparison'),
+                'Value': args.get('threat_intel_indicator_source_value', None),
+                'Comparison': args.get('threat_intel_indicator_source_comparison', None),
 
             }],
             'ThreatIntelIndicatorSourceUrl': [{
-                'Value': args.get('threat_intel_indicator_source_url_value'),
-                'Comparison': args.get('threat_intel_indicator_source_url_comparison'),
+                'Value': args.get('threat_intel_indicator_source_url_value', None),
+                'Comparison': args.get('threat_intel_indicator_source_url_comparison', None),
 
             }],
             'ResourceType': [{
-                'Value': args.get('resource_type_value'),
-                'Comparison': args.get('resource_type_comparison'),
+                'Value': args.get('resource_type_value', None),
+                'Comparison': args.get('resource_type_comparison', None),
 
             }],
             'ResourceId': [{
-                'Value': args.get('resource_id_value'),
-                'Comparison': args.get('resource_id_comparison'),
+                'Value': args.get('resource_id_value', None),
+                'Comparison': args.get('resource_id_comparison', None),
 
             }],
             'ResourcePartition': [{
-                'Value': args.get('resource_partition_value'),
-                'Comparison': args.get('resource_partition_comparison'),
+                'Value': args.get('resource_partition_value', None),
+                'Comparison': args.get('resource_partition_comparison', None),
 
             }],
             'ResourceRegion': [{
-                'Value': args.get('resource_region_value'),
-                'Comparison': args.get('resource_region_comparison'),
+                'Value': args.get('resource_region_value', None),
+                'Comparison': args.get('resource_region_comparison', None),
 
             }],
             'ResourceTags': [{
-                'Key': args.get('resource_tags_key'),
-                'Value': args.get('resource_tags_value'),
-                'Comparison': args.get('resource_tags_comparison'),
+                'Key': args.get('resource_tags_key', None),
+                'Value': args.get('resource_tags_value', None),
+                'Comparison': args.get('resource_tags_comparison', None),
 
             }],
             'ResourceAwsEc2InstanceType': [{
-                'Value': args.get('resource_aws_ec2_instance_type_value'),
-                'Comparison': args.get('resource_aws_ec2_instance_type_comparison'),
+                'Value': args.get('resource_aws_ec2_instance_type_value', None),
+                'Comparison': args.get('resource_aws_ec2_instance_type_comparison', None),
 
             }],
             'ResourceAwsEc2InstanceImageId': [{
-                'Value': args.get('resource_aws_ec2_instance_image_id_value'),
-                'Comparison': args.get('resource_aws_ec2_instance_image_id_comparison'),
+                'Value': args.get('resource_aws_ec2_instance_image_id_value', None),
+                'Comparison': args.get('resource_aws_ec2_instance_image_id_comparison', None),
 
             }],
             'ResourceAwsEc2InstanceIpV4Addresses': [{
-                'Cidr': args.get('resource_aws_ec2_instance_ip_v4_addresses_cidr'),
+                'Cidr': args.get('resource_aws_ec2_instance_ip_v4_addresses_cidr', None),
 
             }],
             'ResourceAwsEc2InstanceIpV6Addresses': [{
-                'Cidr': args.get('resource_aws_ec2_instance_ip_v6_addresses_cidr'),
+                'Cidr': args.get('resource_aws_ec2_instance_ip_v6_addresses_cidr', None),
 
             }],
             'ResourceAwsEc2InstanceKeyName': [{
-                'Value': args.get('resource_aws_ec2_instance_key_name_value'),
-                'Comparison': args.get('resource_aws_ec2_instance_key_name_comparison'),
+                'Value': args.get('resource_aws_ec2_instance_key_name_value', None),
+                'Comparison': args.get('resource_aws_ec2_instance_key_name_comparison', None),
 
             }],
             'ResourceAwsEc2InstanceIamInstanceProfileArn': [{
-                'Value': args.get('resource_aws_ec2_instance_iam_instance_profile_arn_value'),
-                'Comparison': args.get('resource_aws_ec2_instance_iam_instance_profile_arn_comparison'),
+                'Value': args.get('resource_aws_ec2_instance_iam_instance_profile_arn_value', None),
+                'Comparison': args.get('resource_aws_ec2_instance_iam_instance_profile_arn_comparison', None),
 
             }],
             'ResourceAwsEc2InstanceVpcId': [{
-                'Value': args.get('resource_aws_ec2_instance_vpc_id_value'),
-                'Comparison': args.get('resource_aws_ec2_instance_vpc_id_comparison'),
+                'Value': args.get('resource_aws_ec2_instance_vpc_id_value', None),
+                'Comparison': args.get('resource_aws_ec2_instance_vpc_id_comparison', None),
 
             }],
             'ResourceAwsEc2InstanceSubnetId': [{
-                'Value': args.get('resource_aws_ec2_instance_subnet_id_value'),
-                'Comparison': args.get('resource_aws_ec2_instance_subnet_id_comparison'),
+                'Value': args.get('resource_aws_ec2_instance_subnet_id_value', None),
+                'Comparison': args.get('resource_aws_ec2_instance_subnet_id_comparison', None),
 
             }],
             'ResourceAwsEc2InstanceLaunchedAt': [{
-                'Start': args.get('resource_aws_ec2_instance_launched_at_start'),
-                'End': args.get('resource_aws_ec2_instance_launched_at_end'),
+                'Start': args.get('resource_aws_ec2_instance_launched_at_start', None),
+                'End': args.get('resource_aws_ec2_instance_launched_at_end', None),
                 'DateRange': {
-                    'Unit': args.get('date_range_unit'),
+                    'Unit': args.get('date_range_unit', None),
                 },
             }],
             'ResourceAwsS3BucketOwnerId': [{
-                'Value': args.get('resource_aws_s3_bucket_owner_id_value'),
-                'Comparison': args.get('resource_aws_s3_bucket_owner_id_comparison'),
+                'Value': args.get('resource_aws_s3_bucket_owner_id_value', None),
+                'Comparison': args.get('resource_aws_s3_bucket_owner_id_comparison', None),
 
             }],
             'ResourceAwsS3BucketOwnerName': [{
-                'Value': args.get('resource_aws_s3_bucket_owner_name_value'),
-                'Comparison': args.get('resource_aws_s3_bucket_owner_name_comparison'),
+                'Value': args.get('resource_aws_s3_bucket_owner_name_value', None),
+                'Comparison': args.get('resource_aws_s3_bucket_owner_name_comparison', None),
 
             }],
             'ResourceAwsIamAccessKeyUserName': [{
-                'Value': args.get('resource_aws_iam_access_key_user_name_value'),
-                'Comparison': args.get('resource_aws_iam_access_key_user_name_comparison'),
+                'Value': args.get('resource_aws_iam_access_key_user_name_value', None),
+                'Comparison': args.get('resource_aws_iam_access_key_user_name_comparison', None),
 
             }],
             'ResourceAwsIamAccessKeyStatus': [{
-                'Value': args.get('resource_aws_iam_access_key_status_value'),
-                'Comparison': args.get('resource_aws_iam_access_key_status_comparison'),
+                'Value': args.get('resource_aws_iam_access_key_status_value', None),
+                'Comparison': args.get('resource_aws_iam_access_key_status_comparison', None),
 
             }],
             'ResourceAwsIamAccessKeyCreatedAt': [{
-                'Start': args.get('resource_aws_iam_access_key_created_at_start'),
-                'End': args.get('resource_aws_iam_access_key_created_at_end'),
+                'Start': args.get('resource_aws_iam_access_key_created_at_start', None),
+                'End': args.get('resource_aws_iam_access_key_created_at_end', None),
                 'DateRange': {
-                    'Unit': args.get('date_range_unit'),
+                    'Unit': args.get('date_range_unit', None),
                 },
             }],
             'ResourceContainerName': [{
-                'Value': args.get('resource_container_name_value'),
-                'Comparison': args.get('resource_container_name_comparison'),
+                'Value': args.get('resource_container_name_value', None),
+                'Comparison': args.get('resource_container_name_comparison', None),
 
             }],
             'ResourceContainerImageId': [{
-                'Value': args.get('resource_container_image_id_value'),
-                'Comparison': args.get('resource_container_image_id_comparison'),
+                'Value': args.get('resource_container_image_id_value', None),
+                'Comparison': args.get('resource_container_image_id_comparison', None),
 
             }],
             'ResourceContainerImageName': [{
-                'Value': args.get('resource_container_image_name_value'),
-                'Comparison': args.get('resource_container_image_name_comparison'),
+                'Value': args.get('resource_container_image_name_value', None),
+                'Comparison': args.get('resource_container_image_name_comparison', None),
 
             }],
             'ResourceContainerLaunchedAt': [{
-                'Start': args.get('resource_container_launched_at_start'),
-                'End': args.get('resource_container_launched_at_end'),
+                'Start': args.get('resource_container_launched_at_start', None),
+                'End': args.get('resource_container_launched_at_end', None),
                 'DateRange': {
-                    'Unit': args.get('date_range_unit'),
+                    'Unit': args.get('date_range_unit', None),
                 },
             }],
             'ResourceDetailsOther': [{
-                'Key': args.get('resource_details_other_key'),
-                'Value': args.get('resource_details_other_value'),
-                'Comparison': args.get('resource_details_other_comparison'),
+                'Key': args.get('resource_details_other_key', None),
+                'Value': args.get('resource_details_other_value', None),
+                'Comparison': args.get('resource_details_other_comparison', None),
 
             }],
             'ComplianceStatus': [{
-                'Value': args.get('compliance_status_value'),
-                'Comparison': args.get('compliance_status_comparison'),
+                'Value': args.get('compliance_status_value', None),
+                'Comparison': args.get('compliance_status_comparison', None),
 
             }],
             'VerificationState': [{
-                'Value': args.get('verification_state_value'),
-                'Comparison': args.get('verification_state_comparison'),
+                'Value': args.get('verification_state_value', None),
+                'Comparison': args.get('verification_state_comparison', None),
 
             }],
             'WorkflowState': [{
-                'Value': args.get('workflow_state_value'),
-                'Comparison': args.get('workflow_state_comparison'),
+                'Value': args.get('workflow_state_value', None),
+                'Comparison': args.get('workflow_state_comparison', None),
 
             }],
             'RecordState': [{
-                'Value': args.get('record_state_value'),
-                'Comparison': args.get('record_state_comparison'),
+                'Value': args.get('record_state_value', None),
+                'Comparison': args.get('record_state_comparison', None),
 
             }],
             'RelatedFindingsProductArn': [{
-                'Value': args.get('related_findings_product_arn_value'),
-                'Comparison': args.get('related_findings_product_arn_comparison'),
+                'Value': args.get('related_findings_product_arn_value', None),
+                'Comparison': args.get('related_findings_product_arn_comparison', None),
 
             }],
             'RelatedFindingsId': [{
-                'Value': args.get('related_findings_id_value'),
-                'Comparison': args.get('related_findings_id_comparison'),
+                'Value': args.get('related_findings_id_value', None),
+                'Comparison': args.get('related_findings_id_comparison', None),
 
             }],
             'NoteText': [{
-                'Value': args.get('note_text_value'),
-                'Comparison': args.get('note_text_comparison'),
+                'Value': args.get('note_text_value', None),
+                'Comparison': args.get('note_text_comparison', None),
 
             }],
             'NoteUpdatedAt': [{
-                'Start': args.get('note_updated_at_start'),
-                'End': args.get('note_updated_at_end'),
+                'Start': args.get('note_updated_at_start', None),
+                'End': args.get('note_updated_at_end', None),
                 'DateRange': {
-                    'Unit': args.get('date_range_unit'),
+                    'Unit': args.get('date_range_unit', None),
                 },
             }],
             'NoteUpdatedBy': [{
-                'Value': args.get('note_updated_by_value'),
-                'Comparison': args.get('note_updated_by_comparison'),
+                'Value': args.get('note_updated_by_value', None),
+                'Comparison': args.get('note_updated_by_comparison', None),
 
             }],
             'Keyword': [{
-                'Value': args.get('keyword_value'),
+                'Value': args.get('keyword_value', None),
 
             }],
 
         },
         'SortCriteria': [{
-            'Field': args.get('sort_criteria_field'),
-            'SortOrder': args.get('sort_criteria_sort_order'),
+            'Field': args.get('sort_criteria_field', None),
+            'SortOrder': args.get('sort_criteria_sort_order', None),
 
         }],
-        'NextToken': args.get('next_token'),
+        'NextToken': args.get('next_token', None),
 
     }
     kwargs = remove_empty_elements(kwargs)

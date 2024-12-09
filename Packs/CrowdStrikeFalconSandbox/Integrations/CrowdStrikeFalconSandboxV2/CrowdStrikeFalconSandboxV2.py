@@ -116,7 +116,7 @@ def get_search_term_args(args: dict[str, Any]) -> dict[str, Any]:
     if args.get('query'):
         return split_query_to_term_args(args['query'])
     else:
-        return {term: args[term] for term in SEARCH_TERM_QUERY_ARGS if args.get(term)}
+        return {term: args[term] for term in SEARCH_TERM_QUERY_ARGS if args.get(term, None)}
 
 
 def get_api_id(args: dict[str, Any]) -> str:

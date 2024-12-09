@@ -158,9 +158,9 @@ def aws_package_upgrade(args: dict[str, Any]) -> CommandResults:
     """
     instance_id = args.get("instance_id")
     asm_rule_id = args.get("asm_rule_id")
-    region = args.get("region")
-    assume_role = args.get("assume_role")
-    account_id = args.get("account_id")
+    region = args.get("region", None)
+    assume_role = args.get("assume_role", None)
+    account_id = args.get("account_id", None)
 
     instance_id = str(instance_id) if instance_id is not None else ""
     asm_rule_id = str(asm_rule_id) if asm_rule_id is not None else ""

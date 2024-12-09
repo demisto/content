@@ -399,7 +399,7 @@ def get_list_of_assets(client: Client, args: dict[str, Any], page: int) -> list[
 
 
 def get_asset_details(client: Client, args: dict[str, Any]) -> CommandResults:
-    asset_id = args.get("asset_id")
+    asset_id = args.get("asset_id", None)
     if not asset_id:
         raise ValueError("asset_id not specified")
 
@@ -416,7 +416,7 @@ def get_asset_details(client: Client, args: dict[str, Any]) -> CommandResults:
 
 
 def get_asset_files_by_id(client: Client, args: dict[str, Any]) -> CommandResults:
-    asset_id = args.get("asset_id")
+    asset_id = args.get("asset_id", None)
     if not asset_id:
         raise ValueError("Asset ID not specified")
 
@@ -840,7 +840,7 @@ def dspm_list_alerts_command(client, args):
 
 
 def dspm_get_list_of_asset_fields_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    asset_id = args.get("assetId")
+    asset_id = args.get("assetId", None)
     if not asset_id:
         raise ValueError("Asset ID not specified")
 

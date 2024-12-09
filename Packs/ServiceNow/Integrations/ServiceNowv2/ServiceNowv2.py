@@ -1861,9 +1861,9 @@ def query_computers_command(client: Client, args: dict) -> tuple[Any, dict[Any, 
         Demisto Outputs.
     """
     table_name = 'cmdb_ci_computer'
-    computer_id = args.get('computer_id')
-    computer_name = args.get('computer_name')
-    asset_tag = args.get('asset_tag')
+    computer_id = args.get('computer_id', None)
+    computer_name = args.get('computer_name', None)
+    asset_tag = args.get('asset_tag', None)
     computer_query = args.get('query', {})
     offset = args.get('offset', client.sys_param_offset)
     limit = args.get('limit', client.sys_param_limit)
@@ -2799,7 +2799,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
     closure_case = get_closure_case(params)
     demisto.debug(f"closure case= {closure_case}")
     is_custom_close = False
-    close_custom_state = params.get('close_custom_state')
+    close_custom_state = params.get('close_custom_state', None)
     demisto.debug(f"state will change to= {parsed_args.data.get('state')}")
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')

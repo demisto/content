@@ -464,7 +464,7 @@ def update_profile(client: Client, **args) -> str:
         if arg == "tags":
             data[arg] = argToList(args.get(arg))
         if arg == "timeout":
-            data[arg] = args.get(arg)
+            data[arg] = args.get(arg, None)
 
     client._http_request("PUT", f"profiles/{profileID}", data=json.dumps(data))
 

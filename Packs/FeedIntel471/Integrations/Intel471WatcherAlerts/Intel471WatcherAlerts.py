@@ -151,39 +151,39 @@ def get_report_type(url: str) -> str:
 def compose_incident_title(alert: dict) -> str:
     title: str = ''
 
-    if alert.get('actor'):
+    if alert.get('actor', None):
         title = 'ACTOR:\n'
         handles: list = alert.get('actor', {}).get('handles', [])
         if handles:
             title += ','.join(handles)
-    elif alert.get('breachAlert'):
+    elif alert.get('breachAlert', None):
         title = 'BREACH ALERT:\n' + deep_get(alert, 'breachAlert.data.breach_alert.title', '')
-    elif alert.get('credential'):
+    elif alert.get('credential', None):
         title = 'CREDENTIAL:\n' + deep_get(alert, 'credential.data.credential_login', '')
-    elif alert.get('credential_occurrence'):
+    elif alert.get('credential_occurrence', None):
         title = 'CREDENTIAL OCCURRENCE:\n' + deep_get(alert, 'credential_occurrence.data.credential.credential_login', '')
-    elif alert.get('credential_set'):
+    elif alert.get('credential_set', None):
         title = 'CREDENTIAL SET:\n' + deep_get(alert, 'credential_set.data.name', '')
-    elif alert.get('cveReport'):
+    elif alert.get('cveReport', None):
         title = 'CVE REPORT:\n' + deep_get(alert, 'cveReport.data.cve_report.name', '')
-    elif alert.get('entity'):
+    elif alert.get('entity', None):
         title = 'ENTITY:\n' + deep_get(alert, 'entity.value', '')
-    elif alert.get('event'):
+    elif alert.get('event', None):
         title = 'MALWARE EVENT:\n' + deep_get(alert, 'event.data.threat.data.family', '') + ' - ' + \
                 deep_get(alert, 'event.data.event_type', '')
-    elif alert.get('indicator'):
+    elif alert.get('indicator', None):
         title = 'MALWARE INDICATOR:\n' + deep_get(alert, 'indicator.data.threat.data.family', '') + \
                 ' - ' + deep_get(alert, 'indicator.data.context.description', '')
-    elif alert.get('instantMessage'):
+    elif alert.get('instantMessage', None):
         title = 'INSTANT MESSAGE:\n' + html.unescape(' '.join(remove_tags(deep_get(alert,
                                                      'instantMessage.data.message.text', '')).strip().split())[:100])
-    elif alert.get('ioc'):
+    elif alert.get('ioc', None):
         title = 'IOC:\n' + deep_get(alert, 'ioc.value', '')
-    elif alert.get('post'):
+    elif alert.get('post', None):
         title = 'FORUM POST:\n' + html.unescape(' '.join(remove_tags(deep_get(alert, 'post.message', '')).strip().split())[:100])
-    elif alert.get('report'):
+    elif alert.get('report', None):
         title = get_report_type(deep_get(alert, 'report.portalReportUrl', '')) + deep_get(alert, 'report.subject', '')
-    elif alert.get('spotReport'):
+    elif alert.get('spotReport', None):
         title = 'SPOT REPORT:\n' + deep_get(alert, 'spotReport.data.spot_report.spot_report_data.title', '')
     else:
         title = 'UNKNOWN ALERT TYPE:\n' + 'UID: ' + alert.get('uid', '')
@@ -194,40 +194,40 @@ def compose_incident_title(alert: dict) -> str:
 def compose_titan_url(alert: dict) -> str:
     titan_url: str = ''
 
-    if alert.get('actor'):
+    if alert.get('actor', None):
         handles: list = alert.get('actor', {}).get('handles', [])
         if handles:
             titan_url = TITAN_PORTAL_URL + 'search/Actor:' + handles[0] + '/actors?ordering=latest&period_of_time=all'
-    elif alert.get('breachAlert'):
+    elif alert.get('breachAlert', None):
         titan_url = TITAN_PORTAL_URL + 'report/breach_alert/' + deep_get(alert, 'breachAlert.uid', '')
-    elif alert.get('credential'):
+    elif alert.get('credential', None):
         titan_url = TITAN_PORTAL_URL + 'credential/' + deep_get(alert, 'credential.uid', '')
-    elif alert.get('credential_occurrence'):
+    elif alert.get('credential_occurrence', None):
         titan_url = TITAN_PORTAL_URL + 'credential/' + deep_get(alert, 'credential_occurrence.data.credential.uid', '')
-    elif alert.get('credential_set'):
+    elif alert.get('credential_set', None):
         titan_url = TITAN_PORTAL_URL + 'credential_set/' + deep_get(alert, 'credential_set.uid', '')
-    elif alert.get('cveReport'):
+    elif alert.get('cveReport', None):
         titan_url = TITAN_PORTAL_URL + 'report/cve/' + deep_get(alert, 'cveReport.uid', '')
-    elif alert.get('entity'):
+    elif alert.get('entity', None):
         titan_url = TITAN_PORTAL_URL
-    elif alert.get('event'):
+    elif alert.get('event', None):
         titan_url = TITAN_PORTAL_URL + 'malware/event/' + deep_get(alert, 'event.uid', '')
-    elif alert.get('indicator'):
+    elif alert.get('indicator', None):
         titan_url = TITAN_PORTAL_URL + 'malware/indicator/' + deep_get(alert, 'indicator.data.uid', '')
-    elif alert.get('instantMessage'):
+    elif alert.get('instantMessage', None):
         thread_uid_instant_message: str = deep_get(alert, 'instantMessage.data.channel.uid', '')
         message_uid: str = deep_get(alert, 'instantMessage.data.message.uid', '')
         titan_url = TITAN_PORTAL_URL + 'ims_thread/' + thread_uid_instant_message + '?message_uid=' + message_uid
-    elif alert.get('ioc'):
+    elif alert.get('ioc', None):
         titan_url = TITAN_PORTAL_URL + 'search/IOC%7C*:' + deep_get(alert, 'ioc.value', '') + \
                                        '?ordering=latest&period_of_time=all'
-    elif alert.get('post'):
+    elif alert.get('post', None):
         thread_uid_post: str = deep_get(alert, 'post.links.thread.uid', '')
         post_uid: str = deep_get(alert, 'post.uid', '')
         titan_url = TITAN_PORTAL_URL + 'post_thread/' + thread_uid_post + '?post_uid=' + post_uid
-    elif alert.get('report'):
+    elif alert.get('report', None):
         titan_url = deep_get(alert, 'report.portalReportUrl', '')
-    elif alert.get('spotReport'):
+    elif alert.get('spotReport', None):
         titan_url = TITAN_PORTAL_URL + 'report/spotrep/' + deep_get(alert, 'spotReport.data.spot_report.uid', '')
     else:
         titan_url = TITAN_PORTAL_URL
@@ -237,7 +237,7 @@ def compose_titan_url(alert: dict) -> str:
 
 def compose_incident_watcher_details(alert: dict, watcher_groups: list) -> tuple[str, str]:
     watcher_group_description: str = ''
-    watcher_group_uid: str = alert.get('watcherGroupUid')
+    watcher_group_uid: str = alert.get('watcherGroupUid', None)
     watcher_group: dict = [wg for wg in watcher_groups if wg['uid'] == watcher_group_uid][0]
     if watcher_group:
         watcher_group_description = watcher_group.get('name', '')
@@ -245,7 +245,7 @@ def compose_incident_watcher_details(alert: dict, watcher_groups: list) -> tuple
     watcher_description: str = ''
     watcher_uid: str = alert.get('watcherUid', '')
     watchers: list = []
-    if watcher_group.get('watchers'):
+    if watcher_group.get('watchers', None):
         watchers = watcher_group.get('watchers', [])
         watcher: dict = [w for w in watchers if w['uid'] == watcher_uid][0]
         if watcher:
@@ -257,13 +257,13 @@ def compose_incident_watcher_details(alert: dict, watcher_groups: list) -> tuple
 def compose_incident_details(alert: dict, watcher_groups: list) -> str:
     details: str = ''
 
-    if alert.get('actor'):
+    if alert.get('actor', None):
         details += 'Source Object: ACTOR'
         details += '\n\n' + 'Actor Details:'
         actor_details: dict = deep_get(alert, 'actor.links', {})
         actor_details_str: str = json.dumps(actor_details, indent=2, sort_keys=False)
         details += '\n' + actor_details_str
-    elif alert.get('breachAlert'):
+    elif alert.get('breachAlert', None):
         details += 'Source Object: BREACH ALERT'
         details += '\n' + 'Title: ' + deep_get(alert, 'breachAlert.data.breach_alert.title', '')
         details += '\n' + 'Confidence: ' + deep_get(alert, 'breachAlert.data.breach_alert.confidence.lovel', '') + \
@@ -273,7 +273,7 @@ def compose_incident_details(alert: dict, watcher_groups: list) -> str:
         victim_details: dict = deep_get(alert, 'breachAlert.data.breach_alert.victim', {})
         victim_details_str: str = json.dumps(victim_details, indent=2, sort_keys=False)
         details += '/n' + victim_details_str
-    elif alert.get('credential'):
+    elif alert.get('credential', None):
         details += 'Source Object: CREDENTIAL'
         details += '\n' + 'Credential Login: ' + deep_get(alert, 'credential.data.credential_login', '')
         details += '\n' + 'Detection Domain: ' + deep_get(alert, 'credential.data.detection_domain', '')
@@ -281,7 +281,7 @@ def compose_incident_details(alert: dict, watcher_groups: list) -> str:
         affiliations_list_credential: list = alert.get('credential', {}).get('data', {}).get('affiliations', [])
         affiliations_credential: str = ','.join(affiliations_list_credential)
         details += '\n' + 'Affiliations: ' + affiliations_credential
-    elif alert.get('credential_occurrence'):
+    elif alert.get('credential_occurrence', None):
         details += 'Source Object: CREDENTIAL OCCURRENCE'
         details += '\n' + 'Credential Login: ' + deep_get(alert, 'credential_occurrence.data.credential.credential_login', '')
         details += '\n' + 'Detection Domain: ' + deep_get(alert, 'credential_occurrence.data.credential.detection_domain', '')
@@ -291,11 +291,11 @@ def compose_incident_details(alert: dict, watcher_groups: list) -> str:
         affiliations_credential_occurrence: str = ','.join(affiliations_list_credential_occurrence)
         details += '\n' + 'Affiliations: ' + affiliations_credential_occurrence
         details += '\n' + 'Credential Set: ' + deep_get(alert, 'credential_occurrence.data.credential_set.name', '')
-    elif alert.get('credential_set'):
+    elif alert.get('credential_set', None):
         details += 'Source Object: CREDENTIAL SET'
         details += '\n' + 'Name: ' + deep_get(alert, 'credential_set.data.name', '')
         details += '\n\n' + html.unescape(' '.join(remove_tags(str(alert)).strip().split()))
-    elif alert.get('cveReport'):
+    elif alert.get('cveReport', None):
         details += 'Source Object: CVE REPORT'
         details += '\n' + 'CVE: ' + deep_get(alert, 'cveReport.data.cve_report.name', '')
         details += '\n' + 'Risk Level: ' + deep_get(alert, 'cveReport.data.cve_report.risk_level', '')
@@ -310,11 +310,11 @@ def compose_incident_details(alert: dict, watcher_groups: list) -> str:
         details += '\n' + 'Patch Status: ' + str(deep_get(alert, 'cveReport.data.cve_report.patch_status', ''))
         details += '\n' + 'Countermeasures: ' + str(deep_get(alert, 'cveReport.data.cve_report.counter_measures', ''))
         details += '\n\n' + 'Summary: ' + deep_get(alert, 'cveReport.data.cve_report.summary', '')
-    elif alert.get('entity'):
+    elif alert.get('entity', None):
         details += 'Source Object: ENTITY'
         details += '\n' + 'Entity: ' + deep_get(alert, 'entity.value', '')
         details += '\n\n' + html.unescape(' '.join(remove_tags(str(alert)).strip().split()))
-    elif alert.get('event'):
+    elif alert.get('event', None):
         details += 'Source Object: MALWARE EVENT'
         details += '\n' + 'Malware Family: ' + deep_get(alert, 'event.data.threat.data.family', '')
         details += '\n' + 'Malware Family Version: ' + deep_get(alert, 'event.data.threat.data.version', '')
@@ -324,7 +324,7 @@ def compose_incident_details(alert: dict, watcher_groups: list) -> str:
         event_details: dict = deep_get(alert, 'event.data.event_data', '')
         event_details_str: str = json.dumps(event_details, indent=2, sort_keys=False)
         details += '\n' + event_details_str
-    elif alert.get('indicator'):
+    elif alert.get('indicator', None):
         details += 'Source Object: MALWARE INDICATOR'
         details += '\n' + 'Malware Family: ' + deep_get(alert, 'indicator.data.threat.data.family', '')
         details += '\n' + 'Malware Family Version: ' + deep_get(alert, 'indicator.data.threat.data.version', '')
@@ -336,28 +336,28 @@ def compose_incident_details(alert: dict, watcher_groups: list) -> str:
         indicator_details: dict = deep_get(alert, 'indicator.data.indicator_data', '')
         indicator_details_str: str = json.dumps(indicator_details, indent=2, sort_keys=False)
         details += '\n' + indicator_details_str
-    elif alert.get('instantMessage'):
+    elif alert.get('instantMessage', None):
         details += 'Source Object: INSTANT MESSAGE'
         details += '\n' + 'Service: ' + deep_get(alert, 'instantMessage.data.server.service_type', '')
         details += '\n' + 'Channel: ' + deep_get(alert, 'instantMessage.data.channel.name', '')
         details += '\n' + 'Actor: ' + deep_get(alert, 'instantMessage.data.actor.handle', '')
         details += '\n\n' + html.unescape(' '.join(remove_tags(deep_get(alert, 'instantMessage.data.message.text',
                                                                                '')).strip().split()))
-    elif alert.get('ioc'):
+    elif alert.get('ioc', None):
         details += 'Source Object: IOC'
         details += '\n' + 'Type: ' + deep_get(alert, 'ioc.type', '')
         details += '\n' + 'IOC: ' + deep_get(alert, 'ioc.value', '')
-    elif alert.get('post'):
+    elif alert.get('post', None):
         details += 'Source Object: FORUM POST'
         details += '\n' + 'Forum: ' + deep_get(alert, 'post.links.forum.name', '')
         details += '\n' + 'Thread Topic: ' + deep_get(alert, 'post.links.thread.topic', '')
         details += '\n' + 'Actor: ' + deep_get(alert, 'post.links.authorActor.handle', '')
         details += '\n\n' + html.unescape(' '.join(remove_tags(deep_get(alert, 'post.message', '')).strip().split()))
-    elif alert.get('report'):
+    elif alert.get('report', None):
         details += 'Source Object: ' + get_report_type(deep_get(alert, 'report.portalReportUrl', ''))
         details += 'Source Characterization ' + deep_get(alert, 'report.sourceCharacterization', '')
         details += '\n\n' + 'Subject: ' + deep_get(alert, 'report.subject', '')
-    elif alert.get('spotReport'):
+    elif alert.get('spotReport', None):
         details += 'Source Object: SPOT REPORT'
         details += '\n\n' + deep_get(alert, 'spotReport.data.spot_report.spot_report_data.text', '')
         purported_victims_details: dict = deep_get(alert, 'spotReport.data.spot_report.spot_report_data.victims', '')

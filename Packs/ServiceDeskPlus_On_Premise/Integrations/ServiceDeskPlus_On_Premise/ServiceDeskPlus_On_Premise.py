@@ -91,7 +91,7 @@ def create_output(request: dict) -> dict:
     """
     output = {}
     for field in request.keys():
-        value = request.get(field)
+        value = request.get(field, None)
         if value not in [None, {}, []] and field not in FIELDS_TO_IGNORE:
             output[string_to_context_key(field)] = value
             if field in FIELDS_WITH_TIME:
@@ -116,7 +116,7 @@ def args_to_query(args: dict) -> dict:
     """
     request_fields: Dict[str, Any] = {}
     for field in REQUEST_FIELDS:
-        value = args.get(field)
+        value = args.get(field, None)
         if value:
             if field == 'udf_fields':
                 request_fields[field] = f"{create_udf_field(value)}"
@@ -344,11 +344,11 @@ def list_requests_command(client: Client, args: dict):
     Returns:
         Demisto Outputs.
     """
-    request_id = args.get('request_id')
-    start_index = args.get('start_index')
-    row_count = args.get('page_size')
-    search_fields = args.get('search_fields')
-    filter_by = args.get('filter_by')
+    request_id = args.get('request_id', None)
+    start_index = args.get('start_index', None)
+    row_count = args.get('page_size', None)
+    search_fields = args.get('search_fields', None)
+    filter_by = args.get('filter_by', None)
     list_info = create_requests_list_info(start_index, row_count, search_fields, filter_by)
     params = {
         'input_data': f'{list_info}'

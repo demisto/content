@@ -175,14 +175,14 @@ def create_py_documentation(path, origin, language):
 
                     if inspect.isclass(a_object):
                         y["argList"] = list(inspect.getfullargspec(a_object.__init__))[0] \
-                            if PY_IRREGULAR_FUNCS.get(a) is None \
+                            if PY_IRREGULAR_FUNCS.get(a, None) is None \
                             else PY_IRREGULAR_FUNCS[a]["argList"]
 
                         # init will contains self, so remove the self from the arg list
                         y["argList"].remove('self')
                     else:
                         y["argList"] = list(inspect.getfullargspec(a_object))[0] \
-                            if PY_IRREGULAR_FUNCS.get(a) is None \
+                            if PY_IRREGULAR_FUNCS.get(a, None) is None \
                             else PY_IRREGULAR_FUNCS[a]["argList"]
 
                     x.append(y)

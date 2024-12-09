@@ -135,7 +135,7 @@ def test_module(client: Client) -> str:
 
 def search_appnovi_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
-    search_term = args.get("search_term")
+    search_term = args.get("search_term", None)
     if not search_term:
         raise ValueError("Search term not specified")
 
@@ -175,8 +175,8 @@ def search_appnovi_command(client: Client, args: dict[str, Any]) -> CommandResul
 
 def search_appnovi_prop_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
-    search_prop = args.get("property")
-    search_value = args.get("value")
+    search_prop = args.get("property", None)
+    search_value = args.get("value", None)
 
     if not search_prop or not search_value:
         raise ValueError("Search terms not specified")
@@ -223,7 +223,7 @@ def search_appnovi_connected_command(
     """Search for components connected to other components.
     Can be limited in the types of things returned"""
 
-    identity = args.get("identity")
+    identity = args.get("identity", None)
     if not identity:
         raise ValueError("Identity not specified")
 
@@ -268,7 +268,7 @@ def search_appnovi_cve_servers_command(
     """Find Servers with CVE
     This is a convenience command using the connected search"""
 
-    cve = args.get("cve")
+    cve = args.get("cve", None)
     if not cve:
         raise ValueError("CVE not specified")
 
@@ -305,7 +305,7 @@ def find_server_by_ip_command(client: Client, args: dict[str, Any]) -> CommandRe
     """Use the connected function to return servers owning a given IP
     Good example of how you an chain requests to walk the graph via command or playbook
     """
-    ip = args.get("ip")
+    ip = args.get("ip", None)
     if not ip:
         raise ValueError("IP not specified")
 
@@ -411,7 +411,7 @@ def main() -> None:  # pragma: no cover
             "search-appnovi-server-by-ip": find_server_by_ip_command,
         }
 
-        fn = commands.get(command)
+        fn = commands.get(command, None)
         if fn:
             return_results(fn(client, demisto.args()))
 

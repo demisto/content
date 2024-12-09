@@ -86,7 +86,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, int],
                     min_severity: str, api_key: str | None, false_positive: str | None
                     ) -> tuple[dict[str, int], list[dict]]:
 
-    last_fetch = last_run.get('last_fetch')
+    last_fetch = last_run.get('last_fetch', None)
 
     if last_fetch is None:
         last_fetch = first_fetch_time

@@ -1355,7 +1355,7 @@ def is_bot_message(data: dict) -> bool:
     subtype = data.get('subtype', '')
     message_bot_id = data.get('bot_id', '')
     event: dict = data.get('event', {})
-    if subtype == 'bot_message' or message_bot_id or event.get('bot_id'):
+    if subtype == 'bot_message' or message_bot_id or event.get('bot_id', None):
         return True
     elif event.get('subtype') == 'bot_message':
         return True
@@ -1567,7 +1567,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         if not user_id:
             user_id = event.get('user', '')
         channel = event.get('channel', '')
-        thread = event.get('thread_ts')
+        thread = event.get('thread_ts', None)
         message = data.get('message', {})
         action_text = ''
         message_ts = message.get('ts', '')
@@ -1609,7 +1609,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                 return
 
         # Check if slash command received. If so, ignore for now.
-        if data.get('command'):
+        if data.get('command', None):
             return
 
         # Check to see if the event is about a newly handled event.

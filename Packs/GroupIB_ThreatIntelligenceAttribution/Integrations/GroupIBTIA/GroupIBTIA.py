@@ -1202,7 +1202,7 @@ def global_search_command(client: Client, args: dict):
 
 
 def local_search_command(client: Client, args: dict):
-    query, date_from, date_to = args.get('query'), args.get('date_from'), args.get('date_to')
+    query, date_from, date_to = args.get('query'), args.get('date_from', None), args.get('date_to', None)
     collection_name = str(args.get('collection_name'))
 
     if date_from is not None:

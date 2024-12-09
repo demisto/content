@@ -437,7 +437,7 @@ def fetch_incidents(client: Client, last_run: dict[str, int],
     :rtype: ``Tuple[Dict[str, int], List[dict]]``
     """
 
-    last_fetch = last_run.get('last_fetch')
+    last_fetch = last_run.get('last_fetch', None)
     is_initial_run = last_run.get('is_initial_run', True)
     offset = last_run.get('offset')
     if last_fetch is None:
@@ -498,7 +498,7 @@ def get_event_command(client: Client, args: dict[str, Any]) -> CommandResults:
     :rtype: ``CommandResults``
     """
 
-    event_id = args.get('event_id')
+    event_id = args.get('event_id', None)
     if not event_id:
         raise ValueError('event_id not specified')
 
@@ -546,7 +546,7 @@ def get_insight_command(client: Client, args: dict[str, Any]) -> CommandResults:
     :rtype: ``CommandResults``
     """
 
-    insight_id = args.get('insight_id')
+    insight_id = args.get('insight_id', None)
     if not insight_id:
         raise ValueError('insight_id not specified')
 

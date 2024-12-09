@@ -411,7 +411,7 @@ def parse_cve(ocve: OpenCVE, cve: dict):
     """
 
     cvss_version = None
-    if cve.get('cvss') is not None:
+    if cve.get('cvss', None) is not None:
         if cve['cvss'].get('v3', None) is not None:
             cvss_version = 3
         elif cve['cvss'].get('v2', None) is not None:
@@ -618,7 +618,7 @@ def get_cve_command(client: Client, ocve: OpenCVE, args: dict) -> list[CommandRe
     Returns:
         A list of CommandResults. Each CommandResult has a single CVE
     """
-    cves = args.get('cve')
+    cves = args.get('cve', None)
     cves = argToList(cves)
     cves = [cve for cve in cves if valid_cve_format(cve)]
 
@@ -723,7 +723,7 @@ def get_vendor_cves_command(client: Client, ocve: OpenCVE, args: dict) -> list[C
     Returns:
         A list of CommandResults with a single CVE per CommandResult
     """
-    vendor = args.get('vendor_name')
+    vendor = args.get('vendor_name', None)
     params = {}
     if 'search' in args:
         params['search'] = args.get('search')
@@ -768,8 +768,8 @@ def get_products_command(client: Client, args: dict) -> CommandResults | None:
     Returns:
         CommandREsults with a list of products
     """
-    if vendor := args.get('vendor_name'):
-        if product := args.get('product_name'):
+    if vendor := args.get('vendor_name', None):
+        if product := args.get('product_name', None):
             results = client.get_vendor_products_request(vendor_name=vendor, product_name=product)
             return CommandResults(
                 outputs_prefix=f'OpenCVE.{vendor}.{product}',
@@ -779,9 +779,9 @@ def get_products_command(client: Client, args: dict) -> CommandResults | None:
         else:
             params = {}
 
-            if search := args.get('search'):
+            if search := args.get('search', None):
                 params['search'] = search
-            if page := args.get('page'):
+            if page := args.get('page', None):
                 params['page'] = page
 
             results = client.get_vendor_products_request(vendor_name=vendor, params=params)
@@ -805,18 +805,18 @@ def get_product_cves_command(client: Client, ocve: OpenCVE, args: dict) -> list[
     Returns:
         A list of CommandResults with one CVE per CommandResult
     """
-    vendor = args.get('vendor_name')
-    product = args.get('product_name')
+    vendor = args.get('vendor_name', None)
+    product = args.get('product_name', None)
     params = {}
 
     if 'search' in args:
-        params['search'] = args.get('search')
+        params['search'] = args.get('search', None)
     if 'cvss' in args:
-        params['cvss'] = args.get('cvss')
+        params['cvss'] = args.get('cvss', None)
     if 'cwe' in args:
-        params['cwe'] = args.get('cwe')
+        params['cwe'] = args.get('cwe', None)
     if 'page' in args:
-        params['page'] = args.get('page')
+        params['page'] = args.get('page', None)
 
     cves = client.get_cves_by_product_request(vendor, product, params=params)
     results = []
@@ -847,7 +847,7 @@ def get_reports_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults with a dict of the report
     """
-    if report_id := args.get('report_id'):
+    if report_id := args.get('report_id', None):
         results = client.get_reports_request(report_id)
         return CommandResults(
             outputs_prefix=f'OpenCVE.Reports.{report_id}',
@@ -878,8 +878,8 @@ def get_alerts_command(client: Client, args: dict) -> CommandResults | None:
     Returns:
         CommandResults with a list of alerts
     """
-    if report_id := args.get('report_id'):
-        if alert_id := args.get('alert_id'):
+    if report_id := args.get('report_id', None):
+        if alert_id := args.get('alert_id', None):
             results = client.get_alerts_request(report_id, alert_id)
             return CommandResults(
                 outputs_prefix=f'OpenCVE.Reports.Alerts.{alert_id}',
@@ -888,7 +888,7 @@ def get_alerts_command(client: Client, args: dict) -> CommandResults | None:
         else:
             params = {}
 
-            if page := args.get('page'):
+            if page := args.get('page', None):
                 params['page'] = page
 
             results = client.get_alerts_request(report_id, params=params)

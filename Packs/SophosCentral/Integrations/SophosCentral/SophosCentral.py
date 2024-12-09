@@ -3288,7 +3288,7 @@ def fetch_incidents(
         Tuple of next_run (millisecond timestamp) and the incidents list
     """
     demisto.debug(f"Fetching incidents with last_run: {last_run}")
-    last_fetch_timestamp = last_run.get("last_fetch")
+    last_fetch_timestamp = last_run.get("last_fetch", None)
 
     if last_fetch_timestamp:
         demisto.debug(f"Last fetch time: {last_fetch_timestamp}")

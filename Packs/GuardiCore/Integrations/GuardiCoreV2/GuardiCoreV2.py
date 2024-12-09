@@ -223,8 +223,8 @@ def test_module(client: Client, is_fetch: bool = False) -> str:
 
 
 def get_incidents(client: Client, args: dict[str, Any]):
-    from_time = args.get('from_time')
-    to_time = args.get('to_time')
+    from_time = args.get('from_time', None)
+    to_time = args.get('to_time', None)
 
     if not from_time or not to_time:
         raise DemistoException(
@@ -248,10 +248,10 @@ def get_incidents(client: Client, args: dict[str, Any]):
     limit = int(args.get('limit', 50))
     offset = int(args.get('offset', 0))
     severity = args.get('severity', [])
-    source = args.get('source')
-    destination = args.get('destination')
-    tag = args.get('tag')
-    incident_type = args.get('incident_type')
+    source = args.get('source', None)
+    destination = args.get('destination', None)
+    tag = args.get('tag', None)
+    incident_type = args.get('incident_type', None)
 
     if incident_type == 'false' or incident_type == 'All':
         incident_type = None
@@ -299,7 +299,7 @@ def fetch_incidents(client: Client, args: dict[str, Any]) -> \
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("last_fetch")
     last_ids = last_run.get("last_ids", [])
-    first_fetch = args.get('first_fetch')
+    first_fetch = args.get('first_fetch', None)
     demisto.debug(
         f'{INTEGRATION_NAME} - Fetch incidents last fetch: {last_fetch}, first fetch: {first_fetch}')
 
@@ -360,7 +360,7 @@ def fetch_incidents(client: Client, args: dict[str, Any]) -> \
 
 
 def get_indicent(client: Client, args: dict[str, Any]) -> CommandResults:
-    incident_id = args.get('id')
+    incident_id = args.get('id', None)
     if not incident_id:
         raise DemistoException(
             f"{INTEGRATION_NAME} - get incident needs an id parameter.")
@@ -387,9 +387,9 @@ def get_indicent(client: Client, args: dict[str, Any]) -> CommandResults:
 
 
 def get_assets(client: Client, args: dict[str, Any]) -> List[CommandResults]:
-    ip_address = args.get('ip_address')
-    name = args.get('name')
-    asset_id = args.get('asset_id')
+    ip_address = args.get('ip_address', None)
+    name = args.get('name', None)
+    asset_id = args.get('asset_id', None)
     limit = int(args.get('limit', 50))
     offset = int(args.get('offset', 0))
 
@@ -431,9 +431,9 @@ def get_assets(client: Client, args: dict[str, Any]) -> List[CommandResults]:
 
 def endpoint_command(client: Client, args: dict[str, Any]) -> \
         List[CommandResults]:
-    id = args.get("id")
-    ip_address = args.get("ip")
-    hostname = args.get("hostname")
+    id = args.get("id", None)
+    ip_address = args.get("ip", None)
+    hostname = args.get("hostname", None)
     if not id and not ip_address and not hostname:
         raise DemistoException(
             f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')

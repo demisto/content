@@ -129,7 +129,7 @@ def fetch_detections_command(client: Client, args: dict[str, Any]) -> list[Comma
     :rtype: ``CommandResults``
     """
     token = client.get_access_token()
-    hours = args.get('hours')
+    hours = args.get('hours', None)
 
     if not token:
         raise ValueError('Access token not specified')
@@ -191,7 +191,7 @@ def fetch_progressions_command(client: Client, args: dict[str, Any]) -> list[Com
     :rtype: ``CommandResults``
     """
     token = client.get_access_token()
-    hours = args.get('hours')
+    hours = args.get('hours', None)
 
     if not token:
         raise ValueError('Access token not specified')
@@ -253,7 +253,7 @@ def fetch_trail_details_command(client: Client, args: dict[str, Any]) -> Command
     :rtype: ``CommandResults``
     """
     token = client.get_access_token()
-    trail_id = args.get('trail_id')
+    trail_id = args.get('trail_id', None)
 
     if not token:
         raise ValueError('Access token not specified')

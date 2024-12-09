@@ -3958,7 +3958,7 @@ def create_indicator_command(client: MsClient, args: dict, specific_args: dict) 
     expiration_time = get_future_time(args.get('expiration_time', ''))
     threat_type = args.get('threat_type', '')
     tlp_level = args.get('tlp_level', '')
-    confidence = args.get('confidence')
+    confidence = args.get('confidence', None)
     try:
         if confidence is not None:
             confidence = int(confidence)

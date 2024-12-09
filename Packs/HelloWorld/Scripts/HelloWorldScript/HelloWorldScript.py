@@ -60,7 +60,7 @@ def say_hello_command(args: dict[str, Any]) -> CommandResults:
     # Check the HelloWorld comments from the HelloWorld Integration
     # as the command "say_hello_command" is the same.
 
-    name = args.get('name')
+    name = args.get('name', None)
 
     original_result = say_hello(name)
 

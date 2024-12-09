@@ -57,7 +57,7 @@ def filter_resources(data: List[Dict[str, Any]], resource_type: str, desired_res
         'image': 'imageid'
     }
 
-    key = key_mapping.get(resource_type)
+    key = key_mapping.get(resource_type, None)
     if not key:
         raise DemistoException("Invalid resource_type. Supported types: 'host', 'container', 'image'.")
 

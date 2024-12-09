@@ -879,11 +879,11 @@ def get_and_validate_args_finding_update(args: dict[str, Any]) -> tuple:
     :return: name, event_time, severity, external_uri, source_properties, update_mask
     """
     # Get command args
-    name = args.get("name")
+    name = args.get("name", None)
     event_time = args.get("eventTime") or datetime.now().strftime(ISO_DATE_FORMAT)
     severity = args.get("severity", "").upper()
-    external_uri = args.get("externalUri")
-    source_properties = args.get("sourceProperties")
+    external_uri = args.get("externalUri", None)
+    source_properties = args.get("sourceProperties", None)
     update_mask = [value for value in args.get("updateMask", "").split(",") if value.strip()]
 
     if severity and severity.strip().upper() not in SEVERITY_LIST:
@@ -907,7 +907,7 @@ def get_and_validate_args_finding_state_update(args: dict[str, Any]) -> tuple:
     :return: name, event_time, state
     """
     # Get command args
-    name = args.get("name")
+    name = args.get("name", None)
     event_time = datetime.now().strftime(ISO_DATE_FORMAT)
     state = args.get("state", "").upper()
 
@@ -1222,13 +1222,13 @@ def asset_list_command(client: GoogleSccClient, args: dict) -> CommandResults:
 
     resource_type = args.get("resourceType", "")
     project = args.get("project", "")
-    field_mask = args.get("fieldMask")
-    order_by = args.get("orderBy")
+    field_mask = args.get("fieldMask", None)
+    order_by = args.get("orderBy", None)
     active_assets_only = args.get("activeAssetsOnly", "false")
     filter_string = args.get("filter", "")
-    read_time = args.get("readTime")
-    compare_duration = args.get("compareDuration")
-    page_token = args.get("pageToken")
+    read_time = args.get("readTime", None)
+    compare_duration = args.get("compareDuration", None)
+    page_token = args.get("pageToken", None)
 
     # Creating filter
     filter_string = create_filter_list_assets(resource_type, project, filter_string, active_assets_only)
@@ -1263,11 +1263,11 @@ def finding_list_command(client: GoogleSccClient, args: dict) -> CommandResults:
     page_size = args.get("pageSize")
     state = [value for value in args.get("state", "").split(",") if value.strip()]
     filter_string = args.get("filter", "")
-    order_by = args.get("orderBy")
-    compare_duration = args.get("compareDuration")
-    field_mask = args.get("fieldMask")
-    read_time = args.get("readTime")
-    page_token = args.get("pageToken")
+    order_by = args.get("orderBy", None)
+    compare_duration = args.get("compareDuration", None)
+    field_mask = args.get("fieldMask", None)
+    read_time = args.get("readTime", None)
+    page_token = args.get("pageToken", None)
 
     # Validates command args
     validate_state_and_severity_list(state, severity)

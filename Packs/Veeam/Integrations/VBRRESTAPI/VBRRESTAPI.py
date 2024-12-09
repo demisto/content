@@ -1268,7 +1268,7 @@ def fetch_configuration_backup_incident(
     backup_incident: dict = {}
     error_count: int = errors_by_command.get(ERROR_COUNT_IN_CONFIGURATION_BACKUP_INCIDENTS, 0)
     try:
-        backupDate = last_run.get("backup_date")
+        backupDate = last_run.get("backup_date", None)
         backup_incident, backupDate = handle_command_with_token_refresh(
             get_configuration_backup_incident,
             {'client': client, 'last_successful_backup_date': backupDate, 'backup_older_then_days': backup_older_then_days},
@@ -1296,7 +1296,7 @@ def fetch_incidents(
 ) -> tuple[dict, list[dict]]:
 
     demisto.debug(f'Last run: {json.dumps(last_run)}')
-    last_fetch = last_run.get('last_fetch')
+    last_fetch = last_run.get('last_fetch', None)
 
     # Handle first fetch time
     if last_fetch is None:

@@ -261,11 +261,11 @@ class Client(BaseClient):
 
     @staticmethod
     def create_indicator_from_artifact(raw_json_data: dict, artifact: dict):
-        indicator_value = artifact.get('indicator')
+        indicator_value = artifact.get('indicator', None)
         if indicator_value is None:
             return None
 
-        autofocus_indicator_type = artifact.get('indicator_type')
+        autofocus_indicator_type = artifact.get('indicator_type', None)
         indicator_type = af_indicator_type_to_demisto.get(autofocus_indicator_type)
         if not indicator_type:
             return None

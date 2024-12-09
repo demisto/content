@@ -44,11 +44,11 @@ def remove_key_from_list(list_name: str, key_name: str) -> str:
 
 def remove_key_from_list_command(args: dict[str, Any]) -> CommandResults:
 
-    list_name = args.get('listName')
+    list_name = args.get('listName', None)
     if not list_name:
         raise ValueError('listName must be specified')
 
-    key_name = args.get('keyName')
+    key_name = args.get('keyName', None)
     if not key_name:
         raise ValueError('keyName must be specified')
 

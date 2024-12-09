@@ -95,7 +95,7 @@ def aggregate_command(args: Dict[str, Any]) -> CommandResults:
         if source_ip is None:
             continue
 
-        current_state = current_ips.get(source_ip)
+        current_state = current_ips.get(source_ip, None)
         if current_state is None:
             current_state = {
                 'ip': source_ip,

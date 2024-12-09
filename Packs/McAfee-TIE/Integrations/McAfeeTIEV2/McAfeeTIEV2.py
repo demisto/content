@@ -248,7 +248,7 @@ def get_client_config(dxl_config_files: DXLConfigFiles) -> DxlClientConfig:
 
 def get_provider_name(provider_id: Union[int, str]) -> str:
     provider_id_int = arg_to_number(provider_id)
-    provider_info = PROVIDER_INFO.get(provider_id_int)
+    provider_info = PROVIDER_INFO.get(provider_id_int, None)
     if provider_info:
         return provider_info.name
     else:
@@ -257,7 +257,7 @@ def get_provider_name(provider_id: Union[int, str]) -> str:
 
 def get_provider_abbr(provider_id: Union[int, str]) -> str:
     provider_id_int = arg_to_number(provider_id)
-    provider_info = PROVIDER_INFO.get(provider_id_int)
+    provider_info = PROVIDER_INFO.get(provider_id_int, None)
     if provider_info:
         return provider_info.abbreviation
     else:
@@ -347,7 +347,7 @@ def safe_get_file_reputation(tie_client: TieClient, api_input: Dict[str, str]):
 
 def get_hash_type_key(file_hash: str):
     hash_type = get_hash_type(file_hash)
-    hash_type_key = HASH_TYPE_KEYS.get(hash_type)
+    hash_type_key = HASH_TYPE_KEYS.get(hash_type, None)
     if not hash_type_key:
         raise DemistoException(f'Invalid value, {file_hash} is not a valid SHA1, SHA256 or MD5 value.')
     return hash_type_key

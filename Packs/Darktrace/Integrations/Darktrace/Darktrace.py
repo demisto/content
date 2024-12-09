@@ -568,7 +568,7 @@ def fetch_incidents(client: Client, max_alerts: int, last_run: Dict[str, int],
 
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
-    last_fetch = last_run.get('last_fetch')
+    last_fetch = last_run.get('last_fetch', None)
     # Handle first fetch time
     if last_fetch is None:
         last_fetch = first_fetch_time
@@ -650,7 +650,7 @@ def get_breach_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     :rtype: ``CommandResults``
     """
 
-    pbid = str(args.get('pbid'))
+    pbid = str(args.get('pbid', None))
     if not pbid:
         raise ValueError('Darktrace Model Breach ID not specified')
 
@@ -675,13 +675,13 @@ def get_breach_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def get_breach_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    pbid = str(args.get('pbid'))
+    pbid = str(args.get('pbid', None))
     if not pbid:
         raise ValueError('Darktrace Model Breach ID not specified')
 
-    endtime = str(args.get('endtime'))
-    count = str(int(args.get('count')) + 1)
-    offset = str(args.get('offset'))
+    endtime = str(args.get('endtime', None))
+    count = str(int(args.get('count', None)) + 1)
+    offset = str(args.get('offset', None))
 
     model_breach = (client.get_modelbreach_details(pbid=pbid, endtime=endtime, count=count, offset=offset))[1:]
 
@@ -709,7 +709,7 @@ def get_breach_details_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 
 def get_model_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    uuid = str(args.get('uuid'))
+    uuid = str(args.get('uuid', None))
     if not uuid:
         raise ValueError('Darktrace Model UUID not specified')
 
@@ -725,7 +725,7 @@ def get_model_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def get_component_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    cid = str(args.get('cid'))
+    cid = str(args.get('cid', None))
     if not cid:
         raise ValueError('Darktrace Component CID not specified')
 
@@ -758,7 +758,7 @@ def get_comments_command(client: Client, args: Dict[str, Any]) -> CommandResults
     :rtype: ``CommandResults``
     """
 
-    pbid = str(args.get('pbid'))
+    pbid = str(args.get('pbid', None))
     if not pbid:
         raise ValueError('Darktrace Model Breach ID not specified')
 
@@ -801,7 +801,7 @@ def acknowledge_breach_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     :rtype: ``CommandResults``
     """
-    pbid = str(args.get('pbid'))
+    pbid = str(args.get('pbid', None))
     if not pbid:
         raise ValueError('Darktrace Model Breach ID not specified')
 
@@ -840,7 +840,7 @@ def unacknowledge_breach_command(client: Client, args: Dict[str, Any]) -> Comman
 
     :rtype: ``CommandResults``
     """
-    pbid = str(args.get('pbid'))
+    pbid = str(args.get('pbid', None))
     if not pbid:
         raise ValueError('Darktrace Model Breach ID not specified')
 
@@ -880,7 +880,7 @@ def list_similar_devices_command(client: Client, args: Dict[str, Any]) -> Comman
 
     :rtype: ``CommandResults``
     """
-    did = str(args.get('did'))
+    did = str(args.get('did', None))
     max_results = str(args.get('max_results', 5))
     if not did:
         raise ValueError('Darktrace Device ID not specified')

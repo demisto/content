@@ -35,7 +35,7 @@ def load_and_parse_yaml_command(args: dict[str, Any]) -> CommandResults:
     Returns:
         CommandResults: XSOAR CommandResults object
     """
-    stream = args.get("string")
+    stream = args.get("string", None)
 
     if not stream:
         raise ValueError("string not specified in command args")
