@@ -9,7 +9,7 @@ import urllib3
 from typing import Dict, List, Tuple, Any, Union, cast
 import xml.etree.ElementTree as ET_PHONE_HOME
 from copy import deepcopy
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 from dateutil.parser import parse as parsedate
 
 # Disable insecure warnings

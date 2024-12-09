@@ -2,7 +2,7 @@ import demistomock as demisto
 import TimeComponents
 import json
 import freezegun
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 
 
 class TestTimeComponents:
