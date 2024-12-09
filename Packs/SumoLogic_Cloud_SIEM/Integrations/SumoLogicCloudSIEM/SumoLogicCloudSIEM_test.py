@@ -4,7 +4,8 @@ More information about Unit Tests in Cortex XSOAR:
 https://xsoar.pan.dev/docs/integrations/unit-testing
 
 """
-import datetime as datetime_ # since importing everything from CSP includes datetime.datetime, but we need the outer datetime to use the UTC attribute
+# since importing everything from CSP includes datetime.datetime, but we need the outer datetime to use the UTC attribute
+import datetime as datetime_
 from CommonServerPython import *
 from CommonServerUserPython import *
 
