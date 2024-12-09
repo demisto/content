@@ -2555,46 +2555,34 @@ def create_get_group_members_request(group_id=-1, limit=100):
     limit = args.get('limit', limit)
     all_results = argToBoolean(args.get("all_results", False))
     API_MAX_VALUE=500
-
     meta = {}
     data = {}
-
-    if limit and not all_results:
-        meta['pagination'] = {
-            'pageSize': int(limit)
-        }
-    else:
-        meta['pagination'] = {
-            'pageSize': API_MAX_VALUE
-        }
-
+    page_size = API_MAX_VALUE if all_results else int(limit)
+    meta['pagination'] = {'pageSize': page_size}
     data['id'] = group_id
-
     payload = {
         'meta': meta,
         'data': [data]
     }
-
     response = http_request('POST', api_endpoint, payload)
     if isinstance(response, dict) and response.get('fail'):
         raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
+
     next_page = response.get('meta',{}).get('pagination', {}).get('next')
     group_members = response.get('data', [{}])[0].get('groupMembers',{})
-
     while (int(limit) > len(group_members) and next_page) or (all_results and next_page):
-        page_token = response['meta']['pagination']['next']
+        
         meta['pagination'] = {
-            'pageToken': page_token
+            'pageToken': next_page
         }
         payload = {
             'meta': meta,
             'data': [data]
         }
-
         current_response = http_request('POST', api_endpoint, payload)
+        next_page = current_response.get('meta',{}).get('pagination', {}).get('next')
         current_group_members = current_response.get('data', [{}])[0].get('groupMembers',{})
-        response["data"][0]["groupMembers"].extend(current_group_members)
-        group_members = response.get('data', [{}])[0].get('groupMembers',{})
+        group_members.extend(current_group_members)
     return response
 
 
