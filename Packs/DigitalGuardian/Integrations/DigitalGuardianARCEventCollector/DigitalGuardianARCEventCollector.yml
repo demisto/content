@@ -22,7 +22,7 @@ configuration:
   displaypassword: Client Secret
   required: true
 - display: Export Profiles
-  additionalinfo: Names of the Digital Guardian ARC export profiles.
+  additionalinfo: Internal document names or GUIDs of the Digital Guardian ARC export profiles.
   name: export_profiles
   required: true
   type: 16  # Multi Select

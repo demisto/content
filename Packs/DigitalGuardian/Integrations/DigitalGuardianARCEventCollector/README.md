@@ -16,7 +16,7 @@ A maximum of 10,000 events can be retrieved per fetch for each Digital Guardian 
 | Gateway Base URL (e.g. https://some_url.com) |  | True |
 | Client ID |  | True |
 | Client Secret | Client Secret | True |
-| Export Profiles | Names of the Digital Guardian ARC export profiles. Possible values are: defaultExportProfile, demisto. Default is defaultExportProfile. | True |
+| Export Profiles | Internal document names or GUIDs of the Digital Guardian ARC export profiles. Default is defaultExportProfile. | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
