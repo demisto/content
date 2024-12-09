@@ -22,7 +22,7 @@ configuration:
   displaypassword: Client Secret
   required: true
 - display: Export Profiles
-  additionalinfo: Name of the export profile.
+  additionalinfo: Names of the Digital Guardian ARC export profiles.
   name: export_profiles
   required: true
   type: 16  # Multi Select
@@ -61,7 +61,7 @@ script:
       required: true
     - default: false
       defaultValue: 1000
-      description: Maximum results to return.
+      description: Maximum results to return per export profile.
       isArray: false
       name: limit
       required: false

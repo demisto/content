@@ -5,7 +5,7 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Known Limitations
 
-The integration fetch interval should be set to a minimum of "1 hour". If set to less, a quota error might be received.
+A maximum of 10,000 events can be retrieved per fetch for each Digital Guardian export profile. To optimize throughput, it is recommended to distribute alerts and events across multiple export profiles and configure the export profile in the Digital Guardian ARC platform to include only relevant alarm and event types.
 
 ## Configure Digital Guardian ARC Event Collector in Cortex
 
@@ -16,7 +16,7 @@ The integration fetch interval should be set to a minimum of "1 hour". If set to
 | Gateway Base URL (e.g. https://some_url.com) |  | True |
 | Client ID |  | True |
 | Client Secret | Client Secret | True |
-| Export Profile |  | True |
+| Export Profiles | Names of the Digital Guardian ARC export profiles. Possible values are: defaultExportProfile, demisto. Default is defaultExportProfile. | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
@@ -40,7 +40,7 @@ Gets events from the configured Digital Guardian ARC export profile.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum results to return. Default is 1000. | Optional | 
+| limit | Maximum results to return per export profile. Default is 1000. | Optional | 
 
 #### Context Output
 
