@@ -27,9 +27,9 @@ configuration:
   required: true
   type: 16  # Multi Select
   options:
-  - DefaultExportProfile
-  - Demisto
-  default: DefaultExportProfile
+    - defaultExportProfile
+    - demisto
+  default: defaultExportProfile
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
