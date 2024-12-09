@@ -19,12 +19,12 @@ def util_load_json(path):
 
 
 get_alert_mock_response_200 = util_load_json('test_data/get-alert-command-200.json')
-@pytest.mark.parametrize("api_path, command, args, api_response",
+@pytest.mark.parametrize("command, api_path, args, api_response",
                          [
-                             ("https://api.doppel.com/v1/alert?id=TST-31222", "get-alert", {"id": "TST-31222"}, get_alert_mock_response_200)
+                             ("get-alert", "https://api.doppel.com/v1/alert?id=TST-31222", {"id": "TST-31222"}, get_alert_mock_response_200)
                          ]
                          )
-def test_command_success(mocker, requests_mock, api_path, command, args, api_response):
+def test_command_success(mocker, requests_mock, command, api_path, args, api_response):
     """Tests the current command
     """
     mocker.patch.object(demisto, 'params', return_value={"url": "https://api.doppel.com", "credentials": {"password": "<API-KEY>"}})
