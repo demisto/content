@@ -12248,7 +12248,6 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         headers['total-items-count'] = str(items_count)
 
     header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
-
     def data_error_handler(res):
         """
         Internal function to parse the XSIAM API errors
@@ -12278,42 +12277,45 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         raise DemistoException(header_msg + error, DemistoException)
 
 
-    def split_and_send_events(data, data_size):
-        demisto.info(f'[test] sending to xsiam inside executor with {data_size=}, {len(data)}')
+    def split_and_send_events(data):
+        demisto.info('[test] sending to xsiam inside executor with chunk_size= {}, len(data)={}'.format(chunk_size, len(data)))
+        threads_data_size = 0
         client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
         data_chunks = split_data_to_chunks(data, chunk_size)
         for data_chunk in data_chunks:
-            data_size += len(data_chunk)
+            threads_data_size += len(data_chunk)
             data_chunk = '\n'.join(data_chunk)
             zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
             xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
                                         error_msg=header_msg, headers=headers,
                                         num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                         zipped_data=zipped_data, is_json_response=True, data_type=data_type)
-            return "Done."
+            return threads_data_size
         demisto.info('[test] finished sending to xsiam inside executor')
 
     if multiple_threads:
-        demisto.info(f"Got {multiple_threads=}, will send events to xsiam with multiple threads.")
+        demisto.info("[test] Got {}, will send events to xsiam with multiple threads.".format(multiple_threads))
         support_multithreading()
         import concurrent.futures
 
         # Split the Data into chunks
-        demisto.info(f"Spliting the data into {num_of_chunks_to_split} chunks.")
+        demisto.info("[test] Spliting the data into {} chunks.".format(num_of_chunks_to_split))
+        if isinstance(data, str):
+            data = data.split('\n')
         split_data = [data[i:i + len(data) // num_of_chunks_to_split] for i in range(0, len(data), len(data) // num_of_chunks_to_split)]
-
+        demisto.info("[test] got the following lens {}".format([len(chunk) for chunk in split_data]))
         # Step 3: Create a ThreadPool
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
 
             # Step 5: Submit Tasks to the ThreadPool
-            future_to_data = [executor.submit(split_and_send_events, segment, data_size) for segment in split_data]
+            future_to_data = [executor.submit(split_and_send_events, segment) for segment in split_data]
             demisto.info('[test] submitted all the futures')
             # Step 6: Handle Responses (Optional)
             for future in concurrent.futures.as_completed(future_to_data):
-                demisto.info(f'[test] printing result {future.result()}')
+                demisto.info('[test] printing result {}'.format(future.result()))
             demisto.info('[test] should be done sending events')
     else:
-        split_and_send_events(data, data_size)
+        data_size = split_and_send_events(data)
 
     if should_update_health_module:
         demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
