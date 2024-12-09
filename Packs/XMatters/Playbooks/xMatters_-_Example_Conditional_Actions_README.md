@@ -32,4 +32,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 
-![xMatters - Example Conditional Actions](xMatters_-_Example_Conditional_Actions.png)
+![xMatters - Example Conditional Actions](../doc_files/xmatters_example_conditional_actions.png)
