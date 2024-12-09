@@ -50,9 +50,29 @@ While debugging the integration script, you want make sure that the integration 
 
 1. Create a file named `.args_command.json` at `/content/Packs/Doppel/Integrations/Doppel/.args_command.json`
 2. Decide which command you want to debug and initialize the file.
-3. For example if you want to debug the `get-alert` command with input argument for `id`, you should have the following content in the file:
+3. For example if you want to debug the `get-alert` command with input argument for `id` equals to `TST-31`, you should have the following content in the file:
    `{
     "cmd": "get-alert",
     "id": "TST-31"
    }`
 4. Click on the debug button for *Python: Debug Integration locally*. The breackpoint will hit and you will get the correct params, command and args while debugging.
+
+
+## Test the pack on XSOAR tenant
+
+Once you have made sure the commands are working as expected and now you want to test the commands on the actual XSOAR tenant, you need to perform the following steps:
+
+### Connect your local dev environment to XSOAR tenant
+
+1. Press `Ctrl+shift+p` and run *XSOAR: Configure XSOAR Connection*
+2. Enter the XSOAR Server Connection details.
+3. We used the XSOAR API key to setup the connection that can be generated from XSOAR tenant by going to:
+   `Settings and info >> Settings >> Integrations >> API Keys`
+
+### Upload the pack to XSOAR tenant
+
+Upload the current app pack to XSOAR tenant using the following command:
+    `demisto-sdk upload -i Packs/Doppel`
+    OR
+    `demisto-sdk upload -i Packs/Doppel --insecure` if you do not want to validate the certificate while uploading the pack.
+The above command will upload and install the pack on your XSOAR tenant. You can configure and test the new features.
