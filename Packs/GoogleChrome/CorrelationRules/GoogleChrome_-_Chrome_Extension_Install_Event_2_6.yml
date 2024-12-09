@@ -1,0 +1,36 @@
+alert_category: PERSISTENCE
+alert_description: The extension $xdm.target.resource.name was installed on $xdm.source.host.hostname
+  by $xdm.intermediate.identity.username
+alert_fields:
+  actor_effective_username: xdm.source.identity.username
+  agent_hostname: xdm.source.host.hostname
+  user_agent: xdm.source.user_agent
+alert_name: Chrome - Chrome Extension Install Event
+crontab: null
+dataset: alerts
+description: This rule alerts on any installation of a browser extension
+drilldown_query_timeframe: ALERT
+execution_mode: REAL_TIME
+global_rule_id: 6530cad5-856d-4d38-b305-63b9567d4c48
+investigation_query_link: "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.event.type in\
+  \ (\"BROWSER_EXTENSION_INSTALL\")\n| filter xdm.intermediate.identity.username = $xdm.intermediate.identity.username\
+  \ and xdm.source.host.hostname = $xdm.source.host.hostname and xdm.target.resource.name\
+  \ = $xdm.target.resource.name"
+mapping_strategy: CUSTOM
+mitre_defs:
+  TA0003 - Persistence:
+  - T1176 - Browser Extensions
+name: Chrome - Chrome Extension Install Event
+search_window: null
+severity: SEV_020_LOW
+suppression_duration: 1 hours
+suppression_enabled: true
+suppression_fields: xdm.intermediate.identity.username|xdm.target.resource.name|xdm.source.host.hostname|xdm.source.identity.username
+user_defined_category: null
+user_defined_severity: null
+xql_query: "datamodel dataset = google_workspace_chrome_raw\n| filter xdm.event.type in (\"BROWSER_EXTENSION_INSTALL\"\
+  )\n| fields xdm.event.type, xdm.observer.action, xdm.event.description, xdm.event.outcome_reason,\
+  \ xdm.source.identity.username, xdm.intermediate.identity.username, xdm.source.host.hostname,\
+  \ xdm.source.host.os, xdm.source.host.os_family, xdm.network.http.browser, xdm.source.user_agent,\
+  \ xdm.target.resource.name, xdm.target.resource.id"
+fromversion: 9.0.0

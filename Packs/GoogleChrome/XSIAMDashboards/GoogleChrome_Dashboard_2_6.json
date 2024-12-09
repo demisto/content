@@ -1,0 +1,1267 @@
+{
+    "dashboards_data": [
+        {
+            "name": "Chrome Security Dashboard",
+            "description": "This dashboard contains information about google chrome events.",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-1161",
+                    "data": [
+                        {
+                            "key": "xql_1687700757907",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 400,
+                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.observer.vendor = \"Google\" and xdm.observer.product = \"Workspace Chrome\"\n| comp count(xdm.event.type) as counts by xdm.event.type\n| view graph type = pie header = \"Security Events by Type\" xaxis = xdm.event.type yaxis = counts ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Security Events by Type\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.event.type"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "counts"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1687779507172",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 400,
+                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n//| filter xdm.observer.vendor = \"Google\" and xdm.observer.product = \"Workspace Chrome\"\n|filter xdm.event.type != \"\"\n| bin _time span = 24h\n| comp count() as count by _time\n| sort asc _time\n| view graph type = line xaxis = _time yaxis = count ",
+                                "time_frame": {
+                                    "relativeTime": 604800000
+                                },
+                                "viewOptions": {
+                                    "type": "line",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "_time"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "count"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-3172",
+                    "data": [
+                        {
+                            "key": "xql_1687770114700",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 25,
+                                "height": 400,
+                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.source.identity.username != \"\"\n| filter xdm.source.identity.username != \"-\"\n| comp values(xdm.source.identity.username) as `DEVICE_USER` by xdm.source.host.hostname\n| filter DEVICE_USER != null",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1687775796667",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 25,
+                                "height": 400,
+                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| comp count(xdm.source.identity.username) as counts by xdm.source.identity.username\n| sort desc counts\n| view graph type = column subtype = grouped layout = horizontal header = \"Security Events by Device Users\" xaxis = xdm.source.identity.username yaxis = counts default_limit = `false` ",
+                                "time_frame": {
+                                    "relativeTime": 604800000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "layout",
+                                                "value": "horizontal"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Security Events by Device Users\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.source.identity.username"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "counts"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "default_limit",
+                                                "value": "false"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1687769524281",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 25,
+                                "height": 400,
+                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| comp count(xdm.intermediate.identity.username) as counts by xdm.intermediate.identity.username\n| sort desc counts\n| view graph type = column subtype = grouped layout = horizontal header = \"Security Events by Chrome Users\" xaxis = xdm.intermediate.identity.username yaxis = counts default_limit = `false` ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "layout",
+                                                "value": "horizontal"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Security Events by Chrome Users\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.intermediate.identity.username"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "counts"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "default_limit",
+                                                "value": "false"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-4502",
+                    "data": [
+                        {
+                            "key": "xql_1687770699313",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 25,
+                                "height": 400,
+                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| comp count(xdm.event.description) as Security_Events by xdm.event.description\n| view graph type = column subtype = grouped header = \"Security Events by Reason\" show_callouts = `true` xaxis = xdm.event.description yaxis = Security_Events ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Security Events by Reason\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.event.description"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Security_Events"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1687769763268",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 25,
+                                "height": 400,
+                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| comp count(xdm.observer.action) by xdm.observer.action\n| view graph type = funnel header = \"Top Security event Actions\" show_callouts = `true` show_callouts_names = `true` xaxis = xdm.observer.action yaxis = count_1 ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "funnel",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Top Security event Actions\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts_names",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.observer.action"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "count_1"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1687768232236",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 25,
+                                "height": 400,
+                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| alter domain = arrayindex(regextract(xdm.network.http.url, \"\\/\\/([^\\/:]+)\"),0)\n| filter domain != null\n| comp count(domain) as counts by domain\n| sort desc counts\n| view graph type = column subtype = grouped layout = horizontal header = \"Top URL Access\" show_callouts = `true` xaxis = domain yaxis = counts legend = `false` ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "layout",
+                                                "value": "horizontal"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Top URL Access\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "domain"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "counts"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legend",
+                                                "value": "false"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1687770576993",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 25,
+                                "height": 400,
+                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.event.type = \"BROWSER_EXTENSION_INSTALL\"\n| fields xdm.target.resource.name\n| top  xdm.target.resource.name top_count as COUNTS \n| sort desc COUNTS",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-1514",
+                    "data": [
+                        {
+                            "key": "xql_1687774186800",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 25,
+                                "height": 400,
+                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.event.type != \"\"\n| comp count_distinct(xdm.source.identity.username) as distinct_count\n| view graph type = single subtype = standard header = \"Unique Users with Security Events\" yaxis = distinct_count ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "single",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "standard"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Unique Users with Security Events\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "distinct_count"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1687778986988",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 400,
+                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n|filter xdm.event.type != \"\" and xdm.network.http.browser != \"\"\n| top xdm.network.http.browser top_count as `COUNT`\n| view graph type = pie xaxis = xdm.network.http.browser yaxis = count legend_percentage = `true` seriestitle(\"count\",\" \") ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.network.http.browser"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "count"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legend_percentage",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "count",
+                                                    " "
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1687774861843",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 400,
+                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.event.type != \"\"\n| comp count_distinct(xdm.source.host.os) as distinct_count\n| view graph type = single subtype = standard header = \"Unique OSes with Security Events\" yaxis = distinct_count ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "single",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "standard"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Unique OSes with Security Events\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "distinct_count"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1687775123677",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 400,
+                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.event.type != \"\" and xdm.source.host.os != \"\"\n| top xdm.source.host.os top_count as `COUNT`\n| view graph type = pie xaxis = xdm.source.host.os yaxis = count legend_percentage = `true` seriestitle(\"count\",\" \") ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.source.host.os"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "count"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legend_percentage",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "count",
+                                                    " "
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "06d48444d70f4cba8aaa343e518e484a"
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1687700757907",
+            "title": "Chrome Security Events by Type",
+            "creation_time": 1687700757907,
+            "description": "This widget displays chrome events by their type.",
+            "data": {
+                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| comp count(xdm.event.type) as counts by xdm.event.type\n| view graph type = pie header = \"Security Events by Type\" xaxis = xdm.event.type yaxis = counts ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Security Events by Type\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.event.type"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "counts"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1687768232236",
+            "title": "Chrome Top URL Access",
+            "creation_time": 1687768232236,
+            "description": "This widget displays top url addresses visited by chrome users.",
+            "data": {
+                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| alter domain = arrayindex(regextract(xdm.network.http.url, \"\\/\\/([^\\/:]+)\"),0)\n| filter domain != null\n| comp count(domain) as counts by domain\n| sort desc counts\n| view graph type = column subtype = grouped layout = horizontal header = \"Top URL Access\" show_callouts = `true` xaxis = domain yaxis = counts legend = `false` ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "layout",
+                                "value": "horizontal"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Top URL Access\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "domain"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "counts"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legend",
+                                "value": "false"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1687769524281",
+            "title": "Security Events by Chrome Users",
+            "creation_time": 1687769524281,
+            "description": "This widget displays security chrome events by chrome users.",
+            "data": {
+                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| comp count(xdm.intermediate.identity.username) as counts by xdm.intermediate.identity.username\n| sort desc counts\n| view graph type = column subtype = grouped layout = horizontal header = \"Security Events by Chrome Users\" xaxis = xdm.intermediate.identity.username yaxis = counts default_limit = `false` ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "layout",
+                                "value": "horizontal"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Security Events by Chrome Users\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.intermediate.identity.username"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "counts"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "default_limit",
+                                "value": "false"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1687769763268",
+            "title": "Chrome Top Security event Actions",
+            "creation_time": 1687769763268,
+            "description": "This widget displays top security events by action.",
+            "data": {
+                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| comp count(xdm.observer.action) by xdm.observer.action\n| view graph type = funnel header = \"Top Security event Actions\" show_callouts = `true` show_callouts_names = `true` xaxis = xdm.observer.action yaxis = count_1 ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "funnel",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Top Security event Actions\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts_names",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.observer.action"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "count_1"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1687770114700",
+            "title": "Chrome Device Username and Device Name Mapping",
+            "creation_time": 1687770114700,
+            "description": "This widget displays device users by their related device names.",
+            "data": {
+                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.source.identity.username != \"\"\n| filter xdm.source.identity.username != \"-\"\n| comp values(xdm.source.identity.username) as `DEVICE_USER` by xdm.source.host.hostname\n| filter DEVICE_USER != null",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1687770576993",
+            "title": "Top Chrome Extension",
+            "creation_time": 1687770576993,
+            "description": "This widget displays top extension installations",
+            "data": {
+                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.event.type = \"BROWSER_EXTENSION_INSTALL\"\n| fields xdm.target.resource.name\n| top  xdm.target.resource.name top_count as COUNTS \n| sort desc COUNTS",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1687770699313",
+            "title": "Chrome Security Events by Reason",
+            "creation_time": 1687770699313,
+            "description": "This widget displays chrome security events by their reason.",
+            "data": {
+                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| comp count(xdm.event.description) as Security_Events by xdm.event.description\n| view graph type = column subtype = grouped header = \"Security Events by Reason\" show_callouts = `true` xaxis = xdm.event.description yaxis = Security_Events ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Security Events by Reason\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.event.description"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Security_Events"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1687774186800",
+            "title": "Chrome Unique Users with Security Events",
+            "creation_time": 1687774186800,
+            "description": "This widget displays the unique users that triggered security events.",
+            "data": {
+                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.event.type != \"\"\n| comp count_distinct(xdm.source.identity.username) as distinct_count\n| view graph type = single subtype = standard header = \"Unique Users with Security Events\" yaxis = distinct_count ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "single",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "standard"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Unique Users with Security Events\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "distinct_count"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1687774861843",
+            "title": "Chrome Unique OS with Security Events",
+            "creation_time": 1687774861843,
+            "description": "This widget displays the unique OS which had chrome security events.",
+            "data": {
+                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.event.type != \"\"\n| comp count_distinct(xdm.source.host.os) as distinct_count\n| view graph type = single subtype = standard header = \"Unique OSes with Security Events\" yaxis = distinct_count ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "single",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "standard"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Unique OSes with Security Events\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "distinct_count"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1687775123677",
+            "title": "Chrome Top OS Platforms with Security Events",
+            "creation_time": 1687775123677,
+            "description": "This widget displays top os platforms which had chrome security events.",
+            "data": {
+                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.event.type != \"\" and xdm.source.host.os != \"\"\n| top xdm.source.host.os top_count as `COUNT`\n| view graph type = pie xaxis = xdm.source.host.os yaxis = count legend_percentage = `true` seriestitle(\"count\",\" \") ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.source.host.os"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "count"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legend_percentage",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "count",
+                                    " "
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1687775796667",
+            "title": "Security Events by Chrome Device Users",
+            "creation_time": 1687775796667,
+            "description": "This widget displays chrome security events by device users.",
+            "data": {
+                "phrase": "datamodel dataset = google_workspace_chrome_raw \n| comp count(xdm.source.identity.username) as counts by xdm.source.identity.username\n| sort desc counts\n| view graph type = column subtype = grouped layout = horizontal header = \"Security Events by Device Users\" xaxis = xdm.source.identity.username yaxis = counts default_limit = `false` ",
+                "time_frame": {
+                    "relativeTime": 604800000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "layout",
+                                "value": "horizontal"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Security Events by Device Users\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.source.identity.username"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "counts"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "default_limit",
+                                "value": "false"
+                            }
+                        }
+                    ]
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1687778986988",
+            "title": "Events by Chrome Browser",
+            "creation_time": 1687778986988,
+            "description": "This widget displays chrome security events by the browser they were triggered from.",
+            "data": {
+                "phrase": "datamodel dataset = google_workspace_chrome_raw \n|filter xdm.event.type != \"\" and xdm.network.http.browser != \"\"\n| top xdm.network.http.browser top_count as `COUNT`\n| view graph type = pie xaxis = xdm.network.http.browser yaxis = count legend_percentage = `true` seriestitle(\"count\",\" \") ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.network.http.browser"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "count"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legend_percentage",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "count",
+                                    " "
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1687779507172",
+            "title": "Chrome Events over Time",
+            "creation_time": 1687779507172,
+            "description": "This widget displays chrome security events' trend.",
+            "data": {
+                "phrase": "datamodel dataset = google_workspace_chrome_raw \n|filter xdm.event.type != \"\"\n| bin _time span = 24h\n| comp count() as count by _time\n| sort asc _time\n| view graph type = line xaxis = _time yaxis = count ",
+                "time_frame": {
+                    "relativeTime": 604800000
+                },
+                "viewOptions": {
+                    "type": "line",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "_time"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "count"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        }
+    ],
+    "fromVersion": "9.0.0"
+}

@@ -1,0 +1,39 @@
+alert_category: EXECUTION
+alert_description: Unsafe site $xdm.network.http.url was visited by $xdm.source.identity.username
+  via chrome profile $xdm.intermediate.identity.username.
+alert_fields:
+  action_file_name: xdm.target.resource.name
+  actor_effective_username: xdm.source.identity.username
+  agent_hostname: xdm.source.host.hostname
+  fw_url_domain: xdm.network.http.url
+  hostriskreasons: xdm.event.outcome_reason
+  user_agent: xdm.source.user_agent
+alert_name: Chrome - Known Malicious Site Visit
+crontab: null
+dataset: alerts
+description: This rule alerts on events related to bad navigation, that resulted
+  in bypass action.
+drilldown_query_timeframe: ALERT
+execution_mode: REAL_TIME
+global_rule_id: 5fa4d7d2-3b4c-4876-bc0f-b170fa49afe6
+investigation_query_link: "datamodel dataset = google_workspace_chrome_raw\n| filter xdm.event.type in\
+  \ (\"UNSAFE_SITE_VISIT\") and xdm.observer.action = \"BYPASSED\"\n| filter xdm.source.identity.username\
+  \ = $xdm.source.identity.username and xdm.intermediate.identity.username = $xdm.intermediate.identity.username\
+  \ and xdm.network.http.url = $xdm.network.http.url and xdm.source.host.hostname\
+  \ = $xdm.source.host.hostname"
+mapping_strategy: CUSTOM
+mitre_defs: {}
+name: Chrome - Known Malicious Site Visit
+search_window: null
+severity: SEV_030_MEDIUM
+suppression_duration: 1 hours
+suppression_enabled: true
+suppression_fields: xdm.network.http.url|xdm.source.host.hostname|xdm.source.identity.username|xdm.intermediate.identity.username
+user_defined_category: null
+user_defined_severity: null
+xql_query: "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.event.type in (\"UNSAFE_SITE_VISIT\") and\
+  \ xdm.observer.action = \"BYPASSED\"\n| fields xdm.event.type, xdm.event.description,\
+  \ xdm.observer.action, xdm.event.outcome_reason, xdm.source.identity.username, xdm.intermediate.identity.username,\
+  \ xdm.source.host.hostname, xdm.source.host.os, xdm.source.host.os_family, xdm.network.http.browser,\
+  \ xdm.network.http.url, xdm.source.user_agent, xdm.target.resource.name, xdm.target.resource.id"
+fromversion: 9.0.0

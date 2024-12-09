@@ -1,0 +1,64 @@
+{
+    "microsoft_defender_for_cloud_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "name": {
+            "type": "string",
+            "is_array": false
+        },
+        "properties": {
+            "type": "string",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "_collector_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "Entities": {
+            "type": "string",
+            "is_array": false
+        },
+        "ResourceIdentifiers": {
+            "type": "string",
+            "is_array": false
+        },
+        "ExtendedProperties": {
+            "type": "string",
+            "is_array": false
+        },
+        "AgentId": {
+            "type": "string",
+            "is_array": false
+        },
+        "AlertDisplayName": {
+            "type": "string",
+            "is_array": false
+        },
+        "AlertType": {
+            "type": "string",
+            "is_array": false
+        },
+        "CorrelationKey": {
+            "type": "string",
+            "is_array": false
+        },
+        "Description": {
+            "type": "string",
+            "is_array": false
+        },
+        "Severity": {
+            "type": "string",
+            "is_array": false
+        },
+        "SystemAlertId": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
