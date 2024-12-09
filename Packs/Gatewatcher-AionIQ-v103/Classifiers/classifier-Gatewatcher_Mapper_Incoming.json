@@ -593,8 +593,8 @@
 				"Gatewatcher smtp.rcpt_to": {
 					"simple": "smtp.rcpt_to"
 				},
-				"Gatewatcher snmp.community": {
-					"simple": "snmp.community"
+				"Gatewatcher snmp.comm": {
+					"simple": "snmp.comm"
 				},
 				"Gatewatcher snmp.pdu_type": {
 					"simple": "snmp.pdu_type"

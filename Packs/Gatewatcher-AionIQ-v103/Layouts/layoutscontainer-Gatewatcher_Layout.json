@@ -1729,7 +1729,7 @@
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "gatewatchersnmpcommunity",
+								"fieldId": "gatewatchersnmpcomm",
 								"height": 53,
 								"id": "af32ccc0-b229-11ef-b0c5-e3601920aa58",
 								"index": 0,
