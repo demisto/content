@@ -493,8 +493,24 @@ def microsoft_365_defender_incident_get_command(client: Client, args: dict) -> C
                           outputs=incident, readable_output=human_readable_table)
 
 
+def store_ids_for_first_mirroring(incidents: list):
+    """
+    Stores the fetched incident IDs in the integration context to trigger mirroring.
+    We're triggering mirroring for new incidents to mirror existing comments.
+
+    Args:
+        incidents (list): List of fetched incidents.
+    """
+    int_context = get_integration_context()
+    fetched_incidents_ids = [json.loads(incident.get('rawJSON')).get("incidentId", "") for incident in incidents]
+    int_context.setdefault("last_fetched_incident_ids", []).extend(fetched_incidents_ids)
+    demisto.debug(f"Microsoft 365 Defender  - Saving the following incident ids in the integration context: {int_context=}")
+    set_integration_context(int_context)
+
+
 @logger
-def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: str, fetch_limit: int, timeout: int = None) -> List[
+def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: str, fetch_limit: int,
+                    timeout: int = None) -> List[
     dict]:
     """
     Uses to fetch incidents into Demisto
@@ -576,6 +592,7 @@ def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: st
 
     oldest_incidents = incidents_queue[:fetch_limit]
     new_last_run = incidents_queue[-1]["occurred"] if oldest_incidents else last_run  # newest incident creation time
+    store_ids_for_first_mirroring(oldest_incidents)
     demisto.setLastRun({'last_run': new_last_run,
                         'incidents_queue': incidents_queue[fetch_limit:]})
     return oldest_incidents
@@ -726,10 +743,33 @@ def is_new_incident(incident_id: str) -> bool:
     last_fetched_ids = int_context.get("last_fetched_incident_ids") or []
     demisto.debug(f"Microsoft Defender 365 - Last fetched incident ids are: {last_fetched_ids}")
     if id_in_last_fetch := incident_id in last_fetched_ids:
+        demisto.debug(f"Microsoft Defender 365 - Incident {incident_id} is already in the last fetched incidents")
         last_fetched_ids.remove(incident_id)
         int_context["last_fetched_incident_ids"] = last_fetched_ids
+        demisto.debug(f"Microsoft Defender 365 - Removed incident {incident_id} from last fetched incidents")
         set_integration_context(int_context)
+    else:
+        demisto.debug(f"Microsoft Defender 365 - Incident {incident_id} is not in the last fetched incidents")
     return id_in_last_fetch
+
+
+def extend_with_new_incidents(modified_records_ids: list) -> list:
+    """
+    Extend list of modified incidents with new fetched incidents to trigger mirroring.
+    We're triggering mirroring for new incidents to mirror existing comments.
+
+    Args:
+        modified_records_ids (list): List of modified incidents.
+
+    Returns:
+        list: Extended list of incidents to trigger mirroring.
+    """
+    int_context = get_integration_context()
+    last_fetched_incident_ids = int_context.get("last_fetched_incident_ids" , [])
+    demisto.debug(f"Microsoft Defender 365 - Extending with last fetched incident ids: {last_fetched_incident_ids}")
+    modified_records_ids.extend(last_fetched_incident_ids)
+    modified_records_ids = list(set(modified_records_ids))  # remove duplicates
+    return modified_records_ids
 
 
 def get_modified_incidents_close_or_repopen_entries_content(modified_incidents: List[dict], close_incident: bool) -> List[dict]:
@@ -778,8 +818,10 @@ def get_modified_remote_data_command(client: Client, args,
         #     return GetModifiedRemoteDataResponse(modified_incidents_data=modified_incidents + modified_incidents_entries_content)
         # else:
         modified_incident_ids = fetch_modified_incident_ids(client, last_update)
-        demisto.debug(f"microsoft365::Found {len(modified_incident_ids)} modified incidents")
-        demisto.debug(f"microsoft365::{str(modified_incident_ids)}")
+        demisto.debug(f"microsoft365::Found {len(modified_incident_ids)} modified incidents: {str(modified_incident_ids)}")
+        # modified_incident_ids = extend_with_new_incidents(modified_incident_ids)
+
+
 
         # skip update: In case of a failure. In order to notify the server that the command failed and prevent execution of the get-remote-data commands, returns an error that contains the string "skip update".?
         return GetModifiedRemoteDataResponse(modified_incident_ids=modified_incident_ids)
@@ -801,7 +843,7 @@ def fetch_modified_incident(client: Client, incident_id: str) -> dict:
     return incident
 
 
-def get_entries_for_comments(incident_id: str, comments: List[dict], last_update: datetime, comment_tag: str) -> List[dict]:
+def get_entries_for_comments(incident_id: str, comments: List[dict], last_update: datetime, comment_tag: str, new_incident : bool) -> List[dict]:
     """
     Get the entries for the comments of the incident.
     Args:
@@ -812,7 +854,6 @@ def get_entries_for_comments(incident_id: str, comments: List[dict], last_update
     Returns:
         List[dict]: The entries for the comments.
     """
-    new_incident = is_new_incident(incident_id)
     entries = []
     for comment in comments:
         if 'Mirrored from Cortex XSOAR' not in comment.get('comment', ''):
@@ -834,8 +875,9 @@ def get_entries_for_comments(incident_id: str, comments: List[dict], last_update
     return entries
 
 
-def get_incident_entries(remote_incident_id: str, mirrored_object: dict, last_update: datetime, comment_tag : str, close_incident: bool = False) -> \
-List[dict]:
+def get_incident_entries(remote_incident_id: str, mirrored_object: dict, last_update: datetime, comment_tag: str, new_incident : bool,
+                         close_incident: bool = False) -> \
+    List[dict]:
     close_or_repopen_entry_contents = get_modified_incidents_close_or_repopen_entries_content([mirrored_object],
                                                                                               close_incident=close_incident)
     entries = [{
@@ -845,7 +887,7 @@ List[dict]:
 
     } for entry_content in close_or_repopen_entry_contents]
 
-    entries.extend(get_entries_for_comments(remote_incident_id, mirrored_object.get('comments', []), last_update, comment_tag))
+    entries.extend(get_entries_for_comments(remote_incident_id, mirrored_object.get('comments', []), last_update, comment_tag, new_incident))
     return entries
 
 
@@ -861,7 +903,9 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
     try:
         mirrored_object: Dict = fetch_modified_incident(client, remote_args.remote_incident_id)
         demisto.debug(f"microsoft365::Fetched incident {str(mirrored_object)}")
-        entries = get_incident_entries(remote_args.remote_incident_id, mirrored_object, last_update, comment_tag, close_incident=close_incident)
+        new_incident = is_new_incident(remote_args.remote_incident_id)
+        entries = get_incident_entries(remote_args.remote_incident_id, mirrored_object, last_update, comment_tag, new_incident,
+                                       close_incident=close_incident) #todo: if new, get the object from the context rather than making api call
         demisto.debug(f"microsoft365::Fetched entries {str(entries)}")
         return GetRemoteDataResponse(mirrored_object, entries)
     except Exception as e:
@@ -881,7 +925,7 @@ def get_mapping_fields_command():
     return GetMappingFieldsResponse(incident_type_scheme)
 
 
-def update_remote_incident(client: Client, updated_args:dict, remote_incident_id:int) :
+def update_remote_incident(client: Client, updated_args: dict, remote_incident_id: int):
     demisto.debug(f"microsoft365::Starting update_remote_incident")
     updated_incident = client.update_incident(incident_id=remote_incident_id,
                                               status=updated_args.get('status'),
@@ -892,7 +936,6 @@ def update_remote_incident(client: Client, updated_args:dict, remote_incident_id
                                               timeout=50,
                                               comment=updated_args.get('comment'))
     demisto.debug(f"microsoft365::Updated incident {str(updated_incident)}")
-
 
 
 def handle_incident_close_out(delta):
@@ -924,8 +967,6 @@ def handle_mirror_out_entries(client, entries, comment_tag, remote_incident_id):
             update_remote_incident(client, {'comment': text}, remote_incident_id)
         else:
             demisto.debug(f"Skipping entry {entry.get('id')} as it does not contain the comment tag")
-
-
 
 
 def handle_incident_reopening(delta):
