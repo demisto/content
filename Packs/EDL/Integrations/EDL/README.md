@@ -66,6 +66,7 @@ or
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Generic Export Indicators Service.
 3. Click **Add instance** to create and configure a new integration instance.
+4. **Note:** When using XSIAM or XSOAR if "no engine" is selected, make sure to click "Save" before testing and using the instance. This step allows the server to assign a port to the instance.
 
 | **Parameter**                      | **Description**                                                                                                                                                                                                                                      | **Required** |
 |------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|

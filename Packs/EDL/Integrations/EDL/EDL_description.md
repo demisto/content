@@ -96,6 +96,7 @@ Make sure you run the ***!export-indicators-list-update*** command for the first
 ### Important Notes:
 - If constantly using different queries for the same EDL instance through the *q* inline argument, it is recommended to use different instances of the EDL (one for each query), and set each one with a default query for better performance.
 - When using the *q* inline argument, the number of exported indicators is limited to 100,000 due to performance reasons. To export more than 100,000 indicators, create a new instance of the integration with the desired Indicator Query and List Size.
+- **Note:** When using XSIAM or XSOAR 8, if "no engine" is selected, make sure to click "Save" before testing and using the instance. This step allows the server to assign a port to the instance.
 
 ## Troubleshoot
 

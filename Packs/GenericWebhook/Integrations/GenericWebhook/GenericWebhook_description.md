@@ -7,6 +7,7 @@ We recommend that you use Cortex XSOAR server rerouting when using this integrat
 
 
 **Note**: The **Listen Port** needs to be available, which means it has to be unique for each integration instance. It cannot be used by other long-running integrations.                                      
+**Note:** When using XSIAM or XSOAR 8, if "no engine" is selected, make sure to click "Save" before testing and using the instance. This step allows the server to assign a port to the instance.
 
 #### Security
 - We recommend using the authorization header, as described below, to validate the requests sent from your app. If you do not use this header it might result in incident creation from unexpected requests.
