@@ -12248,6 +12248,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         headers['total-items-count'] = str(items_count)
 
     header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
+
     def data_error_handler(res):
         """
         Internal function to parse the XSIAM API errors
@@ -12290,29 +12291,29 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                                         error_msg=header_msg, headers=headers,
                                         num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                         zipped_data=zipped_data, is_json_response=True, data_type=data_type)
-            return threads_data_size
         demisto.info('[test] finished sending to xsiam inside executor')
+        return threads_data_size
 
     if multiple_threads:
-        demisto.info("[test] Got {}, will send events to xsiam with multiple threads.".format(multiple_threads))
+        demisto.info("Sending events to xsiam with multiple threads.")
         support_multithreading()
         import concurrent.futures
 
         # Split the Data into chunks
-        demisto.info("[test] Spliting the data into {} chunks.".format(num_of_chunks_to_split))
         if isinstance(data, str):
             data = data.split('\n')
         split_data = [data[i:i + len(data) // num_of_chunks_to_split] for i in range(0, len(data), len(data) // num_of_chunks_to_split)]
-        demisto.info("[test] got the following lens {}".format([len(chunk) for chunk in split_data]))
-        # Step 3: Create a ThreadPool
+
+        # Create a ThreadPool
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
 
-            # Step 5: Submit Tasks to the ThreadPool
+            # Submit Tasks to the ThreadPool
             future_to_data = [executor.submit(split_and_send_events, segment) for segment in split_data]
             demisto.info('[test] submitted all the futures')
-            # Step 6: Handle Responses (Optional)
+            
+            # Handle Responses
             for future in concurrent.futures.as_completed(future_to_data):
-                demisto.info('[test] printing result {}'.format(future.result()))
+                data_size += future.result()
             demisto.info('[test] should be done sending events')
     else:
         data_size = split_and_send_events(data)
