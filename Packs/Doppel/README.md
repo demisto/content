@@ -1,9 +1,11 @@
 # Doppel XSOAR Pack
 
 ## Overview
+
 Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively.
 
 ## Features supported by the Doppel XSOAR pack
+
 1. Mirror Incidents- Alerts from Doppel are mirrored as per the configured schedule.
 2. Command: Create Alert- Command to create an alert in Doppel.
 3. Command: Get Alert- Command to fetch alert details from Doppel.
@@ -12,6 +14,7 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 6. Command: Create Abuse Alert-Command to create abuse alert details from Doppel.
 
 ## Setup local Development environment for modifying the Doppel pack
+
 1. Clone the XSOAR content Github repository to your local machine
 2. Open the content directory in VS Code.
 3. Install [XSOAR extension for VS Code](https://xsoar.pan.dev/docs/concepts/vscode-extension) as mentioned in this XSOAR documentation
@@ -28,6 +31,28 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 8. The breakpoint should get hit, however, as you do not have params, commands and arguments configured, the program will though an exception.
 
 ## Configure the Demisto params, command and arguments
+
+While debugging the integration script, you want make sure that the integration configuration (URL and API Key) and command with it's input are picked automatically without an hardcoded source code. Please follow below steps to configure the environment for the same:
+
+### Setup Integration configuration
+
 1. Go to /vscode/launch.json.
-2. 
-   
+2. In the *Python: Debug Integration locally* configuration please initialize the following variables. Please do not remove any other environment variables if there are already any.
+   `
+   "env": {
+            "DEMISTO_PARAMS": "{\"url\": \"https://api.doppel.com\",\"credentials\": {\"password\": \"<API-KEY>\"}}"
+         },
+   `
+3. With above variable, `demisto.params()` function will give you corrent app configuration
+
+
+### Setup commands and arguments for debugging
+
+1. Create a file named `.args_command.json` at `/content/Packs/Doppel/Integrations/Doppel/.args_command.json`
+2. Decide which command you want to debug and initialize the file.
+3. For example if you want to debug the `get-alert` command with input argument for `id`, you should have the following content in the file:
+   `{
+    "cmd": "get-alert",
+    "id": "TST-31"
+   }`
+4. Click on the debug button for *Python: Debug Integration locally*. The breackpoint will hit and you will get the correct params, command and args while debugging.
