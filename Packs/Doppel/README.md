@@ -81,8 +81,10 @@ The above command will upload and install the pack on your XSOAR tenant. You can
 ## Unit test
 
 It is important that all the Unit tests pass before we push the latest modification to the pack.
-1. To run the unit tests, you need to make sure you have requests-mock in your virtual envirionment
+
+1. To run the unit tests, you need to make sure you have following dependencies installed in your virtual envirionment
     `pip install requests-mock`
+    `pip install pytest-mock`
 2. Change directory to `Packs/Doppel/Integrations/Doppel`
 3. Run the following command to execute all unit tests
    `pytest`
