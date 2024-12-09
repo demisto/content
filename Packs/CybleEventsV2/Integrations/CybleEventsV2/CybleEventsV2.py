@@ -27,6 +27,13 @@ INCIDENT_SEVERITY = {
     'critical': 4
 }
 
+MIRROR_DIRECTION_DICT = {
+    'None': None,
+    'Incoming': 'In',
+    'Outgoing': 'Out',
+    'Incoming And Outgoing': 'Both'
+}
+
 TAKEDOWN_SERVICES = [
     "brand_mention", "brand_impersonation", "suspicious_domains", "phishing"
 ]
@@ -407,7 +414,8 @@ def test_response(client, method, base_url, token):
         raise Exception("failed to connect")
 
 
-def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, incident_collections, incident_severity, skip=True):
+def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, incident_collections, incident_severity,
+                 mirror_direction, severity_tag, status_tag, skip=True):
     """
     Fetch alert details from server for creating incidents in XSOAR
     Args:
@@ -420,6 +428,7 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
         hide_cvv_expiry: hide expiry / cvv number from cards
         incident_collections: list of collections to be fetched
         incident_severity: list of severities to be fetched
+        mirror_direction: mirror direction to be fetched
         skip: skip the validation for fetch incidnet
 
     Returns: events from the server
@@ -462,6 +471,12 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
             events = format_incidents(all_alerts, hide_cvv_expiry)
 
             for event in events:
+                event['mirror_direction'] = MIRROR_DIRECTION_DICT.get(mirror_direction)
+                event['mirror_tags'] = [
+                    severity_tag,
+                    status_tag
+                ]
+
                 inci = {
                     'name': event.get('name'),
                     'severity': event.get('severity'),
@@ -478,7 +493,7 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
         else:
             return [], {'event_pull_start_date': latest_created_time}
     except Exception as e:
-        print(f"Error while parsing and formatting alert objects: {e} {traceback.print_exc()}")
+        demisto.info(f"Error while parsing and formatting alert objects: {e} {traceback.print_exc()}")
 
 
 def update_remote_system(client, method, token, args, url):
@@ -544,13 +559,13 @@ def get_modified_remote_data_command(client, url, token, args, incident_collecti
 
     try:
         request_body = generate_request_body(input_params, incident_collections, incident_severity,True)
-        print(f"Request body: {request_body}")
+        demisto.info(f"Request body: {request_body}")
         alerts = client.get_alerts("POST", token, request_body, url)
         modified_ids_to_mirror = [alert.get('id') for alert in alerts]
         demisto.debug(f'All ids to mirror in are: {modified_ids_to_mirror}')
         return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
     except Exception as e:
-        print(f"Error while getting remote data ID: {e} {traceback.print_exc()}")
+        demisto.info(f"Error while getting remote data ID: {e} {traceback.print_exc()}")
 
 
 def get_remote_data_command(client, url, token, args, incident_collections, incident_severity, hide_cvv_expiry):
@@ -569,8 +584,7 @@ def get_remote_data_command(client, url, token, args, incident_collections, inci
         )
 
         if updated_object:
-            demisto.debug(f'Update incident {remote_incident_id} with fields: {updated_object}')
-            print(f"Updated incident: {remote_incident_id} with fields: {updated_object}")
+            demisto.info(f"Updated incident: {remote_incident_id} with fields: {updated_object}")
             return GetRemoteDataResponse(mirrored_object=updated_object, entries=entries)
     except Exception as e:
         demisto.debug(f"Error in Cyble Events v2 incoming mirror for incident: {remote_incident_id}\n"
@@ -608,7 +622,7 @@ def get_remote_incident_data(client, url, token, args, incident_collections, inc
             updated_object = create_incident_from_events(events)[0]
             return mirrored_data, updated_object
     except Exception as e:
-        print(f"Error while getting remote data: {e} {traceback.print_exc()}")
+        demisto.info(f"Error while getting remote data: {e} {traceback.print_exc()}")
 
 
 def generate_request_body(params, services, severities, update_only=False):
@@ -923,6 +937,9 @@ def main():     # pragma: no cover
     hide_cvv_expiry = params.get('hide_data', False)
     demisto.debug(f'Command being called is {params}')
     mirror = params.get('mirror', False)
+    mirror_direction = params.get('mirror_direction', 'Incoming And Outgoing')
+    severity_tag = params.get('severity_tag', 'user_severity')
+    status_tag = params.get('status_tag', 'cybleeventsv2status')
     incident_collections = params.get("incident_collections", [])
     incident_severity = params.get("incident_severity", [])
 
@@ -943,9 +960,9 @@ def main():     # pragma: no cover
             last_run = demisto.getLastRun()
 
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
-            data, next_run = cyble_events(client, 'POST', token, url, args, last_run,
-                                          hide_cvv_expiry, incident_collections, incident_severity, False)
-
+            data, next_run = cyble_events(client, 'POST', token, url, args, last_run, hide_cvv_expiry,
+                                          incident_collections, incident_severity, mirror_direction,
+                                          severity_tag, status_tag, False)
             demisto.setLastRun(next_run)
             demisto.incidents(data)
 
@@ -986,8 +1003,9 @@ def main():     # pragma: no cover
         elif demisto.command() == 'cyble-vision-fetch-alerts':
             # This is the call made when cyble-vision-v2-fetch-alerts command.
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
-            lst_alerts, next_run = cyble_events(client, 'POST', token, url, args, {},
-                                                hide_cvv_expiry, incident_collections, incident_severity, True)
+            lst_alerts, next_run = cyble_events(client, 'POST', token, url, args, {}, hide_cvv_expiry,
+                                                incident_collections, incident_severity, mirror_direction,
+                                                severity_tag, status_tag, False)
 
             markdown = tableToMarkdown('Alerts Details:', lst_alerts)
 
@@ -999,7 +1017,6 @@ def main():     # pragma: no cover
             ))
         elif demisto.command() == 'get-modified-remote-data':
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
-            print(f"URL: {url}")
             return_results(
                 get_modified_remote_data_command(
                     client, url, token, args, incident_collections, incident_severity
