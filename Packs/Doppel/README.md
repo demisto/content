@@ -76,3 +76,14 @@ Upload the current app pack to XSOAR tenant using the following command:
     OR
     `demisto-sdk upload -i Packs/Doppel --insecure` if you do not want to validate the certificate while uploading the pack.
 The above command will upload and install the pack on your XSOAR tenant. You can configure and test the new features.
+
+
+## Unit test
+
+It is important that all the Unit tests pass before we push the latest modification to the pack.
+1. To run the unit tests, you need to make sure you have requests-mock in your virtual envirionment
+    `pip install requests-mock`
+2. Change directory to `Packs/Doppel/Integrations/Doppel`
+3. Run the following command to execute all unit tests
+   `pytest`
+
