@@ -114,7 +114,7 @@ filter channel in ("System", "Application") or provider_name in("Microsoft-Windo
         xdm.source.user.identifier = user_sid,
         xdm.source.user.user_type = if(user_type contains "User", XDM_CONST.USER_TYPE_REGULAR, user_type contains "Service", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT , user_type contains "Computer", XDM_CONST.USER_TYPE_MACHINE_ACCOUNT , user_type),
         xdm.source.user.username = user_name,
-        xdm.target.ipv4 = event_data -> DestAddress,
+        xdm.target.ipv4 = coalesce(event_data -> DestAddress, ""),
         xdm.target.file.path = file_path,
         xdm.target.port = to_integer(0),
         xdm.target.resource.id = scan_id, 
