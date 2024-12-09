@@ -5,7 +5,7 @@ alter
 | alter
     xdm.event.type = if(event_type in ("sso", "authentication"), "authentication", event_type),
     xdm.event.id = id,
-    xdm.source.ipv4 = arrayindex(regextract(origin, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    xdm.source.ipv4 = arrayindex(regextract(data -> origin, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
     xdm.source.ipv6 = if(src_ipv6 != null, src_ipv6, ""),
     xdm.source.user_agent = data -> devicetype,
     xdm.observer.name = if(tenantname != null AND servicename != null, concat(tenantname, " - ", servicename), tenantname),
