@@ -294,8 +294,7 @@ def main():  # pragma: no cover
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         if demisto.command() == 'test-module':
-            # return return_results(test_module(PARAMS.get('longRunningPort')))
-            return_results('ok')
+            return return_results(test_module(PARAMS.get('longRunningPort')))
 
         try:
             port = PARAMS.get('longRunningPort')
