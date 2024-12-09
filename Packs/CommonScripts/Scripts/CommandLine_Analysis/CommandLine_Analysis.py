@@ -2,6 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import base64
 import re
+import ipaddress
+import json
 
 def is_base64(s):
     """
@@ -301,7 +303,12 @@ def check_powershell_suspicious_patterns(command_line):
         r'\bSystem\.Net\.WebSockets\.ClientWebSocket\b',
         r'\.ConnectAsync\(',
         r'\[char\[\]\]\s*\([\d,\s]+\)|-join\s*\(\s*\[char\[\]\][^\)]+\)',
-        r'\$(env:[a-zA-Z]+)\[\d+\]\s*\+\s*\$env:[a-zA-Z]+\[\d+\]'
+        r'\$(env:[a-zA-Z]+)\[\d+\]\s*\+\s*\$env:[a-zA-Z]+\[\d+\]',
+        r'%\w+:~\d+,\d+%',
+        r'(cmd\.exe.*\/V:ON|setlocal.*EnableDelayedExpansion)',
+        r'if\s+%?\w+%?\s+geq\s+\d+\s+call\s+%?\w+%?:~\d+%?',
+        r'(\[char\[[^\]]+\]\]){3,}',
+        r'for\s+%?\w+%?\s+in\s*\([^)]{50,}\)'
     ]
 
     matches = []
@@ -407,19 +414,37 @@ def check_custom_patterns(command_line, custom_patterns=None):
 
     return matches
 
+def is_reserved_ip(ip_str):
+    try:
+        ip_obj = ipaddress.ip_address(ip_str)
+        return (
+            ip_obj.is_private or
+            ip_obj.is_loopback or
+            ip_obj.is_reserved or
+            ip_obj.is_multicast or
+            ip_obj.is_link_local
+        )
+    except ValueError:
+        return False
 
 def extract_indicators(command_line):
-    """
-    Extracts indicators from the given command line using the 'extractIndicators' script.
-    """
     try:
         indicators = demisto.executeCommand("extractIndicators", {"text": command_line})
-        if indicators and isinstance(indicators, list) and indicators[0].get('Contents'):
-            return indicators[0].get('Contents', [])
+        if indicators and isinstance(indicators, list):
+            contents = indicators[0].get('Contents', {})
+
+            # Parse contents if it's a JSON string
+            if isinstance(contents, str):
+                try:
+                    contents = json.loads(contents)
+                except json.JSONDecodeError:
+                    return []
+
+            if isinstance(contents, dict) and "IP" in contents:
+                return [ip for ip in contents["IP"] if not is_reserved_ip(ip)]
     except Exception as e:
         demisto.debug(f"Failed to extract indicators: {str(e)}")
     return []
-
 
 
 def calculate_score(results):
@@ -474,28 +499,30 @@ def calculate_score(results):
         context_findings = []
         context_keys_detected = set()
 
-        # Calculate base score for each key
+        # Calculate base score for each key (count each category once)
         for key, value in context_results.items():
             if value and value != "{}":
                 context_keys_detected.add(key)
-                if isinstance(value, list):
-                    count = len(value)
-                    context_score += count * weights.get(key, 0)
-                    context_findings.append(f"{count} {key.replace('_', ' ')} detected")
+                if isinstance(value, list) and len(value) > 0:
+                    # Add weight once, report how many instances were found
+                    context_score += weights.get(key, 0)
+                    context_findings.append(f"{key.replace('_', ' ')} detected ({len(value)} instances)")
                 else:
+                    # Not a list or empty list, just count once
                     context_score += weights.get(key, 0)
                     context_findings.append(f"{key.replace('_', ' ')} detected")
 
         # Apply combination bonuses based on detected keys
-        if high_risk_keys & context_keys_detected and len(context_keys_detected) > 1:
+        if (high_risk_keys & context_keys_detected) and len(context_keys_detected) > 1:
             context_score += risk_bonuses["high"]
             context_findings.append("High-risk combination detected")
-        elif medium_risk_keys & context_keys_detected and len(context_keys_detected) > 1:
+        elif (medium_risk_keys & context_keys_detected) and len(context_keys_detected) > 1:
             context_score += risk_bonuses["medium"]
             context_findings.append("Medium-risk combination detected")
-        elif low_risk_keys & context_keys_detected and len(context_keys_detected) > 1:
+        elif (low_risk_keys & context_keys_detected) and len(context_keys_detected) > 1:
             context_score += risk_bonuses["low"]
             context_findings.append("Low-risk combination detected")
+
         return context_score, context_findings
 
     # Process original and decoded findings
@@ -504,6 +531,7 @@ def calculate_score(results):
 
     # Check global combinations (e.g., double encoding globally)
     if results.get("Double Encoding Detected"):
+        # Add the double_encoding weight once if detected
         scores["decoded"] += weights["double_encoding"]
         findings["decoded"].append("Double encoding detected")
 
@@ -523,11 +551,10 @@ def calculate_score(results):
         risk = "Medium Risk"
 
     return {
-        "normalized_score": int(round(normalized_score, 0)),
+        "score": int(round(normalized_score, 0)),
         "findings": findings,
         "risk": risk,
     }
-
 
 
 def analyze_command_line(command_line, custom_patterns=None):
@@ -610,7 +637,7 @@ def main():
     readable_output = "\n\n".join([
         f"Command Line: {result['original_command']}\n"
         f"Risk: {result['risk']}\n"
-        f"Score: {result['normalized_score']}\n"
+        f"Score: {result['score']}\n"
         f"Findings (Original): {', '.join(result['findings']['original'])}\n"
         f"Findings (Decoded): {', '.join(result['findings'].get('decoded', []))}\n"
         for result in results
