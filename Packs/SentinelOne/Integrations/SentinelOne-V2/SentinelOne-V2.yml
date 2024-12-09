@@ -2286,7 +2286,7 @@ script:
     name: sentinelone-run-remote-script
   - arguments:
     - name: account_ids
-      isArray: true
+      isArray: true 
       description: "A comma-separated list of account IDs. Example: '225494730938493804,225494730938493915'."
     - name: computer_name_contains
       description: Free-text filter by agent computer name (supports multiple values).
@@ -2309,16 +2309,16 @@ script:
     - name: description_contains
       description: Only include tasks with specific description.
     - name: detailed_status_contains
-      isArray: true
+      isArray: true 
       description: Only include tasks with specific detailed status.
     - name: group_ids
-      isArray: true
+      isArray: true 
       description: "Comma-separated list of Group IDs to filter by. Example: '225494730938493804,225494730938493915'."
     - name: ids
-      isArray: true
+      isArray: true 
       description: "Comma-separated list of IDs to filter by. Example: '225494730938493804,225494730938493915'."
     - name: initiated_by_contains
-      isArray: true
+      isArray: true 
       description: Only include tasks from specific initiating user.
     - name: limit
       description: "Limit number of returned items (1-1000). Example: '10'."
@@ -2326,12 +2326,12 @@ script:
       required: true
       description: "Parent task ID to fetch the status by. Example: '225494730938493804'."
     - name: parent_task_id_in
-      isArray: true
+      isArray: true 
       description: List of IDs to filter by.
     - name: query
       description: Query.
     - name: site_ids
-      isArray: true
+      isArray: true 
       description: "List of site IDs to filter by. Example: '225494730938493804,225494730938493915'."
     - name: status
       description: "Status of the script task. Example: 'created'."
@@ -2489,10 +2489,10 @@ script:
       - "false"
       - "true"
     - defaultValue: '60'
-      description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds.
+      description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. 
       name: interval
     - defaultValue: '600'
-      description: Indicates the time in seconds until the polling sequence timeouts.
+      description: Indicates the time in seconds until the polling sequence timeouts. 
       name: timeout
     - description: "Parent task ID to fetch the status by. Example: '225494730938493804'."
       name: parent_task_id
@@ -2659,7 +2659,7 @@ script:
     - contextPath: SentinelOne.Notes.UpdatedAt
       description: The note updated time.
       type: string
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.11.9.107902
   isfetch: true
   ismappable: true
   isremotesyncin: true

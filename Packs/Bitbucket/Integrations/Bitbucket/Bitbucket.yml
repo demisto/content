@@ -200,7 +200,7 @@ script:
       description: Links with information about the relevant repository.
       type: String
     - contextPath: Bitbucket.Branch.target.repository.name
-      description: The name of the repository.
+      description: The name of the repository
       type: String
     - contextPath: Bitbucket.Branch.target.repository.uuid
       description: The repository unique ID.
@@ -664,7 +664,7 @@ script:
       description: An API link to the issue.
       type: String
     - contextPath: Bitbucket.Issue.title
-      description: The title of the issue.
+      description: The title of the issue
       type: String
     - contextPath: Bitbucket.Issue.content.type
       description: The type of the content.
@@ -688,7 +688,7 @@ script:
       description: The type of the reporter.
       type: String
     - contextPath: Bitbucket.Issue.reporter.uuid
-      description: The unique ID of the reporter.
+      description: The unique ID of the reporter
       type: String
     - contextPath: Bitbucket.Issue.reporter.account_id
       description: The account ID of the reporter.
@@ -815,7 +815,7 @@ script:
       description: The type of the reporter.
       type: String
     - contextPath: Bitbucket.Issue.reporter.uuid
-      description: The unique ID of the reporter.
+      description: The unique ID of the reporter
       type: String
     - contextPath: Bitbucket.Issue.reporter.account_id
       description: The account ID of the reporter.
@@ -1098,7 +1098,7 @@ script:
       description: The HTML format of the pull request title.
       type: String
     - contextPath: Bitbucket.PullRequest.rendered.description.type
-      description: The type of the pull request description.
+      description: The type of the pull request description
       type: String
     - contextPath: Bitbucket.PullRequest.rendered.description.raw
       description: The content of the description of the pull request.
@@ -1128,7 +1128,7 @@ script:
       description: Links with information about the author of the pull request.
       type: String
     - contextPath: Bitbucket.PullRequest.author.type
-      description: The type of the author.
+      description: The type of the author
       type: String
     - contextPath: Bitbucket.PullRequest.author.uuid
       description: The unique universal ID of the author.
@@ -1182,7 +1182,7 @@ script:
       description: The type of the commit in the source branch.
       type: String
     - contextPath: Bitbucket.PullRequest.source.commit.hash
-      description: The hash of the commit in the source branch.
+      description: The hash of the commit in the source branch
       type: String
     - contextPath: Bitbucket.PullRequest.source.commit.links
       description: Links with information about the commit in the source branch.
@@ -1212,7 +1212,7 @@ script:
       description: Links with information about the reviewer.
       type: String
     - contextPath: Bitbucket.PullRequest.reviewers.type
-      description: The type of the reviewer.
+      description: The type of the reviewer
       type: String
     - contextPath: Bitbucket.PullRequest.reviewers.uuid
       description: The unique id of the reviewer.
@@ -1445,7 +1445,7 @@ script:
       description: Links with information about the reviewer.
       type: String
     - contextPath: Bitbucket.PullRequest.reviewers.type
-      description: The type of the reviewer.
+      description: The type of the reviewer
       type: String
     - contextPath: Bitbucket.PullRequest.reviewers.uuid
       description: The unique id of the reviewer.
@@ -2064,7 +2064,7 @@ script:
       description: The display name of the user who created the comment.
       type: String
     - contextPath: Bitbucket.PullRequestComment.user.links
-      description: Links to information about the user.
+      description: Links to information about the user
       type: String
     - contextPath: Bitbucket.PullRequestComment.user.type
       description: The type of the user.

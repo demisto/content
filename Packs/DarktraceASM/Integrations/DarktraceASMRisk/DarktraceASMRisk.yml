@@ -4,8 +4,19 @@ commonfields:
 name: Darktrace ASM
 display: Darktrace ASM
 category: Network Security
-description: 'This pack includes configurations to combine the world-class threat detection of Darktrace with the synchrony and automation abilities of XSOAR, allowing security teams to monitor their attack surface for risks, high-impact vulnerabilities and external threats.\nTo configure the connection to your Darktrace Attack Surface Management instance, you will provide:\n- Server URL of Darktrace ASM instance (ex: darktrace.yourcompany.com) and any necessary proxy information\n- The API Token from the Darktrace ASM instance.'
-detaileddescription: "### Partner Contributed Integration\n#### Integration Author: Darktrace\nSupport and maintenance for this integration are provided by the author. Please create a Darktrace Customer Portal support ticket for any questions or concerns [here](https://customerportal.darktrace.com). \n***\n## Darktrace ASM \nTo configure the integration with your Darktrace PREVENT/ASM instance, you will need:\n- URL of your Darktrace PREVENT/ASM instance (ex: example-asm.darktrace.com)\n- Darktrace PREVENT/ASM API token which can be retrieved by making a [Darktrace Customer Portal support ticket](https://customerportal.darktrace.com). \n\n"
+description: 'This pack includes configurations to combine the world-class threat
+  detection of Darktrace with the synchrony and automation abilities of XSOAR, allowing
+  security teams to monitor their attack surface for risks, high-impact vulnerabilities
+  and external threats.\nTo configure the connection to your Darktrace Attack Surface 
+  Management instance, you will provide:\n- Server URL of Darktrace ASM instance (ex: 
+  darktrace.yourcompany.com) and any necessary proxy information\n- The API Token from the Darktrace ASM instance.'
+detaileddescription: "### Partner Contributed Integration\n#### Integration Author:
+  Darktrace\nSupport and maintenance for this integration are provided by the author. Please create a 
+  Darktrace Customer Portal support ticket for any questions or concerns [here](https://customerportal.darktrace.com).
+  \n***\n## Darktrace ASM \nTo configure the integration with your 
+  Darktrace PREVENT/ASM instance, you will need:\n- URL of your Darktrace PREVENT/ASM instance 
+  (ex: example-asm.darktrace.com)\n- Darktrace PREVENT/ASM API token which can be retrieved by making 
+  a [Darktrace Customer Portal support ticket](https://customerportal.darktrace.com). \n\n"
 fromversion: 6.6.0
 defaultmapperin: Darktrace ASM Risk Mapper
 configuration:
@@ -43,7 +54,8 @@ configuration:
   - Reported
   - SSL
   - Vulnerable Software
-  additionalinfo: Comma-separated list of types of alerts to fetch. Types might change over time. Some examples are 'Bug' and 'Vulnerability'
+  additionalinfo: Comma-separated list of types of alerts to fetch. Types might change
+    over time. Some examples are 'Bug' and 'Vulnerability'
 - display: Minimum severity of alerts to fetch
   name: min_severity
   defaultvalue: Medium
@@ -187,7 +199,8 @@ script:
     - contextPath: Darktrace.comment.comment.text
       description: Comment text.
       type: string
-    description: Post a comment to a Darktrace ASM risk or asset within the Darktrace UI.
+    description: Post a comment to a Darktrace ASM risk or asset within the Darktrace
+      UI.
   - name: darktrace-asm-edit-comment
     arguments:
     - name: comment_id
@@ -242,7 +255,8 @@ script:
     - contextPath: Darktrace.tag.tag.name
       description: Tag name.
       type: string
-    description: Create a tag to assign to Darktrace ASM Assets within the Darktrace UI.
+    description: Create a tag to assign to Darktrace ASM Assets within the Darktrace
+      UI.
   - name: darktrace-asm-assign-tag
     arguments:
     - name: tag_name
@@ -260,7 +274,8 @@ script:
       type: string
     - contextPath: Darktrace.tag.asset.tags
       description: All tags assigned to asset.
-    description: Assign an existing tag to a Darktrace ASM Asset within the Darktrace UI.
+    description: Assign an existing tag to a Darktrace ASM Asset within the Darktrace
+      UI.
   - name: darktrace-asm-unassign-tag
     arguments:
     - name: tag_name
@@ -278,10 +293,9 @@ script:
       type: string
     - contextPath: Darktrace.tag.asset.tags
       description: All tags assigned to asset.
-    description: Unassign an existing tag to a Darktrace ASM Asset within the Darktrace UI.
-  dockerimage: demisto/python3:3.11.10.116949
+    description: Unassign an existing tag to a Darktrace ASM Asset within the Darktrace
+      UI.
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   subtype: python3
-tests:
-- No tests (auto formatted)
