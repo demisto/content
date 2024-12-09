@@ -273,6 +273,8 @@ Note that in cases where the ingestion rate from the Akamai API is higher, the i
 **Akamai Page size** configures the number of events to retrieve per request. Note that the maximum allowed value is 80k.
 A single fetch interval may execute multiple requests, so configure **Akamai Page size** < **Fetch limit**
 
+If after readjusting the limits you keep encounter errors, please refer to the support.
+
 ### Known limitations
 
 ## The config ID can only be configured on one instance:

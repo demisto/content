@@ -12178,6 +12178,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
     :type multiple_threads: ``bool``
     :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
+    Note that when set to True, the updateModuleHealth should be done from the itnegration itself.
 
     :return: None
     :rtype: ``None``
@@ -12307,8 +12308,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         for chunk in data_chunks:
             data_size = send_events(chunk)
 
-    if should_update_health_module:
-        demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+        if should_update_health_module:
+            demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
 
 
 def comma_separated_mapping_to_dict(raw_text):

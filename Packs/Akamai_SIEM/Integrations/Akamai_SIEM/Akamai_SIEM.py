@@ -120,7 +120,12 @@ class Client(BaseClient):
             resp_type='text',
         )
         demisto.info("Finished executing request to Akamai, processing")
-        events: list[dict] = [json.loads(e) for e in raw_response.split('\n') if e]
+        events: list[dict] = []
+        for event in raw_response.split('\n'):
+            try:
+                events.append(json.loads(event))
+            except Exception as e:
+                demisto.info(f"Could not decode the {event=}, reason: {e}")
         offset = events.pop().get("offset")
         return events, offset
 
@@ -546,8 +551,8 @@ def fetch_events_command(
         event hashes from current fetch, and whether to set nexttrigger=0 for next execution.
     """
     total_events_count = 0
-    from_epoch, _ = parse_date_range(date_range=fetch_time, date_format='%s')
-    offset = ctx.get("offset")
+    if not (offset := ctx.get("offset")):
+        from_epoch, _ = parse_date_range(date_range=ctx.get("from_time", fetch_time), date_format='%s')
     auto_trigger_next_run = False
     worst_case_time: float = 0
     execution_counter = 0
@@ -574,9 +579,12 @@ def fetch_events_command(
             demisto.info(f"Got an error when trying to request for new events from Akamai\n{e}")
             if "Requested Range Not Satisfiable" in str(e):
                 err_msg = f'Got offset out of range error when attempting to fetch events from Akamai.\n' \
-                    "In order to continue fetching, please run 'akamai-siem-reset-offset' on the specific instance.\n" \
+                    "This occurred due to offset pointing to events older than 12 hours.\n" \
+                    "In order to continue fetching, restarting the offset and rerunning fetch-events with 11 hours backward.\n" \
+                    "If you wish to fetch more up to date events, please run 'akamai-siem-reset-offset' on the specific instance.\n" \
                     'For more information, please refer to the Troubleshooting section in the integration documentation.\n' \
                     f'original error: [{e}]'
+                set_integration_context({"from_time": "11 hours"})
                 raise DemistoException(err_msg)
             else:
                 raise DemistoException(e)
