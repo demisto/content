@@ -6,6 +6,7 @@ import traceback
 from datetime import datetime
 
 IS_PY3 = sys.version_info[0] == 3
+MIN_SUPPORTED_VERSION = "8.9.0"
 
 LAST_RUN_TRUNCATE_SIZE = 1024
 LAST_RUN_SIZE_RECOMMENDATION = 1024 ** 2  # 1MB
@@ -73,10 +74,12 @@ if IS_PY3:
     class DemistoScript(DemistoWrapper):
         def getFilePath(self, id):
             res = self._demisto.getFilePath(id)
+
             try:
                 self.debug(FILE_PATH_LOG.format(id, json.dumps(res)))
             except Exception:
                 self.log_failure()
+
             return res
 
         def _drop_debug_log_entry(self, entries):
@@ -95,21 +98,26 @@ if IS_PY3:
             When debug-mode is true, adds debug logs before and after the execution,
             and handles the log file entry.
             """
-            completed = False
+            start_time = None
+
             try:
                 if self.is_debug:
                     self.debug(EXECUTING_COMMAND_LOG.format(command))
                     start_time = datetime.now()
-                    res = self._demisto.executeCommand(command, args)
-                    completed = True
+            except Exception:
+                    self.log_failure()
+
+            res = self._demisto.executeCommand(command, args)
+
+            try:
+                if start_time and self.is_debug:
                     duration = (datetime.now() - start_time).total_seconds()
                     self.debug(EXECUTE_COMMAND_DURATION_LOG.format(command, duration))
                     return self._drop_debug_log_entry(res)
             except Exception:
                 self.log_failure()
-                if completed:
-                    return res
-            return self._demisto.executeCommand(command, args)
+
+            return res
 
     class DemistoIntegration(DemistoWrapper):
         def _stringify_last_run(self, last_run, truncate_size=LAST_RUN_TRUNCATE_SIZE):
@@ -166,29 +174,45 @@ if IS_PY3:
             """A wrapper for demisto.createIndicators.
             Prints the number of indicators pulled, and the execution time of createIndicators().
             """
-            completed = False
+            start_time = None
             try:
                 self.debug(CREATING_INDICATORS_LOG.format(len(indicators_batch)))
                 start_time = datetime.now()
-                self._demisto.createIndicators(indicators_batch, noUpdate)
-                completed = True
-                duration = (datetime.now() - start_time).total_seconds()
-                if self.is_debug:
-                    self.debug(CREATE_INDICATORS_DURATION_LOG.format(duration))
             except Exception:
                 self.log_failure()
-                if not completed:
-                    self._demisto.createIndicators(indicators_batch, noUpdate)
+
+            self._demisto.createIndicators(indicators_batch, noUpdate)
+
+            try:
+                if start_time:
+                    duration = (datetime.now() - start_time).total_seconds()
+                    if self.is_debug:
+                        self.debug(CREATE_INDICATORS_DURATION_LOG.format(duration))
+            except Exception:
+                self.log_failure()
+
+    def is_supported_version():
+        platform_version = demisto.demistoVersion().get("version")
+        try:
+            comparable_version = lambda v: [int(i) for i in v.split(".")]
+            return comparable_version(platform_version) >= comparable_version(MIN_SUPPORTED_VERSION)
+        except:
+            raise ValueError(
+                "Could not compare platform version {} with {}".format(
+                    platform_version, MIN_SUPPORTED_VERSION
+                )
+            )
 
     def set_demisto_class():
-        platform_version = demisto.demistoVersion().get("version")
-        if isinstance(platform_version, str):
-            major = platform_version.split(".")[0]
-            if major.isnumeric() and int(major) >= 8:  # version >= 8.0.0
+        try:
+            if is_supported_version():
                 if demisto.callingContext.get('context', {}).get('IntegrationBrand'):
                     return DemistoIntegration(demisto)
                 elif demisto.callingContext.get('context', {}).get('ScriptName'):
                     return DemistoScript(demisto)
+        except Exception:
+            demisto.debug("{} {}".format(DEMISTO_WRAPPER_FAILED, traceback.format_exc()))
+
         return demisto
 
     if "pytest" not in sys.modules:

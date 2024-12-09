@@ -3,10 +3,12 @@ import pytest
 
 from DemistoClassApiModule import *
 
+TEST_SKIP_REASON = "DemistoWrapper is not supported for python 2"
+
 
 def command_context(
     mocker,
-    version="8.5.0",
+    version=MIN_SUPPORTED_VERSION,
 ):
     mocker.patch.object(demisto, "demistoVersion", return_value={"version": version})
     return {
@@ -21,7 +23,7 @@ def command_context(
 
 def script_context(
     mocker,
-    version="8.5.0",
+    version=MIN_SUPPORTED_VERSION,
 ):
     mocker.patch.object(demisto, "demistoVersion", return_value={"version": version})
     return {
@@ -44,11 +46,11 @@ def debug_logs_sent(demisto, msgs):
     return res
 
 
-@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
+@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
 def test_set_demisto_class_script_context(mocker):
     """
     Given:
-    - A mock `demisto` object with a script context, version = 8.5.0
+    - A mock `demisto` object with a script context, version = 8.9.0
     When:
     - Setting the appropriate class for `demisto` based on the calling context.
     Then:
@@ -61,11 +63,11 @@ def test_set_demisto_class_script_context(mocker):
     assert type(demisto) == DemistoScript
 
 
-@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
+@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
 def test_set_demisto_class_command_context(mocker):
     """
     Given:
-    - A mock `demisto` object with a command context, version = 8.5.0.
+    - A mock `demisto` object with a command context, version = 8.9.0.
     When:
     - Setting the appropriate class for `demisto` based on the calling context.
     Then:
@@ -78,29 +80,31 @@ def test_set_demisto_class_command_context(mocker):
     assert type(demisto) == DemistoIntegration
 
 
-@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
-def test_set_demisto_class_not_saas(mocker):
+@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
+def test_set_demisto_class_is_debug(mocker):
     """
     Given:
-    - A mock `demisto` object with a command context, version = 6.10.0
+    - A `demisto` object on debug mode.
     When:
     - Setting the appropriate class for `demisto` based on the calling context.
     Then:
-    - Ensure the demisto class is not changed.
+    - Ensure the `is_debug` field is available from the `demisto` object.
     """
     import demistomock as demisto
-    demisto.callingContext = command_context(mocker, version="6.10.0")
+    demisto.is_debug = True
+    demisto.callingContext = command_context(mocker)
     assert type(demisto) == types.ModuleType  # demistomock is a module
     demisto = set_demisto_class()
-    assert type(demisto) == types.ModuleType
+    assert type(demisto) == DemistoIntegration
+    assert demisto.is_debug
 
 
-@pytest.mark.skipif(IS_PY3, reason="DemistoWrapper is not supported for python 2")
+@pytest.mark.skipif(IS_PY3, reason=TEST_SKIP_REASON)
 def test_set_demisto_class_python_2(mocker):
     """
     Given:
     - Python 2
-    - A mock `demisto` object with a command context, version = 8.5.0
+    - A mock `demisto` object with a command context, version = 8.9.0
     When:
     - Importing the API module.
     Then:
@@ -114,7 +118,90 @@ def test_set_demisto_class_python_2(mocker):
     assert type(demisto) == types.ModuleType
 
 
-@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
+@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
+@pytest.mark.parametrize(
+    "platform_version, is_supported",
+    [
+        ("6.10.0", False),
+        ("8.5.0", False),
+        ("8.9.0", True),
+        ("8.10.0", True),
+        ("61.0.0", True),
+    ]
+)
+def test_is_supported_version(mocker, platform_version, is_supported):
+    """
+    Given:
+    - Different platform versions
+    When:
+    - Running is_supported_version()
+    Then:
+    - Ensure the response is as expected
+    """
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": platform_version})
+    assert is_supported_version() == is_supported
+
+
+@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
+def test_set_demisto_class_not_supported_version(mocker):
+    """
+    Given:
+    - A mock `demisto` object with a command context, version = 8.5.0
+    When:
+    - Setting the appropriate class for `demisto` based on the calling context.
+    Then:
+    - Ensure the demisto class is not changed.
+    """
+    import demistomock as demisto
+    demisto.callingContext = command_context(mocker, version="8.5.0")
+    assert type(demisto) == types.ModuleType  # demistomock is a module
+    demisto = set_demisto_class()
+    assert type(demisto) == types.ModuleType
+
+
+@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
+def test_set_demisto_class_malformed_version(mocker):
+    """
+    Given:
+    - A `demisto` object and a command context with a malformed version from the server.
+    When:
+    - Setting the appropriate class for `demisto` based on the calling context.
+    Then:
+    - Ensure the `demisto` class is not changed.
+    - Ensure the warning debug log message is sent.
+    """
+    import demistomock as demisto
+    mocker.patch.object(demisto, "debug")
+    demisto.callingContext = command_context(mocker, version="asdsadasdsad")
+    assert type(demisto) == types.ModuleType  # demistomock is a module
+    demisto = set_demisto_class()
+    assert type(demisto) == types.ModuleType
+    assert debug_logs_sent(demisto, [DEMISTO_WRAPPER_FAILED])
+
+
+@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
+def test_init(mocker):
+    """
+    Given:
+    - A `demisto` object with a command context.
+    When:
+    - Logging execution details.
+    Then:
+    - Ensure the execution details log is sent.
+    """
+    import demistomock as demisto
+    mocker.patch.object(demisto, "debug")
+    demisto.callingContext = command_context(mocker)
+    demisto = set_demisto_class()
+    demisto.debug.assert_called_with(
+        "{}{}".format(
+            EXECUTING_LOG.format(demisto.exec_type, demisto.exec_name),
+            EXECUTING_ROOT_CALLER_SUFFIX.format(demisto.root_caller)
+        )
+    )
+
+
+@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
 def test_set_demisto_class_init_error(mocker):
     """
     Given:
@@ -126,7 +213,7 @@ def test_set_demisto_class_init_error(mocker):
     - Ensure the warning debug log message is sent during __init__(), but no exception is returned.
     """
     import demistomock as demisto
-    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "8.5.0"})
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "8.9.0"})
     mocker.patch.object(demisto, "debug")
     demisto.callingContext = {"context": {"IntegrationBrand": "hello"}}
     demisto = set_demisto_class()
@@ -134,39 +221,18 @@ def test_set_demisto_class_init_error(mocker):
     assert debug_logs_sent(demisto, [DEMISTO_WRAPPER_FAILED])
 
 
-@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
-def test_log_execution_details(mocker):
-    """
-    Given:
-    - A `demisto` object with debug mode enabled and a command context.
-    When:
-    - Logging execution details using the `debug` method.
-    Then:
-    - Ensure the correct debug log message is sent.
-    """
-    import demistomock as demisto
-    mocker.patch.object(demisto, "debug")
-    demisto.callingContext = command_context(mocker)
-    demisto.is_debug = True
-    demisto = set_demisto_class()
-    assert demisto.is_debug
-    demisto.debug.assert_called_with(
-        "{}{}".format(
-            EXECUTING_LOG.format(demisto.exec_type, demisto.exec_name),
-            EXECUTING_ROOT_CALLER_SUFFIX.format(demisto.root_caller)
-        )
-    )
-
-
-@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
+@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
 @pytest.mark.parametrize(
-    "get_fp_result, expected_log",
+    "get_fp_response, expected_log",
     [
-        ({"path": "a/b/c"}, FILE_PATH_LOG.format("test", "{\"path\": \"a/b/c\"}")),
+        # good response
+        ({"path": "a/b/c"}, FILE_PATH_LOG.format("test", '{"path": "a/b/c"}')),
+
+        # bad response - not json serializable
         (set(), DEMISTO_WRAPPER_FAILED)
     ]
 )
-def test_get_file_path(mocker, get_fp_result, expected_log):
+def test_get_file_path(mocker, get_fp_response, expected_log):
     """
     Given:
     - A `demisto` object with mocked `getFilePath` results.
@@ -178,18 +244,18 @@ def test_get_file_path(mocker, get_fp_result, expected_log):
     """
     import demistomock as demisto
     mocker.patch.object(demisto, "debug")
-    get_fp_cmd = mocker.patch.object(demisto, "getFilePath", return_value=get_fp_result)
+    get_fp_cmd = mocker.patch.object(demisto, "getFilePath", return_value=get_fp_response)
 
     demisto.callingContext = script_context(mocker)
     demisto = set_demisto_class()
 
     res = demisto.getFilePath("test")
-    assert res == get_fp_result
+    assert res == get_fp_response
     assert get_fp_cmd.called_once()
     assert debug_logs_sent(demisto, [expected_log])
 
 
-@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
+@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
 @pytest.mark.parametrize("is_debug, expected_entries_length", [(False, 2), (True, 1)])
 def test_execute_command(mocker, is_debug, expected_entries_length):
     """
@@ -211,7 +277,7 @@ def test_execute_command(mocker, is_debug, expected_entries_length):
     assert demisto.is_debug or any(entry["Type"] == 16 for entry in res)
 
 
-@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
+@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
 def test_execute_command_without_debug_log_output(mocker):
     """
     Given:
@@ -240,7 +306,7 @@ def test_execute_command_without_debug_log_output(mocker):
     assert res == entries[0]
 
 
-@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
+@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
 def test_execute_command_bad(mocker):
     """
     Given:
@@ -267,7 +333,7 @@ def test_execute_command_bad(mocker):
     assert debug_logs_sent(demisto, [DEMISTO_WRAPPER_FAILED])
 
 
-@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
+@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
 @pytest.mark.parametrize(
     "last_run, expected_log",
     [
@@ -298,11 +364,11 @@ def test_get_last_run(mocker, last_run, expected_log):
     assert debug_logs_sent(demisto, [expected_log])
 
 
-@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
+@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
 @pytest.mark.parametrize(
     "last_run, expected_log",
     [
-        ("lastRun", SET_LAST_RUN_LOG.format("\"lastRun\"")),
+        ("lastRun", SET_LAST_RUN_LOG.format('"lastRun"')),
         (set(), DEMISTO_WRAPPER_FAILED)
     ]
 )
@@ -328,7 +394,7 @@ def test_set_last_run(mocker, last_run, expected_log):
     assert debug_logs_sent(demisto, [expected_log])
 
 
-@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
+@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
 def test_set_last_run_truncated(mocker):
     """
     Given:
@@ -349,7 +415,7 @@ def test_set_last_run_truncated(mocker):
     assert debug_logs_sent(demisto, [TRUNCATED_SUFFIX])
 
 
-@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
+@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
 def test_set_last_run_exceeds_recommendation(mocker):
     """
     Given:
@@ -374,7 +440,7 @@ def test_set_last_run_exceeds_recommendation(mocker):
     assert debug_logs_sent(demisto, [LAST_RUN_SIZE_LOG.format(last_run_size)])
 
 
-@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
+@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
 @pytest.mark.parametrize(
     "incidents, expected_log",
     [
@@ -417,7 +483,7 @@ def test_incidents(mocker, incidents, expected_log):
     assert debug_logs_sent(demisto, [expected_log])
 
 
-@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
+@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
 def test_create_indicators(mocker):
     """
     Given:
@@ -440,7 +506,7 @@ def test_create_indicators(mocker):
     assert debug_logs_sent(demisto, [CREATING_INDICATORS_LOG.format(0), "createIndicators took"])
 
 
-@pytest.mark.skipif(not IS_PY3, reason="DemistoWrapper is not supported for python 2")
+@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
 def test_create_indicators_failure(mocker):
     """
     Given:
