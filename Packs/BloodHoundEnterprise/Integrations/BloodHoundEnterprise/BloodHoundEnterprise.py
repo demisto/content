@@ -14,8 +14,8 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "BloodHound"
 PRODUCT = "Enterprise"
-FETCH_LIMIT = 250
-PAGE_LIMIT = 50
+FETCH_LIMIT = 5000
+PAGE_LIMIT = 1000
 
 
 class Credentials:

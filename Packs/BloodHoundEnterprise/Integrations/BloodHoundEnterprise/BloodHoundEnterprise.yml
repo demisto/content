@@ -6,20 +6,20 @@ commonfields:
   id: BloodHoundEnterprise
   version: -1
 configuration:
-- display: Server URL
-  additionalinfo: Example format "example.bloodhoundenterprise.io"
+- display: Server URL (e.g., example.bloodhoundenterprise.io)
+  additionalinfo: The hostname of the server from which to fetch events. Without the "https://" part.
   name: server_url
   required: true
   type: 0
   section: Connect
-- additionalinfo: The password for the client application. This is used to authenticate the client with the BloodHound Enterprise server.
-  displaypassword: Password
+- display: API Token ID
+  additionalinfo: The password for the client application. This is used to authenticate the client with the BloodHound Enterprise server.
+  displaypassword: API Token Key
   name: client
-  display: Token ID
   required: true
   type: 9
   section: Connect
-- defaultvalue: 250
+- defaultvalue: 5000
   section: Collect
   advanced: true
   display: Maximum number of events per fetch
@@ -31,12 +31,14 @@ configuration:
   required: false
   type: 8
   section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
   section: Connect
-description: This is the BloodHound Enterprise event collector integration for Cortex XSIAM.
+  advanced: true
+description: Use this integration to fetch audit logs from BloodHound Enterprise as events in Cortex XSIAM.
 display: BloodHoundEnterprise
 name: BloodHoundEnterprise
 script:
@@ -55,7 +57,7 @@ script:
       - 'false'  
       required: false  
       auto: PREDEFINED  
-    - description: The number of events to return. Default is 250.
+    - description: The number of events to return. Default is 5000.
       name: limit
       required: false
     description: Gets events from BloodHound Enterprise.
