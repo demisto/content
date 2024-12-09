@@ -2,6 +2,7 @@ Randomly assigns the incidents to users on call (requires shift management) and 
 See for more information:  
 [Cortex XSOAR 6.13](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Shift-Management)  
 [Cortex XSOAR 8 Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Manage-roles-in-the-Cortex-XSOAR-tenant)
+[Cortex XSOAR 8.7 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Manage-roles-in-the-Cortex-XSOAR-tenant)
 
 Incident Ids should be passed in as a comma separated list.
 

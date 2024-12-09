@@ -174,6 +174,7 @@ tasks:
         See for more information:  
         [Cortex XSOAR 6.13](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Shift-Management)  
         [Cortex XSOAR 8 Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Manage-roles-in-the-Cortex-XSOAR-tenant)
+        [Cortex XSOAR 8.7 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Manage-roles-in-the-Cortex-XSOAR-tenant)
 
         Incident IDs should be passed as a comma-separated list."
       id: d9cfc9cb-513d-4f1b-803d-98f9e396d93a
