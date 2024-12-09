@@ -80,7 +80,7 @@ script:
       description: Incident id.
       type: string
     - contextPath: Ironscales.Incident.attachments
-      description: Email attachments.
+      description: Email attachments
       type: string
     - contextPath: Ironscales.Incident.banner_displayed
       description: Email banners.
