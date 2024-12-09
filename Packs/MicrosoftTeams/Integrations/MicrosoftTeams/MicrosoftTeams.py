@@ -3009,10 +3009,10 @@ def main():   # pragma: no cover
     
     integration_context = get_integration_context()
     current_auth_type = integration_context.get('current_auth_type', '')
-    demisto.debug(f'current_auth_type is: {current_auth_type}')
-    
-    if not current_auth_type: 
-        # First run of the integration instance
+    if current_auth_type:
+        demisto.debug(f'current_auth_type is: {current_auth_type}')
+    else: 
+        # current_auth_type is not set - First run of the integration instance
         demisto.debug(f'This is the first run of the integration instance.\n'\
                       f'Setting the current_auth_type in the integration context to {AUTH_TYPE}.')
         integration_context['current_auth_type'] = AUTH_TYPE
