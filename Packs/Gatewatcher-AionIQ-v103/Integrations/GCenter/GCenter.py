@@ -9,6 +9,7 @@ import json
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
+
 class GwRequests():
     """Allows to easily interact with HTTP server.
 
@@ -276,6 +277,7 @@ class GwClient(GwRequests):
             )
             return False
 
+
 def test_module(client: GwClient) -> str:  # noqa: E501
     """Tests API connectivity and authentication command.
 
@@ -291,6 +293,7 @@ def test_module(client: GwClient) -> str:  # noqa: E501
     else:
         return "Authentication error, please check ip/user/password/token: [ERROR]"
 
+
 def convertEventSeverity(gwSev: int) -> int:
 
     if gwSev == 0:
@@ -303,6 +306,7 @@ def convertEventSeverity(gwSev: int) -> int:
         return 1
 
     return 0
+
 
 def fetch_incidents():
 
@@ -332,42 +336,42 @@ def fetch_incidents():
 
     # Fetch was never runned
     if last_run == {}:
-        first_fetch_dt_str = first_fetch_dt.isoformat(sep='T', timespec='milliseconds')+"Z"
+        first_fetch_dt_str = first_fetch_dt.isoformat(sep='T', timespec='milliseconds') + "Z"
 
         now = datetime.today()
-        now_str = now.isoformat(sep='T', timespec='milliseconds')+"Z"
+        now_str = now.isoformat(sep='T', timespec='milliseconds') + "Z"
         queryRange = {'size': int(max_fetch),
                       'query': {
-                        'range': {
-                            '@timestamp': {
-                                'gte': str(first_fetch_dt_str),
-                                'lte': str(now_str)
-                                }
-                            }
-                        },
-                      'sort': [
+            'range': {
+                '@timestamp': {
+                    'gte': str(first_fetch_dt_str),
+                    'lte': str(now_str)
+                }
+            }
+        },
+            'sort': [
                           {"@timestamp": "asc"}
-                      ]
-                    }
+        ]
+        }
     else:
         last_fetch = last_run.get('start_time')
 
         now = datetime.today()
-        now_str = now.isoformat(sep='T', timespec='milliseconds')+"Z"
+        now_str = now.isoformat(sep='T', timespec='milliseconds') + "Z"
         queryRange = {'size': int(max_fetch),
                       'query': {
-                        'range': {
-                            '@timestamp': {
-                                'gt': str(last_fetch),
-                                'lt': str(now_str)
-                                }
-                            }
-                        },
-                      'sort': [
+            'range': {
+                '@timestamp': {
+                    'gt': str(last_fetch),
+                    'lt': str(now_str)
+                }
+            }
+        },
+            'sort': [
                           {"@timestamp": "asc"}
-                      ]                      
-                    }
-    
+        ]
+        }
+
     if int(max_fetch) > 10000:
 
         queryRange['size'] = 10000
@@ -377,7 +381,7 @@ def fetch_incidents():
 
         resA = retA.json()
         resM = retM.json()
-        
+
         if len(resA['hits']['hits']) or len(resM['hits']['hits']) == 0:
             incidents = []
             demisto.incidents(incidents)
@@ -385,13 +389,13 @@ def fetch_incidents():
 
         gwAlerts = resA['hits']['hits']
         gwMeta = resM['hits']['hits']
-        
+
         search_after_idA = gwAlerts[-1]['sort'][0]
         search_after_idM = gwMeta[-1]['sort'][0]
-        
+
         nbReq = int(max_fetch) // 10000
         nbReq = nbReq + 1
-        
+
         while nbReq > 0:
 
             queryRange['search_after'] = [search_after_idA]
@@ -399,9 +403,9 @@ def fetch_incidents():
             retA = client._post(endpoint="/api/v1/data/es/search/", params={"index": "engines_alerts"}, json_data=queryRange)
 
             queryRange['search_after'] = [search_after_idM]
-    
+
             retM = client._post(endpoint="/api/v1/data/es/search/", params={"index": "engines_metadata"}, json_data=queryRange)
-            
+
             resA = retA.json()
             resM = retM.json()
 
@@ -412,9 +416,9 @@ def fetch_incidents():
 
                 search_after_idA = gwAlerts[-1]['sort'][0]
                 search_after_idM = gwMeta[-1]['sort'][0]
-           
+
             nbReq = nbReq - 1
-        
+
         # Alert events
         incidents = []
 
@@ -445,9 +449,9 @@ def fetch_incidents():
             if 'nba' in gwAlerts[i]['_source'].keys():
                 if 'signature' in gwAlerts[i]['_source']['nba'].keys():
                     incident['name'] = "Gatewatcher Alert: " + str(gwAlerts[i]['_source']['nba']['signature'])
-        
+
             incidents.append(incident)
-        
+
         # Metadata events
         for i in range(0, len(gwMeta)):
 
@@ -509,9 +513,9 @@ def fetch_incidents():
             if 'nba' in gwAlerts[i]['_source'].keys():
                 if 'signature' in gwAlerts[i]['_source']['nba'].keys():
                     incident['name'] = "Gatewatcher Alert: " + str(gwAlerts[i]['_source']['nba']['signature'])
-        
+
             incidents.append(incident)
-        
+
         # Metadata events
         ret = client._post(endpoint="/api/v1/data/es/search/", params={"index": "engines_metadata"}, json_data=queryRange)
 
@@ -544,10 +548,11 @@ def fetch_incidents():
 
     if len(incidents) > 0:
         incidents = sorted(incidents, key=lambda d: d['occurred'])
-        last_incident = incidents[len(incidents)-1]
+        last_incident = incidents[len(incidents) - 1]
         demisto.setLastRun({'start_time': str(last_incident['occurred'])})
 
     demisto.incidents(incidents)
+
 
 def main() -> None:
     """Main function, parses params and runs command functions."""
@@ -583,6 +588,6 @@ def main() -> None:
             f"Failed to execute {command} command.\nError: {str(e)}"
         )
 
+
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-
