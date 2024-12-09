@@ -91,6 +91,7 @@ class Client(BaseClient):
         download_link = download_link_search_regex.group(1) if download_link_search_regex else None
 
         if download_link is None:
+            demisto.debug(f"azure response is: {azure_url_response}")
             raise RuntimeError(F'{INTEGRATION_NAME} - Download link not found')
 
         demisto.debug(F'download link: {download_link}')
