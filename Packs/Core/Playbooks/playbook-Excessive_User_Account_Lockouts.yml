@@ -1,6 +1,5 @@
-id: f6ec5f99-5c14-47ba-8d03-7a30bcedac80
-version: 121
-vcShouldKeepItemLegacyProdMachine: false
+id: Excessive User Account Lockouts
+version: -1
 name: Excessive User Account Lockouts
 description: |-
   This playbook is designed to handle the following alerts:
@@ -40,6 +39,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -67,8 +67,7 @@ tasks:
       id: 34a5e2bb-48fc-49e6-8942-973578d1a7a6
       version: -1
       name: Get more information about the lockout events
-      description: Returns information about the lockout events, including timestamps
-        and the Caller Computer name.
+      description: Returns information about the lockout events, including timestamps and the Caller Computer name.
       script: '|||core-get-cloud-original-alerts'
       type: regular
       iscommand: true
@@ -108,6 +107,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -135,8 +135,7 @@ tasks:
       id: e80f56bc-9b7f-4194-8a3b-b7da358e127a
       version: -1
       name: Enrich Caller Computer
-      description: Retrieves agent information for the Caller Computer that caused
-        the lockouts (if managed).
+      description: Retrieves agent information for the Caller Computer that caused the lockouts (if managed).
       script: '|||core-get-endpoints'
       type: regular
       iscommand: true
@@ -177,11 +176,7 @@ tasks:
       id: 83ff4126-8b59-42d1-80e7-492fa269b5d7
       version: -1
       name: Get endpoint details for the target host
-      description: Gets a list of endpoints, according to the passed filters. If there
-        are no filters, all endpoints are returned. Filtering by multiple fields will
-        be concatenated using AND condition (OR is not supported). Maximum result
-        set size is 100. Offset is the zero-based number of endpoint from the start
-        of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
       script: '|||core-get-endpoints'
       type: regular
       iscommand: true
@@ -265,6 +260,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -294,9 +290,7 @@ tasks:
       id: bb054ce8-8cc5-4060-817d-dba6db2ffee1
       version: -1
       name: Analyze lockout timestamps
-      description: Analyze a list of Unix timestamps in milliseconds, to detect simple
-        patterns of consistency or high frequency. The script can aid in the investigation
-        of multi-event alerts that contain a list of timestamps.
+      description: Analyze a list of Unix timestamps in milliseconds, to detect simple patterns of consistency or high frequency. The script can aid in the investigation of multi-event alerts that contain a list of timestamps.
       scriptName: AnalyzeTimestampIntervals
       type: regular
       iscommand: false
@@ -331,8 +325,7 @@ tasks:
       id: 984a779e-940a-429c-8846-b1f832ce1f17
       version: -1
       name: Ensure Caller Computer is not a server
-      description: Checks whether the Caller Computer is managed and identified is
-        a server.
+      description: Checks whether the Caller Computer is managed and identified is a server.
       type: condition
       iscommand: false
       brand: ""
@@ -389,6 +382,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -416,8 +410,7 @@ tasks:
       id: 8f3e49e5-3f1e-41bf-87ce-085572fb5519
       version: -1
       name: Check alert severity
-      description: Checks the severity of the current alert. Different severity variations
-        have different conditions for verdict decision.
+      description: Checks the severity of the current alert. Different severity variations have different conditions for verdict decision.
       type: condition
       iscommand: false
       brand: ""
@@ -462,8 +455,7 @@ tasks:
       id: 8bd9e5e8-d9a9-4d99-8f3d-8a4e8661dd1e
       version: -1
       name: Check verdict - low severity alert
-      description: Checks if there are medium severity brute-force alerts in the incident,
-        and if the lockouts seem to be the result of an automated process.
+      description: Checks if there are medium severity brute-force alerts in the incident, and if the lockouts seem to be the result of an automated process.
       type: condition
       iscommand: false
       brand: ""
@@ -511,9 +503,7 @@ tasks:
       id: 94de6f92-b24f-47ce-8c6a-2b2bc2b3ddc5
       version: -1
       name: Check verdict - medium/high severity alert
-      description: Checks if the Caller Computer is risky, there are medium severity
-        brute-force alerts in the incident, or if the lockouts seem to be the result
-        of an automated process.
+      description: Checks if the Caller Computer is risky, there are medium severity brute-force alerts in the incident, or if the lockouts seem to be the result of an automated process.
       type: condition
       iscommand: false
       brand: ""
@@ -581,6 +571,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "52"
@@ -662,9 +653,7 @@ tasks:
       id: b114af3d-b553-4a33-8652-3b88a888c6f1
       version: -1
       name: Check availability of Caller Computer Name
-      description: Checks if the name of the Caller Computer is available in the event,
-        in order to avoid cases where all computers are queried due to an empty filter
-        in the core-get-endpoints command.
+      description: Checks if the name of the Caller Computer is available in the event, in order to avoid cases where all computers are queried due to an empty filter in the core-get-endpoints command.
       type: condition
       iscommand: false
       brand: ""
@@ -711,6 +700,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "48"
@@ -741,6 +731,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "48"
@@ -768,8 +759,7 @@ tasks:
       id: cec099da-466d-4705-825f-5228bc8d77e0
       version: -1
       name: Ensure target host is not a server
-      description: Retrieves agent information for the host where the lockouts were
-        logged.
+      description: Retrieves agent information for the host where the lockouts were logged.
       type: condition
       iscommand: false
       brand: ""
@@ -823,8 +813,7 @@ tasks:
       id: 054b82f0-47a5-4a50-82d3-42a7df367ebd
       version: -1
       name: Save Caller Computer as target for remediation
-      description: Saves the Caller Computer that caused the user lockouts as the
-        remediation target.
+      description: Saves the Caller Computer that caused the user lockouts as the remediation target.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -878,8 +867,7 @@ tasks:
       id: 62222607-7815-4c38-8775-1cfe01426421
       version: -1
       name: Save Target Host as target for remediation
-      description: Saves the host on which the lockouts occurred as the remediation
-        target.
+      description: Saves the host on which the lockouts occurred as the remediation target.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -933,8 +921,7 @@ tasks:
       id: 0c636d74-3530-4485-8aab-eeb6b0a459e1
       version: -1
       name: Check Caller Computer risk level
-      description: Checks if the Caller Computer that caused the lockouts is risky
-        (if managed).
+      description: Checks if the Caller Computer that caused the lockouts is risky (if managed).
       type: condition
       iscommand: false
       brand: ""
@@ -1100,9 +1087,7 @@ tasks:
       id: 3979d50a-f78e-4979-8103-27797180092d
       version: -1
       name: Search for suspicious brute force alerts in the incident
-      description: Searches for non-low severity alerts with the Brute Force MITRE
-        technique (T1110) in the same incident, which may be related to the excessive
-        lockouts.
+      description: Searches for non-low severity alerts with the Brute Force MITRE technique (T1110) in the same incident, which may be related to the excessive lockouts.
       scriptName: SearchAlertsV2
       type: regular
       iscommand: false
@@ -1131,8 +1116,7 @@ tasks:
                   simple: 'caseid:'
               suffix:
                 value:
-                  simple: ' and mitreattcktechnique:*T1110* and -severity:LOW and
-                    -id:'
+                  simple: ' and mitreattcktechnique:*T1110* and -severity:LOW and -id:'
           - operator: concat
             args:
               prefix: {}
@@ -1210,13 +1194,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body: {}
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1258,3 +1242,7 @@ view: |-
   }
 inputs: []
 outputs: []
+marketplaces: ["marketplacev2"]
+tests:
+- no tests
+fromversion: 8.8.0
