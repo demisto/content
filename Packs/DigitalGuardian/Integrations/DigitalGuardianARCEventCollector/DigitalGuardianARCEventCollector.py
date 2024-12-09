@@ -29,12 +29,10 @@ class Client(BaseClient):
         base_url: str,
         client_id: str,
         client_secret: str,
-        export_profile: str,
     ) -> None:
         self.__auth_url = auth_url
         self.__client_id = client_id
         self.__client_secret = client_secret
-        self.export_profile = export_profile
 
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)  # headers set below (requires Client)
         self._headers = {'Authorization': f'Bearer {self._get_or_generate_access_token()}'}
@@ -78,20 +76,23 @@ class Client(BaseClient):
 
         return response['access_token']
 
-    def export_events(self) -> dict:
+    def export_events(self, export_profile: str) -> dict:
         """
         Exports events for the export profile that arrived after setting the internal bookmark.
+
+        Args:
+            export_profile (str): Export profile name.
 
         Returns:
             dict: Response JSON.
         """
         return self._http_request(
             method='POST',
-            url_suffix=f'/rest/2.0/export_profiles/{self.export_profile}/export',
+            url_suffix=f'/rest/2.0/export_profiles/{export_profile}/export',
             raise_on_status=True,
         )
 
-    def set_export_bookmark(self) -> str:
+    def set_export_bookmark(self, export_profile: str) -> str:
         """
         Advances the internal bookmark / pointer for the export profile based on the last export events.
         This is effectively an API-side implementation of `demisto.getLastRun` and `demisto.setLastRun`.
@@ -103,25 +104,26 @@ class Client(BaseClient):
         """
         return self._http_request(
             method='POST',
-            url_suffix=f'/rest/2.0/export_profiles/{self.export_profile}/acknowledge',
+            url_suffix=f'/rest/2.0/export_profiles/{export_profile}/acknowledge',
             raise_on_status=True,
             resp_type='text',
         )
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, export_profiles: list[str]) -> str:
     """
     Tests API connectivity and authentication.
     Args:
         client (Client): Digital Guardian client to use.
-        params (dict): Integration parameters.
+        export_profiles (list): List of export profile names.
     Returns:
         str: 'ok' connection to the service is successful.
     Raises:
         DemistoException | HTTPError: If request failed.
     """
     try:
-        client.export_events()
+        for export_profile in export_profiles:
+            client.export_events(export_profile)
         return 'ok'
 
     except Exception as e:
@@ -130,19 +132,20 @@ def test_module(client: Client) -> str:
         raise
 
 
-def fetch_events(client: Client, limit: int | None = None) -> tuple[list[dict], dict]:
+def fetch_events(client: Client, export_profile: str, limit: int | None = None) -> tuple[list[dict], dict]:
     """
     Args:
         client (Client): Digital Guardian client.
+        export_profile (str): Export profile name.
         limit (int | None): Optional value to limit the number of yielded events.
     Returns:
         tuple[list[dict], dict]: Events and last run dictionary.
     """
     demisto.debug('Fetching events')
-    raw_response = client.export_events()
+    raw_response = client.export_events(export_profile)
 
     demisto.info(f"Got {raw_response['total_hits']} raw events")
-    events = create_events_for_push(raw_response, limit)
+    events = create_events_for_push(raw_response, export_profile, limit)
 
     # Fields relating to the internal API bookmark (pointer); logged before pushing events to XSIAM (for debugging purposes)
     last_run = {key: value for key, value in raw_response.items() if key in ('bookmark_values', 'search_after_values')}
@@ -150,22 +153,25 @@ def fetch_events(client: Client, limit: int | None = None) -> tuple[list[dict], 
     return events, last_run
 
 
-def add_time_to_event(event: dict):
+def add_time_and_profile_to_event(event: dict, export_profile: str):
     """
-    Add _time key to the event dictionary based on dg_time
+    Add _time and dg_export_profile keys to the event dictionary.
 
     Args:
         event (dict): Event dictionary with _time field.
+        export_profile (str): Name of export profile.
     """
     event_time = arg_to_datetime(arg=event['dg_time'], required=True)
     event['_time'] = event_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
+    event['dg_export_profile'] = export_profile
 
 
-def create_events_for_push(raw_response: dict, limit: int | None = None) -> list[dict]:
+def create_events_for_push(raw_response: dict, export_profile: str, limit: int | None = None) -> list[dict]:
     """
     Yields key-value dictionaries of distinct events from the raw API response and adds the _time key to the events.
     Args:
         raw_response (dict): Export profile events raw API response.
+        export_profile (str): Export profile name.
         limit (int | None): Optional value to limit the number of yielded events.
     Returns:
         list[dict]: List of events from the raw API response.
@@ -182,35 +188,33 @@ def create_events_for_push(raw_response: dict, limit: int | None = None) -> list
         for field, value in zip(event_fields, event_data, strict=True):
             event[field] = value if value != "-" else None  # "-" mark an empty field in Digital Guardian
 
-        add_time_to_event(event)
+        add_time_and_profile_to_event(event, export_profile)
 
         events.append(event)
 
     return events
 
 
-def get_events_command(client: Client, args: dict) -> tuple[list[dict], dict, CommandResults]:
+def get_events_command(client: Client, args: dict, export_profile: str) -> tuple[list[dict], dict, CommandResults]:
     """
     Fetches a limited number of events and returns it in the CommandResults as a human readable markdown table.
     Args:
         client (Client): Digital Guardian client.
+        export_profile (str): Export profile name.
         args (dict): Command arguments.
     Returns:
         tuple[list, dict, CommandResults]: List of events, last run dictionary, CommandResults with human readable output.
     """
     limit = arg_to_number(args.get('limit')) or 1000
-    events, last_run = fetch_events(client, limit=limit)
+    events, last_run = fetch_events(client, export_profile, limit=limit)
 
-    if events:
-        human_readable = tableToMarkdown(name=f'Events for Profile {client.export_profile}', t=events, removeNull=True)
-        demisto.debug(f'Displayed limit of {limit} events from response')
-    else:
-        human_readable = 'No events found.'
+    human_readable = tableToMarkdown(name=f'Events for Profile {export_profile}', t=events, removeNull=True)
+    demisto.debug(f'Displayed limit of {limit} events from response')
 
     return events, last_run, CommandResults(readable_output=human_readable)
 
 
-def push_events(client: Client, events: list[dict], last_run: dict, set_export_bookmark: bool) -> None:
+def push_events(client: Client, events: list[dict], last_run: dict, export_profile: str, set_export_bookmark: bool) -> None:
     """
     Pushes events to XSIAM and (optionally) moves internal bookmark in the API for the next time fetch-events is invoked.
 
@@ -218,14 +222,15 @@ def push_events(client: Client, events: list[dict], last_run: dict, set_export_b
         client (Client): Digital Guardian client.
         events (list[dict]): Events get_events_command or fetch_events.
         last_run (dict): Dictionary with 'bookmark_values' and 'search_after_values' from raw API response.
+        export_profile (str): Export profile name.
         set_export_bookmark (bool): Whether to set the API-managed bookmark (saves us the need to set `last run`).
     """
-    demisto.debug(f'Sending {len(events)} events to XSIAM')
+    demisto.debug(f'Sending {len(events)} events to XSIAM from profile: {export_profile}.')
     send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
 
     if set_export_bookmark:
-        demisto.debug(f'Setting export bookmark after run: {last_run}.')
-        client.set_export_bookmark()
+        demisto.debug(f'Setting export bookmark after run: {last_run} for profile: {export_profile}.')
+        client.set_export_bookmark(export_profile)
     else:
         demisto.debug('Skipped setting export bookmark.')
 
@@ -240,7 +245,7 @@ def main() -> None:  # pragma: no cover
     base_url = params['gateway_base_url']
     client_id = params['credentials']['identifier']
     client_secret = params['credentials']['password']
-    export_profile = params['export_profile']
+    export_profiles = argToList(params['export_profiles'])
     # optional
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
@@ -256,24 +261,27 @@ def main() -> None:  # pragma: no cover
             base_url=base_url,
             client_id=client_id,
             client_secret=client_secret,
-            export_profile=export_profile,
         )
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            result = test_module(client, export_profiles)
             return_results(result)
 
         elif command == 'digital-guardian-get-events':
-            events, last_run, command_results = get_events_command(client, args)
-            return_results(command_results)
+            should_push_events = argToBoolean(args.pop('should_push_events'))
 
-            if argToBoolean(args.pop('should_push_events')):
-                push_events(client, events, last_run, set_export_bookmark=False)
+            for export_profile in export_profiles:
+                events, last_run, command_results = get_events_command(client, args, export_profile)
+                return_results(command_results)
+
+                if should_push_events:
+                    push_events(client, events, last_run, export_profile, set_export_bookmark=False)
 
         elif command == 'fetch-events':
-            events, last_run = fetch_events(client)
-            push_events(client, events, last_run, set_export_bookmark=True)
+            for export_profile in export_profiles:
+                events, last_run = fetch_events(client, export_profile)
+                push_events(client, events, last_run, export_profile, set_export_bookmark=True)
 
         else:
             raise NotImplementedError(f'Unknown command: {command}')

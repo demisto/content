@@ -21,11 +21,15 @@ configuration:
   name: credentials
   displaypassword: Client Secret
   required: true
-- display: Export Profile
-  additionalinfo: GUID of export profile, part of the export URL
-  name: export_profile
+- display: Export Profiles
+  additionalinfo: Name of the export profile.
+  name: export_profiles
   required: true
-  type: 0
+  type: 16  # Multi Select
+  options:
+  - DefaultExportProfile
+  - Demisto
+  default: DefaultExportProfile
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure

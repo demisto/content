@@ -14,8 +14,8 @@ CLIENT_KWARGS = {
     'base_url': 'https://example.com',
     'client_id': '11',
     'client_secret': '22',
-    'export_profile': '33',
 }
+EXPORT_PROFILE = 'demisto'
 
 
 def util_load_json(path):
@@ -68,10 +68,11 @@ def test_create_events_for_push(index: int):
     limit = 2
     raw_response = util_load_json('test_data/mock_response.json')
 
-    outputted_events = create_events_for_push(raw_response, limit)
+    outputted_events = create_events_for_push(raw_response, EXPORT_PROFILE, limit)
     expected_event_time = arg_to_datetime(outputted_events[index]['dg_time']).strftime(DATE_FORMAT)
 
     assert outputted_events[index]['_time'] == expected_event_time
+    assert outputted_events[index]['dg_export_profile'] == EXPORT_PROFILE
     assert len(outputted_events) == limit
 
 
@@ -90,7 +91,7 @@ def test_get_fetch_events(mocker: MockerFixture, authenticated_client: Client):
     mocker.patch.object(authenticated_client, 'export_events', return_value=raw_response)
     expected_events = util_load_json('test_data/expected_events.json')
 
-    outputted_events, last_run = fetch_events(authenticated_client)
+    outputted_events, last_run = fetch_events(authenticated_client, EXPORT_PROFILE)
 
     assert outputted_events == expected_events
     assert last_run['bookmark_values'] == raw_response['bookmark_values']
@@ -113,13 +114,13 @@ def test_get_events_command(mocker: MockerFixture, authenticated_client: Client)
     mocker.patch.object(authenticated_client, 'export_events', return_value=raw_response)
     table_to_markdown = mocker.patch('DigitalGuardianARCEventCollector.tableToMarkdown')
 
-    outputted_events, *_ = get_events_command(authenticated_client, args={'limit': limit})
+    outputted_events, *_ = get_events_command(authenticated_client, args={'limit': limit}, export_profile=EXPORT_PROFILE)
 
     expected_events = util_load_json('test_data/expected_events.json')[:limit]
     table_to_markdown_kwargs: dict = table_to_markdown.call_args.kwargs
 
     assert outputted_events == expected_events
-    assert table_to_markdown_kwargs['name'] == f'Events for Profile {CLIENT_KWARGS["export_profile"]}'
+    assert table_to_markdown_kwargs['name'] == f'Events for Profile {EXPORT_PROFILE}'
     assert table_to_markdown_kwargs['t'] == expected_events
 
 
@@ -140,7 +141,7 @@ def test_push_events(mocker: MockerFixture, authenticated_client: Client):
     send_events_to_xsiam = mocker.patch('DigitalGuardianARCEventCollector.send_events_to_xsiam')
     set_export_bookmark = mocker.patch.object(authenticated_client, 'set_export_bookmark')
 
-    push_events(authenticated_client, events, last_run, set_export_bookmark=False)
+    push_events(authenticated_client, events, last_run, EXPORT_PROFILE, set_export_bookmark=False)
     send_events_to_xsiam_kwargs: dict = send_events_to_xsiam.call_args.kwargs
 
     assert send_events_to_xsiam.call_count == 1
