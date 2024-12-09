@@ -48,4 +48,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Recorded Future IP Reputation](https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/ip_reputation.png)
+![Recorded Future IP Reputation](../doc_files/ip_reputation.png)
