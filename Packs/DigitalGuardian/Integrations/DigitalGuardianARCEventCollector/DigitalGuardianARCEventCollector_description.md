@@ -4,7 +4,7 @@
 This integration is supported by Palo Alto Networks. 
 
 ### Configuration
-The integration fetch interval should be set to a minimum of "1 hour". If set to less, a quota error might be received.
+A maximum of 10,000 events can be retrieved per fetch for each Digital Guardian export profile. To optimize throughput, it is recommended to distribute alerts and events across multiple export profiles and configure the export profile in the Digital Guardian ARC platform to include only relevant alarm and event types.
 
 ### How to get the configuration parameters
 API Client ID: 
