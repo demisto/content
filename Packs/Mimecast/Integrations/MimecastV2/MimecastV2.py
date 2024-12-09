@@ -2548,30 +2548,21 @@ def get_group_members():
     return_outputs(markdown_output, entry_context, api_response)
 
 
-def create_get_group_members_request(group_id=-1, limit=100):
-    api_endpoint = '/api/directory/get-group-members'
-    args = demisto.args()
-    group_id = args.get('group_id', group_id)
-    limit = args.get('limit', limit)
-    all_results = argToBoolean(args.get("all_results", False))
-    API_MAX_VALUE=500
-    meta = {}
-    data = {}
-    page_size = API_MAX_VALUE if all_results else int(limit)
-    meta['pagination'] = {'pageSize': page_size}
-    data['id'] = group_id
-    payload = {
-        'meta': meta,
-        'data': [data]
-    }
-    response = http_request('POST', api_endpoint, payload)
-    if isinstance(response, dict) and response.get('fail'):
-        raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
+def retrieve_all_results(response, all_results, api_endpoint, meta, data, limit=100):
+    """Retrieve all results according to limit or all_results arguments
 
+    Args:
+        response (dict): the response of the first request
+        all_results (bool): whether to retrieve all results
+        api_endpoint (str): the api endpoint
+        meta (dict): metadata for request
+        data (dict): data for request
+        limit (int, optional): the limit of group members to retrieve. Defaults to 100.
+    """
     next_page = response.get('meta',{}).get('pagination', {}).get('next')
     group_members = response.get('data', [{}])[0].get('groupMembers',{})
+    print('group_members', len(group_members))
     while (int(limit) > len(group_members) and next_page) or (all_results and next_page):
-        
         meta['pagination'] = {
             'pageToken': next_page
         }
@@ -2583,6 +2574,31 @@ def create_get_group_members_request(group_id=-1, limit=100):
         next_page = current_response.get('meta',{}).get('pagination', {}).get('next')
         current_group_members = current_response.get('data', [{}])[0].get('groupMembers',{})
         group_members.extend(current_group_members)
+        print('group_members', len(group_members))
+
+
+def create_get_group_members_request(group_id=-1, limit=100):
+    api_endpoint = '/api/directory/get-group-members'
+    args = demisto.args()
+    group_id = args.get('group_id', group_id)
+    limit = args.get('limit', limit)
+    all_results = argToBoolean(args.get("all_results", False))
+    API_MAX_VALUE=500
+
+    meta = {}
+    data = {}
+    page_size = API_MAX_VALUE if all_results else int(limit)
+    meta['pagination'] = {'pageSize': page_size}
+    data['id'] = group_id
+    payload = {
+        'meta': meta,
+        'data': [data]
+    }
+
+    response = http_request('POST', api_endpoint, payload)
+    if isinstance(response, dict) and response.get('fail'):
+        raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    retrieve_all_results(response, all_results, api_endpoint, meta, data, limit)
     return response
 
 
