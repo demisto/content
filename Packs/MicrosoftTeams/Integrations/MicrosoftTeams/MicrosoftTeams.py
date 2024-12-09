@@ -2921,9 +2921,6 @@ def test_module():
     :return: 'ok' if test passed.
     :rtype: ``str``
     """
-    if not PARAMS.get('longRunningPort'):
-        raise DemistoException('When selecting a single engine, you must specify a Listen Port. If no engine is selected,'
-                               ' click "Save" before testing the configuration, as this may resolve the issue.')
     if not BOT_ID or not BOT_PASSWORD:
         raise DemistoException("Bot ID and Bot Password must be provided.")
     if 'Client' not in AUTH_TYPE:

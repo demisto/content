@@ -801,29 +801,20 @@ async def handle_zoom_response(request: Request, credentials: HTTPBasicCredentia
         await handle_listen_error(f'An error occurred while handling a response from Zoom: {e}')
 
 
-def test_module(client: Client, port: str):
+def test_module(client: Client):
     """Tests connectivity with the client.
     Takes as an argument all client arguments to create a new client
     """
-    if LONG_RUNNING:
-        if not port:
-            raise DemistoException('When selecting a single engine, you must specify a Listen Port. If no engine is selected,'
-                                   ' click "Save" before testing the configuration, as this may resolve the issue.')
-        try:
-            int(port)
-        except ValueError as e:
-            raise ValueError(f'Invalid listen port - {e}')
-
     try:
         if MIRRORING_ENABLED and (not LONG_RUNNING or not SECRET_TOKEN or not client.bot_client_id or not
                                   client.bot_client_secret or not client.bot_jid):
             raise DemistoException("""Mirroring is enabled, however long running is disabled
-            or the necessary bot authentication parameters are missing.
-            For mirrors to work correctly, long running must be enabled and you must provide all
-            the zoom-bot following parameters:
-            secret token,
-            Bot JID,
-            bot client id and secret id""")
+or the necessary bot authentication parameters are missing.
+For mirrors to work correctly, long running must be enabled and you must provide all
+the zoom-bot following parameters:
+secret token,
+Bot JID,
+bot client id and secret id""")
         client.zoom_list_users(page_size=1, url_suffix="users")
         if client.bot_access_token:
             json_data = {
@@ -2508,6 +2499,11 @@ the zoom-bot following parameters:
 secret token,
 Bot JID,
 bot client id and secret id""")
+    if LONG_RUNNING:
+        try:
+            port = int(params.get('longRunningPort'))
+        except ValueError as e:
+            raise ValueError(f'Invalid listen port - {e}')
 
     command = demisto.command()
     # this is to avoid BC. because some of the arguments given as <a-b>, i.e "user-list"
@@ -2531,17 +2527,13 @@ bot client id and secret id""")
         CLIENT = client
 
         if command == 'test-module':
-            return_results(test_module(client=client, port=params.get('longRunningPort')))
+            return_results(test_module(client=client))
 
         demisto.debug(f'Command being called is {command}')
 
         '''CRUD commands'''
         if command == 'long-running-execution':
-            try:
-                int(params.get('longRunningPort'))
-            except ValueError as e:
-                raise ValueError(f'Invalid listen port - {e}')
-            run_long_running(int(params.get('longRunningPort')))
+            run_long_running(port)
         elif command == 'mirror-investigation':
             results = mirror_investigation(client, **args)
         elif command == 'close-channel':
