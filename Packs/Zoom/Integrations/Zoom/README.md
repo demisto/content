@@ -80,7 +80,7 @@ In the Team Chat Subscription section under BOT endpoint URL, add:
       * Be a publicly accessible https endpoint url that supports TLSv1.2+ with a valid certificate chain issued by a Certificate Authority (CA).
       * Be able to accept HTTP POST requests.
       * Be able to respond with a 200 or 204 HTTP Status Code.
-    ##
+    ---
     1. Copy the **secret token** from the "Feature" page under the "Token" section and add it to the instance configuration.
     ![enter image description here](../../doc_files/zoom-token.png)
     2. Configure Event Subscriptions. 
