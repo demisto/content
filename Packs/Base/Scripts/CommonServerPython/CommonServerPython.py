@@ -11968,7 +11968,8 @@ def split_data_to_chunks(data, target_chunk_size):
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                          chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
-                         add_proxy_to_request=False, multiple_threads=False, num_of_chunks_to_split=10):
+                         add_proxy_to_request=False, multiple_threads=False, num_of_chunks_to_split=10,
+                         num_of_workers=10):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -12008,6 +12009,9 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type num_of_chunks_to_split: ``int``
     :param num_of_chunks_to_split: The number of chunks to split the data into in case of using multithreading.
 
+    :type num_of_workers: ``int``
+    :param num_of_workers: The number of max workers to run for the thread pool.
+
     :return: None
     :rtype: ``None``
     """
@@ -12023,7 +12027,8 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         should_update_health_module=should_update_health_module,
         add_proxy_to_request=add_proxy_to_request,
         multiple_threads=multiple_threads,
-        num_of_chunks_to_split=num_of_chunks_to_split
+        num_of_chunks_to_split=num_of_chunks_to_split,
+        num_of_workers=num_of_workers
     )
 
 
@@ -12137,7 +12142,7 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                        chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
                        add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False,
-                       num_of_chunks_to_split=10):
+                       num_of_chunks_to_split=10, num_of_workers=10):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -12186,6 +12191,9 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
     :type num_of_chunks_to_split: ``int``
     :param num_of_chunks_to_split: The number of chunks to split the data into in case of using multithreading.
+
+    :type num_of_workers: ``int``
+    :param num_of_workers: The number of max workers to run for the thread pool.
 
     :return: None
     :rtype: ``None``
@@ -12305,7 +12313,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         split_data = [data[i:i + len(data) // num_of_chunks_to_split] for i in range(0, len(data), len(data) // num_of_chunks_to_split)]
 
         # Create a ThreadPool
-        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=num_of_workers) as executor:
 
             # Submit Tasks to the ThreadPool
             future_to_data = [executor.submit(split_and_send_events, segment) for segment in split_data]
