@@ -661,7 +661,8 @@ class Notable:
                     'Comment': comment})
         labels.append({'type': 'SplunkComments', 'value': str(comment_entries)})
         incident['labels'] = labels
-        incident['dbotMirrorId'] = notable_data.get(EVENT_ID)
+        if notable_data.get(EVENT_ID):
+            incident['dbotMirrorId'] = notable_data.get(EVENT_ID)
         notable_data['SplunkComments'] = comment_entries
         incident["rawJSON"] = json.dumps(notable_data)
         incident['SplunkComments'] = comment_entries
@@ -3157,6 +3158,8 @@ def get_connection_args(params: dict) -> dict:
         'port': params['port'],
         'app': app or "-",
         'verify': VERIFY_CERTIFICATE,
+        'retries': 3,
+        'retryDelay': 3,
     }
 
 
