@@ -1,42 +1,33 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
+"""The file contains the Unit tests for the Doppel XSOAR integration
+The unit tests are suppose to run to make sure that with the modification of the pack, there is not failures
+Please write a new unit test for the behavior whenever the pack is modified for new features
 """
 
 import json
 import io
+import requests_mock
+
+from Doppel import Client, get_alert_command
 
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
-
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
+def test_get_alert_command(requests_mock):
+    """Tests the get-alert command
     """
-    from BaseIntegration import Client, baseintegration_dummy_command
 
-    client = Client(base_url='some_mock_url', verify=False)
+    client = Client(base_url='https://api.doppel.com', api_key='valid_api_key')
     args = {
-        'dummy': 'this is a dummy response'
+        'id': 'TST-31222'
     }
-    response = baseintegration_dummy_command(client, args)
+    response_200 = util_load_json('test_data/get-alert-command-200.json')
+    requests_mock.get(f'https://api.doppel.com/alert?id={args["id"]}', json=response_200)
+    
+    response = get_alert_command(client, args)
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
+    mock_response = util_load_json('test_data/get-alert-command-200.json')
 
     assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+

@@ -53,10 +53,6 @@ class Client(BaseClient):
             api_url = f"{api_url}id={id}"
         if entity:
             api_url = f"{api_url}entity={entity}"
-#        else:
-#            message: str = "Please provide id or entity as input"
-#            demisto.error(message)
-#            raise DemistoException(message)
 
         response_content = self._http_request(
             method="GET",
@@ -134,9 +130,6 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
         client = Client(
             base_url=base_url,
             api_key=api_key)

@@ -48,7 +48,7 @@ While debugging the integration script, you want make sure that the integration 
 
 ### Setup commands and arguments for debugging
 
-1. Create a file named `.args_command.json` at `/content/Packs/Doppel/Integrations/Doppel/.args_command.json`
+1. Create a file `/content/Packs/Doppel/Integrations/Doppel/.args_command.json`
 2. Decide which command you want to debug and initialize the file.
 3. For example if you want to debug the `get-alert` command with input argument for `id` equals to `TST-31`, you should have the following content in the file:
    `{
