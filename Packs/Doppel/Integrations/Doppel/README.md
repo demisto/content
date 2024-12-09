@@ -7,5 +7,6 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 1. Mirror Incidents- Alerts from Doppel are mirrored as per the configured schedule.
 2. Command: Create Alert- Command to create an alert in Doppel.
 3. Command: Get Alert- Command to fetch alert details from Doppel.
-4. Command: Update Alert- Command to update alert details from Doppel.
-5. Command: Create Abuse Alert-Command to create abuse alert details from Doppel.
+4. Command: Get Alerts- Command to fetch list of alerts from Doppel.
+5. Command: Update Alert- Command to update alert details from Doppel.
+6. Command: Create Abuse Alert-Command to create abuse alert details from Doppel.

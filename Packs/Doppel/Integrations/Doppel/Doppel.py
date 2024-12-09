@@ -4,7 +4,6 @@ from CommonServerPython import *  # noqa: F401
 
 This integration contains features to mirror the alerts from Doppel to create incidents in XSOAR and 
 the commands to perform different updates on the alerts
-
 """
 
 from CommonServerUserPython import *  # noqa
@@ -15,10 +14,6 @@ from typing import Dict, Any
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
-''' CONSTANTS '''
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' CLIENT CLASS '''
 
@@ -35,7 +30,6 @@ class Client(BaseClient):
     
     def __init__(self, base_url, api_key):
         super().__init__(base_url)
-
         self._headers = dict()
         self._headers["accept"] = "application/json"
         self._headers["x-api-key"] = api_key
@@ -57,14 +51,13 @@ class Client(BaseClient):
         api_url = f"{self._base_url}/{api_name}?"
         if id:
             api_url = f"{api_url}id={id}"
-        elif entity:
-            api_url = f"{api_url}id={entity}"
-        else:
-            message: str = "Please provide id or entity as input"
-            demisto.error(message)
-            raise DemistoException(message)
+        if entity:
+            api_url = f"{api_url}entity={entity}"
+#        else:
+#            message: str = "Please provide id or entity as input"
+#            demisto.error(message)
+#            raise DemistoException(message)
 
-        
         response_content = self._http_request(
             method="GET",
             full_url=api_url            
@@ -134,7 +127,7 @@ def main() -> None:
     :return:
     :rtype:
     """
-    api_key = demisto.params().get('credentials', {}).get('api_key')
+    api_key = demisto.params().get('credentials', {}).get('password')
 
     # get the service API url
     base_url = urljoin(demisto.params()['url'], '/v1')
