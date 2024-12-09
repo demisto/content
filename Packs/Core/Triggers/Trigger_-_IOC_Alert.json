@@ -4,6 +4,7 @@
   "suggestion_reason": "Recommended for alerts triggered by XDR IOC",
   "description": "This trigger is responsible for XDR IOC alerts",
   "trigger_name": "IOC Alert",
+  "isSilent": true,
   "alerts_filter": {
     "filter": {
       "AND": [
