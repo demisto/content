@@ -2799,10 +2799,10 @@ def download_installation_package(client, url: str, package_type: str, distribut
     )
     if package_type in ["x64", "x86"]:
         file_ext = "msi"
-    elif package_type == "upgrade":
+    elif package_type in ["upgrade", "pkg"]:
         file_ext = "zip"
     else:
-        file_ext = package_type
+        file_ext = "tar.gz"
     file_result = fileResult(
         filename=f"xdr-agent-install-package.{file_ext}",
         data=dist_file_contents
@@ -2816,7 +2816,7 @@ def download_installation_package(client, url: str, package_type: str, distribut
         outputs_key_field='id',
         readable_output="Successfully downloaded the installation package file"
     )
-    return [result, file_result]
+    return [file_result, result]
 
 
 def get_process_context(alert, process_type):
