@@ -54,6 +54,7 @@ MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
+NUM_OF_WORKERS=10
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -11949,27 +11950,25 @@ def split_data_to_chunks(data, target_chunk_size):
     :rtype: ``collections.Iterable[list]``
     """
     target_chunk_size = min(target_chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
-    chunk = []  # type: ignore[var-annotated]
-    chunk_size = 0
     if isinstance(data, str):
         data = data.split('\n')
+    chunks = []
     for data_part in data:
         if chunk_size >= target_chunk_size:
             demisto.debug("reached max chunk size, sending chunk with size: {size}".format(size=chunk_size))
-            yield chunk
+            chunks.append(chunk)
             chunk = []
             chunk_size = 0
         chunk.append(data_part)
         chunk_size += sys.getsizeof(data_part)
     if chunk_size != 0:
-        demisto.debug("sending the remaining chunk with size: {size}".format(size=chunk_size))
-        yield chunk
+        chunks.append(chunk)
+    return chunks
 
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                          chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
-                         add_proxy_to_request=False, multiple_threads=False, num_of_chunks_to_split=10,
-                         num_of_workers=10):
+                         add_proxy_to_request=False, multiple_threads=False):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -12006,12 +12005,6 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type multiple_threads: ``bool``
     :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
 
-    :type num_of_chunks_to_split: ``int``
-    :param num_of_chunks_to_split: The number of chunks to split the data into in case of using multithreading.
-
-    :type num_of_workers: ``int``
-    :param num_of_workers: The number of max workers to run for the thread pool.
-
     :return: None
     :rtype: ``None``
     """
@@ -12026,9 +12019,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         data_type="events",
         should_update_health_module=should_update_health_module,
         add_proxy_to_request=add_proxy_to_request,
-        multiple_threads=multiple_threads,
-        num_of_chunks_to_split=num_of_chunks_to_split,
-        num_of_workers=num_of_workers
+        multiple_threads=multiple_threads
     )
 
 
@@ -12141,8 +12132,7 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                        chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
-                       add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False,
-                       num_of_chunks_to_split=10, num_of_workers=10):
+                       add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -12188,12 +12178,6 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
     :type multiple_threads: ``bool``
     :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
-
-    :type num_of_chunks_to_split: ``int``
-    :param num_of_chunks_to_split: The number of chunks to split the data into in case of using multithreading.
-
-    :type num_of_workers: ``int``
-    :param num_of_workers: The number of max workers to run for the thread pool.
 
     :return: None
     :rtype: ``None``
@@ -12285,22 +12269,19 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)
 
+    data_chunks = split_data_to_chunks(data, chunk_size)
+    client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
 
-    def split_and_send_events(data):
+    def send_events(data_chunk):
         demisto.info('[test] sending to xsiam inside executor with chunk_size= {}, len(data)={}'.format(chunk_size, len(data)))
-        threads_data_size = 0
-        client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
-        data_chunks = split_data_to_chunks(data, chunk_size)
-        for data_chunk in data_chunks:
-            threads_data_size += len(data_chunk)
-            data_chunk = '\n'.join(data_chunk)
-            zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
-            xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
-                                        error_msg=header_msg, headers=headers,
-                                        num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
-                                        zipped_data=zipped_data, is_json_response=True, data_type=data_type)
+        data_chunk = '\n'.join(data_chunk)
+        zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
+        xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
+                                    error_msg=header_msg, headers=headers,
+                                    num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
+                                    zipped_data=zipped_data, is_json_response=True, data_type=data_type)
         demisto.info('[test] finished sending to xsiam inside executor')
-        return threads_data_size
+        return len(data_chunk)
 
     if multiple_threads:
         demisto.info("Sending events to xsiam with multiple threads.")
@@ -12310,13 +12291,12 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         # Split the Data into chunks
         if isinstance(data, str):
             data = data.split('\n')
-        split_data = [data[i:i + len(data) // num_of_chunks_to_split] for i in range(0, len(data), len(data) // num_of_chunks_to_split)]
-
+        
         # Create a ThreadPool
-        with concurrent.futures.ThreadPoolExecutor(max_workers=num_of_workers) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS) as executor:
 
             # Submit Tasks to the ThreadPool
-            future_to_data = [executor.submit(split_and_send_events, segment) for segment in split_data]
+            future_to_data = [executor.submit(send_events, chunk) for chunk in data_chunks]
             demisto.info('[test] submitted all the futures')
             
             # Handle Responses
@@ -12324,7 +12304,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                 data_size += future.result()
             demisto.info('[test] should be done sending events')
     else:
-        data_size = split_and_send_events(data)
+        for chunk in data_chunks:
+            data_size = send_events(chunk)
 
     if should_update_health_module:
         demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
