@@ -105,7 +105,7 @@ if IS_PY3:
                     self.debug(EXECUTING_COMMAND_LOG.format(command))
                     start_time = datetime.now()
             except Exception:
-                    self.log_failure()
+                self.log_failure()
 
             res = self._demisto.executeCommand(command, args)
 
@@ -194,7 +194,7 @@ if IS_PY3:
     def is_supported_version():
         platform_version = demisto.demistoVersion().get("version")
         try:
-            comparable_version = lambda v: [int(i) for i in v.split(".")]
+            def comparable_version(v): return [int(i) for i in v.split(".")]
             return comparable_version(platform_version) >= comparable_version(MIN_SUPPORTED_VERSION)
         except:
             raise ValueError(
