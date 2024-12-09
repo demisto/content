@@ -70,7 +70,7 @@ src = [
 ]
 
 [tool.ruff.lint]
-lint.select = [
+select = [
     "B002", # unary-prefix-increment
     "B003", # assignment-to-os-environ
     "B004", # unreliable-callable-check
@@ -383,7 +383,6 @@ ignore = [
 
     "W605", # invalid-escape-sequence
 ]
-extend-exclude = ["CommonServerPython", "test_data", "conftest.py", "demistomock.py"]
 
 unfixable = [
     "RUF001"  # ambiguous-unicode-character-string
