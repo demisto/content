@@ -561,6 +561,7 @@ def get_detection_details(client: Client, non_edr_guid):
         demisto.info(f"detection details api response: {detection_details_response}")
     except Exception as error:
         demisto.info(f"Exception while getting detection/details: {error}")
+    return detection_details_response
 
 
 def poll_malops(client: Client, start_time):
@@ -1610,85 +1611,117 @@ def fetch_incidents(client: Client):
         raise Exception('Given filter to fetch by is invalid.')
 
     current_time = int(datetime.now().timestamp()) * 1000
-    offset = 0
     demisto.info(f"current_time for mmng/v2: {current_time} and end_time: {last_update_time}")
-    malop_management_response = get_malop_management_data(client, last_update_time, current_time, offset)
-    demisto.info(f"mmng/v2 response: {malop_management_response}")
-    edr_guid_list, non_edr_guid_list = [], []
-    malop_management_response = malop_management_response["data"]["data"]
-    for malop in malop_management_response:
-        demisto.info(f"inside for loop mmng/v2. malop: {malop}")
-        if malop.get("isEdr"):
-            edr_guid_list.append(malop["guid"])
-        else:
-            non_edr_guid_list.append(malop["guid"])
-    demisto.info(f"edr guid list: {edr_guid_list}")
-    demisto.info(f"non_edr_guid_list: {non_edr_guid_list}")
-    # call mmmng/v2 function
-    # iterate the malop list and segregate edr and non edr
-    # if edr:
-    if edr_guid_list:
-        malop_process_type, malop_loggon_session_type = query_malops(client, total_result_limit=10000, per_group_limit=10000,
-                                                                     filters=filters, guid_list=edr_guid_list)
-    if non_edr_guid_list:
-        demisto.info("inside if non_edr_guid_list")
-        for _non_edr_malop in non_edr_guid_list:
-            demisto.info(f"processing non edr malop id: {non_edr_guid_list}")
-            detection_detail_response = get_detection_details(client, non_edr_guid_list)
-            demisto.info(f"detection_detail_response: {detection_detail_response}")
+    offset = 0
+    has_more_results = True
+    total_malops_available = 0
+    total_malops_fetched = 0
+    while has_more_results:
+        malop_management_response = get_malop_management_data(client, last_update_time, current_time, offset)
+        demisto.info(f"mmng/v2 response: {malop_management_response}")
+        edr_guid_list, non_edr_guid_list = [], []
+        malop_management_response = malop_management_response["data"]["data"]
+         if malop_management_response == [] or malop_management_response == None:
+            has_more_results = False
+            continue
+        total_malops_available = malop_management_response["data"]["totalHits"]
+        malop_count_per_poll = len(malop_management_response)
+        self.helper.log_info(f"Malop stats: Malop per paginated call {malop_count_per_poll}. Malops per polling cycle {total_malops_available}")
+        total_malops_fetched += malop_count_per_poll
+        for malop in malop_management_response:
+            demisto.info(f"inside for loop mmng/v2. malop: {malop}")
+            if malop.get("isEdr"):
+                edr_guid_list.append(malop["guid"])
+            else:
+                non_edr_guid_list.append(malop["guid"])
+        demisto.info(f"edr guid list: {edr_guid_list}")
+        demisto.info(f"non_edr_guid_list: {non_edr_guid_list}")
+        if edr_guid_list:
+            malop_process_type, malop_loggon_session_type = query_malops(client, total_result_limit=10000, per_group_limit=10000,
+                                                                        guid_list=edr_guid_list)
 
-    incidents = []
+        incidents = []
 
-    for response in (malop_process_type, malop_loggon_session_type):
-        malops = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={},
-                               return_type=dict)
+        for response in (malop_process_type, malop_loggon_session_type):
+            malops = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={},
+                                return_type=dict)
 
-        for malop in list(malops.values()):
-            simple_values = dict_safe_get(malop, ['simpleValues'], default_return_value={}, return_type=dict)
-            simple_values.pop('iconBase64', None)
-            simple_values.pop('malopActivityTypes', None)
-            malop_update_time = int(dict_safe_get(simple_values, ['malopLastUpdateTime', 'values', 0]))
-            if int(malop_update_time) > int(max_update_time):
-                max_update_time = malop_update_time
+            for malop in list(malops.values()):
+                simple_values = dict_safe_get(malop, ['simpleValues'], default_return_value={}, return_type=dict)
+                simple_values.pop('iconBase64', None)
+                simple_values.pop('malopActivityTypes', None)
+                malop_update_time = int(dict_safe_get(simple_values, ['malopLastUpdateTime', 'values', 0]))
+                if int(malop_update_time) > int(max_update_time):
+                    max_update_time = malop_update_time
 
-            guid_string = malop.get('guidString', '')
-            if not guid_string:
-                guid_string = malop.get('guid', '')
+                guid_string = malop.get('guidString', '')
+                if not guid_string:
+                    guid_string = malop.get('guid', '')
 
-            try:
-                incident = malop_to_incident(malop)
-            except Exception:
-                demisto.debug(f"edr malop got failed to convert into incident : {guid_string} and malop : {malop}")
-                continue
-            incidents.append(incident)
+                try:
+                    incident = malop_to_incident(malop)
+                    demisto.info(f"incident for edr malop: {incident}")
+                except Exception:
+                    demisto.debug(f"edr malop got failed to convert into incident : {guid_string} and malop : {malop}")
+                    continue
+                incidents.append(incident)
+                demisto.info(f"edr malop got appended in incidents: {incidents}")
+
+        demisto.info(f"non edr if start...")
+        if non_edr_guid_list:
+            demisto.info("inside if non_edr_guid_list")
+            for non_edr_malop in non_edr_guid_list:
+                demisto.info(f"processing non edr malop id: {non_edr_guid}")
+                detection_detail_response = get_detection_details(client, non_edr_malop)
+
+                demisto.info(f"detection_detail_response: {detection_detail_response}")
+                try:
+                    incident = malop_to_incident(detection_detail_response)
+                except Exception:
+                    demisto.debug(f"non edr malop got failed to convert into incident : {guid_string} and malop : {malop}")
+                    continue
+                incidents.append(incident)
+                demisto.info(f"non edr malop got appended in incidents: {incidents}")
+        demisto.info(f"non edr if ends...")
+
 
     # Enable Polling for Cybereason EPP Malops
-    non_edr = get_non_edr_malop_data(client, last_update_time)
-    if IS_EPP_ENABLED:
-        demisto.info(f"Fetching EPP malop is enabled: {IS_EPP_ENABLED}")
-        for non_edr_malops in non_edr:
-            malop_update_time = dict_safe_get(non_edr_malops, ['lastUpdateTime'])
+    # non_edr = get_non_edr_malop_data(client, last_update_time)
+    # if IS_EPP_ENABLED:
+    #     demisto.info(f"Fetching EPP malop is enabled: {IS_EPP_ENABLED}")
+    #     for non_edr_malops in non_edr:
+    #         malop_update_time = dict_safe_get(non_edr_malops, ['lastUpdateTime'])
 
-            if malop_update_time > max_update_time:
-                max_update_time = malop_update_time
+    #         if malop_update_time > max_update_time:
+    #             max_update_time = malop_update_time
 
-            guid_string = non_edr_malops.get('guidString', '')
-            if not guid_string:
-                guid_string = non_edr_malops.get('guid', '')
+    #         guid_string = non_edr_malops.get('guidString', '')
+    #         if not guid_string:
+    #             guid_string = non_edr_malops.get('guid', '')
 
-            try:
-                incident = malop_to_incident(non_edr_malops)
-            except Exception:
-                demisto.debug(f"non edr malop got failed to convert into incident : {guid_string} and malop : {non_edr_malops}")
-                continue
-            incidents.append(incident)
-        demisto.debug(f"Fetching the length of incidents list if epp in enabled : {len(incidents)}")
+    #         try:
+    #             incident = malop_to_incident(non_edr_malops)
+    #         except Exception:
+    #             demisto.debug(f"non edr malop got failed to convert into incident : {guid_string} and malop : {non_edr_malops}")
+    #             continue
+    #         incidents.append(incident)
+        # demisto.debug(f"Fetching the length of incidents list if epp in enabled : {len(incidents)}")
 
-    demisto.setLastRun({
-        'creation_time': max_update_time
-    })
+        demisto.setLastRun({
+            'creation_time': max_update_time
+        })
 
-    demisto.incidents(incidents)
+        demisto.incidents(incidents)
+
+        if total_malops_fetched < total_malops_available:
+            has_more_results = True
+            offset += malop_count_per_poll
+            demisto.debug(f"Total malop fetched: {total_malops_fetched} is less than total malops available: {total_malops_available}")
+            demisto.debug(f"updating offset to {offset}")
+        else:
+            has_more_results = False
+            offset = 0
+            demisto.debug(f"No more results")
 
 
 def login(client: Client):
@@ -2118,7 +2151,7 @@ def get_malop_management_data(client: Client, start_time, end_time, offset):
             "to": end_time
         },
         "pagination": {
-            "pageSize": 100,
+            "pageSize": 50,
             "offset": offset
         },
         "filter": {
