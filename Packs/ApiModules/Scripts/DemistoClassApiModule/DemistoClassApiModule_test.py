@@ -293,8 +293,7 @@ def test_execute_command_without_debug_log_output(mocker):
     res = demisto.executeCommand("cmdWithoutDebugFile_DictResult", {})
     assert res == entries[0]
 
-    prepare_demistomock(mocker, exec_type="script")
-    demisto.is_debug = True
+    prepare_demistomock(mocker, exec_type="script", is_debug=True)
     demisto = set_demisto_class()
 
     res = demisto.executeCommand("cmdWithoutDebugFile", {})

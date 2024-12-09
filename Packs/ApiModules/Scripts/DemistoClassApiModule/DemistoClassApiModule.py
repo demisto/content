@@ -35,10 +35,10 @@ if IS_PY3:
         def __init__(self, demisto):
             self._demisto = demisto
             try:
-                script_name = self.callingContext["context"].get("ScriptName") or ""
                 command_name = self.callingContext["command"] or ""
+                script_name = self.callingContext["context"].get("ScriptName") or ""
                 self.exec_type = "command" if command_name else "script"
-                self.exec_name = script_name or command_name
+                self.exec_name = command_name or script_name
                 self.root_caller = self._get_root_caller()
                 self._log_execution_details()
             except Exception:
