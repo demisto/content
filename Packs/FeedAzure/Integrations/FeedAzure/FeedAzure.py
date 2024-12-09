@@ -7,7 +7,8 @@ from CommonServerPython import *
 urllib3.disable_warnings()
 
 INTEGRATION_NAME = 'Azure'
-AZUREJSON_URL = 'https://www.microsoft.com/en-us/download/details.aspx?id=56519'  # disable-secrets-detection
+# AZUREJSON_URL = 'https://www.microsoft.com/en-us/download/confirmation.aspx?id=56519'  # disable-secrets-detection
+AZUREJSON_URL = 'https://www.microsoft.com/en-us/download/details.aspx?id=56519'
 
 ERROR_TYPE_TO_MESSAGE = {
     requests.ConnectionError: F'Connection error in the API call to {INTEGRATION_NAME}.\n',
