@@ -1152,6 +1152,6 @@ script:
   dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   script: ''
-fromversion: 6.10.0
+fromversion: 5.0.0
 tests:
 - SymantecEmailSecurity_TestPlaybook
