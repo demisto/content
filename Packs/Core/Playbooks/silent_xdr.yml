@@ -1,6 +1,7 @@
 id: silent xdr
 version: -1
 name: silent xdr
+description: silent playbook with xdr commands.
 starttaskid: "0"
 tasks:
   "0":
@@ -23,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": -140
         }
       }
     note: false
@@ -48,7 +49,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "6"
     scriptarguments:
       limit:
         simple: "10"
@@ -58,7 +59,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 170
+          "y": -10
         }
       }
     note: false
@@ -205,15 +206,51 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 66eb660a-1a48-4263-83af-55383225f6e7
+    type: regular
+    task:
+      id: 66eb660a-1a48-4263-83af-55383225f6e7
+      version: -1
+      name: Print
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 875,
+        "height": 1065,
         "width": 680,
         "x": 150,
-        "y": 50
+        "y": -140
       }
     }
   }
@@ -225,4 +262,3 @@ fromversion: 6.10.0
 marketplaces:
 - marketplacev2
 issilent: true
-description: silent playbook with xdr commands.
