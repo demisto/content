@@ -16,7 +16,7 @@ This integration was integrated and tested with version January 2024 of AWS-SNS-
 | Store sample events for mapping | Because this is a push-based integration, it cannot fetch sample events in the mapping wizard. After you finish mapping, it is recommended to turn off the sample events storage to reduce performance overhead. | False |
 | Use system proxy settings |  | False |
 
-
+If you select "no engine," make sure to click "Save" before testing the instance so that the server can assign a port to it. 
 
 ## Commands
 
