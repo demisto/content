@@ -1,5 +1,3 @@
-from datetime import timezone
-
 from CommonServerPython import *
 
 ''' IMPORTS '''
@@ -12,30 +10,63 @@ urllib3.disable_warnings()
 
 
 class Client:
-    def __init__(self, base_url=None, headers=None, verify=None, proxies=None, auth=None):
+    def __init__(self, base_url=None, verify=None, proxies=None, auth_credentials=None, use_basic_auth=None, bearer_token=None):
         self.base_url = base_url or demisto.params().get('endpoint')
-        self.headers = headers or {'accept': "application/json"}
         self.verify = verify if verify is not None else not demisto.params().get('insecure', True)
         self.proxies = proxies if proxies is not None else demisto.params().get('proxy', False)
-        self.auth = auth or (
+        self.auth_credentials = auth_credentials or (
             demisto.params().get("credentials", {}).get('identifier', ''),
             demisto.params().get("credentials", {}).get('password', '')
         )
+        self.bearer_token = bearer_token or None
+        self.use_basic_auth = use_basic_auth or False
+
+    def sign_in(self):
+        payload = {
+            "key_name": self.auth_credentials[0],
+            "key_token": self.auth_credentials[1]
+        }
+        try:
+            response = requests.post(f"{self.base_url}/api/open/sign_in", json=payload, verify=self.verify, proxies=self.proxies)
+            if response.status_code != 200:
+                raise Exception(f"Authentication failed with status code {response.status_code}: {response.text}")
+
+            self.bearer_token = response.headers.get("Authorization")
+            self.use_basic_auth = False
+        except Exception as e:
+            demisto.info(f"Sign-in failed: {str(e)}. Falling back to basic authentication.")
+            self.use_basic_auth = True
+
+    def get_headers(self):
+        if self.use_basic_auth:
+            return {
+                "accept": "application/json"
+            }
+        return {
+            "accept": "application/json",
+            "Authorization": f"{self.bearer_token}"
+        }
 
     def _make_request(self, method, path, **kwargs):
         url = self.base_url + path
+
+        if not self.bearer_token and not self.use_basic_auth:
+            demisto.info(f"Token missing. Signing in.")
+            self.sign_in()
+        elif self.use_basic_auth:
+            kwargs['auth'] = self.auth_credentials
+
         response = requests.request(
             method=method,
             url=url,
-            headers=self.headers,
+            headers=self.get_headers(),
             verify=self.verify,
             proxies=self.proxies,
-            auth=self.auth,
             **kwargs
         )
 
         if response.status_code not in (200, 201, 202, 204):
-            demisto.info(f"Nozomi Unexpected status code: {response.status_code}. Returning empty JSON.")
+            demisto.info(f"Unexpected status code: {response.status_code}. Returning empty JSON.")
             return {"result": {}, "error": f"Unexpected status code: {response.status_code}"}
 
         return response.json()
@@ -70,7 +101,7 @@ def get_client():
 def parse_incident(i):
     return {
         'name': f"{i['name']}_{i['id']}",
-        'occurred': datetime.fromtimestamp(i['record_created_at'] / 1000, timezone.utc).isoformat(),
+        'occurred': datetime.fromtimestamp(i['record_created_at'] / 1000, timezone.utc).isoformat(),  # noqa: UP017
         'severity': parse_severity(i),
         'rawJSON': json.dumps(clean_null_terms(i))
     }
@@ -454,7 +485,7 @@ def main():
         elif demisto.command() == 'nozomi-find-ip-by-mac':
             return_results(CommandResults(**find_ip_by_mac(demisto.args(), client)))
     except Exception as e:
-        error_message = f"Nozomi Error of type {type(e).__name__} occurred: {str(e)}"
+        error_message = f"Error of type {type(e).__name__} occurred: {str(e)}"
         demisto.error(error_message)
         return_error(error_message)
 

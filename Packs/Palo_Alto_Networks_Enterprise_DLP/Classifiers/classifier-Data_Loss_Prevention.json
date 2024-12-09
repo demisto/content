@@ -59,7 +59,33 @@
 				"app channel name": {
 					"complex": null,
 					"simple": "channel"
-				}
+				},
+				"severity": {
+                    "complex": {
+                        "accessor": "attribute_value",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "incidentDetails.headers.attribute_name"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "severity"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "incidentDetails.headers",
+                        "transformers": []
+                    }
+                }
 			}
 		},
 		"dbot_classification_incident_type_all": {

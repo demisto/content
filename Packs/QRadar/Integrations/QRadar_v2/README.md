@@ -3,11 +3,8 @@ Supports API versions until 10.0.
 This integration was integrated and tested with version 7.3.2 of QRadar.
 
 
-## Configure QRadar v2 on Cortex XSOAR
+## Configure QRadar v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for QRadar v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -26,7 +23,6 @@ This integration was integrated and tested with version 7.3.2 of QRadar.
 | events_limit | Max number of events per incident | False |
 | adv_params | Advanced Parameters | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Troubleshooting 
 This section provides information for troubleshooting performance and fetching issues.
@@ -79,7 +75,7 @@ To reset fetch incidents, run `qradar-reset-last-run` - this will reset the fetc
 * References (Read) - View Reference Data
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### qradar-offenses
 ***
@@ -1470,4 +1466,3 @@ Retrieves a list of event regex properties.
 >|---|---|---|---|---|---|---|---|---|---|
 >| false | 2012-07-04 17:05:02 |  | 213 | DEFAULT_ACF2_RULE_KEY | 2012-07-04 17:05:02 | ACF2 rule key | string | true | admin |
 >| false | 2012-07-04 17:05:02 | Rule name why Parity Agent blocked an access to a file. | 222 | DEFAULT_RULE_NAME | 2012-07-04 17:05:02 | Rule Name | string | true | admin |
-

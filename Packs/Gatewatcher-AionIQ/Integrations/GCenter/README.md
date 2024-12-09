@@ -2,24 +2,20 @@ This integration allows, via about twenty commands, to interact with the GCenter
 This integration was integrated and tested with version v2.5.3.102 of GCenter.
 To simplify GCenter v2.5.3.102 is called GCenter in the Pack.
 
-## Configure GCenter on Cortex XSOAR
+## Configure GCenter in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for GCenter.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | GCenter IP address | | True |
-    | GCenter Version | | False |
-    | GCenter API token | You must provide either an API token or a username and a password. | False |
-    | GCenter username |  | False |
-    | GCenter password |  | False |
-    | Check the TLS certificate |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| GCenter IP address | | True |
+| GCenter Version | | False |
+| GCenter API token | You must provide either an API token or a username and a password. | False |
+| GCenter username |  | False |
+| GCenter password |  | False |
+| Check the TLS certificate |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### gw-get-alert
 ***
