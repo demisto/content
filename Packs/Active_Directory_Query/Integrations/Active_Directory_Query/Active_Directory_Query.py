@@ -1604,7 +1604,7 @@ def add_member_to_group(default_base_dn):
         raise Exception(args_err)
     if args.get('username'):
         usernames = argToList(args.get('username'))
-        demisto.debug(json.dumps(usernames, indent=2))
+        demisto.debug(f"Usernames collected are {usernames}")
         member_dns = []
         for u in usernames:
             member_dn = user_dn(u, search_base)
