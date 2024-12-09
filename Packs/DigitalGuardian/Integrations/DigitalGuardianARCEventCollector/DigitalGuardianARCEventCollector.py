@@ -78,15 +78,6 @@ class Client(BaseClient):
 
         return response['access_token']
 
-    def get_watchlists(self) -> list[dict]:
-        """
-        Returns all watchlists configured to monitor and track specific data or activities.
-
-        Returns:
-            list: Watchlists.
-        """
-        return self._http_request(method='GET', url_suffix='/rest/1.0/watchlists', raise_on_status=True)
-
     def export_events(self) -> dict:
         """
         Exports events for the export profile that arrived after setting the internal bookmark.
@@ -130,7 +121,7 @@ def test_module(client: Client) -> str:
         DemistoException | HTTPError: If request failed.
     """
     try:
-        client.get_watchlists()
+        client.export_events()
         return 'ok'
 
     except Exception as e:
