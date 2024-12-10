@@ -484,7 +484,7 @@ tasks:
       id: ae7ba50c-7968-4306-8b90-e779acf83fed
       version: -1
       name: Begin investigating the incident
-      description: Start investigation of the incident.
+      description: Start the investigation of the incident to change its status to 'Active', allowing the incident to be used for uploading.
       script: Builtin|||investigate
       type: regular
       iscommand: true
