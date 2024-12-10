@@ -411,7 +411,7 @@ def test_get_remote_data_command_should_update(requests_mock, mocker):
     sort_all_list_incident_fields(expected_modified_incident)
 
     assert response.mirrored_object == expected_modified_incident
-    assert response.entries == []
+    assert response.entries == [{'Type': 1, 'Contents': {'dbotIncidentReopen': True}, 'ContentsFormat': 'json'}]
 
 
 def test_get_remote_data_command_with_rate_limit_exception(mocker):
@@ -602,7 +602,7 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
     sort_all_list_incident_fields(expected_modified_incident)
 
     assert response.mirrored_object == expected_modified_incident
-    assert response.entries == []
+    assert response.entries == [{'Type': 1, 'Contents': {'dbotIncidentReopen': True}, 'ContentsFormat': 'json'}]
 
 
 @pytest.mark.parametrize('last_update',
@@ -899,7 +899,7 @@ def test_xdr_to_xsoar_flexible_close_reason_mapping(capfd, mocker, custom_mappin
     Then
         - The resolved XSOAR statuses match the expected statuses for all possible XDR close-reasons.
     """
-    from CortexXDRIR import handle_incoming_closing_incident
+    from CortexXDRIR import handle_incoming_incident
     mocker.patch.object(demisto, 'params', return_value={"mirror_direction": "Both",
                                                          "custom_xdr_to_xsoar_close_reason_mapping": custom_mapping})
 
@@ -913,7 +913,7 @@ def test_xdr_to_xsoar_flexible_close_reason_mapping(capfd, mocker, custom_mappin
 
         # Overcoming expected non-empty stderr test failures (Errors are submitted to stderr when improper mapping is provided).
         with capfd.disabled():
-            close_entry = handle_incoming_closing_incident(incident_data)
+            close_entry = handle_incoming_incident(incident_data)
         assert close_entry["Contents"]["closeReason"] == expected_resolved_status[i]
 
 
