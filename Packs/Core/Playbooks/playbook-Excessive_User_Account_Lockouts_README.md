@@ -10,11 +10,13 @@ Playbook Stages:
 
 Triage:
 
-- The playbook enriches the alert with details about the lockout events.
+- Enriches the alert with details about the lockout events.
 
 Investigation:
 
-- The playbook analyzes the lockout event timestamps to detect patterns, checks for related medium severity brute-force alerts in the incident, and retrieves the Risk Score for the Caller Computer that caused the lockouts.
+- Analyzes the lockout event timestamps to detect patterns.
+- Checks for related medium severity brute-force alerts in the incident.
+- Retrieves the Risk Score for the Caller Computer that caused the lockouts.
 
 Containment:
 

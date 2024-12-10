@@ -2,7 +2,7 @@ id: Excessive User Account Lockouts
 version: -1
 name: Excessive User Account Lockouts
 description: |-
-  This playbook is designed to handle the following alerts:
+  This playbook addresses the following alerts:
 
   - Excessive user account lockouts
   - Excessive account lockouts on suspicious users
@@ -18,7 +18,9 @@ description: |-
 
   Investigation:
 
-  - The playbook analyzes the lockout event timestamps to detect patterns, checks for related medium severity brute-force alerts in the incident, and retrieves the Risk Score for the Caller Computer that caused the lockouts.
+  - Analyzes the lockout event timestamps to detect patterns.
+  - Checks for related medium severity brute-force alerts in the incident.
+  - Retrieves the Risk Score for the Caller Computer that caused the lockouts.
 
   Containment:
 
