@@ -3228,29 +3228,6 @@ url = "https://pypi.org/simple"
 reference = "pypi-public"
 
 [[package]]
-name = "riff"
-version = "0.0.287.0"
-description = "Run ruff, but only fail on modified lines."
-optional = false
-python-versions = ">=3.10,<4.0"
-files = [
-    {file = "riff-0.0.287.0-py3-none-any.whl", hash = "sha256:1d89f2f91f9fc7657e7a0489614c5143b4fe85189dc88f0a2963ef1305ef8483"},
-    {file = "riff-0.0.287.0.tar.gz", hash = "sha256:82a670311fccbf2ae45202d7451b9b1883ad02b55928430dd38495f3e12113b3"},
-]
-
-[package.dependencies]
-gitpython = ">=3.1.27,<4.0.0"
-loguru = ">=0.7.0,<0.8.0"
-ruff = "0.0.287"
-typer = ">=0.7.0"
-unidiff = ">=0.7.5,<0.8.0"
-
-[package.source]
-type = "legacy"
-url = "https://pypi.org/simple"
-reference = "pypi-public"
-
-[[package]]
 name = "rpds-py"
 version = "0.20.0"
 description = "Python bindings to Rust's persistent data structures (rpds)"
@@ -4281,22 +4258,6 @@ url = "https://pypi.org/simple"
 reference = "pypi-public"
 
 [[package]]
-name = "unidiff"
-version = "0.7.5"
-description = "Unified diff parsing/metadata extraction library."
-optional = false
-python-versions = "*"
-files = [
-    {file = "unidiff-0.7.5-py2.py3-none-any.whl", hash = "sha256:c93bf2265cc1ba2a520e415ab05da587370bc2a3ae9e0414329f54f0c2fc09e8"},
-    {file = "unidiff-0.7.5.tar.gz", hash = "sha256:2e5f0162052248946b9f0970a40e9e124236bf86c82b70821143a6fc1dea2574"},
-]
-
-[package.source]
-type = "legacy"
-url = "https://pypi.org/simple"
-reference = "pypi-public"
-
-[[package]]
 name = "urllib3"
 version = "2.2.2"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
@@ -4576,4 +4537,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10,<3.11"
-content-hash = "d4afec414711c7710fe56d48ad209a9662543a6bbcbb8a792cba57ae5a3e67aa"
+content-hash = "7304581bcdd72e872f6a43c3708cc6ff6f80ce0857ff4426889cd013e5a36579"
