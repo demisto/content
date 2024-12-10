@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "**NOTICE**:All core playbooks, layouts, and triggers have been migrated to a new pack titled 'Cortex Remediation and Response'. DO NOT update this pack before installing the new pack."
+}
