@@ -2,7 +2,7 @@
     "name": "DarktraceASM",
     "description": "Populates Darktrace ASM Risks in Cortex XSOAR, allowing for cross-platform automated investigation and response.",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "fromVersion": "6.6.0",
     "author": "Darktrace",
     "githubUser": "",

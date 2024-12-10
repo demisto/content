@@ -310,7 +310,7 @@ script:
       name: roleSessionDuration
     description: Updates findings with the new values provided in the request.
     name: aws-access-analyzer-update-findings
-  dockerimage: demisto/boto3py3:1.0.0.100468
+  dockerimage: demisto/boto3py3:1.0.0.115129
   isfetch: true
   runonce: false
   script: '-'

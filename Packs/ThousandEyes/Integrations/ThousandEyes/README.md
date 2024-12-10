@@ -1,27 +1,23 @@
 This Integration is used to fetch-incidents via “Active alerts”, get alert details via “Alert details”, and get the “Agent list”.
 It was integrated and tested with API v6 of ThousandEyes.
 
-## Configure ThousandEyes  on Cortex XSOAR
+## Configure ThousandEyes  in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ThousandEyes .
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Base API URL | True |
-    | Password | True |
-    | Fetch incidents | False |
-    | Incidents Fetch Interval | False |
-    | Incident type | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
-    | Minimum Severity to filter out the fetched alerts (only applicable for incidents) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Base API URL | True |
+| Password | True |
+| Fetch incidents | False |
+| Incidents Fetch Interval | False |
+| Incident type | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
+| Minimum Severity to filter out the fetched alerts (only applicable for incidents) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### thousandeyes-get-alerts
 ***

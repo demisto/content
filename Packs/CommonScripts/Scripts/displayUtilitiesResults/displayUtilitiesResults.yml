@@ -10,7 +10,7 @@ tags:
 enabled: true
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.10.113941
 runas: DBotWeakRole
 fromversion: 6.10.0
 tests:

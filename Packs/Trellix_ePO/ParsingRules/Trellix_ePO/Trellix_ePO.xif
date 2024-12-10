@@ -1,0 +1,8 @@
+[INGEST:vendor="trellix", product="epo", target_dataset="trellix_epo_raw" , no_hit=keep]
+ filter _raw_log !~= "Solidifier"
+| alter GMTTime = arrayindex(regextract(_raw_log,"GMTTime\>(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})\<\/GMTTime"),0)
+| alter _time = parse_timestamp("%FT%T", GMTTime)
+| alter tmp_get_xml_keys = rtrim(arraystring(arraymap(regextract(_raw_log,"(\<[^\/\>][a-zA-Z46]+\>)+"),concat("(?P", "@element", "[^|]+)?\|")),""),"\|")
+| alter tmp_get_xml_values = ltrim(rtrim(replex(replex(replex(arraystring(regextract(_raw_log,"(\<[^\/\>][a-zA-Z]+\>?[^\<]+<)\/"),"|"),"\<[^>|]+",""),"><","null"),"([<|>]?\|?[<|>])","|"),"|"),"|")
+| alter parsed_fields = if(tmp_get_xml_values = null or tmp_get_xml_values ~= "^\s*$", null, regexcapture(tmp_get_xml_values, tmp_get_xml_keys))
+| fields -tmp_*;

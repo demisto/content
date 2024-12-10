@@ -31,7 +31,7 @@ script: '-'
 subtype: python3
 timeout: 480ns
 type: python
-dockerimage: demisto/processing-image-file:1.0.0.113909
+dockerimage: demisto/processing-image-file:1.0.0.115372
 tests:
 - No tests (auto formatted)
 fromversion: 6.9.0

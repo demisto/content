@@ -1539,7 +1539,7 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
             text_to_encode += f"+{filter_arg}"
         endpoint_url += urllib.parse.quote_plus(text_to_encode)
         demisto.debug(f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=}")
-        return http_request('GET', endpoint_url)
+        return http_request('GET', endpoint_url, {'sort': 'created_timestamp.asc'})
     else:
         endpoint_url = '/detects/queries/detects/v1'
         demisto.debug(f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=} and {params=}")
@@ -1555,8 +1555,9 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
     Returns:
         Response json of the get detection endpoint (IDs of the detections)
     """
+    sort_key = 'first_behavior.asc' if LEGACY_VERSION else 'created_timestamp.asc'
     params = {
-        'sort': 'first_behavior.asc',
+        'sort': sort_key,
         'offset': offset,
     }
     if has_limit:
@@ -3989,8 +3990,31 @@ def get_ioc_device_count_command(ioc_type: str, value: str):
         ioc_id = f"{ioc_type}:{value}"
         if not device_count_res:
             return create_entry_object(raw_res, hr=f"Could not find any devices the IOC **{ioc_id}** was detected in.")
+
+        device_count = device_count_res[0].get("device_count")
+        if argToBoolean(device_count_res[0].get('limit_exceeded', False)):
+            demisto.debug(f'limit exceeded for {ioc_id}, trying to count by run_indicator_device_id_request')
+            # rate limit exceeded, so we will get the count by running the run_indicator_device_id_request function
+            # see https://falcon.crowdstrike.com/documentation/page/ed1b4a95/detection-and-prevention-policy-apis
+
+            device_count = 0
+            params = assign_params(
+                type=ioc_type,
+                value=value
+            )
+
+            while True:
+                device_ids_raw = run_indicator_device_id_request(params)
+                device_count += len(device_ids_raw.get('resources', []))
+                offset = demisto.get(device_ids_raw, 'meta.pagination.offset')
+                if not offset:
+                    break
+                params['offset'] = offset
+
+            device_count_res[0]['device_count'] = device_count
+
         context = [get_trasnformed_dict(device_count, IOC_DEVICE_COUNT_MAP) for device_count in device_count_res]
-        hr = f'Indicator of Compromise **{ioc_id}** device count: **{device_count_res[0].get("device_count")}**'
+        hr = f'Indicator of Compromise **{ioc_id}** device count: **{device_count}**'
         return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': context}, hr=hr)
 
 
@@ -4934,6 +4958,10 @@ def validate_response(raw_res):
     return 'resources' in raw_res
 
 
+def run_indicator_device_id_request(params):
+    return http_request('GET', '/indicators/queries/devices/v1', params=params, status_code=404)
+
+
 def get_indicator_device_id():
     args = demisto.args()
     ioc_type = args.get('type')
@@ -4942,7 +4970,7 @@ def get_indicator_device_id():
         type=ioc_type,
         value=ioc_value
     )
-    raw_res = http_request('GET', '/indicators/queries/devices/v1', params=params, status_code=404)
+    raw_res = run_indicator_device_id_request(params=params)
     errors = raw_res.get('errors', [])
     for error in errors:
         if error.get('code') == 404:

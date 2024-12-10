@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 import urllib3
 from typing import Any
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, UTC
 from dateutil import relativedelta
 from ZoomApiModule import *
 
@@ -52,8 +52,8 @@ class Client(Zoom_Client):
 
         demisto.debug(f"Last run before the fetch run: {last_time} for {log_type}")
         start_date = first_fetch_time if not last_time else \
-            dateparser.parse(last_time).replace(tzinfo=timezone.utc)  # type: ignore[union-attr]
-        end_date = datetime.now(timezone.utc)
+            dateparser.parse(last_time).replace(tzinfo=UTC)  # type: ignore[union-attr]
+        end_date = datetime.now(UTC)
 
         demisto.debug(f"Starting to get logs from: {start_date} to: {end_date} for {log_type}")
 
@@ -108,7 +108,7 @@ def test_module(client: Client) -> str:
     """
 
     try:
-        client.search_events(log_type=next(iter(LOG_TYPES)), limit=1, first_fetch_time=datetime.now(timezone.utc))
+        client.search_events(log_type=next(iter(LOG_TYPES)), limit=1, first_fetch_time=datetime.now(UTC))
 
     except DemistoException as e:
         error_message = e.message
@@ -269,7 +269,7 @@ def main() -> None:
         elif command == 'zoom-get-events':
             events, results = get_events(client=client,
                                          limit=arg_to_number(args.get("limit")) or MAX_RECORDS_PER_PAGE,
-                                         first_fetch_time=first_fetch_datetime.replace(tzinfo=timezone.utc),
+                                         first_fetch_time=first_fetch_datetime.replace(tzinfo=UTC),
                                          )
             return_results(results)
 
@@ -280,7 +280,7 @@ def main() -> None:
             last_run = demisto.getLastRun()
             next_run, events = fetch_events(client=client,
                                             last_run=last_run,
-                                            first_fetch_time=first_fetch_datetime.replace(tzinfo=timezone.utc),
+                                            first_fetch_time=first_fetch_datetime.replace(tzinfo=UTC),
                                             )
 
             call_send_events_to_xsiam(events)

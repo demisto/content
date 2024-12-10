@@ -7,7 +7,7 @@ script: ''
 type: javascript
 tags:
 - DemistoAPI
-comment: Deprecated. Use DemistoUploadFile instead.
+comment: Deprecated. Use UploadFileV2 instead.
 enabled: true
 args:
 - name: entryID

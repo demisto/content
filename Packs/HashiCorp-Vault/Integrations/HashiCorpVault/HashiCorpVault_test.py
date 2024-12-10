@@ -42,7 +42,7 @@ def test_get_aws_secrets(mocker):
 
 
 def test_get_headers():
-    assert get_headers() == {'Content-Type': 'application/json'}
+    assert get_headers() == {'Content-Type': 'application/json', 'X-Vault-Request': 'true'}
 
 
 def test_list_secrets_engines(mocker):
@@ -113,3 +113,86 @@ def test_seal_vault(mocker):
 def test_disable_engine(mocker):
     mocker.patch('HashiCorpVault.send_request', return_value={})
     assert disable_engine('test') == {}
+
+
+def test_generate_role_secret_command(mocker):
+    """
+    Given:
+        A set of command arguments including role_name, meta_data, cidr_list, token_bound_cidrs, num_uses, and ttl_seconds.
+
+    When:
+        Executing the generate_role_secret_command function to generate a secret ID for a given role.
+
+    Then:
+        Verify that the send_request function is called with the correct path and body, and that the return_results function
+        is called with the expected result containing the secret_id.
+    """
+    mock_demisto = mocker.patch('HashiCorpVault.demisto.args')
+    mock_return_results = mocker.patch('HashiCorpVault.return_results')
+    response = {'secret_id': '123'}
+    mock_send_request = mocker.patch('HashiCorpVault.send_request', return_value=response)
+    mock_demisto.return_value = {
+        'role_name': 'test_role',
+        'meta_data': 'test_metadata',
+        'cidr_list': '',
+        'token_bound_cidrs': '',
+        'num_uses': '5',
+        'ttl_seconds': '3600'
+    }
+    mock_send_request.return_value = {'secret_id': '123'}
+
+    generate_role_secret_command()
+
+    mock_send_request.assert_called_once_with(
+        path='/auth/approle/role/test_role/secret-id',
+        method='post',
+        body={
+            "metadata": 'test_metadata',
+            "ttl": 3600,
+            "num_uses": 5
+        }
+    )
+    mock_return_results.assert_called_once()
+    result_call_args = mock_return_results.call_args[0][0]
+    assert 'secret_id' in result_call_args.readable_output
+    assert result_call_args.readable_output['secret_id'] == '123'
+
+
+def test_get_role_id_command(mocker):
+    """
+    Given:
+        A set of command arguments including role_name.
+
+    When:
+        Executing the get_role_id_command function to retrieve the role ID for a given role.
+
+    Then:
+        Verify that the send_request function is called with the correct path, method, and body, and that the return_results
+        function is called with the expected result containing the role_id.
+    """
+    mock_demisto_args = mocker.patch('HashiCorpVault.demisto.args')
+    mock_return_results = mocker.patch('HashiCorpVault.return_results')
+    mock_send_request = mocker.patch('HashiCorpVault.send_request')
+    mock_demisto_args.return_value = {
+        'role_name': 'test_role'
+    }
+    mock_send_request.return_value = {
+        'data': {
+            'role_id': '12345'
+        }
+    }
+
+    expected_path = '/auth/approle/role/test_role/role-id'
+    expected_method = 'get'
+    expected_body = {
+        'role_name': 'test_role'
+    }
+    expected_outputs = {'Id': '12345', 'Name': 'test_role'}
+
+    get_role_id_command()
+
+    mock_send_request.assert_called_once_with(path=expected_path, method=expected_method, body=expected_body)
+    mock_return_results.assert_called_once()
+    result_call_args = mock_return_results.call_args[0][0]
+    assert result_call_args.outputs == expected_outputs
+    assert result_call_args.outputs_prefix == 'HashiCorp.AppRole'

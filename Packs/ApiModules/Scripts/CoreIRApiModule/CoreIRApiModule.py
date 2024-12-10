@@ -244,7 +244,7 @@ class CoreClient(BaseClient):
         try:
             decoder = base64.b64decode if response_data_type == "bin" else json.loads
             demisto.debug(f'{response_data_type=}, {decoder.__name__=}')
-            return decoder(response['data'])   # type: ignore[operator]
+            return decoder(response['data'])  # type: ignore[operator]
         except json.JSONDecodeError:
             demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}")
             return response['data']
@@ -2416,11 +2416,50 @@ def run_snippet_code_script_command(client: CoreClient, args: Dict) -> CommandRe
     )
 
 
+def form_powershell_command(unescaped_string: str) -> str:
+    """
+    Builds a Powershell command using prefix and a shell-escaped string.
+
+    Args:
+        unescaped_string (str): An unescaped command string.
+
+    Returns:
+        str: Prefixed and escaped command.
+    """
+    escaped_string = ''
+
+    for i, char in enumerate(unescaped_string):
+        if char == "'":
+            escaped_string += "''"
+
+        elif char == '"':
+            backslash_count = 0
+            for j in range(i - 1, -1, -1):
+                if unescaped_string[j] != '\\':
+                    break
+                backslash_count += 1
+
+            escaped_string += ('\\' * backslash_count) + '\\"'
+
+        else:
+            escaped_string += char
+
+    return f"powershell -Command '{escaped_string}'"
+
+
 def run_script_execute_commands_command(client: CoreClient, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
-    parameters = {'commands_list': argToList(args.get('commands'))}
+
+    commands = args.get('commands')
+    is_raw_command = argToBoolean(args.get('is_raw_command', False))
+    commands_list = remove_empty_elements([commands]) if is_raw_command else argToList(commands)
+
+    if args.get('command_type') == 'powershell':
+        commands_list = [form_powershell_command(command) for command in commands_list]
+    parameters = {'commands_list': commands_list}
+
     response = client.run_script('a6f7683c8e217d85bd3c398f0d3fb6bf', endpoint_ids, parameters, timeout, incident_id)
     reply = response.get('reply')
     return CommandResults(
@@ -3724,6 +3763,13 @@ def filter_vendor_fields(alert: dict):
 
 def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResults:
     alert_id_list = argToList(args.get('alert_ids', []))
+    for alert_id in alert_id_list:
+        if alert_id and re.match(r'^[a-fA-F0-9-]{32,36}\$&\$.+$', alert_id):
+            raise DemistoException(f"Error: Alert ID {alert_id} is invalid. This issue arises because the playbook is running in"
+                                   f" debug mode, which replaces the original alert ID with a debug alert ID, causing the task to"
+                                   f" fail. To run this playbook in debug mode, please update the 'alert_ids' value to the real "
+                                   f"alert ID in the relevant task. Alternatively, run the playbook on the actual alert "
+                                   f"(not in debug mode) to ensure task success.")
     events_from_decider_as_list = bool(args.get('events_from_decider_format', '') == 'list')
     raw_response = client.get_original_alerts(alert_id_list)
     reply = copy.deepcopy(raw_response)

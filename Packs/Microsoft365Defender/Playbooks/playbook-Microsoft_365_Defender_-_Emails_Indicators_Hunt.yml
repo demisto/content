@@ -214,7 +214,7 @@ tasks:
         complex:
           root: inputs.ResultsLimit
       query:
-        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailEvents | where Timestamp >= _start | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | join EmailUrlInfo on NetworkMessageId | where Url has_any ("${URLDomainParsed}") or UrlDomain has_any ("${URLDomainParsed}") | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, Timestamp1, OrgLevelAction, SenderObjectId, NetworkMessageId1
+        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailEvents | where Timestamp >= _start | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | join EmailUrlInfo on NetworkMessageId | where Url has_any (```${URLDomainParsed}```) or UrlDomain has_any (```${URLDomainParsed}```) | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, Timestamp1, OrgLevelAction, SenderObjectId, NetworkMessageId1
       timeout:
         simple: ${inputs.Timeout}
     separatecontext: false
@@ -356,16 +356,16 @@ tasks:
             args:
               separator:
                 value:
-                  simple: ', '
+                  simple: '|||'
           - operator: replace
             args:
               limit: {}
               replaceWith:
                 value:
-                  simple: '", "'
+                  simple: '```, ```'
               toReplace:
                 value:
-                  simple: ', '
+                  simple: '|||'
     separatecontext: false
     continueonerrortype: ""
     view: |-

@@ -1,8 +1,13 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import dateutil  # type: ignore
-
 from CommonServerUserPython import *
+
+# set omp
+import os
+import multiprocessing
+os.environ['OMP_NUM_THREADS'] = str(multiprocessing.cpu_count())  # noqa
+
+import dateutil  # type: ignore
 import pandas as pd
 from bs4 import BeautifulSoup
 from sklearn.feature_extraction.text import CountVectorizer

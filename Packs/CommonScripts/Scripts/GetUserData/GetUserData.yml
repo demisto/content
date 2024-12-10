@@ -24,6 +24,7 @@ args:
   - 'Microsoft Graph User'
   - 'SailPointIdentityIQ'
   - 'Cortex XDR - IR'
+  - 'Cortex Core - IR'
   - 'iam-get-user'
 - description: Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to human readable only for the final result.
   name: verbose
@@ -83,7 +84,7 @@ script: '-'
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.11.10.111526
+dockerimage: demisto/python3:3.11.10.115186
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

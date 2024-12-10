@@ -1,0 +1,622 @@
+id: Unprivileged process opened a registry hive
+version: -1
+name: Unprivileged process opened a registry hive
+description: |-
+  This playbook is designed to handle the 'Unprivileged process opened a registry hive' alert.
+
+  Playbook Stages:
+
+  Investigation:
+
+  During the alert investigation, the playbook will perform the following:
+
+  - Checks the prevalence of the unprivileged process that triggered the alert.
+  - Checks the prevalence of the command line used by the unprivileged process.
+  - Searches for additional suspicious Cortex XSIAM alerts within the same incident in order to determine whether a remediation measure is required.
+
+  Remediation:
+
+  - To prevent malicious activity from continuing, the playbook terminates the causality processes that triggered the alert.
+tags:
+- TA0006 - Credential Access
+- T1552 - Unsecured Credentials
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 48d3588d-43e5-4b43-8b35-48ca384bcb15
+    type: start
+    task:
+      id: 48d3588d-43e5-4b43-8b35-48ca384bcb15
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: ff3d375d-21d5-461d-89f1-3afa5ba7f00b
+    type: title
+    task:
+      id: ff3d375d-21d5-461d-89f1-3afa5ba7f00b
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 7842ac2c-e9a5-4b66-8fde-abd99966ae2f
+    type: regular
+    task:
+      id: 7842ac2c-e9a5-4b66-8fde-abd99966ae2f
+      version: -1
+      name: Close Alert as True Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      assetid:
+        simple: |
+          Resolved - False Positive
+      closeNotes:
+        simple: Resolved - Handled by the playbook "Unprivileged process opened a registry hive"
+      closeReason:
+        simple: Resolved - True Positive
+      id:
+        complex:
+          root: alert
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: c787ef1f-6b33-43ec-8f2b-ef107513f04a
+    type: title
+    task:
+      id: c787ef1f-6b33-43ec-8f2b-ef107513f04a
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "49"
+      - "47"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 3200a260-eb1d-4089-8bf7-6895ea662306
+    type: title
+    task:
+      id: 3200a260-eb1d-4089-8bf7-6895ea662306
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 041c6225-6062-47ad-86be-3b7d81f4fb19
+    type: regular
+    task:
+      id: 041c6225-6062-47ad-86be-3b7d81f4fb19
+      version: -1
+      name: Terminate Causality (CGO)
+      description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "62"
+      '#none#':
+      - "22"
+    scriptarguments:
+      agent_id:
+        complex:
+          root: alert
+          accessor: agentid
+          transformers:
+          - operator: uniq
+      causality_id:
+        complex:
+          root: alert
+          accessor: cid
+          transformers:
+          - operator: uniq
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 02cefbac-04e3-4606-8570-a778e38fb0c0
+    type: regular
+    task:
+      id: 02cefbac-04e3-4606-8570-a778e38fb0c0
+      version: -1
+      name: Search for suspicious-related alerts by MITRE Technique
+      description: "This task searches for Cortex XSIAM suspicious alerts related to the current incident by Mitre Technique, indicating that the alert is part of an attack pattern.\n\nFocus on identifying alerts associated with the following MITRE techniques:\n- T1003 - OS Credential Dumping \n- T1036 - Masquerading \n- T1552 - Unsecured Credentials \n- T1059 - Command and Scripting Interpreter"
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      query:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '(mitreattcktechnique:*T1003* or mitreattcktechnique:*T1036* or mitreattcktechnique:*T1552* or mitreattcktechnique:*T1059*) and caseid:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 45
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: ce97d194-4dca-4f9c-8aaf-7c54ab40e966
+    type: regular
+    task:
+      id: ce97d194-4dca-4f9c-8aaf-7c54ab40e966
+      version: -1
+      name: Get Actor CommandLine and CGO CommandLine prevalence
+      description: Get the prevalence of a process_command_line, identified by process_command_line.
+      script: '|||core-get-cmd-analytics-prevalence'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      process_command_line:
+        complex:
+          root: alert
+          accessor: cgocmd
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: alert.osparentcmd
+                iscontext: true
+              raw: {}
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": -300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: e0e01cdc-0f66-414b-8558-24155f2650e7
+    type: regular
+    task:
+      id: e0e01cdc-0f66-414b-8558-24155f2650e7
+      version: -1
+      name: Get Actor Process and CGO Process prevalence
+      description: Get the prevalence of a process, identified by process_name.
+      script: '|||core-get-process-analytics-prevalence'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      process_name:
+        complex:
+          root: alert
+          accessor: osparentname
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: alert.cgoname
+                iscontext: true
+              raw: {}
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": -300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 9f115642-48a0-4395-8608-b29f1d2de9ca
+    type: condition
+    task:
+      id: 9f115642-48a0-4395-8608-b29f1d2de9ca
+      version: -1
+      name: Found related alerts requiring causality termination
+      description: A verdict is determined based on whether the incident contained any related alerts.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "60"
+      "Yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 0be96afe-dfcb-4780-8822-af5ad5f865df
+    type: regular
+    task:
+      id: 0be96afe-dfcb-4780-8822-af5ad5f865df
+      version: -1
+      name: Close Alert as False Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      closeNotes:
+        simple: Resolved - Handled by the playbook "Unprivileged process opened a registry hive"
+      closeReason:
+        simple: Resolved - False Positive
+      id:
+        complex:
+          root: alert
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: eca46ccf-77d3-4853-8b71-f516e49814b7
+    type: condition
+    task:
+      id: eca46ccf-77d3-4853-8b71-f516e49814b7
+      version: -1
+      name: Check for process signatures and prevalence
+      description: Determines the appropriate verdict based on the Actor & CGO process signature and the prevalence of the Actor & CGO process and Actor & CGO CommandLine.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "46"
+      Unsigned and not prevalent:
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: Unsigned and not prevalent
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: alert.osparentsignature
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: alert.osparentsignature
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+          ignorecase: true
+        - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: alert.cgosignature
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: alert.cgosignature
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Core.AnalyticsPrevalence.Process
+                accessor: value
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Core.AnalyticsPrevalence.Cmd
+                accessor: value
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 2647e32a-15b8-4b10-8724-3cdeaf72552f
+    type: regular
+    task:
+      id: 2647e32a-15b8-4b10-8724-3cdeaf72552f
+      version: -1
+      name: Terminate Process Manually
+      description: "Dear Analyst,\n\nDuring the remediation process, the playbook couldn't terminate the process ${alert.cgoname} \n\nPlease terminate the process manually if possible. \nNote that the next remediation step, if possible, will be endpoint isolation."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "44_62_#error#": 0.55,
+      "53_11_Yes": 0.17,
+      "61_11_Unsigned and not prevalent": 0.27
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1665,
+        "width": 1110,
+        "x": 180,
+        "y": -580
+      }
+    }
+  }
+inputs: []
+inputSections:
+- inputs: []
+  name: General (Inputs group)
+  description: Generic group for inputs.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs.
+outputs: []
+marketplaces: ["marketplacev2"]
+tests:
+- No tests (auto formatted)
+fromversion: 8.0.0

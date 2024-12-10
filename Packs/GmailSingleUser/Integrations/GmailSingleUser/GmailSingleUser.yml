@@ -354,7 +354,7 @@ script:
       required: true
     description: Retrieves attachments from a sent Gmail message.
     name: gmail-get-attachments
-  dockerimage: demisto/google-api-py3:1.0.0.114199
+  dockerimage: demisto/google-api-py3:1.0.0.116623
   isfetch: true
   runonce: false
   script: '-'

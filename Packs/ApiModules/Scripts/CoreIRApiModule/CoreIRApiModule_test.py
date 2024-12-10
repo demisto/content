@@ -21,6 +21,41 @@ test_client = CoreClient(
 
 Core_URL = 'https://api.xdrurl.com'
 
+POWERSHELL_COMMAND_CASES = [
+    pytest.param(
+        "Write-Output 'Hello, world, it`s me!'",
+        "powershell -Command 'Write-Output ''Hello, world, it`s me!'''",
+        id='Hello World message',
+    ),
+    pytest.param(
+        r"New-Item -Path 'C:\Users\User\example.txt' -ItemType 'File'",
+        "powershell -Command 'New-Item -Path ''C:\\Users\\User\\example.txt'' -ItemType ''File'''",
+        id='New file in path with backslashes',
+    ),
+    pytest.param(
+        "$message = 'This is a test with special chars: `&^%$#@!'; Write-Output $message",
+        "powershell -Command '$message = ''This is a test with special chars: `&^%$#@!''; Write-Output $message'",
+        id='Special characters message',
+    ),
+    pytest.param(
+        (
+            "$users = @(JohnDoe) -split ';'; query user | Select-Object -Skip 1 | "
+            "ForEach-Object { $sessionInfo = $_ -split '\s+' | "
+            "Where-Object { $_ -ne '' -and $_ -notlike 'Disc' }; "
+            "if ($sessionInfo.Length -ge 6) { $username = $sessionInfo[0].TrimStart('>'); "
+            "$sessionId = $sessionInfo[2]; if ($users -contains $username) { logoff $sessionId } } }"
+        ),
+        (
+            "powershell -Command '$users = @(JohnDoe) -split '';''; query user | Select-Object -Skip 1 | "
+            "ForEach-Object { $sessionInfo = $_ -split ''\\s+'' | "
+            "Where-Object { $_ -ne '''' -and $_ -notlike ''Disc'' }; "
+            "if ($sessionInfo.Length -ge 6) { $username = $sessionInfo[0].TrimStart(''>''); "
+            "$sessionId = $sessionInfo[2]; if ($users -contains $username) { logoff $sessionId } } }'"
+        ),
+        id='End RDP session for users',
+    ),
+]
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -1958,6 +1993,26 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
     assert zipfile.ZipFile(file_name).namelist() == ['your_file.txt']
 
 
+@pytest.mark.parametrize('command_input, expected_command', POWERSHELL_COMMAND_CASES)
+def test_form_powershell_command(command_input: str, expected_command: str):
+    """
+    Given:
+        - An unescaped command containing characters like ', `, ", \
+
+    When:
+        - Calling the form_powershell_command function
+
+    Assert:
+        - Command starts with 'powershell -Command' and is properly escaped.
+    """
+    from CoreIRApiModule import form_powershell_command
+
+    command = form_powershell_command(command_input)
+
+    assert not command_input.startswith('powershell -Command ')
+    assert command == expected_command
+
+
 def test_run_script_execute_commands_command(requests_mock):
     """
     Given:
@@ -2865,6 +2920,41 @@ def test_get_original_alerts_command__without_filtering(requests_mock):
     event = alert['event']
     assert len(alert) == 13  # make sure fields were not filtered
     assert len(event) == 41  # make sure fields were not filtered
+
+
+@pytest.mark.parametrize("alert_ids, raises_demisto_exception",
+                         [("59cf36bbdedb8f05deabf00d9ae77ee5$&$A Successful login from TOR", True),
+                          ("b0e754480d79eb14cc9308613960b84b$&$A successful SSO sign-in from TOR", True),
+                          ("9d657d2dfd14e63d0b98c9dfc3647b4f$&$A successful SSO sign-in from TOR", True),
+                          ("561675a86f68413b6e7a3b12e48c6072$&$External Login Password Spray", True),
+                          ("fe925817cddbd11e6efe5a108cf4d4c5$&$SSO Password Spray", True),
+                          ("e2d2a0dd589e8ca97d468cdb0468e94d$&$SSO Brute Force", True),
+                          ("3978e33b76cc5b2503ba60efd4445603$&$A successful SSO sign-in from TOR", True),
+                          ("79", False)])
+def test_get_original_alerts_command_raises_exception_playbook_debugger_input(alert_ids, raises_demisto_exception,
+                                                                              requests_mock):
+    """
+    Given:
+        - A list of alert IDs with invalid formats for the alert ID of the form <GUID>$&$<Playbook name>
+    When:
+        - Running get_original_alerts_command command
+    Then:
+        - Verify that DemistoException is raised
+    """
+    from CoreIRApiModule import get_original_alerts_command, CoreClient
+
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={}
+    )
+    args = {'alert_ids': alert_ids}
+
+    if raises_demisto_exception:
+        with pytest.raises(DemistoException):
+            get_original_alerts_command(client, args)
+    else:
+        api_response = load_test_data('./test_data/get_original_alerts_results.json')
+        requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_original_alerts/', json=api_response)
+        get_original_alerts_command(client, args)
 
 
 def test_get_dynamic_analysis(requests_mock):
@@ -4375,7 +4465,7 @@ def test_terminate_causality_command(mocker):
     )
 
     result = terminate_causality_command(client=client, args={'agent_id': '1', 'causality_id': [
-                                         'causality_id_1', 'causality_id_2']})
+        'causality_id_1', 'causality_id_2']})
     assert result.readable_output == ('### Action terminate causality created on causality_id_1,'
                                       'causality_id_2\n|action_id|\n|---|\n| 1 |\n| 2 |\n')
     assert result.raw_response == [{'action_id': 1}, {'action_id': 2}]
