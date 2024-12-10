@@ -83,7 +83,9 @@ class Client(BaseClient):
             headers={'User-Agent': 'PANW-XSOAR'},
             stream=False,
             timeout=self._polling_timeout,
-            resp_type='text'
+            resp_type='text',
+            retries=3,
+            status_list_to_retry=[403]
         )
 
         # download_link_search_regex = re.search(r'downloadData={.+(https://(.)+\.json)\",', azure_url_response)
@@ -263,7 +265,7 @@ def test_module(client: Client) -> tuple[str, dict, dict]:
 
 def get_indicators_command(client: Client,
                            feedTags: list,
-                           tlp_color: str | None,
+                           tlp_color: str,
                            enrichment_excluded: bool = False) -> tuple[str, dict, dict]:
     """Retrieves indicators from the feed to the war-room.
 
@@ -288,7 +290,7 @@ def get_indicators_command(client: Client,
 
 def fetch_indicators_command(client: Client,
                              feedTags: list,
-                             tlp_color: str | None,
+                             tlp_color: str,
                              limit: int = -1,
                              enrichment_excluded: bool = False) -> tuple[list[dict], list]:
     """Fetches indicators from the feed to the indicators tab.
