@@ -18,7 +18,7 @@ XSOAR8 or XSIAM:
 
 * The instance should be configured to run only on HTTP. 
 * The instance is using the HTTPS certificate of the server.
-* Please set a user and password (can be global via long running integrations configurations)
+* Set a user and password (can be global via long running integrations configurations)
 or local for this integration only.
 * If "no engine" is selected, make sure to click "Save" before testing and using the instance. This step allows the server to assign a port to the instance. 
    

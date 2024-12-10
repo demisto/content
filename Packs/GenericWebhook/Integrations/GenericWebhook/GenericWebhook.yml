@@ -20,7 +20,7 @@ configuration:
   type: 9
   section: Connect
   required: false
-- additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use."
+- additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the **Test** button more than once, a failure may occur mistakenly indicating that the port is already in use."
   display: Listen Port
   name: longRunningPort
   type: 0
