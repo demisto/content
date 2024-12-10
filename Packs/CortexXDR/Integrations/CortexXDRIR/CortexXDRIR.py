@@ -834,6 +834,7 @@ def resolve_xsoar_close_reason(xdr_close_reason: str):
     )
     return xsoar_close_reason
 
+
 def close_incident_in_xsoar(incident_data):
     xsoar_close_reason = resolve_xsoar_close_reason(incident_data.get("status"))
     closing_entry = {
@@ -865,12 +866,12 @@ def close_incident_in_xsoar(incident_data):
 
 def reopen_incident_in_xsoar():
     opening_entry = {
-            'Type': EntryType.NOTE,
-            'Contents': {
-                'dbotIncidentReopen': True
-            },
-            'ContentsFormat': EntryFormat.JSON
-        }
+        'Type': EntryType.NOTE,
+        'Contents': {
+            'dbotIncidentReopen': True
+        },
+        'ContentsFormat': EntryFormat.JSON
+    }
     demisto.debug(f"The opening entry, {opening_entry=}")
     return opening_entry
 
@@ -1613,7 +1614,7 @@ def main():  # pragma: no cover
 
         elif command == 'get-modified-remote-data':
             last_run_mirroring: Dict[Any, Any] = get_last_mirror_run() or {}
-            demisto.debug(f"asdfghjk")
+            demisto.debug("asdfghjk")
             demisto.debug(f"before get-modified-remote-data, last run={last_run_mirroring}")
 
             modified_incidents, next_mirroring_time = get_modified_remote_data_command(
