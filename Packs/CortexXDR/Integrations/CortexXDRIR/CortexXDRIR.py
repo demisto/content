@@ -1133,6 +1133,7 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
         for raw_incident in raw_incidents:
             incident_data: dict[str, Any] = sort_incident_data(raw_incident) if raw_incident.get('incident') else raw_incident
             incident_id = incident_data.get('incident_id')
+            demisto.debug(f'processing XDR incident: {incident_id=}')
             alert_count = arg_to_number(incident_data.get('alert_count')) or 0
             if alert_count > ALERTS_LIMIT_PER_INCIDENTS:
                 demisto.debug(f'for incident:{incident_id} using the old call since alert_count:{alert_count} >" \
@@ -1356,11 +1357,13 @@ def main():  # pragma: no cover
 
         elif command == 'fetch-incidents':
             integration_instance = demisto.integrationInstance()
+            full_last_run = demisto.getLastRun()
+            demisto.debug(f'full last run: {full_last_run=}')
             next_run, incidents = fetch_incidents(client=client,
                                                   first_fetch_time=first_fetch_time,
                                                   integration_instance=integration_instance,
                                                   exclude_artifacts=exclude_artifacts,
-                                                  last_run=demisto.getLastRun().get('next_run', {}),
+                                                  last_run=full_last_run.get('next_run', {}),
                                                   max_fetch=max_fetch,
                                                   statuses=statuses,
                                                   starred=starred,
@@ -1369,6 +1372,7 @@ def main():  # pragma: no cover
                                                   )
             last_run_obj = demisto.getLastRun()
             last_run_obj['next_run'] = next_run
+            demisto.debug(f'full next run: {last_run_obj=}')
             demisto.setLastRun(last_run_obj)
             demisto.incidents(incidents)
 
