@@ -112,7 +112,8 @@ def get_observables(
     score: list | None = None,
     limit: int | None = 500,
     last_run_id: str | None = None,
-    search: str = ""
+    search: str = "",
+    get_all: bool = False
 ) -> dict:
     """ Retrieving observables from the API
 
@@ -123,6 +124,7 @@ def get_observables(
         last_run_id: The last id from the previous call to use pagination.
         limit: the max observables to fetch
         search: The observable's value to filter by.
+        get_all: Whether to fetch all observables or just the page (default False). 
 
     Returns:
         observables: dict of observables
@@ -149,6 +151,7 @@ def get_observables(
         after=last_run_id,
         first=limit,
         withPagination=True,
+        getAll=get_all,
         filters=filters,
         search=search
     )
@@ -169,7 +172,8 @@ def get_indicators(
     indicator_types: list[str] = None,
     limit: int | None = 50,
     last_run_id: str = None,
-    search: str = ""
+    search: str = "",
+    get_all: bool = False
 ) -> dict:
     """Retrieving indicators from the OpenCTI API with filters and pagination.
 
@@ -188,6 +192,7 @@ def get_indicators(
         limit: The maximum number of indicators to fetch (default 50).
         last_run_id: The last ID from the previous call for pagination.
         search: Search string for the indicator value.
+        get_all: Whether to fetch all indicators or just the page (default False). 
 
     Returns:
         A dictionary containing indicators and pagination information.
@@ -266,6 +271,7 @@ def get_indicators(
             after=last_run_id,
             first=limit,
             withPagination=True,
+            getAll=get_all,
             filters=filters,
             search=search
         )
@@ -547,6 +553,7 @@ def get_observables_command(client: OpenCTIApiClient, args: dict) -> CommandResu
     end = arg_to_number(args.get('score_end', 100))  # type:ignore
     score = args.get('score')
     search = args.get("search", "")
+    get_all = argToBoolean(args.get('get_all', 'false'))
     scores = None
     if score:
         if score.lower() == "unknown":
@@ -565,12 +572,15 @@ def get_observables_command(client: OpenCTIApiClient, args: dict) -> CommandResu
         limit=limit,
         last_run_id=last_run_id,
         score=scores,
-        search=search
+        search=search,
+        get_all=get_all
     )
 
-    last_run = raw_response.get('pagination', {}).get('endCursor')  # type: ignore
+    last_run = None
+    if not get_all:
+        last_run = raw_response.get('pagination', {}).get('endCursor')  # type: ignore
 
-    if observables_list := copy.deepcopy(raw_response.get('entities')):
+    if observables_list := raw_response if get_all else copy.deepcopy(raw_response.get('entities')):
         observables = [{'type': OPENCTI_TYPES_TO_XSOAR.get(observable['entity_type'], observable['entity_type']),
                        'value': observable.get('observable_value'),
                         'id': observable.get('id'),
@@ -1152,6 +1162,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
     valid_from_before = args.get('valid_from_before')
     value = args.get('value', '')
     indicator_types = argToList(args.get('indicator_types'))
+    get_all = argToBoolean(args.get('get_all', 'false'))
 
     raw_response = get_indicators(
         client=client,
@@ -1167,11 +1178,15 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
         indicator_types=indicator_types,
         limit=limit,
         last_run_id=last_run_id,
-        search=value
+        search=value,
+        get_all=get_all
     )
 
-    last_run = raw_response.get('pagination', {}).get('endCursor')
-    if indicators_list := copy.deepcopy(raw_response.get('entities')):
+    last_run = None
+    if not get_all:
+        last_run = raw_response.get('pagination', {}).get('endCursor')
+
+    if indicators_list := raw_response if get_all else copy.deepcopy(raw_response.get('entities')):
         indicators = [
             {
                 "id": indicator.get("id"),

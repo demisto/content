@@ -60,6 +60,13 @@ script:
       name: last_run_id
     - description: The observable's value to filter by, can be partial value.
       name: search
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: True means retrieve all observables, false means retrieve the observables paginated. Default is false.
+      name: get_all
+      predefined:
+      - "true"
+      - "false"
     description: Gets observables from OpenCTI.
     name: opencti-get-observables
     outputs:
@@ -542,6 +549,13 @@ script:
       name: limit
     - description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.Indicators.LastRunID context path.
       name: last_run_id
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: True means retrieve all indicators, false means retrieve the indicators paginated. Default is false.
+      name: get_all
+      predefined:
+      - "true"
+      - "false"
     description: Get indicators in OpenCTI.
     name: opencti-get-indicators
     outputs:

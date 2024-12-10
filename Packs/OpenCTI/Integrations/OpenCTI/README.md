@@ -33,6 +33,7 @@ Get indicators in OpenCTI.
 | --- | --- | --- |
 | value | The indicator's value to filter by, can be partial value. | Optional | 
 | created_by | The ID of the entity that created the indicator (use opencti-organization-list to find or create). | Optional | 
+| creator | The ID of the indicator creator. | Optional | 
 | created_after | Created after date filter. Format: YYYY-MM-DDThh:mm:ss.sssZ. | Optional | 
 | created_before | Created before date filter. Format: YYYY-MM-DDThh:mm:ss.sssZ. | Optional | 
 | valid_until_after | Valid until after date filter. Format: YYYY-MM-DDThh:mm:ss.sssZ. | Optional | 
@@ -43,6 +44,7 @@ Get indicators in OpenCTI.
 | label_id | The label ID for the indicator (use opencti-label-list to find or create). | Optional | 
 | limit | The maximum number of indicators to return. Default value is 50. Maximum value is 500. Default is 50. | Optional | 
 | last_run_id | The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.Indicators.LastRunID context path. | Optional | 
+| get_all | True means retrieve all indicators, false means retrieve the indicators paginated. Default is false. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
@@ -55,6 +57,7 @@ Get indicators in OpenCTI.
 | OpenCTI.Indicators.IndicatorList.validFrom | string | The valid-from date of the indicator. | 
 | OpenCTI.Indicators.IndicatorList.validUntil | string | The valid-until date of the indicator. | 
 | OpenCTI.Indicators.IndicatorList.score | number | Score of the indicator. | 
+| OpenCTI.Indicators.IndicatorList.confidence | number | Confidence of the indicator. | 
 | OpenCTI.Indicators.IndicatorList.createdBy | string | Name of the entity that created the indicator. | 
 | OpenCTI.Indicators.IndicatorList.creators | list | Name of the indicator creators. | 
 | OpenCTI.Indicators.IndicatorList.labels | list | Labels associated with the indicator. | 
@@ -157,7 +160,9 @@ Create new indicator.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenCTI.Indicator.id | String | New indicator ID. |
+| OpenCTI.Indicator.id | String | New indicator ID. | 
+| OpenCTI.Indicator.value | String | New indicator value. | 
+| OpenCTI.Indicator.type | String | New indicator type. | 
 
 
 #### Command Example
@@ -223,9 +228,6 @@ Remove indicator field value. Fields which values can be removed are marking def
 | id | Indicator ID. | Required | 
 | field | Indicator field to update. Possible values are: marking, label. | Required | 
 | value | Value of the field to remove. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI or opencti-marking-definition-list to find all marking definition IDs in OpenCTI. | Required | 
-
-
-#### Context Output
 ### opencti-indicator-create
 
 ***
@@ -260,6 +262,9 @@ Create a new indicator in OpenCTI.
 | --- | --- | --- |
 | OpenCTI.Indicator.id | string | New Indicator ID. | 
 
+                    },
+                    {
+                        "id": "11ddff08-8933-46d7-ab22-31f49496499f",
                         "name": "ExampleOrganization"
                     }
                 ]
@@ -518,6 +523,141 @@ Get a list of all marking definitions.
 >|---|---|
 >| TLP:GREEN | dc911977-796a-4d96-95e4-615bd1c41263 |
 >| TLP:AMBER | 9128e411-c759-4af0-aeb0-b65f12082648 |
+### opencti-observable-field-remove
+
+***
+Remove observable field value. Fields which values can be removed are marking definition and label.
+
+#### Base Command
+
+`opencti-observable-field-remove`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Observable ID. | Required | 
+| field | Observable field to update. Possible values are: marking, label. | Required | 
+| value | Value of the field to remove. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI or opencti-marking-definition-list to find all marking definition IDs in OpenCTI. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### opencti-get-observables
+
+***
+Gets observables from OpenCTI.
+
+#### Base Command
+
+`opencti-get-observables`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of observables to return. Default value is 50. Maximum value is 500. | Optional | 
+| score_start | Score minimum value to filter by. Values range is 0-100. . | Optional | 
+| score_end | Score maximum value to filter by. Values range is 0-100. . | Optional | 
+| score | A specific score. Values range is 0-100 or Unknown. | Optional | 
+| observable_types | The observable types to fetch. Out-of-the-box observable types supported in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key, and URL. Possible values are: ALL, Account, Domain, Email, File, Host, IP, IPv6, Registry Key, URL. Default is ALL. | Optional | 
+| last_run_id | The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.ObservablesList.LastRunID context path. | Optional | 
+| search | The observable's value to filter by, can be partial value. | Optional | 
+| get_all | True means retrieve all observables, false means retrieve the observables paginated. Default is false. Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpenCTI.Observables.ObservablesList.type | String | Observable type. | 
+| OpenCTI.Observables.ObservablesList.value | String | Observable value. | 
+| OpenCTI.Observables.ObservablesList.id | String | Observable ID. | 
+| OpenCTI.Observables.ObservablesList.createdBy | Unknown | The creator of the observable. | 
+| OpenCTI.Observables.ObservablesList.score | Number | Observable score. | 
+| OpenCTI.Observables.ObservablesList.description | String | Observable description. | 
+| OpenCTI.Observables.ObservablesList.labels | Unknown | Observable labels. | 
+| OpenCTI.Observables.ObservablesList.marking | Unknown | Observable marking definitions. | 
+| OpenCTI.Observables.ObservablesList.externalReferences | Unknown | Observable external references. | 
+| OpenCTI.Observables.LastRunID | String | The last ID of the previous fetch to use for pagination. | 
+
+### opencti-incident-types-list
+
+***
+Get a list of all incident types.
+
+#### Base Command
+
+`opencti-incident-types-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpenCTI.IncidentTypes.IncidentTypesList.id | unknown | Incident type ID. | 
+| OpenCTI.IncidentTypes.IncidentTypesList.name | unknown | Incident type name. | 
+| OpenCTI.IncidentTypes.IncidentTypesList.description | unknown | Incident type description. | 
+
+### opencti-observable-field-add
+
+***
+Add a field to the observable. Fields that can be added are marking definition and label.
+
+#### Base Command
+
+`opencti-observable-field-add`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Observable ID. | Required | 
+| field | Observable field to add. Possible values are: marking, label. | Required | 
+| value | Value of the field to add. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### opencti-observable-delete
+
+***
+Delete observable.
+
+#### Base Command
+
+`opencti-observable-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Observable ID. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### opencti-incident-delete
+
+***
+Delete incident.
+
+#### Base Command
+
+`opencti-incident-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Incident ID. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
 ### opencti-indicator-types-list
 
 ***
@@ -539,66 +679,6 @@ Get a list of all indicator types.
 | OpenCTI.IndicatorTypes.IndicatorTypesList.id | unknown | Indicator type ID. | 
 | OpenCTI.IndicatorTypes.IndicatorTypesList.name | unknown | Indicator type name. | 
 | OpenCTI.IndicatorTypes.IndicatorTypesList.description | unknown | Indicator type description. | 
-
-### opencti-indicator-update
-
-***
-Update a indicator in OpenCTI.
-
-#### Base Command
-
-`opencti-indicator-update`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | ID of the indicator. | Required | 
-| name | Name of the indicator. | Optional | 
-| indicator_types | The types of the indicator. Use opencti-indicator-types-list to find all indicator types in OpenCTI. | Optional | 
-| description | The description of the indicator. | Optional | 
-| confidence | Confidence level for the indicator, value between 0 and 100. Default is 50. Default is 50. | Optional | 
-| score | The score of the indicator, value between 0 and 100. Default is 50. Default is 50. | Optional | 
-| valid_from | The valid-from date for the indicator in the format YYYY-MM-DDThh:mm:ss.sssZ. | Optional | 
-| valid_until | The valid-until date for the indicator in the format YYYY-MM-DDThh:mm:ss.sssZ. | Optional | 
-| label_id | The label ID for the indicator (use opencti-label-list to find or create). | Optional | 
-| marking_id | The marking ID for the indicator (use opencti-marking-definition-list to find). | Optional | 
-| external_references_id | External references ID for the indicator (use opencti-external-reference-create to create). | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| OpenCTI.Indicator.id | string | New Indicator ID. | 
-| OpenCTI.Indicator.name | string | Name of the updated indicator. | 
-| OpenCTI.Indicator.validFrom | string | The valid-from date of the updated indicator. | 
-| OpenCTI.Indicator.validUntil | string | The valid-until date of the updated indicator. | 
-
-### opencti-relationship-create
-
-***
-Create new relationship.
-
-#### Base Command
-
-`opencti-relationship-create`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| from_id | Source entity ID for the relationship. | Required | 
-| to_id | Target entity ID for the relationship. | Required | 
-| relationship_type | Type of relationship to create. Possible values are: uses, targets, indicates, mitigates, attributed-to, located-at, related-to, derived-from, member-of, variant-of, part-of, communicates-with, compromises, delivers, owns, authored-by, impersonates, controls, hosts, investigates. Default is related-to. | Optional | 
-| description | Description of the relationship. | Optional | 
-| confidence | Confidence Number. Values range is 0 - 100. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| OpenCTI.Relationship.id | unknown | New Relationship ID. | 
-| OpenCTI.Relationship.relationshipType | unknown | New Relationship Type. | 
 
 ### opencti-incident-create
 
@@ -634,24 +714,89 @@ Create new incident.
 | OpenCTI.Incident.id | String | New Incident ID. | 
 | OpenCTI.Incident.name | String | New Incident name. | 
 
-### opencti-observable-delete
+### opencti-observable-field-update
 
 ***
-Delete observable.
+Update the observable field. The fields that can be updated are: score, description.
 
 #### Base Command
 
-`opencti-observable-delete`
+`opencti-observable-field-update`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Observable ID. | Required | 
+| field | Observable field to update. Possible values are: score, description. | Required | 
+| value | Value of the field to update. | Required | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpenCTI.Observable.id | String | Updated observable ID. | 
+
+### opencti-relationship-create
+
+***
+Create new relationship.
+
+#### Base Command
+
+`opencti-relationship-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| from_id | Source entity ID for the relationship. | Required | 
+| to_id | Target entity ID for the relationship. | Required | 
+| relationship_type | Type of relationship to create. Possible values are: uses, targets, indicates, mitigates, attributed-to, located-at, related-to, derived-from, member-of, variant-of, part-of, communicates-with, compromises, delivers, owns, authored-by, impersonates, controls, hosts, investigates. Default is related-to. | Optional | 
+| description | Description of the relationship. | Optional | 
+| confidence | Confidence Number. Values range is 0 - 100. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpenCTI.Relationship.id | unknown | New Relationship ID. | 
+| OpenCTI.Relationship.relationshipType | unknown | New Relationship Type. | 
+
+### opencti-indicator-update
+
+***
+Update a indicator in OpenCTI.
+
+#### Base Command
+
+`opencti-indicator-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the indicator. | Required | 
+| name | Name of the indicator. | Optional | 
+| indicator_types | The types of the indicator. Use opencti-indicator-types-list to find all indicator types in OpenCTI. | Optional | 
+| description | The description of the indicator. | Optional | 
+| confidence | Confidence level for the indicator, value between 0 and 100. Default is 50. Default is 50. | Optional | 
+| score | The score of the indicator, value between 0 and 100. Default is 50. Default is 50. | Optional | 
+| valid_from | The valid-from date for the indicator in the format YYYY-MM-DDThh:mm:ss.sssZ. | Optional | 
+| valid_until | The valid-until date for the indicator in the format YYYY-MM-DDThh:mm:ss.sssZ. | Optional | 
+| label_id | The label ID for the indicator (use opencti-label-list to find or create). | Optional | 
+| marking_id | The marking ID for the indicator (use opencti-marking-definition-list to find). | Optional | 
+| external_references_id | External references ID for the indicator (use opencti-external-reference-create to create). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpenCTI.Indicator.id | string | New Indicator ID. | 
+| OpenCTI.Indicator.name | string | Name of the updated indicator. | 
+| OpenCTI.Indicator.validFrom | string | The valid-from date of the updated indicator. | 
+| OpenCTI.Indicator.validUntil | string | The valid-until date of the updated indicator. | 
+
 ### opencti-observable-create
 
 ***
@@ -682,143 +827,4 @@ Create new observable.
 | OpenCTI.Observable.id | String | New observable ID. | 
 | OpenCTI.Observable.value | String | New observable value. | 
 | OpenCTI.Observable.type | String | New observable type. | 
-
-### opencti-observable-field-add
-
-***
-Add a field to the observable. Fields that can be added are marking definition and label.
-
-#### Base Command
-
-`opencti-observable-field-add`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | Observable ID. | Required | 
-| field | Observable field to add. Possible values are: marking, label. | Required | 
-| value | Value of the field to add. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-### opencti-observable-field-remove
-
-***
-Remove observable field value. Fields which values can be removed are marking definition and label.
-
-#### Base Command
-
-`opencti-observable-field-remove`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | Observable ID. | Required | 
-| field | Observable field to update. Possible values are: marking, label. | Required | 
-| value | Value of the field to remove. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI or opencti-marking-definition-list to find all marking definition IDs in OpenCTI. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-### opencti-observable-field-update
-
-***
-Update the observable field. The fields that can be updated are: score, description.
-
-#### Base Command
-
-`opencti-observable-field-update`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | Observable ID. | Required | 
-| field | Observable field to update. Possible values are: score, description. | Required | 
-| value | Value of the field to update. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| OpenCTI.Observable.id | String | Updated observable ID. | 
-
-### opencti-incident-types-list
-
-***
-Get a list of all incident types.
-
-#### Base Command
-
-`opencti-incident-types-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| OpenCTI.IncidentTypes.IncidentTypesList.id | unknown | Incident type ID. | 
-| OpenCTI.IncidentTypes.IncidentTypesList.name | unknown | Incident type name. | 
-| OpenCTI.IncidentTypes.IncidentTypesList.description | unknown | Incident type description. | 
-
-### opencti-incident-delete
-
-***
-Delete incident.
-
-#### Base Command
-
-`opencti-incident-delete`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | Incident ID. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-### opencti-get-observables
-
-***
-Gets observables from OpenCTI.
-
-#### Base Command
-
-`opencti-get-observables`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| limit | The maximum number of observables to return. Default value is 50. Maximum value is 500. | Optional | 
-| score_start | Score minimum value to filter by. Values range is 0-100. . | Optional | 
-| score_end | Score maximum value to filter by. Values range is 0-100. . | Optional | 
-| score | A specific score. Values range is 0-100 or Unknown. | Optional | 
-| observable_types | The observable types to fetch. Out-of-the-box observable types supported in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key, and URL. Possible values are: ALL, Account, Domain, Email, File, Host, IP, IPv6, Registry Key, URL. Default is ALL. | Optional | 
-| last_run_id | The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.ObservablesList.LastRunID context path. | Optional | 
-| search | The observable's value to filter by, can be partial value. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| OpenCTI.Observables.ObservablesList.type | String | Observable type. | 
-| OpenCTI.Observables.ObservablesList.value | String | Observable value. | 
-| OpenCTI.Observables.ObservablesList.id | String | Observable ID. | 
-| OpenCTI.Observables.ObservablesList.createdBy | Unknown | The creator of the observable. | 
-| OpenCTI.Observables.ObservablesList.score | Number | Observable score. | 
-| OpenCTI.Observables.ObservablesList.description | String | Observable description. | 
-| OpenCTI.Observables.ObservablesList.labels | Unknown | Observable labels. | 
-| OpenCTI.Observables.ObservablesList.marking | Unknown | Observable marking definitions. | 
-| OpenCTI.Observables.ObservablesList.externalReferences | Unknown | Observable external references. | 
-| OpenCTI.Observables.LastRunID | String | The last ID of the previous fetch to use for pagination. | 
 
