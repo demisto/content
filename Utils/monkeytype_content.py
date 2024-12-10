@@ -22,7 +22,7 @@ def compile_python_path(path: Path):
     raise RuntimeError("Could not find Packs folder")
 
 
-def create_env_var_dict(path: Path):
+def create_env_var_dict(path: Path) -> dict:
     python_path = ":".join(str(path_) for path_ in compile_python_path(path))
     return os.environ.copy() | {"PYTHONPATH": os.environ["PYTHONPATH"] + ":" + python_path}
 
