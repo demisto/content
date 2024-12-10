@@ -415,12 +415,12 @@ def merge_endpoints(endpoints: list[dict[str, dict[str, Any]]]) -> dict[str, Any
         - For other keys, conflicting values are combined into a list.
     """
     demisto.debug(f'merging endpoints with {endpoints=}')
-    merged_endpoint: dict[str, list | dict] = {}
+    merged_endpoint: dict[str, Any] = {}
     for endpoint in endpoints:
         demisto.debug(f'current endpoint: {endpoint}')
         for key, value in endpoint.items():
             # If a different hostname was somehow returned by a vendor
-            if key == 'Hostname' and key in merged_endpoint and value['value'] != merged_endpoint[key]['value']:
+            if key == 'Hostname' and key in merged_endpoint and value['Value'] != merged_endpoint[key]['Value']:
                 demisto.error(f"Conflict detected for 'Hostname'. Conflicting dictionaries: {merged_endpoint[key]}, {value}")
             # For other keys, add to list if conflict exists
             elif key in merged_endpoint:
