@@ -86,14 +86,23 @@ class DomainNameObject:
         if dtype != 'FQDN':
             return []
 
-        domain = props.find('Value')
-        if domain is None or domain.string is None:
+        raw_domain = props.find('Value')
+        if raw_domain is None or raw_domain.string is None:
             return []
-
-        return [{
-            'indicator': domain.string.encode('ascii', 'replace').decode(),
-            'type': 'Domain'
-        }]
+        raw_domain = raw_domain.string.encode('ascii', 'replace').decode()
+        domains_list = raw_domain.split('##comma##')
+        results = []
+        for domain in domains_list:
+            if 'http' in domain:
+                domain = domain.replace('https://', "").replace("http://", "")
+                if len(domain.split(".")) > 1:
+                    results.append({
+                        'indicator': domain,
+                        'type': 'Domain'
+                    })
+                else:
+                    demisto.debug(f"obj with value {domain} is not a domain, skipping.")
+        return results
 
 
 class FileObject:
@@ -139,12 +148,13 @@ class FileObject:
             if value is None:
                 continue
             value = value.string.lower()
-
-            result.append({
-                'indicator': value,
-                'htype': htype,
-                'type': 'File'
-            })
+            file_list = value.split('##comma##')
+            for file in file_list:
+                result.append({
+                    'indicator': file,
+                    'htype': htype,
+                    'type': 'File'
+                })
 
         for r in result:
             for r2 in result:
@@ -174,14 +184,29 @@ class URIObject:
         else:
             return []
 
-        url = props.find('Value')
-        if url is None or url.string is None:
+        raw_url = props.find('Value')
+        if raw_url is None or raw_url.string is None:
             return []
+        raw_url = raw_url.string.encode('utf8', 'replace').decode()
+        urls_list = raw_url.split('##comma##')
+        results = []
+        for url in urls_list:
+            if type_ == 'URL' and auto_detect_indicator_type(url) == 'URL':
+                results.append({
+                    'indicator': url,
+                    'type': type_
+                })
+            elif type_ == 'Domain':
+                domain = url.replace('https://', "").replace("http://", "")
+                if len(domain.split(".")) > 1:
+                    results.append({
+                        'indicator': domain,
+                        'type': 'Domain'
+                    })
+            else:
+                demisto.debug(f"obj with value {url} is not of type {type_}, skipping.")
 
-        return [{
-            'indicator': url.string.encode('utf8', 'replace').decode(),
-            'type': type_
-        }]
+        return results
 
 
 class SocketAddressObject:
@@ -219,10 +244,11 @@ class LinkObject:
             if value is None:
                 LOG('no value in observable LinkObject')
                 return []
+        links_list = value.split('##comma##')
         return [{
-            'indicator': value,
+            'indicator': link,
             'type': ltype
-        }]
+        } for link in links_list]
 
 
 class HTTPSessionObject:
@@ -244,11 +270,13 @@ class HTTPSessionObject:
                     if http_request_header is not None:
                         raw_header = http_request_header.get('raw_header', None)
                         if raw_header is not None:
+                            raw_header = raw_header.split('\n')[0]
+                            headers_list = raw_header.split('##comma##')
                             return [{
-                                'indicator': raw_header.split('\n')[0],
+                                'indicator': header,
                                 'type': 'http-session',  # we don't support this type natively in demisto
-                                'header': raw_header
-                            }]
+                                'header': header
+                            } for header in headers_list]
             else:
                 LOG('multiple HTTPSessionObjectTypes not supported')
         return []
