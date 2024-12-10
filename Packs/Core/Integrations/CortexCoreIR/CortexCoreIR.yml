@@ -87,6 +87,8 @@ script:
       defaultValue: 3 days
       name: starred_incidents_fetch_window
       deprecated: true
+    - description: Comma separated list of sources that detected the alerts.
+      name: alert_sources
     description: |-
       Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
       If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.

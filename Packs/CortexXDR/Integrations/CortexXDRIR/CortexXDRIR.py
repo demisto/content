@@ -386,7 +386,7 @@ class Client(CoreClient):
 
     def get_multiple_incidents_extra_data(self, exclude_artifacts, incident_id_list=[], gte_creation_time_milliseconds=0,
                                           status=None, starred=None, starred_incidents_fetch_window=None,
-                                          page_number=0, limit=100):
+                                          page_number=0, limit=100, filter_by_alert_sources: List = []):
         """
         Returns incident by id
         :param incident_id_list: The list ids of incidents
@@ -404,6 +404,12 @@ class Client(CoreClient):
                 'field': 'status',
                 'operator': 'eq',
                 'value': status
+            })
+        if filter_by_alert_sources:
+            filters.append({
+                'field': 'alert_sources',
+                'operator': 'in',
+                'value': filter_by_alert_sources
             })
         if exclude_artifacts:
             request_data['fields_to_exclude'] = FIELDS_TO_EXCLUDE  # type: ignore
@@ -1097,7 +1103,7 @@ def update_related_alerts(client: Client, args: dict):
 
 def fetch_incidents(client, first_fetch_time, integration_instance, exclude_artifacts: bool, last_run: dict = None,
                     max_fetch: int = 10, statuses: List = [], starred: Optional[bool] = None,
-                    starred_incidents_fetch_window: str = None):
+                    starred_incidents_fetch_window: str = None, filter_by_alert_sources: List = []):
     global ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
@@ -1128,7 +1134,8 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
                     status=status,
                     limit=max_fetch, starred=starred,
                     starred_incidents_fetch_window=starred_incidents_fetch_window,
-                    exclude_artifacts=exclude_artifacts)
+                    exclude_artifacts=exclude_artifacts,
+                    filter_by_alert_sources=filter_by_alert_sources)
                 raw_incidents.extend(raw_incident_status)
             raw_incidents = sorted(raw_incidents, key=lambda inc: inc.get('incident', {}).get('creation_time'))
         else:
@@ -1136,7 +1143,8 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
                 gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
                 starred=starred,
                 starred_incidents_fetch_window=starred_incidents_fetch_window,
-                exclude_artifacts=exclude_artifacts)
+                exclude_artifacts=exclude_artifacts,
+                filter_by_alert_sources=filter_by_alert_sources)
 
     # demisto.debug(f"{raw_incidents=}") # uncomment to debug, otherwise spams the log
 
@@ -1339,6 +1347,7 @@ def main():  # pragma: no cover
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
     exclude_artifacts = argToBoolean(params.get('exclude_fields', True))
     xdr_delay = arg_to_number(params.get('xdr_delay')) or 1
+    filter_by_alert_sources = argToList(params.get('alert_sources', []))
     try:
         timeout = int(params.get('timeout', 120))
     except ValueError as e:
@@ -1380,6 +1389,7 @@ def main():  # pragma: no cover
                                                   statuses=statuses,
                                                   starred=starred,
                                                   starred_incidents_fetch_window=starred_incidents_fetch_window,
+                                                  filter_by_alert_sources=filter_by_alert_sources
                                                   )
             demisto.debug(f"Finished a fetch incidents cycle, {next_run=}."
                           f"Fetched {len(incidents)} incidents.")
