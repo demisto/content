@@ -284,7 +284,7 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
             with open(json_output_path, 'r') as json_outputs:
                 outputs_as_json = json.load(json_outputs)
                 if outputs_as_json:
-                    if type(outputs_as_json) == list:
+                    if type(outputs_as_json) is list:
                         all_outputs.extend(outputs_as_json)
                     else:
                         all_outputs.append(outputs_as_json)
@@ -292,7 +292,7 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
             with open(lint_output_path, 'r') as json_outputs:
                 outputs_as_json = json.load(json_outputs)
                 if outputs_as_json:
-                    if type(outputs_as_json) == list:
+                    if type(outputs_as_json) is list:
                         for validation in outputs_as_json:
                             adjust_linter_row_and_col(validation, code_fp_to_row_offset)
                         all_outputs.extend(outputs_as_json)

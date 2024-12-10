@@ -106,7 +106,7 @@ def parse_indicators_for_get_command(indicators) -> List[dict[str, Any]]:
         List[dict[str, Any]]: List of indicators that can be returned to the war room.
     """
     res = []
-    indicators = [indicators] if type(indicators) != list else indicators
+    indicators = [indicators] if type(indicators) is not list else indicators
     for indicator in indicators:
         res.append(assign_params(
             ID=indicator.get('id'),

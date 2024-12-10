@@ -49,7 +49,7 @@ if demisto.command() == 'test-module':
     sys.exit(0)
 if demisto.command() == 'predict-phishing':
     input_text = demisto.args()['inputText']
-    if type(input_text) != list:
+    if type(input_text) is not list:
         input_text = [input_text]
     response = invoke_enpoint(runtime, endpoint_name, input_text)
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:

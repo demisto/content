@@ -137,9 +137,9 @@ def apply_equals_cuts(query, cuts):
                                                                 cuts.get(key)))
                     use_and = True
                 else:
-                    if type(cuts.get(key)) == str:
+                    if type(cuts.get(key)) is str:
                         query = ("%s %s='%s'" % (query, key, cuts.get(key)))
-                    if type(cuts.get(key)) == int:
+                    if type(cuts.get(key)) is int:
                         query = ("%s %s=%s" % (query, key, cuts.get(key)))
                     use_and = True
 

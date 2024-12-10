@@ -348,11 +348,11 @@ def generic_ansible(integration_name: str, command: str,
                 readable_output += dict2md(result)
 
                 # add host and status to result if it is a dict. Some ansible modules return a list
-                if (type(result) == dict) and (host != 'localhost'):
+                if (type(result) is dict) and (host != 'localhost'):
                     result['host'] = host
                     outputs_key_field = 'host'  # updates previous outputs that share this key, neat!
 
-                if type(result) == dict:
+                if type(result) is dict:
                     result['status'] = status.strip()
 
                 results.append(result)

@@ -1348,7 +1348,7 @@ def epo_get_tables_command(client: Client, args: Dict[str, Any]) -> CommandResul
     table_name = args.get('table')
     response_json, response = client.get_table(table_name=table_name)
 
-    if type(response_json) == dict:
+    if type(response_json) is dict:
         headers = list(response_json.keys())
     else:
         headers = list(set().union(*(entry.keys() for entry in response_json)))
@@ -1389,7 +1389,7 @@ def epo_query_table_command(client: Client, args: Dict[str, Any]) -> CommandResu
                                                  group=group,
                                                  join_tables=join_tables)
 
-    if type(response_json) == dict:
+    if type(response_json) is dict:
         headers = list(response_json.keys())
     else:
         headers = list(set().union(*(entry.keys() for entry in response_json)))

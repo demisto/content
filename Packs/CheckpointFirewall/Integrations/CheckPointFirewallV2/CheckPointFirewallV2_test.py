@@ -485,7 +485,7 @@ def test_add_batch_command(mocker):
     mocked_client = mocker.Mock()
 
     def validate_add_list(object_type, add_list):
-        assert type(add_list) == list
+        assert type(add_list) is list
         for obj in add_list:
             assert len(obj) == 2
             assert 'name' in obj

@@ -736,7 +736,7 @@ def get_dns_history_command(client, args):
 
     latest_record = res.get('records', [])[0]
     values = latest_record.get('values', [])
-    values = [values] if type(values) == dict else values
+    values = [values] if type(values) is dict else values
     # hosts = [x['host'] for x in values if "host" in x]
     ipv4 = [x['ip'] for x in values if "ip" in x]
     ipv6 = [x['ip'] for x in values if "ipv6" in x]

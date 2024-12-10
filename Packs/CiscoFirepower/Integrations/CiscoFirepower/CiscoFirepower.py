@@ -901,7 +901,7 @@ class Client(BaseClient):
             return self._http_request('PUT', suffix, json_data=data)
         else:
             for key, value in data.items():
-                if type(value) == dict:
+                if type(value) is dict:
                     for in_key in value:
                         if in_key in data_from_get[key]:
                             data_from_get[key][in_key].extend(value[in_key])
@@ -1586,12 +1586,12 @@ def switch_list_to_list_counter(data: Union[Dict, List]) -> Union[Dict, List]:
         return [switch_list_to_list_counter(dat) for dat in data]
     new_data = {}
     for item in data:
-        if type(data[item]) == list:
+        if type(data[item]) is list:
             new_data[item] = len(data[item])
         elif data[item] and type(data[item]) == dict:
             counter = 0
             for in_item in data[item]:
-                if type(data[item][in_item]) == list:
+                if type(data[item][in_item]) is list:
                     counter += len(data[item][in_item])
                 elif data[item][in_item]:
                     counter = 1 if counter == 0 else counter

@@ -439,7 +439,7 @@ def test_get_access_key_last_used_command(args, mocked_res, expected_hr, expecte
     cr_obj = AWS_IAM.get_access_key_last_used_command(args, client)
     assert expected_hr == cr_obj.readable_output
     assert expected_ec == cr_obj.outputs
-    assert type(cr_obj.raw_response.get("AccessKeyLastUsed", {}).get("LastUsedDate")) == str
+    assert type(cr_obj.raw_response.get("AccessKeyLastUsed", {}).get("LastUsedDate")) is str
 
 
 @pytest.mark.parametrize('tags_ls, expected_output', [

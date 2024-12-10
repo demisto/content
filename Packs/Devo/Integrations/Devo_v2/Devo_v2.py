@@ -175,7 +175,7 @@ def _to_unix(date, milliseconds=False):
 
     elif date == 'now':
         epoch = datetime.now().timestamp()
-    elif type(date) == str:
+    elif type(date) is str:
         epoch = pd.to_datetime(date).timestamp()
     elif isinstance(date, pd.Timestamp | datetime):
         if date.tzinfo is None:
@@ -301,7 +301,7 @@ def check_configuration():
 
 def check_type(input, tar_type):
     if (
-        tar_type == list
+        tar_type is list
         and isinstance(input, str)
         and input.startswith("[")
         and input.endswith("]")

@@ -63,7 +63,7 @@ def test_create_paramiko_ssh_client_with_valid_ssh_certificate(mocker):
     mocker.patch('paramiko.RSAKey.from_private_key', return_value=RSAKey(key=valid_private_key))
 
     create_paramiko_ssh_client('host', 'user', None, set(), set(), private_key=valid_private_key)
-    assert type(ssh_connect_mock.call_args.kwargs.get('pkey')) == RSAKey
+    assert type(ssh_connect_mock.call_args.kwargs.get('pkey')) is RSAKey
     assert not ssh_connect_mock.call_args.kwargs.get('password')
 
 
