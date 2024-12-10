@@ -200,7 +200,8 @@ def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
     integration_context['current_refresh_token'] = ''
     integration_context['graph_access_token'] = ''
     integration_context['graph_valid_until'] = ''
-    set_to_integration_context_with_retries(integration_context)
+    set_integration_context(integration_context)
+
 
     if error_codes or error_desc:
         demisto.debug(f"Detected Error: {error_codes}, Successfully reset the current_refresh_token and graph_access_token.")
@@ -3017,7 +3018,7 @@ def main():   # pragma: no cover
         demisto.debug(f'This is the first run of the integration instance.\n'
                       f'Setting the current_auth_type in the integration context to {AUTH_TYPE}.')
         integration_context['current_auth_type'] = AUTH_TYPE
-        set_to_integration_context_with_retries(integration_context)
+        set_integration_context(integration_context)
         current_auth_type = AUTH_TYPE
 
     if current_auth_type != AUTH_TYPE:
@@ -3028,7 +3029,7 @@ def main():   # pragma: no cover
         integration_context = get_integration_context()
         demisto.debug(f'Setting the current_auth_type in the integration context to {AUTH_TYPE}.')
         integration_context['current_auth_type'] = AUTH_TYPE
-        set_to_integration_context_with_retries(integration_context)
+        set_integration_context(integration_context)
 
     try:
         support_multithreading()
