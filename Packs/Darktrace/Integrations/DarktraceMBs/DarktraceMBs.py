@@ -38,7 +38,7 @@ DARKTRACE_API_ERRORS = {
     'ENDPOINT_ERROR': f'Invalid Endpoint. {PLEASE_CONTACT}',
     'PRIVILEGE_ERROR': 'User has insufficient permissions to access the API endpoint.',
     'UNDETERMINED_ERROR': f'Darktrace was unable to process your request. {PLEASE_CONTACT}',
-    'DATA_NOT_FOUND_ERROR': f'Darktrace was unable to find the requested data.',
+    'DATA_NOT_FOUND_ERROR': 'Darktrace was unable to find the requested data.',
     'FAILED_TO_PARSE': 'N/A'
 }
 
@@ -714,11 +714,11 @@ def acknowledge_model_breach_command(client: Client, args: dict[str, Any]) -> Co
     pbid = str(args['pbid'])
 
     ack_response = client.acknowledge_model_breach(pbid=pbid)
-    ack_output = {}
+    ack_output: Dict[str, Any] = {}
 
     if "response" in ack_response and ack_response["response"] == "SUCCESS":
         ack_output["response"] = "Successfully acknowledged."
-    elif "replicate" in ack_response and ack_response["replicate"] == True:
+    elif "replicate" in ack_response and ack_response['replicate'] is True:
         ack_output["response"] = "Successfully acknowledged."
     else:
         ack_output["response"] = "Model Breach already acknowledged."
@@ -754,11 +754,11 @@ def unacknowledge_model_breach_command(client: Client, args: dict[str, Any]) -> 
     pbid = str(args.get('pbid', None))
 
     ack_response = client.unacknowledge_model_breach(pbid=pbid)
-    ack_output = {}
+    ack_output: Dict[str, Any] = {}
 
     if "response" in ack_response and ack_response["response"] == "SUCCESS":
         ack_output["response"] = "Successfully unacknowledged."
-    elif "replicate" in ack_response and ack_response["replicate"] == True:
+    elif "replicate" in ack_response and ack_response['replicate'] is True:
         ack_output["response"] = "Successfully unacknowledged."
     else:
         ack_output["response"] = "Model Breach already unacknowledged."
