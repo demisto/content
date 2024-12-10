@@ -99,7 +99,7 @@ class TestCommandRunner:
         get_command_outputs_mock_target = 'GetEndpointData.CommandRunner._get_commands_outputs'
         execute_mock = mocker.patch(execute_command_mock_target, return_value="CommandResult")
         get_outputs_mock = mocker.patch(get_command_outputs_mock_target, return_value=({}, "", ""))
-        context_outputs, human_readable, error_outputs = self.command_runner.run_command_if_available(command)
+        context_outputs, human_readable, error_outputs = self.command_runner.is_command_runnable(command)
 
         execute_mock.assert_called_once_with(command)
         get_outputs_mock.assert_called_once_with("CommandResult")
@@ -110,7 +110,7 @@ class TestCommandRunner:
 
     def test_run_command_if_available_brand_not_available(self):
         command = MappedCommand("BrandB", "Command2", {"arg1": "arg1"})
-        context_outputs, human_readable, error_outputs = self.command_runner.run_command_if_available(command)
+        context_outputs, human_readable, error_outputs = self.command_runner.is_command_runnable(command)
 
         assert context_outputs == []
         assert human_readable == ""
