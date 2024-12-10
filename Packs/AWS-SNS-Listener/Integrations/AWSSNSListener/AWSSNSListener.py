@@ -277,7 +277,7 @@ def setup_server():  # pragma: no cover
                         certificate_path=certificate_path, private_key_path=private_key_path)
 
 
-def test_module(port: str):
+def test_module(port: str):  # pragma: no cover
     """
     Checks if a Listen Port is provided for a single engine configuration and returns 'ok' if valid.
     """
@@ -294,7 +294,7 @@ def main():  # pragma: no cover
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         if demisto.command() == 'test-module':
-            return return_results(test_module(PARAMS.get('longRunningPort')))
+            return return_results(test_module(PARAMS.get('longRunningPort', "")))
 
         try:
             port = PARAMS.get('longRunningPort')
