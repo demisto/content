@@ -340,7 +340,7 @@ script:
     - contextPath: AlienVault.Event.Subcategory
       description: The event subcategory.
       type: String
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: '-'
