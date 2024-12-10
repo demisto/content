@@ -45,8 +45,9 @@ For Cortex XSOAR On-prem -
 
 
 For Cortex XSIAM - 
-`https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log`
-
+`https://edl-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log`
+or 
+`https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log` and replace the `xdr` in the url to `crtx`.
 
 ## Use Cases
 
@@ -193,10 +194,11 @@ For Cortex XSOAR 8 On-prem, you need to add the `ext-` FQDN DNS record to map th
 For example, `ext-xsoar.mycompany.com`.
   
 For Cortex XSOAR 8 Cloud, Cortex XSOAR On-prem and Cortex XSIAM, you can only access the Export Indicators Service using a third-party tool such as cURL.
-- If the integration is configured to run on a tenant, use `https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>`
-   
+- If the integration is configured to run on a tenant, use `https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>`  
+  Note: For Cortex XSIAM, you can use the `edl-` prefix. Alternatively, if using the `ext-` prefix, replace the `xdr` in the url to `crtx`.  
+
   For example: `curl -v -u user:pass https://ext-mytenant.paloaltonetworks.com/xsoar/instance/execute/edl_instance_01?q=type:ip`
-- If the integration is configured to run on an engine, use `http://<engine-address>:<integration listen port>`
+- If the integration is configured to run on an engine, use `http://<engine-address>:<integration listen port>`  
      
   For example: `curl -v -u user:pass http://<engine_address>:<listen_port>?n=50`
 
