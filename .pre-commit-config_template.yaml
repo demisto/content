@@ -181,6 +181,7 @@ repos:
     name: monkeytype-in-docker
     description: Run pytest-monkeytype on the code in content packs
     docker_image: from-yml
+    skip: true
     entry: python
     language: docker
     files: Packs\/.*\.py$
