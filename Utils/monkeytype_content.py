@@ -27,7 +27,7 @@ def create_env_var_dict(path: Path) -> dict:
     return os.environ.copy() | {"PYTHONPATH": os.environ["PYTHONPATH"] + ":" + python_path}
 
 
-def run_monkeytype(path: Path):
+def run_monkeytype(path: Path) -> None:
     """
     This function runs monkeytype on the Python files in the path's folder.
     It knows how to identify variable types and recommends adding typing according to the tests.
