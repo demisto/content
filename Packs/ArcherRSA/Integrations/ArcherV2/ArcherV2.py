@@ -220,6 +220,53 @@ def search_records_by_report_soap_request(token, report_guid):
     return ET.tostring(root)
 
 
+def construct_filter_condition(condition_name: str, operator: str, field_name: str, field_id: str, search_value: str, sub_elements_tags_values: dict[str, Any] | None = None) -> str:
+    root = ET.Element(condition_name)
+
+    operator_element = ET.SubElement(root, 'Operator')
+    operator_element.text = operator
+
+    field_element = ET.SubElement(root, 'Field', attrib={'name': field_name})
+    field_element.text = field_id
+
+    value_element = ET.SubElement(root, 'Value')
+    value_element.text = search_value
+
+    for tag_name, tag_text in (sub_elements_tags_values or {}).items():
+        sub_element = ET.SubElement(root, tag_name)
+        sub_element.text = tag_text
+
+    return ET.tostring(root, encoding='unicode')
+
+
+def construct_content_filter_condition(operator: str, level_id: str, search_value: str) -> str:
+    """
+    Construct an XML string representing a content filter condition for searching records.
+
+    Args:
+        operator (str): The comparison operator (e.g., 'Equals', 'GreaterThan').
+        field_name (str): The name of the application field.
+        field_id (str): The ID of the application field.
+        search_value (str): The value for the comparison.
+
+    Returns:
+        str: An XML string representing the ContentFilterCondition element.
+    """
+    root = ET.Element("ContentFilterCondition")
+
+    level = ET.SubElement(root, 'Level')
+    level.text = level_id
+
+    operator_element = ET.SubElement(root, 'Operator')
+    operator_element.text = operator
+
+    values_element = ET.SubElement(root, 'Values')
+    value_element = ET.SubElement(values_element, 'Value')
+    value_element.text = search_value
+
+    return ET.tostring(root, encoding='unicode')
+
+
 def search_records_soap_request(
     token,
     app_id,
@@ -255,47 +302,26 @@ def search_records_soap_request(
         + f'             <Criteria><ModuleCriteria><Module name="appname">{app_id}</Module></ModuleCriteria>'
     )
 
+    date_search_extras = {'TimeZoneId': 'UTC Standard Time', 'IsTimeIncluded': 'TRUE'}
+
     if search_value:
         request_body += "<Filter><Conditions>"
 
         if date_operator:
-            request_body += (
-                "<DateComparisonFilterCondition>"
-                + f"        <Operator>{date_operator}</Operator>"
-                + f'        <Field name="{field_name}">{field_id}</Field>'
-                + f"        <Value>{search_value}</Value>"
-                + "        <TimeZoneId>UTC Standard Time</TimeZoneId>"
-                + "        <IsTimeIncluded>TRUE</IsTimeIncluded>"
-                + "</DateComparisonFilterCondition >"
-            )
+            request_body += construct_filter_condition('DateComparisonFilterCondition', date_operator,
+                                                       field_name, field_id, search_value, sub_elements_tags_values=date_search_extras)
+
         elif numeric_operator:
-            request_body += (
-                "<NumericFilterCondition>"
-                + f"        <Operator>{numeric_operator}</Operator>"
-                + f'        <Field name="{field_name}">{field_id}</Field>'
-                + f"        <Value>{search_value}</Value>"
-                + "</NumericFilterCondition >"
-            )
+            request_body += construct_filter_condition('NumericFilterCondition',
+                                                       numeric_operator, field_name, field_id, search_value)
         else:
             if (
                 field_to_search_by_id
                 and field_to_search_by_id.lower() == field_name.lower()
             ):
-                request_body += (
-                    "<ContentFilterCondition>"
-                    + f"        <Level>{level_id}</Level>"
-                    + "        <Operator>Equals</Operator>"
-                    + f"        <Values><Value>{search_value}</Value></Values>"
-                    + "</ContentFilterCondition>"
-                )
+                request_body += construct_content_filter_condition('Equals', level_id, search_value)
             else:
-                request_body += (
-                    "<TextFilterCondition>"
-                    + "        <Operator>Contains</Operator>"
-                    + f'        <Field name="{field_name}">{field_id}</Field>'
-                    + f"        <Value>{search_value}</Value>"
-                    + "</TextFilterCondition >"
-                )
+                request_body += construct_filter_condition('TextFilterCondition', 'Contains', field_name, field_id, search_value)
 
         request_body += "</Conditions></Filter>"
 
@@ -303,16 +329,9 @@ def search_records_soap_request(
         request_body += (
             "<Filter>"
             + "<Conditions>"
-            + "    <DateComparisonFilterCondition>"
-            + f"        <Operator>{date_operator}</Operator>"
-            + f'        <Field name="{field_name}">{field_id}</Field>'
-            + f"        <Value>{search_value}</Value>"
-            + "        <TimeZoneId>UTC Standard Time</TimeZoneId>"
-            + "        <IsTimeIncluded>TRUE</IsTimeIncluded>"
-            + "    </DateComparisonFilterCondition >"
-            + xml_filter_condition if xml_filter_condition else ""
+            + construct_filter_condition('DateComparisonFilterCondition', date_operator, field_name,
+                                         field_id, search_value, sub_elements_tags_values=date_search_extras)
             + "</Conditions>"
-            + f"<OperatorLogic>{advanced_operator_logic}</OperatorLogic>" if advanced_operator_logic else ""
             + "</Filter>"
         )
 
