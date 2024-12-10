@@ -6,14 +6,14 @@
 	"description": "Classifies Microsoft 365 Defender's events",
 	"feed": false,
 	"fromServerVersion": "6.0.0",
-	"id": "1f102eee-3a5d-4d84-8f94-d87d83b354ed",
+	"id": "a908664d-f892-4366-89b4-3ba24f083267",
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"instanceIds": null,
 	"itemVersion": "4.5.35",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 4,
+	"logicalVersion": 5,
 	"mapping": {
 		"Microsoft 365 Defender Incident": {
 			"dontMapEventToLabels": true,
@@ -35,6 +35,9 @@
 						]
 					}
 				},
+				"Microsoft 365 Defender Active Alerts": {
+					"simple": "Active alerts"
+				},
 				"Microsoft 365 Defender Alerts": {
 					"complex": {
 						"filters": [],
@@ -45,9 +48,6 @@
 							}
 						]
 					}
-				},
-				"Microsoft 365 Defender Active Alerts": {
-					"simple": "Active alerts"
 				},
 				"Microsoft 365 Defender Categories count": {
 					"complex": {
@@ -300,7 +300,7 @@
 				},
 				"severity": {
 					"complex": {
-						"filters": null,
+						"filters": [],
 						"root": "severity",
 						"transformers": [
 							{
@@ -371,7 +371,7 @@
 									"replaceWith": {
 										"isContext": false,
 										"value": {
-											"simple": "0"
+											"simple": "0.5"
 										}
 									},
 									"toReplace": {
@@ -409,8 +409,8 @@
 			}
 		}
 	},
-	"name": "Microsoft 365 Defender - Incoming Mapper",
-	"nameRaw": "Microsoft 365 Defender - Incoming Mapper",
+	"name": "Microsoft 365 Defender - Incoming Mapper_copy",
+	"nameRaw": "Microsoft 365 Defender - Incoming Mapper_copy",
 	"packID": "",
 	"packName": "Microsoft 365 Defender",
 	"propagationLabels": [
