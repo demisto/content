@@ -427,7 +427,8 @@ class TestCommandsFunctions:
                                                                                         5000
                                                                                         ):
                 pass
-        assert ('Got offset out of range error when attempting to fetch events from Akamai.' in str(e)) == should_expect_extra_info
+        assert ('Got offset out of range error when attempting to fetch events'
+                'from Akamai.' in str(e)) == should_expect_extra_info
         assert ('Expired offset parameter in the request' in str(e)) == should_expect_extra_info
 
 

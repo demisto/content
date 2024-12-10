@@ -488,7 +488,8 @@ def fetch_events_command(
                 err_msg = f'Got offset out of range error when attempting to fetch events from Akamai.\n' \
                     "This occurred due to offset pointing to events older than 12 hours.\n" \
                     "In order to continue fetching, restarting the offset and rerunning fetch-events with 11 hours backward.\n" \
-                    "If you wish to fetch more up to date events, please run 'akamai-siem-reset-offset' on the specific instance.\n" \
+                    "If you wish to fetch more up to date events, " \
+                    "please run 'akamai-siem-reset-offset' on the specific instance.\n" \
                     'For more information, please refer to the Troubleshooting section in the integration documentation.\n' \
                     f'original error: [{e}]'
                 set_integration_context({"from_time": "11 hours"})
