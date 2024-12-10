@@ -8,6 +8,7 @@ from __future__ import print_function
 
 import base64
 import binascii
+from concurrent.futures import Future
 import gc
 import json
 import logging
@@ -11953,6 +11954,8 @@ def split_data_to_chunks(data, target_chunk_size):
     if isinstance(data, str):
         data = data.split('\n')
     chunks = []
+    chunk = []
+    chunk_size = 0
     for data_part in data:
         if chunk_size >= target_chunk_size:
             demisto.debug("reached max chunk size, sending chunk with size: {size}".format(size=chunk_size))
@@ -12005,10 +12008,10 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type multiple_threads: ``bool``
     :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
 
-    :return: None
-    :rtype: ``None``
+    :return: Either None if running in a single thread or future object if running in multiple threads.
+    :rtype: ``?`` or ``None``
     """
-    send_data_to_xsiam(
+    return send_data_to_xsiam(
         events,
         vendor,
         product,
@@ -12274,36 +12277,26 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
 
     def send_events(data_chunk):
-        demisto.info('[test] sending to xsiam inside executor with chunk_size= {}, len(data)={}'.format(chunk_size, len(data)))
         data_chunk = '\n'.join(data_chunk)
         zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
         xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
                                     error_msg=header_msg, headers=headers,
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                     zipped_data=zipped_data, is_json_response=True, data_type=data_type)
-        demisto.info('[test] finished sending to xsiam inside executor')
         return len(data_chunk)
 
     if multiple_threads:
         demisto.info("Sending events to xsiam with multiple threads.")
         support_multithreading()
         import concurrent.futures
-
-        # Split the Data into chunks
-        if isinstance(data, str):
-            data = data.split('\n')
         
-        # Create a ThreadPool
-        with concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS) as executor:
-
-            # Submit Tasks to the ThreadPool
-            future_to_data = [executor.submit(send_events, chunk) for chunk in data_chunks]
-            demisto.info('[test] submitted all the futures')
-            
-            # Handle Responses
-            for future in concurrent.futures.as_completed(future_to_data):
-                data_size += future.result()
-            demisto.info('[test] should be done sending events')
+        future_to_data: List[Future] = []
+        executor = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
+        for chunk in data_chunks:
+            future = executor.submit(send_events, chunk)
+            future_to_data.append(future)
+        demisto.info('Done submiting all Futures.')
+        return future_to_data
     else:
         for chunk in data_chunks:
             data_size = send_events(chunk)

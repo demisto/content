@@ -690,9 +690,16 @@ def main():  # pragma: no cover
                     send_events_to_xsiam_multi_threaded: bool = params.get('send_events_to_xsiam_multi_threaded', False)
                     demisto.info(f"[test] Sending {len(events)} events to xsiam with {send_events_to_xsiam_multi_threaded=} and"
                                  f"latest event time is: {events[-1]['_time']}")
-                    send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
+                    futures = send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
                                          chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE,
                                          multiple_threads=send_events_to_xsiam_multi_threaded)
+                    if send_events_to_xsiam_multi_threaded:
+                        demisto.info("[test] Finished executing send_events_to_xsiam, waiting for futures to end.")
+                        import concurrent.futures
+                        data_size = 0
+                        for future in concurrent.futures.as_completed(futures):
+                            data_size += future.result()
+                        demisto.info(f"[test] Finished waiting for all futures to end, sent {data_size} events.")
                     demisto.info(f"[test] Done sending {len(events)} events to xsiam."
                                  f"sent {total_events_count} events to xsiam in total during this interval.")
                 set_integration_context({"offset": offset})
