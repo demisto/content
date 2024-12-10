@@ -200,7 +200,7 @@ def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
     integration_context['current_refresh_token'] = ''
     integration_context['graph_access_token'] = ''
     integration_context['graph_valid_until'] = ''
-    set_integration_context(integration_context)
+    set_to_integration_context_with_retries(integration_context)
 
     if error_codes or error_desc:
         demisto.debug(f"Detected Error: {error_codes}, Successfully reset the current_refresh_token and graph_access_token.")
@@ -210,14 +210,15 @@ def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
                                "parameter and then run !microsoft-teams-auth-test to re-authenticate")
 
     demisto.debug("Successfully reset the current_refresh_token, graph_access_token and graph_valid_until.")
-    
+
+
 def reset_graph_auth_command():
     """
     A wrapper function for the reset_graph_auth() which resets the Graph API authorization in the integration context.
     """
     reset_graph_auth()
     return_results(CommandResults(readable_output='Authorization was reset successfully.'))
-    
+
 
 def translate_severity(severity: str) -> float:
     """
@@ -3006,29 +3007,29 @@ def main():   # pragma: no cover
 
     ''' EXECUTION '''
     command: str = demisto.command()
-    
+
     integration_context = get_integration_context()
     current_auth_type = integration_context.get('current_auth_type', '')
     if current_auth_type:
         demisto.debug(f'current_auth_type is: {current_auth_type}')
-    else: 
+    else:
         # current_auth_type is not set - First run of the integration instance
-        demisto.debug(f'This is the first run of the integration instance.\n'\
+        demisto.debug(f'This is the first run of the integration instance.\n'
                       f'Setting the current_auth_type in the integration context to {AUTH_TYPE}.')
         integration_context['current_auth_type'] = AUTH_TYPE
-        set_integration_context(integration_context)
+        set_to_integration_context_with_retries(integration_context)
         current_auth_type = AUTH_TYPE
 
-    if current_auth_type != AUTH_TYPE: 
+    if current_auth_type != AUTH_TYPE:
         # First run after the user switched the authentication type
-        demisto.debug(f'The user switched the instance authentication type from {current_auth_type} to {AUTH_TYPE}.\n'\
+        demisto.debug(f'The user switched the instance authentication type from {current_auth_type} to {AUTH_TYPE}.\n'
                       f'Resetting the integration context.')
         reset_graph_auth()
         integration_context = get_integration_context()
         demisto.debug(f'Setting the current_auth_type in the integration context to {AUTH_TYPE}.')
         integration_context['current_auth_type'] = AUTH_TYPE
-        set_integration_context(integration_context)
-        
+        set_to_integration_context_with_retries(integration_context)
+
     try:
         support_multithreading()
         handle_proxy()
