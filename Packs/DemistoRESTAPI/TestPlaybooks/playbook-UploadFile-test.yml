@@ -484,7 +484,7 @@ tasks:
       id: ae7ba50c-7968-4306-8b90-e779acf83fed
       version: -1
       name: Begin investigating the incident
-      description: Start investigation of the incident, so that we can later set the right playbook to run on it. This command has to be unhidden using server configuration.
+      description: Start investigation of the incident.
       script: Builtin|||investigate
       type: regular
       iscommand: true
