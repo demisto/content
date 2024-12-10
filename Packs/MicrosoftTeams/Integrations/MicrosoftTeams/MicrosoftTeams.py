@@ -202,7 +202,6 @@ def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
     integration_context['graph_valid_until'] = ''
     set_integration_context(integration_context)
 
-
     if error_codes or error_desc:
         demisto.debug(f"Detected Error: {error_codes}, Successfully reset the current_refresh_token and graph_access_token.")
         re_search = re.search(REGEX_SEARCH_ERROR_DESC, error_desc)
