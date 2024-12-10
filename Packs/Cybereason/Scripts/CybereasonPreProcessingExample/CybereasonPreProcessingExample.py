@@ -34,4 +34,3 @@ for inc in incident:
         malop_incident_status = inc['status']
         demisto.debug(f"Updating incident status to : {malop_incident_status}")
         execute_command('setIncident', {'id': malop_incident_id, 'status': malop_incident_status})
-    CommandResults(raw_response=res)
