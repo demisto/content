@@ -778,9 +778,9 @@ def main():  # pragma: no cover
         args = demisto.args()
 
         client: GuardDutyClient = aws_client.aws_session(service=SERVICE, region=args.get('region'),
-                                                           role_arn=args.get('roleArn'),
-                                                           role_session_name=args.get('roleSessionName'),
-                                                           role_session_duration=args.get('roleSessionDuration'))
+                                                         role_arn=args.get('roleArn'),
+                                                         role_session_name=args.get('roleSessionName'),
+                                                         role_session_duration=args.get('roleSessionDuration'))
 
         # The command demisto.command() holds the command sent from the user.
         if demisto.command() == 'test-module':

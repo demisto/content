@@ -16,17 +16,20 @@ LOWEST_TRUST_LEVEL_KEY = 'lowest_trust_level_key'
 LOWEST_SCORE_KEY = 'lowest_score_key'
 MAX_QUERY_LIMIT = 500
 
+
 class DXLConfigFiles(NamedTuple):
     broker_ca_bundle_file: str
     client_cert_file: str
     private_key_file: str
     broker_urls: list[str]
 
+
 class InstanceCertificates(NamedTuple):
     broker_ca_bundle: str
     client_cert: str
     private_key: str
     broker_urls: list[str]
+
 
 class ProviderInfo(NamedTuple):
     name: str

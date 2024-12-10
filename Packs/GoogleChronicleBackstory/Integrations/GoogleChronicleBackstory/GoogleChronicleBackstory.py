@@ -1997,7 +1997,7 @@ def get_detections(client_obj, rule_or_version_id: str, page_size: str, detectio
         rule_or_version_id = f"{rule_or_version_id}@-"
 
     request_url = f'{BACKSTORY_API_V2_URL}/detect/rules/{rule_or_version_id}/detections?pageSize={page_size}' \
-        
+
 
     # Append parameters if specified
     if detection_start_time:
@@ -2056,7 +2056,7 @@ def get_curatedrule_detections(client_obj, curatedrule_id: str, page_size: str, 
     """
 
     request_url = f'{BACKSTORY_API_V2_URL}/detect/curatedRules/{curatedrule_id}/detections?pageSize={page_size}' \
-        
+
 
     # Append parameters if specified
     if detection_start_time:
@@ -4558,7 +4558,7 @@ def gcb_list_events_command(client_obj, args: dict[str, str]):
     # Make a request URL
     request_url = (f'{BACKSTORY_API_V1_URL}/asset/listevents?asset.{asset_identifier_type}={asset_identifier}'
                    f'&start_time={start_time}&end_time={end_time}&page_size={page_size}&reference_time={reference_time}')
-        
+
     demisto.debug('Requested url : ' + request_url)
 
     # get list of events from Chronicle Backstory
@@ -4583,7 +4583,7 @@ def gcb_list_events_command(client_obj, args: dict[str, str]):
                   ' fetch next set of events.'
         else:
             hr += f' To fetch the next set of events, execute the command with the start time as {last_event_timestamp}.' \
-                
+
 
     parsed_ec = get_context_for_events(json_data.get('events', []))
 
@@ -4613,7 +4613,6 @@ def gcb_udm_search_command(client_obj, args: dict[str, str]):
     # Make a request URL
     request_url = (f'{BACKSTORY_API_V1_URL}/events:udmSearch?time_range.start_time={start_time}&time_range.end_time={end_time}'
                    f'&limit={limit}&query={query}')
-        
 
     # get list of events from Chronicle Backstory
     json_data = validate_response(client_obj, request_url)
@@ -4638,7 +4637,7 @@ def gcb_udm_search_command(client_obj, args: dict[str, str]):
                   ' fetch next set of events.'
         else:
             hr += f' To fetch the next set of events, execute the command with the end time as {last_event_timestamp}.' \
-                
+
 
     parsed_ec = get_context_for_events(events)
 

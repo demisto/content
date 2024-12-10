@@ -68,7 +68,6 @@ class NoContentException(Exception):
     """
 
 
-
 class Client(BaseClient):
     """Client class to interact with the service API
 

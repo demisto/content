@@ -298,8 +298,8 @@ class ByHostIncident(ByHostIncidentBuilder):
                 '_incident_type': 'by_host',
                 'affected_hosts': [{'id': self.host, 'metadata': ''}],
                 'rules': self._use_severity_titles(sorted(parsed_rules,
-                                                               key=lambda r: SEVERITY_MAPPINGS[r['classification']],
-                                                               reverse=True))
+                                                          key=lambda r: SEVERITY_MAPPINGS[r['classification']],
+                                                          reverse=True))
             }),
             'severity': severity
         }

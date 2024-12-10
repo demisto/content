@@ -654,7 +654,7 @@ def prepare_query_for_fetch_incidents(params: dict[str, str], start_time: int) -
             if query.count('from'):
                 from_search_end = re.search(pattern='from \\w+', string=query).end()  # type: ignore
                 return query[:from_search_end] + f' where LastModifiedDate > {start_time}' \
-                     + query[from_search_end:]
+                    + query[from_search_end:]
             raise ValueError(MESSAGES['INVALID_FETCH_INCIDENT_QUERY_ERROR'])
 
         where_search_end = re.search(pattern='where', string=query).end()  # type: ignore
