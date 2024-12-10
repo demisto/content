@@ -1103,9 +1103,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
     demisto.debug(f"{last_fetch=}")
-    demisto.debug(f"Previous last run: {last_run=}")
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run, dict) else []
-    demisto.debug(f"Incident last run: {incidents_from_previous_run=}")
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
         last_fetch, _ = parse_date_range(first_fetch_time, to_timestamp=True)
@@ -1399,6 +1397,7 @@ def main():  # pragma: no cover
 
             last_run_obj = demisto.getLastRun()
             last_run_obj['next_run'] = next_run
+            demisto.debug(f'saving last run {last_run_obj}')
             demisto.setLastRun(last_run_obj)
             demisto.incidents(incidents)
 
