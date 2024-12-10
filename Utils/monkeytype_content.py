@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 
-def compile_python_path(path: Path):
+def compile_python_path(path: Path) -> str:
     for parent in path.parents:
         if parent.name == "Packs":
             packs = parent
