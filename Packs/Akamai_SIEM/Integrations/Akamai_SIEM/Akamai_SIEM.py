@@ -460,8 +460,8 @@ def fetch_events_command(
         event hashes from current fetch, and whether to set nexttrigger=0 for next execution.
     """
     total_events_count = 0
-    if not (offset := ctx.get("offset")):
-        from_epoch, _ = parse_date_range(date_range=ctx.get("from_time", fetch_time), date_format='%s')
+    offset = ctx.get("offset")
+    from_epoch, _ = parse_date_range(date_range=ctx.get("from_time", fetch_time), date_format='%s')
     auto_trigger_next_run = False
     worst_case_time: float = 0
     execution_counter = 0
@@ -598,8 +598,8 @@ def main():  # pragma: no cover
                     demisto.info(f"[test] Sending {len(events)} events to xsiam with {send_events_to_xsiam_multi_threaded=} and"
                                  f"latest event time is: {events[-1]['_time']}")
                     futures = send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
-                                         chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE,
-                                         multiple_threads=send_events_to_xsiam_multi_threaded)
+                                                   chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE,
+                                                   multiple_threads=send_events_to_xsiam_multi_threaded)
                     if send_events_to_xsiam_multi_threaded:
                         demisto.info("[test] Finished executing send_events_to_xsiam, waiting for futures to end.")
                         import concurrent.futures

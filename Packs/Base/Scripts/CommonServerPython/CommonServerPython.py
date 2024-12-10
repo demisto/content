@@ -55,7 +55,7 @@ MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
-NUM_OF_WORKERS=10
+NUM_OF_WORKERS = 10
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -12008,8 +12008,8 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type multiple_threads: ``bool``
     :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
 
-    :return: Either None if running in a single thread or future object if running in multiple threads.
-    :rtype: ``?`` or ``None``
+    :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
+    :rtype: ``List[Future]`` or ``None``
     """
     return send_data_to_xsiam(
         events,
@@ -12183,8 +12183,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
     Note that when set to True, the updateModuleHealth should be done from the itnegration itself.
 
-    :return: None
-    :rtype: ``None``
+    :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
+    :rtype: ``List[Future]`` or ``None``
     """
     data_size = 0
     params = demisto.params()
@@ -12289,7 +12289,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         demisto.info("Sending events to xsiam with multiple threads.")
         support_multithreading()
         import concurrent.futures
-        
+
         future_to_data: List[Future] = []
         executor = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
         for chunk in data_chunks:
@@ -12303,6 +12303,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
         if should_update_health_module:
             demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+    return None
 
 
 def comma_separated_mapping_to_dict(raw_text):

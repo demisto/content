@@ -199,7 +199,7 @@ class TestCommandsFunctions:
             pass
         assert total_events_count == 50
 
-    def test_fetch_events_command__sanity(self, client, mocker):
+    def test_fetch_events_command_sanity(self, client, mocker):
         """
         Given:
         - A client object
@@ -235,7 +235,7 @@ class TestCommandsFunctions:
             assert offset == f"offset_{events[-1]['id']}" if events else True
         assert total_events_count == 250
 
-    def test_fetch_events_command__no_results(self, mocker, client, requests_mock):
+    def test_fetch_events_command_no_results(self, mocker, client, requests_mock):
         """
         Given:
         - A client object
@@ -258,7 +258,7 @@ class TestCommandsFunctions:
         assert total_events_count == 0
         assert last_offset == "318d8"
 
-    def test_fetch_events_command__limit_is_smaller_than_page_size(self, client, requests_mock, mocker):
+    def test_fetch_events_command_limit_is_smaller_than_page_size(self, client, requests_mock, mocker):
         """
         Given:
         - A client object
@@ -427,7 +427,7 @@ class TestCommandsFunctions:
                                                                                         5000
                                                                                         ):
                 pass
-        assert ('Got Index out of range error when attempting to fetch events from Akamai.' in str(e)) == should_expect_extra_info
+        assert ('Got offset out of range error when attempting to fetch events from Akamai.' in str(e)) == should_expect_extra_info
         assert ('Expired offset parameter in the request' in str(e)) == should_expect_extra_info
 
 
