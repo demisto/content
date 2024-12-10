@@ -8,7 +8,6 @@ from __future__ import print_function
 
 import base64
 import binascii
-from concurrent.futures import Future
 import gc
 import json
 import logging
@@ -34,7 +33,7 @@ from inspect import currentframe
 
 import demistomock as demisto
 import warnings
-
+import concurrent.futures
 
 def __line__():
     cf = currentframe()
@@ -12273,9 +12272,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)
 
-    data_chunks = split_data_to_chunks(data, chunk_size)
     client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
-
+    data_chunks = split_data_to_chunks(data, chunk_size)
     def send_events(data_chunk):
         data_chunk = '\n'.join(data_chunk)
         zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
@@ -12288,7 +12286,6 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     if multiple_threads:
         demisto.info("Sending events to xsiam with multiple threads.")
         support_multithreading()
-        import concurrent.futures
 
         future_to_data = []
         executor = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
@@ -12303,7 +12300,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
         if should_update_health_module:
             demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
-    return None
+    return
 
 
 def comma_separated_mapping_to_dict(raw_text):

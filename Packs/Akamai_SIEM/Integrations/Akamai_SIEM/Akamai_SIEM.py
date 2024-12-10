@@ -13,6 +13,8 @@ import urllib3
 from akamai.edgegrid import EdgeGridAuth
 # Local imports
 from CommonServerUserPython import *
+import concurrent.futures
+                        
 
 """GLOBALS/PARAMS
 
@@ -603,7 +605,6 @@ def main():  # pragma: no cover
                                                    multiple_threads=send_events_to_xsiam_multi_threaded)
                     if send_events_to_xsiam_multi_threaded:
                         demisto.info("[test] Finished executing send_events_to_xsiam, waiting for futures to end.")
-                        import concurrent.futures
                         data_size = 0
                         for future in concurrent.futures.as_completed(futures):
                             data_size += future.result()
