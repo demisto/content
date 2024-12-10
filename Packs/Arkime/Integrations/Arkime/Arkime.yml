@@ -29,7 +29,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.115186
   commands:
   - name: arkime-connection-list
     description: Gets a list of nodes and links and returns them to the client.

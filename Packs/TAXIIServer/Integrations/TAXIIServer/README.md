@@ -18,13 +18,13 @@ The collections are defined by a JSON object in the following format:
 
 ### For Cortex XSOAR 6.x  
 Use one of the following options to access the TAXII service:
-- `https://<demisto_address>/instance/execute/<instance_name>/taxii-discovery-service`
-- `http://<demisto_address>:<listen_port>/taxii-discovery-service`
+- `https://<xsoar_address>/instance/execute/<instance_name>/taxii-discovery-service`
+- `http://<xsoar_address>:<listen_port>/taxii-discovery-service`
 
 ### For Cortex XSOAR 8 On-prem, Cortex XSOAR 8 Cloud, or Cortex XSIAM:  
 Use one of the following options to access the TAXII service:
 - `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>/<taxii2_api_endpoint>/`
-- When using an engine: `http://<demisto_address>:<listen_port>/<taxii2_api_endpoint>/`
+- When using an engine: `http://<xsoar_address>:<listen_port>/<taxii2_api_endpoint>/`
   
 **Note:**  
 For Cortex XSOAR 8 On-prem, you need to add the `ext-` FQDN DNS record to map the Cortex XSOAR DNS name to the external IP address.  
@@ -42,7 +42,7 @@ To access the TAXII service by instance name, make sure ***Instance execute exte
 2. Trigger the TAXII Service URL:
    - For Cortex XSOAR 6.x:  
      `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`.  
-     For example, `https://my.demisto.live/instance/execute/taxiiserver`. 
+     For example, `https://my.xsoar.live/instance/execute/taxiiserver`. 
    - For Cortex XSOAR 8 On-prem, Cortex XSOAR 8 Cloud, or Cortex XSIAM:  
      `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`  
      **Note**:
