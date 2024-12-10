@@ -679,7 +679,7 @@
 						"items": [
 							{
 								"endCol": 6,
-								"fieldId": "microsoft365defenderalerts",
+								"fieldId": "microsoft365defendera",
 								"height": 106,
 								"id": "f9083670-b8f7-11eb-9238-bd79471db011",
 								"index": 0,
@@ -854,7 +854,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "microsoft365defenderactivealerts",
+								"fieldId": "microsoft365defenderactive",
 								"height": 22,
 								"id": "8daa9ef0-b6e5-11ef-93fb-4335ca0d0914",
 								"index": 0,

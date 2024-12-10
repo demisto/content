@@ -35,10 +35,10 @@
 						]
 					}
 				},
-				"Microsoft 365 Defender Active Alerts": {
+				"Microsoft 365 Defender Active": {
 					"simple": "Active alerts"
 				},
-				"Microsoft 365 Defender Alerts": {
+				"Microsoft 365 Defender A": {
 					"complex": {
 						"filters": [],
 						"root": "alerts",

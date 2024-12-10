@@ -4,7 +4,7 @@
         "Microsoft 365 Defender Incident"
     ],
     "caseInsensitive": true,
-    "cliName": "microsoft365defenderalerts",
+    "cliName": "microsoft365defendera",
     "closeForm": false,
     "columns": [
         {
@@ -197,10 +197,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_microsoft365defenderalerts",
+    "id": "incident_microsoft365defendera",
     "isReadOnly": false,
     "locked": false,
-    "name": "Microsoft 365 Defender Alerts",
+    "name": "Microsoft 365 Defender A",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
