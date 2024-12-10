@@ -1,7 +1,6 @@
-import pprint
-import argparse
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 
@@ -29,72 +28,50 @@ def create_env_var_dict(path: Path):
 
 
 def run_monkeytype(path: Path):
+    """
+    This function runs monkeytype on the Python files in the path's folder.
+    It knows how to identify variable types and recommends adding typing according to the tests.
+    """
     if path.is_file():
         path = path.parent
-    runner_path = path / "runner.py"
+    runner_path = path / "runner.py"  # a temporary file, generated at runtime,
+    # solving an issue where MonkeyType can't run on files outside of python packages
     env = create_env_var_dict(path)
-    try:
-        subprocess.run(
-            [
-                "python3",
-                "-m",
-                "pytest",
-                str(path),
-                "--monkeytype-output=./monkeytype.sqlite3",
-            ],
-            check=True,
-            env=env,
-            cwd=path,
-            capture_output=True,
-        )
-    except subprocess.CalledProcessError as e:
-        print(e.stderr)
-        print(e.stdout)
-        raise
+    subprocess.run(
+        [
+            "pytest",
+            str(path),
+            "--monkeytype-output=./monkeytype.sqlite3",
+        ],
+        check=True,
+        env=env,
+        cwd=path,
+    )
     modules = subprocess.run(
-        ["python", "-m", "monkeytype", "list-modules"], text=True, check=True, capture_output=True, cwd=path, env=env
+        # list the python files to run on (usually `<integration>.py` and `test_<integration>.py`)
+        ["monkeytype", "list-modules"],
+        text=True,
+        check=True,
+        capture_output=True,
+        cwd=path,
+        env=env,
     ).stdout.splitlines()
     filtered_modules = set(modules).difference(
-        (
-            "demistomock",
-            # "CommonServerPython",
-        )
+        ("demistomock", "CommonServerPython")
+    )  # we don't want to run monkeytype on these
+    runner_path.write_text(
+        "\n".join(f"import {module}\n{module}.main()" for module in filtered_modules)
     )
-
-    runner_path.write_text("\n".join(f"import {module}\n{module}.main()" for module in filtered_modules))
-    for module in filtered_modules:
-        subprocess.run(["python", "-m", "monkeytype", "-v", "stub", module], check=True, cwd=path, env=env)
-    Path(path / "modules.txt").write_text("\n".join(filtered_modules))
-    runner_path.unlink()
-
-
-# def apply_monkeytype(path: Path):
-#     integration_or_script_path = path.parent
-#     env = create_env_var_dict(integration_or_script_path)
-#     if (modules_path := path.with_name("modules.txt")).exists():
-#         for module in (modules_path).read_text().splitlines():
-#             result = subprocess.run(
-#                 ["run", "monkeytype", "-v", "apply", module],
-#                 env=env,
-#                 cwd=integration_or_script_path,
-#             )
-#             if result.returncode:
-#                 raise ValueError(f"{result}")
-#     else:
-#         print(f"modules doesn't exist under {path}")
+    for module in filtered_modules:  # actually run monkeytype on each module
+        subprocess.run(
+            ["monkeytype", "-v", "stub", module], check=True, cwd=path, env=env
+        )
+        subprocess.run(
+            ["monkeytype", "-v", "apply", module], check=True, cwd=path, env=env
+        )
+    runner_path.unlink()  # that was a temporary file we no longer need
+    (path / "monkeytype.sqlite3").unlink()  # created by monkeytype
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(prog="ContentMonkeyType", description="Generates monkeytype stubs and applies them")
-    parser.add_argument("command")
-    parser.add_argument("path", help="path to the content item folder or modules file")
-
-    args = parser.parse_args()
-    path = Path(args.path)
-
-    if args.command == "run":
-        run_monkeytype(path)
-    # elif args.command == "apply":
-    #     apply_monkeytype(path)
-    else:
-        raise NotImplementedError("invalid command")
+    run_monkeytype(Path(sys.argv[2]))
