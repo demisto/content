@@ -378,7 +378,7 @@ class TestCommandsFunctions:
         assert offset == 'b'
 
     @pytest.mark.parametrize(
-        "error_entry, error_message, should_expect_extra_info",
+        "error_entry, error_message, expect_extra_info",
         [
             ({
                 "clientIp": "192.0.2.228",
@@ -402,7 +402,7 @@ class TestCommandsFunctions:
             }, "Error in API call [403] - Unauthorized", False)
         ],
     )
-    def test_index_out_of_range_error(self, mocker, client, error_entry, error_message, should_expect_extra_info):
+    def test_index_out_of_range_error(self, mocker, client, error_entry, error_message, expect_extra_info):
         """
         Given:
         - A client object and an error entry
@@ -427,9 +427,8 @@ class TestCommandsFunctions:
                                                                                         5000
                                                                                         ):
                 pass
-        assert ('Got offset out of range error when attempting to fetch events'
-                'from Akamai.' in str(e)) == should_expect_extra_info
-        assert ('Expired offset parameter in the request' in str(e)) == should_expect_extra_info
+        assert ('Got offset out of range error when attempting to fetch events from Akamai.' in str(e)) == expect_extra_info
+        assert ('Expired offset parameter in the request' in str(e)) == expect_extra_info
 
 
 @pytest.mark.parametrize(

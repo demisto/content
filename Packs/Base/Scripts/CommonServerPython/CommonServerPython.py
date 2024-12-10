@@ -12290,7 +12290,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         support_multithreading()
         import concurrent.futures
 
-        future_to_data: List[Future] = []
+        future_to_data = []
         executor = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
         for chunk in data_chunks:
             future = executor.submit(send_events, chunk)
