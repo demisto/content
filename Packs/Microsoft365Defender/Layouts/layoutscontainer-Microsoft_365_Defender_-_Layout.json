@@ -436,74 +436,6 @@
 					},
 					{
 						"displayType": "CARD",
-						"h": 3,
-						"hideName": false,
-						"i": "caseinfoid-d8eec53a-90ac-4c87-8106-94bd72dfc8a1",
-						"items": [
-							{
-								"endCol": 4,
-								"fieldId": "microsoft365defenderactivealerts",
-								"height": 53,
-								"id": "a40d2f7f-75b7-4115-8715-4f3f34fb1fc5",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 6,
-								"fieldId": "microsoft365defendercategoriescount",
-								"height": 106,
-								"id": "5d7abfa0-b98f-4d9a-b619-839f762821a0",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "Alerts and categories",
-						"static": false,
-						"w": 3,
-						"x": 0,
-						"y": 8
-					},
-					{
-						"displayType": "ROW",
-						"h": 4,
-						"hideName": false,
-						"i": "caseinfoid-e470968b-55c3-41f6-998b-8606de4f9a87",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "impactedentities",
-								"height": 26,
-								"id": "da1ec48d-a19a-41a6-831e-50c48b09bf80",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "impacteddevices",
-								"height": 26,
-								"id": "aede3f6e-fded-4b93-bced-ebeb18da583a",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "Scope",
-						"static": false,
-						"w": 1,
-						"x": 2,
-						"y": 11
-					},
-					{
-						"displayType": "CARD",
 						"h": 4,
 						"hideName": false,
 						"i": "caseinfoid-02d2204c-7f89-49a8-bf92-e5357e924c5c",
@@ -612,7 +544,7 @@
 						"static": false,
 						"w": 2,
 						"x": 0,
-						"y": 11
+						"y": 8
 					},
 					{
 						"columns": [
@@ -665,9 +597,9 @@
 								"args": {},
 								"buttonClass": null,
 								"dropEffect": "move",
-								"endCol": 6,
+								"endCol": 2,
 								"fieldId": "",
-								"height": 44,
+								"height": 53,
 								"hexColor": "#cbeac4",
 								"id": "11b8f409-07fc-4fc6-8d2a-306ce5e0025e",
 								"index": 0,
@@ -675,7 +607,7 @@
 								"name": "Add comment to Microsoft 365 Defender",
 								"scriptId": "MS365DefenderAddComment",
 								"sectionItemType": "button",
-								"startCol": 4
+								"startCol": 0
 							}
 						],
 						"maxW": 3,
@@ -685,11 +617,11 @@
 						"static": false,
 						"w": 1,
 						"x": 2,
-						"y": 15
+						"y": 12
 					},
 					{
 						"description": "",
-						"h": 5,
+						"h": 4,
 						"i": "caseinfoid-0389dbf0-b58c-11ef-ad76-3b71fb7d3507",
 						"items": [],
 						"maxW": 3,
@@ -707,9 +639,9 @@
 						"queryType": "warRoomFilter",
 						"static": false,
 						"type": "invTimeline",
-						"w": 2,
-						"x": 0,
-						"y": 15
+						"w": 1,
+						"x": 2,
+						"y": 8
 					}
 				],
 				"type": "custom"
@@ -876,6 +808,114 @@
 						"w": 3,
 						"x": 0,
 						"y": 4
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "lojuolhy3q",
+				"name": "Summary",
+				"sections": [
+					{
+						"columns": [
+							{
+								"displayName": "Category",
+								"fieldCalcScript": "",
+								"isDefault": true,
+								"isReadOnly": false,
+								"key": "category",
+								"orgType": "shortText",
+								"required": false,
+								"script": "",
+								"selectValues": null,
+								"type": "shortText",
+								"width": 150
+							},
+							{
+								"displayName": "Count",
+								"fieldCalcScript": "",
+								"isDefault": true,
+								"isReadOnly": false,
+								"key": "count",
+								"orgType": "number",
+								"required": false,
+								"script": "",
+								"selectValues": null,
+								"type": "number",
+								"width": 150
+							}
+						],
+						"displayType": "ROW",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-829cb9d0-b6e5-11ef-93fb-4335ca0d0914",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "microsoft365defenderactivealerts",
+								"height": 22,
+								"id": "8daa9ef0-b6e5-11ef-93fb-4335ca0d0914",
+								"index": 0,
+								"listId": "caseinfoid-829cb9d0-b6e5-11ef-93fb-4335ca0d0914",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "microsoft365defendercategoriescount",
+								"height": 106,
+								"id": "8592c850-b6e5-11ef-93fb-4335ca0d0914",
+								"index": 1,
+								"listId": "caseinfoid-829cb9d0-b6e5-11ef-93fb-4335ca0d0914",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Alerts and Categories",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 1,
+						"hideName": false,
+						"i": "caseinfoid-dc9b0e50-b6e5-11ef-93fb-4335ca0d0914",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "impacteddevices",
+								"height": 22,
+								"id": "e99ed000-b6e5-11ef-93fb-4335ca0d0914",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "impactedentities",
+								"height": 22,
+								"id": "eac093b0-b6e5-11ef-93fb-4335ca0d0914",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Scope",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
 					}
 				],
 				"type": "custom"
@@ -1950,7 +1990,7 @@
 	},
 	"fromServerVersion": "0.0.0",
 	"group": "incident",
-	"id": "3fc33099-7a4d-47b9-8b84-21491e35148e",
+	"id": "1e0d84c7-7452-4944-8a22-59fd24e6e504",
 	"indicatorsDetails": null,
 	"indicatorsQuickView": null,
 	"itemVersion": "4.5.35",
