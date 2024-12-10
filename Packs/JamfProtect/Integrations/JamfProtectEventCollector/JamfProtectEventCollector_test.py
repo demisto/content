@@ -226,3 +226,175 @@ def test_get_events_computer_type(mocker: MockerFixture, client, fetch_all_compu
     else:
         assert "$created: AWSDateTime" in actual_query
         assert "created" in actual_variables
+
+
+def mock_set_last_run(last_run):
+    return last_run
+
+
+def test_alerts_and_next_page_audits_and_next_page(mocker):
+    from JamfProtectEventCollector import main, parse_response
+    mock_last_run = {
+        "alert": {
+            "last_fetch": MOCK_TIME_UTC_NOW,
+            "next_page": "next_page_alerts"
+        },
+        "audit": {
+            "last_fetch": MOCK_TIME_UTC_NOW,
+            "next_page": "next_page_audits"
+        },
+        "computer": {
+            "last_fetch": MOCK_TIME_UTC_NOW
+        }
+    }
+    expected_mock_last_run = {
+        "alert": {
+            "last_fetch": MOCK_TIME_UTC_NOW,
+            "next_page": "next_page_alerts"
+        },
+        "audit": {
+            "last_fetch": MOCK_TIME_UTC_NOW,
+            "next_page": "next_page_audits"
+        },
+        "computer": {
+            "last_fetch": MOCK_TIME_UTC_NOW
+        },
+        "nextTrigger": "0"
+    }
+    mocker.patch('JamfProtectEventCollector.get_events', side_effect=[
+        (parse_response(util_load_json('test_data/raw_alerts.json'))[1], 'next_page_alerts'),
+        (parse_response(util_load_json('test_data/raw_audits.json'))[1], 'next_page_audits'),
+    ])
+    mocker.patch.object(demisto, 'params', return_value={'fetch_all_computers': False})
+    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
+    mock_next_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
+    mocker.patch('JamfProtectEventCollector.send_events_to_xsiam')
+
+    main()
+
+    assert mock_next_run.call_args.args[0] == expected_mock_last_run
+
+
+@freeze_time(MOCK_TIME_UTC_NOW)
+def test_no_alerts_and_no_next_page_no_audits_and_no_next_page(mocker):
+    from JamfProtectEventCollector import main
+    mock_last_run = {
+        "alert": {
+            "last_fetch": "2023-01-01T00:00:00.000000Z",
+            "next_page": "next_page_alerts"
+        },
+        "audit": {
+            "last_fetch": "2023-01-01T00:00:00.000000Z",
+            "next_page": "next_page_audits"
+        },
+        "computer": {
+            "last_fetch": "2023-01-01T00:00:00.000000Z"
+        }
+    }
+    expected_mock_last_run = {
+        "alert": {
+            "last_fetch": MOCK_TIME_UTC_NOW,
+        },
+        "audit": {
+            "last_fetch": MOCK_TIME_UTC_NOW,
+        },
+        "computer": {
+            "last_fetch": "2023-01-01T00:00:00.000000Z"
+        }
+    }
+    mocker.patch('JamfProtectEventCollector.get_events', side_effect=[
+        ([], ''),
+        ([], ''),
+    ])
+    mocker.patch.object(demisto, 'params', return_value={'fetch_all_computers': False})
+    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
+    mock_next_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
+    mocker.patch('JamfProtectEventCollector.send_events_to_xsiam')
+
+    main()
+
+    assert mock_next_run.call_args.args[0] == expected_mock_last_run
+
+
+def test_alerts_and_no_next_page_audits_and_no_next_page(mocker):
+    from JamfProtectEventCollector import main, parse_response
+    mock_last_run = {
+        "alert": {
+            "last_fetch": MOCK_TIME_UTC_NOW,
+            "next_page": "next_page_alerts"
+        },
+        "audit": {
+            "last_fetch": MOCK_TIME_UTC_NOW,
+            "next_page": "next_page_audits"
+        },
+        "computer": {
+            "last_fetch": MOCK_TIME_UTC_NOW
+        }
+    }
+    expected_mock_last_run = {
+        "alert": {
+            "last_fetch": "2024-01-01T14:33:12.000000Z",
+        },
+        "audit": {
+            "last_fetch": "2024-01-01T14:17:38.552096Z",
+        },
+        "computer": {
+            "last_fetch": MOCK_TIME_UTC_NOW
+        }
+    }
+    mocker.patch('JamfProtectEventCollector.get_events', side_effect=[
+        (parse_response(util_load_json('test_data/raw_alerts.json'))[1], ''),
+        (parse_response(util_load_json('test_data/raw_audits.json'))[1], ''),
+    ])
+    mocker.patch.object(demisto, 'params', return_value={'fetch_all_computers': False})
+    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
+    mock_next_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
+    mocker.patch('JamfProtectEventCollector.send_events_to_xsiam')
+
+    main()
+
+    assert mock_next_run.call_args.args[0] == expected_mock_last_run
+
+
+@freeze_time(MOCK_TIME_UTC_NOW)
+def test_no_alerts_and_next_page_no_audits_and_no_next_page(mocker):
+    from JamfProtectEventCollector import main
+    mock_last_run = {
+        "alert": {
+            "last_fetch": "2023-01-01T00:00:00.000000Z",
+            "next_page": "next_page_alerts"
+        },
+        "audit": {
+            "last_fetch": "2023-01-01T00:00:00.000000Z",
+        },
+        "computer": {
+            "last_fetch": "2023-01-01T00:00:00.000000Z"
+        }
+    }
+    expected_mock_last_run = {
+        "alert": {
+            "last_fetch": MOCK_TIME_UTC_NOW,
+        },
+        "audit": {
+            "last_fetch": "2023-01-01T00:00:00.000000Z",
+        },
+        "computer": {
+            "last_fetch": "2023-01-01T00:00:00.000000Z"
+        }
+    }
+    mocker.patch('JamfProtectEventCollector.get_events', side_effect=[
+        ([], 'next_page_alerts'),
+        ([], ''),
+    ])
+    mocker.patch.object(demisto, 'params', return_value={'fetch_all_computers': False})
+    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
+    mock_next_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
+    mocker.patch('JamfProtectEventCollector.send_events_to_xsiam')
+
+    main()
+
+    assert mock_next_run.call_args.args[0] == expected_mock_last_run
