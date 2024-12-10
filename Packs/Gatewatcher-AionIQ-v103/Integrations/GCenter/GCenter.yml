@@ -35,6 +35,10 @@ configuration:
   required: false
   type: 8
   section: Collect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8

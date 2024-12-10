@@ -26,7 +26,7 @@ class GwRequests():
     }
 
     def __init__(self, ip: str, headers: dict = {}, check_cert: bool = False,
-                 proxies: dict = None) -> None:
+                 proxy: bool = False) -> None:
         """Init.
 
         Disable urllib3 warning. Allow unsecure ciphers.
@@ -49,8 +49,9 @@ class GwRequests():
         self.ip = ip
         self.headers = headers
         self.check_cert = check_cert
-        if proxies is not None:
-            self.PROXIES = proxies
+        if proxy:
+            self.PROXIES["http"] = os.getenv("http_proxy", "")
+            self.PROXIES["https"] = os.getenv("https_proxy", "")
 
     def _gen_request_kwargs(self,
                             endpoint: str,
@@ -566,10 +567,11 @@ def main() -> None:
     user = params.get("credentials", {}).get("identifier", None)
     password = params.get("credentials", {}).get("password", None)
     check_cert = params.get("check_cert", False)
+    proxy = params.get("proxy", False)
 
     demisto.debug(f"Command being called is {command}")
     try:
-        client = GwClient(ip=ip, check_cert=check_cert)
+        client = GwClient(ip=ip, check_cert=check_cert, proxy=proxy)
         client.auth(
             user=user if user != "" else None,
             password=password if password != "" else None,
