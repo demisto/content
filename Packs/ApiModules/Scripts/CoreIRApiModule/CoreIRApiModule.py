@@ -2416,11 +2416,50 @@ def run_snippet_code_script_command(client: CoreClient, args: Dict) -> CommandRe
     )
 
 
+def form_powershell_command(unescaped_string: str) -> str:
+    """
+    Builds a Powershell command using prefix and a shell-escaped string.
+
+    Args:
+        unescaped_string (str): An unescaped command string.
+
+    Returns:
+        str: Prefixed and escaped command.
+    """
+    escaped_string = ''
+
+    for i, char in enumerate(unescaped_string):
+        if char == "'":
+            escaped_string += "''"
+
+        elif char == '"':
+            backslash_count = 0
+            for j in range(i - 1, -1, -1):
+                if unescaped_string[j] != '\\':
+                    break
+                backslash_count += 1
+
+            escaped_string += ('\\' * backslash_count) + '\\"'
+
+        else:
+            escaped_string += char
+
+    return f"powershell -Command '{escaped_string}'"
+
+
 def run_script_execute_commands_command(client: CoreClient, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
-    parameters = {'commands_list': argToList(args.get('commands'))}
+
+    commands = args.get('commands')
+    is_raw_command = argToBoolean(args.get('is_raw_command', False))
+    commands_list = remove_empty_elements([commands]) if is_raw_command else argToList(commands)
+
+    if args.get('command_type') == 'powershell':
+        commands_list = [form_powershell_command(command) for command in commands_list]
+    parameters = {'commands_list': commands_list}
+
     response = client.run_script('a6f7683c8e217d85bd3c398f0d3fb6bf', endpoint_ids, parameters, timeout, incident_id)
     reply = response.get('reply')
     return CommandResults(
