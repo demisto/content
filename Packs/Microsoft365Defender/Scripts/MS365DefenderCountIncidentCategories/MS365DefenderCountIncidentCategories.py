@@ -7,7 +7,6 @@ def count_dict(value):
     if not isinstance(value, str):
         return value
     categories = value.split(',')
-    counter_dict = dict(Counter(categories))
     return [{'category': key, 'count': value} for key, value in dict(Counter(categories)).items()]
 
 

@@ -37,6 +37,14 @@ CLASSIFICATION_DETERMINATION_MAPPING = {
     'FalsePositive': ['Clean', 'NoEnoughDataToValidate', 'Other'],
     'Unknown': ['NotAvailable']}
 
+MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON = {
+    'Unknown': 'Other',
+    'TruePositive': 'Resolved',
+    'FalsePositive': 'False Positive',
+    'InformationalExpectedActivity': 'Resolved',
+}
+
+
 ''' CLIENT CLASS '''
 
 
@@ -721,12 +729,6 @@ def fetch_modified_incidents(client: Client, last_update_time) -> List[dict]:
     return incidents
 
 
-MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON = {
-    'Unknown': 'Other',
-    'TruePositive': 'Resolved',
-    'FalsePositive': 'False Positive',
-    'InformationalExpectedActivity': 'Resolved',
-}
 
 
 def is_new_incident(incident_id: str) -> bool:

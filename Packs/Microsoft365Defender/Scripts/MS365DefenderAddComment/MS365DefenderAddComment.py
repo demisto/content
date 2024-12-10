@@ -22,11 +22,10 @@ def add_comment(args: Dict[str, Any]) -> CommandResults:
         demisto.debug(f'After calling microsoft-365-defender-incident-update, {command_res=}')
         return command_res
 
-
-
     except Exception as ex1:
         demisto.info(f"Failed to add comment to incident. {type(ex1)}: {ex1}, Trace:\n{traceback.format_exc()}")
         return_error(str(ex1))
+
 
 def main():
     try:
