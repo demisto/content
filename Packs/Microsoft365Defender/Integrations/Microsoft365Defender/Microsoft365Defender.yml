@@ -179,9 +179,9 @@ configuration:
   hidden:
   - marketplacev2
   required: false
-- additionalinfo: When selected, closing the Microsoft 365 Defender incident is mirrored in Cortex XSOAR. #todo: add info about closing reason?
+- additionalinfo: Incoming Mirroring - when selected, closing the Microsoft 365 Defender incident is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
-  display: Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)
+  display: Close Mirrored Cortex XSOAR Incidents ()
   name: close_incident
   type: 8
   section: Collect
@@ -189,9 +189,9 @@ configuration:
   hidden:
   - marketplacev2
   required: false
-- additionalinfo: When selected, closing the XSOAR incident is mirrored in Microsoft 365 Defender.
+- additionalinfo: Outgoing Mirroring - when selected, closing the XSOAR incident is mirrored in Microsoft 365 Defender.
   defaultvalue: 'false'
-  display: Close Mirrored Microsoft 365 Defender Incidents (Outgoing Mirroring)
+  display: Close Mirrored Microsoft 365 Defender Incidents
   name: close_out
   type: 8
   section: Collect
