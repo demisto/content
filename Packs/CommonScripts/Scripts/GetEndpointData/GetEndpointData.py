@@ -1,5 +1,6 @@
 from CommonServerPython import *
-from typing import Any, Callable
+from typing import Any
+from collections.abc import Callable
 from itertools import zip_longest
 
 
@@ -9,8 +10,8 @@ class MappedCommand:
         brand: str,
         name: str,
         output_keys: List[str],
-        args_mapping: dict = None,
-        output_mapping: dict | Callable = None,
+        args_mapping: dict,
+        output_mapping: dict | Callable,
         post_processing: Callable = None,
     ):
         """
@@ -86,7 +87,7 @@ class ModuleManager:
         return False if not self.is_brand_in_brands_to_run(command) else command.brand in self._enabled_brands
 
 
-class CommandRunner:
+class EndpointCommandRunner:
     def __init__(self, module_manager: ModuleManager, arg_free_commands: list[str]) -> None:
         """
         Initializes the instance of CommandRunner.
@@ -115,8 +116,8 @@ class CommandRunner:
 
         execute_command_results = self.run_execute_command(command, args)
         entry_context, human_readable, readable_errors = self.get_commands_outputs(command.name,
-                                                                                             execute_command_results,
-                                                                                             args)
+                                                                                   execute_command_results,
+                                                                                   args)
 
         if not entry_context:
             return readable_errors, []
@@ -156,7 +157,7 @@ class CommandRunner:
         return True
 
     @staticmethod
-    def run_execute_command( command: MappedCommand, args: dict[str, Any]) -> list[dict[str, Any]]:
+    def run_execute_command(command: MappedCommand, args: dict[str, Any]) -> list[dict[str, Any]]:
         """
         Executes a command if the brand is available and returns the results.
 
@@ -170,7 +171,7 @@ class CommandRunner:
         return to_list(demisto.executeCommand(command.name, args))
 
     @staticmethod
-    def get_commands_outputs(command: str, results: list[dict[str, Any]], args: dict[str, Any]) -> tuple[list,str, list]:
+    def get_commands_outputs(command: str, results: list[dict[str, Any]], args: dict[str, Any]) -> tuple[list, str, list]:
         """
         Processes the results of a previously executed command and extracts relevant outputs.
 
@@ -215,11 +216,12 @@ class CommandRunner:
 
 
 def to_list(var):
-    if not var: return []
+    if not var:
+        return []
     return [var] if not isinstance(var, list) else var
 
 
-def safe_list_get(l: list, idx: int, default: Any):
+def safe_list_get(lst: list, idx: int, default: Any):
     """
     Safely retrieves an element from a list at the specified index.
 
@@ -232,7 +234,7 @@ def safe_list_get(l: list, idx: int, default: Any):
     Any: The element at the specified index if it exists, otherwise the default value.
     """
     try:
-        return l[idx]
+        return lst[idx]
     except IndexError:
         return default
 
@@ -358,7 +360,8 @@ def get_output_key(output_key: str, raw_context: dict[str, Any]) -> str:
             full_output_key = output_key
         else:
             for key in raw_context:
-                if not key: continue
+                if not key:
+                    continue
                 if key.startswith(f"{output_key}("):
                     full_output_key = key
                     break
@@ -412,7 +415,7 @@ def merge_endpoints(endpoints: list[dict[str, dict[str, Any]]]) -> dict[str, Any
         - For other keys, conflicting values are combined into a list.
     """
     demisto.debug(f'merging endpoints with {endpoints=}')
-    merged_endpoint = {}
+    merged_endpoint: dict[str, list | dict] = {}
     for endpoint in endpoints:
         demisto.debug(f'current endpoint: {endpoint}')
         for key, value in endpoint.items():
@@ -458,13 +461,13 @@ def get_raw_endpoints(context_outputs: list[list[dict[str, Any]]]) -> list[dict[
 
 
 def create_endpoints(raw_endpoints: list[dict[str, Any]], output_mapping: dict | Callable, brand: str) -> list[dict[str, Any]]:
-    endpoints =[]
+    endpoints = []
     for raw_endpoint in raw_endpoints:
         if isinstance(output_mapping, dict):
-            output_mapping = output_mapping
+            output_map = output_mapping
         else:
-            output_mapping = output_mapping(raw_endpoint)
-        endpoints.append(create_endpoint(raw_endpoint, output_mapping, brand))
+            output_map = output_mapping(raw_endpoint)
+        endpoints.append(create_endpoint(raw_endpoint, output_map, brand))
     return endpoints
 
 
@@ -517,7 +520,7 @@ def main():
         endpoint_outputs_list: list[dict[str, Any]] = []
         endpoints_not_found_list: list[dict] = []
 
-        command_runner = CommandRunner(
+        command_runner = EndpointCommandRunner(
             module_manager=module_manager,
             arg_free_commands=['cylance-protect-get-devices', 'endpoint']
         )
@@ -637,7 +640,7 @@ def main():
                 command_results_list.extend(single_endpoint_readable_outputs)
 
             for index in range(max(map(len, single_endpoint_outputs), default=0)):
-                unmerged_endpoints = [safe_list_get(l, index, {}) for l in single_endpoint_outputs]
+                unmerged_endpoints = [safe_list_get(lst, index, {}) for lst in single_endpoint_outputs]
                 demisto.debug(f'merging endoints {unmerged_endpoints=}, {index=}')
                 merged_endpoint = merge_endpoints(unmerged_endpoints) if unmerged_endpoints else None
                 if merged_endpoint:
@@ -664,7 +667,7 @@ def main():
             multiple_endpoint_readable_outputs.extend(readable_outputs)
 
         for index in range(max(map(len, multiple_endpoint_outputs), default=0)):
-            unmerged_endpoints = [safe_list_get(l, index, {}) for l in multiple_endpoint_outputs]
+            unmerged_endpoints = [safe_list_get(lst, index, {}) for lst in multiple_endpoint_outputs]
             demisto.debug(f'merging endoints {unmerged_endpoints=}, {index=}')
             merged_endpoint = merge_endpoints(unmerged_endpoints) if unmerged_endpoints else None
             if merged_endpoint:
@@ -679,7 +682,6 @@ def main():
                         or safe_list_get(agent_hostnames, index, ''),
                         'Source': command.brand
                     })
-
 
         if endpoints_not_found_list:
             command_results_list.append(

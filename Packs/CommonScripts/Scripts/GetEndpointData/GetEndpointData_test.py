@@ -1,7 +1,7 @@
 import pytest
 import demistomock as demisto
 from pytest_mock import MockerFixture
-from GetEndpointData import MappedCommand, ModuleManager, CommandRunner, to_list
+from GetEndpointData import MappedCommand, ModuleManager, EndpointCommandRunner
 
 
 @pytest.fixture
@@ -91,7 +91,7 @@ class TestCommandRunner:
         self.endpoint_args = {"arg1": "value1", "arg2": "value2"}
         self.arg_free_commands = ["CommandFree"]
 
-        self.command_runner = CommandRunner(self.module_manager, self.endpoint_args, self.arg_free_commands)
+        self.command_runner = EndpointCommandRunner(self.module_manager, self.endpoint_args, self.arg_free_commands)
 
     def test_run_command_if_available(self, mocker: MockerFixture):
         command = MappedCommand("BrandA", "Command1", {"arg1": "arg1"})
@@ -107,7 +107,6 @@ class TestCommandRunner:
         assert human_readable == ""
         assert error_outputs == ""
 
-
     def test_run_command_if_available_brand_not_available(self):
         command = MappedCommand("BrandB", "Command2", {"arg1": "arg1"})
         context_outputs, human_readable, error_outputs = self.command_runner.is_command_runnable(command)
@@ -118,7 +117,7 @@ class TestCommandRunner:
     def test_run_execute_command_brand_available_with_args(self, mocker):
         command = MappedCommand("BrandA", "test_command", {"arg1": "mapped_arg1"})
 
-        mock_execute = mocker.patch.object(demisto,'executeCommand', return_value=[{"Contents": "test_result"}])
+        mock_execute = mocker.patch.object(demisto, 'executeCommand', return_value=[{"Contents": "test_result"}])
 
         result = self.command_runner._run_execute_command(command)
 
@@ -151,7 +150,7 @@ class TestCommandRunner:
     def test_run_execute_command_brand_not_available(self, mocker):
         command = MappedCommand(self.modules['module2']['brand'], "test_command", {"arg1": "mapped_arg1"})
 
-        mock_execute = mocker.patch.object(demisto,'executeCommand', return_value=[{"Contents": "test_result"}])
+        mock_execute = mocker.patch.object(demisto, 'executeCommand', return_value=[{"Contents": "test_result"}])
         mock_debug = mocker.patch.object(demisto, 'debug')
 
         result = self.command_runner._run_execute_command(command)
@@ -166,7 +165,7 @@ class TestCommandRunner:
 
         mocker.patch.object(self.module_manager, 'is_brand_available', return_value=True)
         mock_debug = mocker.patch.object(demisto, 'debug')
-        mock_execute = mocker.patch.object(demisto,'executeCommand', return_value=[{"Contents": "test_result"}])
+        mocker.patch.object(demisto, 'executeCommand', return_value=[{"Contents": "test_result"}])
 
         self.command_runner._run_execute_command(command)
 
@@ -178,7 +177,7 @@ class TestCommandRunner:
         self.endpoint_args = {"mapped_arg1": "value1"}
 
         mocker.patch.object(self.module_manager, 'is_brand_available', return_value=True)
-        mock_execute = mocker.patch('GetEndpointData.demisto.executeCommand', return_value={"Contents": "test_result"})
+        mocker.patch('GetEndpointData.demisto.executeCommand', return_value={"Contents": "test_result"})
         mock_to_list = mocker.patch('GetEndpointData.to_list', side_effect=lambda x: [x] if not isinstance(x, list) else x)
 
         result = self.command_runner._run_execute_command(command)
