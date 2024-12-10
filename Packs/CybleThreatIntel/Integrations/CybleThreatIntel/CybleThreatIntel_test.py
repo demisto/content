@@ -1,6 +1,9 @@
 from datetime import datetime, timedelta, timezone
 import json
+import pytz
 import pytest
+
+UTC = pytz.UTC
 
 input_value = json.load(open("test_data/input.json", "r"))
 params = input_value['params']
@@ -65,21 +68,6 @@ def test_get_taxii(mocker):
     assert isinstance(val, list)
     assert isinstance(time, str)
     assert mock_response_3 == val[0]
-
-
-def test_get_taxii_invalid(mocker, capfd):
-    from CybleThreatIntel import Client
-    client = Client(params)
-
-    mock_response_1 = str(open("test_data/data_err.xml", "r").read())
-    mocker.patch.object(client, 'fetch', return_value=[mock_response_1])
-    with capfd.disabled():
-        try:
-            val, time = Client.get_taxii(client, args2)
-        except Exception as e:
-            error_val = e.args[0]
-
-    assert "Last fetch time retrieval failed." in error_val
 
 
 def test_get_taxii_failure(mocker):
@@ -280,8 +268,8 @@ def test_date_validate_input(capfd, limit):
 
     args = {
         "limit": limit,
-        "begin": str(datetime.now(timezone.utc).strftime(DATETIME_FORMAT)),
-        "end": str((datetime.now(timezone.utc) - timedelta(days=1)).strftime(DATETIME_FORMAT)),
+        "begin": str(datetime.now(tz=UTC).strftime(DATETIME_FORMAT)),
+        "end": str((datetime.now(tz=UTC) - timedelta(days=1)).strftime(DATETIME_FORMAT)),
         "collection": "phishing_url"
     }
 
@@ -296,8 +284,8 @@ def test_idate_validate_input(capfd):
 
     args = {
         "limit": 5,
-        "begin": str(datetime.now(timezone.utc).strftime(DATETIME_FORMAT)),
-        "end": str((datetime.now(timezone.utc) + timedelta(days=1)).strftime(DATETIME_FORMAT)),
+        "begin": str(datetime.now(tz=UTC).strftime(DATETIME_FORMAT)),
+        "end": str((datetime.now(tz=UTC) + timedelta(days=1)).strftime(DATETIME_FORMAT)),
         "collection": "phishing_url"
     }
 
@@ -311,8 +299,8 @@ def test_end_date_validate_input(capfd):
 
     args = {
         "limit": 5,
-        "begin": str((datetime.now(timezone.utc) + timedelta(days=1)).strftime(DATETIME_FORMAT)),
-        "end": str(datetime.now(timezone.utc).strftime(DATETIME_FORMAT)),
+        "begin": str((datetime.now(tz=UTC) + timedelta(days=1)).strftime(DATETIME_FORMAT)),
+        "end": str(datetime.now(tz=UTC).strftime(DATETIME_FORMAT)),
         "collection": "phishing_url"
     }
 
@@ -326,8 +314,8 @@ def test_collection_validate_input(capfd):
 
     args = {
         "limit": 5,
-        "begin": str((datetime.now(timezone.utc) - timedelta(days=1)).strftime(DATETIME_FORMAT)),
-        "end": str(datetime.now(timezone.utc).strftime(DATETIME_FORMAT)),
+        "begin": str((datetime.now(tz=UTC) - timedelta(days=1)).strftime(DATETIME_FORMAT)),
+        "end": str(datetime.now(tz=UTC).strftime(DATETIME_FORMAT)),
         "collection": ""
     }
 

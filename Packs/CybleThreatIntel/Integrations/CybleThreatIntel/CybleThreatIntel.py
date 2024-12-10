@@ -68,15 +68,13 @@ class Client(object):
                 fields_found.append(value)
 
             elif isinstance(value, dict):
-                results = self.get_recursively(value, field)
-                for result in results:
+                for result in self.get_recursively(value, field):
                     fields_found.append(result)
 
             elif isinstance(value, list):
                 for item in value:
                     if isinstance(item, dict):
-                        more_results = self.get_recursively(item, field)
-                        for another_result in more_results:
+                        for another_result in self.get_recursively(item, field):
                             fields_found.append(another_result)
 
         return fields_found
@@ -155,10 +153,8 @@ class Client(object):
         count = 0
 
         try:
-
             if 'begin' not in args or 'end' not in args:
                 raise ValueError("Last fetch time retrieval failed.")
-
             for data in self.fetch(args.get('begin'), args.get('end'), args.get('collection')):
                 try:
                     skip = False
@@ -175,14 +171,14 @@ class Client(object):
                         if eachone.get('confidence'):
                             current_timestamp = parser.parse(
                                 eachone['confidence']['timestamp']).replace(tzinfo=pytz.UTC).strftime(DATETIME_FORMAT)
-                            if is_first_fetch or datetime.fromisoformat(current_timestamp) > datetime.fromisoformat(save_fetch_time):
+                            if (is_first_fetch or
+                                datetime.fromisoformat(current_timestamp) > datetime.fromisoformat(save_fetch_time)):
                                 save_fetch_time = current_timestamp
                             else:
                                 skip = True
 
                     if not skip:
                         taxii_data.append(response)
-
                         count += 1
                         if count == args.get('limit'):
                             break
@@ -306,7 +302,6 @@ def fetch_indicators(client: Client):
         is_first_fetch = True
 
     args['end'] = str(datetime.utcnow().replace(tzinfo=pytz.UTC))
-
     args['collection'] = client.collection_name
     args['limit'] = client.limit       # type: ignore
     indicator, save_fetch_time = client.get_taxii(args, is_first_fetch)
