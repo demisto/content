@@ -346,13 +346,6 @@
             ]
         },
         {
-            "id": "Rundeck",
-            "reason": "CIAC-11186, This integration support only from python 3.11",
-            "ignored_native_images": [
-                "native:8.6"
-            ]
-        },
-        {
             "id": "FireEye ETP Event Collector",
             "reason": "CIAC-11186, This integration support only from python 3.11",
             "ignored_native_images": [
