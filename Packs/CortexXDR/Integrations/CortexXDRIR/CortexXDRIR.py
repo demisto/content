@@ -580,6 +580,7 @@ def sort_incident_data(raw_incident):
     """
     incident = raw_incident.get('incident', {})
     raw_alerts = raw_incident.get('alerts', {}).get('data', [])
+    demisto.debug(f"{raw_alerts=}")
     file_artifacts = raw_incident.get('file_artifacts', {}).get('data', [])
     network_artifacts = raw_incident.get('network_artifacts', {}).get('data', [])
     context_alerts = clear_trailing_whitespace(raw_alerts)
@@ -761,6 +762,7 @@ def sort_all_list_incident_fields(incident_data):
         incident_data['incident_sources'] = sorted(incident_data.get('incident_sources', []))
     format_sublists = not argToBoolean(demisto.params().get('dont_format_sublists', False))
     if incident_data.get('alerts', []):
+        demisto.debug(f"{incident_data.get('alerts', [])=}")
         incident_data['alerts'] = sort_by_key(incident_data.get('alerts', []), main_key='alert_id', fallback_key='name')
         if format_sublists:
             reformat_sublist_fields(incident_data['alerts'])
@@ -879,7 +881,7 @@ def reopen_incident_in_xsoar():
 
 def handle_incoming_incident(incident_data) -> dict:
     incident_id = incident_data.get("incident_id")
-    demisto.debug(f"handle_incoming_incident {incident_data=} {incident_id=}")
+    demisto.debug(f"handle_incoming_incident {incident_data.get('status')=} {incident_id=}")
     demisto.debug(f'{incident_data.get("status")=}')
     if incident_data.get("status") in XDR_RESOLVED_STATUS_TO_XSOAR:
         return close_incident_in_xsoar(incident_data, incident_id)
