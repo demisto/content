@@ -62,7 +62,7 @@ class Client(BaseClient):
 
         try:
             response = self._http_request(
-                method="POST", url_suffix="/api/SessionService/Sessions", data=self.credentials, resp_type='response'
+                method="POST", url_suffix="/api/SessionService/Sessions", json_data=self.credentials, resp_type='response'
             )
         except Exception as e:
             raise DemistoException(
