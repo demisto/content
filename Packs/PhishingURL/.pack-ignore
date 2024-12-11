@@ -1,5 +1,5 @@
 [file:DBotPredictURLPhishing.yml]
-ignore=SC106,BA124
+ignore=SC106,BA124,DO101
 
 [file:DBotUpdateLogoURLPhishing.yml]
 ignore=SC106
