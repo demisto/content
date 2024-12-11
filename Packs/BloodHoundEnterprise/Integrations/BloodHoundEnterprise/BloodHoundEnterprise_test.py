@@ -59,7 +59,7 @@ def test_client_request(mocker):
         for call in log.call_args_list
     )
     assert found, "'sort_by=created_at&after' was not found in any demisto.debug calls."
-    
+
 
 @freeze_time("2024-11-22T13:28:27.698038Z")
 def test_fetch_events_first_time(mocker):
@@ -95,9 +95,7 @@ def test_fetch_events_first_time(mocker):
     )
 
     assert len(events) == 7
-    assert next_run.get("last_event_date", "").startswith(
-        "2024-11-22T13:27:27.698038+"
-    )
+    assert next_run.get("last_event_date", "").startswith("2024-11-22T13:27:27.698038+")
     assert all(
         (
             next_run.get("last_event_id") == 2057,
@@ -153,9 +151,7 @@ def test_fetch_events_second_time(mocker):
 
     assert len(events) == 2
     assert events[0].get("id") == 2073
-    assert next_run.get("last_event_date", "").startswith(
-        "2024-11-24T12:43:57.27948"
-    )
+    assert next_run.get("last_event_date", "").startswith("2024-11-24T12:43:57.27948")
     assert all(
         (
             next_run.get("last_event_id") == 2074,
