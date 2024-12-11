@@ -124,7 +124,9 @@
 	"selectValues": null,
 	"sla": 0,
 	"system": false,
-	"systemAssociatedTypes": null,
+	"systemAssociatedTypes": [
+		"GIB OSI Vulnerability"
+	],
 	"template": "",
 	"threshold": 72,
 	"toServerVersion": "",

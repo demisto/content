@@ -137,7 +137,9 @@
 	"selectValues": null,
 	"sla": 0,
 	"system": false,
-	"systemAssociatedTypes": null,
+	"systemAssociatedTypes": [
+		"GIB OSI Public Leak"
+	],
 	"template": "",
 	"threshold": 72,
 	"toServerVersion": "",

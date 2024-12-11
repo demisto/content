@@ -45,7 +45,10 @@
 	"selectValues": [],
 	"sla": 0,
 	"system": false,
-	"systemAssociatedTypes": null,
+	"systemAssociatedTypes": [
+		"GIB Cybercriminal Threat",
+		"GIB Cybercriminal Threat Actor"
+	],
 	"template": "",
 	"threshold": 72,
 	"toServerVersion": "",

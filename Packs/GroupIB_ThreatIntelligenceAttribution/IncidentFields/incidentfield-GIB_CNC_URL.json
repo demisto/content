@@ -46,7 +46,11 @@
 	"selectValues": [],
 	"sla": 0,
 	"system": false,
-	"systemAssociatedTypes": null,
+	"systemAssociatedTypes": [
+		"GIB Malware CNC",
+		"GIB Malware",
+		"GIB Attacks DDOS"
+	],
 	"template": "",
 	"threshold": 72,
 	"toServerVersion": "",

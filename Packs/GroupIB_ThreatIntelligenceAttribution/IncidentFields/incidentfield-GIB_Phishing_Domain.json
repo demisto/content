@@ -45,7 +45,10 @@
 	"selectValues": [],
 	"sla": 0,
 	"system": false,
-	"systemAssociatedTypes": null,
+	"systemAssociatedTypes": [
+		"GIB Brand Protection Domain",
+		"GIB Attacks Phishing Group"
+	],
 	"template": "",
 	"threshold": 72,
 	"toServerVersion": "",

@@ -40,7 +40,9 @@
 	"selectValues": null,
 	"sla": 0,
 	"system": false,
-	"systemAssociatedTypes": null,
+	"systemAssociatedTypes": [
+		"GIB Suspicious IP Socks Proxy"
+	],
 	"template": "",
 	"threshold": 72,
 	"toServerVersion": "",

@@ -45,7 +45,10 @@
 	"selectValues": [],
 	"sla": 0,
 	"system": false,
-	"systemAssociatedTypes": null,
+	"systemAssociatedTypes": [
+		"GIB Nation-State Cybercriminals Threat Actor",
+		"GIB Nation-State Cybercriminals Threat"
+	],
 	"template": "",
 	"threshold": 72,
 	"toServerVersion": "",

@@ -45,7 +45,10 @@
 	"selectValues": null,
 	"sla": 0,
 	"system": false,
-	"systemAssociatedTypes": null,
+	"systemAssociatedTypes": [
+		"GIB Compromised Card",
+		"GIB Compromised Account"
+	],
 	"template": "",
 	"threshold": 72,
 	"toServerVersion": "",

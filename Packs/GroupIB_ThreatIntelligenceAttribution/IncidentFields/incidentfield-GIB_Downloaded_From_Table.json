@@ -111,7 +111,9 @@
 	"selectValues": null,
 	"sla": 0,
 	"system": false,
-	"systemAssociatedTypes": null,
+	"systemAssociatedTypes": [
+		"GIB Attacks Phishing Kit"
+	],
 	"template": "",
 	"threshold": 72,
 	"toServerVersion": "",
