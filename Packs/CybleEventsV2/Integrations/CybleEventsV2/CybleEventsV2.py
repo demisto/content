@@ -231,7 +231,10 @@ def alert_input_structure(input_params, update_only=False):
                             "UNREVIEWED",
                             "CONFIRMED_INCIDENT",
                             "UNDER_REVIEW",
-                            "INFORMATIONAL"
+                            "INFORMATIONAL",
+                            "RESOLVED",
+                            "REMEDIATION_IN_PROGRESS",
+                            "REMEDIATION_NOT_REQUIRED"
                         ]
                     }
                 }
@@ -324,7 +327,7 @@ def format_incidents(alerts, hide_cvv_expiry):
             alert_details = {
                 "name": "Cyble Vision Alert on {}".format(alert.get('service')),
                 "event_type": "{}".format(alert.get('service')),
-                "severity": INCIDENT_SEVERITY.get(alert.get('severity').lower()),
+                "severity": INCIDENT_SEVERITY.get(alert.get('user_severity').lower()),
                 "alert_group_id": "{}".format(alert.get('alert_group_id')),
                 "event_id": "{}".format(alert.get('id')),
                 "data_message": json.dumps(alert.get('data_message')),
@@ -471,11 +474,12 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
             events = format_incidents(all_alerts, hide_cvv_expiry)
 
             for event in events:
-                event['mirror_direction'] = MIRROR_DIRECTION_DICT.get(mirror_direction)
                 event['mirror_tags'] = [
                     severity_tag,
                     status_tag
                 ]
+
+                # print(f"Event severity: {event['severity']}")
 
                 inci = {
                     'name': event.get('name'),
@@ -483,8 +487,10 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
                     'rawJSON': json.dumps(event),
                     'alert_group_id': event.get('alert_group_id'),
                     'event_id': event.get('event_id'),
+                    'dbotMirrorId': str(event.get('event_id', 'TEST')),
+                    'dbotMirrorDirection': 'Both',
                     'keyword': event.get('keyword'),
-                    'created': event.get('created_at')
+                    'created': event.get('created_at'),
                 }
                 incidents.append(inci)
             next_run = {'event_pull_start_date': latest_created_time}
@@ -559,10 +565,10 @@ def get_modified_remote_data_command(client, url, token, args, incident_collecti
 
     try:
         request_body = generate_request_body(input_params, incident_collections, incident_severity,True)
-        demisto.info(f"Request body: {request_body}")
+        # print(f"Request body: {request_body}")
         alerts = client.get_alerts("POST", token, request_body, url)
         modified_ids_to_mirror = [alert.get('id') for alert in alerts]
-        demisto.debug(f'All ids to mirror in are: {modified_ids_to_mirror}')
+        # print(f'All ids to mirror in are: {modified_ids_to_mirror}')
         return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
     except Exception as e:
         demisto.info(f"Error while getting remote data ID: {e} {traceback.print_exc()}")
@@ -617,9 +623,13 @@ def get_remote_incident_data(client, url, token, args, incident_collections, inc
     try:
         request_body = generate_request_body(input_params, incident_collections, incident_severity)
         mirrored_data = client.get_alerts("POST", token, request_body, url)
+        # print(f"Mirrored incident: {mirrored_data}")
         if mirrored_data:
             events = format_incidents(mirrored_data, hide_cvv_expiry)
+            # print(f"Events: {events}")
             updated_object = create_incident_from_events(events)[0]
+            # print(f"Updated incident: {updated_object}")
+            # demisto.info(f"Updated incident: {updated_object}")
             return mirrored_data, updated_object
     except Exception as e:
         demisto.info(f"Error while getting remote data: {e} {traceback.print_exc()}")
@@ -672,9 +682,10 @@ def set_services(incident_collections):
 def create_incident_from_events(events):
     incidents = []
     for event in events:
+        print(f"event: {event}")
         inci = {
             'name': event.get('name'),
-            'severity': event.get('severity'),
+            'severity': event.get('user_severity'),
             'rawJSON': json.dumps(event),
             'alert_group_id': event.get('alert_group_id'),
             'event_id': event.get('event_id'),

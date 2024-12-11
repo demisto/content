@@ -62,12 +62,6 @@
                 "CybleEventsV2 URL": {
                     "simple": "url"
                 },
-                "dbotMirrorDirection": {
-                    "simple": "mirror_direction"
-                },
-                "dbotMirrorId": {
-                    "simple": "event_id"
-                },
                 "dbotMirrorInstance": {
                     "simple": "mirrorInstance"
                 },
