@@ -53,12 +53,13 @@ ACCOUNT_STATUS_DICT = {1: "Active", 2: "Inactive", 3: "Locked"}
 
 API_ENDPOINT = demisto.params().get("api_endpoint", "api")
 
+
 class FilterConditionTypes(Enum):
     date = 'DateComparisonFilterCondition'
     numeric = 'NumericFilterCondition'
     text = 'TextFilterCondition'
     content = 'ContentFilterCondition'
-    
+
 
 def parser(
     date_str,
@@ -301,14 +302,14 @@ def construct_operator_logic(logical_operator: str, conditions_count: int) -> st
     Args:
         logical_operator (str): The logical operator (e.g. 'AND', 'OR', 'XOR').
         conditions_count (int): The number of conditions.
-    
+
     Returns:
         str: An XML string representing the OperatorLogic element.
     """
     root = ET.Element('OperatorLogic')
     root.text = f' {logical_operator.upper()} '.join([str(num) for num in range(1, conditions_count + 1)])
     return ET.tostring(root, encoding='unicode')
- 
+
 
 def search_records_soap_request(
     token: str,
@@ -405,7 +406,7 @@ def search_records_soap_request(
         filter_conditions_xml = '\n'.join(filter_conditions)
         if logical_operator:
             operator_logic = construct_operator_logic(logical_operator, conditions_count=len(filter_conditions))
-        
+
         request_body += f'<Filter><Conditions>{filter_conditions_xml}</Conditions>{operator_logic}</Filter>'
 
     if field_id:

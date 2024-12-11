@@ -5,7 +5,7 @@ from CommonServerPython import DemistoException
 import demistomock as demisto
 from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value, \
     fetch_incidents, get_fetch_time, parser, OCCURRED_FORMAT, search_records_by_report_command, \
-    search_records_soap_request
+    search_records_soap_request, is_valid_xml, construct_generic_filter_condition, FilterConditionTypes
 
 BASE_URL = 'https://test.com/'
 
@@ -583,27 +583,37 @@ class TestArcherV2:
     @pytest.mark.parametrize(
         'field_name,field_to_search_by_id,expected_condition',
         [
-            (
+            pytest.param(
                 'id_field_name',
                 '',
+                # Expected
                 '<TextFilterCondition>'
                 '<Operator>Contains</Operator>'
                 '<Field name="id_field_name">field_id</Field>'
                 '<Value>1234</Value>'
                 '</TextFilterCondition>',
+                id='Generic text filter',
             ),
-            (   'id_field_name',
+            pytest.param(
                 'id_field_name',
+                'id_field_name',
+                # Expected
                 '<ContentFilterCondition>'
                 '<Level>5678</Level>'
                 '<Operator>Equals</Operator>'
                 '<Values><Value>1234</Value></Values>'
                 '</ContentFilterCondition>',
+                id='Content filter by ID',
             )
-            
+
         ]
     )
-    def test_search_records_soap_request(self, field_name, field_to_search_by_id, expected_condition):
+    def test_search_records_soap_request(
+        self,
+        field_name: str,
+        field_to_search_by_id: str,
+        expected_condition: str
+    ):
         """
         Given:
             - Fields to search on records and id fields to search by ID.
@@ -1094,3 +1104,85 @@ class TestArcherV2:
         else:
             assert not new_token_mocker.called
         assert soap_mocker.call_count == len(http_call_attempt_results)
+
+    @pytest.mark.parametrize(
+        'xml_document, expected_is_valid',
+        [
+            ('<DisplayField name="First Published">7194</DisplayField>', True),
+            ('<ShowStatSummaries>false</ShowSummaries>', False),
+        ]
+    )
+    def test_is_valid_xml(self, xml_document: str, expected_is_valid: bool):
+        """
+        Given:
+            - Case 1: A valid XML document as a string.
+            - Case 2: A malformed XML document (open and close tags mismatch).
+        When:
+            - Calling is_valid_xml.
+        Assert:
+            - Case 1: Ensure is_valid is True.
+            - Case 2: Ensure is_valid is False.
+        """
+        is_valid = is_valid_xml(xml_document)
+        assert is_valid == expected_is_valid
+
+    @pytest.mark.parametrize(
+        'condition_type, operator, field_name, field_id, search_value, expected_xml_condition',
+        [
+            pytest.param(
+                FilterConditionTypes.date,
+                'GreaterThan',
+                'Last Updated',
+                '1234',
+                '2024-12-11T11:11:24.433385Z',
+                # Expected
+                '<DateComparisonFilterCondition>'
+                '<Operator>GreaterThan</Operator>'
+                '<Field name="Last Updated">1234</Field>'
+                '<Value>2024-12-11T11:11:24.433385Z</Value>'
+                '</DateComparisonFilterCondition>',
+                id='Date greater than condition',
+            ),
+            pytest.param(
+                FilterConditionTypes.text,
+                'Contains',
+                'Incident Priority',
+                '456',
+                'High',
+                # Expected
+                '<TextFilterCondition>'
+                '<Operator>Contains</Operator>'
+                '<Field name="Incident Priority">456</Field>'
+                '<Value>High</Value>'
+                '</TextFilterCondition>',
+                id='Text contains condition',
+            ),
+        ]
+    )
+    def test_construct_generic_filter_condition(
+        self,
+        condition_type: FilterConditionTypes,
+        operator: str,
+        field_name: str,
+        field_id: str,
+        search_value: str,
+        expected_xml_condition: str
+    ):
+        """
+        Given:
+            - Case 1: A date filter condition with 'GreaterThan' operator on the 'Last Updated' field.
+            - Case 2: A text filter condition with 'Contains' operator on the 'Incident Priority' field.
+        When:
+            - Calling construct_generic_filter_condition.
+        Assert:
+            - Case 1: Ensure a valid DateComparisonFilterCondition XML element with the correct sub-elements.
+            - Case 2: Ensure a valid TextFilterCondition XML element with the correct sub-elements.
+        """
+        xml_condition = construct_generic_filter_condition(
+            condition_type=condition_type,
+            operator=operator,
+            field_name=field_name,
+            field_id=field_id,
+            search_value=search_value,
+        )
+        assert xml_condition == expected_xml_condition
