@@ -62,7 +62,7 @@ script:
       name: search
     - auto: PREDEFINED
       defaultValue: "false"
-      description: True means retrieve all observables, false means retrieve the observables paginated. Default is false.
+      description: When the argument is set to true, the limit argument is ignored. Default is false.
       name: all_results
       predefined:
       - "true"
@@ -548,7 +548,7 @@ script:
       name: last_run_id
     - auto: PREDEFINED
       defaultValue: "false"
-      description: True means retrieve all indicators, false means retrieve the indicators paginated. Default is false.
+      description: When the argument is set to true, the limit argument is ignored. Default is false.
       name: all_results
       predefined:
       - "true"
