@@ -181,7 +181,7 @@ configuration:
   required: false
 - additionalinfo: Incoming Mirroring - when selected, closing the Microsoft 365 Defender incident is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
-  display: Close Mirrored Cortex XSOAR Incidents ()
+  display: Close Mirrored Cortex XSOAR Incidents
   name: close_incident
   type: 8
   section: Collect

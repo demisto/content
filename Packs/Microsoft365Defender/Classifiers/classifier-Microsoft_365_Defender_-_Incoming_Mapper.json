@@ -409,8 +409,8 @@
 			}
 		}
 	},
-	"name": "Microsoft 365 Defender - Incoming Mapper_copy",
-	"nameRaw": "Microsoft 365 Defender - Incoming Mapper_copy",
+	"name": "Microsoft 365 Defender - Incoming Mapper",
+	"nameRaw": "Microsoft 365 Defender - Incoming Mapper",
 	"packID": "",
 	"packName": "Microsoft 365 Defender",
 	"propagationLabels": [
