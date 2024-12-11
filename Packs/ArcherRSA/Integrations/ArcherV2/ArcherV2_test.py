@@ -580,12 +580,21 @@ class TestArcherV2:
         assert records[0]['record']['Id'] == '238756'
         assert records[0]['record']['Device Name'] == 'DEVICE NAME'
 
-    @pytest.mark.parametrize('field_name,field_to_search_by_id,expected_condition', [
-        ('id_field_name', '', '<TextFilterCondition>        <Operator>Contains</Operator>        '
-         + '<Field name="id_field_name">field_id</Field>        <Value>1234</Value></TextFilterCondition >'),
-        ('id_field_name', 'id_field_name', '<ContentFilterCondition>        <Level>5678</Level>        '
-         + '<Operator>Equals</Operator>        <Values><Value>1234</Value></Values></ContentFilterCondition>')
-    ])
+    @pytest.mark.parametrize(
+        'field_name,field_to_search_by_id,expected_condition', 
+        [
+            (
+                'id_field_name',
+                '', 
+                '<TextFilterCondition><Operator>Contains</Operator><Field name="id_field_name">field_id</Field><Value>1234</Value></TextFilterCondition>',
+            ),
+            (   'id_field_name',
+                'id_field_name', 
+                '<ContentFilterCondition><Level>5678</Level><Operator>Equals</Operator><Values><Value>1234</Value></Values></ContentFilterCondition>',
+            )
+            
+        ]
+    )
     def test_search_records_soap_request(self, field_name, field_to_search_by_id, expected_condition):
         """
         Given:

@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from datetime import UTC, datetime
+from enum import Enum
 import random
 
 import dateparser
@@ -53,6 +53,12 @@ ACCOUNT_STATUS_DICT = {1: "Active", 2: "Inactive", 3: "Locked"}
 
 API_ENDPOINT = demisto.params().get("api_endpoint", "api")
 
+class FilterConditionNames(Enum):
+    date = 'DateComparisonFilterCondition'
+    numeric = 'NumericFilterCondition'
+    text = 'TextFilterCondition'
+    content = 'ContentFilterCondition'
+    
 
 def parser(
     date_str,
@@ -220,8 +226,15 @@ def search_records_by_report_soap_request(token, report_guid):
     return ET.tostring(root)
 
 
-def construct_filter_condition(condition_name: str, operator: str, field_name: str, field_id: str, search_value: str, sub_elements_tags_values: dict[str, Any] | None = None) -> str:
-    root = ET.Element(condition_name)
+def construct_generic_filter_condition(
+    condition_name: FilterConditionNames,
+    operator: str,
+    field_name: str,
+    field_id: str,
+    search_value: str,
+    sub_elements_tags_values: dict[str, Any] | None = None
+) -> str:
+    root = ET.Element(condition_name.value)
 
     operator_element = ET.SubElement(root, 'Operator')
     operator_element.text = operator
@@ -252,7 +265,7 @@ def construct_content_filter_condition(operator: str, level_id: str, search_valu
     Returns:
         str: An XML string representing the ContentFilterCondition element.
     """
-    root = ET.Element("ContentFilterCondition")
+    root = ET.Element(FilterConditionNames.content.value)
 
     level = ET.SubElement(root, 'Level')
     level.text = level_id
@@ -268,15 +281,15 @@ def construct_content_filter_condition(operator: str, level_id: str, search_valu
 
 
 def search_records_soap_request(
-    token,
-    app_id,
-    display_fields,
-    field_id,
-    field_name,
-    search_value,
-    date_operator="",
-    field_to_search_by_id="",
-    numeric_operator="",
+    token: str,
+    app_id: str,
+    display_fields: str,
+    field_id: str,
+    field_name: str,
+    search_value: str | None,
+    date_operator: str | None = "",
+    field_to_search_by_id: str | None = "",
+    numeric_operator: str | None = "",
     max_results=10,
     level_id: str = "",
     sort_type: str = "Ascending",
@@ -302,38 +315,64 @@ def search_records_soap_request(
         + f'             <Criteria><ModuleCriteria><Module name="appname">{app_id}</Module></ModuleCriteria>'
     )
 
-    date_search_extras = {'TimeZoneId': 'UTC Standard Time', 'IsTimeIncluded': 'TRUE'}
+    date_search_options = {'TimeZoneId': 'UTC Standard Time', 'IsTimeIncluded': 'TRUE'}
+
+    filter_conditions: set[str] = set()
+
+    if xml_filter_condition:
+        filter_conditions.add(xml_filter_condition)
 
     if search_value:
-        request_body += "<Filter><Conditions>"
-
         if date_operator:
-            request_body += construct_filter_condition('DateComparisonFilterCondition', date_operator,
-                                                       field_name, field_id, search_value, sub_elements_tags_values=date_search_extras)
+            filter_conditions.add(
+                construct_generic_filter_condition(
+                    FilterConditionNames.date,
+                    operator=date_operator,
+                    field_name=field_name,
+                    field_id=field_id,
+                    search_value=search_value,
+                    sub_elements_tags_values=date_search_options,
+                )
+            )
 
         elif numeric_operator:
-            request_body += construct_filter_condition('NumericFilterCondition',
-                                                       numeric_operator, field_name, field_id, search_value)
+            filter_conditions.add(
+                construct_generic_filter_condition(
+                    FilterConditionNames.numeric,
+                    operator=numeric_operator,
+                    field_name=field_name,
+                    field_id=field_id,
+                    search_value=search_value,
+                )
+            )
+
         else:
             if (
                 field_to_search_by_id
                 and field_to_search_by_id.lower() == field_name.lower()
             ):
-                request_body += construct_content_filter_condition('Equals', level_id, search_value)
+                filter_conditions.add(
+                    construct_content_filter_condition(
+                        operator='Equals',
+                        level_id=level_id,
+                        search_value=search_value,
+                    )
+                )
+
             else:
-                request_body += construct_filter_condition('TextFilterCondition', 'Contains', field_name, field_id, search_value)
+                filter_conditions.add(
+                    construct_generic_filter_condition(
+                        FilterConditionNames.text,
+                        operator='Contains',
+                        field_name=field_name,
+                        field_id=field_id,
+                        search_value=search_value
+                    )
+                )
 
-        request_body += "</Conditions></Filter>"
-
-    if date_operator:  # Fetch incidents must present date_operator
-        request_body += (
-            "<Filter>"
-            + "<Conditions>"
-            + construct_filter_condition('DateComparisonFilterCondition', date_operator, field_name,
-                                         field_id, search_value, sub_elements_tags_values=date_search_extras)
-            + "</Conditions>"
-            + "</Filter>"
-        )
+    if filter_conditions:
+        filter_conditions_xml = '\n'.join(filter_conditions)
+        request_body += f"<Filter><Conditions>{filter_conditions_xml}</Conditions></Filter>"
 
     if field_id:
         request_body += (
