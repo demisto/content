@@ -19,6 +19,8 @@
     "githubUser": [
         "FabienMht",
         "CesarGW",
-        "ThibaultReboul"
-    ]
+        "ThibaultReboul",
+	"clement-lyonnet"
+    ],
+    "defaultDataSource": "GCenter 103"
 }
