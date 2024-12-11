@@ -446,10 +446,10 @@ def test_incident_create_command(mocker):
         'confidence': '100',
         'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     }
-    mocker.patch.object(client.incident, 'create', return_value={'id': '123456', 'name': 'Lorem ipsum dolor'})
+    mocker.patch.object(client.incident, 'create', return_value={'id': '123456'})
     results: CommandResults = incident_create_command(client, args)
     assert "Incident created successfully" in results.readable_output
-    assert {'id': '123456', 'name': 'Lorem ipsum dolor'} == results.outputs
+    assert {'id': '123456'} == results.outputs
 
 
 def test_incident_create_command_exception(mocker, capfd):

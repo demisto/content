@@ -124,7 +124,7 @@ def get_observables(
         last_run_id: The last id from the previous call to use pagination.
         limit: the max observables to fetch
         search: The observable's value to filter by.
-        get_all: Whether to fetch all observables or just the page (default False). 
+        get_all: Whether to fetch all observables or just the page (default False).
 
     Returns:
         observables: dict of observables
@@ -192,7 +192,7 @@ def get_indicators(
         limit: The maximum number of indicators to fetch (default 50).
         last_run_id: The last ID from the previous call for pagination.
         search: Search string for the indicator value.
-        get_all: Whether to fetch all indicators or just the page (default False). 
+        get_all: Whether to fetch all indicators or just the page (default False).
 
     Returns:
         A dictionary containing indicators and pagination information.
@@ -307,7 +307,7 @@ def get_incidents(
         limit: The maximum number of incidents to fetch (default 50).
         last_run_id: The last ID from the previous call for pagination.
         search: Search string for the incident value.
-        get_all: Whether to fetch all incidents or just the page (default False). 
+        get_all: Whether to fetch all incidents or just the page (default False).
 
     Returns:
         A dictionary containing incidents and pagination information.
