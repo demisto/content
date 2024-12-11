@@ -1,36 +1,32 @@
 Use the Zoom integration manage your Zoom users and meetings
 This integration was integrated and tested with version 2.0.0 of Zoom
 
-## Configure Zoom on Cortex XSOAR
+## Configure Zoom in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Zoom.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | `Server URL` (e.g., '<https://api.zoom.us/v2/>') |  | True |
-    | `Account ID (OAuth)` |  | True |
-    | `Client ID (OAuth)` |  | True |
-    | `Client Secret (OAuth)` |  | True |
-    | `Use system proxy settings` |  | False |
-    | `Trust any certificate (not secure)` |  | False |
-    | `Long running instance`| Enable in order to use zoom-ask and for mirroring. |False |
-    | `Listen Port`|Listener port number.  |False|
-    | `Bot JID`| Zoom Bot app JID. | False|
-    | `Bot Client ID (OAuth)`| Zoom Bot app client ID. | False|
-    | `Bot Client Secret (OAuth)`|  Zoom Bot app secret ID. | False|
-    | `Secret Token`| For mirroring, see [Configuring Secret Token](#secret-token). |False|
-    | `Verification Token`| For verify the mirror in. |False|
-    | `Mirroring` | Enable Incident Mirroring. See [how to configure the app](#secret-token). | False |
-    | `Certificate (Required for HTTPS)`| (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are supported only using engine.|False|
-    |`Private Key (Required for HTTPS)`|(For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key|False|
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| `Server URL` (e.g., '<https://api.zoom.us/v2/>') |  | True |
+| `Account ID (OAuth)` |  | True |
+| `Client ID (OAuth)` |  | True |
+| `Client Secret (OAuth)` |  | True |
+| `Use system proxy settings` |  | False |
+| `Trust any certificate (not secure)` |  | False |
+| `Long running instance`| Enable in order to use zoom-ask and for mirroring. |False |
+| `Listen Port`|Listener port number.  |False|
+| `Bot JID`| Zoom Bot app JID. | False|
+| `Bot Client ID (OAuth)`| Zoom Bot app client ID. | False|
+| `Bot Client Secret (OAuth)`|  Zoom Bot app secret ID. | False|
+| `Secret Token`| For mirroring, see [Configuring Secret Token](#secret-token). |False|
+| `Verification Token`| For verify the mirror in. |False|
+| `Mirroring` | Enable Incident Mirroring. See [how to configure the app](#secret-token). | False |
+| `Certificate (Required for HTTPS)`| (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are supported only using engine.|False|
+|`Private Key (Required for HTTPS)`|(For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key|False|
  
   
 
 
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 ### Server configuration (XSOAR 6.x)
@@ -105,7 +101,7 @@ In the Team Chat Subscription section under BOT endpoint URL add:
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### zoom-create-user
@@ -2044,4 +2040,3 @@ There is no context output for this command.
 #### Human Readable Output
 
 > Channel successfully deleted.
-

@@ -98,15 +98,13 @@ class Client(BaseClient):
     """Client class to interact with the service API"""
 
     def __init__(self, url: str, verify: bool, proxy: bool, client_id: str, client_secret: str, redirect_uri: str,
-                 scope: str | None, user: str, command: str):
+                 scope: str | None, user: str):
         super().__init__(base_url=url, verify=verify, proxy=proxy)
         self.client_id = client_id
         self.client_secret = client_secret
         self.redirect_uri = redirect_uri
         self.scope = scope
         self.user = user
-        if command == 'cisco-webex-oauth-start':
-            remove_integration_context_for_user(self.user)
 
     def create_access_token(self, grant_type: str, code: str | None = None, refresh_token: str | None = None) -> dict:
         """
@@ -199,8 +197,8 @@ class Client(BaseClient):
 
 class AdminClient(Client):
     def __init__(self, url: str, verify: bool, proxy: bool, client_id: str, client_secret: str, redirect_uri: str,
-                 scope: str | None, org_id: str, command: str):
-        super().__init__(url, verify, proxy, client_id, client_secret, redirect_uri, scope, user='admin', command=command)
+                 scope: str | None, org_id: str):
+        super().__init__(url, verify, proxy, client_id, client_secret, redirect_uri, scope, user='admin')
         self.org_id = org_id
         self._headers = {
             'Authorization': f'Bearer {self.get_access_token()}'
@@ -255,9 +253,8 @@ class AdminClient(Client):
 
 class ComplianceOfficerClient(Client):
     def __init__(self, url: str, verify: bool, proxy: bool, client_id: str, client_secret: str, redirect_uri: str,
-                 scope: str | None, command: str):
-        super().__init__(url, verify, proxy, client_id, client_secret, redirect_uri, scope, user='compliance_officer',
-                         command=command)
+                 scope: str | None):
+        super().__init__(url, verify, proxy, client_id, client_secret, redirect_uri, scope, user='compliance_officer')
         self._headers = {
             'Authorization': f'Bearer {self.get_access_token()}'
         }
@@ -472,6 +469,7 @@ def main() -> None:  # pragma: no cover
     max_fetch = arg_to_number(params.get('max_fetch', DEFAULT_MAX_FETCH)) or DEFAULT_MAX_FETCH
     if not 0 < max_fetch <= 2000:
         max_fetch = DEFAULT_MAX_FETCH
+    user = args.get('user')
 
     demisto.debug(f'Command being called is {command}')
 
@@ -485,7 +483,6 @@ def main() -> None:  # pragma: no cover
             redirect_uri=admin_redirect_uri,
             org_id=admin_org_id,
             scope=SCOPE.get('admin'),
-            command=command,
         )
 
         compliance_officer_client = ComplianceOfficerClient(
@@ -496,24 +493,24 @@ def main() -> None:  # pragma: no cover
             client_secret=compliance_officer_client_secret,
             redirect_uri=compliance_officer_redirect_uri,
             scope=SCOPE.get('compliance_officer'),
-            command=command,
         )
 
         if command == 'test-module':
             test_module()
 
         elif command == 'cisco-webex-oauth-start':
-            client = admin_client if args.get('user') == 'admin' else compliance_officer_client
+            remove_integration_context_for_user(user)
+            client = admin_client if user == 'admin' else compliance_officer_client
             result = oauth_start(client)
             return_results(result)
 
         elif command == 'cisco-webex-oauth-complete':
-            client = admin_client if args.get('user') == 'admin' else compliance_officer_client
+            client = admin_client if user == 'admin' else compliance_officer_client
             result = oauth_complete(client, args)
             return_results(result)
 
         elif command == 'cisco-webex-oauth-test':
-            client = admin_client if args.get('user') == 'admin' else compliance_officer_client
+            client = admin_client if user == 'admin' else compliance_officer_client
             result = oauth_test(client)
             return_results(result)
 

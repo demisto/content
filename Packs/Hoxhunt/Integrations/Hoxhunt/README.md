@@ -1,29 +1,27 @@
 Use the Hoxhunt integration to send feedback to reporters of incidents, set incident sensitivity, and apply SOC classification to incidents.
 This integration was integrated and tested with version August 2024 of Hoxhunt.
 
-## Configure Hoxhunt on Cortex XSOAR
+## Configure Hoxhunt v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Hoxhunt.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. <https://api.hoxhunt.com/graphql-external>) |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | API Key | Input your api key from Hoxhunt | False |
-    | Fetch incidents |  | False |
-    | Incidents Fetch Interval |  | False |
-    | Incident type |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Query Filter | Input a query filter for incidents to be fetched | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | e.g. <https://api.hoxhunt.com/graphql-external> | True |
+| API Key | Input your api key from Hoxhunt | True |
+| Fetch incidents |  | False |
+| Incidents Fetch Interval |  | False |
+| Incident type |  | False |
+| First fetch timestamp | \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days\). Defaults to 7 days. | False |
+| Fetch limit | Maximum number of incidents per fetch. Cap is 100. | False |
+| Only fetch escalated incidents | If enabled, only escalated incidents will be fetched. Set up escalation rules in Hoxhunt Response -&gt; Incident Rules | False |
+| Only fetch open incidents | If enabled, only open incidents will be fetched. | False |
+| Use system proxy settings |  | False |
+| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Hoxhunt to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Hoxhunt\), or Incoming and Outgoing \(from/to Cortex XSOAR and Hoxhunt\). | False |
+| Trust any certificate (not secure) |  | False |
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### hoxhunt-get-current-user

@@ -49,13 +49,21 @@ configuration:
   advanced: true
   section: Collect
 - additionalinfo: Maximum number of computer events to fetch at a time.
-  defaultvalue: '1000'
+  defaultvalue: '500'
   display: Max computer events per fetch
   name: max_fetch_computer
   required: false
   type: 0
   advanced: true
   section: Collect
+- display: Fetch all computers
+  name: fetch_all_computers
+  defaultvalue: "false"
+  type: 8
+  required: false
+  advanced: true
+  section: Collect
+  additionalinfo: When set to true, retrieves all available computers during the initial fetch.
 description: Use this integration to fetch audit logs, alerts and computer events from Jamf Protect as events in Cortex XSIAM.
 display: Jamf Protect Event Collector
 name: Jamf Protect Event Collector
@@ -84,7 +92,7 @@ script:
   type: python
   subtype: python3
   isfetchevents: true
-  dockerimage: demisto/python3:3.11.9.105369
+  dockerimage: demisto/python3:3.11.10.116949
 marketplaces:
 - marketplacev2
 fromversion: 6.9.0
