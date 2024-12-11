@@ -3199,33 +3199,39 @@ def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
     return xdr_close_reason
 
 
-def handle_outgoing_issue_closure(remote_args):
-    incident_id = remote_args.remote_incident_id
-    demisto.debug(f"handle_outgoing_issue_closure {incident_id=}")
-    update_args = remote_args.delta
-    current_remote_status = remote_args.data.get('status') if remote_args.data else None
-    close_reason = update_args.get('close_reason') or update_args.get('closeReason')
-    demisto.debug(f'{current_remote_status=} {remote_args.data=} {remote_args.inc_status=} {close_reason=}')
-    # force closing remote incident only if:
-    #   The XSOAR incident is closed
-    #   and the remote incident isn't already closed
-    if remote_args.inc_status == 2 and current_remote_status not in XDR_RESOLVED_STATUS_TO_XSOAR and close_reason:
-        if close_notes := update_args.get('closeNotes'):
-            demisto.debug(f"handle_outgoing_issue_closure {incident_id=} {close_notes=}")
-            update_args['resolve_comment'] = close_notes
+def handle_outgoing_issue_closure(parsed_args: UpdateRemoteSystemArgs):
+    """
+    Handle closure of an outgoing issue by updating the delta field in the parsed_args object. The closed_reason will
+    be determined based on whether it exists in XSOAR or XDR. If the XSOAR incident is closed and the remote incident isn't
+    already closed, update the delta with resolve comment or xsoar close-reason.
 
-        xdr_close_reason = resolve_xdr_close_reason(close_reason)
-        update_args['status'] = xdr_close_reason
-        demisto.debug(f"handle_outgoing_issue_closure Closing Remote incident {incident_id=} with status {update_args['status']}")
+    Args:
+        parsed_args (object): An object of type UpdateRemoteSystemArgs, containing the parsed arguments.
+    """
+
+    close_reason_fields = ['close_reason', 'closeReason', 'closeNotes', 'resolve_comment', 'closingUserId']
+    closed_reason = (next((parsed_args.delta.get(key) for key in close_reason_fields if parsed_args.delta.get(key)), None)
+                     or next((parsed_args.data.get(key) for key in close_reason_fields if parsed_args.data.get(key)), None))
+    demisto.debug(f"handle_outgoing_issue_closure: incident_id: {parsed_args.remote_incident_id} {closed_reason=}")
+    remote_xdr_status = parsed_args.data.get('status') if parsed_args.data else None
+    if parsed_args.inc_status == IncidentStatus.DONE and closed_reason and remote_xdr_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
+        demisto.debug("handle_outgoing_issue_closure: XSOAR is closed, xdr is open. updating delta")
+        if close_notes := parsed_args.delta.get('closeNotes'):
+            demisto.debug(f"handle_outgoing_issue_closure: adding resolve comment to the delta. {close_notes}")
+            parsed_args.delta['resolve_comment'] = close_notes
+
+        parsed_args.delta['status'] = resolve_xdr_close_reason(closed_reason)
+        demisto.debug(
+            f"handle_outgoing_issue_closure Closing Remote incident ID: {parsed_args.remote_incident_id}"
+            f" with status {parsed_args.delta['status']}")
 
 
-def get_update_args(remote_args):
+def get_update_args(parsed_args):
     """Change the updated field names to fit the update command"""
-
-    handle_outgoing_issue_closure(remote_args)
-    handle_outgoing_incident_owner_sync(remote_args.delta)
-    handle_user_unassignment(remote_args.delta)
-    return remote_args.delta
+    handle_outgoing_issue_closure(parsed_args)
+    handle_outgoing_incident_owner_sync(parsed_args.delta)
+    handle_user_unassignment(parsed_args.delta)
+    return parsed_args.delta
 
 
 def get_distribution_versions_command(client, args):
