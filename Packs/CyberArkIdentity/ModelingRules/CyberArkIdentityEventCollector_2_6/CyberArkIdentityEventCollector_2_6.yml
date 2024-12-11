@@ -1,0 +1,5 @@
+fromversion: 9.0.0
+id: cyberark_identity_ModelingRule
+name: CyberArk Identity Modeling Rule
+rules: ''
+schema: ''

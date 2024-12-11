@@ -1,0 +1,379 @@
+[RULE: huawei_network_devices_header_fields]
+alter 
+    hostname = arrayindex(regextract(_raw_log, "\<\d+\>\S{3}\s\d{2}\s\d{4}\s\d{2}\:\d{2}\:\d{2}\s(\S+)"),0),
+    module_name = arrayindex(regextract(_raw_log,"\<\d+\>\S{3}\s\d{2}\s\d{4}\s\d{2}\:\d{2}\:\d{2}\s\S+\s+\%*\d*(\w+)"),0),
+    log_level = arrayindex(regextract(_raw_log,"\<\d+\>\S{3}\s\d{2}\s\d{4}\s\d{2}\:\d{2}\:\d{2}\s\S+\s+\%*\d*\w+\/(\d)"),0),
+    log_des = arrayindex(regextract(_raw_log,"\<\d+\>\S{3}\s\d{2}\s\d{4}\s\d{2}\:\d{2}\:\d{2}\s\S+\s+\%*\d*\w+\/\d\/(\w+)"),0),
+    log = arrayindex(regextract(_raw_log,"\<\d+\>\S{3}\s\d{2}\s\d{4}\s\d{2}\:\d{2}\:\d{2}\s\S+\s+\%*\d*\w+\/\d\/\w+.*?\:(.+)"),0)
+| alter
+    xdm.intermediate.host.hostname = hostname,
+    xdm.observer.type = module_name,
+    xdm.event.log_level = if(log_level = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, log_level = "1", XDM_CONST.LOG_LEVEL_ALERT, log_level = "2", XDM_CONST.LOG_LEVEL_CRITICAL, log_level = "3", XDM_CONST.LOG_LEVEL_ERROR, log_level = "4", XDM_CONST.LOG_LEVEL_WARNING, log_level = "5", XDM_CONST.LOG_LEVEL_NOTICE, log_level = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level = "7", XDM_CONST.LOG_LEVEL_DEBUG, log_level),
+    xdm.event.original_event_type = log_ref,
+    xdm.event.type = log_des,
+    xdm.event.description = log;
+
+//***** SHELL/5/CMDRECORD & SHELL/5/USERCONFIRM & SHELL/6/CMDCONFIRM_UNIFORMRECORD & SHELL/6/DISPLAY_CMDRECORD *****
+[MODEL: dataset="huawei_network_devices_raw"]
+alter 
+    log_ref = arrayindex(regextract(_raw_log,"[^\d\s]+\/\w+\/\w+"),0)
+| filter log_ref in ("SHELL/5/CMDRECORD","SHELL/5/USERCONFIRM","SHELL/6/CMDCONFIRM_UNIFORMRECORD", "SHELL/6/DISPLAY_CMDRECORD")
+| call huawei_network_devices_header_fields
+| alter
+    des = arrayindex(regextract(_raw_log,"\[\d+\]\:(.+?)\."),0),
+    task = arrayindex(regextract(_raw_log,"Task\=(\w+)"),0),
+    ipv4 = arrayindex(regextract(_raw_log,"I[pP]\=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    ipv6 = arrayindex(regextract(_raw_log,"I[pP]\=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+    user = arrayindex(regextract(_raw_log,"User[Name]*\=(\w+)"),0),
+    auth_protocol = arrayindex(regextract(_raw_log,"AuthenticationMethod\=\"(\w+)"),0), //Relevant for SHELL/5/CMDRECORD events
+    command = arrayindex(regextract(_raw_log,"Command\=\"([^\"]+)"),0), //Relevant for SHELL/5/CMDRECORD, SHELL/6/CMDCONFIRM_UNIFORMRECORD
+    result = arrayindex(regextract(_raw_log,"Result\=(\w+)"),0), //Relevant for SHELL/5/CMDRECORD
+    more_info = arrayindex(if( log_ref="SHELL/5/USERCONFIRM", regextract(_raw_log,"(Warning\:.+)"), log_ref="SHELL/6/CMDCONFIRM_UNIFORMRECORD", regextract(_raw_log,"(PromptInfo.+)\)")),0)    
+
+| alter //xdm mapping
+    xdm.alert.description = if(log_ref="SHELL/5/USERCONFIRM", concat(des,", ",more_info), log_ref="SHELL/6/CMDCONFIRM_UNIFORMRECORD", concat(des,", ", more_info), des),
+    xdm.source.interface = task,
+    xdm.source.ipv4 = ipv4,
+    xdm.source.ipv6 = ipv6,
+    xdm.source.identity.username = user,
+    xdm.auth.service =  auth_protocol,
+    xdm.source.process.command_line = command,
+    xdm.event.outcome = if(result="Success", XDM_CONST.OUTCOME_SUCCESS, result~="[Ff]ail.*", XDM_CONST.OUTCOME_FAILED,to_string(result));
+
+//***** CM/5/USER_OFFLINERESULT & CM/5/USER_ACCESSRESULT *****
+alter 
+    log_ref = arrayindex(regextract(_raw_log,"[^\d\s]+\/\w+\/\w+"),0)
+| filter log_ref in ("CM/5/USER_OFFLINERESULT","CM/5/USER_ACCESSRESULT")
+| call huawei_network_devices_header_fields
+| alter
+    device_mac = regextract(_raw_log,"DEVICEMAC\:(\S+?)\;"),
+    user = arrayindex(regextract(_raw_log,"USER\:(\S+?)\;"),0),
+    mac_user = regextract(_raw_log,"\;MAC\:(\S+?)\;"),
+    ipv4 = arrayindex(regextract(_raw_log,"IPADDRESS\:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0), 
+    ipv6 = arrayindex(regextract(_raw_log,"IPADDRESS\:([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+    result = arrayindex(regextract(_raw_log,"RESULT\:(.+?)\;"),0),
+    interface = arrayindex(regextract(_raw_log,"INTERFACE\:(\S+)\;"),0),
+    access_type = arrayindex(regextract(_raw_log,"ACCESS\sTYPE\:(\S+)\;"),0),
+    id = arrayindex(regextract(_raw_log,"CIB\sID\:(\d+)"),0),
+    vpn = arrayindex(regextract(_raw_log,"VPNNAME\:(.+?)\;"),0),
+    auth_protocol = arrayindex(regextract(_raw_log,"AUTHPROTOCOL\:(.+?)\;"),0)
+| alter //xdm mapping
+    xdm.intermediate.host.mac_addresses = device_mac,
+    xdm.source.identity.username = user,
+    xdm.source.host.mac_addresses = mac_user,
+    xdm.source.ipv4 = if(ipv4 != "-" and ipv4 != null, ipv4),
+    xdm.source.ipv6 = if(ipv6 != "-" and ipv6 != null, ipv6),
+    xdm.event.outcome = if(result~="[Ss]uccess" or result~="Idle\scut",XDM_CONST.OUTCOME_SUCCESS, result~="[Ff]ail.*", XDM_CONST.OUTCOME_FAILED,result="User request to offline",XDM_CONST.OUTCOME_PARTIAL),
+    xdm.event.outcome_reason = result,
+    xdm.source.interface = interface,
+    xdm.network.application_protocol = access_type,
+    xdm.event.id = id,
+    xdm.source.application.name = if(vpn!= null, concat("VPN Name: ", vpn)),
+    xdm.auth.auth_method = auth_protocol;
+
+//****** LINE/4/USERLOGOUT & LINE/4/USERLOGIN & LINE/5/VTYUSERLOGIN & LINE/5/VTYUSERLOGOUT ******
+alter 
+    log_ref = arrayindex(regextract(_raw_log,"[^\d\s]+\/\w+\/\w+"),0)
+| filter log_ref in ("LINE/4/USERLOGOUT", "LINE/4/USERLOGIN", "LINE/5/VTYUSERLOGIN","LINE/5/VTYUSERLOGOUT")
+| call huawei_network_devices_header_fields
+| alter 
+    id = arrayindex(regextract(_raw_log,"OID\s(1\.3\.6\.1\.4\.1\.2011\.5\.25\.207\.2\.\d)"),0),
+    description = arrayindex(regextract(_raw_log,"(A\suser\s\w+)"),0),
+    username = arrayindex(regextract(_raw_log,"UserName\=(\S+)\,"),0),
+    ipv4 = arrayindex(regextract(_raw_log,"UserIP\=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    ipv6 = arrayindex(regextract(_raw_log,"UserIP\=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+    channel = arrayindex(regextract(_raw_log,"UserChannel\=(\w+)"),0)
+| alter //xdm mapping 
+    xdm.event.id = id,
+    xdm.event.operation_sub_type = description,
+    xdm.source.identity.username = username,
+    xdm.source.ipv4 = ipv4,
+    xdm.source.ipv6 = ipv6,
+    xdm.source.interface = channel;
+
+// ***** SSMPADP/4/AUTHENTICAL_FAIL & SNMP/4/AUTHFAIL *****
+alter 
+    log_ref = arrayindex(regextract(_raw_log,"[^\d\s]+\/\w+\/\w+"),0)
+| filter log_ref in("SSMPADP/4/AUTHENTICAL_FAIL","SNMP/4/AUTHFAIL")
+| call huawei_network_devices_header_fields
+| alter 
+    oid = arrayindex(regextract(_raw_log,"OID\s(1.3.6.1.6.3.1.1.5.5)"),0),
+    ipv4 = arrayindex(regextract(_raw_log,"RemoteIpAddress\=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    ipv6 = arrayindex(regextract(_raw_log,"RemoteIpAddress\=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+    outcome_reason = arrayindex(regextract(_raw_log,"\.\d\s(.+?)\."),0)
+| alter //xdm mapping
+    xdm.event.id = oid,
+    xdm.source.ipv4 = ipv4,
+    xdm.source.ipv6 = ipv6,
+    xdm.event.outcome_reason = outcome_reason,
+    xdm.event.outcome = XDM_CONST.OUTCOME_FAILED;
+
+// ***** SNMP/5/SNMP_IP_LOCK & SNMP/5/SNMP_LOG_IP_UNLOCK & SNMP/4/SNMP_IPLOCK & SNMP/4/SNMP_IPUNLOCK *****
+alter 
+    log_ref = arrayindex(regextract(_raw_log,"[^\d\s]+\/\w+\/\w+"),0)
+| filter log_ref in ("SNMP/5/SNMP_IP_LOCK","SNMP/5/SNMP_LOG_IP_UNLOCK","SNMP/4/SNMP_IPLOCK","SNMP/4/SNMP_IPUNLOCK")
+| call huawei_network_devices_header_fields
+| alter 
+    des = arrayindex(regextract(_raw_log,"\[\d+\]\:(.+?)\."),0),
+    ipv4 = arrayindex(regextract(_raw_log,"SourceIP\=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    ipv6 = arrayindex(regextract(_raw_log,"SourceIP\=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0)
+| alter //xdm mapping
+    xdm.alert.description = des,
+    xdm.source.ipv4 = ipv4,
+    xdm.source.ipv6 = ipv6,
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS;
+
+// ***** LLDP/4/BAD_PACKET *****
+alter 
+    log_ref = arrayindex(regextract(_raw_log,"[^\d\s]+\/\w+\/\w+"),0)
+| filter log_ref in ("LLDP/4/BAD_PACKET")
+| call huawei_network_devices_header_fields
+| alter src_interface = arrayindex(regextract(_raw_log,"interface\s(\S+)\."),0)
+| alter xdm.source.interface = src_interface; //xdm mapping
+
+// ***** INFO/4/SUPPRESS_LOG *****
+alter 
+    log_ref = arrayindex(regextract(_raw_log,"[^\d\s]+\/\w+\/\w+"),0)
+| filter log_ref in ("INFO/4/SUPPRESS_LOG")
+| call huawei_network_devices_header_fields
+| alter 
+    des = arrayindex(regextract(_raw_log,"\[\d+\]\:(.+\.)"),0),
+    id = arrayindex(regextract(_raw_log,"InfoID\=(\d+)"),0),
+    alias = arrayindex(regextract(_raw_log,"InfoAlias\=(\w+)"),0)
+| alter //xdm mapping
+    xdm.alert.description = des,
+    xdm.event.outcome_reason = alias,
+    xdm.event.id = id;
+
+// ***** ARP/4/ARP_DUPLICATE_IPADDR	*****
+alter 
+    log_ref = arrayindex(regextract(_raw_log,"[^\d\s]+\/\w+\/\w+"),0)
+| filter log_ref in ("ARP/4/ARP_DUPLICATE_IPADDR")
+| call huawei_network_devices_header_fields
+| alter 
+    des = arrayindex(regextract(_raw_log,"\[\d+\]\:(.+interface\.)"),0),
+    ipv4 = arrayindex(regextract(_raw_log,"IpAddress\=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    ipv6 = arrayindex(regextract(_raw_log,"IpAddress\=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+    interface = arrayindex(regextract(_raw_log,"InterfaceName\=(\S+)\,"),0),
+    mac = regextract(_raw_log,"MacAddress\=(.+)[\)\,]"),
+    pe_vlan = to_number(arrayindex(regextract(_raw_log,"PE-VLAN\=(.+)[\)\,]"),0)),
+    ce_vlan = to_number(arrayindex(regextract(_raw_log,"CE-VLAN\=(.+)[\)\,]"),0))
+| alter //xdm mapping
+    xdm.alert.description = des,
+    xdm.source.ipv4 = if(ipv4 != null, ipv4),
+    xdm.source.ipv6 = if(ipv6 != null, ipv6),
+    xdm.source.interface = interface,
+    xdm.source.host.mac_addresses = mac,
+    xdm.source.vlan = coalesce(ce_vlan, pe_vlan);
+
+// ***** HWCM/4/CFGCHANGE && HWCM/5/TRAPLOG *****
+alter 
+    log_ref = arrayindex(regextract(_raw_log,"[^\d\s]+\/\w+\/\w+"),0)
+| filter log_ref in ("HWCM/4/CFGCHANGE", "HWCM/5/TRAPLOG")
+| call huawei_network_devices_header_fields
+| alter 
+    oid = arrayindex(regextract(_raw_log,"OID\s(\S+)"),0),
+    des = arrayindex(regextract(_raw_log,"([Cc]onfigure.+\.)"),0),
+    event_id = arrayindex(regextract(_raw_log,"EventIndex\=(\d+)"),0),
+    more_info = arrayindex(regextract(_raw_log,"(Command.+)\)"),0)
+| alter
+    xdm.event.id = oid,
+    xdm.alert.original_alert_id = event_id,
+    xdm.alert.description = concat(des, " ", more_info);
+
+//***** IFPDT/4/PKT_OUTDISCARD_ABNL & IFPDT/4/PKT_OUTDISCARD_NL *****
+alter 
+    log_ref = arrayindex(regextract(_raw_log,"[^\d\s]+\/\w+\/\w+"),0)
+| filter log_ref in ("IFPDT/4/PKT_OUTDISCARD_ABNL","IFPDT/4/PKT_OUTDISCARD_NL")
+| call huawei_network_devices_header_fields
+| alter 
+    interface = arrayindex(regextract(_raw_log,"Interface\=(\S+)\,"),0),
+    des = arrayindex(regextract(_raw_log,"\:(Interface.+\.)"),0)
+| alter
+    xdm.source.interface = interface,
+    xdm.alert.description = des;
+
+//***** SECE/4/ARPMISS & SECE/4/ARPMISS_SIP_SPEEDLIMIT_ALARM *****
+alter 
+    log_ref = arrayindex(regextract(_raw_log,"[^\d\s]+\/\w+\/\w+"),0)
+| filter log_ref in ("SECE/4/ARPMISS","SECE/4/ARPMISS_SIP_SPEEDLIMIT_ALARM")
+| call huawei_network_devices_header_fields
+| alter
+    attack_type = arrayindex(regextract(_raw_log,"AttackType\=(.+?)\,"),0),
+    interface = arrayindex(regextract(_raw_log,"SourceInterface\=(\S+)\,"),0),  //Relevant for SECE/4/ARPMISS
+    ipv4_1 = arrayindex(regextract(_raw_log,"SourceIP\=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0), //Relevant for SECE/4/ARPMISS
+    ipv6_1 = arrayindex(regextract(_raw_log,"SourceIP\=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0), //Relevant for SECE/4/ARPMISS
+    des1 = arrayindex(regextract(_raw_log,"\[\d+\]\:(.+\.)\("),0), //Relevant for SECE/4/ARPMISS
+    oid = arrayindex(regextract(_raw_log,"OID\s(\S+)"),0),
+    des2 = arrayindex(regextract(_raw_log,"The.+"),0), //Relevant for SECE/4/ARPMISS_SIP_SPEEDLIMIT_ALARM
+    ipv4_2 = arrayindex(regextract(_raw_log,"ip\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0), //Relevant for SECE/4/ARPMISS_SIP_SPEEDLIMIT_ALARM
+    ipv6_2 = arrayindex(regextract(_raw_log,"ip\s([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0) //Relevant for SECE/4/ARPMISS_SIP_SPEEDLIMIT_ALARM
+| alter
+    xdm.alert.original_threat_name = if( attack_type != null, attack_type),
+    xdm.source.interface = if(interface != null, interface),
+    xdm.event.id = if(oid != null, oid),
+    xdm.source.ipv4 = coalesce(ipv4_1,ipv4_2),
+    xdm.source.ipv6 = coalesce(ipv6_1,ipv6_2),
+    xdm.alert.description = if(des1 != null, des1, des2 != null, des2);
+    
+// ***** SHELL/5/TIMEOUT *****
+alter 
+    log_ref = arrayindex(regextract(_raw_log,"[^\d\s]+\/\w+\/\w+"),0)
+| filter log_ref in ("SHELL/5/TIMEOUT")
+| call huawei_network_devices_header_fields
+| alter
+    user = arrayindex(regextract(_raw_log,"\[\d+\]\:(\w+)"),0),
+    ipv4 = arrayindex(regextract(_raw_log,"from\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    ipv6 = arrayindex(regextract(_raw_log,"from\s([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+    des = arrayindex(regextract(_raw_log,"\[\d+\]\:(.+)"),0),
+    from = arrayindex(regextract(_raw_log,"from\s([^\d]\w+)"),0)
+| alter //xdm mapping
+    xdm.source.identity.username = user,
+    xdm.source.ipv4 = ipv4,
+    xdm.source.ipv6 = ipv6,
+    xdm.network.application_protocol = if(from!= null, from),
+    xdm.alert.description = des;
+
+//***** SSH/4/SSH_FAIL & SNMP/4/SNMP_FAIL & SHELL/5/LOGIN & SHELL/5/LOGOUT & SSH/5/SSH_CONNECT_CLOSED *****
+alter 
+    log_ref = arrayindex(regextract(_raw_log,"[^\d\s]+\/\w+\/\w+"),0)
+| filter log_ref in ("SSH/4/SSH_FAIL","SNMP/4/SNMP_FAIL", "SHELL/5/LOGIN","SHELL/5/LOGOUT", "SSH/5/SSH_CONNECT_CLOSED")
+| call huawei_network_devices_header_fields
+| alter
+    des = arrayindex(regextract(_raw_log,"\[\d+\]\:(.+?)\."),0),
+    ipv4 = arrayindex(regextract(_raw_log,"I[Pp]\=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    ipv6 = arrayindex(regextract(_raw_log,"I[Pp]\=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+    user = arrayindex(regextract(_raw_log,"UserName\=(.+?)[\,\)]"),0),
+    times = arrayindex(regextract(_raw_log,"Times\=(\d+)"),0), //Relevant for SSH/4/SSH_FAIL,SNMP/4/SNMP_FAIL events
+    reason = arrayindex(regextract(_raw_log,"Reason\=(.+?)[\)\,]"),0), //Relevant for SSH/4/SSH_FAIL,SNMP/4/SNMP_FAIL events
+    auth_protocol = arrayindex(regextract(_raw_log,"Type\=(\w+)"),0), //Relevant for SHELL/5/LOGIN, SHELL/5/LOGOUT events
+    auth_method = arrayindex(regextract(_raw_log,"Method\=\"(\w+)"),0), //Relevant for SHELL/5/LOGIN
+    interface = arrayindex(regextract(_raw_log,"(\w+)\.\s\(U"),0) //Relevant for SHELL/5/LOGIN, SHELL/5/LOGOUT events
+| alter // xdm mapping
+    xdm.alert.description = if(times!= null,concat(des," ", times," times"), des),
+    xdm.source.ipv4 = ipv4,
+    xdm.source.ipv6 = ipv6,
+    xdm.source.identity.username = user,
+    xdm.event.outcome = if(log_ref="SSH/4/SSH_FAIL" or log_ref="SNMP/4/SNMP_FAIL",XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_SUCCESS),
+    xdm.event.outcome_reason = reason,
+    xdm.network.application_protocol = auth_protocol,
+    xdm.auth.service = auth_method,
+    xdm.source.interface = interface;
+
+// ***** ARP/4/ARP_IPCONFLICT_TRAP events *****
+alter 
+    log_ref = arrayindex(regextract(_raw_log,"[^\d\s]+\/\w+\/\w+"),0)
+| filter log_ref in ("ARP/4/ARP_IPCONFLICT_TRAP")
+| call huawei_network_devices_header_fields
+| alter
+    oid = arrayindex(regextract(_raw_log,"OID\s(.+?)\s"),0),
+    des = arrayindex(regextract(_raw_log,"\.\d\s(.+?)\."),0),
+    ipv4 = arrayindex(regextract(_raw_log,"IP\saddress\=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    ipv6 = arrayindex(regextract(_raw_log,"IP\saddress\=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+    interfaces = regextract(_raw_log,"interface\=(\w+)\,"),
+    macs = regextract(_raw_log,"MAC\=(\S+)\,"),
+    conflict_des = arrayindex(regextract(_raw_log,"type\=(.+?)\)"),0)
+| alter //xdm mapping
+    xdm.event.id = oid,
+    xdm.alert.description = des,
+    xdm.source.ipv4 = ipv4,
+    xdm.source.ipv6 = ipv6,
+    xdm.source.interface = concat(arrayindex(interfaces,0), ", ", arrayindex(interfaces,1)),
+    xdm.source.host.mac_addresses = macs,
+    xdm.alert.name = "IP conflict",
+    xdm.event.outcome_reason = conflict_des;
+
+// ***** L2IFPPI/4/MFLPVLANALARM *****
+alter 
+    log_ref = arrayindex(regextract(_raw_log,"\w+\/\w+\/\w+"),0)
+| filter log_ref contains "L2IFPPI/4/MFLPVLANALARM"
+| call huawei_network_devices_header_fields
+| alter
+    oid = arrayindex(regextract(_raw_log,"OID\s(.+?)\s"),0),
+    des1 = arrayindex(regextract(_raw_log,"\.\d\s(.+?\,)"),0),
+    des2 = arrayindex(regextract(_raw_log,"\.\s(.+)"),0),
+    vlan_id = arrayindex(regextract(_raw_log,"VLANID\s\=\s(\d+)"),0),
+    mac = regextract(_raw_log,"MacAddress\s\=\s(.+?)\,"),
+    og_port = arrayindex(regextract(_raw_log,"Port\s\=\s(.+)\,"),0)
+| alter //xdm mapping
+    xdm.event.id = oid,
+    xdm.source.vlan = to_number(vlan_id),
+    xdm.source.host.mac_addresses = mac,
+    xdm.source.interface = og_port,
+    xdm.alert.description = concat(des1," ",des2);
+
+// ***** SECE/4/SPECIFY_SIP_ATTACK events *****
+alter 
+    log_ref = arrayindex(regextract(_raw_log,"[^\d\s]+\/\w+\/\w+"),0)
+| filter log_ref in ("SECE/4/SPECIFY_SIP_ATTACK")
+| call huawei_network_devices_header_fields
+| alter
+    des = arrayindex(regextract(_raw_log,"\[\d+\]\:(.+?\.)"),0),
+    ipv4 = arrayindex(regextract(_raw_log,"IP\=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    ipv6 = arrayindex(regextract(_raw_log,"IP\=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+    protocol = arrayindex(regextract(_raw_log,"AttackProtocol\=(\w+)"),0)
+| alter //xdm mapping
+    xdm.alert.description = des,
+    xdm.network.ip_protocol = if(protocol~="AH",XDM_CONST.IP_PROTOCOL_AH,protocol~="AN", XDM_CONST.IP_PROTOCOL_AN,protocol~="ARGUS" ,XDM_CONST.IP_PROTOCOL_ARGUS,protocol~="ARIS", XDM_CONST.IP_PROTOCOL_ARIS ,protocol~="AX25" ,XDM_CONST.IP_PROTOCOL_AX25 ,protocol~="BBN[\s\_]RCC[\s\_]MON" ,XDM_CONST.IP_PROTOCOL_BBN_RCC_MON , protocol~="BNA",XDM_CONST.IP_PROTOCOL_BNA , protocol~="BR[\_\s]SAT[\s\_]MON",XDM_CONST.IP_PROTOCOL_BR_SAT_MON , protocol~="CBT",XDM_CONST.IP_PROTOCOL_CBT , protocol~="CFTP",XDM_CONST.IP_PROTOCOL_CFTP , protocol~="CHAOS",XDM_CONST.IP_PROTOCOL_CHAOS,protocol~="COMPAQ[\s\_]PEER",XDM_CONST.IP_PROTOCOL_COMPAQ_PEER, protocol~="CPHB", XDM_CONST.IP_PROTOCOL_CPHB , protocol~="CPNX",XDM_CONST.IP_PROTOCOL_CPNX , protocol~="CRTP",XDM_CONST.IP_PROTOCOL_CRTP , protocol~="CRUDP",XDM_CONST.IP_PROTOCOL_CRUDP , protocol~="DCCP",XDM_CONST.IP_PROTOCOL_DCCP , protocol~="DCN[\s\_]MEAS",XDM_CONST.IP_PROTOCOL_DCN_MEAS , protocol~="DDP",XDM_CONST.IP_PROTOCOL_DDP , protocol~="DDX",XDM_CONST.IP_PROTOCOL_DDX , protocol~="DGP",XDM_CONST.IP_PROTOCOL_DGP , protocol~="DSR",XDM_CONST.IP_PROTOCOL_DSR , protocol~="EGP",XDM_CONST.IP_PROTOCOL_EGP , protocol~="EIGRP",XDM_CONST.IP_PROTOCOL_EIGRP , protocol~="EMCON", XDM_CONST.IP_PROTOCOL_EMCON , protocol~="ENCAP",XDM_CONST.IP_PROTOCOL_ENCAP , protocol~="ESP",XDM_CONST.IP_PROTOCOL_ESP , protocol~="ETHERIP",XDM_CONST.IP_PROTOCOL_ETHERIP , protocol~="FC",XDM_CONST.IP_PROTOCOL_FC , protocol~="FIRE",XDM_CONST.IP_PROTOCOL_FIRE , protocol~="GGP",XDM_CONST.IP_PROTOCOL_GGP , protocol~="GMTP",XDM_CONST.IP_PROTOCOL_GMTP , protocol~="GRE",XDM_CONST.IP_PROTOCOL_GRE , protocol~="HIP",XDM_CONST.IP_PROTOCOL_HIP , protocol~="HMP",XDM_CONST.IP_PROTOCOL_HMP , protocol~="HOPOPT", XDM_CONST.IP_PROTOCOL_HOPOPT , protocol~="IATP",XDM_CONST.IP_PROTOCOL_IATP , protocol~="ICMP",XDM_CONST.IP_PROTOCOL_ICMP , protocol~="IDPR",XDM_CONST.IP_PROTOCOL_IDPR , protocol~="IDPR[\s\_]CMTP",XDM_CONST.IP_PROTOCOL_IDPR_CMTP , protocol~="IDRP",XDM_CONST.IP_PROTOCOL_IDRP , protocol~="IFMP",XDM_CONST.IP_PROTOCOL_IFMP , protocol~="IGMP",XDM_CONST.IP_PROTOCOL_IGMP , protocol~="IGP",XDM_CONST.IP_PROTOCOL_IGP , protocol~="IL",XDM_CONST.IP_PROTOCOL_IL , protocol~="IP",XDM_CONST.IP_PROTOCOL_IP , protocol~="IPCOMP",XDM_CONST.IP_PROTOCOL_IPCOMP , protocol~="IPCV",XDM_CONST.IP_PROTOCOL_IPCV , protocol~="IPIP",XDM_CONST.IP_PROTOCOL_IPIP, protocol~="IPLT",XDM_CONST.IP_PROTOCOL_IPLT , protocol~="IPPC",XDM_CONST.IP_PROTOCOL_IPPC , protocol~="IPV6",XDM_CONST.IP_PROTOCOL_IPV6 , protocol~="IPV6[\s\_]FRAG",XDM_CONST.IP_PROTOCOL_IPV6_FRAG , protocol~="IPV6[\s\_]ICMP",XDM_CONST.IP_PROTOCOL_IPV6_ICMP , protocol~="IPV6[\s\_]NONXT", XDM_CONST.IP_PROTOCOL_IPV6_NONXT , protocol~="IPV6[\s\_]OPTS",XDM_CONST.IP_PROTOCOL_IPV6_OPTS , protocol~="IPV6[\s\_]ROUTE",XDM_CONST.IP_PROTOCOL_IPV6_ROUTE , protocol~="IPX[\s\_]IN[\s\_]IP",XDM_CONST.IP_PROTOCOL_IPX_IN_IP , protocol~="IRTP",XDM_CONST.IP_PROTOCOL_IRTP , protocol~="ISIS", XDM_CONST.IP_PROTOCOL_ISIS , protocol~="ISO[\s\_]IP",XDM_CONST.IP_PROTOCOL_ISO_IP , protocol~="ISO[\s\_]TP4",XDM_CONST.IP_PROTOCOL_ISO_TP4 , protocol~="I[\s\_]NLSP",XDM_CONST.IP_PROTOCOL_I_NLSP , protocol~="KRYPTOLAN",XDM_CONST.IP_PROTOCOL_KRYPTOLAN , protocol~="L2TP",XDM_CONST.IP_PROTOCOL_L2TP , protocol~="LARP",XDM_CONST.IP_PROTOCOL_LARP , protocol~="LEAF[\s\_]1",XDM_CONST.IP_PROTOCOL_LEAF_1 , protocol~="LEAF[\s\_]2",XDM_CONST.IP_PROTOCOL_LEAF_2 , protocol~="MANET",XDM_CONST.IP_PROTOCOL_MANET , protocol~="MERIT[\s\_]INP",XDM_CONST.IP_PROTOCOL_MERIT_INP , protocol~="MFE[\s\_]NSP",XDM_CONST.IP_PROTOCOL_MFE_NSP , protocol~="MICP",XDM_CONST.IP_PROTOCOL_MICP , protocol~="MOBILE",XDM_CONST.IP_PROTOCOL_MOBILE , protocol~="MOBILITY",XDM_CONST.IP_PROTOCOL_MOBILITY , protocol~="MPLS[\s\_]IN[\s\_]IP",XDM_CONST.IP_PROTOCOL_MPLS_IN_IP , protocol~="MTP",XDM_CONST.IP_PROTOCOL_MTP , protocol~="MUX",XDM_CONST.IP_PROTOCOL_MUX , protocol~="NARP",XDM_CONST.IP_PROTOCOL_NARP , protocol~="NETBLT",XDM_CONST.IP_PROTOCOL_NETBLT , protocol~="NSFNET[\s\_]IGP",XDM_CONST.IP_PROTOCOL_NSFNET_IGP , protocol~="NVP[\s\_]II",XDM_CONST.IP_PROTOCOL_NVP_II , protocol~="OSPFIGP",XDM_CONST.IP_PROTOCOL_OSPFIGP , protocol~="PGM",XDM_CONST.IP_PROTOCOL_PGM , protocol~="PIM",XDM_CONST.IP_PROTOCOL_PIM , protocol~="PIPE",XDM_CONST.IP_PROTOCOL_PIPE , protocol~="PNNI",XDM_CONST.IP_PROTOCOL_PNNI , protocol~="PRM",XDM_CONST.IP_PROTOCOL_PRM , protocol~="PTP",XDM_CONST.IP_PROTOCOL_PTP , protocol~="PUP",XDM_CONST.IP_PROTOCOL_PUP , protocol~="PVP",XDM_CONST.IP_PROTOCOL_PVP , protocol~="QNX",XDM_CONST.IP_PROTOCOL_QNX , protocol~="RDP",XDM_CONST.IP_PROTOCOL_RDP , protocol~="RESERVED",XDM_CONST.IP_PROTOCOL_RESERVED , protocol~="ROHC",XDM_CONST.IP_PROTOCOL_ROHC , protocol~="RSVP",XDM_CONST.IP_PROTOCOL_RSVP , protocol~="RSVP[\s\_]E2E[\s\_]IGNORE",XDM_CONST.IP_PROTOCOL_RSVP_E2E_IGNORE , protocol~="RVD",XDM_CONST.IP_PROTOCOL_RVD , protocol~="SAT[\s\_]EXPAK",XDM_CONST.IP_PROTOCOL_SAT_EXPAK , protocol~="SAT[\s\_]MON",XDM_CONST.IP_PROTOCOL_SAT_MON , protocol~="SCC[\s\_]SP",XDM_CONST.IP_PROTOCOL_SCC_SP , protocol~="SCPS",XDM_CONST.IP_PROTOCOL_SCPS , protocol~="SDRP",XDM_CONST.IP_PROTOCOL_SDRP , protocol~="SECURE[\s\_]VMTP",XDM_CONST.IP_PROTOCOL_SECURE_VMTP , protocol~="SHIM6",XDM_CONST.IP_PROTOCOL_SHIM6 , protocol~="SKIP",XDM_CONST.IP_PROTOCOL_SKIP , protocol~="SM",XDM_CONST.IP_PROTOCOL_SM , protocol~="SMP",XDM_CONST.IP_PROTOCOL_SMP , protocol~="SNP",XDM_CONST.IP_PROTOCOL_SNP , protocol~="SPRITE[\s\_]RPC",XDM_CONST.IP_PROTOCOL_SPRITE_RPC , protocol~="SPS",XDM_CONST.IP_PROTOCOL_SPS , protocol~="SRP",XDM_CONST.IP_PROTOCOL_SRP , protocol~="SSCOPMCE",XDM_CONST.IP_PROTOCOL_SSCOPMCE , protocol~="ST",XDM_CONST.IP_PROTOCOL_ST , protocol~="STP",XDM_CONST.IP_PROTOCOL_STP , protocol~="SUN[\s\_]ND",XDM_CONST.IP_PROTOCOL_SUN_ND , protocol~="SWIPE",XDM_CONST.IP_PROTOCOL_SWIPE , protocol~="TCF",XDM_CONST.IP_PROTOCOL_TCF , protocol~="TCP",XDM_CONST.IP_PROTOCOL_TCP , protocol~="TLSP",XDM_CONST.IP_PROTOCOL_TLSP , protocol~="TP",XDM_CONST.IP_PROTOCOL_TP , protocol~="TRUNK[\s\_]1",XDM_CONST.IP_PROTOCOL_TRUNK_1 , protocol~="TRUNK[\s\_]1",XDM_CONST.IP_PROTOCOL_TRUNK_1 , protocol~="TRUNK[\s\_]2",XDM_CONST.IP_PROTOCOL_TRUNK_2 , protocol~="TTP",XDM_CONST.IP_PROTOCOL_TTP , protocol~="UDP",XDM_CONST.IP_PROTOCOL_UDP , protocol~="UDPLITE", XDM_CONST.IP_PROTOCOL_UDPLITE , protocol~="UTI",XDM_CONST.IP_PROTOCOL_UTI , protocol~="VINES",XDM_CONST.IP_PROTOCOL_VINES , protocol~="VISA",XDM_CONST.IP_PROTOCOL_VISA , protocol~="VMTP",XDM_CONST.IP_PROTOCOL_VMTP , protocol~="VRRP",XDM_CONST.IP_PROTOCOL_VRRP , protocol~="WB[\s\_]EXPAK",XDM_CONST.IP_PROTOCOL_WB_EXPAK , protocol~="WB[\s\_]MON",XDM_CONST.IP_PROTOCOL_WB_MON, protocol~="WESP",XDM_CONST.IP_PROTOCOL_WESP , protocol~="WSN",XDM_CONST.IP_PROTOCOL_WSN , protocol~="XNET",XDM_CONST.IP_PROTOCOL_XNET , protocol~="XNS[\s\_]IDP",XDM_CONST.IP_PROTOCOL_XNS_IDP , protocol~="XTP",XDM_CONST.IP_PROTOCOL_XTP, protocol ),
+    xdm.source.ipv4 = ipv4,
+    xdm.source.ipv6 = ipv6;
+
+// ***** INFO/4/IC_LOGFILE_AGING & INFO/6/LOGFILE_DELETED events *****
+alter 
+    log_ref = arrayindex(regextract(_raw_log,"[^\d\s]+\/\w+\/\w+"),0)
+| filter log_ref in ("INFO/4/IC_LOGFILE_AGING","INFO/6/LOGFILE_DELETED")
+| call huawei_network_devices_header_fields
+| alter
+    oid = arrayindex(regextract(_raw_log,"OID\s(.+?)\s"),0), //Relevant for INFO/4/IC_LOGFILE_AGING events
+    des1 = arrayindex(regextract(_raw_log,"\.\d\s(.+?)\."),0), //Relevant for INFO/4/IC_LOGFILE_AGING events
+    des2 = arrayindex(regextract(_raw_log,"\sis.+"),0), //Relevant for INFO/6/LOGFILE_DELETED events
+    filename1 = arrayindex(regextract(_raw_log,"LogFileName\=(.+)\)"),0), //Relevant for INFO/4/IC_LOGFILE_AGING events
+    filename2 = arrayindex(regextract(_raw_log,"file\s(.+?)\s"),0) //Relevant for INFO/6/LOGFILE_DELETED events
+| alter //xdm mapping
+    xdm.event.id = if(log_ref = "INFO/4/IC_LOGFILE_AGING",oid),
+    xdm.event.outcome = if(log_ref = "INFO/6/LOGFILE_DELETED",XDM_CONST.OUTCOME_SUCCESS),
+    xdm.alert.description = coalesce(des1,concat("The log file",des2)),
+    xdm.target.file.filename = coalesce(filename1,filename2);
+
+// ***** SRM/3/SFP_EXCEPTION events *****
+alter 
+    log_ref = arrayindex(regextract(_raw_log,"[^\d\s]+\/\w+\/\w+"),0)
+| filter log_ref in ("SRM/3/SFP_EXCEPTION")
+| call huawei_network_devices_header_fields
+| alter
+    oid = arrayindex(regextract(_raw_log,"OID\s(.+?)\s"),0),
+    des = arrayindex(regextract(_raw_log,"\.\d\s(.+?\.)\s"),0),
+    alarm_sev = arrayindex(regextract(_raw_log,"BaseTrapSeverity\=(\d+)"),0),
+    alarm_error_code = arrayindex(regextract(_raw_log,"BaseTrapProbableCause\=(\d+)"),0),
+    entity_index_p = arrayindex(regextract(_raw_log,"EntityPhysicalIndex\=(\d+)"),0),
+    entity_index = arrayindex(regextract(_raw_log,"EntPhysicalContainedIn\=(\d+)"),0),
+    entity_name = arrayindex(regextract(_raw_log,"EntPhysicalName\=(.+?)\,"),0),
+    reason = arrayindex(regextract(_raw_log,"ReasonDescription\=(.+\.)"),0)
+| alter //xdm mapping
+    xdm.event.id = oid,
+    xdm.alert.description = des,
+    xdm.alert.severity = alarm_sev,
+    xdm.alert.original_alert_id = concat("Alarm error code: ", alarm_error_code),
+    xdm.target.resource.parent_id = entity_index_p,
+    xdm.target.resource.id = entity_index,
+    xdm.target.resource.name = entity_name,
+    xdm.target.resource.type = "Interface",
+    xdm.event.outcome_reason = reason;
+
+//Genreal mapping
+alter 
+    log_ref = arrayindex(regextract(_raw_log,"\d{2}\:\d{2}\:\d{2}\s\S+\s[\%]*[\d]*(\w+\/\w+\/\w+)"),0)
+| filter log_ref not in ("SHELL/5/CMDRECORD","CM/5/USER_OFFLINERESULT","LINE/4/USERLOGOUT","CM/5/USER_ACCESSRESULT","LINE/4/USERLOGIN","SHELL/5/USERCONFIRM","SSH/4/SSH_FAIL","INFO/4/SUPPRESS_LOG","SSMPADP/4/AUTHENTICAL_FAIL","SNMP/5/SNMP_IP_LOCK","SNMP/5/SNMP_LOG_IP_UNLOCK","LLDP/4/BAD_PACKET","ARP/4/ARP_DUPLICATE_IPADDR","ARP/4/ARP_IPCONFLICT_TRAP","HWCM/4/CFGCHANGE","HWCM/5/TRAPLOG","IFPDT/4/PKT_OUTDISCARD_ABNL","IFPDT/4/PKT_OUTDISCARD_NL","L2IFPPI/4/MFLPVLANALARM","LINE/5/VTYUSERLOGIN","LINE/5/VTYUSERLOGOUT","SECE/4/ARPMISS","SECE/4/ARPMISS_SIP_SPEEDLIMIT_ALARM","SECE/4/SPECIFY_SIP_ATTACK","SHELL/5/LOGIN","SHELL/5/LOGOUT","SHELL/5/TIMEOUT","SHELL/6/CMDCONFIRM_UNIFORMRECORD","SHELL/6/DISPLAY_CMDRECORD","SNMP/4/AUTHFAIL","SNMP/4/SNMP_FAIL","SNMP/4/SNMP_IPLOCK","SNMP/4/SNMP_IPUNLOCK","SSH/5/SSH_CONNECT_CLOSED","SRM/3/SFP_EXCEPTION","INFO/4/IC_LOGFILE_AGING","INFO/6/LOGFILE_DELETED")
+| call huawei_network_devices_header_fields
+| alter
+    ipv4 = arrayindex(regextract(_raw_log,"I[Pp]\=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    ipv6 = arrayindex(regextract(_raw_log,"I[Pp]\=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+    user = arrayindex(regextract(_raw_log,"[Uu]ser[Nn]ame\=(\w+)"),0),
+    des = arrayindex(regextract(_raw_log,"\[\d+\]\:(.+?)\."),0),
+    oid = arrayindex(regextract(_raw_log,"OID\s(.+?)\s"),0)
+| alter
+    xdm.source.ipv4 = ipv4,
+    xdm.source.ipv6 = ipv6,
+    xdm.source.identity.username = user,
+    xdm.event.id = oid,
+    xdm.alert.description = des;
