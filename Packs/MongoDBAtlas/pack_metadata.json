@@ -9,9 +9,14 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
     "keywords": [
+        "mongo",
+        "db",
+        "atlas",
         "event collector"
     ],
     "marketplaces": [
