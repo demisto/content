@@ -7,8 +7,7 @@ from CommonServerPython import *
 urllib3.disable_warnings()
 
 INTEGRATION_NAME = 'Azure'
-# AZUREJSON_URL = 'https://www.microsoft.com/en-us/download/confirmation.aspx?id=56519'  # disable-secrets-detection
-AZUREJSON_URL = 'https://www.microsoft.com/en-us/download/details.aspx?id=56519'
+AZUREJSON_URL = 'https://www.microsoft.com/en-us/download/details.aspx?id=56519'  # disable-secrets-detection
 
 ERROR_TYPE_TO_MESSAGE = {
     requests.ConnectionError: F'Connection error in the API call to {INTEGRATION_NAME}.\n',
@@ -84,11 +83,11 @@ class Client(BaseClient):
             stream=False,
             timeout=self._polling_timeout,
             resp_type='text',
-            retries=3,
-            status_list_to_retry=[403]
+            retries=5,
+            status_list_to_retry=[403],
+            backoff_factor=6
         )
 
-        # download_link_search_regex = re.search(r'downloadData={.+(https://(.)+\.json)\",', azure_url_response)
         download_link_search_regex = re.search(r'.+\"(https://download.microsoft.com/download/.+\.json)\",', azure_url_response)
         download_link = download_link_search_regex.group(1) if download_link_search_regex else None
 
