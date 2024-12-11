@@ -5,16 +5,15 @@
     "description": "This trigger is responsible for handling Valid Accounts alerts related to successful guest user invitations.",
     "trigger_name": "Valid Accounts - Rare guest user invitation",
     "fromVersion": "8.8.0",
-      "alerts_filter": {
-        "filter": {
-            "AND": [
-              {
-                  "SEARCH_FIELD": "alert_name",
-                  "SEARCH_TYPE": "EQ",
-                  "SEARCH_VALUE": "Rare successful guest invitation in the organization"
-              }
-            ]
+    "alerts_filter": {
+    "filter": {
+        "AND": [
+          {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Rare successful guest invitation in the organization"
           }
+        ]
       }
     }
 }
