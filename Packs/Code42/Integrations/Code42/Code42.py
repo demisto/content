@@ -609,6 +609,13 @@ def alert_update_state_command(client, args):
 
 
 @logger
+def alert_resolve_command(client, args):
+    args.update({"state": "CLOSED_TP"})
+    results = alert_update_state_command(client, args)
+    return results
+
+
+@logger
 def file_events_search_command(client, args):
     json_query = args.get("json")
     add_to_context = argToBoolean(args.get("add-to-context"))
@@ -1125,6 +1132,7 @@ def main():
     # switch case
     commands = {
         "code42-alert-get": alert_get_command,
+        "code42-alert-resolve": alert_resolve_command,
         "code42-alert-update": alert_update_state_command,
         "code42-file-events-search": file_events_search_command,
         "code42-file-events-table": file_events_to_table_command,

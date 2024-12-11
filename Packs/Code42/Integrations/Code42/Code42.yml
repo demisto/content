@@ -149,6 +149,16 @@ script:
       description: The alert ID of the resolved alert.
       type: string
   - arguments:
+    - description: The alert session ID to resolve. Alert session IDs are associated with alerts that are fetched via fetch-incidents.
+      name: id
+      required: true
+    description: DEPRECATED. Use code42-alert-update instead.
+    name: code42-alert-resolve
+    outputs:
+    - contextPath: Code42.SecurityAlert.ID
+      description: The alert ID of the resolved alert.
+      type: string
+  - arguments:
     - description: The name of the Code42 organization from which to add the user.
       name: orgname
       required: true

@@ -1396,6 +1396,15 @@ def test_alert_get_command_when_no_alert_found(mocker, incydr_sdk_mock):
 
 def test_alert_update_state_command(incydr_sessions_mock):
     client = _create_incydr_client(incydr_sessions_mock)
+    cmd_res = alert_update_state_command(client, {"id": "rule-id-abc-123", "state": "OPEN"})
+    assert cmd_res.raw_response["sessionId"] == "sessionid-abc-123"
+    assert cmd_res.outputs == [MOCK_CODE42_ALERT_CONTEXT[0]]
+    assert cmd_res.outputs_prefix == "Code42.SecurityAlert"
+    assert cmd_res.outputs_key_field == "ID"
+
+
+def test_alert_resolve_command(incydr_sessions_mock):
+    client = _create_incydr_client(incydr_sessions_mock)
     cmd_res = alert_update_state_command(client, {"id": "rule-id-abc-123"})
     assert cmd_res.raw_response["sessionId"] == "sessionid-abc-123"
     assert cmd_res.outputs == [MOCK_CODE42_ALERT_CONTEXT[0]]
