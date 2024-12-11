@@ -586,3 +586,45 @@ def test_generate_token(mocker):
 
     Client(base_url="https://example.com", verify=False, proxy=False, username="username", password="password")
     assert basic_auth_token.call_count == 1
+
+
+def test_get_computer_configuration_profiles_by_id(mocker):
+    """
+    Given:
+        - Computer ID
+    When:
+        - get_profile_configuration_osx is called
+    Then:
+        - Ensure the function returns the correct output
+    """
+    from jamfV2 import Client, get_profile_configuration_osx
+    mocker.patch.object(Client, '_get_token')
+    client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
+    args = {'id': 1}
+    mock_response = util_load_json('test_data/get_computer_configuration_profiles/'
+                                   'get_computer_configuration_profiles_by_id_raw_response.json')
+    mocker.patch.object(client, 'get_osxconfigurationprofiles_by_id', return_value=mock_response)
+
+    outputs = get_profile_configuration_osx(client, args)
+    assert outputs.outputs["general"]["id"] == 1
+
+
+def test_get_mobile_configuration_profiles_by_id(mocker):
+    """
+    Given:
+        - Mobile ID
+    When:
+        - get_profile_configuration_mobile is called
+    Then:
+        - Ensure the function returns the correct output
+    """
+    from jamfV2 import Client, get_profile_configuration_mobile
+    mocker.patch.object(Client, '_get_token')
+    client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
+    args = {'id': 1}
+    mock_response = util_load_json('test_data/get_mobile_configuration_profiles/'
+                                   'get_mobile_configuration_profiles_by_id_raw_response.json')
+    mocker.patch.object(client, 'get_mobiledeviceconfigurationprofiles_by_id', return_value=mock_response)
+
+    outputs = get_profile_configuration_mobile(client, args)
+    assert outputs.outputs["general"]["id"] == 1
