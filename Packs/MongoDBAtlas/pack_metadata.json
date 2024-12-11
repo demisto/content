@@ -7,10 +7,10 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Analytics & SIEM"
+        "Database"
     ],
     "tags": [
-        "Security"
+        "Data Source"
     ],
     "useCases": [],
     "keywords": [
