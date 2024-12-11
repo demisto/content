@@ -27,7 +27,7 @@ import shutil
 
 ''' IMPORTS '''
 import uuid
-from typing import Tuple, Callable, ValuesView, Iterator, TYPE_CHECKING
+from typing import Tuple, Callable, ValuesView, Iterator, Literal, TYPE_CHECKING
 from urllib.parse import urlparse
 
 if TYPE_CHECKING:
@@ -14511,6 +14511,122 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
     )
 
 
+def build_master_key_create_or_update_cmd(args: dict, action: Literal['create', 'update']) -> str:
+    """Builds the XML command for creating or updating the default master key on Panorama / PAN-OS.
+
+    Args:
+        args (dict): The command arguments.
+        action ('create'| 'update'): Whether to create a new master key or update an existing one.
+
+    Returns:
+        str: XML string of the master key create or update command.
+    """
+    xml_args = [
+        add_argument(arg=args.get('lifetime_in_hours'), field_name='lifetime', member=False),
+        add_argument(arg=args.get('reminder_in_hours'), field_name='reminder', member=False),
+    ]
+
+    match action:
+        case 'create':
+            xml_args.append(
+                add_argument(arg=args.get('master_key'), field_name='new-master-key', member=False),
+            )
+        case 'update':
+            xml_args.extend(
+                [
+                    add_argument(arg=args.get('new_master_key'), field_name='new-master-key', member=False),
+                    add_argument(arg=args.get('current_master_key'), field_name='current-master-key', member=False),
+                ]
+            )
+        case _:
+            raise ValueError(f"Invalid action value: '{action}'. Expected 'create' or 'update'.")
+
+    # Whether to encrypt the master key using a Hardware Security Module (HSM) encryption key; currently a static value by demand
+    xml_args.append(add_argument_yes_no(arg='no', field_name='on-hsm'))
+    master_key_element = add_argument(arg=''.join(xml_args), field_name='master-key', member=False)
+
+    return add_argument(arg=master_key_element, field_name='request', member=False)
+
+
+def create_or_update_master_key(args: dict, action: Literal['create', 'update']) -> CommandResults:
+    """Builds an XML command and sends a request to create or update the master key based on the given action.
+
+    Args:
+        args (dict): The command arguments.
+        action ('create'| 'update'): Whether to create a new master key or update an existing one.
+
+    Returns:
+        CommandResults: Contains readable output and raw response.
+    """
+    master_key_cmd = build_master_key_create_or_update_cmd(args, action=action)
+    raw_response: dict = http_request(URL, 'GET', params={'type': 'op', 'key': API_KEY, 'cmd': master_key_cmd})
+    response_result = raw_response['response']['result']  # human readable message
+
+    # Creating or updating the encryption master key by definition invalidates the current API key, refer to the integration docs.
+    demisto.info(f'The master key of {URL} has been {action}d. The current API key has been invalidated.')
+
+    return CommandResults(
+        readable_output=f'{response_result}. \n\n⚠️ The current API key is no longer valid! (by design) '
+        'Generate a new API key and update it in the integration instance configuration to keep using the integration.',
+        raw_response=raw_response,
+    )
+
+
+def pan_os_create_master_key_command(args: dict) -> CommandResults:
+    """Creates a new default master key on Panorama / PAN-OS.
+
+    Args:
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: Contains readable output and raw response.
+    """
+    return create_or_update_master_key(args, action='create')
+
+
+def pan_os_update_master_key_command(args: dict) -> CommandResults:
+    """Updates the default master key on Panorama / PAN-OS.
+
+    Args:
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: Contains readable output and raw response.
+    """
+    return create_or_update_master_key(args, action='update')
+
+
+def pan_os_get_master_key_details_command() -> CommandResults:
+    """Shows the details of the default master key on Panorama / PAN-OS.
+
+    Args:
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: Contains context output, readable output, and raw response.
+    """
+    system_element = add_argument(arg='<masterkey-properties/>', field_name='system', member=False)
+    show_master_key_cmd = add_argument(arg=system_element, field_name='show', member=False)
+
+    raw_response: dict = http_request(URL, 'GET', params={'type': 'op', 'key': API_KEY, 'cmd': show_master_key_cmd})
+    response_result = raw_response['response']['result']
+
+    result_to_human_readable = {'auto-renew-mkey': 'Auto-renew master key', "on-hsm": "Encryption on HSM"}
+    human_readable = tableToMarkdown(
+        'Master Key Details',
+        response_result,
+        headers=['auto-renew-mkey', 'on-hsm', 'remind-at', 'expire-at'],
+        headerTransform=lambda key: result_to_human_readable.get(key, ' '.join(key.split('-')).capitalize()),
+    )
+
+    return CommandResults(
+        outputs_prefix='Panorama.MasterKey',
+        outputs=response_result,
+        raw_response=raw_response,
+        readable_output=human_readable,
+    )
+
+
 """ Fetch Incidents """
 
 
@@ -15695,6 +15811,12 @@ def main():  # pragma: no cover
             return_results(pan_os_delete_profile_exception_command(args))
         elif command == 'pan-os-list-profile-exception':
             return_results(pan_os_list_profile_exception_command(args))
+        elif command == 'pan-os-create-master-key':
+            return_results(pan_os_create_master_key_command(args))
+        elif command == 'pan-os-update-master-key':
+            return_results(pan_os_update_master_key_command(args))
+        elif command == 'pan-os-get-master-key-details':
+            return_results(pan_os_get_master_key_details_command())
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
