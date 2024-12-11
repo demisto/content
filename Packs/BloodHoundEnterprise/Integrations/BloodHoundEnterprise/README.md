@@ -15,7 +15,7 @@ This integration was integrated and tested with version 1.0.0 of BloodHound Ente
     | API Token ID                               | Yes           | The ID associated with the API Token Key.                                            |
     | API Token Key                              | Yes           | The key used for authentication with the BloodHound Enterprise API.                  |
     | Fetch events                               | No            | Enable this to fetch events automatically.                                           |
-    | Maximum number of events per fetch         | No            | Limits the number of events fetched in each cycle. Default is 5000.                   |
+    | Maximum number of events per fetch         | No            | Limits the number of events fetched in each cycle. Default is 5000.                  |
     | Trust any certificate (not secure)         | No            | Allow the integration to trust any SSL certificate, even if it's not secure.         |
     | Use system proxy settings                  | No            | Use the system's proxy configuration for connecting to the server.                   |
 
@@ -40,12 +40,12 @@ This command allows you to monitor and analyze recent events directly from the C
 
 #### Input
 
-| **Argument Name**    | **Description**                                                                                       | **Required** |
-|----------------------|-----------------------------------------------------------------------------------------------------|--------------|
-| start                | The start date for filtering events. Use ISO 8601 format (e.g., 2024-07-10T08:08:46Z).               | No           |
-| end                  | The end date for filtering events. Use ISO 8601 format (e.g., 2024-07-11T08:09:47Z).                 | No           |
-| should_push_events   | Set to `true` to create events in Cortex XSIAM; `false` will only display them.                     | No           |
-| limit                | The maximum number of events to return. Default is 5000.                                              | No           |
+| **Argument Name**    | **Description**                                                                                                    | **Required** |
+|----------------------|--------------------------------------------------------------------------------------------------------------------|--------------|
+| start                | The start date for filtering events. Use ISO 8601 format (e.g., 2024-07-10T08:08:46Z). Default is one minute back  | No           |
+| end                  | The end date for filtering events. Use ISO 8601 format (e.g., 2024-07-11T08:09:47Z). Default is current time       | No           |
+| should_push_events   | Set to `true` to create events in Cortex XSIAM; `false` will only display them.                                    | No           |
+| limit                | The maximum number of events to return. Default is 10.                                                             | No           |
 
 #### Example Usage
 

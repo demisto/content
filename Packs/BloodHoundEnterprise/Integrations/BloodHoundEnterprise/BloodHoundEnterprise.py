@@ -112,7 +112,7 @@ class Client(BaseClient):
             List[Dict]: A list of events retrieved from the API.
         """
         method = "GET"
-        uri = "/api/v2/audit"
+        url_suffix = "/api/v2/audit"
         query_params = {
             "limit": limit,
             "sort_by": "created_at",
@@ -122,7 +122,7 @@ class Client(BaseClient):
         }
         demisto.debug(f"Got the follow parameters to the query {query_params}")
         remove_nulls_from_dictionary(query_params)
-        response = self._request(method=method, url_suffix=uri, query_params=query_params)
+        response = self._request(method=method, url_suffix=url_suffix, query_params=query_params)
         return response.get("data", {}).get("logs", [])
 
 
@@ -215,18 +215,14 @@ def fetch_events(
 
     fetch_id = int(last_run.get("fetch_id", 0)) + 1
 
-    demisto.debug(f"Fetched event id: {fetch_id}.")
-    demisto.debug(f"Fetched {len(events)} events in fetch No: {fetch_id}")
     next_run = {
-        "last_event_date": events[-1].get("created_at") if events else from_date,
+        "last_event_date": events[-1].get("created_at") if events and not skip else from_date,
         "last_event_id": events[-1].get("id") if events else from_event,
         "fetch_id": fetch_id,
         "offset": skip
     }
-    if skip:
-        next_run["last_event_date"] = from_date
     demisto.debug(
-        f"returning {len(events)} events. and the follow details to the setLastRun function {next_run}."
+        f"returning {len(events)} events. in fetch No: {fetch_id}. and the follow details to the setLastRun function {next_run}."
     )
     return next_run, events
 
@@ -252,7 +248,7 @@ def get_events_with_pagination(
         end_date (str): The ending date for the event search (exclusive).
         max_events (int): Maximum number of events to fetch.
         last_event_id (int, optional): The ID of the last event processed. Defaults to 0.
-        initial_skip (int, optional): The initial number of events to skip. Defaults to 0.
+        offset (int, optional): The initial number of events to skip. Defaults to 0.
 
     Returns:
         tuple[list, int]:
@@ -274,6 +270,7 @@ def get_events_with_pagination(
             demisto.debug("No new events received from the API")
             break
         demisto.debug(f"Got {len(response)} events before deduplication")
+        # Added the offset before the dedup to avoid incorrect offset on the second page
         pagination_offset += len(response)
         filtered_events = [item for item in response if item.get("id", 0) > last_event_id]
         demisto.debug(f"Got {len(filtered_events)} events after deduplication")
@@ -313,8 +310,7 @@ def main() -> None:  # pragma: no cover
         token_id=params.get('client', {}).get('identifier', ''),
         token_key=params.get('client', {}).get('password', ''),
     )
-    server_url = params.get("server_url")
-    base_url = f"https://{server_url}"
+    base_url = params.get("server_url")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 

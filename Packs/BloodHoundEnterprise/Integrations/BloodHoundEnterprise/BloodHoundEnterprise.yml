@@ -6,8 +6,8 @@ commonfields:
   id: BloodHoundEnterprise
   version: -1
 configuration:
-- display: Server URL (e.g., example.bloodhoundenterprise.io)
-  additionalinfo: The hostname of the server from which to fetch events. Without the "https://" part.
+- display: Server URL (e.g., https://example.bloodhoundenterprise.io)
+  additionalinfo: The hostname of the server from which to fetch events. With the "https://" part.
   name: server_url
   required: true
   type: 0
@@ -57,7 +57,7 @@ script:
       - 'false'  
       required: false  
       auto: PREDEFINED  
-    - description: The number of events to return. Default is 5000.
+    - description: The number of events to return. Default is 10.
       name: limit
       required: false
     description: Gets events from BloodHound Enterprise.
