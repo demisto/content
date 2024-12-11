@@ -1600,7 +1600,5 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- Test Playbook - Impossible Traveler - Enrichment
-- Test Playbook - IOC Alert
-- Test Playbook - Identity Analytics - Alert Handling
+- No tests (auto formatted)
 fromversion: 6.10.0
