@@ -6,33 +6,12 @@ display: Hoxhunt v2
 category: Email
 description: "Use the Hoxhunt integration to send feedback to reporters of incidents, set incident sensitivity, and apply SOC classification to incidents."
 configuration:
-- display: Incident Mirroring Direction
-  name: mirror_direction
-  defaultvalue: Incoming And Outgoing
-  type: 15
-  required: false
-  additionalinfo: "Choose the direction to mirror the incident: Incoming (from Hoxhunt to Cortex XSOAR), Outgoing (from Cortex XSOAR to Hoxhunt), or Incoming and Outgoing (from/to Cortex XSOAR and Hoxhunt)."
-  options:
-  - None
-  - Incoming
-  - Outgoing
-  - Incoming And Outgoing
-  hidden:
-  - marketplacev2
 - display: Server URL
   name: url
   type: 0
   required: true
   additionalinfo: e.g. https://api.hoxhunt.com/graphql-external
   defaultvalue: https://api.hoxhunt.com/graphql-external
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  required: false
 - display: API Key
   name: api_key
   type: 4
@@ -75,6 +54,27 @@ configuration:
   type: 8
   required: false
   additionalinfo: "If enabled, only open incidents will be fetched."
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Incident Mirroring Direction
+  name: mirror_direction
+  defaultvalue: Incoming And Outgoing
+  type: 15
+  required: false
+  additionalinfo: "Choose the direction to mirror the incident: Incoming (from Hoxhunt to Cortex XSOAR), Outgoing (from Cortex XSOAR to Hoxhunt), or Incoming and Outgoing (from/to Cortex XSOAR and Hoxhunt)."
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  hidden:
+  - marketplacev2
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
 script:
   script: ""
   type: python
