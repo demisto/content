@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from datetime import UTC, datetime
 from enum import Enum
 import random
 
