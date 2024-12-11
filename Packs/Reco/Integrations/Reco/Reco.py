@@ -26,7 +26,7 @@ PAGE_SIZE = 1000
 DEMISTO_OCCURRED_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 RECO_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEMISTO_INFORMATIONAL = 0.5
-RECO_API_TIMEOUT_IN_SECONDS = 30  # Increase timeout for RECO API
+RECO_API_TIMEOUT_IN_SECONDS = 180  # Increase timeout for RECO API
 RECO_ACTIVE_INCIDENTS_VIEW = "active_incidents_view"
 RECO_ACTIVE_ALERTS_VIEW = "alerts"
 RECO_INCIDENT_ID_FIELD = "incident_id"
@@ -705,8 +705,8 @@ class RecoClient(BaseClient):
             )
         try:
             response = self._http_request(
-                method="POST",
-                url_suffix="/asset-management",
+                method="PUT",
+                url_suffix="/asset-management/query",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS * 2,
                 data=json.dumps(params),
             )
@@ -767,8 +767,8 @@ class RecoClient(BaseClient):
         }
         try:
             response = self._http_request(
-                method="POST",
-                url_suffix="/asset-management",
+                method="PUT",
+                url_suffix="/asset-management/query",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS * 2,
                 data=json.dumps(params),
             )
@@ -882,8 +882,8 @@ class RecoClient(BaseClient):
             )
         try:
             response = self._http_request(
-                method="POST",
-                url_suffix="/asset-management",
+                method="PUT",
+                url_suffix="/asset-management/query",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS * 2,
                 data=json.dumps(params),
             )

@@ -143,16 +143,16 @@ tasks:
             args:
               separator:
                 value:
-                  simple: ','
+                  simple: '|||'
           - operator: replace
             args:
               limit: {}
               replaceWith:
                 value:
-                  simple: '", "'
+                  simple: '```, ```'
               toReplace:
                 value:
-                  simple: ','
+                  simple: '|||'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -248,7 +248,7 @@ tasks:
         complex:
           root: inputs.ResultsLimit
       query:
-        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailEvents | where Timestamp >= _start | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | join UrlClickEvents on NetworkMessageId | where Url has_any ("${URLDomainParsed}") |  project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, OrgLevelAction, SenderObjectId, NetworkMessageId1, DetectionMethods1, ThreatTypes1 |  project-rename ClickTimestamp = Timestamp1
+        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailEvents | where Timestamp >= _start | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | join UrlClickEvents on NetworkMessageId | where Url has_any (```${URLDomainParsed}```) |  project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, OrgLevelAction, SenderObjectId, NetworkMessageId1, DetectionMethods1, ThreatTypes1 |  project-rename ClickTimestamp = Timestamp1
       timeout:
         simple: ${inputs.Timeout}
     separatecontext: false
@@ -410,7 +410,7 @@ tasks:
         complex:
           root: inputs.ResultsLimit
       query:
-        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailEvents | where Timestamp >= _start | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | join UrlClickEvents on NetworkMessageId | where (InternetMessageId in ("${MessageIDParsed}") or NetworkMessageId in ("${MessageIDParsed}")) and Url has_any ("${URLDomainParsed}")  | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, OrgLevelAction, SenderObjectId, NetworkMessageId1, DetectionMethods1, ThreatTypes1 | project-rename ClickTimestamp = Timestamp1
+        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailEvents | where Timestamp >= _start | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | join UrlClickEvents on NetworkMessageId | where (InternetMessageId in ("${MessageIDParsed}") or NetworkMessageId in ("${MessageIDParsed}")) and Url has_any (```${URLDomainParsed}```)  | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, OrgLevelAction, SenderObjectId, NetworkMessageId1, DetectionMethods1, ThreatTypes1 | project-rename ClickTimestamp = Timestamp1
       timeout:
         simple: ${inputs.Timeout}
     separatecontext: false

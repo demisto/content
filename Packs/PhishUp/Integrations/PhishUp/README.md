@@ -5,23 +5,19 @@ Also you can visit and test [PhishUp Web Demo](https://phishup.co).
 
 If you have any question feel free to concat us: [info@phishup.com](mailto:info@phishup.co)
 
-## Configure PhishUp on Cortex XSOAR
+## Configure PhishUp in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for PhishUp.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API KEY |  | True |
-    | Incident type |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | PhishUp Playbook Actions | If there is any Phishing activity in mail, what should PhishUp do? | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API KEY |  | True |
+| Incident type |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| PhishUp Playbook Actions | If there is any Phishing activity in mail, what should PhishUp do? | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### url
 ***
