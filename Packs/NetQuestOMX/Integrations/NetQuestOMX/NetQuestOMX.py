@@ -96,19 +96,17 @@ class Client(BaseClient):
         """
         try:
             # Create a temporary file
-            with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            with tempfile.NamedTemporaryFile() as temp_file:
                 temp_file_name = temp_file.name
 
                 # Copy the contents of the original file to the temporary file
-                with open(file_path, 'rb') as source_file:
-                    temp_file.write(source_file.read())
+                Path(temp_file_name).write_bytes(Path(file_path).read_bytes())
 
-            # Use the temporary file for the upload request
-            with open(temp_file_name, 'rb') as upload_file:
+                # Use the temporary file for the upload request
                 self._http_request(
                     method="POST",
                     url_suffix="/api/v1/UpdateService/ImportList/Config",
-                    data={"UpdateFile": upload_file},
+                    files={"UpdateFile": open(temp_file_name, 'rb')},
                     ok_codes=(200,)
                 )
         except Exception as exc:
@@ -144,7 +142,7 @@ class Client(BaseClient):
         try:
             self._http_request(
                 method="PUT", url_suffix=f"/api/Systems/Filters/ListImport/ListName/{existing_name}/Config/Install",
-                data={"Name": new_name},
+                json_data={"Name": new_name},
                 ok_codes=(200,)
             )
         except Exception as e:
@@ -262,7 +260,7 @@ def address_list_upload_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(readable_output="Address list was successfully uploaded")
 
 
-def address_list_optimize_command(client: Client) -> CommandResults:
+def address_list_optimize_command(client: Client, args: dict = None) -> CommandResults:
     """
     If the traffic elements are IP addresses,
     the integration should optimize the list by compressing IP addresses into CIDR groups.
