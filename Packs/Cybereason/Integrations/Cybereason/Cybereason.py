@@ -1620,13 +1620,13 @@ def fetch_incidents(client: Client):
         malop_management_response = get_malop_management_data(client, last_update_time, current_time, offset)
         demisto.info(f"mmng/v2 response: {malop_management_response}")
         edr_guid_list, non_edr_guid_list = [], []
+        total_malops_available = malop_management_response["data"]["totalHits"]
         malop_management_response = malop_management_response["data"]["data"]
-         if malop_management_response == [] or malop_management_response == None:
+        if malop_management_response == [] or malop_management_response == None:
             has_more_results = False
             continue
-        total_malops_available = malop_management_response["data"]["totalHits"]
         malop_count_per_poll = len(malop_management_response)
-        self.helper.log_info(f"Malop stats: Malop per paginated call {malop_count_per_poll}. Malops per polling cycle {total_malops_available}")
+        demisto.info(f"Malop stats: Malop per paginated call {malop_count_per_poll}. Malops per polling cycle {total_malops_available}")
         total_malops_fetched += malop_count_per_poll
         for malop in malop_management_response:
             demisto.info(f"inside for loop mmng/v2. malop: {malop}")
@@ -1671,7 +1671,7 @@ def fetch_incidents(client: Client):
         if non_edr_guid_list:
             demisto.info("inside if non_edr_guid_list")
             for non_edr_malop in non_edr_guid_list:
-                demisto.info(f"processing non edr malop id: {non_edr_guid}")
+                demisto.info(f"processing non edr malop id: {non_edr_malop}")
                 detection_detail_response = get_detection_details(client, non_edr_malop)
 
                 demisto.info(f"detection_detail_response: {detection_detail_response}")
