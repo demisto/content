@@ -24,4 +24,4 @@
         "marketplacev2"
     ],
     "defaultDataSource": "Github Event Collector"
-}
+}https://gitlab.xdr.pan.local/xdr/cortex-content/content/-/pipelines/new?var[PIPELINE_TYPE]=content-override&var[ENV_TYPE]=dev%7Cprod&var[MARKETPLACE]=marketplacev2%7Cxpanse%7Cxsoar_saas&var[TENANT_IDS]=

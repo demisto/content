@@ -32,4 +32,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![FireMon Create Policy Planner Ticket](../doc_files/playbook-FireMon_Create_Policy_Planner_Ticket.png)
+![FireMon Create Policy Planner Ticket](../doc_files/playbook-firemon_create_policy_planner_ticket.png)
