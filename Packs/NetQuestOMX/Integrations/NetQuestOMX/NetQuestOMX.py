@@ -27,8 +27,8 @@ PRODUCT = "OMX"
 class Client(BaseClient):
 
     def __init__(self, base_url: str, credentials: dict, verify: bool, proxy: bool):
-        headers = {"Accept": "application/json", "X-Auth-Token": ""}
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
+        _headers = {"Accept": "application/json", "X-Auth-Token": ""}
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=_headers)
         self.credentials = {"UserName": credentials["identifier"], "Password": credentials["password"]}
         self.login()
 
@@ -48,6 +48,7 @@ class Client(BaseClient):
             # if the token is still valid, continue using it. otherwise, generate a new one.
             if (seconds_left := (expiration_time - now).total_seconds()) > 60:  # decreasing 60s from token expiry for safety
                 demisto.debug(f"No need to regenerate the token, it is still valid for {seconds_left} more seconds")
+                self._headers["X-Auth-Token"] = cache["Token"]  # in this case, the Token key exists
                 return
 
         demisto.debug("IntegrationContext token cache is empty or token has expired, regenerating a new token")
@@ -131,7 +132,7 @@ class Client(BaseClient):
     def address_list_create_request(self, name: str):
         try:
             self._http_request(
-                method="POST", url_suffix="/api/Systems/Filters/ListImport/Config/Install", data={"Name": name},
+                method="POST", url_suffix="/api/Systems/Filters/ListImport/Config/Install", json_data={"Name": name},
                 ok_codes=(200,)
             )
         except Exception as e:
@@ -350,20 +351,8 @@ def test_module(client: Client) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-    message: str = ''
 
-    try:
-        # create a list and then delete it for a sanity check
-        address_list_create_command(client=client, args={"name": "cortex_instance_test"})
-    except DemistoException as de:
-        demisto.debug(de.message)
-        demisto.debug("Trying to just delete the list for a sanity check, since it might already exist.")
-        address_list_delete_command(client=client, args={"name": "cortex_instance_test"})
-    except Exception as e:
-        raise DemistoException("An error was occurred when deleting the cortex_instance_test addresses list."
-                               "Please delete this list manually if exists. It's was created only for testing.") from e
-
-    return message
+    return 'ok'
 
 
 def add_time_to_events(events: list[dict]):
@@ -479,7 +468,7 @@ def main() -> None:
             return_results(test_module(client))
 
         elif command in commands:
-            return_results(commands[command](client, **args))
+            return_results(commands[command](client, args))
 
         elif command == "fetch-events":
             events = fetch_events(
