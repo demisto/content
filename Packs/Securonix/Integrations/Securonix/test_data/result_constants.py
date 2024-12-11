@@ -652,6 +652,52 @@ EXPECTED_GET_INCIDENT_STATUS = "Incident 123456 status is TestStatus."
 
 EXPECTED_GET_INCIDENT_AVAILABLE_ACTIONS = "Incident 123456 available actions: ['CLAIM', 'COMPLETED']."
 
+EXPECTED_FETCH_INCIDENT = {
+    "violatorText": "Cyndi Converse",
+    "lastUpdateDate": 1566232568502,
+    "violatorId": "96",
+    "incidentType": "Policy",
+    "incidentId": "100107",
+    "incidentStatus": "COMPLETED",
+    "riskscore": 0.0,
+    "assignedUser": "Admin Admin",
+    "priority": "low",
+    "reason": [
+        "Resource: Symantec Email DLP",
+        "Policy: Emails with large File attachments",
+        "Threat: Data egress attempts",
+        {
+            "Policies": {
+                "stage1": {
+                    "s1": ["TestEmailTemplate1", "TestEmailTemplate2"]
+                },
+                "stage2": {
+                    "s2": ["TestEmailtemplate3"]
+                }
+            }
+        }
+    ],
+    'close_sx_incident': False,
+    'mirror_direction': None,
+    'mirror_instance': '',
+    'mirror_tags': '',
+    'policy_list': ['TestEmailTemplate1', 'TestEmailTemplate2', 'TestEmailtemplate3'],
+    'policy_stages_json': {'stage1:s1': ['TestEmailTemplate1', 'TestEmailTemplate2'],
+                           'stage2:s2': ['TestEmailtemplate3']},
+    'policy_stages_table': [{'Policies': 'TestEmailTemplate1, TestEmailTemplate2',
+                            'Stage Name': 'stage1:s1'},
+                            {'Policies': 'TestEmailtemplate3', 'Stage Name': 'stage2:s2'}],
+    "violatorSubText": "1096",
+    "entity": "Users",
+    "workflowName": "SOCTeamReview",
+    "url": "https://source_url.com",
+    "isWhitelisted": False,
+    "watchlisted": False,
+    "policystarttime": 1692950376801,
+    "policyendtime": 1695613655539,
+    "solrquery": "index = violation and ( ( @policyname = \"Response-*PB?-Resources-\\AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""  # noqa: E501
+}
+
 EXPECTED_ADD_COMMENT_TO_INCIDENT = "Comment was added to the incident 123456 successfully."
 
 EXPECTED_XSOAR_STATE_MAPPING = {
