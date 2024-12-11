@@ -1588,7 +1588,7 @@ def switch_list_to_list_counter(data: Union[Dict, List]) -> Union[Dict, List]:
     for item in data:
         if type(data[item]) is list:
             new_data[item] = len(data[item])
-        elif data[item] and type(data[item]) == dict:
+        elif data[item] and type(data[item]) is dict:
             counter = 0
             for in_item in data[item]:
                 if type(data[item][in_item]) is list:

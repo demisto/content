@@ -1604,7 +1604,7 @@ def move_item(item_id, target_folder_path, target_mailbox=None, is_public=None):
 def delete_items(item_ids, delete_type, target_mailbox=None):  # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     deleted_items = []
-    if type(item_ids) is list:
+    if type(item_ids) is not list:
         item_ids = item_ids.split(",")
     items = get_items_from_mailbox(account, item_ids)
     delete_type = delete_type.lower()
