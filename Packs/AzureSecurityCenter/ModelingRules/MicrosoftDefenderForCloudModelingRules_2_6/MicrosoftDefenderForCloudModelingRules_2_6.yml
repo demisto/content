@@ -1,0 +1,6 @@
+fromversion: 9.0.0
+id: microsoft_defender_for_cloud_ModelingRule
+name: Microsoft Defender for Cloud Modeling Rule
+rules: ''
+schema: ''
+tags: defender_for_cloud
