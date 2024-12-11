@@ -19,6 +19,48 @@ def create_mock_client(test_events):
     return client
 
 
+def test_client_request(mocker):
+    """
+    Given:
+        - The `query_params` dictionary includes:
+            - `limit`: 50
+            - `sort_by`: "created_at"
+            - `after`: "2024-11-18T11:16:09.076711Z"
+            - `before`: "2024-11-18T14:00:20.303699Z"
+        - The `_http_request` method is patched to avoid actual HTTP requests.
+        - The `demisto.debug` method is patched to capture debug log outputs.
+    When:
+        - The `client._request` method is called with the provided `query_params`.
+    Then:
+        - Ensure that the debug log contains the expected query string with `sort_by=created_at` and `after` parameters.
+        - Validate that the expected parameters are found in the log call arguments.
+    """
+    from BloodHoundEnterprise import Client, Credentials
+
+    query_params = {
+        "limit": 50,
+        "sort_by": "created_at",
+        "after": "2024-11-18T11:16:09.076711Z",
+        "before": "2024-11-18T14:00:20.303699Z",
+    }
+    client = Client(
+        base_url="example.com",
+        verify=False,
+        proxy=False,
+        credentials=Credentials(token_id="token_id", token_key="token_key"),
+    )
+
+    mocker.patch.object(client, "_http_request")
+    log = mocker.patch.object(demisto, "debug")
+    client._request("GET", "/api/v2/audit", query_params=query_params)
+    found = any(
+        "/api/v2/audit?limit=50&sort_by=created_at&after=2024-11-18T11%3A16%3A09.076711Z&before=2024-11-18T14%3A00%3A20.303699Z,"
+        in call.args[0]
+        for call in log.call_args_list
+    )
+    assert found, "'sort_by=created_at&after' was not found in any demisto.debug calls."
+    
+
 @freeze_time("2024-11-22T13:28:27.698038Z")
 def test_fetch_events_first_time(mocker):
     """

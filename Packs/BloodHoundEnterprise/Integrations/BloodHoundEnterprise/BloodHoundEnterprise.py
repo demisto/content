@@ -326,12 +326,12 @@ def main() -> None:  # pragma: no cover
             return_results(test_module(client))
 
         elif command == "bloodhound-get-events":
-            should_push_events = argToBoolean(args.get("should_push_events"))
             events, results = get_events_command(client, args)
-            should_push_events = argToBoolean(args.get("should_push_events"))
+            should_push_events = argToBoolean(args.get("should_push_events", "false"))
             if should_push_events:
                 add_time_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            return_results(results)
 
         elif command == "fetch-events":
             next_run, events = fetch_events(
