@@ -370,7 +370,7 @@ def get_incidents(
     except Exception as e:
         demisto.error(str(e))
         raise DemistoException(f"Failed to retrieve incidents. {e}")
-    
+
 
 def build_stix_pattern(
     indicator: str,
@@ -603,7 +603,7 @@ def get_incidents_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Com
         )
     else:
         return CommandResults(readable_output="No incidents.")
-    
+
 
 def indicator_types_list_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
     """ Get indicator types list from opencti

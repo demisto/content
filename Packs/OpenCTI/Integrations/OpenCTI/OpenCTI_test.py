@@ -539,6 +539,7 @@ def test_incident_delete_command_exception(mocker, capfd):
     captured = capfd.readouterr()
     assert captured.out.strip() == "Test exception"
 
+
 def test_get_incidents(mocker):
     """Tests get_incidents function
     Given
