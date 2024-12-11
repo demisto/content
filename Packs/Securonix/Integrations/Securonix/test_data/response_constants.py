@@ -456,7 +456,22 @@ RESPONSE_FETCH_INCIDENTS = {
             "reason": [
                 "Resource: Symantec Email DLP",
                 "Policy: Emails with large File attachments",
-                "Threat: Data egress attempts"
+                "Threat: Data egress attempts",
+                {
+                    "Policies": {
+                        "stage1": {
+                            "s1": [
+                                "TestEmailTemplate1",
+                                "TestEmailTemplate2"
+                            ]
+                        },
+                        "stage2": {
+                            "s2": [
+                                "TestEmailtemplate3"
+                            ]
+                        }
+                    }
+                }
             ],
             "violatorSubText": "1096",
             "entity": "Users",
