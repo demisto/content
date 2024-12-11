@@ -2967,6 +2967,34 @@ def fetch_samples():
     demisto.incidents(get_integration_context().get('samples'))
 
 
+def auth_type_switch_handling():
+    """
+    Handling cases where the user switches the auth type in the integration instance (from the client credentials flow to the
+    auth code flow and vice versa), by auto-resetting the Graph API authorization in the integration context.
+    """
+    integration_context = get_integration_context()
+    current_auth_type = integration_context.get('current_auth_type', '')
+    if current_auth_type:
+        demisto.debug(f'current_auth_type is: {current_auth_type}')
+    else:
+        # current_auth_type is not set - First run of the integration instance
+        demisto.debug(f'This is the first run of the integration instance.\n'
+                      f'Setting the current_auth_type in the integration context to {AUTH_TYPE}.')
+        integration_context['current_auth_type'] = AUTH_TYPE
+        set_integration_context(integration_context)
+        current_auth_type = AUTH_TYPE
+
+    if current_auth_type != AUTH_TYPE:
+        # First run after the user switched the authentication type
+        demisto.debug(f'The user switched the instance authentication type from {current_auth_type} to {AUTH_TYPE}.\n'
+                      f'Resetting the integration context.')
+        reset_graph_auth()
+        integration_context = get_integration_context()
+        demisto.debug(f'Setting the current_auth_type in the integration context to {AUTH_TYPE}.')
+        integration_context['current_auth_type'] = AUTH_TYPE
+        set_integration_context(integration_context)
+
+
 def main():   # pragma: no cover
     """ COMMANDS MANAGER / SWITCH PANEL """
     demisto.debug("Main started...")
@@ -3008,27 +3036,7 @@ def main():   # pragma: no cover
     ''' EXECUTION '''
     command: str = demisto.command()
 
-    integration_context = get_integration_context()
-    current_auth_type = integration_context.get('current_auth_type', '')
-    if current_auth_type:
-        demisto.debug(f'current_auth_type is: {current_auth_type}')
-    else:
-        # current_auth_type is not set - First run of the integration instance
-        demisto.debug(f'This is the first run of the integration instance.\n'
-                      f'Setting the current_auth_type in the integration context to {AUTH_TYPE}.')
-        integration_context['current_auth_type'] = AUTH_TYPE
-        set_integration_context(integration_context)
-        current_auth_type = AUTH_TYPE
-
-    if current_auth_type != AUTH_TYPE:
-        # First run after the user switched the authentication type
-        demisto.debug(f'The user switched the instance authentication type from {current_auth_type} to {AUTH_TYPE}.\n'
-                      f'Resetting the integration context.')
-        reset_graph_auth()
-        integration_context = get_integration_context()
-        demisto.debug(f'Setting the current_auth_type in the integration context to {AUTH_TYPE}.')
-        integration_context['current_auth_type'] = AUTH_TYPE
-        set_integration_context(integration_context)
+    auth_type_switch_handling()  # handles auth type switch cases
 
     try:
         support_multithreading()

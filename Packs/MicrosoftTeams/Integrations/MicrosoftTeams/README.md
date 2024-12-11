@@ -1103,9 +1103,9 @@ There is no context output for this command.
 ***
 Run this command if for some reason you need to rerun the graph authentication process.
 Notes:
-- Use this command to switch between authentication flows and ensure the integration uses the appropriate token.
 - After making changes to permissions in the Azure Portal, reset the authentication to ensure that the token reflects the updated permissions.
-- When using the `Authorization Code Flow`, after executing the command, regenerate the **Authorization code** parameter, and then run the *!microsoft-teams-auth-test* command to verify the authentication.
+- This command is triggered automatically when an authentication flow type switch is detected. The auto resetting ensures the integration uses the appropriate token.
+- When switching the authentication type to the `Authorization Code Flow`, this command will be triggered automatically, after that you will need to regenerate the **Authorization code** parameter by running the ***microsoft-teams-generate-login-url*** command, and to verify the authentication by running the ***!microsoft-teams-auth-test*** command.
 
 #### Base Command
 
@@ -1225,7 +1225,8 @@ Note: To enrich an incident created via the Demisto BOT (`new incident` command)
 
 2. If you see the following error message: `Error in API call to Microsoft Teams: [403] - UnknownError`, it means the AAD application has insufficient permissions. 
 To retrieves the API permissions associated with the used graph access token you can run the `microsoft-teams-token-permissions-list` command ([microsoft-teams-token-permissions-list documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-token-permissions-list)).
-Compare the permissions list obtained for the token with the permissions required for the command you wish to execute (can be found in the command documentation). If there are missing API permissions, add them to your application, and then run the `microsoft-teams-auth-reset` command (as described here - [microsoft-teams-auth-reset documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-auth-reset)).
+Compare the permissions list obtained for the token with the permissions required for the command you wish to execute (can be found in the command documentation). If there are missing API permissions, add them to your application, and then run the `microsoft-teams-auth-reset` command (as described here - [microsoft-teams-auth-reset documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-auth-reset)). 
+If your authentication type is the `Authorization Code Flow` after running the `microsoft-teams-auth-reset` command you will need to regenerate the **Authorization code** parameter by running the ***microsoft-teams-generate-login-url*** command, and to verify the authentication by running the ***!microsoft-teams-auth-test*** command.
 
 3. Since the integration works based on Docker port mapping, it can't function if the Docker is set to run with the host networking (`--network=host`). For more details, refer to the [Docker documentation](https://docs.docker.com/network/host/).
 
