@@ -552,7 +552,7 @@ def get_observables_command(client: OpenCTIApiClient, args: dict) -> CommandResu
     end = arg_to_number(args.get('score_end', 100))  # type:ignore
     score = args.get('score')
     search = args.get("search", "")
-    get_all = argToBoolean(args.get('get_all', 'false'))
+    get_all = argToBoolean(args.get('all_results', 'false'))
     scores = None
     if score:
         if score.lower() == "unknown":
@@ -1161,7 +1161,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
     valid_from_before = args.get('valid_from_before')
     value = args.get('value', '')
     indicator_types = argToList(args.get('indicator_types'))
-    get_all = argToBoolean(args.get('get_all', 'false'))
+    get_all = argToBoolean(args.get('all_results', 'false'))
 
     raw_response = get_indicators(
         client=client,
