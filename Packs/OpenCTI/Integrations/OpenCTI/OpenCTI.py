@@ -350,8 +350,7 @@ def incident_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> C
         return CommandResults(outputs_prefix='OpenCTI.Incident',
                               outputs_key_field='id',
                               outputs={
-                                  'id': result.get('id'),
-                                  'name': result.get('name')
+                                  'id': result.get('id')
                               },
                               readable_output=readable_output,
                               raw_response=result)

@@ -347,9 +347,6 @@ script:
     - contextPath: OpenCTI.Incident.id
       description: New Incident ID.
       type: String
-    - contextPath: OpenCTI.Incident.name
-      description: New Incident name.
-      type: String
   - arguments:
     - description: Incident ID.
       name: id
