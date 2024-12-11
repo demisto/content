@@ -10,6 +10,7 @@ from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 from multiprocessing import Process
 from werkzeug.datastructures import Headers
 
+
 from libtaxii.messages_11 import (
     TAXIIMessage,
     DiscoveryRequest,
