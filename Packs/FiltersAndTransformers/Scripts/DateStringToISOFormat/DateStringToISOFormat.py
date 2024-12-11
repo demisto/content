@@ -1,6 +1,6 @@
 import demistomock as demisto
 from dateutil.parser import ParserError, parse  # type: ignore[attr-defined]
-from datetime import timezone
+from datetime import UTC
 
 
 def parse_datestring_to_iso(
@@ -9,7 +9,7 @@ def parse_datestring_to_iso(
     try:
         datetime_obj = parse(date_value, dayfirst=day_first, yearfirst=year_first, fuzzy=fuzzy)
         if add_utc_timezone and not datetime_obj.tzinfo:
-            datetime_obj = datetime_obj.replace(tzinfo=timezone.utc)
+            datetime_obj = datetime_obj.replace(tzinfo=UTC)
         return datetime_obj.isoformat()
     except ParserError as e:
         demisto.error(f'ParserError occurred: {e}\n Returning the original date string.')
