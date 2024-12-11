@@ -27,7 +27,7 @@ def util_load_json(path):
 def test_command_success(mocker, requests_mock, command, args, api_path, api_response):
     """Tests the current command
     """
-    mocker.patch.object(demisto, 'params', return_value={"url": "https://api.doppel.com", "credentials": {"password": "<API-KEY>"}})
+    mocker.patch.object(demisto, 'params', return_value={"url": "https://api.doppel.com", "credentials": {"password": "SAMPLE-API-KEY"}})
     mocker.patch.object(demisto, 'command', return_value=command)
     mocker.patch.object(demisto, 'args', return_value=args)
     results_checker = mocker.patch.object(demisto, 'results', return_value=None)
@@ -52,7 +52,7 @@ def test_command_success(mocker, requests_mock, command, args, api_path, api_res
 def test_command_failure(mocker, requests_mock, command, args, api_path, status_code, api_response):
     """Tests the current command
     """
-    mocker.patch.object(demisto, 'params', return_value={"url": "https://api.doppel.com", "credentials": {"password": "<API-KEY>"}})
+    mocker.patch.object(demisto, 'params', return_value={"url": "https://api.doppel.com", "credentials": {"password": "SAMPLE-API-KEY"}})
     mocker.patch.object(demisto, 'command', return_value=command)
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, 'results', return_value=None)
@@ -78,7 +78,7 @@ def test_command_failure(mocker, requests_mock, command, args, api_path, status_
 def test_command_exception(mocker, requests_mock, command, args, api_path, status_code, exception_message):
     """Tests the current command
     """
-    mocker.patch.object(demisto, 'params', return_value={"url": "https://api.doppel.com", "credentials": {"password": "<API-KEY>"}})
+    mocker.patch.object(demisto, 'params', return_value={"url": "https://api.doppel.com", "credentials": {"password": "SAMPLE-API-KEY"}})
     mocker.patch.object(demisto, 'command', return_value=command)
     mocker.patch.object(demisto, 'args', return_value=args)
     results_checker = mocker.patch.object(demisto, 'results', return_value=None)
