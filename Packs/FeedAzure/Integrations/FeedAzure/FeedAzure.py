@@ -263,7 +263,7 @@ def test_module(client: Client) -> tuple[str, dict, dict]:
 
 def get_indicators_command(client: Client,
                            feedTags: list,
-                           tlp_color: str,
+                           tlp_color: str | None,
                            enrichment_excluded: bool = False) -> tuple[str, dict, dict]:
     """Retrieves indicators from the feed to the war-room.
 
@@ -288,7 +288,7 @@ def get_indicators_command(client: Client,
 
 def fetch_indicators_command(client: Client,
                              feedTags: list,
-                             tlp_color: str,
+                             tlp_color: str | None,
                              limit: int = -1,
                              enrichment_excluded: bool = False) -> tuple[list[dict], list]:
     """Fetches indicators from the feed to the indicators tab.
