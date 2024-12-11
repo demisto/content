@@ -1,7 +1,7 @@
 commonfields:
-  id: CommandLine_Analysis
+  id: CommandLineAnalysis
   version: -1
-name: CommandLine_Analysis
+name: CommandLineAnalysis
 script: ''
 type: python
 tags: []
