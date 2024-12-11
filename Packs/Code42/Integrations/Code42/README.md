@@ -100,7 +100,7 @@ Updates a Code42 Alert Session
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The alert ID to resolve. Alert IDs are associated with alerts that are fetched via fetch-incidents. | Required | 
+| id | The alert ID to update. Alert IDs are associated with alerts that are fetched via fetch-incidents. | Required | 
 | state | The state to which the session will be updated. Permissible values are OPEN, CLOSED_TP, or CLOSED_FP | Required |
 
 #### Context Output
@@ -108,6 +108,28 @@ Updates a Code42 Alert Session
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Code42.SecurityAlert.ID | string | The alert ID of the resolved alert. | 
+
+### code42-alert-resolve
+
+***
+DEPRECATED. Use `code42-alert-update` instead.
+
+#### Base Command
+
+`code42-alert-resolve`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The alert ID to resolve. Alert IDs are associated with alerts that are fetched via fetch-incidents. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.SecurityAlert.ID | string | The alert ID of the resolved alert. | 
+
 
 ### code42-user-create
 
