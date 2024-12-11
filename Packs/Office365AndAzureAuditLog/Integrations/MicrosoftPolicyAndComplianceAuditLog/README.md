@@ -1,19 +1,15 @@
 Use the integration to get logs from the O365 service.
-## Configure Microsoft Policy And Compliance (Audit Log) on Cortex XSOAR
+## Configure Microsoft Policy And Compliance (Audit Log) in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Microsoft Policy And Compliance (Audit Log).
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Exchange Online URL |  | True |
-    | Certificate | A pfx certificate encoded in Base64. | True |
-    | Password |  | True |
-    | The organization used in app-only authentication. |  | True |
-    | The application ID from the Azure portal |  | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Exchange Online URL |  | True |
+| Certificate | A pfx certificate encoded in Base64. | True |
+| Password |  | True |
+| The organization used in app-only authentication. |  | True |
+| The application ID from the Azure portal |  | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Required Permissions To Search Audit Logs
 - The minimum required Exchange permissions are **Audit Logs** or **View-Only Audit Logs**.
@@ -23,7 +19,7 @@ Use the integration to get logs from the O365 service.
 - For more information --> [How to assign permissions to search the audit log](https://docs.microsoft.com/en-us/microsoft-365/compliance/set-up-basic-audit?view=o365-worldwide#step-2-assign-permissions-to-search-the-audit-log).
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 
@@ -164,4 +160,3 @@ Use the o365-search-auditlog command to search the unified audit log. This log c
 >| Actor | ActorContextId | ActorIpAddress | ApplicationId | AzureActiveDirectoryEventType | ClientIP | CreationTime | ExtendedProperties | Id | InterSystemsId | IntraSystemId | LogonError | ModifiedProperties | ObjectId | Operation | OrganizationId | RecordType | ResultStatus | SupportTicketId | Target | TargetContextId | UserId | UserKey | UserType | Version | Workload
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >| \[\{"ID":"ID","Type":0\},\{"ID":"user@example.com","Type":5\}\] | "ebac1a16\-81bf\-449b\-8d43\-5732c3c1d999" | "ClientIP" | "00000002\-0000\-0ff1\-ce00\-000000000000" | 1 | "ClientIP" | \{"value":"2021\-01\-01T23:59:56","DateTime":"Friday, January 1, 2021 11:59:56 PM"\} | \[\{"Name":"UserAgent","Value":"python\-requests/2.18.4"\},\{"Name":"UserAuthenticationMethod","Value":"1"\},\{"Name":"RequestType","Value":"OAuth2:Token"\},\{"Name":"ResultStatusDetail","Value":"UserError"\},\{"Name":"KeepMeSignedIn","Value":"false"\}\] | "8133912e\-b888\-4849\-b8fb\-070710b35400" | "4bf55773\-4137\-4d68\-b7f8\-ef8ef9c0235f" | "8133912e\-b888\-4849\-b8fb\-070710b35400" | "InvalidUserNameOrPassword" | "00000002\-0000\-0ff1\-ce00\-000000000000" | "UserLoginFailed" | "ebac1a16\-81bf\-449b\-8d43\-5732c3c1d999" | 15 | "Failed" | "" | \{"ID":"00000002\-0000\-0ff1\-ce00\-000000000000","Type":0\} | "ebac1a16\-81bf\-449b\-8d43\-5732c3c1d999" | "user@example.com" | "user@example.com" | 0 | 1 | "AzureActiveDirectory"
-

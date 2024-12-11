@@ -1513,7 +1513,7 @@ class Client(BaseClient):
         schedule_id = int(demisto.args().get("schedule_id"))
 
         method = "DELETE"
-        url = f"/config/v1/accounts/{account_id}/plans/{schedule_id}"
+        url = f"/config/v2/accounts/{account_id}/plans/{schedule_id}"
         schedule_data = self.get_response(url=url, method=method)
         return schedule_data
 

@@ -62,19 +62,22 @@ Follow the steps bellow for configuring an [XDR Collector](https://docs-cortex.p
   ```bash 
   sudo timedatectl set-timezone UTC
   ```
-- [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339) compatible like timestamps. 
+- [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339) and ISO 8601 compatible like timestamps. 
   **Examples**: 
    - *`2024-10-28T14:30:55Z`*
    - *`2024-10-28T14:30:55-0300`*
-   - *`2024-10-28T14:30:55.123+02:00`*
+   - *`2024-10-28T14:30:55-03:00`*
+   - *`2024-10-28 14:30:55.123+0300`*  
+   - *`2024-10-28 14:30:55.123+03:00`*
   
-
 ##### Filebeat XDR Collector
-- [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339) compatible like timestamps. 
+- [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339) and ISO 8601 compatible like timestamps. 
 **Examples**: 
    - *`2024-10-28T14:30:55Z`*
    - *`2024-10-28T14:30:55-0300`*
-   - *`2024-10-28T14:30:55.123+02:00`*  
+   - *`2024-10-28T14:30:55-03:00`*
+   - *`2024-10-28 14:30:55.123+0300`*  
+   - *`2024-10-28 14:30:55.123+03:00`*
 
 **Note**: 
 Event logs collected via Filebeat with timestamp formats other than those listed above are assigned the agent collection time.

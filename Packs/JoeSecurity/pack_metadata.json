@@ -2,7 +2,7 @@
     "name": "Joe Security",
     "description": "Sandbox Cloud",
     "support": "xsoar",
-    "currentVersion": "1.1.23",
+    "currentVersion": "1.1.24",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

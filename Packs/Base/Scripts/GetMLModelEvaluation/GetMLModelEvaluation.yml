@@ -48,3 +48,4 @@ tests:
 - Create Phishing Classifier V2 ML Test
 fromversion: 5.0.0
 runas: DBotWeakRole
+autoUpdateDockerImage: false

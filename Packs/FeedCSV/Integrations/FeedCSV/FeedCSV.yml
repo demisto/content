@@ -222,7 +222,7 @@ script:
     - contextPath: CSV.Indicator.rawJSON
       description: The indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/py3-tools:1.0.0.112434
+  dockerimage: demisto/py3-tools:1.0.0.114656
   feed: true
   runonce: false
   script: ''

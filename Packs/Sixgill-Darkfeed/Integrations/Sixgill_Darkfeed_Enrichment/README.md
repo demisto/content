@@ -1,25 +1,21 @@
 Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time Threat Intelligence indicators. Enrich IOCs such as domains, URLs, hashes, and IP addresses straight from XSOAR platform.
 This integration was integrated and tested with sixgill-clients
 
-## Configure Sixgill_Darkfeed_Enrichment on Cortex XSOAR
+## Configure Sixgill_Darkfeed_Enrichment in Cortex
 
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Sixgill_Darkfeed_Enrichment.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | client_id | Sixgill API client ID | True |
-    | client_secret | Sixgill API client secret | True |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| client_id | Sixgill API client ID | True |
+| client_secret | Sixgill API client secret | True |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### ip
@@ -352,5 +348,4 @@ Returns information and a reputation for each post ID in the input list.
 ``` ```
 
 #### Human Readable Output
-
 
