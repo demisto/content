@@ -350,18 +350,19 @@ def test_module(client: Client) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-
     message: str = ''
 
-    # create a list and then delete it for sanity check
-    address_list_create_command(client=client, args={"name": "cortex_instance_test"})
     try:
+        # create a list and then delete it for a sanity check
+        address_list_create_command(client=client, args={"name": "cortex_instance_test"})
+    except DemistoException as de:
+        demisto.debug(de.message)
+        demisto.debug("Trying to just delete the list for a sanity check, since it might already exist.")
         address_list_delete_command(client=client, args={"name": "cortex_instance_test"})
     except Exception as e:
-        raise DemistoException("An error was occurred when deleting the cortex_instance_test IP's list."
-                               "Please delete this list manually. It's was created only for testing.") from e
+        raise DemistoException("An error was occurred when deleting the cortex_instance_test addresses list."
+                               "Please delete this list manually if exists. It's was created only for testing.") from e
 
-    message = 'ok'
     return message
 
 
