@@ -353,6 +353,81 @@ script:
       required: true
     description: Delete incident.
     name: opencti-incident-delete
+  - arguments:
+    - description: The incident's value to filter by, can be partial value.
+      name: search
+    - description: The ID of the entity that created the incident (use opencti-organization-list to find or create).
+      name: created_by
+    - description: The ID of the incident creator.
+      name: creator
+    - description: "Created after date filter. Format: YYYY-MM-DDThh:mm:ss.sssZ"
+      name: created_after
+    - description: "Created before date filter. Format: YYYY-MM-DDThh:mm:ss.sssZ"
+      name: created_before
+    - description: The types of the incident. Use opencti-incident-types-list to find all incident types in OpenCTI.
+      isArray: true
+      name: incident_types
+      type: string
+    - description: The label ID for the incident (use opencti-label-list to find or create).
+      name: label_id
+      type: string
+    - defaultValue: "50"
+      description: The maximum number of incidents to return. Default value is 50. Maximum value is 500.
+      name: limit
+    - description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.Incidents.LastRunID context path.
+      name: last_run_id
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: When the argument is set to true, the limit argument is ignored. Default is false.
+      name: all_results
+      predefined:
+      - "true"
+      - "false"
+    description: Get incidents in OpenCTI.
+    name: opencti-get-incidents
+    outputs:
+    - contextPath: OpenCTI.Incidents.IncidentList.id
+      description: Unique ID of the incident.
+      type: string
+    - contextPath: OpenCTI.Incidents.IncidentList.name
+      description: Name of the incident.
+      type: string
+    - contextPath: OpenCTI.Incidents.IncidentList.description
+      description: Description of the incident.
+      type: string
+    - contextPath: OpenCTI.Incidents.IncidentList.source
+      description: The source of the incident.
+      type: string
+    - contextPath: OpenCTI.Incidents.IncidentList.severity
+      description: The severity of the incident.
+      type: string
+    - contextPath: OpenCTI.Incidents.IncidentList.objective
+      description: The objective date of the incident.
+      type: string
+    - contextPath: OpenCTI.Incidents.IncidentList.confidence
+      description: Confidence of the incident.
+      type: number
+    - contextPath: OpenCTI.Incidents.IncidentList.createdBy
+      description: Name of the entity that created the incident.
+      type: string
+    - contextPath: OpenCTI.Incidents.IncidentList.creators
+      description: Name of the incident creators.
+      type: list
+    - contextPath: OpenCTI.Incidents.IncidentList.labels
+      description: Labels associated with the incident.
+      type: list
+    - contextPath: OpenCTI.Incidents.IncidentList.incidentTypes
+      description: Types of the incident.
+      type: list
+    - contextPath: OpenCTI.Incidents.IncidentList.created
+      description: Creation date of the incident.
+      type: string
+    - contextPath: OpenCTI.Incidents.IncidentList.updatedAt
+      description: Last update date of the incident.
+      type: string
+    - contextPath: OpenCTI.Incidents.LastRunID
+      description: The last ID of the previous fetch for pagination.
+      type: string
   - arguments: []
     description: Get a list of all incident types.
     name: opencti-incident-types-list

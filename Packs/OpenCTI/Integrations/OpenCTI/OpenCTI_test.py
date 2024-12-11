@@ -4,6 +4,7 @@ from OpenCTI import *
 from test_data.data import (
     RESPONSE_DATA_OBSERVABLES,
     RESPONSE_DATA_INDICATORS,
+    RESPONSE_DATA_INCIDENTS,
     RESPONSE_DATA_EMPTY,
 )
 from CommonServerPython import CommandResults
@@ -537,6 +538,81 @@ def test_incident_delete_command_exception(mocker, capfd):
         incident_delete_command(client, args)
     captured = capfd.readouterr()
     assert captured.out.strip() == "Test exception"
+
+def test_get_incidents(mocker):
+    """Tests get_incidents function
+    Given
+        The following incident types: 'registry key', 'account' that were chosen by the user.
+    When
+        - `get_incidents_command` is calling the get_incidents function
+    Then
+        - convert the result to incidents list
+        - validate the length of the incidents list
+        - validate the new_last_id that is saved into the integration context is the same as the ID returned by the
+            command.
+    """
+    client = Client
+    mocker.patch.object(client.incident, 'list', return_value=RESPONSE_DATA_INCIDENTS)
+    incidents = get_incidents(client, incident_types=['incident_type_1', 'incident_type_2'], limit=10)
+    assert len(incidents) == 2
+
+
+def test_get_incidents_exception(mocker, capfd):
+    """Tests get_incidents function
+    Given
+        The following incident types: 'registry key', 'account' that were chosen by the user.
+    When
+        - `get_incidents_command` is calling the get_incidents function
+    Then
+         Ensure a DemistoException is raised with the correct error message.
+    """
+    client = Client
+    mocker.patch.object(client.incident, 'list', side_effect=Exception("Test exception"))
+    with pytest.raises(DemistoException, match="Failed to retrieve incidents."):
+        get_incidents(client, incident_types=['incident_type_1', 'incident_type_2'], limit=10)
+    captured = capfd.readouterr()
+    assert captured.out.strip() == "Test exception"
+
+
+def test_get_incidents_command(mocker):
+    """Tests get_incidents_command function
+    Given
+        The following incident types: 'compromised' that were chosen by the user and 'limit': 2
+    When
+        - Calling `get_incidents_command`
+    Then
+        - convert the result to human readable table
+        - validate the readable_output, raw_response.
+    """
+    client = Client
+    args = {
+        'incident_types': 'compromised',
+        'limit': 2
+    }
+    mocker.patch.object(client.incident, 'list', return_value=RESPONSE_DATA_INCIDENTS)
+    results: CommandResults = get_incidents_command(client, args)
+    assert len(results.raw_response) == 2
+    assert "Incidents" in results.readable_output
+    assert RESPONSE_DATA_INCIDENTS.get('pagination', {}).get('endCursor') == \
+        results.outputs.get('OpenCTI.Incidents(val.lastRunID)').get('lastRunID')
+
+
+def test_get_incidents_command_with_no_data_to_return(mocker):
+    """Tests get_incidents_command function with no data to return
+    Given
+        The following incident types: 'compromised' that were chosen by the user.
+    When
+        - Calling `get_incidents_command`
+    Then
+        - validate the response to have a "No incidents" string
+    """
+    client = Client
+    args = {
+        'incident_types': 'compromised'
+    }
+    mocker.patch.object(client.incident, 'list', return_value=RESPONSE_DATA_EMPTY)
+    results: CommandResults = get_incidents_command(client, args)
+    assert "No incidents" in results.readable_output
 
 
 def test_incident_types_list_command(mocker):

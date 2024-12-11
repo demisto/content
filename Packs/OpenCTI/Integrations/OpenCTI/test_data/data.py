@@ -159,6 +159,47 @@ RESPONSE_DATA_INDICATORS = {
     }
 }
 
+RESPONSE_DATA_INCIDENTS = {
+  'entities': [
+    {
+      'id': "a48ccd47-a6a1-4ba2-b89c-cbb3200b27eb",
+      'name': "2024-12-01 | Phishing Campaign Against ExampleBank",
+      'description': "A phishing campaign targeting ExampleBank customers was discovered. Attackers used fake login pages to steal credentials.",
+      'source': "Email Reports",
+      'confidence': 90,
+      'severity': "high",
+      'objective': "Credential Theft",
+      'createdBy': "Cybersecurity Team Alpha",
+      'creators': ["John Doe", "Jane Smith"],
+      'labels': ["phishing", "urgent"],
+      'incidentTypes': ["Credential Theft"],
+      'created': "2024-12-01T10:00:00Z",
+      'updatedAt': "2024-12-02T15:30:00Z"
+    },
+    {
+      'id': "5f1e74cb-6aa2-4d8b-a313-1e0a7694ad1e",
+      'name': "2024-11-30 | DDoS Attack Against ExampleSite",
+      'description': "A DDoS attack disrupted ExampleSite services for 3 hours. Traffic patterns suggest involvement of known botnets.",
+      'source': "Network Monitoring Tools",
+      'confidence': 85,
+      'severity': "medium",
+      'objective': "Service Disruption",
+      'createdBy': "Cyber Defense Unit",
+      'creators': ["Alice Green", "Bob Brown"],
+      'labels': ["ddos", "network"],
+      'incidentTypes': ["Service Disruption"],
+      'created': "2024-11-30T14:00:00Z",
+      'updatedAt': "2024-12-01T09:00:00Z"
+    }
+  ],
+  'pagination': {
+    'startCursor': "WyJpbmNpZGVudC0tMDAxIl0=",
+    'endCursor': "WyJpbmNpZGVudC0tMDAyIl0=",
+    'hasNextPage': False,
+    'hasPreviousPage': False,
+    'globalCount': 2
+  }
+};
 
 RESPONSE_DATA_EMPTY = {
     'entities': [],

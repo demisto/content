@@ -281,6 +281,97 @@ def get_indicators(
         raise DemistoException(f"Failed to retrieve indicators. {e}")
 
 
+def get_incidents(
+    client: OpenCTIApiClient,
+    label: str = None,
+    created_by: str = None,
+    creator: str = None,
+    created_after: str = None,
+    created_before: str = None,
+    incident_types: list[str] = None,
+    limit: int | None = 50,
+    last_run_id: str = None,
+    search: str = "",
+    get_all: bool = False
+) -> dict:
+    """Retrieving incidents from the OpenCTI API with filters and pagination.
+
+    Args:
+        client: OpenCTI Client object.
+        label: The label to filter by.
+        created_by: The creator of the incident.
+        creator: The creator of the incident.
+        created_after: The date and time after which the incident was created.
+        created_before: The date and time before which the incident was created.
+        incident_types: The types of incident to filter by.
+        limit: The maximum number of incidents to fetch (default 50).
+        last_run_id: The last ID from the previous call for pagination.
+        search: Search string for the incident value.
+        get_all: Whether to fetch all incidents or just the page (default False). 
+
+    Returns:
+        A dictionary containing incidents and pagination information.
+    """
+    filters: dict[str, Any] = {
+        'mode': 'and',
+        'filters': [],
+        'filterGroups': []
+    }
+
+    if label:
+        filters["filters"].append({
+            'key': 'objectLabel',
+            'values': [label],
+            'operator': 'eq',
+            'mode': 'or'
+        })
+    if created_by:
+        filters["filters"].append({
+            'key': 'createdBy',
+            'values': [created_by],
+            'operator': 'eq',
+            'mode': 'or'
+        })
+    if creator:
+        filters["filters"].append({
+            'key': 'creator_id',
+            'values': [creator],
+            'operator': 'eq'
+        })
+    if incident_types:
+        filters["filters"].append({
+            'key': 'incident_types',
+            'values': incident_types,
+            'operator': 'eq',
+            'mode': 'or'
+        })
+    if created_after:
+        filters["filters"].append({
+            'key': 'created_at',
+            'values': [created_after],
+            'operator': 'gt'
+        })
+    if created_before:
+        filters["filters"].append({
+            'key': 'created_at',
+            'values': [created_before],
+            'operator': 'lt'
+        })
+    try:
+        incident_list = client.incident.list(
+            after=last_run_id,
+            first=limit,
+            withPagination=True,
+            getAll=get_all,
+            filters=filters,
+            search=search
+        )
+        return incident_list
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(f"Failed to retrieve incidents. {e}")
+    
+
 def build_stix_pattern(
     indicator: str,
     observable_type: str
@@ -433,6 +524,86 @@ def incident_types_list_command(client: OpenCTIApiClient, args: Dict[str, str]) 
     else:
         return CommandResults(readable_output='No incident types')
 
+
+def get_incidents_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> CommandResults:
+    """List incidents in OpenCTI with optional filters and pagination.
+
+    Args:
+        client: OpenCTI Client object.
+        args: demisto.args()
+
+    Returns:
+        CommandResults object with readable_output, raw_response, and pagination cursor.
+    """
+    limit = arg_to_number(args.get('limit', '50'))
+    last_run_id = args.get('last_run_id')
+    label = args.get('label_id')
+    created_by = args.get('created_by')
+    creator = args.get('creator')
+    created_after = args.get('created_after')
+    created_before = args.get('created_before')
+    search = args.get('search', '')
+    incident_types = argToList(args.get('incident_types'))
+    get_all = argToBoolean(args.get('all_results', 'false'))
+
+    raw_response = get_incidents(
+        client=client,
+        label=label,
+        created_by=created_by,
+        creator=creator,
+        created_after=created_after,
+        created_before=created_before,
+        incident_types=incident_types,
+        limit=limit,
+        last_run_id=last_run_id,
+        search=search,
+        get_all=get_all
+    )
+
+    last_run = None
+    if not get_all:
+        last_run = raw_response.get('pagination', {}).get('endCursor')
+
+    if incidents_list := raw_response if get_all else copy.deepcopy(raw_response.get('entities')):
+        incidents = [
+            {
+                "id": incident.get("id"),
+                "name": incident.get("name"),
+                "description": incident.get("description"),
+                "source": incident.get("source"),
+                "confidence": incident.get("confidence"),
+                "severity": incident.get("severity"),
+                "objective": incident.get("objective"),
+                "createdBy": incident.get("createdBy")["name"] if incident.get("createdBy") else "",
+                "creators": [label["name"] for label in incident.get("creators", [])],
+                "labels": [label["value"] for label in incident.get("objectLabel", [])],
+                "incidentTypes": incident.get("incident_types"),
+                "created": incident.get("created"),
+                "updatedAt": incident.get("updated_at")
+            }
+            for incident in incidents_list
+        ]
+
+        readable_output = tableToMarkdown(
+            "Incidents",
+            incidents,
+            headers=["id", "name", "description", "source", "confidence", "severity", "objective",
+                     "createdBy", "creators", "labels", "incidentTypes", "created", "updatedAt"],
+            headerTransform=pascalToSpace
+        )
+        outputs = {
+            'OpenCTI.Incidents(val.lastRunID)': {'lastRunID': last_run},
+            'OpenCTI.Incidents.IncidentList(val.id === obj.id)': incidents
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=incidents_list
+        )
+    else:
+        return CommandResults(readable_output="No incidents.")
+    
 
 def indicator_types_list_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
     """ Get indicator types list from opencti
@@ -1481,6 +1652,9 @@ def main():
 
         elif command == "opencti-incident-delete":
             return_results(incident_delete_command(client, args))
+
+        elif command == "opencti-get-incidents":
+            return_results(get_incidents_command(client, args))
 
         elif command == "opencti-incident-types-list":
             return_results(incident_types_list_command(client, args))
