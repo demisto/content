@@ -1,6 +1,6 @@
 import demistomock as demisto
 import dateparser
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from typing import Optional
 
 
