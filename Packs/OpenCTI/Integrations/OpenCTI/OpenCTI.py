@@ -1159,7 +1159,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
     valid_until_before = args.get('valid_until_before')
     valid_from_after = args.get('valid_from_after')
     valid_from_before = args.get('valid_from_before')
-    value = args.get('value', '')
+    search = args.get('search', '')
     indicator_types = argToList(args.get('indicator_types'))
     get_all = argToBoolean(args.get('all_results', 'false'))
 
@@ -1177,7 +1177,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
         indicator_types=indicator_types,
         limit=limit,
         last_run_id=last_run_id,
-        search=value,
+        search=search,
         get_all=get_all
     )
 
