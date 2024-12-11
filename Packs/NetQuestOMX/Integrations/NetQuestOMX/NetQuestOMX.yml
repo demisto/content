@@ -30,6 +30,8 @@ configuration:
   type: 8
   required: false
   section: Collect
+  hidden:
+    - xsoar
   additionalinfo: Whether to collect events.
 - display: Statistic types to fetch
   name: statistic_types_to_fetch
@@ -124,6 +126,8 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.11.10.116949
+  isfetchevents: true
+  isfetchevents:xsoar: false
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
