@@ -44,6 +44,15 @@ configuration:
   name: isFetch
   type: 8
   required: false
+- name: fetch_type
+  display: Fetch incidents from type
+  defaultvalue: Alerts
+  type: 15
+  options:
+  - Alerts
+  - Metadata
+  - Both
+  required: false
 - defaultValue: 1 day
   display: First fetch
   name: first_fetch
