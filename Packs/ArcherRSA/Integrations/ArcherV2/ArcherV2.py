@@ -53,7 +53,7 @@ ACCOUNT_STATUS_DICT = {1: "Active", 2: "Inactive", 3: "Locked"}
 
 API_ENDPOINT = demisto.params().get("api_endpoint", "api")
 
-class FilterConditionNames(Enum):
+class FilterConditionTypes(Enum):
     date = 'DateComparisonFilterCondition'
     numeric = 'NumericFilterCondition'
     text = 'TextFilterCondition'
@@ -227,14 +227,28 @@ def search_records_by_report_soap_request(token, report_guid):
 
 
 def construct_generic_filter_condition(
-    condition_name: FilterConditionNames,
+    condition_type: FilterConditionTypes,
     operator: str,
     field_name: str,
     field_id: str,
     search_value: str,
     sub_elements_tags_values: dict[str, Any] | None = None
 ) -> str:
-    root = ET.Element(condition_name.value)
+    """
+    Constructs an XML string representing any generic filter condition for searching records.
+
+    Args:
+        condition_type (FilterConditionTypes): The type of the filter condition.
+        operator (str): The comparison operator (e.g., 'Equals', 'GreaterThan').
+        field_name (str): The name of the application field.
+        field_id (str): The ID of the application field.
+        search_value (str): The value for the comparison.
+        sub_elements_tags_values (dict | None): Optional tag names and values to embed as sub-elements.
+
+    Returns:
+        str: An XML string representing the FilterCondition element.
+    """
+    root = ET.Element(condition_type.value)
 
     operator_element = ET.SubElement(root, 'Operator')
     operator_element.text = operator
@@ -254,7 +268,7 @@ def construct_generic_filter_condition(
 
 def construct_content_filter_condition(operator: str, level_id: str, search_value: str) -> str:
     """
-    Construct an XML string representing a content filter condition for searching records.
+    Constructs an XML string representing a content filter condition for searching records.
 
     Args:
         operator (str): The comparison operator (e.g., 'Equals', 'GreaterThan').
@@ -265,7 +279,7 @@ def construct_content_filter_condition(operator: str, level_id: str, search_valu
     Returns:
         str: An XML string representing the ContentFilterCondition element.
     """
-    root = ET.Element(FilterConditionNames.content.value)
+    root = ET.Element(FilterConditionTypes.content.value)
 
     level = ET.SubElement(root, 'Level')
     level.text = level_id
@@ -279,6 +293,22 @@ def construct_content_filter_condition(operator: str, level_id: str, search_valu
 
     return ET.tostring(root, encoding='unicode')
 
+
+def construct_operator_logic(logical_operator: str, conditions_count: int) -> str:
+    """
+    Constructs an XML string representing the operator logic that applies to the filtering conditions for searching records.
+
+    Args:
+        logical_operator (str): The logical operator (e.g. 'AND', 'OR', 'XOR').
+        conditions_count (int): The number of conditions.
+    
+    Returns:
+        str: An XML string representing the OperatorLogic element.
+    """
+    root = ET.Element('OperatorLogic')
+    root.text = f' {logical_operator.upper()} '.join([str(num) for num in range(1, conditions_count + 1)])
+    return ET.tostring(root, encoding='unicode')
+ 
 
 def search_records_soap_request(
     token: str,
@@ -294,7 +324,7 @@ def search_records_soap_request(
     level_id: str = "",
     sort_type: str = "Ascending",
     xml_filter_condition: str = "",
-    advanced_operator_logic: str = "",
+    logical_operator: str = "",
 ):
     # CDATA is not supported in Element Tree, therefore keeping original structure.
     request_body = (
@@ -326,7 +356,7 @@ def search_records_soap_request(
         if date_operator:
             filter_conditions.add(
                 construct_generic_filter_condition(
-                    FilterConditionNames.date,
+                    FilterConditionTypes.date,
                     operator=date_operator,
                     field_name=field_name,
                     field_id=field_id,
@@ -338,7 +368,7 @@ def search_records_soap_request(
         elif numeric_operator:
             filter_conditions.add(
                 construct_generic_filter_condition(
-                    FilterConditionNames.numeric,
+                    FilterConditionTypes.numeric,
                     operator=numeric_operator,
                     field_name=field_name,
                     field_id=field_id,
@@ -362,7 +392,7 @@ def search_records_soap_request(
             else:
                 filter_conditions.add(
                     construct_generic_filter_condition(
-                        FilterConditionNames.text,
+                        FilterConditionTypes.text,
                         operator='Contains',
                         field_name=field_name,
                         field_id=field_id,
@@ -370,9 +400,13 @@ def search_records_soap_request(
                     )
                 )
 
+    operator_logic = ''
     if filter_conditions:
         filter_conditions_xml = '\n'.join(filter_conditions)
-        request_body += f"<Filter><Conditions>{filter_conditions_xml}</Conditions></Filter>"
+        if logical_operator:
+            operator_logic = construct_operator_logic(logical_operator, conditions_count=len(filter_conditions))
+        
+        request_body += f'<Filter><Conditions>{filter_conditions_xml}</Conditions>{operator_logic}</Filter>'
 
     if field_id:
         request_body += (
@@ -889,7 +923,7 @@ class Client(BaseClient):
         max_results=10,
         sort_type: str = "Ascending",
         xml_filter_condition: str = "",
-        advanced_operator_logic: str = "",
+        logical_operator: str = "",
     ):
         demisto.debug(f"searching for records {field_to_search}:{search_value}")
         if fields_to_display is None:
@@ -930,7 +964,7 @@ class Client(BaseClient):
             sort_type=sort_type,
             level_id=level_id,
             xml_filter_condition=xml_filter_condition,
-            advanced_operator_logic=advanced_operator_logic,
+            logical_operator=logical_operator,
         )
 
         if not res:
@@ -1781,7 +1815,7 @@ def fetch_incidents(
     app_id = params["applicationId"]
     date_field = params["applicationDateField"]
     xml_filter_condition = params.get("fetchXml", "")
-    advanced_operator_logic = params.get("advancedOperatorLogic", "")
+    logical_operator = params.get("conditionsOperator", "")
     max_results = params.get("fetch_limit", 10)
     fields_to_display = argToList(params.get("fields_to_fetch"))
     fields_to_display.append(date_field)
@@ -1794,7 +1828,7 @@ def fetch_incidents(
         date_operator="GreaterThan",
         max_results=max_results,
         xml_filter_condition=xml_filter_condition,
-        advanced_operator_logic=advanced_operator_logic,
+        logical_operator=logical_operator,
     )
     demisto.debug(f"Found {len(records)=}.")
     # Build incidents
