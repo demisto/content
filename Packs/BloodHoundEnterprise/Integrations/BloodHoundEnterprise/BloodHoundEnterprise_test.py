@@ -40,8 +40,8 @@ def test_client_request(mocker):
     query_params = {
         "limit": 50,
         "sort_by": "created_at",
-        "after": "2024-11-18T11:16:09.076711Z",
-        "before": "2024-11-18T14:00:20.303699Z",
+        "after": "2024-11-18T11:16:09.076711",
+        "before": "2024-11-18T14:00:20.303699",
     }
     client = Client(
         base_url="example.com",
@@ -54,7 +54,7 @@ def test_client_request(mocker):
     log = mocker.patch.object(demisto, "debug")
     client._request("GET", "/api/v2/audit", query_params=query_params)
     found = any(
-        "/api/v2/audit?limit=50&sort_by=created_at&after=2024-11-18T11%3A16%3A09.076711Z&before=2024-11-18T14%3A00%3A20.303699Z,"
+        "/api/v2/audit?limit=50&sort_by=created_at&after=2024-11-18T11%3A16%3A09.076711&before=2024-11-18T14%3A00%3A20.303699,"
         in call.args[0]
         for call in log.call_args_list
     )
