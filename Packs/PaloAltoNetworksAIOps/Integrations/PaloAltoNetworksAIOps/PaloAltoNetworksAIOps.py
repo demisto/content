@@ -15,6 +15,10 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 ''' CLIENT CLASS '''
 
 
+
+
+# Just to trig build
+
 class Client(BaseClient):
     def __init__(self, base_url, api_key, tsg_id, client_id, client_secret, verify=True, proxy=False, headers=None):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
