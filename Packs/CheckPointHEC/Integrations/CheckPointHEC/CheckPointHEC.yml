@@ -60,7 +60,7 @@ configuration:
   section: Collect
   defaultvalue: 1 hour
 - display: SaaS Application
-  additionalinfo: Get incidents from the selected SaaS
+  additionalinfo: Get incidents from the selected SaaS.
   name: saas_apps
   type: 16
   required: false
@@ -107,7 +107,7 @@ configuration:
   - Malicious URL
   - Malicious URL Click
 - display: Maximum number of incidents per fetch
-  additionalinfo: The maximum number of incidents to fetch per fetch. The default is 10.
+  additionalinfo: The maximum number of incidents to retrieve per fetch.
   name: max_fetch
   defaultvalue: "10"
   type: 0
