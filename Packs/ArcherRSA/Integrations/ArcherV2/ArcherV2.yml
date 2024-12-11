@@ -49,12 +49,23 @@ configuration:
   type: 0
   required: false
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year)
+  additionalinfo: 'In the <number> <time unit> format. For example: 12 hours, 7 days, 3 months, 1 year.'
+  display: First fetch timestamp
   name: fetch_time
   type: 0
   required: false
 - display: List of fields from the application to get into the incident
   name: fields_to_fetch
+  type: 0
+  required: false
+- additionalinfo: 'XML condition element used for fetch filtering. For example: "TextFilterCondition" XML element. Cannot be of type "DateComparisonFilterCondition".'
+  display: XML for fetch filtering
+  name: fetch_xml
+  type: 0
+  required: false
+- additionalinfo: 'Logic operator used for building the "OperatorLogic" XML element for filtering. For example: "AND", "OR".'
+  display: Fetch filtering logic Operator
+  name: logical_operator
   type: 0
   required: false
 - additionalinfo: Request timeout value, in seconds. Default is 400.
@@ -389,6 +400,8 @@ script:
       - 'false'
     - description: The Level ID to use for searching. This argument is relevant when fullData is True. If empty, the command by default takes the first level ID.
       name: levelId
+    - description: 'The raw XML filter condition. For example: "DateComparisonFilterCondition" or "TextFilterCondition" XML element.'
+      name: xmlForFiltering
     description: Searches for records in the given application.
     name: archer-search-records
     outputs:

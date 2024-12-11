@@ -1106,13 +1106,32 @@ class TestArcherV2:
         assert soap_mocker.call_count == len(http_call_attempt_results)
 
     @pytest.mark.parametrize(
-        'xml_document, expected_is_valid',
+        'xml_document, blacklisted_tags, expected_is_valid',
         [
-            ('<DisplayField name="First Published">7194</DisplayField>', True),
-            ('<ShowStatSummaries>false</ShowSummaries>', False),
+            pytest.param(
+                '<DisplayField name="First Published">7194</DisplayField>',
+                [],
+                # Expected
+                True,
+                id='Valid',
+            ),
+            pytest.param(
+                '<ShowStatSummaries>false</ShowSummaries>',
+                [],
+                # Expected
+                False,
+                id='Mismatched tags',
+            ),
+            pytest.param(
+                '<ModuleCriteria><Module name="appname">5</Module></ModuleCriteria>',
+                ['ModuleCriteria'],
+                # Expected
+                False,
+                id='Blacklisted tag',
+            ),
         ]
     )
-    def test_is_valid_xml(self, xml_document: str, expected_is_valid: bool):
+    def test_is_valid_xml(self, xml_document: str, blacklisted_tags: list[str], expected_is_valid: bool):
         """
         Given:
             - Case 1: A valid XML document as a string.
@@ -1123,7 +1142,7 @@ class TestArcherV2:
             - Case 1: Ensure is_valid is True.
             - Case 2: Ensure is_valid is False.
         """
-        is_valid = is_valid_xml(xml_document)
+        is_valid = is_valid_xml(xml_document, blacklisted_tags)
         assert is_valid == expected_is_valid
 
     @pytest.mark.parametrize(

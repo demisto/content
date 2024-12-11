@@ -322,11 +322,11 @@ def search_records_soap_request(
     date_operator: str | None = "",
     field_to_search_by_id: str | None = "",
     numeric_operator: str | None = "",
-    max_results=10,
+    max_results: int = 10,
     level_id: str = "",
     sort_type: str = "Ascending",
-    xml_filter_condition: str = "",
-    logical_operator: str = "",
+    xml_filter_condition: str | None = "",
+    logical_operator: str | None = "",
 ):
     # CDATA is not supported in Element Tree, therefore keeping original structure.
     request_body = (
@@ -915,17 +915,17 @@ class Client(BaseClient):
 
     def search_records(
         self,
-        app_id,
-        fields_to_display=None,
-        field_to_search="",
-        search_value="",
-        field_to_search_by_id="",
-        numeric_operator="",
-        date_operator="",
-        max_results=10,
+        app_id: str,
+        fields_to_display: list[str] | None = None,
+        field_to_search: str | None = "",
+        search_value: str | None = "",
+        field_to_search_by_id: str | None = "",
+        numeric_operator: str | None = "",
+        date_operator: str | None = "",
+        max_results: int = 10,
         sort_type: str = "Ascending",
-        xml_filter_condition: str = "",
-        logical_operator: str = "",
+        xml_filter_condition: str | None = "",
+        logical_operator: str | None = "",
     ):
         demisto.debug(f"searching for records {field_to_search}:{search_value}")
         if fields_to_display is None:
@@ -1655,29 +1655,33 @@ def list_users_command(client: Client, args: dict[str, str]):
     return_outputs(markdown, context, res)
 
 
-def is_valid_xml(xml_document: str) -> bool:
-    """Checks if the string is valid XML document
+def is_valid_xml(xml_document: str, blacklisted_tags: list[str] | None = None) -> bool:
+    """
+    Checks if the string is syntactically valid XML document and if the XML contains any forbidden tags.
 
     Args:
         xml_document (str): String for checking.
+        blacklisted_tags (list): List of forbidden XML tags.
 
     Returns:
-        bool: True if valid, otherwise False.
+        bool: True if valid XML and no forbidden tags, otherwise False.
     """
+    blacklisted_tags = blacklisted_tags or []
+
     try:
-        ET.fromstring(xml_document)
-        return True
-    except ET.ParseError as err:
-        demisto.debug(err)
+        root = ET.fromstring(xml_document)
+    except ET.ParseError:
         return False
+
+    return all(not (root.tag == blacklisted_tag or root.find(blacklisted_tag)) for blacklisted_tag in blacklisted_tags)
 
 
 def search_records_command(client: Client, args: dict[str, str]):
-    app_id = args.get("applicationId")
+    app_id = args["applicationId"]  # required
     field_to_search = args.get("fieldToSearchOn")
     field_to_search_by_id = args.get("fieldToSearchById")
     search_value = args.get("searchValue")
-    max_results = args.get("maxResults", 10)
+    max_results = arg_to_number(args.get("maxResults")) or 10
     date_operator = args.get("dateOperator")
     numeric_operator = args.get("numericOperator")
     fields_to_display = argToList(args.get("fieldsToDisplay"))
@@ -1688,7 +1692,7 @@ def search_records_command(client: Client, args: dict[str, str]):
     )
     level_id = args.get("levelId")
 
-    xml_filter_condition = args.get("xml_for_filtering", "")
+    xml_filter_condition = args.get("xmlForFiltering", "")
     if xml_filter_condition and not is_valid_xml(xml_filter_condition):
         raise DemistoException(f'Invalid XML filter: {xml_filter_condition}.')
 
@@ -1816,11 +1820,17 @@ def fetch_incidents(
     # Not using get method as those params are a must
     app_id = params["applicationId"]
     date_field = params["applicationDateField"]
-    xml_filter_condition = params.get("fetchXml", "")
-    logical_operator = params.get("conditionsOperator", "")
     max_results = params.get("fetch_limit", 10)
     fields_to_display = argToList(params.get("fields_to_fetch"))
     fields_to_display.append(date_field)
+
+    xml_filter_condition = params.get("fetch_xml", "")
+    logical_operator = params.get("logical_operator", "")
+
+    # if custom XML filter condition is given, verify syntax validity and check for forbidden tags
+    if xml_filter_condition and not is_valid_xml(xml_filter_condition, blacklisted_tags=[FilterConditionTypes.date.value]):
+        raise ValueError(f"XML for fetch filtering condition of type: '{FilterConditionTypes.date.value}' is not allowed.")
+
     # API Call
     records, _ = client.search_records(
         app_id,

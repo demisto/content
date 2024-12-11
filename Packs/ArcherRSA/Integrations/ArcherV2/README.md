@@ -6,26 +6,28 @@ The RSA Archer GRC platform provides a common foundation for managing policies, 
 2. Search for RSA Archer v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | url | Server URL (for example <https://example.net>, <https://example.net/rsaarcher>, <https://example.net/archer>) | True |
-    | api_endpoint | API Endpoint<br/>Warning: Change only if you have another API endpoint. | True |
-    | credentials | Username | True |
-    | isFetch | Fetch incidents | False |
-    | incidentType | Incident type | False |
-    | insecure | Trust any certificate (not secure) | False |
-    | proxy | Use system proxy settings | False |
-    | instanceName | Instance name | True |
-    | userDomain | User domain | False |
-    | applicationId | Application ID for fetch | True |
-    | applicationDateField | Application date field for fetch | True |
-    | fetch_limit | Maximum number of incidents to pull per fetch | False |
-    | fetch_time | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, for example, 12 hours, 7 days, 3 months, 1 year) | False |
-    | fields_to_fetch | List of fields from the application to get into the incident | False |
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Server URL<br/>For example: <https://example.net>, <https://example.net/rsaarcher>, <https://example.net/archer> | True |
+    | API Endpoint<br/>Warning: Change only if you have another API endpoint. | True |
+    | Username | True |
+    | Fetch incidents | False |
+    | Incident type | False |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
+    | Instance name | True |
+    | User domain | False |
+    | Application ID for fetch | True |
+    | Application date field for fetch | True |
+    | Maximum number of incidents to pull per fetch | False |
+    | First fetch timestamp | False |
+    | List of fields from the application to get into the incident | False |
+    | XML for fetch filtering | False |
+    | Fetch filtering logic operator | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-Note: Archer customers might know there is an Archer REST API that supports token based authentication. Not all functionality of this integration can be achieved using Archer's REST API, which is why this integration requries credential based authentication. 
+Note: Archer customers might know there is an Archer REST API that supports token based authentication. Not all functionality of this integration can be achieved using Archer's REST API, which is why this integration requires credential based authentication.
 
 ## Commands
 
@@ -997,6 +999,7 @@ Search for records inside the given application
 | fullData | Whether to get extended responses with all of the data regarding this search. For example, "fullData=true" | Required |
 | isDescending | Whether to order by descending order. Possible values are: "true", "false". | Optional |
 | levelId | The Level ID to use for searching. This argument is relevant when fullData is True. If empty, the command by default takes the first level ID. | Optional |
+| xmlForFiltering | The raw XML filter condition. For example: "DateComparisonFilterCondition" or "TextFilterCondition" XML element. | Optional |
 
 #### Context Output
 
