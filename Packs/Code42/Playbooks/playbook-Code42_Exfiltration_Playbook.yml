@@ -14,7 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ""
+      description: "Start the playbook"
     nexttasks:
       '#none#':
       - "1"
@@ -112,7 +112,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: "Begin the branch for when the incident constitutes malicious behavior"
     nexttasks:
       '#none#':
       - "19"
@@ -145,7 +145,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: "Begin the branch for when the behavior is not malicious"
     nexttasks:
       '#none#':
       - "9"
@@ -213,7 +213,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: "Stop the remediation timer"
     nexttasks:
       '#none#':
       - "8"
@@ -246,7 +246,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: "End of the playbook"
     separatecontext: false
     view: |-
       {
@@ -514,7 +514,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
+      description: "Retrieve manager details from Active Directory"
     nexttasks:
       '#none#':
       - "5"
@@ -999,7 +999,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: "Stop the remediation timer"
     nexttasks:
       '#none#':
       - "39"

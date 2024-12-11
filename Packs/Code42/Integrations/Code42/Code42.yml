@@ -153,6 +153,7 @@ script:
       name: id
       required: true
     description: DEPRECATED. Use code42-alert-update instead.
+    deprecated: true
     name: code42-alert-resolve
     outputs:
     - contextPath: Code42.SecurityAlert.ID
