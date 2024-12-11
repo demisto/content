@@ -1,32 +1,27 @@
 Use the Hoxhunt integration to send feedback to reporters of incidents, set incident sensitivity, and apply SOC classification to incidents.
 This integration was integrated and tested with version August 2024 of Hoxhunt.
 
-## Configure Hoxhunt V2 on Cortex XSOAR
+## Configure Hoxhunt v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Hoxhunt v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Hoxhunt to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Hoxhunt\), or Incoming and Outgoing \(from/to Cortex XSOAR and Hoxhunt\). | False |
-    | Server URL | e.g. https://api.hoxhunt.com/graphql-external | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | API Key | Input your api key from Hoxhunt | False |
-    | Fetch incidents |  | False |
-    | Incidents Fetch Interval |  | False |
-    | Incident type |  | False |
-    | First fetch timestamp | \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days\). Defaults to 7 days. | False |
-    | Fetch limit | Maxium number of incidents per fetch. Cap is 100. | False |
-    | Only fetch escalated incidents | If enabled, only escalated incidents will be fetched. Set up escalation rules in Hoxhunt Response -&gt; Incident Rules | False |
-    | Only fetch open incidents | If enabled, only open incidents will be fetched. | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | e.g. <https://api.hoxhunt.com/graphql-external> | True |
+| API Key | Input your api key from Hoxhunt | True |
+| Fetch incidents |  | False |
+| Incidents Fetch Interval |  | False |
+| Incident type |  | False |
+| First fetch timestamp | \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days\). Defaults to 7 days. | False |
+| Fetch limit | Maxium number of incidents per fetch. Cap is 100. | False |
+| Only fetch escalated incidents | If enabled, only escalated incidents will be fetched. Set up escalation rules in Hoxhunt Response -&gt; Incident Rules | False |
+| Only fetch open incidents | If enabled, only open incidents will be fetched. | False |
+| Use system proxy settings |  | False |
+| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Hoxhunt to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Hoxhunt\), or Incoming and Outgoing \(from/to Cortex XSOAR and Hoxhunt\). | False |
+| Trust any certificate (not secure) |  | False |
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### hoxhunt-current-user-get
@@ -261,10 +256,12 @@ Get mapping fields from remote incident. Please note that this method will not u
 #### Context Output
 
 There is no context output for this command.
+
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and Hoxhunt v2 corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 
