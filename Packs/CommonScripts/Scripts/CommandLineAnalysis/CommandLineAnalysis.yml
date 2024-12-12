@@ -5,7 +5,7 @@ name: CommandLineAnalysis
 script: ''
 type: python
 tags: []
-comment: This script analyses a command line and provide a score based on the matched profiles.
+comment: "This script evaluates command-line threats by analyzing both original and decoded inputs. It assigns weighted scores to detected patterns, such as AMSI bypass or credential dumping, and applies risk combination bonuses for multiple detections. The total score is normalized to a 0-100 scale, with risk levels categorized as follows:\n\n* 0-25: Low Risk\n* 26-50: Medium Risk\n* 51-90: High Risk\n* 91-100: Critical Risk\n\nThe scoring mechanism provides a comprehensive risk assessment, considering both the severity and frequency of malicious behaviors."
 enabled: true
 args:
 - name: command_line
