@@ -24,7 +24,7 @@ Containment:
 
 Requirements:
 
-- For response actions, the following integrations are required: Core - IR.
+- For response actions, the following integration is required: Core - IR.
 
 ## Dependencies
 
