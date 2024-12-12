@@ -1,0 +1,42 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Doppel
+  version: -1
+configuration:
+- defaultvalue: https://<your-doppel-tenant>.com/
+  display: Doppel tenant URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection with Doppel
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+description: 'Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively. The XSOAR pack for Doppel provides mirrors the alerts created by Doppel as XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.'
+display: Doppel
+name: Doppel
+script:
+  commands:
+  - name: get-alert
+    description: 'Retrieves the alert details by ID or entity. Must include exactly one of either id or entity'
+    arguments:
+    - name: id
+      description: 'The ID of the alert to retrieve details for'
+      required: false
+    - name: entity
+      description: 'The alerted entity to retrieve details for'
+      required: false
+    outputs:
+    - contextPath: Doppel.doppel_link
+      description: 'Link to the alert in the Doppel portal'
+      type: String
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.7.117934
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

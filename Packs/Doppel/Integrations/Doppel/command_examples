@@ -1,0 +1,7 @@
+create-alert entity="http://example-entity-url.com"
+get-alert id="entity-id" entity="http://example-entity-url.com"
+
+TODO
+update-alert
+create-abuse-alert
+get-alerts
