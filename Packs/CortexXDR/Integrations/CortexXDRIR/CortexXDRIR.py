@@ -440,19 +440,24 @@ class Client(CoreClient):
             request_data['filters'] = filters
 
         demisto.debug(f'before fetch: {request_data=}')
-        reply = self._http_request(
+        res = self._http_request(
             method='POST',
             url_suffix='/incidents/get_multiple_incidents_extra_data/',
             json_data={'request_data': request_data},
             headers=self.headers,
             timeout=self.timeout,
         )
-        demisto.debug(f'after fetch: {reply=}')
+        reply = res.get('reply', {})
+        
         if ALERTS_LIMIT_PER_INCIDENTS < 0:
-            ALERTS_LIMIT_PER_INCIDENTS = arg_to_number(reply.get('reply', {}).get('alerts_limit_per_incident')) or 50
+            ALERTS_LIMIT_PER_INCIDENTS = arg_to_number(reply.get('alerts_limit_per_incident')) or 50
             demisto.debug(f'Setting alerts limit per incident to {ALERTS_LIMIT_PER_INCIDENTS}')
-        incidents = reply.get('reply')
-        return incidents.get('incidents', {}) if isinstance(incidents, dict) else incidents  # type: ignore
+        
+        # pop the incidents and then log the reply data so as not to overload the logs
+        incidents = reply.pop('incidents', []) if isinstance(reply, dict) else reply  # type: ignore
+        demisto.debug(f'reply data: {reply}')  
+        demisto.debug(f'Incidents fetched: {[i.get("incident", i).get("incident_id") for i in incidents]}')
+        return incidents
 
     def update_alerts_in_xdr_request(self, alerts_ids, severity, status, comment) -> List[Any]:
         request_data = {"request_data": {
@@ -1184,6 +1189,7 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
 
     if non_created_incidents:
         next_run['alerts_limit_per_incident'] = ALERTS_LIMIT_PER_INCIDENTS  # type: ignore[assignment]
+
     demisto.debug(f'{next_run=}')
     return next_run, incidents
 
