@@ -27,7 +27,8 @@ class CoreClient(BaseClient):
 
     def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,
                       params=None, data=None, timeout=None, raise_on_status=False, ok_codes=None,
-                      error_handler=None, with_metrics=False, resp_type='json', response_data_type=None):
+                      error_handler=None, with_metrics=False, resp_type='json', response_data_type=None,
+                      use_base_client=False, base_client_retries=0):
         '''
         """A wrapper for requests lib to send our requests and handle requests and responses.
 
@@ -83,7 +84,7 @@ class CoreClient(BaseClient):
         if self.is_core and not IS_CORE_AVAILABLE:
             raise DemistoException(f"Using the XQL Query Engine from the core Pack is available only from version "
                                    f"{SERVER_VERSION}-{BUILD_VERSION}.")
-        if (not IS_CORE_AVAILABLE):
+        if (not IS_CORE_AVAILABLE) or use_base_client:
             return BaseClient._http_request(self,  # we use the standard base_client http_request without overriding it
                                             method=method,
                                             url_suffix=url_suffix,
@@ -95,7 +96,9 @@ class CoreClient(BaseClient):
                                             ok_codes=ok_codes,
                                             error_handler=error_handler,
                                             with_metrics=with_metrics,
-                                            resp_type=resp_type)
+                                            resp_type=resp_type,
+                                            retries=base_client_retries)
+
         headers = headers if headers else self._headers
         data = json.dumps(json_data) if json_data else data
         address = full_url if full_url else urljoin(self._base_url, url_suffix)
@@ -116,7 +119,11 @@ class CoreClient(BaseClient):
             return response['data']
 
     def start_xql_query(self, data: dict) -> str:
-        res = self._http_request(method='POST', url_suffix='/xql/start_xql_query', json_data=data)
+        full_url = 'https://api/webapp/public_api/v1/xql/start_xql_query'
+        # res = self._http_request(method='POST', url_suffix='/xql/start_xql_query',
+        #                          json_data=data, use_base_client=True, base_client_retries=5)
+        res = self._http_request(method='POST', full_url=full_url,
+                                 json_data=data, use_base_client=True, base_client_retries=5)
         execution_id = res.get('reply', "")
         return execution_id
 
@@ -684,7 +691,7 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
             outputs['results'] = [json.loads(line) for line in data.split("\n") if len(line) > 0]
 
     # if status is pending, the command will be called again in the next run until success.
-    if outputs.get('status') == 'PENDING':
+    if outputs.get('status') == 'PENDING': # add also if error with the error message
         scheduled_command = ScheduledCommand(command='xdr-xql-get-query-results', next_run_in_seconds=interval_in_secs,
                                              args=args, timeout_in_seconds=600)
         command_results.scheduled_command = scheduled_command
