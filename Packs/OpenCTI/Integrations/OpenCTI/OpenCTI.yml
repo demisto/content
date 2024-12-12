@@ -42,7 +42,7 @@ script:
       name: score
     - auto: PREDEFINED
       defaultValue: ALL
-      description: 'The observable types to fetch. Out-of-the-box observable types supported in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key, and URL.'
+      description: 'The observable types to fetch. Out-of-the-box observable types supported in Cortex XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key, and URL.'
       isArray: true
       name: observable_types
       predefined:
