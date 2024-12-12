@@ -725,6 +725,36 @@ script:
       required: true
     description: Delete relationship.
     name: opencti-relationship-delete
+  - arguments:
+    - description: The relationship from entity ID.
+      name: from_id
+      required: true
+    - defaultValue: '50'
+      description: The maximum number of relationships to return per fetch. Default value is 50. Maximum value is 200.
+      name: limit
+    - description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.Relationships.relationshipsLastRun context path.
+      name: last_run_id
+    description: Get a list of all relationships in OpenCTI.
+    name: opencti-relationship-list
+    outputs:
+    - contextPath: OpenCTI.Relationships.RelationshipsList.id
+      description: Relationship ID.
+      type: String
+    - contextPath: OpenCTI.Relationships.RelationshipsList.relationshipType
+      description: Relationship type.
+      type: String
+    - contextPath: OpenCTI.Relationships.RelationshipsList.fromId
+      description: Relationship from entity ID.
+      type: String
+    - contextPath: OpenCTI.Relationships.RelationshipsList.toId
+      description: Relationship to entity ID.
+      type: String
+    - contextPath: OpenCTI.Relationships.RelationshipsList.toEntityType
+      description: Relationship to entity type.
+      type: String
+    - contextPath: OpenCTI.Relationships.relationshipsLastRun
+      description: The last ID of the previous fetch to use for pagination.
+      type: String
   - arguments: []
     description: Get a list of all indicator types.
     name: opencti-indicator-types-list
@@ -734,7 +764,7 @@ script:
     - contextPath: OpenCTI.IndicatorTypes.IndicatorTypesList.name
       description: Indicator type name.
     - contextPath: OpenCTI.IndicatorTypes.IndicatorTypesList.description
-      description: Indicator type description.
+      description: Indicator type description.  
   dockerimage: demisto/vendors-sdk:1.0.0.110574
   runonce: false
   script: '-'

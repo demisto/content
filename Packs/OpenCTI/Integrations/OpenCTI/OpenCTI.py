@@ -725,6 +725,52 @@ def relationship_delete_command(client: OpenCTIApiClient, args: dict) -> Command
     return CommandResults(readable_output='Relationship deleted.')
 
 
+def relationship_list_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """ Get relationships list from opencti
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            readable_output, raw_response
+        """
+    from_id = args.get("from_id")
+    limit = arg_to_number(args.get('limit', '50'))
+    last_run_id = args.get('last_run_id')
+    relationships_list = client.stix_core_relationship.list(
+        fromOrToId=from_id, first=limit, after=last_run_id, withPagination=True)
+
+    if relationships_list:
+        new_last_run = relationships_list.get('pagination').get('endCursor')
+        relationships = [
+            {
+                'id': relationship.get('id'),
+                'relationshipType': relationship.get('relationship_type'),
+                'fromId': relationship.get('from').get('id'),
+                'toId': relationship.get('to').get('id'),
+                'toEntityType': relationship.get('to').get('entity_type')
+            }
+            for relationship in relationships_list.get('entities')]
+        readable_output = tableToMarkdown(
+            'Relationships',
+            relationships,
+            headers=['id', 'relationshipType', 'fromId', 'toId', 'toEntityType'],
+            headerTransform=pascalToSpace
+        )
+        outputs = {
+            'OpenCTI.Relationships(val.relationshipsLastRun)': {'relationshipsLastRun': new_last_run},
+            'OpenCTI.Relationships.RelationshipsList(val.id === obj.id)': relationships
+        }
+        return CommandResults(
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=relationships_list
+        )
+    else:
+        return CommandResults(readable_output='No relationships')
+
+
 def get_observables_command(client: OpenCTIApiClient, args: dict) -> CommandResults:
     """ Gets observable from opencti to readable output
 
@@ -1683,6 +1729,9 @@ def main():
 
         elif command == "opencti-relationship-delete":
             return_results(relationship_delete_command(client, args))
+
+        elif command == "opencti-relationship-list":
+            return_results(relationship_list_command(client, args))
 
         elif command == "opencti-indicator-create":
             return_results(indicator_create_command(client, args))

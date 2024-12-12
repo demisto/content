@@ -742,6 +742,39 @@ def test_relationship_delete_command_exception(mocker, capfd):
     assert captured.out.strip() == "Test exception"
 
 
+def test_relationship_list_command(mocker):
+    """Tests relationship_list_command function
+    Given
+
+    When
+        - Calling `relationship_list_command`
+    Then
+        - validate the readable_output, context
+    """
+    client = Client
+    mocker.patch.object(client.stix_core_relationship, 'list',
+                        return_value={
+                            'entities': [{
+                                'id': '4acaed3c-5683-4caa-b87d-28ba32c72056',
+                                'relationship_type': 'related-to',
+                                'from': {
+                                    'id': '17282d6a-2da1-491a-b1ad-13b29bead0c8'
+                                },
+                                'to': {
+                                    'id': 'a4ff07c2-3ea8-42fc-b227-947e74a3a551',
+                                    'entity_type': 'IPv4-Addr'
+                                },
+                            }],
+                            'pagination': {'endCursor': 'XYZ123'}
+                        })
+    results: CommandResults = relationship_list_command(client, {'from_id': '17282d6a-2da1-491a-b1ad-13b29bead0c8'})
+    assert "Relationships" in results.readable_output
+    assert [{'id': '4acaed3c-5683-4caa-b87d-28ba32c72056', 'relationshipType': 'related-to',
+             'fromId': '17282d6a-2da1-491a-b1ad-13b29bead0c8', 'toId': 'a4ff07c2-3ea8-42fc-b227-947e74a3a551',
+             'toEntityType': 'IPv4-Addr'}] == \
+        results.outputs.get('OpenCTI.Relationships.RelationshipsList(val.id === obj.id)')
+
+
 def test_relationship_create_command_with_no_data_to_return(mocker):
     """Tests relationship_create_command function
     Given
