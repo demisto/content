@@ -14,7 +14,7 @@ from akamai.edgegrid import EdgeGridAuth
 # Local imports
 from CommonServerUserPython import *
 import concurrent.futures
-                        
+
 
 """GLOBALS/PARAMS
 

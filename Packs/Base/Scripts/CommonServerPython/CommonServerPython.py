@@ -12275,6 +12275,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
     client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
     data_chunks = split_data_to_chunks(data, chunk_size)
+
     def send_events(data_chunk):
         data_size = len(data_chunk)
         data_chunk = '\n'.join(data_chunk)
