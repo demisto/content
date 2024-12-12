@@ -2,8 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 """Doppel for Cortex XSOAR (aka Demisto)
 
-This integration contains features to mirror the alerts from Doppel to create incidents in XSOAR and 
-the commands to perform different updates on the alerts
+This integration contains features to mirror the alerts from Doppel to create incidents in XSOAR
+and the commands to perform different updates on the alerts
 """
 
 from CommonServerUserPython import *  # noqa
