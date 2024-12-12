@@ -345,9 +345,7 @@ def main() -> None:  # pragma: no cover
             add_time_to_events(events)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
-            demisto.debug(f"Setting next run to: {next_run}.")
 
-    # Log exceptions and return errors
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
