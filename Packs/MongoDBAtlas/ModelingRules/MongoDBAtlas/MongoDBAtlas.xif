@@ -26,7 +26,7 @@ filter source_log_type = "events"
 	xdm.alert.original_alert_id = coalesce(alertConfigId, id),
 	xdm.event.original_event_type = eventTypeName,
 	xdm.source.user.groups = arraycreate(groupId),
-	xdm.observer.unique_identifier = coalesce(get_linkToDetails, get_links_href),
+	xdm.observer.unique_identifier = coalesce(to_string(get_linkToDetails), to_string(get_links_href)),
 	xdm.source.user.username = if(get_username ~= "\s*\|\s*", null, get_username ~= "^\|", ltrim(get_username), get_username ~= "\|$", rtrim(get_username), get_username),
 	xdm.auth.privilege_level = if(to_boolean(isGlobalAdmin) = true, XDM_CONST.PRIVILEGE_LEVEL_ADMIN),
 	xdm.source.ipv4 = check_remoteAddress_ipv4,
