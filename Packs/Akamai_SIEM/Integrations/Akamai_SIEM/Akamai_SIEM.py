@@ -516,10 +516,12 @@ def fetch_events_command(
                         for attack_data_key in ['rules', 'ruleMessages', 'ruleTags', 'ruleData', 'ruleSelectors',
                                                 'ruleActions', 'ruleVersions']:
                             event['attackData'][attack_data_key] = decode_message(event.get('attackData', {}).get(attack_data_key,
-                                                                                                                ""))
+                                                                                                                  ""))
                     if "httpMessage" in event:
-                        event['httpMessage']['requestHeaders'] = decode_url(event.get('httpMessage', {}).get('requestHeaders', ""))
-                        event['httpMessage']['responseHeaders'] = decode_url(event.get('httpMessage', {}).get('responseHeaders', ""))
+                        event['httpMessage']['requestHeaders'] = decode_url(
+                            event.get('httpMessage', {}).get('requestHeaders', ""))
+                        event['httpMessage']['responseHeaders'] = decode_url(
+                            event.get('httpMessage', {}).get('responseHeaders', ""))
                 except Exception as e:
                     config_id = event.get('attackData', {}).get('configId', "")
                     policy_id = event.get('attackData', {}).get('policyId', "")
