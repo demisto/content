@@ -1611,14 +1611,15 @@ def fetch_incidents(client: Client):
         raise Exception('Given filter to fetch by is invalid.')
 
     current_time = int(datetime.now().timestamp()) * 1000
-    demisto.info(f"current_time for mmng/v2: {current_time} and end_time: {last_update_time}")
+    demisto.info(f"start_time: {last_update_time} and endtime for mmng/v2: {current_time}")
     offset = 0
     has_more_results = True
     total_malops_available = 0
     total_malops_fetched = 0
     while has_more_results:
+        demisto.debug(f"Polling starts. has_more_results: {has_more_results}  total_malops_available:{total_malops_available}  total_malops_fetched: {total_malops_fetched} offset: {offset}")
         malop_management_response = get_malop_management_data(client, last_update_time, current_time, offset)
-        demisto.info(f"mmng/v2 response: {malop_management_response}")
+        # demisto.info(f"mmng/v2 response: {malop_management_response}")
         edr_guid_list, non_edr_guid_list = [], []
         total_malops_available = malop_management_response["data"]["totalHits"]
         malop_management_response = malop_management_response["data"]["data"]
@@ -1629,13 +1630,13 @@ def fetch_incidents(client: Client):
         demisto.info(f"Malop stats: Malop per paginated call {malop_count_per_poll}. Malops per polling cycle {total_malops_available}")
         total_malops_fetched += malop_count_per_poll
         for malop in malop_management_response:
-            demisto.info(f"inside for loop mmng/v2. malop: {malop}")
+            # demisto.info(f"inside for loop mmng/v2. malop: {malop}")
             if malop.get("isEdr"):
                 edr_guid_list.append(malop["guid"])
             else:
                 non_edr_guid_list.append(malop["guid"])
-        demisto.info(f"edr guid list: {edr_guid_list}")
-        demisto.info(f"non_edr_guid_list: {non_edr_guid_list}")
+        # demisto.info(f"edr guid list: {edr_guid_list}")
+        # demisto.info(f"non_edr_guid_list: {non_edr_guid_list}")
         if edr_guid_list:
             malop_process_type, malop_loggon_session_type = query_malops(client, total_result_limit=10000, per_group_limit=10000,
                                                                         guid_list=edr_guid_list)
@@ -1669,20 +1670,20 @@ def fetch_incidents(client: Client):
 
         demisto.info(f"non edr if start...")
         if non_edr_guid_list:
-            demisto.info("inside if non_edr_guid_list")
+            # demisto.info("inside if non_edr_guid_list")
             for non_edr_malop in non_edr_guid_list:
-                demisto.info(f"processing non edr malop id: {non_edr_malop}")
+                # demisto.info(f"processing non edr malop id: {non_edr_malop}")
                 detection_detail_response = get_detection_details(client, non_edr_malop)
 
-                demisto.info(f"detection_detail_response: {detection_detail_response}")
+                # demisto.info(f"detection_detail_response: {detection_detail_response}")
                 try:
                     incident = malop_to_incident(detection_detail_response)
                 except Exception:
                     demisto.debug(f"non edr malop got failed to convert into incident : {guid_string} and malop : {malop}")
                     continue
                 incidents.append(incident)
-                demisto.info(f"non edr malop got appended in incidents: {incidents}")
-        demisto.info(f"non edr if ends...")
+                # demisto.info(f"non edr malop got appended in incidents: {incidents}")
+        
 
 
     # Enable Polling for Cybereason EPP Malops
@@ -1722,6 +1723,8 @@ def fetch_incidents(client: Client):
             has_more_results = False
             offset = 0
             demisto.debug(f"No more results")
+        demisto.debug(f"Polling ends. has_more_results: {has_more_results}  total_malops_available:{total_malops_available}  total_malops_fetched: {total_malops_fetched} offset:{offset}")
+        
 
 
 def login(client: Client):
@@ -2151,7 +2154,7 @@ def get_malop_management_data(client: Client, start_time, end_time, offset):
             "to": end_time
         },
         "pagination": {
-            "pageSize": 50,
+            "pageSize": 5,
             "offset": offset
         },
         "filter": {
