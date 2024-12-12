@@ -446,6 +446,7 @@ def fetch_events_command(
     config_ids: str,
     ctx: dict,
     page_size: int,
+    should_skip_decode_events: bool
 ) -> Iterator[Any]:
     """Iteratively gathers events from Akamai SIEM. Stores the offset in integration context.
 
@@ -456,6 +457,7 @@ def fetch_events_command(
         config_ids: security configuration ids to fetch, e.g. `51000;56080`
         ctx: The integration context
         page_size: The number of events to limit for every request.
+        should_skip_decode_events: Wether to skip events decoding or not.
 
     Yields:
         (list[dict], str, int, set[str], bool): events, new offset, total number of events fetched,
@@ -503,23 +505,27 @@ def fetch_events_command(
             demisto.info("Didn't receive any events, breaking.")
             break
         demisto.info(f"got {len(events)} events, moving to processing events data.")
-        for event in events:
-            try:
+        if should_skip_decode_events:
+            for event in events:
                 event["_time"] = event["httpMessage"]["start"]
-                if "attackData" in event:
-                    for attack_data_key in ['rules', 'ruleMessages', 'ruleTags', 'ruleData', 'ruleSelectors',
-                                            'ruleActions', 'ruleVersions']:
-                        event['attackData'][attack_data_key] = decode_message(event.get('attackData', {}).get(attack_data_key,
-                                                                                                              ""))
-                if "httpMessage" in event:
-                    event['httpMessage']['requestHeaders'] = decode_url(event.get('httpMessage', {}).get('requestHeaders', ""))
-                    event['httpMessage']['responseHeaders'] = decode_url(event.get('httpMessage', {}).get('responseHeaders', ""))
-            except Exception as e:
-                config_id = event.get('attackData', {}).get('configId', "")
-                policy_id = event.get('attackData', {}).get('policyId', "")
-                demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
-        total_events_count += len(events)
-        execution_counter += 1
+        else:
+            for event in events:
+                try:
+                    event["_time"] = event["httpMessage"]["start"]
+                    if "attackData" in event:
+                        for attack_data_key in ['rules', 'ruleMessages', 'ruleTags', 'ruleData', 'ruleSelectors',
+                                                'ruleActions', 'ruleVersions']:
+                            event['attackData'][attack_data_key] = decode_message(event.get('attackData', {}).get(attack_data_key,
+                                                                                                                ""))
+                    if "httpMessage" in event:
+                        event['httpMessage']['requestHeaders'] = decode_url(event.get('httpMessage', {}).get('requestHeaders', ""))
+                        event['httpMessage']['responseHeaders'] = decode_url(event.get('httpMessage', {}).get('responseHeaders', ""))
+                except Exception as e:
+                    config_id = event.get('attackData', {}).get('configId', "")
+                    policy_id = event.get('attackData', {}).get('policyId', "")
+                    demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
+            total_events_count += len(events)
+            execution_counter += 1
         yield events, offset, total_events_count, auto_trigger_next_run
     yield [], offset, total_events_count, auto_trigger_next_run
 
@@ -587,6 +593,7 @@ def main():  # pragma: no cover
             if limit < page_size:
                 demisto.info(f"Got {limit=} lower than {page_size=}, lowering page_size to {limit}.")
                 page_size = limit
+            should_skip_decode_events = params.get("should_skip_decode_events", False)
             for events, offset, total_events_count, auto_trigger_next_run in (  # noqa: B007
             fetch_events_command(
                 client,
@@ -594,7 +601,8 @@ def main():  # pragma: no cover
                 fetch_limit=limit,
                 config_ids=params.get("configIds", ""),
                 ctx=get_integration_context() or {},
-                page_size=page_size
+                page_size=page_size,
+                should_skip_decode_events=should_skip_decode_events
             )):
                 if events:
                     send_events_to_xsiam_multi_threaded: bool = params.get('send_events_to_xsiam_multi_threaded', False)

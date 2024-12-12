@@ -162,7 +162,8 @@ class TestCommandsFunctions:
                                                                                       220,
                                                                                       '',
                                                                                       {},
-                                                                                      50
+                                                                                      50,
+                                                                                      False
                                                                                       ):
             mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(True, 1))
         assert total_events_count == 50
@@ -194,7 +195,8 @@ class TestCommandsFunctions:
                                                                                       220,
                                                                                       '',
                                                                                       {},
-                                                                                      page_size=60
+                                                                                      page_size=60,
+                                                                                      should_skip_decode_events=False
                                                                                       ):
             pass
         assert total_events_count == 50
@@ -230,7 +232,8 @@ class TestCommandsFunctions:
                                                                                       limit,
                                                                                       '',
                                                                                       {},
-                                                                                      page_size
+                                                                                      page_size,
+                                                                                      False
                                                                                       ):
             assert offset == f"offset_{events[-1]['id']}" if events else True
         assert total_events_count == 250
@@ -253,7 +256,7 @@ class TestCommandsFunctions:
         mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
 
         for _, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(client, '12 hours', size,  # noqa: B007
-                                                                              '50170', {"offset": last_offset}, size):
+                                                                              '50170', {"offset": last_offset}, size, False):
             last_offset = offset
         assert total_events_count == 0
         assert last_offset == "318d8"
@@ -281,7 +284,8 @@ class TestCommandsFunctions:
         for _, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
                                                                                              '12 hours',
                                                                                              6, '50170',
-                                                                                             {}, 6):
+                                                                                             {}, 6,
+                                                                                             False):
             last_offset = offset
         assert total_events_count == 6
         assert last_offset == "218d9"
@@ -310,7 +314,8 @@ class TestCommandsFunctions:
                                                                                              '12 hours',
                                                                                              20,
                                                                                              '50170',
-                                                                                             {}, 6
+                                                                                             {}, 6,
+                                                                                             False
                                                                                             ):
             last_offset = offset
         assert total_events_count == 8
@@ -340,7 +345,8 @@ class TestCommandsFunctions:
                                                                                  '12 hours',
                                                                                  2,
                                                                                  '50170',
-                                                                                 {}, 2
+                                                                                 {}, 2,
+                                                                                 False
                                                                                 ):
             last_offset = offset
         assert total_events_count == 2
@@ -371,7 +377,8 @@ class TestCommandsFunctions:
                                                                                       fetch_limit=fetch_limit,
                                                                                       config_ids='50170',
                                                                                       ctx={},
-                                                                                      page_size=page_size
+                                                                                      page_size=page_size,
+                                                                                      should_skip_decode_events=False
                                                                                       ):
             requests_mock.get(f"{BASE_URL}/50170?limit=1&offset={offset}", text=second_response_mock)
         assert total_events_count == fetch_limit
@@ -424,7 +431,8 @@ class TestCommandsFunctions:
                                                                                         220,
                                                                                         '',
                                                                                         {},
-                                                                                        5000
+                                                                                        5000,
+                                                                                        False
                                                                                         ):
                 pass
         assert ('Got offset out of range error when attempting to fetch events from Akamai.' in str(e)) == expect_extra_info
