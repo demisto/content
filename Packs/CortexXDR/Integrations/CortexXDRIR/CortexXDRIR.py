@@ -189,10 +189,10 @@ def validate_custom_close_reasons_mapping(mapping: str, direction: str):
                                          if direction == XSOAR_TO_XDR else xsoar_statuses))
 
 
-def handle_excluded_data_param(excluded_alert_fields: list=[]):
-    remove_nulls_from_alerts = True if REMOVE_ALERTS_NULL_VALUES in excluded_alert_fields else False
+def handle_excluded_data_param(excluded_alert_fields: list = []):
+    remove_nulls_from_alerts = REMOVE_ALERTS_NULL_VALUES in excluded_alert_fields
     formated_excluded_data = [field for field in excluded_alert_fields if field != REMOVE_ALERTS_NULL_VALUES]
-    return formated_excluded_data , remove_nulls_from_alerts
+    return formated_excluded_data, remove_nulls_from_alerts
 
 
 def handle_repetitions_in_incident_fields(incident_data):
@@ -202,7 +202,7 @@ def handle_repetitions_in_incident_fields(incident_data):
         if field in incident_data and incident_data[field]:
             if field == 'alert_categories':
                 demisto.debug('alert_categories', incident_data[field])
-            incident_data[field]=list(set(incident_data.get(field, [])))
+            incident_data[field] = list(set(incident_data.get(field, [])))
 
 
 class Client(CoreClient):
@@ -323,7 +323,8 @@ class Client(CoreClient):
             timeout=self.timeout
         )
 
-    def get_incident_extra_data(self, incident_id, alerts_limit=1000, exclude_artifacts :bool = False, excluded_alert_fields: List = [], remove_nulls_from_alerts: bool = False):
+    def get_incident_extra_data(self, incident_id, alerts_limit=1000, exclude_artifacts: bool = False,
+                                excluded_alert_fields: List = [], remove_nulls_from_alerts: bool = False):
         """
         Returns incident by id
 
@@ -335,7 +336,7 @@ class Client(CoreClient):
             'incident_id': incident_id,
             'alerts_limit': alerts_limit,
         }
-        #TODO fields_to_exclude does not appear in the xdr api
+        # TODO fields_to_exclude does not appear in the xdr api
         if excluded_alert_fields:
             request_data['alert_fields_to_exclude'] = excluded_alert_fields
         if remove_nulls_from_alerts:
@@ -351,8 +352,8 @@ class Client(CoreClient):
         incident = reply.get('reply')
         # Workaround for the TODO
         if exclude_artifacts:
-            for field in FIELDS_TO_EXCLUDE:
-                value = incident.pop('field', None)
+            for _field in FIELDS_TO_EXCLUDE:
+                incident.pop('field', None)
         return incident
 
     def save_modified_incidents_to_integration_context(self):
@@ -411,7 +412,7 @@ class Client(CoreClient):
 
     def get_multiple_incidents_extra_data(self, exclude_artifacts, incident_id_list=[], gte_creation_time_milliseconds=0,
                                           status=None, starred=None, starred_incidents_fetch_window=None,
-                                          page_number=0, limit=100, excluded_alert_fields=[],remove_nulls_from_alerts=False):
+                                          page_number=0, limit=100, excluded_alert_fields=[], remove_nulls_from_alerts=False):
         """
         Returns incident by id
         :param incident_id_list: The list ids of incidents
@@ -644,7 +645,7 @@ def get_incident_extra_data_command(client, args):
         else:  # the incident was not modified
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
     raw_incident = client.get_multiple_incidents_extra_data(incident_id_list=[incident_id], exclude_artifacts=exclude_artifacts,
-                                                            excluded_alert_fields=alert_fields_to_exclude,remove_nulls_from_alerts=drop_nulls)
+                                                            excluded_alert_fields=alert_fields_to_exclude, remove_nulls_from_alerts=drop_nulls)
     if not raw_incident:
         raise DemistoException(f'Incident {incident_id} is not found')
     if isinstance(raw_incident, list):
@@ -653,7 +654,8 @@ def get_incident_extra_data_command(client, args):
         demisto.debug(f'for incident:{incident_id} using the old call since "\
             "alert_count:{raw_incident.get("incident", {}).get("alert_count")} >" \
             "limit:{ALERTS_LIMIT_PER_INCIDENTS}')
-        raw_incident = client.get_incident_extra_data(incident_id, alerts_limit, excluded_alert_fields=alert_fields_to_exclude, remove_nulls_from_alerts=drop_nulls)
+        raw_incident = client.get_incident_extra_data(
+            incident_id, alerts_limit, excluded_alert_fields=alert_fields_to_exclude, remove_nulls_from_alerts=drop_nulls)
     readable_output = [tableToMarkdown(f'Incident {incident_id}', raw_incident.get('incident'), removeNull=True)]
 
     incident = sort_incident_data(raw_incident)
@@ -967,9 +969,9 @@ def get_remote_data_command(client, args, excluded_alert_fields, remove_nulls_fr
         # returned from get_modified_remote_data_command so we want to perform extra-data request on those incidents.
         return_only_updated_incident = not is_demisto_version_ge('6.1.0')  # True if version is below 6.1 else False
         requested_data = {"incident_id": remote_args.remote_incident_id,
-                            "alerts_limit": 1000,
-                            "return_only_updated_incident": return_only_updated_incident,
-                            "last_update": remote_args.last_update}
+                          "alerts_limit": 1000,
+                          "return_only_updated_incident": return_only_updated_incident,
+                          "last_update": remote_args.last_update}
         if excluded_alert_fields:
             requested_data['alert_fields_to_exclude'] = excluded_alert_fields
         if remove_nulls_from_alerts:
@@ -1120,7 +1122,7 @@ def update_related_alerts(client: Client, args: dict):
 
 def fetch_incidents(client, first_fetch_time, integration_instance, exclude_artifacts: bool, last_run: dict = None,
                     max_fetch: int = 10, statuses: List = [], starred: Optional[bool] = None,
-                    starred_incidents_fetch_window: str = None, excluded_alert_fields: List =[],
+                    starred_incidents_fetch_window: str = None, excluded_alert_fields: List = [],
                     remove_nulls_from_alerts: bool = True):
     global ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
@@ -1155,7 +1157,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
                     exclude_artifacts=exclude_artifacts,
                     excluded_alert_fields=excluded_alert_fields,
                     remove_nulls_from_alerts=remove_nulls_from_alerts
-                    )
+                )
                 raw_incidents.extend(raw_incident_status)
             raw_incidents = sorted(raw_incidents, key=lambda inc: inc.get('incident', {}).get('creation_time'))
         else:
@@ -1166,7 +1168,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
                 exclude_artifacts=exclude_artifacts,
                 excluded_alert_fields=excluded_alert_fields,
                 remove_nulls_from_alerts=remove_nulls_from_alerts
-                )
+            )
 
     # demisto.debug(f"{raw_incidents=}") # uncomment to debug, otherwise spams the log
 
@@ -1354,6 +1356,7 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
         raise DemistoException("Could not find alerts to update, please make sure you used valid alert IDs.")
     return CommandResults(readable_output="Alerts with IDs {} have been updated successfully.".format(",".join(array_of_all_ids))
                           )
+
 
 def main():  # pragma: no cover
     """
