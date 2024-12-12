@@ -24,7 +24,6 @@ FIELDS_TO_EXCLUDE = [
     'network_artifacts',
     'file_artifacts'
 ]
-INCIDENT_RESPONSE_FIELDS_MINIMIZE = ['mitre_techniques_ids_and_names', 'mitre_tactics_ids_and_names', 'alert_categories']
 XDR_INCIDENT_FIELDS = {
     "status": {"description": "Current status of the incident: \"new\",\"under_"
                               "investigation\",\"resolved_known_issue\","
@@ -193,16 +192,6 @@ def handle_excluded_data_param(excluded_alert_fields: list = []):
     remove_nulls_from_alerts = REMOVE_ALERTS_NULL_VALUES in excluded_alert_fields
     formated_excluded_data = [field for field in excluded_alert_fields if field != REMOVE_ALERTS_NULL_VALUES]
     return formated_excluded_data, remove_nulls_from_alerts
-
-
-def handle_repetitions_in_incident_fields(incident_data):
-    demisto.debug('handle_repetitions_in_incident_fields')
-    for field in INCIDENT_RESPONSE_FIELDS_MINIMIZE:
-        demisto.debug(f"{incident_data.get(field, [])=}")
-        if field in incident_data and incident_data[field]:
-            if field == 'alert_categories':
-                demisto.debug('alert_categories', incident_data[field])
-            incident_data[field] = list(set(incident_data.get(field, [])))
 
 
 class Client(CoreClient):
@@ -1210,7 +1199,6 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
                                                                remove_nulls_from_alerts=remove_nulls_from_alerts)
                 incident_data = sort_incident_data(raw_incident_)
             sort_all_list_incident_fields(incident_data)
-            # handle_repetitions_in_incident_fields(incident_data)
             incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
                                                                      None)
             incident_data['mirror_instance'] = integration_instance
