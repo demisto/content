@@ -704,6 +704,44 @@ def test_relationship_create_command(mocker):
     assert {'id': '123456', 'relationshipType': 'related-to'} == results.outputs
 
 
+def test_relationship_delete_command(mocker):
+    """Tests relationship_delete_command function
+    Given
+        id of relationship to delete
+    When
+        - Calling `relationship_delete_command`
+    Then
+        - validate the response to have a "Relationship deleted." string
+    """
+    client = Client
+    args = {
+        'id': '123456'
+    }
+    mocker.patch.object(client.stix_core_relationship, 'delete', return_value="Relationship deleted")
+    results: CommandResults = relationship_delete_command(client, args)
+    assert "Relationship deleted" in results.readable_output
+
+
+def test_relationship_delete_command_exception(mocker, capfd):
+    """Tests relationship_delete_command function
+    Given
+        id of relationship to delete
+    When
+        - Calling `relationship_delete_command`
+    Then
+        - Ensure a DemistoException is raised with the correct error message.
+    """
+    client = Client
+    args = {
+        'id': '123456'
+    }
+    mocker.patch.object(client.stix_core_relationship, 'delete', side_effect=Exception("Test exception"))
+    with pytest.raises(DemistoException, match="Can't delete relationship."):
+        relationship_delete_command(client, args)
+    captured = capfd.readouterr()
+    assert captured.out.strip() == "Test exception"
+
+
 def test_relationship_create_command_with_no_data_to_return(mocker):
     """Tests relationship_create_command function
     Given

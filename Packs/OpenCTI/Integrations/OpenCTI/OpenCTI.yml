@@ -719,6 +719,12 @@ script:
       description: New Relationship ID.
     - contextPath: OpenCTI.Relationship.relationshipType
       description: New Relationship Type.
+  - arguments:
+    - description: Relationship ID.
+      name: id
+      required: true
+    description: Delete relationship.
+    name: opencti-relationship-delete
   - arguments: []
     description: Get a list of all indicator types.
     name: opencti-indicator-types-list

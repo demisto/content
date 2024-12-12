@@ -16,6 +16,7 @@
 !opencti-get-incidents limit=2 label_id=07cfae2d-6cc9-42c5-9fd0-32eff8142404
 !opencti-incident-types-list
 !opencti-relationship-create from=7bb1e29c-0d3a-4fcf-960b-beae280558e3 to=33bd535b-fa1c-41e2-a6f9-80d82dd29a9b relationship_type=related-to
+!opencti-relationship-delete id=7bb1e29c-0d3a-4fcf-960b-beae280558e3
 !opencti-indicator-create name=ExampleIndicator indicator="1.1.1.1" main_observable_type=ip
 !opencti-indicator-update id=33bd535b-fa1c-41e2-a6f9-80d82dd29a9b name=ExampleIndicator2
 !opencti-indicator-field-add field=marking value=c9819001-c80c-45e1-8edb-e543e350f195

@@ -706,6 +706,25 @@ def relationship_create_command(client: OpenCTIApiClient, args: Dict[str, Any]) 
         raise DemistoException("Can't create relationship.")
 
 
+def relationship_delete_command(client: OpenCTIApiClient, args: dict) -> CommandResults:
+    """ Delete relationship from opencti
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            readable_output, raw_response
+        """
+    relationship_id = args.get("id")
+    try:
+        client.stix_core_relationship.delete(id=relationship_id)
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(f"Can't delete relationship. {e}")
+    return CommandResults(readable_output='Relationship deleted.')
+
+
 def get_observables_command(client: OpenCTIApiClient, args: dict) -> CommandResults:
     """ Gets observable from opencti to readable output
 
@@ -1661,6 +1680,9 @@ def main():
 
         elif command == "opencti-relationship-create":
             return_results(relationship_create_command(client, args))
+
+        elif command == "opencti-relationship-delete":
+            return_results(relationship_delete_command(client, args))
 
         elif command == "opencti-indicator-create":
             return_results(indicator_create_command(client, args))
