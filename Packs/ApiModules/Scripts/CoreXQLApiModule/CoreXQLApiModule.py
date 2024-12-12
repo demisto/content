@@ -119,11 +119,11 @@ class CoreClient(BaseClient):
             return response['data']
 
     def start_xql_query(self, data: dict) -> str:
-        full_url = 'https://api/webapp/public_api/v1/xql/start_xql_query'
+        # full_url = 'https://api/webapp/public_api/v1/xql/start_xql_query'
+        res = self._http_request(method='POST', url_suffix='/xql/start_xql_query',
+                                 json_data=data)
         # res = self._http_request(method='POST', url_suffix='/xql/start_xql_query',
         #                          json_data=data, use_base_client=True, base_client_retries=5)
-        res = self._http_request(method='POST', full_url=full_url,
-                                 json_data=data, use_base_client=True, base_client_retries=5)
         execution_id = res.get('reply', "")
         return execution_id
 
@@ -674,10 +674,13 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
     if max_fields is None:
         raise DemistoException('Please provide a valid number for max_fields argument.')
     outputs, file_data = get_xql_query_results(client, args)  # get query results with query_id
+    demisto.debug(f'itamar {outputs=}')
+    demisto.info(f'info itamar {outputs=}')
     outputs.update({'query_name': args.get('query_name', '')})
     outputs_prefix = get_outputs_prefix(command_name)
     command_results = CommandResults(outputs_prefix=outputs_prefix, outputs_key_field='execution_id', outputs=outputs,
                                      raw_response=copy.deepcopy(outputs))
+
     # if there are more than 1000 results
     if file_data:
         if not parse_result_file_to_context:
