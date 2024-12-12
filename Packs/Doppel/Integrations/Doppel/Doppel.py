@@ -60,7 +60,13 @@ class Client(BaseClient):
         )
         return response_content
     
-    def update_alert(self, queue_state: str, entity_state: str, alert_id: Optional[str] = None, entity: Optional[str] = None) -> Dict[str, Any]:
+    def update_alert(
+                self,
+                queue_state: str,
+                entity_state: str,
+                alert_id: Optional[str] = None,
+                entity: Optional[str] = None,
+            ) -> Dict[str, Any]:
         """
         Updates an existing alert using either the alert ID or the entity.
 
@@ -84,7 +90,7 @@ class Client(BaseClient):
             method="PUT",  # Changed to PUT as per reference
             full_url=api_url,
             params=params,
-            json_data=payload
+            json_data=payload,
         )
         return response_content
 
