@@ -51,7 +51,7 @@ def main():
     merged_pr = content_repo.get_pull(pr_number)
     merged_pr_url = merged_pr.html_url
     body = f'## Original External PR\r\n[external pull request]({merged_pr_url})\r\n\r\n'
-    title = merged_pr.title
+    title = f"Internal: {merged_pr.title}"
     if '## Contributor' not in merged_pr.body:
         merged_pr_author = merged_pr.user.login
         body += f'## Contributor\r\n@{merged_pr_author}\r\n\r\n'
