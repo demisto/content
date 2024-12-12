@@ -944,6 +944,7 @@ def get_remote_data_command(client, args):
         # when Demisto version is 6.1.0 and above, this command will only be automatically executed on incidents
         # returned from get_modified_remote_data_command so we want to perform extra-data request on those incidents.
         return_only_updated_incident = not is_demisto_version_ge('6.1.0')  # True if version is below 6.1 else False
+
         incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
                                                                  "alerts_limit": 1000,
                                                                  "return_only_updated_incident": return_only_updated_incident,
@@ -978,7 +979,7 @@ def get_remote_data_command(client, args):
                     reformatted_entries.append(entry)
 
             incident_data['in_mirror_error'] = ''
-            
+
             return GetRemoteDataResponse(
                 mirrored_object=incident_data,
                 entries=reformatted_entries
@@ -1014,6 +1015,7 @@ def get_remote_data_command(client, args):
                 'id': remote_args.remote_incident_id,
                 'in_mirror_error': str(e)
             }
+
         return GetRemoteDataResponse(
             mirrored_object=incident_data,
             entries=[]
