@@ -674,7 +674,6 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout) -> Pychr
         tab_ready_event.wait(navigation_timeout)
         demisto.debug(f'After waiting for tab_ready_event on {tab.id=}')
 
-
         if wait_time > 0:
             demisto.info(f'Sleeping before capturing screenshot, {wait_time=}')
         else:
