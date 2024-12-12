@@ -409,6 +409,7 @@ tasks:
       id: c9d81dd1-f324-4ba5-8942-b81894d03815
       version: -1
       name: Can host be contained?
+      description: Check if the host can be contained.
       type: condition
       iscommand: false
       brand: ""
@@ -472,6 +473,7 @@ tasks:
       id: 7b949216-7fd5-4381-8b3f-ac4c58d3a38e
       version: -1
       name: Does Manager Email Exist?
+      description: Check if the manager's email exists.
       type: condition
       iscommand: false
       brand: ""
@@ -552,6 +554,7 @@ tasks:
       id: 5780cd88-c739-4170-807c-55b04126ada4
       version: -1
       name: Close Incident
+      description: Close the incident
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -583,6 +586,7 @@ tasks:
       id: 795c6712-38a7-4ab2-8274-ecaddf72be79
       version: -1
       name: Confirm Network Contain
+      description: Confirm that the network has been contained.
       type: condition
       iscommand: false
       brand: ""
@@ -615,6 +619,7 @@ tasks:
       id: 24e269c9-29c2-4afc-80cb-ca07203aa29f
       version: -1
       name: Send email to manager
+      description: Send an email to the manager.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -666,6 +671,7 @@ tasks:
       id: ca7c8de0-f5b9-45e6-8455-42fdc6ccb541
       version: -1
       name: Confirm Remediation Is Complete
+      description: Confirm Remediation Is Complete
       type: regular
       iscommand: false
       brand: ""
@@ -696,6 +702,7 @@ tasks:
       id: 7226625c-88a1-41a0-8777-6d5683692852
       version: -1
       name: Determine if network contain should be bypassed based on host count
+      description: Determine if the network containment should be bypassed.
       type: condition
       iscommand: false
       brand: ""
@@ -749,6 +756,7 @@ tasks:
       id: aaccca5a-4ce2-4639-84a7-1b008bb3225e
       version: -1
       name: CrowdStrike Network Contain
+      description: contain the network using Crowdstrike
       script: '|||cs-falcon-contain-host'
       type: regular
       iscommand: true
@@ -784,6 +792,7 @@ tasks:
       id: 2fa3d2ff-96b8-466f-8b7c-ce934f09b6ff
       version: -1
       name: Is email integration enabled?
+      description: Check if the email integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -958,6 +967,7 @@ tasks:
       id: 4bc82fbf-a687-4da4-83f7-df2ddc6e0425
       version: -1
       name: File events exist?
+      description: Check if there are file events.
       type: condition
       iscommand: false
       brand: ""
