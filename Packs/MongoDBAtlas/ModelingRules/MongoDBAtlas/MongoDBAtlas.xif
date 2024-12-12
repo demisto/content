@@ -14,7 +14,7 @@ filter source_log_type = "alerts"
 
 filter source_log_type = "events"
 | alter
-	get_links_href = arraystring(arraydistinct(arraymap(links -> [], "@element" -> href)), "|"),
+	get_links_href = arraydistinct(arraymap(links -> [], "@element" -> href)),
 	get_username = arraystring(arraycreate(acknowledgingUsername, username), "|"),
 	get_status = concat(lowercase(status), "-", _ENTRY_STATUS)
 | alter
