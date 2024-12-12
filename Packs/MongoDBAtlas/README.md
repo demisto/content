@@ -18,7 +18,7 @@ This pack provides an automated timestamp ingestion using the available integrat
 To enable the MongoDB Atlas Event Collector, follow these steps:
 1. Go to **Settings** &rarr; **Configurations** &rarr; **Automation & Feed Integrations**.
 2. In the search bar, type **MongoDB Atlas**.
-3. At the right-corner, click on **+ Add instance**.
+3. At the right-corner, click **+ Add instance**.
 4. Follow the instruction in the prompt window to configure the MongoDB Atlas Event Collector.
 
 # For more information
