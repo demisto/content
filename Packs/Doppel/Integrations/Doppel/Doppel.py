@@ -93,6 +93,28 @@ class Client(BaseClient):
             json_data=payload,
         )
         return response_content
+    
+    def get_alerts(self, params: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Fetches multiple alerts based on query parameters.
+
+        :param params: A dictionary of query parameters to apply to the request.
+        :return: A list of dictionaries containing alert details.
+        """
+        api_name = "alerts"
+        api_url = f"{self._base_url}/{api_name}"
+        # Filter out None values
+        filtered_params = {k: v for k, v in params.items() if v is not None}
+
+        demisto.debug(f"API Request Params: {filtered_params}")
+
+        # Use params as query parameters, not json_data
+        response_content = self._http_request(
+            method="GET",
+            full_url=api_url,
+            params=filtered_params
+        )
+        return response_content
 
 ''' HELPER FUNCTIONS '''
 
@@ -172,6 +194,48 @@ def update_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults
         outputs=result,
     )
 
+def get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Command to fetch multiple alerts based on query parameters.
+
+    :param client: Client instance to interact with the API.
+    :param args: Command arguments containing the query parameters as key-value pairs.
+    :return: CommandResults object with the retrieved alerts.
+    """
+    # Extract query parameters
+    query_params = {
+        'search_key': args.get('search_key'),
+        'queue_state': args.get('queue_state'),
+        'product': args.get('product'),
+        'created_before': args.get('created_before'),
+        'created_after': args.get('created_after'),
+        'sort_type': args.get('sort_type'),
+        'sort_order': args.get('sort_order'),
+        'page': args.get('page'),
+        'tags': args.get('tags')
+    }
+
+    # Fetch results from the API
+    try:
+        results = client.get_alerts(params=query_params)
+        demisto.debug(f"Fetched alerts raw response: {results}")
+        if not results:
+            readable_output = "No alerts were found with the given parameters."
+        else:
+            readable_output = f"Retrieved {len(results)} alerts successfully.\n\nComplete JSON data:\n" \
+                              f"{json.dumps(results, indent=4)}"
+
+
+        return CommandResults(
+            outputs_prefix="Doppel.GetAlerts",
+            outputs_key_field="id",
+            outputs=results,
+            readable_output=readable_output,
+            raw_response=results
+        )
+    except Exception as e:
+        raise ValueError(f"Failed to fetch alerts: {str(e)}")
+
 ''' MAIN FUNCTION '''
 
 
@@ -201,6 +265,8 @@ def main() -> None:
             return_results(get_alert_command(client, demisto.args()))
         elif current_command == 'update-alert':
             return_results(update_alert_command(client, demisto.args()))
+        elif current_command == 'get-alerts':
+            return_results(get_alerts_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
