@@ -530,6 +530,8 @@ class Client(BaseClient):
             url_suffix = "/api/data/threat_intelligence/SigmaSource/"
         elif source_type == "ioc":
             url_suffix = "/api/data/threat_intelligence/IOCSource/"
+        else:
+            url_suffix = ""
 
         return self._http_request(method="GET", url_suffix=url_suffix, params=data)
 
@@ -2913,6 +2915,9 @@ class Telemetry:
                 hash_type = "sha1"
             elif len(binary_hash) == 32:
                 hash_type = "md5"
+            else:
+                hash_type = "unknown"
+                demisto.debug(f"{hash_type=}")
 
             self.params[f"hashes.{hash_type}"] = binary_hash
 

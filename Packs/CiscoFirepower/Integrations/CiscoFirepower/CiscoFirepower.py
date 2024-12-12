@@ -3470,6 +3470,9 @@ def get_deployable_devices_command(client: Client, args: Dict) -> CommandResults
                 'Type': item.get('type', '')
             } for item in items
             ]
+        else:
+            context_entry = []
+            demisto.debug(f"no {items=}")
         title = f'{INTEGRATION_NAME} - List of devices status pending deployment:'
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.PendingDeployment(val.ID && val.ID === obj.ID)': context_entry

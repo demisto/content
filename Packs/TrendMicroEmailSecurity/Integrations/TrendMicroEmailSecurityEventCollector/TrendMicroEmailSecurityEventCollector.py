@@ -460,6 +460,7 @@ def main() -> None:  # pragma: no cover
         )
 
         if command == "test-module":
+            should_update_last_run = False
             return_results(test_module(client))
 
         elif command == "trend-micro-get-events":

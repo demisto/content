@@ -1114,6 +1114,9 @@ def get_configuration_backup_incident(
     last_successful_backup_date = last_successful_backup_date if last_successful_backup_date else ''
     if last_successful_backup_date:
         last_successful_backup_datetime = parser.isoparse(last_successful_backup_date)
+    else:
+        last_successful_backup_datetime = 0
+        demisto.debug(f"no {last_successful_backup_date=}")
 
     last_fetch_time = datetime.now().strftime(DATE_FORMAT)
     response = client.get_configuration_backup_request()

@@ -356,6 +356,7 @@ def generic_ansible(integration_name: str, command: str,
                     result['status'] = status.strip()
 
                 results.append(result)
+            msg = ""
             if each_host_event['event'] == "runner_on_unreachable":
                 msg = "Host %s unreachable\nError Details: %s" % (host, result.get('msg'))
 

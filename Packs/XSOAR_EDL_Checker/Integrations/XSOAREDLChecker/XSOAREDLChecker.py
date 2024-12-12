@@ -100,6 +100,10 @@ def get_edl_command(base_url, edl_name, verify, creds=None):
             else:
                 edl_response = "Bad request."
             edl_items_on_list = 0
+        else:
+            edl_response = f"Bad request {status=}"
+            edl_items_on_list = 0
+            demisto.debug(f"unknown status {status}")
 
     # outputs for war room and context
     output = {
