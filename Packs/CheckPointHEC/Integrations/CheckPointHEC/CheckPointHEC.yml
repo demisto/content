@@ -30,13 +30,11 @@ configuration:
   name: isFetch
   type: 8
   required: false
-  additionalinfo: Enable fetching incidents from the selected SaaS application.
 - section: Collect
   display: Incident type
   name: incidentType
   type: 13
   required: false
-  additionalinfo: Fetch incidents of the selected types.
 - section: Connect
   display: ""
   name: client_id
