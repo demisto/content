@@ -8,7 +8,6 @@ import traceback
 from datetime import datetime, timezone
 from typing import Any, cast
 from collections.abc import Mapping
-from json import JSONDecodeError
 
 import dateparser
 import urllib3
@@ -128,7 +127,7 @@ class Client(BaseClient):
                     raise Exception(f"{res.status_code} - {DARKTRACE_API_ERRORS['DATA_NOT_FOUND_ERROR']} {error}.")
                 else:
                     raise Exception(f"{res.status_code} - {DARKTRACE_API_ERRORS['DATA_NOT_FOUND_ERROR']}")
-            except JSONDecodeError:
+            except json.JSONDecodeError:
                 raise Exception(f"{res.status_code} - {DARKTRACE_API_ERRORS['DATA_NOT_FOUND_ERROR']}")
         elif res.status_code == 302:
             # Valid hmac but invalid endpoint (should not happen)
