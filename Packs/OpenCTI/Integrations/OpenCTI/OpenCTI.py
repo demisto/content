@@ -564,7 +564,7 @@ def get_incidents_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Com
     if not get_all:
         last_run = raw_response.get('pagination', {}).get('endCursor')
 
-    if incidents_list := raw_response if get_all else copy.deepcopy(raw_response.get('entities')):
+    if incidents_list := raw_response if get_all else copy.deepcopy(raw_response.get('entities', {})):
         incidents = [
             {
                 "id": incident.get("id"),
@@ -815,7 +815,7 @@ def get_observables_command(client: OpenCTIApiClient, args: dict) -> CommandResu
     if not get_all:
         last_run = raw_response.get('pagination', {}).get('endCursor')  # type: ignore
 
-    if observables_list := raw_response if get_all else copy.deepcopy(raw_response.get('entities')):
+    if observables_list := raw_response if get_all else copy.deepcopy(raw_response.get('entities', {})):
         observables = [{'type': OPENCTI_TYPES_TO_XSOAR.get(observable['entity_type'], observable['entity_type']),
                        'value': observable.get('observable_value'),
                         'id': observable.get('id'),
@@ -1421,7 +1421,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
     if not get_all:
         last_run = raw_response.get('pagination', {}).get('endCursor')
 
-    if indicators_list := raw_response if get_all else copy.deepcopy(raw_response.get('entities')):
+    if indicators_list := raw_response if get_all else copy.deepcopy(raw_response.get('entities', {})):
         indicators = [
             {
                 "id": indicator.get("id"),
