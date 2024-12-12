@@ -2,7 +2,6 @@ import pytest
 from NozomiNetworks import *
 import demistomock as demisto
 from unittest.mock import MagicMock
-
 demisto.callingContext = {
     'context': {
         'IntegrationBrand': 'NozomiNetworks'
@@ -151,7 +150,7 @@ def test_incidents_filtered(requests_mock):
         __get_client(
             [{'json': __load_test_data('./test_data/incidents_better_than_time.json'),
               'path': '/api/open/query/do?query=alerts | sort record_created_at asc | sort id asc '
-                      '| where record_created_at > 1392048082000 | where risk >= 4 | head 20'}],
+              '| where record_created_at > 1392048082000 | where risk >= 4 | head 20'}],
             requests_mock))
 
     assert lid is not None

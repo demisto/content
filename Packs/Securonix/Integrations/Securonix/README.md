@@ -1,5 +1,5 @@
 ## Overview
-Use the Securonix integration to manage incidents, threats, lookup tables, whitelists and watchlists. Integration was built and tested with SNYPR Versions: 6.4 (Feb 2023 R3 release).
+Use the Securonix integration to manage incidents, threats, lookup tables, whitelists and watchlists. Integration was built and tested with SNYPR Versions: 6.4 (Nov 2024 R2 release).
 
 This integration supports both cloud and on-prem instances of Securonix.
 To configure a cloud base instance use the *Tenant* parameter only.

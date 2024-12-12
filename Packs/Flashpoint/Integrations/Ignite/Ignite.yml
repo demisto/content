@@ -275,6 +275,9 @@ script:
     - contextPath: Ignite.CompromisedCredential._source.email
       description: The email address for the compromised credential.
       type: String
+    - contextPath: Ignite.CompromisedCredential._source.username
+      description: The username for the compromised credential.
+      type: String
     - contextPath: Ignite.CompromisedCredential._source.extraction_id
       description: Extraction ID of the IoC.
       type: String
@@ -1365,7 +1368,7 @@ script:
     description: Looks up the "File" type indicator details. The reputation of File hash is considered malicious if there's at least one IoC event in the Ignite database matching the File hash indicator.
   script: ''
   type: python
-  dockerimage: demisto/python3:3.11.10.111526
+  dockerimage: demisto/python3:3.11.10.116439
   isfetch: true
   runonce: false
   subtype: python3
