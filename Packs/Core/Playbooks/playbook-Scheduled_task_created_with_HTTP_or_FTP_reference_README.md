@@ -20,8 +20,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* PAN-OS - Block URL - Custom URL Category
 * PAN-OS - Block IP
+* PAN-OS - Block URL - Custom URL Category
 
 ### Integrations
 
@@ -29,13 +29,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* Set
+* Print
 * SearchAlertsV2
+* Set
 * SetAndHandleEmpty
 
 ### Commands
 
 * closeInvestigation
+* core-get-script-execution-results
 * core-run-script-execute-commands
 
 ## Playbook Inputs

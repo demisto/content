@@ -1,21 +1,17 @@
 USTA is an Cyber Intelligence Platform that responds directly and effectively to today's complex cyber threats. 
 
-## Configure USTA on Cortex XSOAR
+## Configure USTA in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for USTA.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. https://usta.prodaft.com) |  | True |
-    | API Key | You can reach out your access token : https://usta.prodaft.com/\#/api-documents | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://usta.prodaft.com) |  | True |
+| API Key | You can reach out your access token : https://usta.prodaft.com/\#/api-documents | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### usta-get-malicious-urls
 ***
@@ -357,5 +353,4 @@ You can close the notifications in the status of "In Progress" or "Open", which 
 ``` ```
 
 #### Human Readable Output
-
 

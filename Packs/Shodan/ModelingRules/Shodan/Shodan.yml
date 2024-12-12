@@ -1,0 +1,6 @@
+fromversion: 8.6.0  # Will be updated with XSIAM version updates
+id: Shodan_Banner_ModelingRule
+name: Shodan Banner Modeling Rule
+rules: ''
+schema: ''
+tags: ''

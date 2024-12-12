@@ -1,0 +1,38 @@
+commonfields:
+  id: DSPMIncidentList
+  version: -1
+name: DSPMIncidentList
+script: ''
+type: python
+tags: []
+comment: "This automation script manages incidents in a list by adding or deleting incidents based on the provided action.\nFor incidents older than the configured time limit (default is 48 hours), the script performs a cleanup by removing\nthe incident from the list. Additionally, the script supports adding new incidents to the list if they do not already exist."
+enabled: true
+args:
+- name: incident_data
+  required: true
+  description: Incident data of a specific asset.
+  isArray: true
+  type: unknown
+- name: action
+  default: true
+  description: Action to perform on an incident list, such as add or delete a list.
+  defaultValue: add
+- name: incident_list
+  required: true
+  description: DSPM Incident list data.
+- name: rerun_time
+  required: true
+  description: Re-run time to be checked of an incident to delete or not.
+outputs:
+- contextPath: listStatus
+  description: Updated incident list status.
+scripttarget: 0
+subtype: python3
+timeout: 100800h0m0s
+runonce: false
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

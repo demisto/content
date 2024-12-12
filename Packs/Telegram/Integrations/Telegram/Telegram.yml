@@ -36,7 +36,7 @@ script:
     name: telegram-send-message
   - description: List users
     name: telegram-list-users
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   type: python

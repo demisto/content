@@ -98,7 +98,7 @@ script:
       description: Google Chat thread name.
     - contextPath: GoogleChatWebhook.CustomCard.SenderDisplayName
       description: Google Chat custom card sender display name.
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3

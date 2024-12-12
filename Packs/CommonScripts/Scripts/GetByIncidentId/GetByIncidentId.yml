@@ -18,7 +18,7 @@ args:
 - name: set_key
   description: The key to set. The default is "get_key".
 scripttarget: 0
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 tests:
 - No test - tested with unittest

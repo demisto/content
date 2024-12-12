@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import dateparser
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 import json
 import time
 from typing import Any
@@ -221,7 +221,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | N
             # if d is None it means dateparser failed to parse it
             raise ValueError(f'Invalid date: {arg}')
 
-        return int(date.replace(tzinfo=timezone.utc).timestamp())
+        return int(date.replace(tzinfo=UTC).timestamp())
     if isinstance(arg, int | float):
         # Convert to int if the input is a float
         return int(arg)
@@ -476,7 +476,7 @@ def fetch_incidents(client, last_run, is_test=False):
 
         for alert in alerts:
             alert_date_epoch = datetime.strptime(
-                alert['date'], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc).timestamp()
+                alert['date'], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC).timestamp()
             alert_id = alert["zb_ticketid"].replace("alert-", "")
             incident = {
                 'name': alert['name'],
@@ -533,7 +533,7 @@ def fetch_incidents(client, last_run, is_test=False):
                 detected_date = detected_date[0]
 
             vuln_date_epoch = datetime.strptime(
-                detected_date, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc).timestamp()
+                detected_date, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC).timestamp()
             vuln_name_encoded = vuln['vulnerability_name'].replace(' ', '+')
             incident = {
                 'name': vuln['name'],
@@ -586,7 +586,7 @@ def main():
             required=False
         )
         if ff:
-            first_fetch = datetime.fromtimestamp(ff).astimezone(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+            first_fetch = datetime.fromtimestamp(ff).astimezone(UTC).strftime('%Y-%m-%dT%H:%M:%SZ')
     except ValueError as e:
         return_error(f'First fetch time is in a wrong format. Error: {str(e)}')
 

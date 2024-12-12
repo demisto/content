@@ -244,7 +244,7 @@ class CoreClient(BaseClient):
         try:
             decoder = base64.b64decode if response_data_type == "bin" else json.loads
             demisto.debug(f'{response_data_type=}, {decoder.__name__=}')
-            return decoder(response['data'])   # type: ignore[operator]
+            return decoder(response['data'])  # type: ignore[operator]
         except json.JSONDecodeError:
             demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}")
             return response['data']
@@ -2109,20 +2109,73 @@ def generate_endpoint_by_contex_standard(endpoints, ip_as_string, integration_na
     return standard_endpoints
 
 
+def retrieve_all_endpoints(client, endpoints, endpoint_id_list, dist_name, ip_list, public_ip_list,
+                           group_name, platform, alias_name, isolate, hostname, page_number,
+                           limit, first_seen_gte, first_seen_lte, last_seen_gte, last_seen_lte,
+                           sort_by_first_seen, sort_by_last_seen, status, username):
+    endpoints_page = endpoints
+    # Continue looping for as long as the latest page of endpoints retrieved is NOT empty
+    while endpoints_page:
+        page_number += 1
+        endpoints_page = client.get_endpoints(
+            endpoint_id_list=endpoint_id_list,
+            dist_name=dist_name,
+            ip_list=ip_list,
+            public_ip_list=public_ip_list,
+            group_name=group_name,
+            platform=platform,
+            alias_name=alias_name,
+            isolate=isolate,
+            hostname=hostname,
+            page_number=page_number,
+            limit=limit,
+            first_seen_gte=first_seen_gte,
+            first_seen_lte=first_seen_lte,
+            last_seen_gte=last_seen_gte,
+            last_seen_lte=last_seen_lte,
+            sort_by_first_seen=sort_by_first_seen,
+            sort_by_last_seen=sort_by_last_seen,
+            status=status,
+            username=username
+        )
+        endpoints += endpoints_page
+    return endpoints
+
+
+def convert_timestamps_to_datestring(endpoints):
+    for endpoint in endpoints:
+        if endpoint.get('content_release_timestamp'):
+            endpoint['content_release_timestamp'] = timestamp_to_datestring(endpoint.get('content_release_timestamp'))
+        if endpoint.get('first_seen'):
+            endpoint['first_seen'] = timestamp_to_datestring(endpoint.get('first_seen'))
+        if endpoint.get('install_date'):
+            endpoint['install_date'] = timestamp_to_datestring(endpoint.get('install_date'))
+        if endpoint.get('last_content_update_time'):
+            endpoint['last_content_update_time'] = timestamp_to_datestring(endpoint.get('last_content_update_time'))
+        if endpoint.get('last_seen'):
+            endpoint['last_seen'] = timestamp_to_datestring(endpoint.get('last_seen'))
+    return endpoints
+
+
 def get_endpoints_command(client, args):
     integration_context_brand = args.pop('integration_context_brand', 'CoreApiModule')
     integration_name = args.pop("integration_name", "CoreApiModule")
-    page_number = arg_to_int(
-        arg=args.get('page', '0'),
-        arg_name='Failed to parse "page". Must be a number.',
-        required=True
-    )
-
-    limit = arg_to_int(
-        arg=args.get('limit', '30'),
-        arg_name='Failed to parse "limit". Must be a number.',
-        required=True
-    )
+    all_results = argToBoolean(args.get('all_results', False))
+    # When we want to get all endpoints, start at page 0 and use the max limit supported by the API (100)
+    if all_results:
+        page_number = 0
+        limit = 100
+    else:
+        page_number = arg_to_int(
+            arg=args.get('page', '0'),
+            arg_name='Failed to parse "page". Must be a number.',
+            required=True
+        )
+        limit = arg_to_int(
+            arg=args.get('limit', '30'),
+            arg_name='Failed to parse "limit". Must be a number.',
+            required=True
+        )
 
     endpoint_id_list = argToList(args.get('endpoint_id_list'))
     dist_name = argToList(args.get('dist_name'))
@@ -2134,6 +2187,7 @@ def get_endpoints_command(client, args):
     isolate = args.get('isolate')
     hostname = argToList(args.get('hostname'))
     status = argToList(args.get('status'))
+    convert_timestamp_to_datestring = argToBoolean(args.get('convert_timestamp_to_datestring', False))
 
     first_seen_gte = arg_to_timestamp(
         arg=args.get('first_seen_gte'),
@@ -2181,6 +2235,17 @@ def get_endpoints_command(client, args):
         status=status,
         username=username
     )
+
+    if all_results:
+        endpoints = retrieve_all_endpoints(client, endpoints, endpoint_id_list, dist_name,
+                                           ip_list, public_ip_list, group_name, platform,
+                                           alias_name, isolate, hostname, page_number,
+                                           limit, first_seen_gte, first_seen_lte,
+                                           last_seen_gte, last_seen_lte, sort_by_first_seen,
+                                           sort_by_last_seen, status, username)
+
+    if convert_timestamp_to_datestring:
+        endpoints = convert_timestamps_to_datestring(endpoints)
 
     standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False, integration_name)
     endpoint_context_list = []
@@ -2351,11 +2416,50 @@ def run_snippet_code_script_command(client: CoreClient, args: Dict) -> CommandRe
     )
 
 
+def form_powershell_command(unescaped_string: str) -> str:
+    """
+    Builds a Powershell command using prefix and a shell-escaped string.
+
+    Args:
+        unescaped_string (str): An unescaped command string.
+
+    Returns:
+        str: Prefixed and escaped command.
+    """
+    escaped_string = ''
+
+    for i, char in enumerate(unescaped_string):
+        if char == "'":
+            escaped_string += "''"
+
+        elif char == '"':
+            backslash_count = 0
+            for j in range(i - 1, -1, -1):
+                if unescaped_string[j] != '\\':
+                    break
+                backslash_count += 1
+
+            escaped_string += ('\\' * backslash_count) + '\\"'
+
+        else:
+            escaped_string += char
+
+    return f"powershell -Command '{escaped_string}'"
+
+
 def run_script_execute_commands_command(client: CoreClient, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
-    parameters = {'commands_list': argToList(args.get('commands'))}
+
+    commands = args.get('commands')
+    is_raw_command = argToBoolean(args.get('is_raw_command', False))
+    commands_list = remove_empty_elements([commands]) if is_raw_command else argToList(commands)
+
+    if args.get('command_type') == 'powershell':
+        commands_list = [form_powershell_command(command) for command in commands_list]
+    parameters = {'commands_list': commands_list}
+
     response = client.run_script('a6f7683c8e217d85bd3c398f0d3fb6bf', endpoint_ids, parameters, timeout, incident_id)
     reply = response.get('reply')
     return CommandResults(
@@ -3095,33 +3199,39 @@ def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
     return xdr_close_reason
 
 
-def handle_outgoing_issue_closure(remote_args):
-    incident_id = remote_args.remote_incident_id
-    demisto.debug(f"handle_outgoing_issue_closure {incident_id=}")
-    update_args = remote_args.delta
-    current_remote_status = remote_args.data.get('status') if remote_args.data else None
-    close_reason = update_args.get('close_reason') or update_args.get('closeReason')
-    demisto.debug(f'{current_remote_status=} {remote_args.data=} {remote_args.inc_status=} {close_reason=}')
-    # force closing remote incident only if:
-    #   The XSOAR incident is closed
-    #   and the remote incident isn't already closed
-    if remote_args.inc_status == 2 and current_remote_status not in XDR_RESOLVED_STATUS_TO_XSOAR and close_reason:
-        if close_notes := update_args.get('closeNotes'):
-            demisto.debug(f"handle_outgoing_issue_closure {incident_id=} {close_notes=}")
-            update_args['resolve_comment'] = close_notes
+def handle_outgoing_issue_closure(parsed_args: UpdateRemoteSystemArgs):
+    """
+    Handle closure of an outgoing issue by updating the delta field in the parsed_args object. The closed_reason will
+    be determined based on whether it exists in XSOAR or XDR. If the XSOAR incident is closed and the remote incident isn't
+    already closed, update the delta with resolve comment or xsoar close-reason.
 
-        xdr_close_reason = resolve_xdr_close_reason(close_reason)
-        update_args['status'] = xdr_close_reason
-        demisto.debug(f"handle_outgoing_issue_closure Closing Remote incident {incident_id=} with status {update_args['status']}")
+    Args:
+        parsed_args (object): An object of type UpdateRemoteSystemArgs, containing the parsed arguments.
+    """
+
+    close_reason_fields = ['close_reason', 'closeReason', 'closeNotes', 'resolve_comment', 'closingUserId']
+    closed_reason = (next((parsed_args.delta.get(key) for key in close_reason_fields if parsed_args.delta.get(key)), None)
+                     or next((parsed_args.data.get(key) for key in close_reason_fields if parsed_args.data.get(key)), None))
+    demisto.debug(f"handle_outgoing_issue_closure: incident_id: {parsed_args.remote_incident_id} {closed_reason=}")
+    remote_xdr_status = parsed_args.data.get('status') if parsed_args.data else None
+    if parsed_args.inc_status == IncidentStatus.DONE and closed_reason and remote_xdr_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
+        demisto.debug("handle_outgoing_issue_closure: XSOAR is closed, xdr is open. updating delta")
+        if close_notes := parsed_args.delta.get('closeNotes'):
+            demisto.debug(f"handle_outgoing_issue_closure: adding resolve comment to the delta. {close_notes}")
+            parsed_args.delta['resolve_comment'] = close_notes
+
+        parsed_args.delta['status'] = resolve_xdr_close_reason(closed_reason)
+        demisto.debug(
+            f"handle_outgoing_issue_closure Closing Remote incident ID: {parsed_args.remote_incident_id}"
+            f" with status {parsed_args.delta['status']}")
 
 
-def get_update_args(remote_args):
+def get_update_args(parsed_args):
     """Change the updated field names to fit the update command"""
-
-    handle_outgoing_issue_closure(remote_args)
-    handle_outgoing_incident_owner_sync(remote_args.delta)
-    handle_user_unassignment(remote_args.delta)
-    return remote_args.delta
+    handle_outgoing_issue_closure(parsed_args)
+    handle_outgoing_incident_owner_sync(parsed_args.delta)
+    handle_user_unassignment(parsed_args.delta)
+    return parsed_args.delta
 
 
 def get_distribution_versions_command(client, args):
@@ -3659,6 +3769,13 @@ def filter_vendor_fields(alert: dict):
 
 def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResults:
     alert_id_list = argToList(args.get('alert_ids', []))
+    for alert_id in alert_id_list:
+        if alert_id and re.match(r'^[a-fA-F0-9-]{32,36}\$&\$.+$', alert_id):
+            raise DemistoException(f"Error: Alert ID {alert_id} is invalid. This issue arises because the playbook is running in"
+                                   f" debug mode, which replaces the original alert ID with a debug alert ID, causing the task to"
+                                   f" fail. To run this playbook in debug mode, please update the 'alert_ids' value to the real "
+                                   f"alert ID in the relevant task. Alternatively, run the playbook on the actual alert "
+                                   f"(not in debug mode) to ensure task success.")
     events_from_decider_as_list = bool(args.get('events_from_decider_format', '') == 'list')
     raw_response = client.get_original_alerts(alert_id_list)
     reply = copy.deepcopy(raw_response)

@@ -74,17 +74,19 @@ class Client(BaseClient):
 
 def test_module(client: Client, last_run: dict[str, str], first_fetch: datetime, domain: str):
     try:
-        fetch_incidents(client, last_run, first_fetch, domain, 1)
+        fetch_incidents(client, last_run, first_fetch, domain, 1, 0)
         return 'ok'
     except DemistoException as e:
         return e.message
 
 
-def parse_insights(insights: list[dict[str, Any]], domain: str, startTS: int, max_fetch: int):
+def parse_insights(insights: list[dict[str, Any]], domain: str, startTS: int, max_fetch: int, min_probability: int):
     incidents: list[dict[str, Any]] = []
     for insight in insights:
         for event in insight['events']:
             if event['updated'] <= startTS:
+                continue
+            if event['probability'] < min_probability:
                 continue
 
             id = f"{insight['id']}_{event['id']}"
@@ -92,6 +94,7 @@ def parse_insights(insights: list[dict[str, Any]], domain: str, startTS: int, ma
             updated = int(event['data'].get('discovery_date', event['updated']))
             desc_i = insight['data'].get('description', '')
             desc_e = event['data'].get('description', '')
+            statistics = event['data'].get('statistics', {})
             description = desc_i + "\n" + desc_e if desc_e else desc_i
             link = f"{NDR_URL}/#/insights?id={insight['id']}&domain={domain}&startDate={event['from']}&endDate={event['to']}"
             severity = 3
@@ -113,7 +116,17 @@ def parse_insights(insights: list[dict[str, Any]], domain: str, startTS: int, ma
                     'externalendtime': datetime.utcfromtimestamp(event['to'] / 1000).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                     'externallink': link,
                     'description': desc_i,
-                    'eventdescriptions': desc_e
+                    'eventdescriptions': desc_e,
+                    'sourceips': statistics.get('top_src', []),
+                    'sourceexternalips': statistics.get('top_proxy_src_ip', []),
+                    'destinationips': statistics.get('top_dst', []),
+                    'dstports': statistics.get('top_service', []),
+                    'filemd5': statistics.get('top_file_md5', []),
+                    'appiName': statistics.get('top_appi_name', []),
+                    'users': statistics.get('top_src_user_name', []),
+                    'hostnames': statistics.get('top_src_machine_name', []),
+                    'sentbytes': statistics.get('total_bytes_sent', 0),
+                    'receivedbytes': statistics.get('total_bytes_received', 0)
                 },
                 'rawJSON': json.dumps(event)
             })
@@ -125,7 +138,8 @@ def parse_insights(insights: list[dict[str, Any]], domain: str, startTS: int, ma
     return incidents, last_time
 
 
-def fetch_incidents(client: Client, last_run: dict[str, str], first_fetch: datetime, domain: str, max_fetch: int):
+def fetch_incidents(client: Client, last_run: dict[str, str], first_fetch: datetime, domain: str, max_fetch: int,
+                    min_probability: int):
     last_fetch = last_run.get('last_fetch', first_fetch.isoformat())
     last_fetch_time = dateparser.parse(last_fetch)
     if not last_fetch_time:
@@ -133,7 +147,7 @@ def fetch_incidents(client: Client, last_run: dict[str, str], first_fetch: datet
 
     startTS = int(last_fetch_time.timestamp() * 1000)
     insights = client.get_insights(startTS, max_fetch)
-    incidents, last_insight_time = parse_insights(insights, domain, startTS, max_fetch)
+    incidents, last_insight_time = parse_insights(insights, domain, startTS, max_fetch, min_probability)
 
     return {'last_fetch': last_insight_time}, incidents
 
@@ -148,6 +162,7 @@ def main() -> None:  # pragma: no cover
     verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     max_fetch = int(params.get('max_fetch', 1000))
+    min_probability = int(params.get('min_probability', 0))
 
     fetch_time = params.get('first_fetch', '3 days').strip()
     first_fetch = dateparser.parse(fetch_time, settings={'TIMEZONE': 'UTC'})
@@ -163,7 +178,7 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             return_results(test_module(client, last_run, first_fetch, domain))
         elif command == 'fetch-incidents':
-            next_run, incidents = fetch_incidents(client, last_run, first_fetch, domain, max_fetch)
+            next_run, incidents = fetch_incidents(client, last_run, first_fetch, domain, max_fetch, min_probability)
             demisto.incidents(incidents)
             demisto.debug(f"Set last run to {next_run.get('last_fetch')}")
             demisto.setLastRun(next_run)

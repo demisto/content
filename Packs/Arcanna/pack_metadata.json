@@ -2,7 +2,7 @@
     "name": "ArcannaAI",
     "description": "Siscale Arcanna.Ai Cognitive automation platform that provides AI assistance to IT & Cybersecurity teams",
     "support": "partner",
-    "currentVersion": "1.2.1",
+    "currentVersion": "1.2.2",
     "author": "Siscale Engineering",
     "created": "2021-06-16T20:46:43Z",
     "url": "https://www.arcanna.ai/contact",
@@ -23,8 +23,7 @@
         "Intelligence"
     ],
     "devEmail": [
-        "mcraciunescu@siscale.com",
-        "bperian@siscale.com"
+        "mcraciunescu@siscale.com"
     ],
     "githubUser": [
         "marian-craciunescu",

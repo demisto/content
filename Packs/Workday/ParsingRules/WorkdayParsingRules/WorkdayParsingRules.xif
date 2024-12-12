@@ -1,4 +1,4 @@
-[INGEST:vendor="workday", product="workday", target_dataset="workday_activity_raw", no_hit = keep]
+[INGEST:vendor="workday", product="activity", target_dataset="workday_activity_raw", no_hit = keep]
 // Support only date time of format: YYYY-MM-DDTHH:MM:SS.E3S%z. For example: "2023-07-15T07:00:00.000Z"
 filter to_string(requestTime) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z"
-| alter _time = requestTime;
+| alter _time = parse_timestamp("%FT%R:%E*SZ", to_string(requestTime));

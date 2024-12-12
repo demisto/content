@@ -51,7 +51,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "15"
     scriptarguments:
       append:
         simple: "true"
@@ -65,7 +65,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 515
+          "y": 425
         }
       }
     note: false
@@ -105,7 +105,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 340
+          "y": 290
         }
       }
     note: false
@@ -141,7 +141,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 690
+          "y": 710
         }
       }
     note: false
@@ -215,7 +215,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 195
+          "y": 165
         }
       }
     note: false
@@ -535,6 +535,44 @@ tasks:
         "position": {
           "x": 40,
           "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: f621d9a3-6c73-4b7c-8ddb-38c0c4982b4d
+    type: condition
+    task:
+      id: f621d9a3-6c73-4b7c-8ddb-38c0c4982b4d
+      version: -1
+      name: check key was set
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${valid_addresses}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 560
         }
       }
     note: false
