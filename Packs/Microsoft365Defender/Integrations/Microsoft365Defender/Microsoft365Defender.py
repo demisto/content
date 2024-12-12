@@ -304,11 +304,10 @@ def _get_meta_data_for_incident(raw_incident: dict) -> dict:
     mailboxes = []
     for alert in alerts_list:
         for entity in alert.get('entities', []):
-            if entity.get('entityType') == 'Mailbox':
-                if entity.get('mailboxAddress', '') not in mailboxes_set:
-                    mailboxes.append({'Mailbox': entity.get('mailboxAddress', ''),
-                                      'Display Name': entity.get('mailboxDisplayName', '')})
-                    mailboxes_set.add((entity.get('mailboxAddress', '')))
+            if entity.get('entityType') == 'Mailbox' and entity.get('mailboxAddress', '') not in mailboxes_set:
+                mailboxes.append({'Mailbox': entity.get('mailboxAddress', ''),
+                                  'Display Name': entity.get('mailboxDisplayName', '')})
+                mailboxes_set.add(entity.get('mailboxAddress', ''))
     return {
         'Categories': [alert.get('category', '') for alert in alerts_list],
         'Impacted entities': list({(entity.get('domainName', ''))
@@ -522,7 +521,7 @@ def store_ids_for_first_mirroring(incidents: list):
 @logger
 def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: str, fetch_limit: int,
                     timeout: int = None) -> List[
-    dict]:
+        dict]:
     """
     Uses to fetch incidents into Demisto
     Documentation: https://xsoar.pan.dev/docs/integrations/fetching-incidents#the-fetch-incidents-command
@@ -965,7 +964,7 @@ def mirror_out_entries(client: Client, entries: list[Dict], comment_tag: str, re
 
 
     """
-    demisto.debug(f"Microsoft Defender 365 - Starting mirror_out_entries")
+    demisto.debug("Microsoft Defender 365 - Starting mirror_out_entries")
     for entry in entries:
         demisto.debug(f'handling entry {entry.get("id")}, type: {entry.get("type")}, tags: {entry.get("tags", [])}')
         tags = entry.get('tags', [])
@@ -1063,7 +1062,7 @@ def main() -> None:
     client_credentials = params.get('client_credentials', False)
     enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or \
-                             params.get('certificate_thumbprint', '')
+        params.get('certificate_thumbprint', '')
 
     private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
                    or params.get('private_key', ''))
