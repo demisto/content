@@ -2,7 +2,7 @@
     "name": "Gatewatcher AionIQ",
     "description": "This pack provide integration with Gatewatcher NDR solution : AIonIQ",
     "support": "partner",
-    "currentVersion": "1.1.21",
+    "currentVersion": "1.1.22",
     "author": "Gatewatcher",
     "url": "https://www.gatewatcher.com/",
     "email": "integration@gatewatcher.com",

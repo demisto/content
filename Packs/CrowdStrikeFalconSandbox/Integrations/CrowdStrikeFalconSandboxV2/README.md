@@ -20,21 +20,17 @@ Obtain an API key by:
 1. In your [profile page](https://www.hybrid-analysis.com/my-account?tab=%23api-key-tab), from the top right menu navigate to the **API key** tab. 
 2. Click the **Create API key** button.
 
-## Configure CrowdStrike Falcon Sandbox v2 on Cortex XSOAR
+## Configure CrowdStrike Falcon Sandbox v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CrowdStrike Falcon Sandbox v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL| The Server URL of the CrowdStrike Falcon Sandbox instance. By default, `https://www.hybrid-analysis.com`| | True |
-    | API Key |  | True |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL| The Server URL of the CrowdStrike Falcon Sandbox instance. By default, `https://www.hybrid-analysis.com`| | True |
+| API Key |  | True |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Supported File Types:
 
@@ -64,7 +60,7 @@ The maximum file upload size is 100 MB.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### cs-falcon-sandbox-scan
