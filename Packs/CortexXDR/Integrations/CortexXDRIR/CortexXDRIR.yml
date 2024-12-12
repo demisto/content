@@ -63,7 +63,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Cortex XDR.
+- additionalinfo: "When selected, closing the Cortex XSOAR incident is mirrored in Cortex XDR. Notice: If not selected, but 'Close all related alerts in XDR' is selected, the incident will automatically be closed in Cortex XDR."
   defaultvalue: 'true'
   display: Close Mirrored Cortex XDR Incident
   name: close_xdr_incident
@@ -2528,9 +2528,20 @@ script:
     - description: A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
       name: endpoint_ids
       required: true
-    - description: A comma-separated list of shell commands to execute.
+    - description: A comma-separated list of shell commands to execute. Set the `is_raw_command` argument to `true` to prevent splitting by commas. (Useful when using `||`, `&&`, `;` separators for controlling the flow of multiple commands).
       name: commands
       required: true
+    - description: Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands, that are run independently.
+      name: is_raw_command
+      type: Boolean
+      required: false
+    - description: Type of shell command.
+      auto: PREDEFINED
+      name: command_type
+      predefined:
+      - 'powershell'
+      - 'native'
+      required: false
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
       name: timeout
@@ -3592,7 +3603,7 @@ script:
       Update one or more alerts with the provided arguments.
       Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
     name: xdr-update-alert
-  dockerimage: demisto/python3:3.11.9.107902
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   isfetch:xpanse: false
   script: ''

@@ -1,30 +1,26 @@
 Concentric’s Semantic Intelligence™ solution discovers and protects business critical, unstructured data. We use deep learning to identify risky sharing, inappropriate third party access, assets in the wrong location, mis-classified documents, or lateral movement of data – all without rules or complex upfront configuration.
 
-## Configure ConcentricAI on Cortex XSOAR
+## Configure ConcentricAI in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ConcentricAI.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | Minimum severity of alerts to fetch |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Client ID |  | False |
-    | Client Secret |  | False |
-    | Domain |  | False |
-    | Maximum no. of incidents to fetch. | max -&amp;gt; 200 | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
-    | First Fetch Time of Risks |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| Minimum severity of alerts to fetch |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Client ID |  | False |
+| Client Secret |  | False |
+| Domain |  | False |
+| Maximum no. of incidents to fetch. | max -&amp;gt; 200 | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
+| First Fetch Time of Risks |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### concentricai-get-file-details

@@ -147,7 +147,7 @@ script:
       name: since_datetime
     description: Gets events from Cisco Webex.
     name: cisco-webex-get-compliance-officer-events
-  dockerimage: demisto/python3:3.10.14.98471
+  dockerimage: demisto/python3:3.11.10.116439
   isfetchevents: true
   runonce: false
   script: ''
