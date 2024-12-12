@@ -42,7 +42,7 @@ script:
       name: score
     - auto: PREDEFINED
       defaultValue: ALL
-      description: 'The observable types to fetch. Out-of-the-box observable types supported in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key, and URL.'
+      description: 'The observable types to fetch. Out-of-the-box observable types supported in Cortex XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key, and URL.'
       isArray: true
       name: observable_types
       predefined:
@@ -58,11 +58,11 @@ script:
       - URL
     - description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.ObservablesList.LastRunID context path.
       name: last_run_id
-    - description: The observable's value to filter by, can be partial value.
+    - description: The observable's value to filter by. Can be a partial value.
       name: search
     - auto: PREDEFINED
       defaultValue: "false"
-      description: When the argument is set to true, the limit argument is ignored. Default is false.
+      description: When the argument is set to true, the limit argument is ignored. 
       name: all_results
       predefined:
       - "true"
