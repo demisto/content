@@ -47,16 +47,16 @@ class Client(BaseClient):
         :return: dict as with alert's details
         :rtype: ``dict``
         """
-        api_name: str = "alert"
-        api_url = f"{self._base_url}/{api_name}?"
+        params: dict = {}
         if id:
-            api_url = f"{api_url}id={id}"
+            params['id'] = id
         if entity:
-            api_url = f"{api_url}entity={entity}"
+            params['entity'] = entity
 
         response_content = self._http_request(
             method="GET",
-            full_url=api_url            
+            url_suffix='alert',
+            params=params
         )
         return response_content
 
