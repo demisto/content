@@ -29,6 +29,9 @@ description: |-
   Requirements:
 
   - For response actions, the following integration is required: Core - IR.
+tags:
+- T1110 - Brute Force
+- TA0006 - Credential Access
 starttaskid: "0"
 tasks:
   "0":
