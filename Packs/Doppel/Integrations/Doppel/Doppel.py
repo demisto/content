@@ -59,7 +59,34 @@ class Client(BaseClient):
             params=params
         )
         return response_content
+    
+    def update_alert(self, queue_state: str, entity_state: str, alert_id: Optional[str] = None, entity: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Updates an existing alert using either the alert ID or the entity.
 
+        :param queue_state: The queue state to update to.
+        :param entity_state: The entity state to update to.
+        :param alert_id: The alert ID (optional).
+        :param entity: The entity (optional).
+        :return: JSON response containing the updated alert.
+        """
+        if alert_id and entity:
+            raise ValueError("Only one of 'alert_id' or 'entity' can be specified, not both.")
+        if not alert_id and not entity:
+            raise ValueError("Either 'alert_id' or 'entity' must be specified.")
+
+        api_name = "alert"
+        api_url = f"{self._base_url}/{api_name}"
+        params = {"id": alert_id} if alert_id else {"entity": entity}
+        payload = {"queue_state": queue_state, "entity_state": entity_state}
+
+        response_content = self._http_request(
+            method="PUT",  # Changed to PUT as per reference
+            full_url=api_url,
+            params=params,
+            json_data=payload
+        )
+        return response_content
 
 ''' HELPER FUNCTIONS '''
 
@@ -113,6 +140,31 @@ def get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs=result,
     )
 
+def update_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Executes the update alert command.
+
+    :param client: The Client instance.
+    :param args: Command arguments.
+    :return: CommandResults object.
+    """
+    alert_id = args.get('alert_id')
+    entity = args.get('entity')
+    queue_state = args.get('queue_state')
+    entity_state = args.get('entity_state')
+
+    if alert_id and entity:
+        raise ValueError("Only one of 'alert_id' or 'entity' can be specified.")
+    if not queue_state or not entity_state:
+        raise ValueError("Both 'queue_state' and 'entity_state' must be specified.")
+
+    result = client.update_alert(queue_state=queue_state, entity_state=entity_state, alert_id=alert_id, entity=entity)
+
+    return CommandResults(
+        outputs_prefix='Doppel.UpdatedAlert',
+        outputs_key_field='id',
+        outputs=result,
+    )
 
 ''' MAIN FUNCTION '''
 
@@ -141,6 +193,8 @@ def main() -> None:
             return_results(result)
         elif current_command == 'get-alert':
             return_results(get_alert_command(client, demisto.args()))
+        elif current_command == 'update-alert':
+            return_results(update_alert_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
