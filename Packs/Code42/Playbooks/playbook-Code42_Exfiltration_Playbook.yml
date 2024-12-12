@@ -271,6 +271,7 @@ tasks:
       id: 08f325cd-0162-470c-8be5-4a045309b75b
       version: -1
       name: Locate CrowdStrike Host
+      description: Locate the appopriate host in Crowdstrike
       script: CrowdstrikeFalcon|||cs-falcon-search-device
       type: regular
       iscommand: true
