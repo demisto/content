@@ -2,7 +2,7 @@ import demistomock as demisto
 
 
 def csv_string_to_list(v):
-    if type(v) == str:  # requires python3
+    if type(v) is str:  # requires python3
         return v.lower().replace(' ', '').replace('\n', '').split(',')
     v = [val.lower() for val in v]
     return v
