@@ -36,4 +36,5 @@ filter source_log_type = "events"
 	xdm.target.resource.type = if(replicaSetName != null, "replicaSetName"),
 	xdm.target.resource.name = if(replicaSetName != null, replicaSetName),
 	xdm.database.operation = if(opType ~= "query", XDM_CONST.DB_OPERATION_QUERY, opType ~= "update", XDM_CONST.DB_OPERATION_UPDATE, opType ~= "create", XDM_CONST.DB_OPERATION_CREATE, opType ~= "delete", XDM_CONST.DB_OPERATION_DELETE, opType ~= "alter", XDM_CONST.DB_OPERATION_ALTER, opType = null, null, to_string(opType)),
-	xdm.alert.subcategory = concat(lowercase(status), "-", _ENTRY_STATUS);
+	xdm.alert.subcategory = concat(lowercase(status), "-", _ENTRY_STATUS),
+	xdm.alert.description = ("apiKeyId", apiKeyId, "publicKey", publicKey, "targetPublicKey", targetPublicKey, "collection", collection, "userAlias", userAlias, "clusterName", clusterName, "whitelistEntry", whitelistEntry, "dbUserUsername", dbUserUsername);
