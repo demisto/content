@@ -192,6 +192,14 @@ configuration:
   section: Collect
   defaultvalue: 'true'
   advanced: true
+- additionalinfo: "Whether to fetch only the essential Alert's fields - in order to minimize the incident's information. Can either choose null_values to remove all null values or any required field."
+  display: Minimize Alert Information
+  name: excluded_alert_fields
+  required: false
+  type: 16
+  section: Collect
+  defaultvalue: 'null_values'
+  advanced: true
 - display: Close all related alerts in XDR
   name: close_alerts_in_xdr
   required: false

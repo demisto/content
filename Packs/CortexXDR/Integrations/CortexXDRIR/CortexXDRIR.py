@@ -332,15 +332,21 @@ class Client(CoreClient):
         :param alerts_limit: Maximum number alerts to get
         :return:
         """
+        demisto.debug("in_the_get_incident_extra_data")
         request_data = {
             'incident_id': incident_id,
             'alerts_limit': alerts_limit,
         }
-        # TODO fields_to_exclude does not appear in the xdr api
+
         if excluded_alert_fields:
             request_data['alert_fields_to_exclude'] = excluded_alert_fields
         if remove_nulls_from_alerts:
             request_data['drop_nulls'] = True
+# TODO fields_to_exclude does not appear in the xdr api
+        if exclude_artifacts:
+            request_data['fields_to_exclude'] = FIELDS_TO_EXCLUDE
+        demisto.debug(f"{exclude_artifacts=} , {type(exclude_artifacts)}, {excluded_alert_fields=}, {type(excluded_alert_fields)}, {remove_nulls_from_alerts=}, {type(remove_nulls_from_alerts)}")
+
         reply = self._http_request(
             method='POST',
             url_suffix='/incidents/get_incident_extra_data/',
@@ -350,10 +356,13 @@ class Client(CoreClient):
         )
 
         incident = reply.get('reply')
+        demisto.debug(f"{incident.get('network_artifacts')=}")
+        demisto.debug(f"{incident.get('file_artifacts')=}")
         # Workaround for the TODO
         if exclude_artifacts:
-            for _field in FIELDS_TO_EXCLUDE:
-                incident.pop('field', None)
+            for field in FIELDS_TO_EXCLUDE:
+                incident.pop(field, None)
+        demisto.debug(f"{incident.get('file_artifacts', 'aaaaa')=}")
         return incident
 
     def save_modified_incidents_to_integration_context(self):
@@ -475,7 +484,7 @@ class Client(CoreClient):
             ALERTS_LIMIT_PER_INCIDENTS = arg_to_number(reply.get('reply', {}).get('alerts_limit_per_incident')) or 50
             demisto.debug(f'Setting alerts limit per incident to {ALERTS_LIMIT_PER_INCIDENTS}')
         incidents = reply.get('reply')
-        demisto.debug(f"{incidents=}")
+        demisto.debug(f"{incidents.get('alerts')=}")
         return incidents.get('incidents', {}) if isinstance(incidents, dict) else incidents  # type: ignore
 
     def update_alerts_in_xdr_request(self, alerts_ids, severity, status, comment) -> List[Any]:
@@ -634,6 +643,7 @@ def get_incident_extra_data_command(client, args):
     # TODO check the type of args.get('alert_fields_to_exclude' and type of args.get('drop_nulls'
     alert_fields_to_exclude = args.get('alert_fields_to_exclude', [])
     drop_nulls = args.get('drop_nulls', False)
+    demisto.debug(f"{exclude_artifacts=} , {type(exclude_artifacts)}, {alert_fields_to_exclude=}, {type(alert_fields_to_exclude)}, {drop_nulls=}, {type(drop_nulls)}")
     return_only_updated_incident = argToBoolean(args.get('return_only_updated_incident', 'False'))
     if return_only_updated_incident:
         last_mirrored_in_time = get_last_mirrored_in_time(args)
@@ -655,10 +665,13 @@ def get_incident_extra_data_command(client, args):
             "alert_count:{raw_incident.get("incident", {}).get("alert_count")} >" \
             "limit:{ALERTS_LIMIT_PER_INCIDENTS}')
         raw_incident = client.get_incident_extra_data(
-            incident_id, alerts_limit, excluded_alert_fields=alert_fields_to_exclude, remove_nulls_from_alerts=drop_nulls)
+            incident_id, alerts_limit, exclude_artifacts=exclude_artifacts,
+            excluded_alert_fields=alert_fields_to_exclude, remove_nulls_from_alerts=drop_nulls)
     readable_output = [tableToMarkdown(f'Incident {incident_id}', raw_incident.get('incident'), removeNull=True)]
 
     incident = sort_incident_data(raw_incident)
+    demisto.debug(f"line 673 {incident.get('network_artifacts')=}")
+    demisto.debug(f"line 673 {incident.get('file_artifacts')=}")
 
     if incident_alerts := incident.get('alerts'):
         readable_output.append(tableToMarkdown('Alerts', incident_alerts,
@@ -958,7 +971,7 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
     return GetModifiedRemoteDataResponse(list(id_to_modification_time.keys())), last_run_mirroring_str
 
 
-def get_remote_data_command(client, args, excluded_alert_fields, remove_nulls_from_alerts):
+def get_remote_data_command(client, args, exclude_artifacts=False, excluded_alert_fields=[], remove_nulls_from_alerts=False):
     demisto.debug(f"{excluded_alert_fields=}, {remove_nulls_from_alerts=}")
     remote_args = GetRemoteDataArgs(args)
     demisto.debug(f'Performing get-remote-data command with incident id: {remote_args.remote_incident_id}')
@@ -976,6 +989,8 @@ def get_remote_data_command(client, args, excluded_alert_fields, remove_nulls_fr
             requested_data['alert_fields_to_exclude'] = excluded_alert_fields
         if remove_nulls_from_alerts:
             requested_data['drop_nulls'] = True
+        if exclude_artifacts:
+            requested_data['excluding_artifacts'] = True
         incident_data = get_incident_extra_data_command(client, requested_data)
         if 'The incident was not modified' not in incident_data[0]:
             demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
@@ -984,6 +999,7 @@ def get_remote_data_command(client, args, excluded_alert_fields, remove_nulls_fr
             incident_data['id'] = incident_data.get('incident_id')
 
             sort_all_list_incident_fields(incident_data)
+            demisto.debug(f"{incident_data.get('alerts')=}")
 
             # deleting creation time as it keeps updating in the system
             del incident_data['creation_time']
@@ -1585,7 +1601,10 @@ def main():  # pragma: no cover
             return_results(get_mapping_fields_command())
 
         elif command == 'get-remote-data':
-            return_results(get_remote_data_command(client, args, excluded_alert_fields, remove_nulls_from_alerts))
+            return_results(get_remote_data_command(client, args,
+                                                   exclude_artifacts,
+                                                   excluded_alert_fields,
+                                                   remove_nulls_from_alerts))
 
         elif command == 'update-remote-system':
             return_results(update_remote_system_command(client, args))
@@ -1654,6 +1673,7 @@ def main():  # pragma: no cover
             last_run_mirroring['mirroring_last_update'] = next_mirroring_time
             set_last_mirror_run(last_run_mirroring)
             demisto.debug(f"after get-modified-remote-data, last run={last_run_mirroring}")
+            demisto.debug(f"updated ids are {modified_incidents.modified_incident_ids}")
             return_results(modified_incidents)
 
         elif command == 'xdr-script-run':  # used with polling = true always
