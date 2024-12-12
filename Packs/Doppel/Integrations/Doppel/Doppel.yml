@@ -32,6 +32,40 @@ script:
     - contextPath: Doppel.doppel_link
       description: 'Link to the alert in the Doppel portal'
       type: String
+
+  - name: update-alert
+    description: Updates a alert in the system with certain parameters.
+    arguments:
+    - name: alert_id
+      description: The id of the alert to update
+    - name: entity
+      description: The entity of the alert to update
+      type: unknown
+    - name: queue_state
+      auto: PREDEFINED
+      predefined:
+      - doppel_review
+      - actioned
+      - needs_confirmation
+      - monitoring
+      - taken_down
+      - archived
+      description: Status of which queue the alert is in.
+      type: textArea
+    - name: entity_state
+      auto: PREDEFINED
+      predefined:
+      - active
+      - down
+      - parked
+      description: State of the alert.
+      type: textArea
+    outputs:
+    - contextPath: Doppel.UpdatedAlert
+      description: Provides details of the updated alert after modifying its queue_state
+        and entity_state. The result confirms the success and updates made.
+      type: unknown
+
   runonce: false
   script: '-'
   type: python
