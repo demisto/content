@@ -371,6 +371,7 @@ tasks:
       id: 77fc6d22-33b2-484f-80e7-498a1398dc80
       version: -1
       name: Create Jira Incident Ticket
+      description: Create an incident ticket in Jira
       script: jira-v2|||jira-create-issue
       type: regular
       iscommand: true
