@@ -4,7 +4,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import shutil
 from collections.abc import Callable
-
+from traceback import format_exc
 import tarfile
 import io
 import urllib3
@@ -1421,7 +1421,9 @@ def wildfire_get_file_report(file_hash: str, args: dict):
                                              readable_output=human_readable, indicator=indicator, raw_response=json_res,
                                              relationships=relationships)
             return command_results, entry_context.get('Status')
-        except Exception:
+        except Exception as e:
+            demisto.error(f'An error occurred on the following entry context: {entry_context}')
+            demisto.error(f'An error occurred trying to get the report from the API: {str(e)} - {format_exc()}')
             raise DemistoException('Error while trying to get the report from the API.')
 
 
