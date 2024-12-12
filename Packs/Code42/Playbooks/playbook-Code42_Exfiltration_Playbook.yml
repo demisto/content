@@ -311,6 +311,7 @@ tasks:
       id: e47f5c76-9a17-4b8a-89b3-16fe10613723
       version: -1
       name: Is Jira Enabled?
+      description: Check if Jira branch is enabled.
       type: condition
       iscommand: false
       brand: ""
