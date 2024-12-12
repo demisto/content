@@ -308,12 +308,12 @@ def convertEventSeverity(gwSev: int) -> int:
 
     return 0
 
+def return_empty_incidents():
 
-def fetch_incidents(fetch_type: str):
+    empty = []
+    demisto.incidents(empty)
 
-    params = demisto.params()
-    command = demisto.command()
-    args = demisto.args()
+def gw_client_auth(params: dict) -> GwClient:
 
     ip = params.get("ip")
     token = params.get("token", None)
@@ -321,7 +321,6 @@ def fetch_incidents(fetch_type: str):
     password = params.get("credentials", {}).get("password", None)
     check_cert = params.get("check_cert", False)
 
-    demisto.debug(f"Command being called is {command}")
     client = GwClient(ip=ip, check_cert=check_cert)
     client.auth(
         user=user if user != "" else None,
@@ -329,231 +328,377 @@ def fetch_incidents(fetch_type: str):
         token=token
     )
 
+    return client
+
+"""
+    Return a list containing the range of time query
+    Args: params - demisto params
+    Returns: from_to: list
+"""
+def last_run_range(params: dict) -> list:
+
+    from_to = ["", ""]
     first_fetch = params.get('first_fetch', '1 day')
     first_fetch_dt = arg_to_datetime(arg=first_fetch, arg_name='First fetch', required=True)
-    max_fetch = arg_to_number(args.get('max_fetch')) or params.get('max_fetch', '200')
 
     last_run = demisto.getLastRun()
+    now = datetime.today()
+    now_str = now.isoformat(sep='T', timespec='milliseconds') + "Z"
 
-    # Fetch was never runned
     if last_run == {}:
+
         first_fetch_dt_str = first_fetch_dt.isoformat(sep='T', timespec='milliseconds') + "Z"
 
-        now = datetime.today()
-        now_str = now.isoformat(sep='T', timespec='milliseconds') + "Z"
-        queryRange = {'size': int(max_fetch),
-                      'query': {
-            'range': {
-                '@timestamp': {
-                    'gte': str(first_fetch_dt_str),
-                    'lte': str(now_str)
-                }
-            }
-        },
-            'sort': [
-                          {"@timestamp": "asc"}
-        ]
-        }
+        from_to[0] = str(first_fetch_dt_str)
+        from_to[1] = str(now_str)
+        
+        return from_to
+    
     else:
+
         last_fetch = last_run.get('start_time')
+        from_to[0] = str(last_fetch)
+        from_to[1] = str(now_str)
 
-        now = datetime.today()
-        now_str = now.isoformat(sep='T', timespec='milliseconds') + "Z"
-        queryRange = {'size': int(max_fetch),
-                      'query': {
-            'range': {
-                '@timestamp': {
-                    'gt': str(last_fetch),
-                    'lt': str(now_str)
-                }
+        return from_to
+
+def query_es_alerts(client: GwClient, query: dict) -> dict:
+    
+    ret = client._post(endpoint="/api/v1/data/es/search/", params={"index": "engines_alerts"}, json_data=query)
+    res = ret.json()
+    
+    if len(res['hits']['hits']) > 0:
+        return res
+
+    return_empty_incidents()
+    return
+
+def query_es_metadata(client: GwClient, query: dict) -> dict:
+    
+    ret = client._post(endpoint="/api/v1/data/es/search/", params={"index": "engines_metadata"}, json_data=query)
+    res = ret.json()
+    
+    if len(res['hits']['hits']) > 0:
+        return res
+
+    return_empty_incidents()
+    return
+
+def handle_big_fetch_selected_engines(client: GwClient, query: dict, engine_selection: list, max_fetch: int, fetch_type: str) -> list:
+
+    gw_alerts = []
+
+    for i in range(0,len(engine_selection) - 1):
+
+        query['size'] = 10000
+
+        if fetch_type == "Alerts" or fetch_type == "Both":
+
+            res_a = query_es_alerts(client=client,query=query)
+            gw_alerts += res_a['hits']['hits']
+            search_after_id_a = gw_alerts[-1]['sort'][0]
+        
+        else: 
+            return_empty_incidents()
+
+        nb_req = max_fetch // 10000
+        nb_req = nb_req + 1
+
+        while nb_req > 0:
+
+            query['search_after'] = [search_after_id_a]
+            res_a = query_es_alerts(client=client,query=query)
+            gw_alerts += res_a['hits']['hits']
+            search_after_id_a = gw_alerts[-1]['sort'][0]
+
+            nb_req = nb_req - 1
+
+        query['query']['bool']['must'][0]['match']['event.module'] = str(engine_selection[i])
+        query['search_after'] = []
+
+    return gw_alerts
+
+def handle_big_fetch_empty_selected_engines(client: GwClient, query: dict, max_fetch: int, fetch_type: str) -> list:
+
+    query['size'] = 10000
+
+    if fetch_type == "Alerts" or fetch_type == "Both":
+
+        res_a = query_es_alerts(client=client,query=query)
+        gw_alerts = res_a['hits']['hits']
+        search_after_id_a = gw_alerts[-1]['sort'][0]
+    
+    else: 
+        return_empty_incidents()
+
+    nb_req = max_fetch // 10000
+    nb_req = nb_req + 1
+
+    while nb_req > 0:
+
+        query['search_after'] = [search_after_id_a]
+        res_a = query_es_alerts(client=client,query=query)
+        gw_alerts += res_a['hits']['hits']
+        search_after_id_a = gw_alerts[-1]['sort'][0]
+
+        nb_req = nb_req - 1
+
+    query['search_after'] = []
+
+    return gw_alerts
+
+def handle_big_fetch_metadata(client: GwClient, query: dict, engine_selection: list, max_fetch: int, fetch_type: str) -> list:
+
+    query['size'] = 10000
+
+    if fetch_type == "Metadata" or fetch_type == "Both":
+
+        res_m = query_es_metadata(client=client,query=query)
+        gw_metadata = res_m['hits']['hits']
+        search_after_id_m = gw_metadata[-1]['sort'][0]
+    
+    else: 
+        return_empty_incidents()
+
+    nb_req = max_fetch // 10000
+    nb_req = nb_req + 1
+
+    while nb_req > 0:
+
+        query['search_after'] = [search_after_id_m]
+        res_m = query_es_metadata(client=client,query=query)
+        gw_metadata += res_m['hits']['hits']
+        search_after_id_m = gw_metadata[-1]['sort'][0]
+
+        nb_req = nb_req - 1
+
+    return gw_metadata
+
+def handle_little_fetch_alerts(client: GwClient, fetch_type: str, engine_selection: list, query: dict) -> list:
+
+    gw_alerts = []
+
+    for i in range(0,len(engine_selection) - 1):
+
+        if fetch_type == "Alerts" or fetch_type == "Both":
+
+            res_a = query_es_alerts(client=client,query=query)
+            gw_alerts.append(res_a['hits']['hits'])
+        
+        else: 
+            return_empty_incidents()
+
+        query['query']['bool']['must'][0]['match']['event.module'] = str(engine_selection[i])
+
+    return gw_alerts
+
+def handle_little_fetch_empty_selected_engines(client: GwClient, fetch_type: str, query: dict) -> list:
+
+    gw_alerts = []
+
+    if fetch_type == "Alerts" or fetch_type == "Both":
+
+        res_a = query_es_alerts(client=client,query=query)
+        gw_alerts = res_a['hits']['hits']
+    
+    return gw_alerts
+
+def handle_little_fetch_metadata(client: GwClient, fetch_type: str, query: dict) -> list:
+
+    gw_metadata = []
+
+    if fetch_type == "Metadata" or fetch_type == "Both":
+
+        res_m = query_es_metadata(client=client,query=query)
+        gw_metadata = res_m['hits']['hits']
+    
+    return gw_metadata
+
+def index_alerts_incidents(incidents_dict: list, incidents: list) -> list:
+
+    for i in range(0, len(incidents_dict)):
+
+        incident = {'name': "Gatewatcher Alert: " + incidents_dict[i]['_source']['event']['module'],
+                    'occurred': str(incidents_dict[i]['_source']['@timestamp']),
+                    'dbotMirrorId': str(incidents_dict[i]['_source']['event']['id']),
+                    'labels': [{"value": str(incidents_dict[i]['_source']['source']['ip']), "type": "IP"},
+                               {"value": str(incidents_dict[i]['_source']['destination']['ip']), "type": "IP"}],
+                    'rawJSON': json.dumps(incidents_dict[i]['_source']),
+                    'type': "Gatewatcher Incident"
+                    }
+
+        # XSOAR Severity
+        if 'severity' in incidents_dict[i]['_source']['event'].keys():
+            incident['severity'] = convertEventSeverity(incidents_dict[i]['_source']['event']['severity'])
+
+        else:
+            incident['severity'] = convertEventSeverity(-1)
+
+        # Sigflow alert signature
+        if 'sigflow' in incidents_dict[i]['_source'].keys():
+            if 'signature' in incidents_dict[i]['_source']['sigflow'].keys():
+                incident['name'] = "Gatewatcher Alert: " + str(incidents_dict[i]['_source']['sigflow']['signature'])
+
+        # NBA alert signature
+        if 'nba' in incidents_dict[i]['_source'].keys():
+            if 'signature' in incidents_dict[i]['_source']['nba'].keys():
+                incident['name'] = "Gatewatcher Alert: " + str(incidents_dict[i]['_source']['nba']['signature'])
+
+        incidents.append(incident)
+
+    return incidents
+
+def index_metadata_incidents(incidents_dict: list, incidents: list) -> list:
+
+    for i in range(0, len(incidents_dict)):
+
+        incident = {'name': "Gatewatcher Metadata: " + incidents_dict[i]['_source']['event']['module'],
+                    'occurred': str(incidents_dict[i]['_source']['@timestamp']),
+                    'dbotMirrorId': str(incidents_dict[i]['_source']['event']['id']),
+                    'labels': [{"value": str(incidents_dict[i]['_source']['source']['ip']), "type": "IP"},
+                               {"value": str(incidents_dict[i]['_source']['destination']['ip']), "type": "IP"}],
+                    'rawJSON': json.dumps(incidents_dict[i]['_source']),
+                    'type': "Gatewatcher Incident"
+                    }
+
+        # XSOAR Severity
+        if 'severity' in incidents_dict[i]['_source']['event'].keys():
+            incident['severity'] = convertEventSeverity(incidents_dict[i]['_source']['event']['severity'])
+
+        else:
+            incident['severity'] = convertEventSeverity(-1)
+
+        incidents.append(incident)
+
+    return incidents
+
+def query_selected_engines_builder(max_fetch: int, engine_selection: list, from_to: list) -> dict:
+    
+    query = {'size': max_fetch,
+             'query': {
+               'bool': {
+                  'must': [
+                  {
+                    'match': {
+                      'event.module': str(engine_selection[0])
+                    }
+                  },
+                  {
+                    'range': {
+                      '@timestamp': {
+                        'gte': str(from_to[0]),
+                        'lte': str(from_to[1])
+                      }
+                    }
+                  }
+                 ]
+               }
+             },
+             'sort': [
+             {"@timestamp": "asc"}
+             ]
+           }
+
+    return query
+
+def query_empty_selected_engines_builder(from_to: list, max_fetch: int) -> dict:
+
+    query = {'size': max_fetch,
+             'query': {
+               'range': {
+                 '@timestamp': {
+                   'gt': str(from_to[0]),
+                   'lt': str(from_to[1])
+                 }
+               }
+             },
+             'sort': [
+               {"@timestamp": "asc"}
+             ]
             }
-        },
-            'sort': [
-                          {"@timestamp": "asc"}
-        ]
-        }
 
-    if int(max_fetch) > 10000:
+    return query
 
-        incidents = []
-        queryRange['size'] = 10000
+def fetch_selected_engines(client: GwClient, engine_selection: list, params: dict, max_fetch: int, fetch_type: str, incidents: list) -> list:
 
-        if fetch_type == "Alerts" or fetch_type == "Both":
-            retA = client._post(endpoint="/api/v1/data/es/search/", params={"index": "engines_alerts"}, json_data=queryRange)
-            resA = retA.json()
-            if len(resA['hits']['hits']) == 0:
-                incidents = []
-                demisto.incidents(incidents)
-                return
+    from_to = last_run_range(params=params)
+    query = query_selected_engines_builder(max_fetch=max_fetch, engine_selection=engine_selection, from_to=from_to)
 
-        if fetch_type == "Metadata" or fetch_type == "Both":
-            retM = client._post(endpoint="/api/v1/data/es/search/", params={"index": "engines_metadata"}, json_data=queryRange)
-            resM = retM.json()
-            if len(resM['hits']['hits']) == 0:
-                incidents = []
-                demisto.incidents(incidents)
-                return
+    if max_fetch > 10000:
 
-        if fetch_type == "Alerts" or fetch_type == "Both":
-            gwAlerts = resA['hits']['hits']
-            search_after_idA = gwAlerts[-1]['sort'][0]
+        gw_alerts = handle_big_fetch_selected_engines(client=client, query=query, engine_selection=engine_selection, max_fetch=max_fetch, fetch_type=fetch_type)
+        incidents = index_alerts_incidents(incidents_dict=gw_alerts, incidents=incidents)
 
-        if fetch_type == "Metadata" or fetch_type == "Both":
-            gwMeta = resM['hits']['hits']
-            search_after_idM = gwMeta[-1]['sort'][0]
+        query = query_empty_selected_engines_builder(from_to=from_to, max_fetch=max_fetch)
+        gw_metadata = handle_big_fetch_metadata(client=client, query=query, max_fetch=max_fetch, fetch_type=fetch_type)
+        incidents = index_metadata_incidents(incidents_dict=gw_metadata, incidents=incidents)
 
-        nbReq = int(max_fetch) // 10000
-        nbReq = nbReq + 1
-
-        while nbReq > 0:
-
-            if fetch_type == "Alerts" or fetch_type == "Both":
-                queryRange['search_after'] = [search_after_idA]
-                retA = client._post(endpoint="/api/v1/data/es/search/", params={"index": "engines_alerts"}, json_data=queryRange)
-                resA = retA.json()
-                if len(resA['hits']['hits']) > 0:
-                    gwAlerts += resA['hits']['hits']
-                    search_after_idA = gwAlerts[-1]['sort'][0]
-
-            if fetch_type == "Metadata" or fetch_type == "Both":
-                queryRange['search_after'] = [search_after_idM]
-                retM = client._post(endpoint="/api/v1/data/es/search/",
-                                    params={"index": "engines_metadata"}, json_data=queryRange)
-                resM = retM.json()
-                if len(resM['hits']['hits']) > 0:
-                    gwMeta += resM['hits']['hits']
-                    search_after_idM = gwMeta[-1]['sort'][0]
-
-            nbReq = nbReq - 1
-
-        # Alert events
-        if fetch_type == "Alerts" or fetch_type == "Both":
-            for i in range(0, len(gwAlerts)):
-
-                incident = {'name': "Gatewatcher Alert: " + gwAlerts[i]['_source']['event']['module'],
-                            'occurred': str(gwAlerts[i]['_source']['@timestamp']),
-                            'dbotMirrorId': str(gwAlerts[i]['_source']['event']['id']),
-                            'labels': [{"value": str(gwAlerts[i]['_source']['source']['ip']), "type": "IP"},
-                                       {"value": str(gwAlerts[i]['_source']['destination']['ip']), "type": "IP"}],
-                            'rawJSON': json.dumps(gwAlerts[i]['_source']),
-                            'type': "Gatewatcher Incident"
-                            }
-
-                # XSOAR Severity
-                if 'severity' in gwAlerts[i]['_source']['event'].keys():
-                    incident['severity'] = convertEventSeverity(gwAlerts[i]['_source']['event']['severity'])
-
-                else:
-                    incident['severity'] = convertEventSeverity(-1)
-
-                # Sigflow alert signature
-                if 'sigflow' in gwAlerts[i]['_source'].keys():
-                    if 'signature' in gwAlerts[i]['_source']['sigflow'].keys():
-                        incident['name'] = "Gatewatcher Alert: " + str(gwAlerts[i]['_source']['sigflow']['signature'])
-
-                # NBA alert signature
-                if 'nba' in gwAlerts[i]['_source'].keys():
-                    if 'signature' in gwAlerts[i]['_source']['nba'].keys():
-                        incident['name'] = "Gatewatcher Alert: " + str(gwAlerts[i]['_source']['nba']['signature'])
-
-                incidents.append(incident)
-
-        # Metadata events
-        if fetch_type == "Metadata" or fetch_type == "Both":
-            for i in range(0, len(gwMeta)):
-
-                incident = {'name': "Gatewatcher Metadata: " + gwMeta[i]['_source']['event']['module'],
-                            'occurred': str(gwMeta[i]['_source']['@timestamp']),
-                            'dbotMirrorId': str(gwMeta[i]['_source']['event']['id']),
-                            'labels': [{"value": str(gwMeta[i]['_source']['source']['ip']), "type": "IP"},
-                                       {"value": str(gwMeta[i]['_source']['destination']['ip']), "type": "IP"}],
-                            'rawJSON': json.dumps(gwMeta[i]['_source']),
-                            'type': "Gatewatcher Incident"
-                            }
-
-                # XSOAR Severity
-                if 'severity' in gwMeta[i]['_source']['event'].keys():
-                    incident['severity'] = convertEventSeverity(gwMeta[i]['_source']['event']['severity'])
-
-                else:
-                    incident['severity'] = convertEventSeverity(-1)
-
-                incidents.append(incident)
+        return incidents
 
     else:
 
-        incidents = []
-        # Alert events
-        if fetch_type == "Alerts" or fetch_type == "Both":
-            ret = client._post(endpoint="/api/v1/data/es/search/", params={"index": "engines_alerts"}, json_data=queryRange)
+        gw_alerts = handle_little_fetch_alerts(client=client, query=query, engine_selection=engine_selection, fetch_type=fetch_type)
+        incidents = index_alerts_incidents(incidents_dict=gw_alerts, incidents=incidents)
 
-            results = ret.json()
-            gwAlerts = results['hits']['hits']
-            if len(results['hits']['hits']) == 0:
-                incidents = []
-                demisto.incidents(incidents)
-                return
+        query = query_empty_selected_engines_builder(from_to=from_to, max_fetch=max_fetch)
+        gw_metadata = handle_little_fetch_metadata(client=client, query=query, fetch_type=fetch_type)
+        incidents = index_metadata_incidents(incidents_dict=gw_metadata, incidents=incidents)
 
-            for i in range(0, len(gwAlerts)):
+        return incidents
 
-                incident = {'name': "Gatewatcher Alert: " + gwAlerts[i]['_source']['event']['module'],
-                            'occurred': str(gwAlerts[i]['_source']['@timestamp']),
-                            'dbotMirrorId': str(gwAlerts[i]['_source']['event']['id']),
-                            'labels': [{"value": str(gwAlerts[i]['_source']['source']['ip']), "type": "IP"},
-                                       {"value": str(gwAlerts[i]['_source']['destination']['ip']), "type": "IP"}],
-                            'rawJSON': json.dumps(gwAlerts[i]['_source']),
-                            'type': "Gatewatcher Incident"
-                            }
+def fetch_empty_selected_engines(client: GwClient, max_fetch: int, fetch_type: str, incidents: list, params: dict) -> list:
 
-                # XSOAR Severity
-                if 'severity' in gwAlerts[i]['_source']['event'].keys():
-                    incident['severity'] = convertEventSeverity(gwAlerts[i]['_source']['event']['severity'])
+    from_to = last_run_range(params=params)
+    query = query_empty_selected_engines_builder(from_to=from_to, max_fetch=max_fetch)
 
-                else:
-                    incident['severity'] = convertEventSeverity(-1)
+    if max_fetch > 10000:
 
-                # Sigflow alert signature
-                if 'sigflow' in gwAlerts[i]['_source'].keys():
-                    if 'signature' in gwAlerts[i]['_source']['sigflow'].keys():
-                        incident['name'] = "Gatewatcher Alert: " + str(gwAlerts[i]['_source']['sigflow']['signature'])
+        gw_alerts = handle_big_fetch_empty_selected_engines(client=client, query=query, max_fetch=max_fetch, fetch_type=fetch_type)
+        incidents += index_alerts_incidents(incidents_dict=gw_alerts, incidents=incidents)
 
-                # NBA alert signature
-                if 'nba' in gwAlerts[i]['_source'].keys():
-                    if 'signature' in gwAlerts[i]['_source']['nba'].keys():
-                        incident['name'] = "Gatewatcher Alert: " + str(gwAlerts[i]['_source']['nba']['signature'])
+        query = query_empty_selected_engines_builder(from_to=from_to, max_fetch=max_fetch)
+        gw_metadata = handle_big_fetch_metadata(client=client, query=query, max_fetch=max_fetch, fetch_type=fetch_type)
+        incidents += index_metadata_incidents(incidents_dict=gw_metadata, incidents=incidents)
 
-                incidents.append(incident)
+        return incidents
 
-        # Metadata events
-        if fetch_type == "Metadata" or fetch_type == "Both":
-            ret = client._post(endpoint="/api/v1/data/es/search/", params={"index": "engines_metadata"}, json_data=queryRange)
+    else:
 
-            results = ret.json()
-            gwMeta = results['hits']['hits']
-            if len(results['hits']['hits']) == 0:
-                incidents = []
-                demisto.incidents(incidents)
-                return
+        gw_alerts = handle_little_fetch_empty_selected_engines(client=client, query=query, fetch_type=fetch_type)
+        incidents += index_alerts_incidents(incidents_dict=gw_alerts, incidents=incidents)
 
-            for i in range(0, len(gwMeta)):
+        query = query_empty_selected_engines_builder(from_to=from_to, max_fetch=max_fetch)
+        gw_metadata = handle_little_fetch_metadata(client=client, query=query, fetch_type=fetch_type)
+        incidents += index_metadata_incidents(incidents_dict=gw_metadata, incidents=incidents)
 
-                incident = {'name': "Gatewatcher Metadata: " + gwMeta[i]['_source']['event']['module'],
-                            'occurred': str(gwMeta[i]['_source']['@timestamp']),
-                            'dbotMirrorId': str(gwMeta[i]['_source']['event']['id']),
-                            'labels': [{"value": str(gwMeta[i]['_source']['source']['ip']), "type": "IP"},
-                                       {"value": str(gwMeta[i]['_source']['destination']['ip']), "type": "IP"}],
-                            'rawJSON': json.dumps(gwMeta[i]['_source']),
-                            'type': "Gatewatcher Incident"
-                            }
+        return incidents
 
-                # XSOAR Severity
-                if 'severity' in gwMeta[i]['_source']['event'].keys():
-                    incident['severity'] = convertEventSeverity(gwMeta[i]['_source']['event']['severity'])
+def fetch_incidents():
 
-                else:
-                    incident['severity'] = convertEventSeverity(-1)
+    params = demisto.params()
+    args = demisto.args()
 
-                incidents.append(incident)
+    max_fetch = arg_to_number(args.get('max_fetch')) or params.get('max_fetch', '200')
+    max_fetch = int(max_fetch)
+    
+    fetch_type = str(params['fetch_type'])
+
+    if fetch_type == "":
+        fetch_type = "Alerts"
+   
+    engine_selection = params['engine_selection'] 
+    
+    client = gw_client_auth(params=params)
+    
+    incidents = []
+
+    if len(engine_selection) > 0:
+
+        incidents = fetch_selected_engines(client=client, engine_selection=engine_selection, params=params, max_fetch=max_fetch, fetch_type=fetch_type, incidents=incidents)
+
+    else:
+
+        incidents = fetch_empty_selected_engines(client=client, max_fetch=max_fetch, fetch_type=fetch_type, incidents=incidents, params=params)
 
     if len(incidents) > 0:
         incidents = sorted(incidents, key=lambda d: d['occurred'])
@@ -561,7 +706,6 @@ def fetch_incidents(fetch_type: str):
         demisto.setLastRun({'start_time': str(last_incident['occurred'])})
 
     demisto.incidents(incidents)
-
 
 def main() -> None:
     """Main function, parses params and runs command functions."""
@@ -577,10 +721,6 @@ def main() -> None:
     check_cert = params.get("check_cert", False)
     proxy = params.get("proxy", False)
 
-    fetch_type = str(params['fetch_type'])
-    if fetch_type == "":
-        fetch_type = "Alerts"
-
     demisto.debug(f"Command being called is {command}")
     try:
         client = GwClient(ip=ip, check_cert=check_cert, proxy=proxy)
@@ -595,7 +735,7 @@ def main() -> None:
             )
         elif command == "fetch-incidents":
             return_results(
-                fetch_incidents(fetch_type=fetch_type)
+                fetch_incidents()
             )
     except Exception as e:
         return_error(
