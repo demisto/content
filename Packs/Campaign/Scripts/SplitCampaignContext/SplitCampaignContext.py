@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Tuple
 
 BELOW_THRESHOLD_ITEMS_CONTEXT_PATH = 'LowerSimilarityIncidents'
 ABOVE_THE_THRESHOLD_ITEMS_CONTEXT_PATH = 'incidents'
@@ -11,7 +10,7 @@ def save_to_context(items: list, context_path: str, delete_existing: bool = Fals
     if delete_existing:
         res = demisto.executeCommand('DeleteContext', {"key": context_path, "subplaybook": is_sub_playbook})
         if is_error(res):
-            return_error('Failed to delete current context. Error details:\n{}'.format(get_error(res)))
+            return_error(f'Failed to delete current context. Error details:\n{get_error(res)}')
 
     return CommandResults(
         outputs_prefix=context_path,
@@ -23,13 +22,13 @@ def _get_incident_campaign(_id: int):
     res = demisto.executeCommand('getIncidents', {'id': _id})
 
     if is_error(res):
-        return
+        return None
 
     res_custom_fields = res[0]['Contents']['data'][0]['CustomFields']
     return res_custom_fields['partofcampaign'] if 'partofcampaign' in res_custom_fields else None
 
 
-def filter_by_threshold(context: list, threshold: float) -> Tuple[list, list]:
+def filter_by_threshold(context: list, threshold: float) -> tuple[list, list]:
     low = []
     high = []
     for item in context:

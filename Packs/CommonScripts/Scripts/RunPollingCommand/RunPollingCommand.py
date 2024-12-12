@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 def prepare_arg_dict(ids_arg_name, ids, additional_arg_names, additional_arg_values, using_instance=''):
     if not isinstance(ids, list):
         ids = [ids]
-    for i, val in enumerate(ids):
+    for i, _val in enumerate(ids):
         ids[i] = str(ids[i])
 
     args_names = [str(name).strip() for name in argToList(additional_arg_names)]
@@ -45,7 +45,7 @@ def main(args):     # pragma: no cover
 
         demisto.results(demisto.executeCommand(demisto.getArg('pollingCommand'), args))
     except Exception as exp:
-        return_error('An error occurred: {}'.format(exp), error=exp)
+        return_error(f'An error occurred: {exp}', error=exp)
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

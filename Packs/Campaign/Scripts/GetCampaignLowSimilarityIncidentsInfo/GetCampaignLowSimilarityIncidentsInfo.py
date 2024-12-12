@@ -76,7 +76,7 @@ def convert_incident_to_hr(incident):
     """
     converted_incident = copy.deepcopy(incident)
 
-    for key in converted_incident.keys():
+    for key in converted_incident:
 
         if key == 'status':
             converted_incident[key] = STATUS_DICT.get(converted_incident.get(key))
@@ -148,7 +148,7 @@ def update_empty_fields():
     incident = demisto.incidents()[0]
     custom_fields = incident.get('customFields', {})
 
-    for field in DEFAULT_CUSTOM_FIELDS.keys():
+    for field in DEFAULT_CUSTOM_FIELDS:
         if not custom_fields.get(field):
             custom_fields[field] = DEFAULT_CUSTOM_FIELDS[field]
     demisto.executeCommand('setIncident', {'id': incident['id'], 'customFields': custom_fields})

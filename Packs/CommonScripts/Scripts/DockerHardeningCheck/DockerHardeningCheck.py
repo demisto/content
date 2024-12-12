@@ -27,7 +27,7 @@ def big_string(size):
 def mem_size_to_bytes(mem: str) -> int:
     res = re.match(r'(\d+)\s*([gm])?b?', mem, re.IGNORECASE)
     if not res:
-        raise ValueError("Failed parsing memory string: {}".format(mem))
+        raise ValueError(f"Failed parsing memory string: {mem}")
     b = int(res.group(1))
     if res.group(2):
         b = b * 1024 * 1024  # convert to mega byte
@@ -48,11 +48,11 @@ def check_memory(target_mem: str, check_type: str) -> str:  # pragma: no cover
     """
     size = mem_size_to_bytes(target_mem)
     if check_type == "allocate":
-        LOG("starting process to check memory of size: {}".format(size))
+        LOG(f"starting process to check memory of size: {size}")
         p = Process(target=big_string, args=(size, ))
         p.start()
         p.join()
-        LOG("memory intensive process status code: {}".format(p.exitcode))
+        LOG(f"memory intensive process status code: {p.exitcode}")
         if p.exitcode == 0:
             return ("Succeeded allocating memory of size: {}. "
                     "It seems that you haven't limited the available memory to the docker container.".format(target_mem))
@@ -68,7 +68,7 @@ def check_memory(target_mem: str, check_type: str) -> str:  # pragma: no cover
                     ' cgroup files found, verify cgroups is enabled.')
 
         try:
-            with open(cgroup_file, "r") as f:
+            with open(cgroup_file) as f:
                 mem_bytes = int(f.read().strip())
                 if mem_bytes > size:
                     return (f'According to memory cgroup configuration at: {cgroup_file}'
@@ -81,7 +81,7 @@ def check_memory(target_mem: str, check_type: str) -> str:  # pragma: no cover
 
 
 def check_pids(pid_num: int) -> str:
-    LOG("Starting pid check for: {}".format(pid_num))
+    LOG(f"Starting pid check for: {pid_num}")
     processes = [Process(target=time.sleep, args=(30, )) for i in range(pid_num)]
     try:
         for p in processes:
@@ -97,7 +97,7 @@ def check_pids(pid_num: int) -> str:
         else:
             LOG(f'Number of processes that are alive: {alive} is smaller than {pid_num}. All good.')
     except Exception as ex:
-        LOG("Pool startup failed (as expected): {}".format(ex))
+        LOG(f"Pool startup failed (as expected): {ex}")
     finally:
         for p in processes:
             if p.is_alive():
@@ -109,9 +109,9 @@ def check_pids(pid_num: int) -> str:
 def check_fd_limits(soft, hard) -> str:
     s, h = resource.getrlimit(resource.RLIMIT_NOFILE)
     if s > soft:
-        return "FD soft limit: {} is above desired limt: {}.".format(s, soft)
+        return f"FD soft limit: {s} is above desired limt: {soft}."
     if h > hard:
-        return "FD hard limit: {} is above desired limit: {}.".format(h, hard)
+        return f"FD hard limit: {h} is above desired limit: {hard}."
     return ""
 
 
@@ -141,7 +141,7 @@ def check_cpus(num_cpus: int) -> str:
     for p in processes:
         p.join()
     runtime = time.time_ns() - start
-    LOG("cpus check runtime for {} processes time: {}".format(num_cpus, runtime))
+    LOG(f"cpus check runtime for {num_cpus} processes time: {runtime}")
     processes = [Process(target=intensive_calc, args=(iterval, )) for i in range(num_cpus * 2)]
     start = time.time_ns()
     for p in processes:

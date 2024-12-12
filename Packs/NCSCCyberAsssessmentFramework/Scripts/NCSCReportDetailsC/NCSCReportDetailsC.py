@@ -40,9 +40,9 @@ def main():
         assessment_answers = json.loads(custom_fields.get(answers_field))
         assessment_details = json.loads(custom_fields.get(result_field))
         assessment_result = calculate_overall(assessment_details)
-        answered_questions = str()
+        answered_questions = ""
         for x in range(0, len(assessment_questions)):
-            table = list()
+            table = []
             original_answers = [a.get('answers') for a in original_question_data if a['question']
                                 == assessment_questions.get(str(x))][0]
             these_answers = assessment_answers.get(str(x))
@@ -80,6 +80,7 @@ def main():
     else:
         md = ""
     demisto.results(md)
+    return None
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

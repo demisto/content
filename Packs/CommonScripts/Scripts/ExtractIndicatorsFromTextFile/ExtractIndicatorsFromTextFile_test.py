@@ -8,6 +8,7 @@ def execute_command(command, args):
         return [{'Contents': {'path': './test_data/test_file.txt'}}]
     if command == "extractIndicators":
         return [{'Contents': '{"IP": ["1.1.1.1"]}'}]
+    return None
 
 
 def test_extract_indicators(mocker):
@@ -46,7 +47,7 @@ def test_extract_indicators_no_file():
     with pytest.raises(FileNotFoundError) as e:
         extract_indicators_from_file(args)
         if not e:
-            assert False
+            raise AssertionError
 
 
 @pytest.mark.parametrize("params", [('{"IP": ["1.1.1.1"]}', '### IP\n- 1.1.1.1\n'),

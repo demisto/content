@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict
 
 
 def create_grids(custom_fields, linked_incident):
@@ -24,7 +23,7 @@ def create_grids(custom_fields, linked_incident):
                 main_row["analystnote"] = f'({str(linked_created_date)}) ' \
                                           f'{integrations_data.get(main_row.get("instance"), "")}'
 
-    incidents_data: Dict[str, tuple] = {}
+    incidents_data: dict[str, tuple] = {}
     linked_incidentsD_data = linked_content.get("CustomFields").get("playbooktaskserrors",
                                                                     {})  # table of the linked incident
     for row in linked_incidentsD_data:
