@@ -2979,19 +2979,22 @@ def bot_configuration_list_command():
         if bots_configuration_info := response.get('value'):
             for bot in bots_configuration_info:
                 bot_config = {
-                    "ID": bot.get('id'),
                     "Name": bot.get('name'),
                     "Messaging Endpoint": bot.get('properties',[]).get('endpoint', ''),
                     "App ID": bot.get('properties',[]).get('msaAppId', ''),
+                     "ID": bot.get('id'),
                 }
                 bots_configuration.append(bot_config)
-        
+                
+    if limit and not all_results:
+         bots_configuration = bots_configuration[:limit] 
+    
     result = CommandResults(
         readable_output=tableToMarkdown(
-            "Configuration info of the Bots configured in Microsoft Teams:\n",
+            f"Configuration info of the Bots configured in Microsoft Teams:\n",
             bots_configuration,
             removeNull=True, 
-            headers=["ID", "Name", "Messaging Endpoint", "App ID"]
+            headers=["Name", "Messaging Endpoint", "App ID", "ID"]
         ),
         outputs_prefix='MicrosoftTeams.BotList',
         outputs_key_field='',
