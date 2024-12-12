@@ -16,8 +16,10 @@ def upload_file_command(args: dict) -> list[CommandResults]:
     body = args.get('body', '')
     target = args.get('target', 'war room entry')
     using = args.get('using', '')
+    demisto.info(args)
     for entry_id in entry_ids:
         response = upload_file(incident_id, entry_id, body, using, target == 'incident attachment')
+        demisto.info(response)
         if is_error(response[0]):
             raise DemistoException(f"There was an issue uploading the file. Error received: {response[0]['Contents']}")
 
