@@ -14,7 +14,7 @@ import zipfile
 import git
 import io
 import os
-os.environ['DEMISTO_SDK_MAX_CPU_CORES'] = "1"  # TODO - Consider not specifying and use as much as available
+# os.environ['DEMISTO_SDK_MAX_CPU_CORES'] = "1"  # TODO - Consider not specifying and use as much as available
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -33,11 +33,11 @@ DEFAULT_ERROR_PATTERN = {
 }
 
 HOOK_ID_TO_PATTERN = {
-    # 'xsoar-lint': DEFAULT_ERROR_PATTERN,
-    # 'debug-statements': {
-    #     'pattern': 'File\s+"(.+)",\s+line\s+(\d+)\n\s+(.*)',
-    #     'groups': ['file', 'line', 'details']
-    # },
+    'xsoar-lint': DEFAULT_ERROR_PATTERN,
+    'debug-statements': {
+        'pattern': 'File\s+"(.+)",\s+line\s+(\d+)\n\s+(.*)',
+        'groups': ['file', 'line', 'details']
+    },
     'check-ast': {
         'regex': re.compile(r'File "(Packs/TmpPack/[\w/]+/[\w/]+\.py)", line (\d+)\n\s+(.+)'),
         'groups': ['file', 'line', 'details']
@@ -129,7 +129,7 @@ def extract_file_and_line(output: str, pattern_obj: dict) -> list[dict]:
         dict: Extracted information for a single matching line.
     """
     results = []
-
+    demisto.debug(f'extract_file_and_line got {pattern_obj}')
     regex = pattern_obj['regex']
     group_names = pattern_obj['groups']
 
@@ -143,30 +143,6 @@ def extract_file_and_line(output: str, pattern_obj: dict) -> list[dict]:
             results.append(result)
 
     return results
-
-    # error_regex = pattern_obj.get('pattern')
-    #
-    # group_names = pattern_obj.get('groups')
-    # demisto.debug('stripped_output: {}'.format(output))
-    # pattern = re.compile(error_regex)
-    # results = []
-    #
-    # for line in output.splitlines():
-    #     match = pattern.search(line, re.DOTALL)
-    #     if match:
-    #         extracted_data = {}
-    #         for i, group_name in enumerate(group_names, start=1):
-    #             extracted_data[group_name] = match.group(i)
-    #         demisto.debug(f'extract_file_and_line extracted_data={json.dumps(extracted_data, indent=4)}')
-    #
-    #         # Check if file path is under validated directory.
-    #         file_path = extracted_data.get('file')
-    #         demisto.debug(f'extract_file_and_line {file_path=} | {(CONTENT_DIR_PATH / Path(file_path)).exists()=}')
-    #         if file_path and (CONTENT_DIR_PATH / Path(file_path)).exists():
-    #             results.append(extracted_data)
-    #             demisto.debug(f'extract_file_and_line appended to results.')
-    #
-    # return results
 
 
 def get_skipped_hooks():
@@ -574,7 +550,7 @@ def read_validate_results(json_path: Path):
                     filePath=str(Path(file_path).absolute()) if file_path else None,
                     name=Path(file_path).stem,
                     fileType='yml' if file_path.endswith(('.yml', '.yaml')) else '',
-                    errorType=error_code,
+                    errorCode=error_code,
                     message=message,
                     linter='validate'
                 )
@@ -612,6 +588,7 @@ def read_pre_commit_results(pre_commit_dir: Path):
                         linter=hook_id,
                         col=result.get('column', 0),
                         row=int(result.get('line', 0)) - 1,  # Normalizing as UI adds a module registration line at row=0.
+
                     )
                 )
 
@@ -743,9 +720,6 @@ def setup_envvars():
     os.environ['ARTIFACTS_FOLDER'] = '/tmp/artifacts'
     os.environ['DEMISTO_SDK_LOG_NO_COLORS'] = 'true'
     demisto.debug(f'setup_envvars: {os.environ}')
-
-# @content_profiler
-
 
 def main():
     setup_envvars()
