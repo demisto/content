@@ -1105,7 +1105,7 @@ Run this command if for some reason you need to rerun the graph authentication p
 Notes:
 - After making changes to permissions in the Azure Portal, reset the authentication to ensure that the token reflects the updated permissions.
 - This command is triggered automatically when an authentication flow type switch is detected. The auto resetting ensures the integration uses the appropriate token.
-- When switching the authentication type to the `Authorization Code Flow`, this command will be triggered automatically, after that you will need to regenerate the **Authorization code** parameter by running the ***microsoft-teams-generate-login-url*** command, and to verify the authentication by running the ***!microsoft-teams-auth-test*** command.
+- When switching the authentication type to the `Authorization Code Flow`, this command will be triggered automatically. Then you will need to regenerate the **Authorization code** parameter by running the ***microsoft-teams-generate-login-url*** command, and to verify the authentication by running the ***!microsoft-teams-auth-test*** command.
 
 #### Base Command
 
