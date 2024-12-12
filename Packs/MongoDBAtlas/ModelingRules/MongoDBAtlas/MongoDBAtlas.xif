@@ -1,6 +1,8 @@
 [MODEL: dataset="mongodb_atlas_raw"]
 filter source_log_type = "alerts"
 | alter
+	get_status = concat(lowercase(status), "-", _ENTRY_STATUS)
+| alter
 	xdm.event.type = source_log_type,
 	xdm.alert.description = acknowledgementComment,
 	xdm.source.user.username = acknowledgingUsername,
@@ -8,12 +10,15 @@ filter source_log_type = "alerts"
 	xdm.event.original_event_type = eventTypeName,
 	xdm.source.user.groups = arraycreate(groupId),
 	xdm.observer.unique_identifier = arraystring(arraydistinct(arraymap(links -> [], "@element" -> href)), "|"),
-	xdm.alert.subcategory = concat(lowercase(status), "-", _ENTRY_STATUS);
+	xdm.alert.subcategory = if(get_status ~= "\s*\-\s*", null, get_status);
 
 filter source_log_type = "events"
 | alter
 	get_linkToDetails = arraycreate(linkToDetails),
 	get_links_href = arraymap(links -> [], "@element" -> href),
+	get_username = arraystring(arraycreate(acknowledgingUsername, username), "|"),
+	get_status = concat(lowercase(status), "-", _ENTRY_STATUS)
+| alter
 	check_remoteAddress_ipv4 = if(remoteAddress ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", remoteAddress),
 	check_remoteAddress_ipv6 = if(remoteAddress ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", remoteAddress)
 | alter
@@ -21,8 +26,8 @@ filter source_log_type = "events"
 	xdm.alert.original_alert_id = coalesce(alertConfigId, id),
 	xdm.event.original_event_type = eventTypeName,
 	xdm.source.user.groups = arraycreate(groupId),
-	xdm.observer.unique_identifier = arraystring(arraydistinct(arrayconcat(get_linkToDetails, get_links_href)), "|"),
-	xdm.source.user.username = arraystring(arraycreate(acknowledgingUsername, username), "|"),
+	xdm.observer.unique_identifier = coalesce(get_linkToDetails, get_links_href),
+	xdm.source.user.username = if(get_username ~= "\s*\|\s*", null, get_username ~= "^\|", ltrim(get_username), get_username ~= "\|$", rtrim(get_username), get_username)
 	xdm.auth.privilege_level = if(to_boolean(isGlobalAdmin) = true, XDM_CONST.PRIVILEGE_LEVEL_ADMIN),
 	xdm.source.ipv4 = check_remoteAddress_ipv4,
 	xdm.source.ipv6 = check_remoteAddress_ipv6,
@@ -36,5 +41,5 @@ filter source_log_type = "events"
 	xdm.target.resource.type = if(replicaSetName != null, "replicaSetName"),
 	xdm.target.resource.name = if(replicaSetName != null, replicaSetName),
 	xdm.database.operation = if(opType ~= "query", XDM_CONST.DB_OPERATION_QUERY, opType ~= "update", XDM_CONST.DB_OPERATION_UPDATE, opType ~= "create", XDM_CONST.DB_OPERATION_CREATE, opType ~= "delete", XDM_CONST.DB_OPERATION_DELETE, opType ~= "alter", XDM_CONST.DB_OPERATION_ALTER, opType = null, null, to_string(opType)),
-	xdm.alert.subcategory = concat(lowercase(status), "-", _ENTRY_STATUS),
+	xdm.alert.subcategory = if(get_status ~= "\s*\-\s*", null, get_status),
 	xdm.alert.description = to_string(object_create("apiKeyId", apiKeyId, "publicKey", publicKey, "targetPublicKey", targetPublicKey, "collection", collection, "userAlias", userAlias, "clusterName", clusterName, "whitelistEntry", whitelistEntry, "dbUserUsername", dbUserUsername));
