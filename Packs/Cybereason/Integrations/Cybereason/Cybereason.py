@@ -1709,7 +1709,7 @@ def fetch_incidents(client: Client):
         # demisto.debug(f"Fetching the length of incidents list if epp in enabled : {len(incidents)}")
 
         demisto.setLastRun({
-            'creation_time': max_update_time
+            'creation_time': max_update_time+1
         })
 
         demisto.incidents(incidents)
