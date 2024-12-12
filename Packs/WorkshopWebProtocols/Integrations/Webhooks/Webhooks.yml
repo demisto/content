@@ -1,0 +1,65 @@
+category: Utilities
+commonfields:
+  id: Webhooks
+  version: -1
+configuration:
+- defaultvalue: https://example.com/
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Long running instance
+  name: longRunning
+  section: Collect
+  type: 8
+- name: verification_token
+  type: 9
+  hiddenusername: true
+  required: false
+  displaypassword: Verification Token(Team Chat App)
+  additionalinfo: Token to verify the messages from Zoom.
+- display: Listen Port
+  name: longRunningPort
+  type: 0
+  section: Collect
+  required: false
+  additionalinfo: You must enable Long running instance to run the web server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
+description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+display: Webhooks
+name: Webhooks
+script:
+  commands:
+  - arguments:
+    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      name: dummy
+      required: true
+    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+    name: baseintegration-dummy
+    outputs:
+    - contextPath: BaseIntegration.Output
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  longRunning: true
+  longRunningPort: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/fastapi:0.115.4.115067
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
