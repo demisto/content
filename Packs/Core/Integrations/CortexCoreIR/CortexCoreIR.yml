@@ -964,6 +964,34 @@ script:
     description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
     name: core-quarantine-files
     polling: true
+    outputs:
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket that the error happened in.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: String that represents the endpoint ID.
       name: endpoint_id
@@ -995,6 +1023,34 @@ script:
     description: Restores a quarantined file on requested endpoints.
     name: core-restore-file
     polling: true
+    outputs:
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket that the error happened in.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Links the response action to the triggered incident.
       name: incident_id
@@ -1065,6 +1121,33 @@ script:
     - contextPath: Core.endpointScan.aborted
       description: Was the scan aborted.
       type: Boolean
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket that the error happened in.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Links the response action to the incident that triggered it.
       name: incident_id
@@ -1347,6 +1430,33 @@ script:
     - contextPath: Core.RetrievedFiles.action_id
       description: ID of the action to retrieve files from selected endpoints.
       type: string
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket that the error happened in.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Action ID retrieved from the core-retrieve-files command.
       isArray: true
@@ -1471,16 +1581,16 @@ script:
       description: The specified action ID.
       type: number
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that caused the error.
+      description: The bucket that the error happened in.
       type: String
     - contextPath: Core.GetActionStatus.ErrorReasons.file_name
-      description: The file name that caused the error.
+      description: The name of the file that caused the error.
       type: String
     - contextPath: Core.GetActionStatus.ErrorReasons.file_path
-      description: The file path that caused the error.
+      description: The path of the file that caused the error.
       type: String
     - contextPath: Core.GetActionStatus.ErrorReasons.file_size
-      description: The file size that caused the error.
+      description: The size of the file that caused the error.
       type: Number
     - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
       description: The missing files that caused the error.
@@ -1548,6 +1658,33 @@ script:
     - contextPath: Core.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket that the error happened in.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Action IDs retrieved from the core-run-script command.
       isArray: true
@@ -1717,6 +1854,33 @@ script:
     - contextPath: Core.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket that the error happened in.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Links the response action to the incident that triggered it.
       name: incident_id
@@ -1749,6 +1913,33 @@ script:
     - contextPath: Core.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket that the error happened in.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Links the response action to the incident that triggered it.
       name: incident_id
@@ -1781,6 +1972,33 @@ script:
     - contextPath: Core.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket that the error happened in.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Links the response action to the incident that triggered it.
       name: incident_id
@@ -1813,6 +2031,33 @@ script:
     - contextPath: Core.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket that the error happened in.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: The endpoint ID.
       isArray: true
@@ -3101,16 +3346,16 @@ script:
       description: The specified action ID.
       type: number
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that caused the error.
+      description: The bucket that the error happened in.
       type: String
     - contextPath: Core.GetActionStatus.ErrorReasons.file_name
-      description: The file name that caused the error.
+      description: The name of the file that caused the error.
       type: String
     - contextPath: Core.GetActionStatus.ErrorReasons.file_path
-      description: The file path that caused the error.
+      description: The path of the file that caused the error.
       type: String
     - contextPath: Core.GetActionStatus.ErrorReasons.file_size
-      description: The file size that caused the error.
+      description: The size of the file that caused the error.
       type: Number
     - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
       description: The missing files that caused the error.
@@ -3172,16 +3417,16 @@ script:
       description: The specified action ID.
       type: number
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that caused the error.
+      description: The bucket that the error happened in.
       type: String
     - contextPath: Core.GetActionStatus.ErrorReasons.file_name
-      description: The file name that caused the error.
+      description: The name of the file that caused the error.
       type: String
     - contextPath: Core.GetActionStatus.ErrorReasons.file_path
-      description: The file path that caused the error.
+      description: The path of the file that caused the error.
       type: String
     - contextPath: Core.GetActionStatus.ErrorReasons.file_size
-      description: The file size that caused the error.
+      description: The size of the file that caused the error.
       type: Number
     - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
       description: The missing files that caused the error.
