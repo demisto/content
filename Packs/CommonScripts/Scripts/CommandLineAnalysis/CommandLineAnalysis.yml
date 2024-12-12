@@ -12,7 +12,76 @@ args:
   required: true
   description: The command line to be analyzed.
 - name: custom_patterns
-  description:  Custom patterns to use in the analysis. 
+  description:  Custom patterns to use in the analysis.
+outputs:
+- contextPath: CommandLineAnalysis.original_command
+  description: The original command line string analyzed for potential risks.
+- contextPath: CommandLineAnalysis.decoded_command
+  description: The decoded Base64 command line string, if decoding was performed.
+- contextPath: CommandLineAnalysis.risk
+  description: The overall risk level derived from the command line analysis, classified as Low, Medium, High, or Critical.
+- contextPath: CommandLineAnalysis.score
+  description: The normalized score (0-100) representing the risk associated with the analyzed command line.
+- contextPath: CommandLineAnalysis
+  description: A detailed summary of the analysis results, including findings and scores.
+- contextPath: CommandLineAnalysis.findings.original
+  description: Findings from the analysis of the original command line, highlighting the detected patterns.
+- contextPath: CommandLineAnalysis.findings.decoded
+  description: Findings from the analysis of the decoded Base64 command line, if decoding was applicable.
+- contextPath: CommandLineAnalysis.analysis.original.malicious_commands
+  description: Checks for malicious commands in the original command line.
+- contextPath: CommandLineAnalysis.analysis.original.windows_temp_path
+  description: Checks if the original command line accesses Windows temporary paths.
+- contextPath: CommandLineAnalysis.analysis.original.suspicious_parameters
+  description: Identifies suspicious parameters or content in the original command line.
+- contextPath: CommandLineAnalysis.analysis.original.mixed_case_powershell
+  description: Detects mixed case PowerShell commands in the original command line.
+- contextPath: CommandLineAnalysis.analysis.original.powershell_suspicious_patterns
+  description: Searches for suspicious PowerShell patterns in the original command line.
+- contextPath: CommandLineAnalysis.analysis.original.credential_dumping
+  description: Checks for credential dumping techniques in the original command line.
+- contextPath: CommandLineAnalysis.analysis.original.custom_patterns
+  description: Matches custom patterns (if provided) in the original command line.
+- contextPath: CommandLineAnalysis.analysis.original.reconnaissance
+  description: Checks for reconnaissance activities in the original command line.
+- contextPath: CommandLineAnalysis.analysis.original.lateral_movement
+  description: Identifies lateral movement techniques in the original command line.
+- contextPath: CommandLineAnalysis.analysis.original.data_exfiltration
+  description: Detects data exfiltration activities in the original command line.
+- contextPath: CommandLineAnalysis.analysis.original.amsi_techniques
+  description: Checks for AMSI bypass techniques in the original command line.
+- contextPath: CommandLineAnalysis.analysis.original.indicators
+  description: Extracts indicators of compromise (IOCs) from the original command line.
+- contextPath: CommandLineAnalysis.analysis.original.base64_encoding
+  description: Decoded content from Base64 encoding in the original command line.
+- contextPath: CommandLineAnalysis.analysis.original.reversed_command
+  description: Indicates if the original command line was reversed.
+- contextPath: CommandLineAnalysis.analysis.decoded.malicious_commands
+  description: Checks for malicious commands in the decoded Base64 command line.
+- contextPath: CommandLineAnalysis.analysis.decoded.windows_temp_path
+  description: Checks if the decoded Base64 command line accesses Windows temporary paths.
+- contextPath: CommandLineAnalysis.analysis.decoded.suspicious_parameters
+  description: Identifies suspicious parameters or content in the decoded Base64 command line.
+- contextPath: CommandLineAnalysis.analysis.decoded.mixed_case_powershell
+  description: Detects mixed case PowerShell commands in the decoded Base64 command line.
+- contextPath: CommandLineAnalysis.analysis.decoded.powershell_suspicious_patterns
+  description: Searches for suspicious PowerShell patterns in the decoded Base64 command line.
+- contextPath: CommandLineAnalysis.analysis.decoded.credential_dumping
+  description: Checks for credential dumping techniques in the decoded Base64 command line.
+- contextPath: CommandLineAnalysis.analysis.decoded.custom_patterns
+  description: Matches custom patterns (if provided) in the decoded Base64 command line.
+- contextPath: CommandLineAnalysis.analysis.decoded.reconnaissance
+  description: Checks for reconnaissance activities in the decoded Base64 command line.
+- contextPath: CommandLineAnalysis.analysis.decoded.lateral_movement
+  description: Identifies lateral movement techniques in the decoded Base64 command line.
+- contextPath: CommandLineAnalysis.analysis.decoded.data_exfiltration
+  description: Detects data exfiltration activities in the decoded Base64 command line.
+- contextPath: CommandLineAnalysis.analysis.decoded.amsi_techniques
+  description: Checks for AMSI bypass techniques in the decoded Base64 command line.
+- contextPath: CommandLineAnalysis.analysis.decoded.indicators
+  description: Extracts indicators of compromise (IOCs) from the decoded Base64 command line.
+- contextPath: CommandLineAnalysis.Double Encoding Detected
+  description: Identifies nested Base64 strings.
 scripttarget: 0
 subtype: python3
 runonce: false
