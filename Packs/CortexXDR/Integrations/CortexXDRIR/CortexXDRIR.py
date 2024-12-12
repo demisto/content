@@ -580,7 +580,6 @@ def sort_incident_data(raw_incident):
     """
     incident = raw_incident.get('incident', {})
     raw_alerts = raw_incident.get('alerts', {}).get('data', [])
-    demisto.debug(f"{raw_alerts=}")
     file_artifacts = raw_incident.get('file_artifacts', {}).get('data', [])
     network_artifacts = raw_incident.get('network_artifacts', {}).get('data', [])
     context_alerts = clear_trailing_whitespace(raw_alerts)
@@ -762,7 +761,6 @@ def sort_all_list_incident_fields(incident_data):
         incident_data['incident_sources'] = sorted(incident_data.get('incident_sources', []))
     format_sublists = not argToBoolean(demisto.params().get('dont_format_sublists', False))
     if incident_data.get('alerts', []):
-        demisto.debug(f"{incident_data.get('alerts', [])=}")
         incident_data['alerts'] = sort_by_key(incident_data.get('alerts', []), main_key='alert_id', fallback_key='name')
         if format_sublists:
             reformat_sublist_fields(incident_data['alerts'])
@@ -933,6 +931,7 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
 
     id_to_modification_time = {raw.get('incident_id'): raw.get('modification_time') for raw in raw_incidents}
     demisto.debug(f"{last_run_mirroring_str=}, modified incidents {id_to_modification_time=}")
+
     return GetModifiedRemoteDataResponse(list(id_to_modification_time.keys())), last_run_mirroring_str
 
 
@@ -945,7 +944,6 @@ def get_remote_data_command(client, args):
         # when Demisto version is 6.1.0 and above, this command will only be automatically executed on incidents
         # returned from get_modified_remote_data_command so we want to perform extra-data request on those incidents.
         return_only_updated_incident = not is_demisto_version_ge('6.1.0')  # True if version is below 6.1 else False
-        demisto.debug(f"{remote_args.remote_incident_id=}")
         incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
                                                                  "alerts_limit": 1000,
                                                                  "return_only_updated_incident": return_only_updated_incident,
@@ -980,6 +978,7 @@ def get_remote_data_command(client, args):
                     reformatted_entries.append(entry)
 
             incident_data['in_mirror_error'] = ''
+            
             return GetRemoteDataResponse(
                 mirrored_object=incident_data,
                 entries=reformatted_entries
@@ -990,6 +989,7 @@ def get_remote_data_command(client, args):
                 'id': remote_args.remote_incident_id,
                 'in_mirror_error': ""
             }
+
             return GetRemoteDataResponse(
                 mirrored_object=incident_data,
                 entries=[]
@@ -1614,7 +1614,6 @@ def main():  # pragma: no cover
 
         elif command == 'get-modified-remote-data':
             last_run_mirroring: Dict[Any, Any] = get_last_mirror_run() or {}
-            demisto.debug("asdfghjk")
             demisto.debug(f"before get-modified-remote-data, last run={last_run_mirroring}")
 
             modified_incidents, next_mirroring_time = get_modified_remote_data_command(
