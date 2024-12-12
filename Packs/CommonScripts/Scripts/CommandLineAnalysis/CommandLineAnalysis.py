@@ -442,6 +442,9 @@ def extract_indicators(command_line):
 
             if isinstance(contents, dict) and "IP" in contents:
                 return [ip for ip in contents["IP"] if not is_reserved_ip(ip)]
+            elif isinstance(contents, dict) and "IP" not in contents:
+                for key in contents:
+                    return [value for value in contents[key]]
     except Exception as e:
         demisto.debug(f"Failed to extract indicators: {str(e)}")
     return []
