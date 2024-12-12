@@ -35,6 +35,7 @@ import demistomock as demisto
 import warnings
 import concurrent.futures
 
+
 def __line__():
     cf = currentframe()
     return cf.f_back.f_lineno  # type: ignore[union-attr]
@@ -42,7 +43,7 @@ def __line__():
 
 # The number is the line offset from the beginning of the file. If you added an import, update this number accordingly.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 45, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 46, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -11950,11 +11951,11 @@ def split_data_to_chunks(data, target_chunk_size):
     :rtype: ``collections.Iterable[list]``
     """
     target_chunk_size = min(target_chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
-    if isinstance(data, str):
-        data = data.split('\n')
     chunks = []
     chunk = []
     chunk_size = 0
+    if isinstance(data, str):
+        data = data.split('\n')
     for data_part in data:
         if chunk_size >= target_chunk_size:
             demisto.debug("reached max chunk size, sending chunk with size: {size}".format(size=chunk_size))
@@ -12275,13 +12276,14 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
     data_chunks = split_data_to_chunks(data, chunk_size)
     def send_events(data_chunk):
+        data_size = len(data_chunk)
         data_chunk = '\n'.join(data_chunk)
         zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
         xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
                                     error_msg=header_msg, headers=headers,
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                     zipped_data=zipped_data, is_json_response=True, data_type=data_type)
-        return len(data_chunk)
+        return data_size
 
     if multiple_threads:
         demisto.info("Sending events to xsiam with multiple threads.")
