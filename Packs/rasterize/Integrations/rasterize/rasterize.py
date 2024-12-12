@@ -22,6 +22,7 @@ from pdf2image import convert_from_path
 from PyPDF2 import PdfReader
 
 
+
 # region constants and configurations
 
 pypdf_logger = logging.getLogger("PyPDF2")
