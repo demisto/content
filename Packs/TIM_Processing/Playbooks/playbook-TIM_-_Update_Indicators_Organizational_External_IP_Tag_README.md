@@ -21,4 +21,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![TIM - Update Indicators Organizational External IP Tag](https://raw.githubusercontent.com/demisto/content/cccd5a9429521a24db91a981e7d2157df187a4df/Packs/TIM_Processing/doc_files/TIM_-_Update_Indicators_Organizational_External_IP_Tag.png)
+![TIM - Update Indicators Organizational External IP Tag](../doc_files/TIM_-_Update_Indicators_Organizational_External_IP_Tag.png)

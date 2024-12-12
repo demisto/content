@@ -59,11 +59,7 @@ The server will then authenticate the requests by the `Authorization` header, ex
 ### For Cortex XSOAR On-prem (6.x or 8) or When Using Engines
 For Cortex XSOAR On-prem (6.x or 8) or when using engines, you can set up authentication using custom certificates. For more information on setting up a custom certificate for Cortex XSOAR 8 On-prem, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate). For more information on setting up a custom certificate for Cortex XSOAR 6.x, see [HTTPS with a Signed Certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/HTTPS-with-a-Signed-Certificate).
 
-## TAXII v2.0 API Enpoints
-
-**Note**:  
-For Cortex XSOAR 8 On-prem, you need to add the `api-` FQDN DNS record that maps the Cortex XSOAR DNS name to the API IP address.  
-For example, `api-xoar.mycompany.com`.
+## TAXII v2.0 API Endpoints
 
 
 | **URL** | **Method** | **Response** | **TAXII2 Documentation** |
@@ -77,7 +73,7 @@ For example, `api-xoar.mycompany.com`.
 
 For more information, visit [TAXII2 Documentation](http://docs.oasis-open.org/cti/taxii/v2.0/taxii-v2.0.html).
 
-## TAXII v2.1 API Enpoints
+## TAXII v2.1 API Endpoints
 
 | **URL**                                           | **Method** | **Response**                                                                   | **TAXII2 Documentation**                                                                                   |
 |---------------------------------------------------|------------|--------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
@@ -90,14 +86,14 @@ For more information, visit [TAXII2 Documentation](http://docs.oasis-open.org/ct
 
 For more information, visit [TAXII2 Documentation](https://docs.oasis-open.org/cti/taxii/v2.1/taxii-v2.1.html).
 
-## Known limitations
+## Known Limitations
 
 - GET objects by ID is not allowed.
 - Filtering objects by ID or version not allowed.
 - POST and DELETE objects are not allowed. Cannot add or delete indicators using TAXII2 Server. 
 
 
-## How UUIDs work in TAXII2 XSOAR
+## How UUIDs Work for TAXII2 in Cortex XSOAR
 
 ---
 
@@ -317,7 +313,7 @@ There are no input arguments for this command.
 | TAXIIServer.ServerInfo.default | String | The default URL. | 
 | TAXIIServer.ServerInfo.description | String | The server description | 
 
-#### Command example
+#### Command Example
 
 ```!taxii-server-info```
 

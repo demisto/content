@@ -1,0 +1,113 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: IBMMaaS360Security
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- name: credentials
+  display: User Name
+  required: true
+  type: 9
+  displaypassword: Password
+  section: Connect
+  hiddenusername: false
+- display: App ID
+  name: app_id
+  required: true
+  type: 0
+  section: Connect
+- display: App Version
+  name: app_version
+  required: true
+  type: 0
+  section: Connect
+- display: Platform ID
+  name: platform_id
+  required: true
+  type: 0
+  section: Connect
+- name: app_access_key
+  required: true
+  type: 9
+  displaypassword: App Access Key
+  section: Connect
+  hiddenusername: true
+- name: billing_id
+  required: true
+  type: 9
+  displaypassword: Billing ID
+  section: Connect
+  hiddenusername: true
+- display: Maximum number of Admin Login Reports events per fetch
+  name: max_login_reports_per_fetch
+  additionalinfo: Rounds up to the nearest page size increment. (250)
+  required: false
+  type: 0
+  section: Collect
+  defaultvalue: 1250
+- display: Maximum number of Admin Changes Audit events per fetch
+  name: max_admin_change_audits_per_fetch
+  additionalinfo: Rounds up to the nearest page size increment. (250)
+  required: false
+  type: 0
+  section: Collect
+  defaultvalue: 1250
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+description: This is the IBM MaaS360 Security event collector integration for Cortex XSIAM.
+display: IBM MaaS360 Security
+name: IBMMaaS360Security
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      isArray: false
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - default: false
+      description: Maximum number of results to return.
+      isArray: false
+      name: limit
+      required: true
+      secret: false
+    - default: false
+      description: Date from which to get events.
+      name: from_date
+      required: false
+    deprecated: false
+    description: Gets events from IBM MaaS360 Security.
+    execution: false
+    name: ibm-maas360-security-get-events
+  dockerimage: demisto/python3:3.11.10.115186
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+fromversion: 8.4.0
+tests:
+- No tests (auto formatted)
