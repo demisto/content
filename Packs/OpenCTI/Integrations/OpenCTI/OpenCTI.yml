@@ -62,7 +62,7 @@ script:
       name: search
     - auto: PREDEFINED
       defaultValue: "false"
-      description: When the argument is set to true, the limit argument is ignored. Default is false.
+      description: When the argument is set to true, the limit argument is ignored. 
       name: all_results
       predefined:
       - "true"
