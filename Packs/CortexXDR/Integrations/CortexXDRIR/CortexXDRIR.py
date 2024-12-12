@@ -876,13 +876,15 @@ def reopen_incident_in_xsoar():
 
 def handle_incoming_incident(incident_data) -> dict:
     incident_id = incident_data.get("incident_id")
-    demisto.debug(f"handle_incoming_incident {incident_data.get('status')=}, {incident_id=}, {incident_data=}")
-    if incident_data.get("status") in XDR_RESOLVED_STATUS_TO_XSOAR:
+    incoming_incident_status = incident_data.get("status")
+    demisto.debug(f"handle_incoming_incident {incoming_incident_status=}, {incident_id=}, {incident_data=}")
+    if incoming_incident_status in XDR_RESOLVED_STATUS_TO_XSOAR:
         demisto.debug(f"handle_incoming_incident Incident is closed: {incident_id}")
         return close_incident_in_xsoar(incident_data)
-    else:
+    elif incoming_incident_status in XDR_OPEN_STATUS_TO_XSOAR:
         demisto.debug(f'handle_incoming_incident Incident is opened (or reopened): {incident_id}')
         return reopen_incident_in_xsoar()
+    return {}
 
 
 def get_mapping_fields_command():
