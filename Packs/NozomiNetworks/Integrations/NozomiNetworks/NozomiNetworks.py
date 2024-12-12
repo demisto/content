@@ -53,7 +53,8 @@ class Client:
         if not self.bearer_token and not self.use_basic_auth:
             demisto.info(f"Token missing. Signing in.")
             self.sign_in()
-        elif self.use_basic_auth:
+
+        if self.use_basic_auth:
             kwargs['auth'] = self.auth_credentials
 
         response = requests.request(
