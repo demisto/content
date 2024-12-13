@@ -33,6 +33,67 @@ script:
       description: 'Link to the alert in the Doppel portal'
       type: String
 
+  - name: get-alerts
+    description: Retrieves multiple alerts based on the query parameters provided.
+        It includes metadata and details about each alert.
+    arguments:
+    - name: search_key
+      description: Currently only supports search by url
+      type: textArea
+    - name: queue_state
+      auto: PREDEFINED
+      predefined:
+      - actioned
+      - needs_confirmation
+      - doppel_review
+      - monitoring
+      - taken_down
+      - archived
+      description: New queue status to update alert with (id required)
+    - name: product
+      auto: PREDEFINED
+      predefined:
+      - domains
+      - social_media
+      - mobile_apps
+      - ecommerce
+      - crypto
+      - emails
+      - paid_adds
+      description: Product category the report belongs to.
+    - name: created_before
+      description: Filter alerts created before this date. '2024-01-05T13:45:30' --
+        Represents the 5th of January 2024, at 1:45:30 PM
+      type: textArea
+    - name: created_after
+      description: Filter alerts created after this date. '2024-01-05T13:45:30' --
+        Represents the 5th of January 2024, at 1:45:30 PM
+      type: textArea
+    - name: sort_type
+      auto: PREDEFINED
+      predefined:
+      - date_sourced
+      - date_last_actioned
+      description: The field to sort the reports by. Defaults to date_sourced.
+      type: textArea
+    - name: sort_order
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: The order to sort the reports by. Defaults to desc.
+      type: textArea
+    - name: page
+      description: Page number for pagination; defaults to 0
+      type: textArea
+    - name: tags
+      description: List of tags to filter alerts
+      isArray: true
+      type: textArea
+    outputs:
+    - contextPath: Doppel.GetAlerts
+      
+
   - name: update-alert
     description: Updates a alert in the system with certain parameters.
     arguments:
