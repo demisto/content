@@ -53,6 +53,19 @@ configuration:
   - Metadata
   - Both
   required: false
+- name: engine_selection
+  display: Engine alerts selection
+  type: 16
+  options:
+  - malcore
+  - shellcode_detect
+  - malicious_powershell_detect
+  - sigflow_alert
+  - dga_detect
+  - retrohunt
+  - ransomware_detect
+  - beacon_detect  
+  required: false
 - defaultValue: 1 day
   display: First fetch
   name: first_fetch
