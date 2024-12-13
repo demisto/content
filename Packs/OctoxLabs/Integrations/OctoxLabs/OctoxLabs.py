@@ -6,6 +6,8 @@ from octoxlabs import OctoxLabs
 import urllib3
 from typing import Any, Dict, List, Callable, Optional
 
+# from Packs.Base.Scripts.CommonServerPython.CommonServerPython import CommandResults
+
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -28,7 +30,12 @@ def run_command(
         "octoxlabs-get-discoveries": get_discoveries,
         "octoxlabs-get-last-discovery": get_last_discovery,
         "octoxlabs-search-devices": search_devices,
+        "octoxlabs-search-users-inventory": search_users_inventory,
+        "octoxlabs-search-applications": search_applications,
+        "octoxlabs-search-avm": search_avm,
         "octoxlabs-get-device": get_device,
+        "octoxlabs-get-user-inventory-detail": get_user_inventory_detail,
+        "octoxlabs-get-application-detail": get_application_detail,
         "octoxlabs-get-queries": get_queries,
         "octoxlabs-get-query-by-id": get_query_by_id,
         "octoxlabs-get-query-by-name": get_query_by_name,
@@ -43,6 +50,10 @@ def run_command(
         "octoxlabs-get-user-by-username": get_user_by_username,
         "octoxlabs-get-groups": get_groups,
         "octoxlabs-get-permissions": get_permissions,
+        "octoxlabs-search-scroll-devices": search_scroll_devices,
+        "octoxlabs-search-scroll-users-inventory": search_scroll_users,
+        "octoxlabs-search-scroll-applications": search_scroll_applications,
+        "octoxlabs-search-scroll-avm": search_scroll_avm,
     }
     command_function: Optional[Callable] = commands.get(command_name, None)
     if command_function:
@@ -507,6 +518,167 @@ def get_permissions(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
     )
 
 
+def search_users_inventory(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    fields = args.get("fields", None)
+    if isinstance(fields, str):
+        fields = [f.strip() for f in fields.split(",")]
+
+    count, users = octox.search_users(
+        query=args.get("query", ""),
+        fields=fields,
+        page=args.get("page", 1),
+        size=args.get("size", 50),
+        discovery_id=args.get("discovery_id", None),
+    )
+
+    return CommandResults(
+        outputs_prefix="OctoxLabs.UsersInventory",
+        outputs={
+            "count": count,
+            "results": users,
+        },
+    )
+
+
+def search_applications(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    fields = args.get("fields", None)
+    if isinstance(fields, str):
+        fields = [f.strip() for f in fields.split(",")]
+
+    count, applications = octox.search_applications(
+        query=args.get("query", ""),
+        fields=fields,
+        page=args.get("page", 1),
+        size=args.get("size", 50),
+        discovery_id=args.get("discovery_id", None),
+    )
+
+    return CommandResults(
+        outputs_prefix="OctoxLabs.Applications",
+        outputs={
+            "count": count,
+            "results": applications,
+        },
+    )
+
+
+def search_avm(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    count, avm = octox.search_avm(
+        query=args.get("query", ""),
+        page=args.get("page", 1),
+        size=args.get("size", 50),
+        discovery_id=args.get("discovery_id", None),
+    )
+
+    return CommandResults(
+        outputs_prefix="OctoxLabs.AVM",
+        outputs={
+            "count": count,
+            "results": avm,
+        },
+    )
+
+
+def get_user_inventory_detail(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    user = octox.get_user_inventory_detail(
+        username=args.get("username"), discovery_id=args.get("discovery_id", None)
+    )
+    return CommandResults(outputs_prefix="OctoxLabs.UserInv", outputs=user)
+
+
+def get_application_detail(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    application = octox.get_application_detail(
+        application_id=args.get("application_id"),
+        discovery_id=args.get("discovery_id", None),
+    )
+    return CommandResults(outputs_prefix="OctoxLabs.Application", outputs=application)
+
+
+def search_scroll_devices(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    fields = args.get("fields", None)
+    if isinstance(fields, str):
+        fields = [f.strip() for f in fields.split(",")]
+
+    count, scroll_id, devices = octox.search_scroll_devices(
+        query=args.get("query", ""),
+        fields=fields,
+        scroll_id=args.get("scroll_id", None),
+        size=args.get("size", 50),
+        discovery_id=args.get("discovery_id", None),
+    )
+
+    return CommandResults(
+        outputs_prefix="OctoxLabs.ScrolledDevices",
+        outputs={
+            "count": count,
+            "scroll_id": scroll_id,
+            "results": devices,
+        },
+    )
+
+
+def search_scroll_users(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    fields = args.get("fields", None)
+    if isinstance(fields, str):
+        fields = [f.strip() for f in fields.split(",")]
+
+    count, scroll_id, users = octox.search_scroll_users(
+        query=args.get("query", ""),
+        fields=fields,
+        scroll_id=args.get("scroll_id", None),
+        size=args.get("size", 50),
+        discovery_id=args.get("discovery_id", None),
+    )
+
+    return CommandResults(
+        outputs_prefix="OctoxLabs.ScrolledUsers",
+        outputs={
+            "count": count,
+            "scroll_id": scroll_id,
+            "results": users,
+        },
+    )
+
+
+def search_scroll_applications(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    fields = args.get("fields", None)
+    if isinstance(fields, str):
+        fields = [f.strip() for f in fields.split(",")]
+
+    count, scroll_id, applications = octox.search_scroll_applications(
+        query=args.get("query", ""),
+        fields=fields,
+        scroll_id=args.get("scroll_id", None),
+        size=args.get("size", 50),
+        discovery_id=args.get("discovery_id", None),
+    )
+
+    return CommandResults(
+        outputs_prefix="OctoxLabs.ScrolledApplications",
+        outputs={
+            "count": count,
+            "scroll_id": scroll_id,
+            "results": applications,
+        },
+    )
+
+def search_scroll_avm(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    count, scroll_id, avm = octox.search_scroll_avm(
+        query=args.get("query", ""),
+        scroll_id=args.get("scroll_id", None),
+        size=args.get("size", 50),
+        discovery_id=args.get("discovery_id", None),
+    )
+
+    return CommandResults(
+        outputs_prefix="OctoxLabs.ScrolledAVM",
+        outputs={
+            "count": count,
+            "scroll_id": scroll_id,
+            "results": avm,
+        },
+    )
+
 """ MAIN FUNCTION """
 
 
@@ -518,10 +690,12 @@ def main() -> None:  # pragma: no cover
     """
     ip = demisto.params().get("octox_ip")
     token = demisto.params().get("octox_token", {"password": ""}).get("password")
+    https_proxy = demisto.params().get("https_proxy", None)
+    no_verify = demisto.params().get("no_verify", True)
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        octox = OctoxLabs(ip=ip, token=token)
+        octox = OctoxLabs(ip=ip, token=token, https_proxy=https_proxy, no_verify=no_verify)
         return_results(
             run_command(
                 octox=octox, command_name=demisto.command(), args=demisto.args()
