@@ -94,6 +94,20 @@ script:
     - contextPath: Doppel.GetAlerts
       
 
+  - name: create-alert
+    arguments:
+    description: Creates an alert for a specified entity. This command requires the
+      entity to be provided in the arguments.
+    - name: entity
+      required: true
+      description: The entity for which the alert should be created.
+    outputs:
+    - contextPath: Doppel.CreatedAlert
+      description: The details of the created alert, including its unique ID and other
+        relevant metadata.
+      type: string
+    
+
   - name: update-alert
     description: Updates a alert in the system with certain parameters.
     arguments:
