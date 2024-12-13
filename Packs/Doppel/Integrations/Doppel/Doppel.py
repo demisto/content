@@ -116,6 +116,16 @@ class Client(BaseClient):
             params=filtered_params
         )
         return response_content
+    
+    def create_alert(self, entity: str) -> Dict[str, Any]:
+        api_name = "alert"
+        api_url = f"{self._base_url}/{api_name}"
+        response_content = self._http_request(
+            method="POST",
+            full_url=api_url,
+            json_data={"entity": entity}
+        )
+        return response_content
 
 ''' HELPER FUNCTIONS '''
 
@@ -236,6 +246,19 @@ def get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         readable_output=readable_output
     )
 
+def create_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    entity = args.get('entity')
+    if not entity:
+        raise ValueError("Entity must be specified to create an alert.")
+
+    result = client.create_alert(entity=entity)
+
+    return CommandResults(
+        outputs_prefix='Doppel.CreatedAlert',
+        outputs_key_field='id',
+        outputs=result,
+    )
+
 
 ''' MAIN FUNCTION '''
 
@@ -268,6 +291,8 @@ def main() -> None:
             return_results(update_alert_command(client, demisto.args()))
         elif current_command == 'get-alerts':
             return_results(get_alerts_command(client, demisto.args()))
+        elif current_command == 'create-alert':
+            return_results(create_alert_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
