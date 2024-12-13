@@ -2,7 +2,7 @@
     "name": "Common Dashboards",
     "description": "Frequently used dashboards pack.",
     "support": "xsoar",
-    "currentVersion": "1.7.7",
+    "currentVersion": "1.7.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
