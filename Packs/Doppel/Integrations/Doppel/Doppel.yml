@@ -95,9 +95,9 @@ script:
       
 
   - name: create-alert
-    arguments:
     description: Creates an alert for a specified entity. This command requires the
       entity to be provided in the arguments.
+    arguments:
     - name: entity
       required: true
       description: The entity for which the alert should be created.
@@ -106,6 +106,20 @@ script:
       description: The details of the created alert, including its unique ID and other
         relevant metadata.
       type: string
+    
+  - name: create-abuse-alert
+    description: Create an alert for the provided value to abuse box. Will fail if
+      the alert value is invalid or is protected
+    arguments:
+    - name: entity
+      required: true
+      description: The entity for which the abuse alert should be created.
+    outputs:
+    - contextPath: Doppel.AbuseAlert
+      description: The details of the created abuse alert, including its unique ID
+        and other relevant metadata.
+      type: string
+  
     
 
   - name: update-alert
