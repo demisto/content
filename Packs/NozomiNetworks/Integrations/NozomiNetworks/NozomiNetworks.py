@@ -68,7 +68,7 @@ class Client:
 
         if response.status_code not in (200, 201, 202, 204):
             demisto.info(f"Unexpected status code: {response.status_code}. path {path} Returning empty JSON.")
-            return {"result": [], "error": f"Unexpected status code: {response.status_code}"}
+            return {"result": None, "error": f"Unexpected status code: {response.status_code}"}
 
         return response.json()
 
@@ -193,6 +193,8 @@ def risk_filter(risk):
 
 
 def incidents_better_than_id(incidents_to_filter, the_id):
+    if incidents_to_filter is None:
+        return []
     return [incident for incident in incidents_to_filter if incident['id'] > the_id]
 
 
@@ -214,6 +216,9 @@ def incidents(st, last_id, last_run, risk, also_n2os_incidents, client):
     lft = last_fetched_time(ibtt, last_run)
     lfid = last_fetched_id(ibtt, last_run)
 
+    if ibtt is None:
+        return [], lft, lfid
+
     incidents_merged = incidents_equal_time_better_id(st, last_id, risk, also_n2os_incidents, client) + ibtt
 
     parsed_incidents = [parse_incident(i) for i in incidents_merged]
@@ -226,13 +231,13 @@ def incidents(st, last_id, last_run, risk, also_n2os_incidents, client):
 
 
 def last_fetched_time(inc, last_run):
-    if len(inc) > 0 and 'record_created_at' in inc[-1]:
+    if inc and len(inc) > 0 and 'record_created_at' in inc[-1]:
         return inc[-1]['record_created_at']
     return last_run.get("last_fetch", 0)
 
 
 def last_fetched_id(inc, last_run):
-    return inc[-1]['id'] if len(inc) > 0 else last_run.get("last_id", None)
+    return inc[-1]['id'] if inc and len(inc) > 0 else last_run.get("last_id", None)
 
 
 def last_asset_id(response):
@@ -244,6 +249,9 @@ def ack_unack_alerts(ids, status, client):
     for id in ids:
         data.append({'id': id, 'ack': status})
     response = client.http_post_request('/api/open/alerts/ack', {'data': data})
+
+    if 'error' in response and response['error']:
+        return None
 
     return response.get("result", {}).get("id", None)
 
@@ -405,6 +413,8 @@ def find_assets(args, client, head=DEFAULT_HEAD_ASSETS):
     while limit > len(result) and are_there_assets_to_request:
         raw_response = client.http_get_request(
             f'{QUERY_ASSETS_PATH}{filter_from_args(args)}{better_than_id_filter(last_id)} | head {head}')
+        if raw_response['result'] is None:
+            continue
         last_id = last_asset_id(raw_response['result'])
         are_there_assets_to_request = head == len(raw_response['result'])
         result = result + raw_response['result']

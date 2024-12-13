@@ -1,7 +1,8 @@
 import pytest
 from NozomiNetworks import *
 import demistomock as demisto
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
+
 demisto.callingContext = {
     'context': {
         'IntegrationBrand': 'NozomiNetworks'
@@ -74,6 +75,23 @@ def test_equal_time_filter_with_ts(obj, expected):
     assert equal_than_time_filter(obj) == expected
 
 
+def test_incidents_when_ibtt_is_none(requests_mock):
+    st = '1392048082000'
+    last_id = None
+    last_run = {'last_fetch': '1392048082000'}
+    risk = '4'
+    also_n2os_incidents = True
+
+    client = __get_client([], requests_mock)
+
+    with patch('NozomiNetworks.incidents_better_than_time', return_value=None):
+        incidents_result, lft, lfid = incidents(st, last_id, last_run, risk, also_n2os_incidents, client)
+
+        assert incidents_result == []
+        assert lft == last_run.get('last_fetch', st)
+        assert lfid == last_run.get('last_id', last_id)
+
+
 def test_parse_incidents():
     i = parse_incident({
         'id': '1af93f46-65c1-4f52-a46a-2a181597fb0c',
@@ -138,6 +156,14 @@ def test_http_incident_request(requests_mock):
 def test_incidents_better_than_id():
     filtered = incidents_better_than_id([{'id': 'a'}, {'id': 'b'}, {'id': 'f'}, {'id': '0'}], 'a')
     assert filtered == [{'id': 'b'}, {'id': 'f'}]
+
+
+def test_response_with_error():
+    client = MagicMock()
+
+    client.http_post_request.return_value = {'error': "pippo"}
+
+    assert ack_unack_alerts(ids=[1, 2, 3], status=True, client=client) is None
 
 
 def test_incidents_filtered(requests_mock):
@@ -210,6 +236,27 @@ def test_find_assets(requests_mock):
     assert len(result['outputs']) == 8
     assert result['outputs_key_field'] == 'id'
     assert result['outputs_prefix'] == 'Nozomi.Asset'
+
+
+def test_find_assets_with_none_result_in_loop(requests_mock):
+    response_sequence = [
+        {"result": None},
+        {"result": [{"id": "1", "name": "Asset 1"}]}
+    ]
+
+    client = MagicMock()
+    client.http_get_request = MagicMock(side_effect=response_sequence)
+
+    args = {}
+    head = 10
+    result = find_assets(args, client, head=head)
+
+    client.http_get_request.assert_called()
+    assert len(result['outputs']) == 1
+    assert result['outputs'][0]['id'] == "1"
+    assert "Nozomi.Asset" in result['outputs_prefix']
+    assert result['outputs_key_field'] == "id"
+    assert "Asset 1" in result['readable_output']
 
 
 def test_assets_limit_from_args():
