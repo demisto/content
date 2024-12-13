@@ -448,9 +448,17 @@ HoxNonReturningCommandType = Callable[[Client, dict, dict], None]
 
 ''' FNS '''
 
+def camel_to_title(text: str) -> str:
+    result = []
+    for i, char in enumerate(text):
+        if char.isupper() and (i == 0 or not text[i - 1].isupper()):
+            result.append(' ')
+        result.append(char)
+    return ''.join(result).strip().title()
+
 
 def create_output(results: dict[str, str], endpoint: str, key_field: str = '') -> CommandResults:
-    human_readable = tableToMarkdown('Hoxhunt results', results)
+    human_readable = tableToMarkdown(name='Hoxhunt results', t=results, headerTransform=camel_to_title, removeNull=True)
     return CommandResults(
         outputs_prefix=f'Hoxhunt.{endpoint}',
         outputs_key_field=key_field,
