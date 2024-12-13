@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import json
 """Doppel for Cortex XSOAR (aka Demisto)
 
 This integration contains features to mirror the alerts from Doppel to create incidents in XSOAR
@@ -202,7 +203,8 @@ def get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     :param args: Command arguments containing the query parameters as key-value pairs.
     :return: CommandResults object with the retrieved alerts.
     """
-    # Extract query parameters
+
+    # Extract query parameters directly from arguments
     query_params = {
         'search_key': args.get('search_key'),
         'queue_state': args.get('queue_state'),
@@ -215,26 +217,25 @@ def get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         'tags': args.get('tags')
     }
 
-    # Fetch results from the API
-    try:
-        results = client.get_alerts(params=query_params)
-        demisto.debug(f"Fetched alerts raw response: {results}")
-        if not results:
-            readable_output = "No alerts were found with the given parameters."
-        else:
-            readable_output = f"Retrieved {len(results)} alerts successfully.\n\nComplete JSON data:\n" \
-                              f"{json.dumps(results, indent=4)}"
+    # Call the client's `get_alerts` method to fetch data
+    demisto.debug(f"Query parameters before sending to client: {query_params}")
+    results = client.get_alerts(params=query_params)
+    demisto.debug(f"Results received: {results}")
 
+    # Handle empty alerts response
+    if not results:
+        raise ValueError("No alerts were found with the given parameters.")
 
-        return CommandResults(
-            outputs_prefix="Doppel.GetAlerts",
-            outputs_key_field="id",
-            outputs=results,
-            readable_output=readable_output,
-            raw_response=results
-        )
-    except Exception as e:
-        raise ValueError(f"Failed to fetch alerts: {str(e)}")
+    # Prepare the readable JSON response
+    readable_output = json.dumps(results, indent=4)
+
+    return CommandResults(
+        outputs_prefix="Doppel.GetAlerts",
+        outputs_key_field="id",
+        outputs=results,
+        readable_output=readable_output
+    )
+
 
 ''' MAIN FUNCTION '''
 
