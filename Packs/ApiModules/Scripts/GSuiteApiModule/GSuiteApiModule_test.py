@@ -375,8 +375,6 @@ def test_strip_dict():
     assert GSuiteClient.strip_dict(sample_input) == sample_output
 
 
-
-
 @pytest.mark.parametrize("input_text, expected_output", [
     # Test case 1: Token is present in the text
     ('invalid_grant: java.security.SignatureException: Invalid signature for token: eyJ0eXAiOiAiSlyJ9',
