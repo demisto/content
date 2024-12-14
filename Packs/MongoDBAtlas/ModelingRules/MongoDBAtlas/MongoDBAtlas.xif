@@ -20,13 +20,14 @@ filter source_log_type = "events"
 	get_status = concat(lowercase(status), "-", _ENTRY_STATUS)
 | alter
 	check_remoteAddress_ipv4 = if(remoteAddress ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", remoteAddress),
-	check_remoteAddress_ipv6 = if(remoteAddress ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", remoteAddress)
+	check_remoteAddress_ipv6 = if(remoteAddress ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", remoteAddress),
+	check_links = arraystring(arrayconcat(get_linkToDetails, get_links_href), "|")
 | alter
 	xdm.event.type = source_log_type,
 	xdm.alert.original_alert_id = coalesce(alertConfigId, id),
 	xdm.event.original_event_type = eventTypeName,
 	xdm.source.user.groups = arraycreate(groupId),
-	xdm.observer.unique_identifier = coalesce(to_string(get_linkToDetails), to_string(get_links_href)),
+	xdm.observer.unique_identifier = if(check_links ~= "^\s*\|\s*$", null, check_links ~= "^\|", ltrim(check_links), check_links ~= "\|$", rtrim(check_links), check_links),
 	xdm.source.user.username = if(get_username ~= "^\s*\|\s*$", null, get_username ~= "^\|", ltrim(get_username), get_username ~= "\|$", rtrim(get_username), get_username),
 	xdm.auth.privilege_level = if(to_boolean(isGlobalAdmin) = true, XDM_CONST.PRIVILEGE_LEVEL_ADMIN),
 	xdm.source.ipv4 = check_remoteAddress_ipv4,
