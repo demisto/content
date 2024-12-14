@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from GSuiteApiModule import DemistoException, COMMON_MESSAGES, GSuiteClient
+from GSuiteApiModule import DemistoException, COMMON_MESSAGES, GSuiteClient, replace_token_text
 
 with open('test_data/service_account_json.txt') as f:
     TEST_JSON = f.read()
@@ -373,3 +373,29 @@ def test_strip_dict():
     sample_input = {"key1": "  VALUE_1 ", "key2": ""}
     sample_output = {"key1": "VALUE_1"}
     assert GSuiteClient.strip_dict(sample_input) == sample_output
+
+
+MASK = "MASKED"
+
+@pytest.mark.parametrize("input_text, expected_output", [
+    # Test case 1: Token is present in the text
+    ('invalid_grant: java.security.SignatureException: Invalid signature for token: eyJ0eXAiOiAiSlyJ9',
+     'invalid_grant: java.security.SignatureException: Invalid signature for token: MASKED'),
+
+    # Test case 2: Token is not present in the text
+    ('invalid_grant: java.security.SignatureException: No token present',
+     'invalid_grant: java.security.SignatureException: No token present'),
+])
+def test_replace_token_text(input_text, expected_output, mocker):
+    """
+    Given:
+    - Input text containing token.
+
+    When:
+    - Calling replace_token_text() method.
+
+    Then:
+    - Ensure token is replaced with MASKED.
+    """
+    mocker.patch.object(GSuiteClient, 'add_sensitive_log_strs', return_value=None)
+    assert replace_token_text(input_text) == expected_output
