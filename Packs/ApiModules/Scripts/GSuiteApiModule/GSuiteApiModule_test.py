@@ -375,7 +375,6 @@ def test_strip_dict():
     assert GSuiteClient.strip_dict(sample_input) == sample_output
 
 
-MASK = "MASKED"
 
 
 @pytest.mark.parametrize("input_text, expected_output", [
@@ -398,5 +397,7 @@ def test_replace_token_text(input_text, expected_output, mocker):
     Then:
     - Ensure token is replaced with MASKED.
     """
-    mocker.patch.object(GSuiteClient, 'add_sensitive_log_strs', return_value=None)
+    mocker.patch('GSuiteApiModule.MASK', new="MASKED")
+    mocker.patch('GSuiteApiModule.add_sensitive_log_strs', return_value=None)
+
     assert replace_token_text(input_text) == expected_output
