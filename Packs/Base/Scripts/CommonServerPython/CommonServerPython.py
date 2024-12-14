@@ -1608,6 +1608,7 @@ def stringUnEscape(st):
     """
     return st.replace('\\r', '\r').replace('\\n', '\n').replace('\\t', '\t')
 
+
 def doubleBackslashes(st):
     """
        Double any backslashes in the given string if it contains two backslashes.

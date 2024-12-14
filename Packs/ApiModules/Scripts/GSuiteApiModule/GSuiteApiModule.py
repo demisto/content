@@ -137,7 +137,7 @@ class GSuiteClient:
             raise DemistoException(COMMON_MESSAGES['TRANSPORT_ERROR'].format(error))
         except exceptions.RefreshError as error:
             if error.args:
-                masked_error_message =replace_token_text(error.args[0])
+                masked_error_message = replace_token_text(error.args[0])
                 raise DemistoException(COMMON_MESSAGES['REFRESH_ERROR'].format(masked_error_message))
             raise DemistoException(error)
         except TimeoutError as error:
@@ -299,9 +299,10 @@ class GSuiteClient:
 
 ''' HELPER FUNCTIONS '''
 
+
 def replace_token_text(text: str) -> str:
     """
-    Replaces the token in the given text with a mask, adds the token to the list of strings 
+    Replaces the token in the given text with a mask, adds the token to the list of strings
     that should not appear in any logs, and returns the new string.
     Args:
         text (str): The input text containing the token.
@@ -310,13 +311,13 @@ def replace_token_text(text: str) -> str:
     """
     token_prefix = 'token:'
     token_pos = text.find(token_prefix)
-    
+
     if token_pos == -1:
         return text
-    
+
     # Extract the part before 'token:'
     before_token = text[:token_pos + len(token_prefix)]
-    
+
     # Extract the original token
     after_token = text[token_pos + len(token_prefix):].strip()
     original_token = after_token.split()[0]

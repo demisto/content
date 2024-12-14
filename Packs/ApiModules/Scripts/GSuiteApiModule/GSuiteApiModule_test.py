@@ -377,6 +377,7 @@ def test_strip_dict():
 
 MASK = "MASKED"
 
+
 @pytest.mark.parametrize("input_text, expected_output", [
     # Test case 1: Token is present in the text
     ('invalid_grant: java.security.SignatureException: Invalid signature for token: eyJ0eXAiOiAiSlyJ9',
