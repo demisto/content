@@ -269,7 +269,7 @@ script:
     - description: The content (record) ID to update.
       name: contentId
     - defaultValue: Supporting Documentation
-      description: Archer field name to associate the file with.
+      description: Archer field name to associate the file with. If not provided, a random uuid will be generated.
       name: associatedField
     description: Uploads a file to Archer.
     name: archer-upload-file

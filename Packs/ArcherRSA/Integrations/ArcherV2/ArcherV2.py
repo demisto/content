@@ -1,3 +1,5 @@
+import uuid
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from datetime import UTC, datetime
@@ -1478,10 +1480,10 @@ def upload_file_command(client: Client, args: dict[str, str]) -> str:
 
 
 def upload_and_associate_command(client: Client, args: dict[str, str]):
-    """Uploading an entry to archer. than, if needed, associate it to a record."""
+    """Uploading an entry to archer. Then, if needed, associate it to a record."""
     app_id = args.get("applicationId")
     content_id = args.get("contentId")
-    associate_field = args.get("associatedField")
+    associate_field = args.get("associatedField", uuid.uuid4())
 
     should_associate_to_record = app_id and content_id
     if not should_associate_to_record and (
