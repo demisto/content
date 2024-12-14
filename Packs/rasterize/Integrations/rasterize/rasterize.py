@@ -990,7 +990,7 @@ def rasterize_email_command():  # pragma: no cover
     offline = demisto.args().get('offline', 'false') == 'true'
 
     rasterize_type_arg = demisto.args().get('type', 'png').lower()
-    file_name = demisto.args().get('file_name', 'email')
+    file_name = demisto.args().get('file_name', uuid.uuid4())
     file_name = f'{file_name}.{rasterize_type_arg}'
     rasterize_type = RasterizeType(rasterize_type_arg)
 
