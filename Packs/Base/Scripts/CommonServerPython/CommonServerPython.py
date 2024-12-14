@@ -1608,6 +1608,18 @@ def stringUnEscape(st):
     """
     return st.replace('\\r', '\r').replace('\\n', '\n').replace('\\t', '\t')
 
+def doubleBackslashes(st):
+    """
+       Double any backslashes in the given string if it contains two backslashes.
+
+       :type st: ``str``
+       :param st: The string to be modified (required).
+
+       :return: A modified string with doubled backslashes.
+       :rtype: ``str``
+    """
+    return st.replace('\\', '\\\\')
+
 
 class IntegrationLogger(object):
     """
@@ -1689,6 +1701,7 @@ class IntegrationLogger(object):
                 a = self.encode(a)
                 to_add.append(stringEscape(a))
                 to_add.append(stringUnEscape(a))
+                to_add.append(doubleBackslashes(a))
                 js = json.dumps(a)
                 if js.startswith('"'):
                     js = js[1:]
