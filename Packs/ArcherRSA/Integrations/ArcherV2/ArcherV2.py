@@ -1,5 +1,3 @@
-import uuid
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from datetime import UTC, datetime
@@ -1480,7 +1478,7 @@ def upload_file_command(client: Client, args: dict[str, str]) -> str:
 
 
 def upload_and_associate_command(client: Client, args: dict[str, str]):
-    """Uploading an entry to archer. Then, if needed, associate it to a record."""
+    """Uploading an entry to archer. than, if needed, associate it to a record."""
     app_id = args.get("applicationId")
     content_id = args.get("contentId")
     associate_field = args.get("associatedField")
@@ -1495,8 +1493,6 @@ def upload_and_associate_command(client: Client, args: dict[str, str]):
 
     attachment_id = upload_file_command(client, args)
     if should_associate_to_record:
-        if associate_field == "Supporting Documentation":
-            associate_field += f"_{uuid.uuid4()}"  # To avoid overwriting since `Supporting Documentation` is the default value.
         args["fieldsToValues"] = json.dumps({associate_field: [attachment_id]})
         update_record_command(client, args)
 
