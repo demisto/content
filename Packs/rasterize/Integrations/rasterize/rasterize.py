@@ -12,6 +12,7 @@ import threading
 import time
 import traceback
 import websocket
+import uuid
 import json
 from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
