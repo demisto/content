@@ -9,7 +9,7 @@ comment: 'This script generates the report details for the individual CAF Sectio
 commonfields:
   id: NCSCReportDetails_C
   version: -1
-dockerimage: demisto/python3:3.10.14.100715
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: NCSCReportDetails_C
 script: ''
