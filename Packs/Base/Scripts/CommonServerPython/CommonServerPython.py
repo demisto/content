@@ -218,7 +218,7 @@ except Exception:
         sys.exc_clear()
 
 CONTENT_RELEASE_VERSION = '0.0.0'
-CONTENT_BRANCH_NAME = 'CIAC-9576-wo-passing-data'
+CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
 PY_VER_MINOR = sys.version_info[1]
 STIX_PREFIX = "STIX "
