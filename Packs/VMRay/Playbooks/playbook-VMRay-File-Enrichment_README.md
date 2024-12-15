@@ -57,4 +57,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![File Enrichment - VMRay](../doc_files/File_Enrichment_VMRay.png)
+![File Enrichment - VMRay](../doc_files/playbook-VMRay-File-Enrichment.png)

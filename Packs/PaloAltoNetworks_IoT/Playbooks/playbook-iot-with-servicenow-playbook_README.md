@@ -35,4 +35,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Palo_Alto_Neworks_IoT_Security](../doc_files/Palo_Alto_Neworks_IoT_Security_Playbook.png)
+![Palo_Alto_Neworks_IoT_Security](../doc_files/playbook-iot-with-servicenow-playbook.png)

@@ -113,4 +113,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![CyberTotal Auto Enrichment - CyCraft](../doc_files/CyberTotalAutoEnrichment.png)
+![CyberTotal Auto Enrichment - CyCraft](../doc_files/CyberTotal_Auto_Enrichment_-_CyCraft.png)
