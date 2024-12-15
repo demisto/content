@@ -382,7 +382,7 @@ class EWSClient:
 
         if context_dict:
             try:
-                config_args = get_config_from_context(context_dict, self.credentials)
+                config_args = get_config_args_from_context(context_dict, self.credentials)
                 account = Account(
                     primary_smtp_address=target_mailbox,
                     autodiscover=False,
@@ -484,7 +484,9 @@ class EWSClient:
 
     def is_default_folder(self, folder_path, is_public=None):
         """
-        Is the given folder_path public
+        Check whether the given folder_path is known to be public,
+        determined either by the is_public argument, or in the case where folder_path is the
+        configured instance folder name and the is_public instance variable is set.
 
         :param folder_path: folder path to check if is public
         :param is_public: (Optional) if provided, will return this value
@@ -617,7 +619,7 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
     clean_body += html_body[last_index:]
     return clean_body, attachments
 
-def get_config_from_context(context: dict, credentials: BaseCredentials):
+def get_config_args_from_context(context: dict, credentials: BaseCredentials):
     """
     Create a configuration obj from the cached autodiscovery results in the provided integration context.
 
@@ -687,7 +689,7 @@ def get_on_prem_build(version: str):
     """
     if version not in SUPPORTED_ON_PREM_BUILDS:
         supported_versions = '\\'.join(list(SUPPORTED_ON_PREM_BUILDS.keys()))
-        raise Exception(f'{version} is not a supported version. Choose one of: {supported_versions}.')
+        raise ValueError(f'{version} is not a supported version. Choose one of: {supported_versions}.')
 
     return SUPPORTED_ON_PREM_BUILDS[version]
 
