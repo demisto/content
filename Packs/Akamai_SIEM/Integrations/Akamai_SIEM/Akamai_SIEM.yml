@@ -123,14 +123,6 @@ configuration:
   section: Collect
   hidden:
   - xsoar
-- display: Send events to xsiam in multiple threads
-  name: send_events_to_xsiam_multi_threaded
-  additionalinfo: Use this parameter to speed up the events ingestion rate in case your instance keeps bringing the limit events every interval.
-  type: 8
-  required: false
-  section: Collect
-  hidden:
-  - xsoar
 - display: Skip events decoding
   name: should_skip_decode_events
   additionalinfo: Use this parameter to avoid decoding the http message and attack data fields and speed up the ingestion rate.

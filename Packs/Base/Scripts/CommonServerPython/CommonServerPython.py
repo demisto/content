@@ -12009,6 +12009,9 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
 
     :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
+    In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
+    for future in concurrent.futures.as_completed(futures):
+        data_size += future.result()
     :rtype: ``List[Future]`` or ``None``
     """
     return send_data_to_xsiam(
@@ -12184,7 +12187,10 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     Note that when set to True, the updateModuleHealth should be done from the itnegration itself.
 
     :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
-    :rtype: ``List[Future]`` or ``None``
+    In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
+    for future in concurrent.futures.as_completed(futures):
+        data_size += future.result()
+    :rtype: ``List[Future]`` or ``None```
     """
     data_size = 0
     params = demisto.params()
@@ -12295,7 +12301,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         for chunk in data_chunks:
             future = executor.submit(send_events, chunk)
             future_to_data.append(future)
-        demisto.info('Done submiting all Futures.')
+        demisto.info(f'Finished submiting {len(future_to_data)} Futures.')
         return future_to_data
     else:
         for chunk in data_chunks:

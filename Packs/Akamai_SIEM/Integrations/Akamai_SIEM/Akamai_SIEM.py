@@ -127,7 +127,7 @@ class Client(BaseClient):
             try:
                 events.append(json.loads(event))
             except Exception as e:
-                demisto.info(f"Could not decode the {event=}, reason: {e}")
+                demisto.error(f"Could not decode the {event=}, reason: {e}")
         offset = events.pop().get("offset")
         return events, offset
 
@@ -487,11 +487,11 @@ def fetch_events_command(
         try:
             events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
         except DemistoException as e:
-            demisto.info(f"Got an error when trying to request for new events from Akamai\n{e}")
+            demisto.error(f"Got an error when trying to request for new events from Akamai\n{e}")
             if "Requested Range Not Satisfiable" in str(e):
                 err_msg = f'Got offset out of range error when attempting to fetch events from Akamai.\n' \
                     "This occurred due to offset pointing to events older than 12 hours.\n" \
-                    "In order to continue fetching, restarting the offset and rerunning fetch-events with 11 hours backward.\n" \
+                    "Restarting fetching events after 11 hours ago. Some events were missed.\n" \
                     "If you wish to fetch more up to date events, " \
                     "please run 'akamai-siem-reset-offset' on the specific instance.\n" \
                     'For more information, please refer to the Troubleshooting section in the integration documentation.\n' \
@@ -607,19 +607,16 @@ def main():  # pragma: no cover
                 should_skip_decode_events=should_skip_decode_events
             )):
                 if events:
-                    send_events_to_xsiam_multi_threaded: bool = params.get('send_events_to_xsiam_multi_threaded', False)
-                    demisto.info(f"[test] Sending {len(events)} events to xsiam with {send_events_to_xsiam_multi_threaded=} and"
+                    demisto.info(f"[test] Sending {len(events)} events to xsiam using multithreads."
                                  f"latest event time is: {events[-1]['_time']}")
                     futures = send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
                                                    chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE,
-                                                   multiple_threads=send_events_to_xsiam_multi_threaded)
-                    if send_events_to_xsiam_multi_threaded:
-                        demisto.info("[test] Finished executing send_events_to_xsiam, waiting for futures to end.")
-                        data_size = 0
-                        for future in concurrent.futures.as_completed(futures):
-                            data_size += future.result()
-                        demisto.info(f"[test] Finished waiting for all futures to end, sent {data_size} events.")
-                    demisto.info(f"[test] Done sending {len(events)} events to xsiam."
+                                                   multiple_threads=True)
+                    demisto.info("[test] Finished executing send_events_to_xsiam, waiting for futures to end.")
+                    data_size = 0
+                    for future in concurrent.futures.as_completed(futures):
+                        data_size += future.result()
+                    demisto.info(f"[test] Done sending {data_size} events to xsiam."
                                  f"sent {total_events_count} events to xsiam in total during this interval.")
                 set_integration_context({"offset": offset})
             demisto.updateModuleHealth({'eventsPulled': (total_events_count or 0)})

@@ -43,7 +43,6 @@ A WAF (web application firewall) is a filter that protects against HTTP applicat
     | Fetch limit | False | Limit on the number of incidents retrieved in a single fetch. The maximum is 80k.|
     | Akamai Page size | False | The number of events to fetch per request to akamai (multiple requests are made for each fetch). If you're getting aggregated delays, increase the number. The maximum is 80,000. |
     | Skip events decoding | False | Use this parameter to avoid decoding the http message and attack data fields and speed up the ingestion rate. |
-    | Send events to xsiam in multiple threads | False | Use this parameter to speed up the events ingestion rate in case your instance keeps bringing the limit events every interval. |
     | Trust any certificate (not secure) | False | |
     | Use system proxy settings | False | |
 
