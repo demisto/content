@@ -2559,9 +2559,8 @@ def retrieve_all_results(response, all_results, api_endpoint, meta, data, limit=
         data (dict): data for request
         limit (int, optional): the limit of group members to retrieve. Defaults to 100.
     """
-    next_page = response.get('meta',{}).get('pagination', {}).get('next')
-    group_members = response.get('data', [{}])[0].get('groupMembers',{})
-    print('group_members', len(group_members))
+    next_page = response.get('meta', {}).get('pagination', {}).get('next')
+    group_members = response.get('data', [{}])[0].get('groupMembers', {})
     while (int(limit) > len(group_members) and next_page) or (all_results and next_page):
         meta['pagination'] = {
             'pageToken': next_page
@@ -2571,10 +2570,9 @@ def retrieve_all_results(response, all_results, api_endpoint, meta, data, limit=
             'data': [data]
         }
         current_response = http_request('POST', api_endpoint, payload)
-        next_page = current_response.get('meta',{}).get('pagination', {}).get('next')
-        current_group_members = current_response.get('data', [{}])[0].get('groupMembers',{})
+        next_page = current_response.get('meta', {}).get('pagination', {}).get('next')
+        current_group_members = current_response.get('data', [{}])[0].get('groupMembers', {})
         group_members.extend(current_group_members)
-        print('group_members', len(group_members))
 
 
 def create_get_group_members_request(group_id=-1, limit=100):
@@ -2583,7 +2581,7 @@ def create_get_group_members_request(group_id=-1, limit=100):
     group_id = args.get('group_id', group_id)
     limit = args.get('limit', limit)
     all_results = argToBoolean(args.get("all_results", False))
-    API_MAX_VALUE=500
+    API_MAX_VALUE = 500
 
     meta = {}
     data = {}
