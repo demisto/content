@@ -3,6 +3,7 @@
 from datetime import datetime
 import time
 import json
+import demistomock as demisto
 
 # 3-rd party packages
 import pytest
@@ -409,7 +410,7 @@ class TestCommandsFunctions:
             }, "Error in API call [403] - Unauthorized", False)
         ],
     )
-    def test_index_out_of_range_error(self, mocker, client, error_entry, error_message, expect_extra_info):
+    def test_response_errors(self, mocker, client, error_entry, error_message, expect_extra_info):
         """
         Given:
         - A client object and an error entry
@@ -425,6 +426,7 @@ class TestCommandsFunctions:
         err_msg = f'{error_message}\n{json.dumps(error_entry)}'
         mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=DemistoException(err_msg, res={}))
         mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=False)
+        error_log_mocker = mocker.patch.object(demisto, 'error')
         with pytest.raises(DemistoException) as e:
             for _, _, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
                                                                                         '3 days',
@@ -435,6 +437,7 @@ class TestCommandsFunctions:
                                                                                         False
                                                                                         ):
                 pass
+        error_log_mocker.assert_called_with(f"Got an error when trying to request for new events from Akamai\n{err_msg}")
         assert ('Got offset out of range error when attempting to fetch events from Akamai.' in str(e)) == expect_extra_info
         assert ('Expired offset parameter in the request' in str(e)) == expect_extra_info
 

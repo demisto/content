@@ -127,7 +127,8 @@ class Client(BaseClient):
             try:
                 events.append(json.loads(event))
             except Exception as e:
-                demisto.error(f"Could not decode the {event=}, reason: {e}")
+                if event:  # The last element might be an empty dict.
+                    demisto.error(f"Could not decode the {event=}, reason: {e}")
         offset = events.pop().get("offset")
         return events, offset
 
