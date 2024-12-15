@@ -1,7 +1,7 @@
 import pytest
 import demistomock as demisto
 from CommonServerPython import CommandResults, EntryType
-from GetEndpointData import MappedCommand, ModuleManager, EndpointCommandRunner
+from GetEndpointData import Command, ModuleManager, EndpointCommandRunner
 
 
 @pytest.fixture
@@ -12,7 +12,7 @@ def setup_module_manager():
     }
     brands_to_run = ["BrandA", "BrandC"]
     module_manager = ModuleManager(modules=modules, brands_to_run=brands_to_run)
-    command = MappedCommand(brand="BrandA", name="TestCommand", output_keys=[], args_mapping={}, output_mapping={})
+    command = Command(brand="BrandA", name="TestCommand", output_keys=[], args_mapping={}, output_mapping={})
     return module_manager, command, modules, brands_to_run
 
 class TestModuleManager:
@@ -50,7 +50,7 @@ def setup_endpoint_command_runner(mocker):
     module_manager = mocker.Mock(spec=ModuleManager)
     arg_free_commands = ["test-command"]
     command_runner = EndpointCommandRunner(module_manager=module_manager, arg_free_commands=arg_free_commands)
-    command = MappedCommand(brand="TestBrand", name="test-command", output_keys=[], args_mapping={}, output_mapping={})
+    command = Command(brand="TestBrand", name="test-command", output_keys=[], args_mapping={}, output_mapping={})
     return command_runner, module_manager, command
 
 class TestEndpointCommandRunner:
@@ -111,7 +111,7 @@ class TestEndpointCommandRunner:
                     mark_as_note=True,
                 )]
 
-        context_outputs, human_readable, error_outputs = command_runner.get_commands_outputs("test-command", command_results, {})
+        context_outputs, human_readable, error_outputs = command_runner.get_command_results("test-command", command_results, {})
         assert context_outputs == expected_context_outputs
         assert human_readable == expected_human_readable
         for expected_error_output, error_output in zip(expected_error_outputs, error_outputs):
@@ -119,7 +119,7 @@ class TestEndpointCommandRunner:
 
     def test_run_command(self, mocker, setup_endpoint_command_runner):
         command_runner, module_manager = setup_endpoint_command_runner
-        command = MappedCommand(brand="TestBrand", name="test-command", output_keys=[], args_mapping={}, output_mapping={})
+        command = Command(brand="TestBrand", name="test-command", output_keys=[], args_mapping={}, output_mapping={})
         endpoint_args = {"arg1": "value1"}
 
         mock_prepare_args = mocker.patch('your_module.prepare_args', return_value={"arg1": "value1"})
