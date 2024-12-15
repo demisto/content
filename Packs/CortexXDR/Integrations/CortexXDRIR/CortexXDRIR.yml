@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Cortex XDR - IR1
+  id: Cortex XDR - IR
   version: -1
 configuration:
 - display: Fetch incidents
@@ -45,7 +45,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: Not selected for backwards compatibility. Recommended to select. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid.)
+  additionalinfo: Removes duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid).
 - display: Incident Mirroring Direction
   name: mirror_direction
   required: false
@@ -65,7 +65,7 @@ configuration:
   section: Mirroring
   advanced: true
   required: false
-- additionalinfo: "When selected, closing the Cortex XSOAR incident is mirrored in Cortex XDR. Notice: If not selected, but 'Close all related alerts in XDR' is selected, the incident will automatically be closed in Cortex XDR."
+- additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Cortex XDR. If not selected, but "Close all related alerts in XDR" is selected, the incident will automatically be closed in Cortex XDR
   defaultvalue: 'true'
   display: Close Mirrored Cortex XDR Incident
   name: close_xdr_incident
@@ -80,11 +80,11 @@ configuration:
   section: Mirroring
   required: false
   advanced: true
-  additionalinfo: "In the event of a delay in mirroring incoming changes from XDR, use the xdr_delay parameter to extend the look-back period. However, be aware that this may result in increased latency when updating incidents."
+  additionalinfo: Use this parameter to extend the lookback period. However, be aware that this may result in increased latency when updating incidents
 - display: Custom close-reason mapping Cortex XSOAR -> Cortex XDR
   section: Collect
   advanced: true
-  additionalinfo: Override the default close reason mapping defined by Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons. Acceptable format {Cortex XSOAR close reason}={Cortex XDR close reason}. 
+  additionalinfo: Override the default close reason mapping defined by Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons. Acceptable format {Cortex XSOAR close reason}={Cortex XDR close reason}. For more info https://xsoar.pan.dev/docs/reference/integrations/cortex-xdr---ir
   name: custom_xsoar_to_xdr_close_reason_mapping
   defaultvalue: ''
   type: 0
@@ -92,7 +92,7 @@ configuration:
 - display: Custom close-reason mapping Cortex XDR -> Cortex XSOAR
   section: Collect
   advanced: true
-  additionalinfo: Override the default close reason mapping defined by Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons. Acceptable format {Cortex XDR close reason}={Cortex XSOAR close reason}.
+  additionalinfo: Override the default close reason mapping defined by Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons. Acceptable format {Cortex XDR close reason}={Cortex XSOAR close reason}. For more info https://xsoar.pan.dev/docs/reference/integrations/cortex-xdr---ir
   name: custom_xdr_to_xsoar_close_reason_mapping
   defaultvalue: ''
   type: 0
@@ -122,7 +122,7 @@ configuration:
   type: 0
   section: Collect
   required: false
-  additionalinfo: The maximum number of incidents per fetch. Cannot exceed 100.
+  additionalinfo: Cannot exceed 100.
   defaultvalue: '10'
 - display: First fetch timestamp
   additionalinfo: 'The format should be: <number> <time unit>. e.g., 12 hours, 7 days'
@@ -137,7 +137,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected. For example, if you change the owner in Cortex XSOAR, the new owner will also be changed in Cortex XDR. However, if you now change the owner back in Cortex XDR, this additional change will not be reflected in Cortex XSOAR. In addition, for this change to be reflected, the owners must exist in both Cortex XSOAR and Cortex XDR.
+  additionalinfo: For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be synced. For more https://xsoar.pan.dev/docs/reference/integrations/cortex-xdr---ir
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -157,7 +157,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: 'The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched.'
+- additionalinfo: If no status is provided then incidents of all the statuses will be fetched
   display: Incident Statuses to Fetch
   name: status
   options:
@@ -173,7 +173,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- additionalinfo: "Whether to fetch only the essential incident's fields - without Network Artifacts and File Artifacts to minimize the incident's information."
+- additionalinfo: Whether to fetch only the essential incident's fields - without Network Artifacts and File Artifacts to minimize the incident's information
   display: Minimize Incident Information
   name: exclude_fields
   required: false
@@ -184,10 +184,10 @@ configuration:
 - display: Close all related alerts in XDR
   name: close_alerts_in_xdr
   required: false
-  additionalinfo: "Close all related alerts in Cortex XDR once an incident has been closed in Cortex XSOAR."
+  additionalinfo: Close all related alerts in Cortex XDR once an incident has been closed in Cortex XSOAR
   advanced: true
   type: 8
-  section: Collect
+  section: Mirroring
 - display: Only fetch starred incidents
   name: starred
   type: 8
@@ -204,7 +204,7 @@ configuration:
   advanced: true
 description: The integration enables direct execution of Cortex XDR actions within Cortex XSOAR.
 display: Palo Alto Networks Cortex XDR - Investigation and Response - Tal
-name: Cortex XDR - IR1
+name: Cortex XDR - IR
 script:
   commands:
   - arguments:
