@@ -12535,7 +12535,7 @@ def replace_sensitive_text(text, pattern, mask=MASK):
     if not match:
         return text
 
-    original_sensitive_info = match.group(1)
+    original_sensitive_info = match.group(2)
     add_sensitive_log_strs(original_sensitive_info)
 
     # Replace only the sensitive part, keeping all the rest
