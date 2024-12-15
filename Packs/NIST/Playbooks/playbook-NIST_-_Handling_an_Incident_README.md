@@ -25,7 +25,7 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![NIST_Handling_an_Incident](../doc_files/NIST_Handling_an_Incident_Template.png)
+![NIST_Handling_an_Incident](../doc_files/playbook-NIST_-_Handling_an_Incident.png)
 
 ## Playbook Demo Video
 <video controls>
