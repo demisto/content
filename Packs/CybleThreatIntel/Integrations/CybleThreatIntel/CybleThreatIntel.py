@@ -171,8 +171,8 @@ class Client(object):
                         if eachone.get('confidence'):
                             current_timestamp = parser.parse(
                                 eachone['confidence']['timestamp']).replace(tzinfo=pytz.UTC).strftime(DATETIME_FORMAT)
-                            if (is_first_fetch or
-                                datetime.fromisoformat(current_timestamp) > datetime.fromisoformat(save_fetch_time)):
+                            if (is_first_fetch
+                                    or datetime.fromisoformat(current_timestamp) > datetime.fromisoformat(save_fetch_time)):
                                 save_fetch_time = current_timestamp
                             else:
                                 skip = True
