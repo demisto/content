@@ -252,18 +252,14 @@ def construct_generic_filter_condition(
     """
     root = ET.Element(condition_type.value)
 
-    operator_element = ET.SubElement(root, 'Operator')
-    operator_element.text = operator
-
-    field_element = ET.SubElement(root, 'Field', attrib={'name': field_name})
-    field_element.text = field_id
+    ET.SubElement(root, 'Operator').text = operator
+    ET.SubElement(root, 'Field', attrib={'name': field_name}).text = field_id
 
     value_element = ET.SubElement(root, 'Value')
     value_element.text = search_value
 
     for tag_name, tag_text in (sub_elements_tags_values or {}).items():
-        sub_element = ET.SubElement(root, tag_name)
-        sub_element.text = tag_text
+        ET.SubElement(root, tag_name).text = tag_text
 
     return ET.tostring(root, encoding='unicode')
 
@@ -283,15 +279,11 @@ def construct_content_filter_condition(operator: str, level_id: str, search_valu
     """
     root = ET.Element(FilterConditionTypes.content.value)
 
-    level = ET.SubElement(root, 'Level')
-    level.text = level_id
-
-    operator_element = ET.SubElement(root, 'Operator')
-    operator_element.text = operator
+    ET.SubElement(root, 'Level').text = level_id
+    ET.SubElement(root, 'Operator').text = operator
 
     values_element = ET.SubElement(root, 'Values')
-    value_element = ET.SubElement(values_element, 'Value')
-    value_element.text = search_value
+    ET.SubElement(values_element, 'Value').text = search_value
 
     return ET.tostring(root, encoding='unicode')
 
@@ -1695,8 +1687,7 @@ def search_records_command(client: Client, args: dict[str, str]):
     )
     level_id = args.get("levelId")
 
-    xml_filter_condition = args.get("xmlForFiltering")
-    if xml_filter_condition and not is_valid_xml(xml_filter_condition):
+    if (xml_filter_condition := args.get("xmlForFiltering")) and not is_valid_xml(xml_filter_condition):
         raise DemistoException(f'Invalid XML filter: {xml_filter_condition}.')
 
     if fields_to_get and "Id" not in fields_to_get:

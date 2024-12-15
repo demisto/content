@@ -1168,13 +1168,11 @@ class TestArcherV2:
     def test_is_valid_xml(self, xml_document: str, blacklisted_tags: list[str], expected_is_valid: bool):
         """
         Given:
-            - Case 1: A valid XML document as a string.
-            - Case 2: A malformed XML document (open and close tags mismatch).
+            - A string that is meant to represent an XML document.
         When:
             - Calling is_valid_xml.
         Assert:
-            - Case 1: Ensure is_valid is True.
-            - Case 2: Ensure is_valid is False.
+            - Ensure the result matches the XML validity.
         """
         is_valid = is_valid_xml(xml_document, blacklisted_tags)
         assert is_valid == expected_is_valid
@@ -1223,13 +1221,11 @@ class TestArcherV2:
     ):
         """
         Given:
-            - Case 1: A date filter condition with 'GreaterThan' operator on the 'Last Updated' field.
-            - Case 2: A text filter condition with 'Contains' operator on the 'Incident Priority' field.
+            - A filter condition with a comparison operator on a given field.
         When:
             - Calling construct_generic_filter_condition.
         Assert:
-            - Case 1: Ensure a valid DateComparisonFilterCondition XML element with the correct sub-elements.
-            - Case 2: Ensure a valid TextFilterCondition XML element with the correct sub-elements.
+            - Ensure a valid condition XML element with the correct sub-elements.
         """
         xml_condition = construct_generic_filter_condition(
             condition_type=condition_type,
@@ -1269,9 +1265,7 @@ class TestArcherV2:
     def test_construct_operator_logic(self, logical_operator: str, conditions_count: int, expected_operator_logic: str):
         """
         Given:
-            - Case 1: 'or' logical operator and 3 conditions.
-            - Case 2: 'AND' logical operator and 4 conditions.
-            - Case 3: 'XOR' logical operator with 1 condition.
+            - A logical operator and a conditions count.
         When:
             - Calling construct_operator_logic.
         Assert:
