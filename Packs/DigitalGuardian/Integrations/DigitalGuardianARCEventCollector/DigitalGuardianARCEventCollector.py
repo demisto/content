@@ -112,7 +112,7 @@ class Client(BaseClient):
 
 def test_module(client: Client, export_profiles: list[str]) -> str:
     """
-    Tests API connectivity and authentication.
+    Tests API connectivity and authentication and validates export profiles.
     Args:
         client (Client): Digital Guardian client to use.
         export_profiles (list): List of export profile names.
@@ -121,16 +121,27 @@ def test_module(client: Client, export_profiles: list[str]) -> str:
     Raises:
         DemistoException | HTTPError: If request failed.
     """
-    try:
-        for export_profile in export_profiles:
+    invalid_export_profiles = set()
+
+    for export_profile in export_profiles:
+        try:
             client.export_events(export_profile)
-        return 'ok'
 
-    except Exception as e:
-        if 'Forbidden' in str(e):
-            raise DemistoException('Authorization Error: Make sure client credentials are correctly set') from e
-        raise
+        except Exception as e:
+            if 'Forbidden' in str(e):
+                raise DemistoException('Authorization Error: Make sure client credentials are correctly set') from e
 
+            if 'Unable to find export_profile' in str(e):
+                invalid_export_profiles.add(export_profile)
+            
+            else:
+                # Some other unknown error
+                raise
+
+    if invalid_export_profiles:
+        raise DemistoException(f'Invalid export profiles: {", ".join(invalid_export_profiles)}')
+    
+    return 'ok'
 
 def fetch_events(client: Client, export_profile: str, limit: int | None = None) -> tuple[list[dict], dict]:
     """
@@ -214,7 +225,7 @@ def get_events_command(client: Client, args: dict, export_profile: str) -> tuple
     return events, last_run, CommandResults(readable_output=human_readable)
 
 
-def push_events(client: Client, events: list[dict], last_run: dict, export_profile: str, set_export_bookmark: bool) -> None:
+def push_events(client: Client, events: list[dict], last_run: dict, export_profile: str, *, set_export_bookmark: bool) -> None:
     """
     Pushes events to XSIAM and (optionally) moves internal bookmark in the API for the next time fetch-events is invoked.
 
