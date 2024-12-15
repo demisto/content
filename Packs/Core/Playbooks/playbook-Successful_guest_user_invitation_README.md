@@ -79,4 +79,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Valid Accounts - Successful_guest user invitation](../doc_files/Valid_Accounts_-_Successful_guest_user_invitation.png)
+![Successful_guest user invitation](../doc_files/Successful_guest_user_invitation.png)

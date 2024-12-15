@@ -1,4 +1,4 @@
-id: Valid Accounts - Successful guest user invitation
+id: Successful guest user invitation
 version: -1
 description: |-
   This playbook addresses the following alerts:
@@ -37,7 +37,7 @@ description: |-
 tags:
 - TA0003 - Persistence
 - T1078 - Valid Accounts
-name: Valid Accounts - Successful guest user invitation
+name: Successful guest user invitation
 starttaskid: "0"
 tasks:
   "0":

@@ -1,9 +1,9 @@
 {
-  "trigger_id": "2d9c2e83eb7d4b189c8e725ad56643d2",
-  "playbook_id": "Valid Accounts - Successful guest user invitation",
+  "trigger_id": "06fd5112c09b4312c1a8e92bcb5aa30f",
+  "playbook_id": "Successful guest user invitation",
   "suggestion_reason": "Recommended for Valid Accounts alerts involving successful guest user invitations.",
   "description": "This trigger is responsible for handling Valid Accounts alerts related to successful guest user invitations.",
-  "trigger_name": "Valid Accounts - Successful guest user invitation",
+  "trigger_name": "Successful guest user invitation",
   "fromVersion": "8.8.0",
   "alerts_filter": {
     "filter": {
