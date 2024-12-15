@@ -2642,7 +2642,7 @@
             "timeout": 500
         },
         {
-            "playbookID": "DemistoUploadFileV2 Test",
+            "playbookID": "UploadFile Test",
             "integrations": "Core REST API"
         },
         {
