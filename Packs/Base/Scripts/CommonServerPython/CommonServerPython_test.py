@@ -18,7 +18,7 @@ from pytest import raises, mark
 
 import CommonServerPython
 import demistomock as demisto
-from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase,
+from CommonServerPython import (replace_sensitive_text, xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase,
                                 flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList,
                                 remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid,
                                 get_demisto_version, IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger,
@@ -9994,3 +9994,28 @@ def test_get_engine_base_url(mocker):
     mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
     res = get_engine_base_url('1111')
     assert res == '11.111.111.33:443'
+
+
+@pytest.mark.parametrize("input_text, expected_output", [
+    # Test case 1: Token is present in the text
+    ('invalid_grant: java.security.SignatureException: Invalid signature for token: 1234',
+     'invalid_grant: java.security.SignatureException: Invalid signature for token: MASKED'),
+
+    # Test case 2: Token is not present in the text
+    ('invalid_grant: java.security.SignatureException: No token present',
+     'invalid_grant: java.security.SignatureException: No token present'),
+])
+def test_replace_sensitive_text(input_text, expected_output, mocker):
+    """
+        Given:
+        - Input text containing sensitive information.
+    
+        When:
+        - Calling replace_sensitive_text() method with a regex pattern to find the sensitive information and a mask to replace it.
+    
+        Then:
+        - Ensure the sensitive information is replaced with the mask if it exists.
+    """
+    mocker.patch('CommonServerPython.add_sensitive_log_strs', return_value=None)
+
+    assert replace_sensitive_text(input_text, r'(token:\s*)(\S+)', "MASKED") == expected_output

@@ -12514,6 +12514,32 @@ def content_profiler(func):
     return profiler_wrapper
 
 
+def replace_sensitive_text(text, pattern, mask=MASK):
+    """
+    Replaces sensitive information in the given text with a mask, adds the sensitive information to the list of strings
+    that should not appear in any logs, and returns the new string.
+
+    Args:
+        text (str): The input text containing the sensitive information.
+        pattern (str): The regex pattern to match the sensitive information.
+        mask (str): The text to replace the sensitive information with. Defaults to '<XX_REPLACED>'.
+
+    Returns:
+        str: The new string with the sensitive information replaced by the mask.
+    """
+    sensitive_pattern = re.compile(pattern)
+    match = sensitive_pattern.search(text)
+
+    if not match:
+        return text
+
+    original_sensitive_info = match.group(1)
+    add_sensitive_log_strs([original_sensitive_info])
+
+    # Replace only the sensitive part, keeping the prefix intact
+    return sensitive_pattern.sub(r'\g<1>{}'.format(mask), text)
+
+
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 
 ###########################################
