@@ -357,13 +357,13 @@ def main() -> None:
                        or params.get('certificate'))
         private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
                        or params.get('private_key'))
-        port: Union[Optional[str], int] = params.get('longRunningPort', '')
+        port: Union[Optional[str], int] = params.get('longRunningPort')
 
         if command == 'test-module':
             return_results(test_module(port, message_regex, certificate, private_key))
 
         try:
-            port = int(port)
+            port = int(params.get('longRunningPort'))
         except (ValueError, TypeError):
             raise DemistoException(f'Invalid listen port - {port}. Make sure your port is a number')
 
