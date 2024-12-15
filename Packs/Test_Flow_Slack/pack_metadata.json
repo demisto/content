@@ -1,0 +1,21 @@
+{
+    "name": "Test_flow_slack",
+    "description": "TEST",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "RotemAmit",
+    "url": "",
+    "email": "",
+    "created": "2024-12-15T09:23:09Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "RotemAmit"
+    ]
+}
