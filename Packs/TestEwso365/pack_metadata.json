@@ -1,0 +1,21 @@
+{
+    "name": "Test ewso365",
+    "description": "test",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "RotemAmit",
+    "url": "",
+    "email": "",
+    "created": "2024-12-15T11:51:40Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "RotemAmit"
+    ]
+}
