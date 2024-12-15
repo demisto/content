@@ -32,4 +32,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Saas Security - Take Action on the incident](../doc_files/Take_Action_on_the_Incident_Playbook.png)
+![Saas Security - Take Action on the incident](../doc_files/Saas_Security_-_Take_Action_on_the_Incident.png)
