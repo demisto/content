@@ -282,23 +282,27 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 ##### Authentication Using the Client Credentials Flow
 
 1. Choose the 'Client Credentials' option in the *Authentication Type* parameter.
-2. Enter your Client/Application ID in the *Bot ID* parameter. 
+2. Enter your Client/Application ID in the *Bot ID* parameter.
 3. Enter your Client Secret in the *Bot Password* parameter.
-4. Save the instance.
-5. Click **Test** to validate the URLs, token, and connection.
-6. [Add the Demisto Bot to a Team](#Add-the-Demisto-Bot-to-a-Team)
+4. Set the *Default team* and the *Notifications channel* parameters.
+5. Set the *Long running instance* parameter to 'True'.
+6. Save the instance.
+7. Click **Test** to validate the URLs, token, and connection.
+8. [Add the Demisto Bot to a Team](#Add-the-Demisto-Bot-to-a-Team)
 
 ##### Authentication Using the Authorization Code Flow
 
 1. Choose the 'Authorization Code' option in the *Authentication Type* parameter.
-2. Enter your Client/Application ID in the *Bot ID* parameter. 
+2. Enter your Client/Application ID in the *Bot ID* parameter.
 3. Enter your Client Secret in the *Bot Password* parameter.
 4. Enter your Application redirect URI in the *Application redirect URI* parameter.
-5. Save the instance.
-6. [Add the Demisto Bot to a Team](#Add-the-Demisto-Bot-to-a-Team)
-7. Run the ***!microsoft-teams-generate-login-url*** command in the War Room and follow the instructions.
-8. Save the instance.
-9. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
+5. Set the *Default team* and the *Notifications channel* parameters.
+6. Set the *Long running instance* parameter to 'True'.
+7. Save the instance.
+8. [Add the Demisto Bot to a Team](#Add-the-Demisto-Bot-to-a-Team)
+9. Run the ***!microsoft-teams-generate-login-url*** command in the War Room and follow the instructions.
+10. Save the instance.
+11. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
 
 
 ### Add the Demisto Bot to a Team
@@ -315,9 +319,9 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 6. In the `webApplicationInfo`, replace the value of `id` attribute with the value of the *Bot ID* from step 5 of the **Create the Demisto Bot in Microsoft Teams section**.
 7. Compress the 3 files (the modified `manifest.json` file, `color.png` and `outline.png`).
 8. Navigate to [Manage Apps in the Microsoft Teams admin center](https://admin.teams.microsoft.com/policies/manage-apps).
-9. Click the **+Upload** button.
+9. Click the **Actions** button and then the **+ Upload new app** button.
 10. In the pop-up window, click the **Upload** button.
-11. Browse for the ZIP file you created in step 5, open it, and wait a few seconds until it loads.
+11. Browse for the ZIP file you created in step 7, open it, and wait a few seconds until it loads.
 12. Search for **Demisto Bot**.
 13. In the line where `Demisto Bot` shows under **Name**, tick the V on the left.
 14. Click the **Add to team** button.
