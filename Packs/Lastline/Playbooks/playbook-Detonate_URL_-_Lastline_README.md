@@ -70,4 +70,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Detonate_URL_Lastline](../doc_files/Detonate_URL_Lastline.png)
+![Detonate_URL_Lastline](../doc_files/playbook-Detonate_URL_-_Lastline.png)

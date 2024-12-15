@@ -38,4 +38,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![PS Remote Get File Sample From Path](../doc_files/PS_Remote_-_Get_File_Sample_From_Path.png)
+![PS Remote Get File Sample From Path](../doc_files/playbook-PS-Remote_Get_File_Sample_From_Path.png)
