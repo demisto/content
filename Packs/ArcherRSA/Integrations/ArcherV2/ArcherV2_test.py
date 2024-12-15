@@ -959,6 +959,40 @@ class TestArcherV2:
         assert last_fetch == next_fetch
         assert not incidents, 'Should not get new incidents.'
 
+    @staticmethod
+    def test_fetch_blacklisted_date_filter():
+        """
+        Given:
+            fetch_xml parameter with a forbidden DateComparisonFilterCondition
+
+        When:
+            Fetching incidents
+
+        Then:
+            Check that a ValueError is raised with the appropriate error message
+        """
+        client = Client(BASE_URL, '', '', '', '', 400)
+        params = {
+            'applicationId': '75',
+            'applicationDateField': 'Date/Time Reported',
+            'fetch_xml': (
+                '<DateComparisonFilterCondition>'
+                '<Operator>GreaterThan</Operator>'
+                '<Field name="Last Updated">7195</Field>'
+                '<Value>2023-06-04T13:08:43.433385Z</Value>'
+                '<TimeZoneId>UTC Standard Time</TimeZoneId>'
+                '<IsTimeIncluded>TRUE</IsTimeIncluded>'
+                '</DateComparisonFilterCondition>'
+            )
+        }
+        from_time = datetime(2024, 12, 11)
+        expected_error_message = (
+            "The 'XML for fetch filtering' parameter either contains "
+            "a syntax error or is of type 'DateComparisonFilterCondition'."
+        )
+        with pytest.raises(ValueError, match=expected_error_message):
+            fetch_incidents(client, params, from_time, '204')
+
     def test_same_record_returned_in_two_fetches(self, mocker):
         """
         Given:

@@ -347,8 +347,6 @@ def search_records_soap_request(
         + f'             <Criteria><ModuleCriteria><Module name="appname">{app_id}</Module></ModuleCriteria>'
     )
 
-    date_search_options = {'TimeZoneId': 'UTC Standard Time', 'IsTimeIncluded': 'TRUE'}
-
     filter_conditions: set[str] = set()
 
     if xml_filter_condition:
@@ -363,7 +361,7 @@ def search_records_soap_request(
                     field_name=field_name,
                     field_id=field_id,
                     search_value=search_value,
-                    sub_elements_tags_values=date_search_options,
+                    sub_elements_tags_values={'TimeZoneId': 'UTC Standard Time', 'IsTimeIncluded': 'TRUE'},
                 )
             )
 
@@ -1824,19 +1822,22 @@ def fetch_incidents(
     fields_to_display = argToList(params.get("fields_to_fetch"))
     fields_to_display.append(date_field)
 
-    xml_filter_condition = params.get("fetch_xml", "")
-    logical_operator = params.get("logical_operator", "")
+    xml_filter_condition = params.get("fetch_xml")
+    logical_operator = params.get("logical_operator")
 
-    # if custom XML filter condition is given, verify syntax validity and check for forbidden tags
+    # If an XML filter is given, verify syntax and check no additional date filter that would interfere with the fetch filter
     if xml_filter_condition and not is_valid_xml(xml_filter_condition, blacklisted_tags=[FilterConditionTypes.date.value]):
-        raise ValueError(f"XML for fetch filtering condition of type: '{FilterConditionTypes.date.value}' is not allowed.")
+        raise ValueError(
+            "The 'XML for fetch filtering' parameter either contains "
+            f"a syntax error or is of type '{FilterConditionTypes.date.value}'."
+        )
 
     # API Call
     records, _ = client.search_records(
-        app_id,
-        fields_to_display,
-        date_field,
-        from_time.strftime(OCCURRED_FORMAT),
+        app_id=app_id,
+        fields_to_display=fields_to_display,
+        field_to_search=date_field,
+        search_value=from_time.strftime(OCCURRED_FORMAT),
         date_operator="GreaterThan",
         max_results=max_results,
         xml_filter_condition=xml_filter_condition,

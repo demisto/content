@@ -27,7 +27,11 @@ The RSA Archer GRC platform provides a common foundation for managing policies, 
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-Note: Archer customers might know there is an Archer REST API that supports token based authentication. Not all functionality of this integration can be achieved using Archer's REST API, which is why this integration requires credential based authentication.
+### Limitations
+
+- The 'XML for fetch filtering' configuration parameter cannot be a "DateComparisonFilterCondition" XML element since it would interfere with the existing fetch date filter. Other types of filtering conditions, such as "TextFilterCondition", are allowed.
+
+- Archer customers might know there is an Archer REST API that supports token based authentication. Not all functionality of this integration can be achieved using Archer's REST API, which is why this integration requires credential based authentication.
 
 ## Commands
 
@@ -1011,7 +1015,7 @@ Search for records inside the given application
 
 #### Command Example
 
-```!archer-search-records applicationId=75 fullData=False fieldsToDisplay=`Date/Time Occurred,Days Open` fieldsToGet=`Date/Time Occurred,Days Open` fieldToSearchOn=`Date/Time Occurred` dateOperator=GreaterThan searchValue=2018-06-23T07:00:00Z maxResults=100```
+```!archer-search-records applicationId=75 fullData=False fieldsToDisplay=`Date/Time Occurred,Days Open` fieldsToGet=`Date/Time Occurred,Days Open` fieldToSearchOn=`Date/Time Occurred` dateOperator=GreaterThan searchValue=2018-06-23T07:00:00Z xmlForFiltering=`<TextFilterCondition><Operator>Contains</Operator><Field name="Incident Priority">456</Field><Value>High</Value></TextFilterCondition>` maxResults=100```
 
 #### Context Example
 
