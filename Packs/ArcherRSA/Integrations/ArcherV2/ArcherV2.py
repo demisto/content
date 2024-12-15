@@ -1690,7 +1690,7 @@ def search_records_command(client: Client, args: dict[str, str]):
     )
     level_id = args.get("levelId")
 
-    xml_filter_condition = args.get("xmlForFiltering", "")
+    xml_filter_condition = args.get("xmlForFiltering")
     if xml_filter_condition and not is_valid_xml(xml_filter_condition):
         raise DemistoException(f'Invalid XML filter: {xml_filter_condition}.')
 
@@ -1818,7 +1818,7 @@ def fetch_incidents(
     # Not using get method as those params are a must
     app_id = params["applicationId"]
     date_field = params["applicationDateField"]
-    max_results = params.get("fetch_limit", 10)
+    max_results = arg_to_number(params.get("fetch_limit")) or 10
     fields_to_display = argToList(params.get("fields_to_fetch"))
     fields_to_display.append(date_field)
 
@@ -1828,8 +1828,8 @@ def fetch_incidents(
     # If an XML filter is given, verify syntax and check no additional date filter that would interfere with the fetch filter
     if xml_filter_condition and not is_valid_xml(xml_filter_condition, blacklisted_tags=[FilterConditionTypes.date.value]):
         raise ValueError(
-            "The 'XML for fetch filtering' parameter either contains "
-            f"a syntax error or is of type '{FilterConditionTypes.date.value}'."
+            "The 'XML for fetch filtering' parameter either contains a "
+            f"syntax error or is of type '{FilterConditionTypes.date.value}'."
         )
 
     # API Call
