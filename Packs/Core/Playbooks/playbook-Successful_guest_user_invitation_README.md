@@ -1,9 +1,4 @@
-
-#### Playbooks
-
-##### New: Successful guest user invitation
-
-**This playbook addresses the following alert**:
+**This playbook addresses the following alerts**:
 - Rare successful guest invitation in the organization
 
 **Playbook Stages**:
@@ -37,9 +32,51 @@ For the best results, it's recommended to ensure these integrations are configur
 - `Microsoft 365 Defender` for advanced hunting queries and Azure security alerts.
 - `Microsoft Graph User` for disabling accounts and revoking sessions.
 
+## Dependencies
 
-#### Triggers Recommendations
+This playbook uses the following sub-playbooks, integrations, and scripts.
 
-##### New: Successful guest user invitation
+### Sub-playbooks
 
-This trigger is responsible for handling Valid Accounts alerts related to successful guest user invitations.
+This playbook does not use any sub-playbooks.
+
+### Integrations
+
+* CoreIOCs
+* CortexCoreIR
+* CortexCoreXQLQueryEngine
+
+### Scripts
+
+* GetTime
+* SetAndHandleEmpty
+
+### Commands
+
+* azure-risky-users-list
+* azure-risky-users-risk-detections-list
+* closeInvestigation
+* core-get-cloud-original-alerts
+* core-list-risky-users
+* domain
+* email
+* ip
+* microsoft-365-defender-advanced-hunting
+* msgraph-user-account-disable
+* msgraph-user-session-revoke
+
+## Playbook Inputs
+
+---
+There are no inputs for this playbook.
+
+## Playbook Outputs
+
+---
+There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![Successful_guest user invitation](../doc_files/Successful_guest_user_invitation.png)
