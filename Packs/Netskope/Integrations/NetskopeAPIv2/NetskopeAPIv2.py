@@ -1769,7 +1769,7 @@ def pagination(args: dict[str, Any], start_count_from_zero: bool = True) -> Pagi
     Returns:
         Tuple: page, limit, pagination_message.
     """
-    page = arg_to_number(args.get("page", 1))
+    page = arg_to_number(args.get("page")) or 1
     limit = arg_to_number(args.get("limit")) or 50
 
     validate_pagination_arguments(page, limit)
