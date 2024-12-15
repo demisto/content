@@ -39,4 +39,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![JOB - Integrations and Incidents Health Check](../doc_files/JOB_-_Integrations_and_Playbooks_Checkup.png)
+![JOB - Integrations and Incidents Health Check](../doc_files/playbook-JOB_-_Integrations_and_Playbooks_Health_Check.png)

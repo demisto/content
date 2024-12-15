@@ -33,4 +33,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Get_File_Sample_From_Path_Carbon_Black_Enterprise_Response](../doc_files/Get_File_Sample_From_Path_Carbon_Black_Enterprise_Response.png)
+![Get_File_Sample_From_Path_Carbon_Black_Enterprise_Response](../doc_files/playbook-Get_File_Sample_From_Path_-_Carbon_Black_Enterprise_Response.png)
