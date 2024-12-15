@@ -133,15 +133,16 @@ def test_module(client: Client, export_profiles: list[str]) -> str:
 
             if 'Unable to find export_profile' in str(e):
                 invalid_export_profiles.add(export_profile)
-            
+
             else:
                 # Some other unknown error
                 raise
 
     if invalid_export_profiles:
         raise DemistoException(f'Invalid export profiles: {", ".join(invalid_export_profiles)}')
-    
+
     return 'ok'
+
 
 def fetch_events(client: Client, export_profile: str, limit: int | None = None) -> tuple[list[dict], dict]:
     """
