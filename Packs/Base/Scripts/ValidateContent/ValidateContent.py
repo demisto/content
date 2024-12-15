@@ -17,7 +17,7 @@ import logging
 import git
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, TYPE_TO_EXTENSION, FileType
 from demisto_sdk.commands.common.content import Content
-from demisto_sdk.commands.common.logger import logging_setup
+from demisto_sdk.commands.common.logger import logging_setup, DEFAULT_CONSOLE_THRESHOLD
 from demisto_sdk.commands.common.tools import find_type
 from demisto_sdk.commands.init.contribution_converter import (
     AUTOMATION, INTEGRATION, INTEGRATIONS_DIR, SCRIPT, SCRIPTS_DIR,
@@ -260,12 +260,13 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
 
     with redirect_stderr(output_capture):
         with TemporaryFile(mode='w+') as tmp:
+            # Setup Demisto SDK's logging.
             logging_setup(
-                console_log_threshold=logging.INFO,
-                file_log_threshold=logging.DEBUG,
-                log_file_path=tmp.name,
-                skip_log_file_creation=True
+                calling_function='ValidateContent',
+                console_threshold='DEBUG' if is_debug_mode() else DEFAULT_CONSOLE_THRESHOLD,
+                propagate=True
             )
+            demisto.debug("Finished setting logger.")
 
             if filename.endswith('.zip'):
                 path_to_validate, code_fp_to_row_offset = prepare_content_pack_for_validation(
