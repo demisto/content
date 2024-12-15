@@ -152,9 +152,12 @@ class Client:
                                            params=params)
 
     @logger
-    def update_incident(self, incident_id: int, status: Optional[str], assigned_to: Optional[str],
-                        classification: Optional[str],
-                        determination: Optional[str], tags: Optional[List[str]], timeout: int, comment: Optional[str]) -> dict:
+    def update_incident(self, incident_id: int, status: Optional[str] = None, assigned_to: Optional[str] = None,
+                        classification: Optional[str] = None,
+                        determination: Optional[str] = None,
+                        tags: Optional[List[str]] = None,
+                        timeout: int = None,
+                        comment: Optional[str] = None) -> dict:
         """
         PATCH request to update single incident.
         Args:
@@ -1077,7 +1080,7 @@ def main() -> None:
     mirroring_fields = {
         'mirror_direction': MIRROR_DIRECTION.get(params.get('mirror_direction', 'None')),
         'mirror_instance': demisto.integrationInstance(),
-        'dbotMirrorTags': [params.get('comment_tag', COMMENT_TO_MICROSOFT_DEFAULT_TAG)],
+        'mirror_tags': [params.get('comment_tag', COMMENT_TO_MICROSOFT_DEFAULT_TAG)],
     }
 
     demisto.debug(f'Command being called is {demisto.command()}')

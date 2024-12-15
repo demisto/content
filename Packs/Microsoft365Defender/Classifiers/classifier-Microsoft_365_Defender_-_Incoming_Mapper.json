@@ -290,6 +290,12 @@
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
 				},
+                "dbotMirrorName": {
+                    "simple": "mirror_name"
+                },
+                 "dbotMirrorTags": {
+                    "simple": "mirror_tags"
+                },
 				"details": {
 					"complex": {
 						"accessor": "[4].description",
