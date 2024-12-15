@@ -145,7 +145,7 @@ def fetch_samples() -> None:
 
 def test_module(params: dict):
     """
-    Checks if a Listen Port is provided for a single engine configuration and returns 'ok' if valid.
+    Assigns a temporary port for longRunningPort and returns 'ok'.
     """
     if not params.get('longRunningPort'):
         params['longRunningPort'] = '8888'
