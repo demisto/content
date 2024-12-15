@@ -322,36 +322,46 @@ def get_mapping_fields() -> Dict[str, str]:
     }
 
 
+def test_module(port: Optional[Union[str, int]], message_regex: Optional[str], certificate: Optional[str],
+                private_key: Optional[str]):
+    if not port:
+        raise DemistoException('When selecting a single engine, you must specify a Listen Port. If no engine is selected,'
+                               ' click "Save" before testing the configuration, as this may resolve the issue.')
+    try:
+        port = int(port)
+    except (ValueError, TypeError):
+        raise DemistoException(f'Invalid listen port - {port}. Make sure your port is a number')
+
+    if port < 0 or MAX_PORT < port:
+        raise DemistoException(f'Given port: {port} is not valid and must be between 0-{MAX_PORT}')
+    try:
+        prepare_globals_and_create_server(port, message_regex, certificate, private_key)
+    except OSError as e:
+        if 'Address already in use' in str(e):
+            raise DemistoException(f'Given port: {port} is already in use. Please either change port or '
+                                   f'make sure to close the connection in the server using that port.')
+        raise e
+    return_results('ok')
+
+
 ''' MAIN FUNCTION '''
 
 
 def main() -> None:
     params = demisto.params()
     command = demisto.command()
-    message_regex: Optional[str] = params.get('message_regex')
-    certificate = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('identifier'))
-                   or params.get('certificate'))
-    private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
-                   or params.get('private_key'))
-    port: Union[Optional[str], int] = params.get('longRunningPort')
-    try:
-        port = int(params.get('longRunningPort'))
-    except (ValueError, TypeError):
-        raise DemistoException(f'Invalid listen port - {port}. Make sure your port is a number')
-    if port < 0 or MAX_PORT < port:
-        raise DemistoException(f'Given port: {port} is not valid and must be between 0-{MAX_PORT}')
-
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
+        message_regex: Optional[str] = params.get('message_regex')
+        certificate = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('identifier'))
+                       or params.get('certificate'))
+        private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
+                       or params.get('private_key'))
+        port: Union[Optional[str], int] = params.get('longRunningPort', '')
+
         if command == 'test-module':
-            try:
-                prepare_globals_and_create_server(port, message_regex, certificate, private_key)
-            except OSError as e:
-                if 'Address already in use' in str(e):
-                    raise DemistoException(f'Given port: {port} is already in use. Please either change port or '
-                                           f'make sure to close the connection in the server using that port.')
-                raise e
-            return_results('ok')
+            return_results(test_module(port, message_regex, certificate, private_key))
+
         elif command == 'fetch-incidents':
             # The integration fetches incidents in the long-running-execution command. Fetch incidents is called
             # only when "Pull From Instance" is clicked in create new classifier section in Cortex XSOAR.

@@ -6,3 +6,4 @@
 - **Important**: Only TCP/TLS is supported. UDP is not supported.
 - **Important**: Supported log formats: RFC3164, RFC5424, RFC6587 (with RFC3164 or RFC5424)
 - The integration **does not support** encrypted private keys.
+- **Note:** When using Cortex XSIAM or Cortex XSOAR 8.9, if "no engine" is selected, make sure to click **Save** before testing and using the instance. This step allows the server to assign a port to the instance.
