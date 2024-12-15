@@ -784,7 +784,7 @@ script:
     - contextPath: Infoblox.NetworkInfo.AdditionalFields
       description: The additional fields for network.
       type: Unknown
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   script: ''
   subtype: python3
