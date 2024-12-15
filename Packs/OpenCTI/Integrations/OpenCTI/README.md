@@ -42,7 +42,7 @@ Get indicators in OpenCTI.
 | valid_from_before | Valid from before date filter. Format: YYYY-MM-DDThh:mm:ss.sssZ. | Optional | 
 | indicator_types | The types of the indicator. Use opencti-indicator-types-list to find all indicator types in OpenCTI. | Optional | 
 | label_id | The label ID for the indicator (use opencti-label-list to find or create). | Optional | 
-| limit | The maximum number of indicators to return. Default value is 50. Maximum value is 500. Default is 50. | Optional | 
+| limit | The maximum number of indicators to return. Maximum value is 500. Default is 50. | Optional | 
 | last_run_id | The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.Indicators.LastRunID context path. | Optional | 
 | all_results | When the argument is set to true, the limit argument is ignored. Default is false. Possible values are: true, false. Default is false. | Optional | 
 
@@ -246,8 +246,8 @@ Create a new indicator in OpenCTI.
 | main_observable_type | Main observable type for the indicator. Possible values are: Account, Domain, Email, File-MD5, File-SHA1, File-SHA256, IP, IPv6, Registry Key, URL. | Required | 
 | indicator_types | The types of the indicator. Use opencti-indicator-types-list to find all indicator types in OpenCTI. | Optional | 
 | description | The description of the indicator. | Optional | 
-| confidence | Confidence level for the indicator, value between 0 and 100. Default is 50. Default is 50. | Optional | 
-| score | The score of the indicator, value between 0 and 100. Default is 50. Default is 50. | Optional | 
+| confidence | Confidence level for the indicator, value between 0 and 100. Default is 50. | Optional | 
+| score | The score of the indicator, value between 0 and 100. Default is 50. | Optional | 
 | valid_from | The valid-from date for the indicator in the format YYYY-MM-DDThh:mm:ss.sssZ. | Optional | 
 | valid_until | The valid-until date for the indicator in the format YYYY-MM-DDThh:mm:ss.sssZ. | Optional | 
 | created_by | The ID of the entity that created the indicator (use opencti-organization-list to find or create). | Optional | 
