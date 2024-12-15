@@ -67,7 +67,8 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                "An error was occurred when creating a new token. Please verify your credentials."
+                f"An error was occurred when creating a new token. Please verify your credentials."
+                f"{str(e)}"
             ) from e
 
         new_token = response.headers["X-Auth-Token"]
@@ -109,8 +110,9 @@ class Client(BaseClient):
                     files={"UpdateFile": open(temp_file_name, 'rb')},
                     ok_codes=(200,)
                 )
-        except Exception as exc:
-            raise DemistoException(f"An error occurred while uploading the file {file_name}.") from exc
+        except Exception as e:
+            raise DemistoException(f"An error occurred while uploading the file {file_name}."
+                                   f"{str(e)}") from e
         finally:
             # Ensure the temporary file is deleted
             Path(temp_file_name).unlink(missing_ok=True)
@@ -122,7 +124,8 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                "An error was occurred when optimizing the list of IPs."
+                f"An error was occurred when optimizing the list of IPs."
+                f"{str(e)}"
             ) from e
 
         return response_json
@@ -135,7 +138,8 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                "An error was occurred when creating the list of IPs."
+                f"An error was occurred when creating the list of IPs."
+                f"{str(e)}"
             ) from e
 
     def address_list_rename_request(self, new_name: str, existing_name: str):
@@ -148,6 +152,7 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(
                 f"An error occurred when renaming the {existing_name} IP list to {new_name}."
+                f"{str(e)}"
             ) from e
 
     def address_list_delete_request(self, list_name_to_delete: str):
@@ -160,6 +165,7 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(
                 f"An error was occurred when deleting the {list_name_to_delete} IP list."
+                f"{str(e)}"
             ) from e
 
     def metering_stats_request(self, slot_number: str, port_number: str) -> dict[str, Any]:
@@ -171,7 +177,8 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                "An error was occurred when requesting for an event of Metering Stats type."
+                f"An error was occurred when requesting for an event of Metering Stats type."
+                f"{str(e)}"
             ) from e
 
         metering_stats_event["STAT_TYPE"] = 'MeteringStats'
@@ -187,7 +194,8 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                "An error was occurred when requesting for an event of Export Stats type."
+                f"An error was occurred when requesting for an event of Export Stats type."
+                f"{str(e)}"
             ) from e
 
         export_stats_event["STAT_TYPE"] = 'ExportStats'
@@ -203,7 +211,8 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                "An error was occurred when requesting for an event of Export Peaks FPS type."
+                f"An error was occurred when requesting for an event of Export Peaks FPS type."
+                f"{str(e)}"
             ) from e
 
         export_peaks_FPS_event["STAT_TYPE"] = 'ExportPeaksFPS'
@@ -219,7 +228,8 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                "An error was occurred when requesting for an event of Optimization Stats type."
+                f"An error was occurred when requesting for an event of Optimization Stats type."
+                f"{str(e)}"
             ) from e
 
         optimization_stats_event["STAT_TYPE"] = 'OptimizationStats'
@@ -362,7 +372,7 @@ def add_time_to_events(events: list[dict]):
         list: The events with the _time key.
     """
     for event in events:
-        create_time = arg_to_datetime(event["timestamp"])
+        create_time = datetime.utcnow()  # The events do not contain a timestamp
         event["_time"] = create_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
 
 
