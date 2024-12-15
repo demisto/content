@@ -119,13 +119,12 @@ class CoreClient(BaseClient):
             return response['data']
 
     def start_xql_query(self, data: dict) -> str:
-        # full_url = 'https://api/webapp/public_api/v1/xql/start_xql_query'
-        res = self._http_request(method='POST', url_suffix='/xql/start_xql_query',
-                                 json_data=data)
-        # res = self._http_request(method='POST', url_suffix='/xql/start_xql_query',
-        #                          json_data=data, use_base_client=True, base_client_retries=5)
-        execution_id = res.get('reply', "")
-        return execution_id
+        try:
+            res = self._http_request(method='POST', url_suffix='/xql/start_xql_query', json_data=data)
+            execution_id = res.get('reply', "")
+            return execution_id
+        except:
+            return "FAILURE"
 
     def get_xql_query_results(self, data: dict) -> dict:
         res = self._http_request(method='POST', url_suffix='/xql/get_query_results', json_data=data)
@@ -290,7 +289,7 @@ def get_dns_query(endpoint_ids: str, args: dict) -> str:
     Returns:
         str: The created query.
     """
-    if not args.get('external_domain') and not args.get('dns_query'):
+    if not args.get('external_do') and not args.get('dns_query'):
         raise DemistoException('Please provide at least one of the external_domain, dns_query arguments.')
     external_domain_list = wrap_list_items_in_double_quotes(args.get('external_domain', ''))
     dns_query_list = wrap_list_items_in_double_quotes(args.get('dns_query', ''))
@@ -648,6 +647,17 @@ def start_xql_query_polling_command(client: CoreClient, args: dict) -> Union[Com
     if not args.get('query_name'):
         raise DemistoException('Please provide a query name')
     execution_id = start_xql_query(client, args)
+    if execution_id == 'FAILURE':
+        command_results = CommandResults()
+        interval_in_secs = int(args.get('interval_in_seconds', 10))
+        scheduled_command = ScheduledCommand(command='xdr-xql-generic-query', next_run_in_seconds=interval_in_secs,
+                                             args=args, timeout_in_seconds=600)
+        command_results.scheduled_command = scheduled_command
+        # command_results.readable_output = 'Query is still running, it may take a little while...'
+        command_results.readable_output = 'ITAMAR ITAMAR ITAMAR'
+        return command_results
+
+    # if failure: return schedualecommand that try again start_xql_query
     if not execution_id:
         raise DemistoException('Failed to start query\n')
     args['query_id'] = execution_id
@@ -673,14 +683,12 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
     max_fields = arg_to_number(args.get('max_fields', 20))
     if max_fields is None:
         raise DemistoException('Please provide a valid number for max_fields argument.')
+
     outputs, file_data = get_xql_query_results(client, args)  # get query results with query_id
-    demisto.debug(f'itamar {outputs=}')
-    demisto.info(f'info itamar {outputs=}')
     outputs.update({'query_name': args.get('query_name', '')})
     outputs_prefix = get_outputs_prefix(command_name)
     command_results = CommandResults(outputs_prefix=outputs_prefix, outputs_key_field='execution_id', outputs=outputs,
                                      raw_response=copy.deepcopy(outputs))
-
     # if there are more than 1000 results
     if file_data:
         if not parse_result_file_to_context:
@@ -694,7 +702,7 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
             outputs['results'] = [json.loads(line) for line in data.split("\n") if len(line) > 0]
 
     # if status is pending, the command will be called again in the next run until success.
-    if outputs.get('status') == 'PENDING': # add also if error with the error message
+    if outputs.get('status') == 'PENDING':
         scheduled_command = ScheduledCommand(command='xdr-xql-get-query-results', next_run_in_seconds=interval_in_secs,
                                              args=args, timeout_in_seconds=600)
         command_results.scheduled_command = scheduled_command
