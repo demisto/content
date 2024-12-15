@@ -337,15 +337,13 @@ def main() -> None:
     try:
         port = int(params.get('longRunningPort'))
     except (ValueError, TypeError):
-        raise DemistoException(f'Invalid listen port - {port}. Make sure your port is a number')
+        raise DemistoException(f'Please select an engine and insert a valid listen port.')
     if port < 0 or MAX_PORT < port:
         raise DemistoException(f'Given port: {port} is not valid and must be between 0-{MAX_PORT}')
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         if command == 'test-module':
-            if not params.get('longRunningPort'):
-                params['longRunningPort'] = '8888'
             try:
                 prepare_globals_and_create_server(port, message_regex, certificate, private_key)
             except OSError as e:
