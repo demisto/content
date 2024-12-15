@@ -135,7 +135,7 @@ class EWSClient:
         incident_filter: IncidentFilter = IncidentFilter.RECEIVED_FILTER,
         azure_cloud: Optional[AzureCloud] = None,
         tenant_id: str = '',
-        self_deployed: bool = False,
+        self_deployed: bool = True,
         manual_username: Optional[str] = None,
         log_memory: bool = False,
         app_name: str = 'EWS',
@@ -199,23 +199,23 @@ class EWSClient:
 
         self.auto_discover = not ews_server
 
-        self.config, self.credentials, self.server_build = self.configure_auth()
+        self.config, self.credentials, self.server_build = self._configure_auth()
         self._protocol = Protocol(config=self.config) if self.config else None
 
 
-    def configure_auth(self) -> tuple[Optional[Configuration], BaseCredentials, Optional[Build]]:
+    def _configure_auth(self) -> tuple[Optional[Configuration], BaseCredentials, Optional[Build]]:
         """
         Prepares the client protocol, credentials and configuration based on the authentication type.
 
         :return: Configuration and Credentials objects.
         """
         if self.auth_type == OAUTH2:
-            return self.configure_oauth()
+            return self._configure_oauth()
 
-        return self.configure_onprem()
+        return self._configure_onprem()
 
 
-    def configure_oauth(self) -> tuple[Configuration, CustomDomainOAuth2Credentials, Build]:
+    def _configure_oauth(self) -> tuple[Configuration, CustomDomainOAuth2Credentials, Build]:
         """
         Prepares the client PROTOCOL, CREDENTIALS and CONFIGURATION
 
@@ -261,7 +261,7 @@ class EWSClient:
         )
         return config, credentials, EXCHANGE_O365
 
-    def configure_onprem(self) -> tuple[Optional[Configuration], Credentials, Optional[Build]]:
+    def _configure_onprem(self) -> tuple[Optional[Configuration], Credentials, Optional[Build]]:
         """
         Prepares the client protocol, credentials and configuration based on the authentication type.
         For auto_discovery, the configuration object will be created as needed from the discovered connection parameters.

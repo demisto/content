@@ -6,7 +6,6 @@ from unittest.mock import MagicMock, patch
 import pytest
 from EWSO365 import (
     SMTP,
-    EWSClient,
     ExpandGroup,
     GetSearchableMailboxes,
     add_additional_headers,
@@ -18,6 +17,7 @@ from EWSO365 import (
     fetch_last_emails,
     find_folders,
     get_attachment_name,
+    get_client_from_params,
     get_expanded_group,
     get_item_as_eml,
     get_searchable_mailboxes,
@@ -90,6 +90,9 @@ class TestNormalCommands:
 
         def get_account(self, target_mailbox=None, access_type=None):
             return self.account
+
+        def get_protocol(self):
+            return self.protocol
 
         def get_items_from_mailbox(self, account, item_ids):
             return ""
@@ -763,13 +766,16 @@ def test_credentials_with_old_secret(mocker, old_credentials, new_credentials, e
     Then:
       - Ensure the new credentials is taken if exist and old if new doesn't exist.
     """
-    mocker.patch.object(EWSClient, '_EWSClient__prepare')
-    client = EWSClient(default_target_mailbox='test',
-                       credentials=new_credentials,
-                       client_secret=old_credentials,
-                       _client_id='new_client_id',
-                       _tenant_id='new_tenant_id')
-
+    mocker.patch('EWSO365.MicrosoftClient.get_access_token', return_value='test_token')
+    params = {
+        'credentials': new_credentials,
+        'client_secret': old_credentials,
+        '_client_id': 'new_client_id',
+        '_tenant_id': 'new_tenant_id',
+        'default_target_mailbox': 'test',
+        'self_deployed': True,
+    }
+    client = get_client_from_params(params)
     assert client.ms_client.client_secret == expected
 
 
