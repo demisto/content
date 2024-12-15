@@ -2,7 +2,7 @@
     "name": "GoogleThreatIntelligence",
     "description": "Analyze suspicious hashes, URLs, domains and IP addresses",
     "support": "partner",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.1",
     "author": "Google Threat Intelligence",
     "url": "https://www.virustotal.com",
     "email": "contact@virustotal.com",
