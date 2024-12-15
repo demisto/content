@@ -143,10 +143,9 @@ class Event:
 
     def __init__(self, raw_input):
         #  Created at time is stored in either or two locations, never both.
+        demisto.debug(f"'created_at': {raw_input.get('created_at')}, 'source' exists: {bool(raw_input.get('source'))}")
         created_at = raw_input.get('created_at')
         _created_at = raw_input.get('source').get('created_at')
-        demisto.debug("line 148")
-        raise DemistoException("Test")
         self.created_at = created_at if created_at is not None else _created_at
         self.event_id = raw_input.get('event_id')
         self.event_type = raw_input.get('event_type')
@@ -1972,6 +1971,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     results = client.list_events(stream_type='admin_logs', as_user=as_user, limit=max_results,
                                  created_after=created_after)
     raw_incidents = results.get('entries', [])
+    demisto.debug(f"Extracted {len(raw_incidents)} raw incidents from the results.")
     next_run = datetime.now(tz=UTC).strftime(DATE_FORMAT)
     for raw_incident in raw_incidents:
         event = Event(raw_input=raw_incident)
