@@ -44,7 +44,7 @@ configuration:
   type: 0
   section: Connect
   required: false
-- additionalinfo: Will run the TAXII server on this port from within Demisto. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for the EDL will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port.
+- additionalinfo: Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for the EDL will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port.
   display: Listen Port
   name: longRunningPort
   required: true
