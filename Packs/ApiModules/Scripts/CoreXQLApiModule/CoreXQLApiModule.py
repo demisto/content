@@ -27,8 +27,7 @@ class CoreClient(BaseClient):
 
     def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,
                       params=None, data=None, timeout=None, raise_on_status=False, ok_codes=None,
-                      error_handler=None, with_metrics=False, resp_type='json', response_data_type=None,
-                      use_base_client=False, base_client_retries=0):
+                      error_handler=None, with_metrics=False, resp_type='json', response_data_type=None):
         '''
         """A wrapper for requests lib to send our requests and handle requests and responses.
 
@@ -84,7 +83,7 @@ class CoreClient(BaseClient):
         if self.is_core and not IS_CORE_AVAILABLE:
             raise DemistoException(f"Using the XQL Query Engine from the core Pack is available only from version "
                                    f"{SERVER_VERSION}-{BUILD_VERSION}.")
-        if (not IS_CORE_AVAILABLE) or use_base_client:
+        if (not IS_CORE_AVAILABLE):
             return BaseClient._http_request(self,  # we use the standard base_client http_request without overriding it
                                             method=method,
                                             url_suffix=url_suffix,
@@ -96,8 +95,7 @@ class CoreClient(BaseClient):
                                             ok_codes=ok_codes,
                                             error_handler=error_handler,
                                             with_metrics=with_metrics,
-                                            resp_type=resp_type,
-                                            retries=base_client_retries)
+                                            resp_type=resp_type)
 
         headers = headers if headers else self._headers
         data = json.dumps(json_data) if json_data else data
@@ -636,6 +634,7 @@ def test_module(client: CoreClient, args: Dict[str, Any]) -> str:
 
 def start_xql_query_polling_command(client: CoreClient, args: dict) -> Union[CommandResults, list]:
     """Execute an XQL query as a scheduled command.
+       If 'start_xql_query' fails, the command will use a polling mechanism to start the XQL query again.
 
     Args:
         client (Client): The XDR Client.
@@ -648,16 +647,17 @@ def start_xql_query_polling_command(client: CoreClient, args: dict) -> Union[Com
         raise DemistoException('Please provide a query name')
     execution_id = start_xql_query(client, args)
     if execution_id == 'FAILURE':
+        # the 'start_xql_query' function failed because it reached the maximum allowed number of parallel running queries.
+        # running the command again using polling with an interval of 'interval_in_secs' seconds.
         command_results = CommandResults()
         interval_in_secs = int(args.get('interval_in_seconds', 10))
         scheduled_command = ScheduledCommand(command='xdr-xql-generic-query', next_run_in_seconds=interval_in_secs,
                                              args=args, timeout_in_seconds=600)
         command_results.scheduled_command = scheduled_command
         # command_results.readable_output = 'Query is still running, it may take a little while...'
-        command_results.readable_output = 'ITAMAR ITAMAR ITAMAR'
+        command_results.readable_output = 'ITAMAR ITAMAR ITAMAR'  # TODO: remove line
         return command_results
 
-    # if failure: return schedualecommand that try again start_xql_query
     if not execution_id:
         raise DemistoException('Failed to start query\n')
     args['query_id'] = execution_id
