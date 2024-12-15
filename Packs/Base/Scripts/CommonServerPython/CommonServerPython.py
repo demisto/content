@@ -12294,13 +12294,11 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
     if multiple_threads:
         demisto.info("Sending events to xsiam with multiple threads.")
-        support_multithreading()
 
-        future_to_data = []
+        support_multithreading()
         executor = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
-        for chunk in data_chunks:
-            future = executor.submit(send_events, chunk)
-            future_to_data.append(future)
+        future_to_data = [executor.submit(send_events, chunk) for chunk in data_chunks]
+
         demisto.info(f'Finished submiting {len(future_to_data)} Futures.')
         return future_to_data
     else:
