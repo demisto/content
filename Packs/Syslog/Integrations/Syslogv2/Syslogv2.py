@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from tempfile import NamedTemporaryFile
-from typing import Callable
+from collections.abc import Callable
 
 import urllib3
 
@@ -209,7 +209,7 @@ def log_message_passes_filter(log_message: SyslogMessageExtract, message_regex: 
     if not message_regex:
         return True
     regexp = re.compile(message_regex)
-    return True if regexp.search(log_message.msg) else False
+    return bool(regexp.search(log_message.msg))
 
 
 def perform_long_running_loop(socket_data: bytes):
@@ -337,8 +337,8 @@ def main() -> None:
     try:
         port = int(params.get('longRunningPort'))
     except (ValueError, TypeError):
-        raise DemistoException(f'Please select an engine and insert a valid listen port.')
-    if port < 0 or MAX_PORT < port:
+        raise DemistoException('Please select an engine and insert a valid listen port.')
+    if port < 0 or port > MAX_PORT:
         raise DemistoException(f'Given port: {port} is not valid and must be between 0-{MAX_PORT}')
 
     demisto.debug(f'Command being called is {demisto.command()}')
