@@ -12,6 +12,10 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'Cisco'
 PRODUCT = 'ThousandEyes'
+DEFAULT_MAX_FETCH_ALERT = 1000
+DEFAULT_MAX_FETCH_AUDIT = 20000
+DEFAULT_LIMIT = 10
+
 
 ''' CLIENT CLASS '''
 
@@ -40,6 +44,7 @@ class Client(BaseClient):
         Returns:
             List[Dict]: the next event
         """
+        
         # use limit & from date arguments to query the API
         return [{
             'id': prev_id + 1,
@@ -56,6 +61,26 @@ class Client(BaseClient):
                 'requested_From_date': from_date
             }
         }]
+
+
+def get_events_alert_type(client: Client, start_date: str, max_fetch: int, last_run: dict) -> tuple:
+    events = client.search_events(
+        prev_id=prev_id,
+        alert_status=alert_status,
+        limit=max_events_per_fetch,
+        from_date=first_fetch_time,
+    )
+    return [],{}
+
+
+def get_events_audit_type(client, start_date_arg, end_date_arg, max_fetch_audits, last_run):
+    events = client.search_events(
+        prev_id=prev_id,
+        alert_status=alert_status,
+        limit=max_events_per_fetch,
+        from_date=first_fetch_time,
+    )
+    return [],{}
 
 
 def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -> str:
@@ -125,13 +150,15 @@ def fetch_events(client: Client, last_run: dict[str, int],
     prev_id = last_run.get('prev_id', None)
     if not prev_id:
         prev_id = 0
+        
+    alert_events, alert_next_run = [], {}
+    audit_events, audit_next_run = [], {}
+    
+    
+    alert_events, alert_next_run = get_events_alert_type(client, start_date_arg, max_fetch_alerts, last_run)
 
-    events = client.search_events(
-        prev_id=prev_id,
-        alert_status=alert_status,
-        limit=max_events_per_fetch,
-        from_date=first_fetch_time,
-    )
+    audit_events, audit_next_run = get_events_audit_type(client, start_date_arg, end_date_arg, max_fetch_audits, last_run)
+    
     demisto.debug(f'Fetched event with id: {prev_id + 1}.')
 
     # Save the next_run as a dict with the last_fetch key to be stored
@@ -153,7 +180,7 @@ def add_time_to_events(events: List[Dict] | None):
     """
     if events:
         for event in events:
-            create_time = arg_to_datetime(arg=event.get('created_time'))
+            create_time = arg_to_datetime(arg=event.get('startDate') or event.get('date'))
             event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
@@ -165,8 +192,8 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    api_key = params.get('apikey', {}).get('password')
-    base_url = urljoin(params.get('url'), '/api/v1')
+    api_key = params.get('api_token', {}).get('password')
+    base_url = params.get('url')
     verify_certificate = not params.get('insecure', False)
 
     # How much time before the first fetch to retrieve events

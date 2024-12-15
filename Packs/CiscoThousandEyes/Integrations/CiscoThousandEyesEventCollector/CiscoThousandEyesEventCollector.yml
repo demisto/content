@@ -18,22 +18,32 @@ configuration:
   hiddenusername: true
   type: 9
   section: Connect
-- defaultvalue: 10000
+- defaultvalue: 5000
   section: Collect
-  display: Max number of events per fetch
+  display: The maximum number of audit events per fetch
   name: max_events_per_fetch
   required: false
   type: 0
+  advanced: true
+- defaultvalue: 5000
+  section: Collect
+  display: The maximum number of alerts per fetch
+  name: max_alerts_per_fetch
+  required: false
+  type: 0
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
   section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
   section: Connect
+  advanced: true
 description: This is the Cisco ThousandEyes event collector integration for Cortex XSIAM.
 display: CiscoThousandEyesEventCollector
 name: CiscoThousandEyesEventCollector
