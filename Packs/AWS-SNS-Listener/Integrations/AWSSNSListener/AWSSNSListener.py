@@ -284,6 +284,10 @@ def test_module(port: str):  # pragma: no cover
     if not port:
         raise DemistoException('When selecting a single engine, you must specify a Listen Port. If no engine is selected,'
                                ' click "Save" before testing the configuration, as this may resolve the issue.')
+    try:
+        int(PARAMS.get('longRunningPort'))
+    except ValueError as e:
+        raise ValueError(f'Invalid listen port - {e}')
     return 'ok'
 
 
@@ -295,12 +299,6 @@ def main():  # pragma: no cover
     try:
         if demisto.command() == 'test-module':
             return return_results(test_module(PARAMS.get('longRunningPort', "")))
-
-        try:
-            port = PARAMS.get('longRunningPort')
-        except ValueError as e:
-            raise ValueError(f'Invalid listen port - {e}')
-
         if demisto.command() == 'long-running-execution':
             demisto.debug('Started long-running-execution.')
             while True:

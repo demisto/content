@@ -930,7 +930,7 @@ def main():
         http_server = False
 
     demisto.debug(f'Command being called is {command}')
-
+    commands = {}
     try:
         port = get_port(params)
         collections = get_collections(params)
@@ -950,6 +950,9 @@ def main():
             return_results(test_module(SERVER))
         elif command == 'long-running-execution':
             run_server(SERVER)
+        else:
+            readable_output, outputs, raw_response = commands[command](SERVER)
+            return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg)

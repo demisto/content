@@ -29,7 +29,7 @@ You can add a collection description as is done in `collection1_name`, or enter 
 - `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>/<taxii2_api_endpoint>/`
   When running on an engine:  `http://<xsoar_address>:<listen_port>/<taxii2_api_endpoint>/`
   NOTE: The instance name cannot be changed after saving the integration configuration.
-- **Note:** if "no engine" is selected, make sure to click **Save** before testing and using the instance. This step allows the server to assign a port to the instance.
+- **Note:** When using Cortex XSIAM or Cortex XSOAR 8, if "no engine" is selected, make sure to click **Save** before testing and using the instance. This step allows the server to assign a port to the instance.
 
 ## Access the TAXII Service by Instance Name
 To access the TAXII service by instance name, make sure *Instance execute external* is enabled. 
