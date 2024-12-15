@@ -12538,7 +12538,7 @@ def replace_sensitive_text(text, pattern, mask=MASK):
     original_sensitive_info = match.group(1)
     add_sensitive_log_strs(original_sensitive_info)
 
-    # Replace only the sensitive part, keeping the prefix intact
+    # Replace only the sensitive part, keeping all the rest
     return sensitive_pattern.sub(r'\g<1>{}'.format(mask), text)
 
 
