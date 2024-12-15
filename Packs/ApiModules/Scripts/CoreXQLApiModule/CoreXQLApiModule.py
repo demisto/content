@@ -96,7 +96,6 @@ class CoreClient(BaseClient):
                                             error_handler=error_handler,
                                             with_metrics=with_metrics,
                                             resp_type=resp_type)
-
         headers = headers if headers else self._headers
         data = json.dumps(json_data) if json_data else data
         address = full_url if full_url else urljoin(self._base_url, url_suffix)
@@ -287,7 +286,7 @@ def get_dns_query(endpoint_ids: str, args: dict) -> str:
     Returns:
         str: The created query.
     """
-    if not args.get('external_do') and not args.get('dns_query'):
+    if not args.get('external_domain') and not args.get('dns_query'):
         raise DemistoException('Please provide at least one of the external_domain, dns_query arguments.')
     external_domain_list = wrap_list_items_in_double_quotes(args.get('external_domain', ''))
     dns_query_list = wrap_list_items_in_double_quotes(args.get('dns_query', ''))
@@ -683,7 +682,6 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
     max_fields = arg_to_number(args.get('max_fields', 20))
     if max_fields is None:
         raise DemistoException('Please provide a valid number for max_fields argument.')
-
     outputs, file_data = get_xql_query_results(client, args)  # get query results with query_id
     outputs.update({'query_name': args.get('query_name', '')})
     outputs_prefix = get_outputs_prefix(command_name)
