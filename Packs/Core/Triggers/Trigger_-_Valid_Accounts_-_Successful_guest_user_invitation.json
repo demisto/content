@@ -1,19 +1,19 @@
 {
-    "trigger_id": "2d9c2e83eb7d4b189c8e725ad56643d2",
-    "playbook_id": "Valid Accounts - Successful guest user invitation",
-    "suggestion_reason": "Recommended for Valid Accounts alerts involving successful guest user invitations.",
-    "description": "This trigger is responsible for handling Valid Accounts alerts related to successful guest user invitations.",
-    "trigger_name": "Valid Accounts - Successful guest user invitation",
-    "fromVersion": "8.8.0",
-    "alerts_filter": {
+  "trigger_id": "2d9c2e83eb7d4b189c8e725ad56643d2",
+  "playbook_id": "Valid Accounts - Successful guest user invitation",
+  "suggestion_reason": "Recommended for Valid Accounts alerts involving successful guest user invitations.",
+  "description": "This trigger is responsible for handling Valid Accounts alerts related to successful guest user invitations.",
+  "trigger_name": "Valid Accounts - Successful guest user invitation",
+  "fromVersion": "8.8.0",
+  "alerts_filter": {
     "filter": {
-        "AND": [
-          {
-              "SEARCH_FIELD": "alert_name",
-              "SEARCH_TYPE": "EQ",
-              "SEARCH_VALUE": "Rare successful guest invitation in the organization"
-          }
-        ]
-      }
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "Rare successful guest invitation in the organization"
+        }
+      ]
     }
+  }
 }
