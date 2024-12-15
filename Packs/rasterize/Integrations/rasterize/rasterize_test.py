@@ -993,7 +993,7 @@ def test_rasterize_email_command_full_screen(mocker):
 
     rasterize_email_command()
 
-    mock_file_result.assert_called_once_with(filename=f'test_email.png', data='image_data')
+    mock_file_result.assert_called_once_with(filename='test_email.png', data='image_data')
     mock_perform_rasterize.assert_called_once_with(
         path=mocker.ANY,
         rasterize_type=mocker.ANY,
