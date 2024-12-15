@@ -36,4 +36,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Employee_Offboarding_Gather_User_Information](../doc_files/Employee_Offboarding_Gather_User_Information.png)
+![Employee_Offboarding_Gather_User_Information](../doc_files/Employee_Offboarding_-_Gather_User_Information.png)

@@ -44,4 +44,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Employee_Offboarding_Revoke_Permissions](../doc_files/Employee_Offboarding_Revoke_Permissions.png)
+![Employee_Offboarding_Revoke_Permissions](../doc_files/Employee_Offboarding_-_Revoke_Permissions.png)
