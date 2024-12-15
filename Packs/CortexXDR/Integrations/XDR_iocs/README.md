@@ -14,24 +14,27 @@ An API key of type **Advanced** with an **Administrator** role.
   
 | **Parameter** | **Description** | **Required** |  
 | --- | --- | --- |  
-| url | Server URL \(e.g. https://example.net\) | True |  
-| apikey_id | API Key ID | True |  
-| apikey | API Key | True |  
-| feed | Fetch indicators | False |  
-| severity | the severity in Cortex XDR | True |  
-| query | Sync Query | True |  
-| insecure | Trust any certificate \(not secure\) | False |  
-| xsoar_severity_field | The Cortex XSOAR indicator field used as severity. | True |  
-| xsoar_comments_field | The Cortex XSOAR field where comments are stored. Default is `comments`. Expecting an XSOAR IOC format of a comment (nested dictionary). See `Comments As Tags` for more.| True |  
-| comments_as_tags | Whether to consider the value at `xsoar_comments_field` as CSV. Requires specifying a xsoar_comments_field value different than the default `comments`. | True |  
-| proxy | Use system proxy settings | False |  
-| feedReputation | Indicator Reputation | False |  
-| feedReliability | Source Reliability | True |  
-| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
-| feedExpirationPolicy |  | False |  
-| feedExpirationInterval |  | False |  
-| feedFetchInterval | Feed Fetch Interval (make sure to set it to at least 15 minutes) | False |  
-| feedBypassExclusionList | Bypass exclusion list | False |  
+| Server URL | In Cortex XDR, navigate to Settings > Configurations > API Keys and click Copy API URL| True |  
+| API Key ID | In Cortex XDR platform, go to Settings > Configurations > API Keys and copy the Key ID from the ID column | True |  
+| API Key | In Cortex XDR, go to **Settings** > **Configurations** > **API Keys**, click **+ New Key**, set **Security Level** to **Standard**, select an appropriate **Role**, and copy the Generated Key | True | 
+| Auto Sync | When enabled, indicators will be synced from Cortex XSOAR to Cortex XDR. Disable if you prefer to use a playbook to sync indicators | False |
+| Overriding severity value | When the **override severity** parameter is set to True, the severity level chosen here will be used for all indicators. Otherwise, the original severity level of the indicator will be used | True | 
+| Tags | Supports CSV values | False|
+| Sync Query | The query used to collect indicators to sync from Cortex XSOAR to Cortex XDR | True |
+| Trust any certificate (not secure) | | False |
+| Use system proxy settings | Enabled only when an engine is selected | False |  
+| Indicator Reputation | Indicator Reputation | False |  
+| Source Reliability | Source Reliability | True |  
+| Traffic Light Protocol Color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
+| Indicator Expiration Method | According to which method the indicators from this feed will be expired | False |  
+| Feed Fetch Interval | Feed Fetch Interval (make sure to set it to at least 15 minutes) | False |
+| XSOAR Severity Field | The Cortex XSOAR indicator field used as severity | True |
+| Comments as tags (CSV) | Whether to consider the value at `XSOAR Comment Field Exporting To XDR` as CSV. Requires specifying a `XSOAR Comment Field Exporting To XDR` value different than the default `comments`. | True |
+| Override severity| When enabled, the severity value will be taken from the **Overriding severity value** parameter, regardless of the IOC severity value. Otherwise, the severity value will be taken from the field specified in the **XSOAR Severity Field** parameter| False|
+| Bypass exclusion list | Bypass exclusion list | False |
+| Fetches indicators | Whether to fetch indicators from Cortex XDR | false |
+| XSOAR Comment Field Exporting To XDR | The Cortex XSOAR field where comments are stored. The default is comments. Expecting an XSOAR IOC format of a comment (nested dictionary). See Comments As Tags for more.| True |
+| Extensive logging | For debugging purposes. Do not use this option unless advised otherwise. Using this parameter may result in increased processing time| False |
   
 ## Commands  
 You can execute these commands from the CLI, as part of an automation, or in a playbook.  
