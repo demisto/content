@@ -58,12 +58,12 @@ configuration:
   name: fields_to_fetch
   type: 0
   required: false
-- additionalinfo: 'XML condition element used for fetch filtering. For example: "TextFilterCondition" XML element. Fetch filtering cannot be "DateComparisonFilterCondition" XML element since it would interfere with the existing fetch date filter.'
+- additionalinfo: 'XML condition element which can be appended to the fetch date filter conditions. For example: "TextFilterCondition" XML element. This cannot be a "DateComparisonFilterCondition" element since it would interfere with the existing fetch filter.'
   display: XML for fetch filtering
   name: fetch_xml
   type: 0
   required: false
-- additionalinfo: 'Logic operator used for building the "OperatorLogic" XML element for filtering. For example: "AND", "OR".'
+- additionalinfo: 'Logic operator used for building the "OperatorLogic" XML element for filtering. For example: Inputting "AND" results in "<OperatorLogic>1 AND 2 AND 3 ... AND N</OperatorLogic>", where N is the number of filtering conditions.'
   display: Fetch filtering logic operator
   name: logical_operator
   type: 0

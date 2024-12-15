@@ -5,7 +5,7 @@ from CommonServerPython import DemistoException
 import demistomock as demisto
 from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value, \
     fetch_incidents, get_fetch_time, parser, OCCURRED_FORMAT, search_records_by_report_command, \
-    search_records_soap_request, is_valid_xml, construct_generic_filter_condition, FilterConditionTypes
+    search_records_soap_request, is_valid_xml, construct_generic_filter_condition, construct_operator_logic, FilterConditionTypes
 
 BASE_URL = 'https://test.com/'
 
@@ -1239,3 +1239,44 @@ class TestArcherV2:
             search_value=search_value,
         )
         assert xml_condition == expected_xml_condition
+
+    @pytest.mark.parametrize(
+        'logical_operator, conditions_count, expected_operator_logic',
+        [
+            pytest.param(
+                'or',
+                3,
+                # Expected
+                '<OperatorLogic>1 OR 2 OR 3</OperatorLogic>',
+                id='OR with 3 conditions',
+            ),
+            pytest.param(
+                'AND',
+                4,
+                # Expected
+                '<OperatorLogic>1 AND 2 AND 3 AND 4</OperatorLogic>',
+                id='AND with 4 conditions',
+            ),
+            pytest.param(
+                'XOR',
+                1,
+                # Expected
+                '',
+                id='XOR with 1 condition',
+            ),
+        ]
+    )
+    def test_construct_operator_logic(self, logical_operator: str, conditions_count: int, expected_operator_logic: str):
+        """
+        Given:
+            - Case 1: 'or' logical operator and 3 conditions.
+            - Case 2: 'AND' logical operator and 4 conditions.
+            - Case 3: 'XOR' logical operator with 1 condition.
+        When:
+            - Calling construct_operator_logic.
+        Assert:
+            - Cases 1 & 2: Ensure a valid OperatorLogic XML element with the correct inner text.
+            - Case 3: Ensure no operator logic since it is irrelevant for fewer than 2 conditions.
+        """
+        operator_logic = construct_operator_logic(logical_operator, conditions_count)
+        assert operator_logic == expected_operator_logic

@@ -296,17 +296,24 @@ def construct_content_filter_condition(operator: str, level_id: str, search_valu
     return ET.tostring(root, encoding='unicode')
 
 
-def construct_operator_logic(logical_operator: str, conditions_count: int) -> str:
+def construct_operator_logic(logical_operator: str | None, conditions_count: int) -> str:
     """
     Constructs an XML string representing the operator logic that applies to the filtering conditions for searching records.
 
     Args:
-        logical_operator (str): The logical operator (e.g. 'AND', 'OR', 'XOR').
+        logical_operator (str | None): The logical operator (e.g. 'AND', 'OR', 'XOR').
         conditions_count (int): The number of conditions.
 
     Returns:
         str: An XML string representing the OperatorLogic element.
     """
+    if not logical_operator or not logical_operator.strip():
+        return ''
+
+    # Only relevant if there are two or more conditions
+    if conditions_count < 2:
+        return ''
+
     root = ET.Element('OperatorLogic')
     root.text = f' {logical_operator.upper()} '.join([str(num) for num in range(1, conditions_count + 1)])
     return ET.tostring(root, encoding='unicode')
@@ -347,14 +354,12 @@ def search_records_soap_request(
         + f'             <Criteria><ModuleCriteria><Module name="appname">{app_id}</Module></ModuleCriteria>'
     )
 
-    filter_conditions: set[str] = set()
-
-    if xml_filter_condition:
-        filter_conditions.add(xml_filter_condition)
+    # Order of conditions important if using non-commutative logical_operator (e.g. 1 AND NOT 2 != 2 AND NOT 1)
+    filter_conditions: list[str] = []
 
     if search_value:
         if date_operator:
-            filter_conditions.add(
+            filter_conditions.append(
                 construct_generic_filter_condition(
                     FilterConditionTypes.date,
                     operator=date_operator,
@@ -366,7 +371,7 @@ def search_records_soap_request(
             )
 
         elif numeric_operator:
-            filter_conditions.add(
+            filter_conditions.append(
                 construct_generic_filter_condition(
                     FilterConditionTypes.numeric,
                     operator=numeric_operator,
@@ -381,7 +386,7 @@ def search_records_soap_request(
                 field_to_search_by_id
                 and field_to_search_by_id.lower() == field_name.lower()
             ):
-                filter_conditions.add(
+                filter_conditions.append(
                     construct_content_filter_condition(
                         operator='Equals',
                         level_id=level_id,
@@ -390,7 +395,7 @@ def search_records_soap_request(
                 )
 
             else:
-                filter_conditions.add(
+                filter_conditions.append(
                     construct_generic_filter_condition(
                         FilterConditionTypes.text,
                         operator='Contains',
@@ -400,12 +405,12 @@ def search_records_soap_request(
                     )
                 )
 
-    operator_logic = ''
+    if xml_filter_condition:
+        filter_conditions.append(xml_filter_condition)
+
     if filter_conditions:
         filter_conditions_xml = '\n'.join(filter_conditions)
-        if logical_operator:
-            operator_logic = construct_operator_logic(logical_operator, conditions_count=len(filter_conditions))
-
+        operator_logic = construct_operator_logic(logical_operator, conditions_count=len(filter_conditions))
         request_body += f'<Filter><Conditions>{filter_conditions_xml}</Conditions>{operator_logic}</Filter>'
 
     if field_id:
