@@ -18,10 +18,8 @@ XSOAR8 or XSIAM:
 
 * The instance should be configured to run only on HTTP. 
 * The instance is using the HTTPS certificate of the server.
-* Set a user and password (can be global via long running integrations configurations)
-or local for this integration only.
-* **Note:** When using Cortex XSIAM or Cortex XSOAR 8, if "no engine" is selected, make sure to click **Save** before testing and using the instance. This step allows the server to assign a port to the instance.
-
+* Please set a user and password (can be global via long running integrations configurations)
+* or local for this integration only.
    
 Configuring the subscriber on AWS-SNS UI:
 ```https://<username:password>@ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>```

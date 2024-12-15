@@ -25,4 +25,3 @@ If listening on a port less than 1024 and running with the Docker Hardening conf
 * Value: `demisto/syslog`
 
 If the integration is running via an engine, you need to add this setting to the engine configuration either via the `d1.conf` file or in the Server `Settings->Engines-> Edit Configuration`.
-* **Note:** When using Cortex XSIAM or Cortex XSOAR 8, if "no engine" is selected, make sure to click **Save** before testing and using the instance. This step allows the server to assign a port to the instance.

@@ -702,8 +702,7 @@ def get_port(params: dict = demisto.params()) -> int:
     Gets port from the integration parameters.
     """
     if not params.get('longRunningPort'):
-        raise DemistoException('When selecting a single engine, you must specify a Listen Port. If no engine is selected,'
-                               ' click "Save" before testing the configuration, as this may resolve the issue.')
+        params['longRunningPort'] = '8888'
     try:
         port = int(params.get('longRunningPort', ''))
     except ValueError as e:

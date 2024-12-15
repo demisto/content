@@ -1361,10 +1361,8 @@ def test_module(_: dict, params: dict):
         2. Valid cache_refresh_rate
     """
     if not params.get('longRunningPort'):
-        raise DemistoException('When selecting a single engine, you must specify a Listen Port. If no engine is selected,'
-                               ' click "Save" before testing the configuration, as this may resolve the issue.')
+        params['longRunningPort'] = '8888'
     get_params_port(params)
-
     on_demand = params.get('on_demand', None)
     if not on_demand:
         try_parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG)  # validate EDL Size was set

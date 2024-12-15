@@ -888,9 +888,7 @@ def test_module(params: dict) -> str:
     Integration test module.
     """
     if not params.get('longRunningPort'):
-        raise DemistoException('When selecting a single engine, you must specify a Listen Port. If no engine is selected,'
-                               ' click "Save" before testing the configuration, as this may resolve the issue.')
-
+        params['longRunningPort'] = '8888'
     run_long_running(params, is_test=True)
     return 'ok'
 

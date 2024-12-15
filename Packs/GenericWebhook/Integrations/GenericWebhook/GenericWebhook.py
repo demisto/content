@@ -143,23 +143,23 @@ def fetch_samples() -> None:
     demisto.incidents(sample_events)
 
 
-def test_module(port: str):
+def test_module(params: dict):
     """
     Checks if a Listen Port is provided for a single engine configuration and returns 'ok' if valid.
     """
-    if not port:
-        raise DemistoException('When selecting a single engine, you must specify a Listen Port. If no engine is selected,'
-                               ' click "Save" before testing the configuration, as this may resolve the issue.')
+    if not params.get('longRunningPort'):
+        params['longRunningPort'] = '8888'
     return_results('ok')
 
 
 def main() -> None:
+    params = demisto.params()
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         if demisto.command() == 'test-module':
-            return test_module(demisto.params().get('longRunningPort'))
+            return test_module(params)
         try:
-            port = int(demisto.params().get('longRunningPort'))
+            port = int(params.get('longRunningPort'))
         except ValueError as e:
             raise ValueError(f'Invalid listen port - {e}')
         if demisto.command() == 'fetch-incidents':

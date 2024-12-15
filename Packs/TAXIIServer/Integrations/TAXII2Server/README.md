@@ -37,7 +37,7 @@ Use `https://ext-<tenant>/xsoar/instance/execute/<instance-name>/<taxii2_api_end
 - For Cortex XSOAR 8 On-prem, you need to add the `ext-` FQDN DNS record to map the Cortex XSOAR DNS name to the external IP address.  
   For example, `ext-xsoar.mycompany.com`.  
 - The instance name cannot be changed after saving the integration configuration.
-- **Note:** If "no engine" is selected, make sure to click **Save** before testing and using the instance. This step allows the server to assign a port to the instance.
+
 
 ## Access the TAXII Service by Instance Name
 
