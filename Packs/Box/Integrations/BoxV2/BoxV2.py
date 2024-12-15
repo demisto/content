@@ -1969,7 +1969,11 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
             DATE_FORMAT)
     results = client.list_events(stream_type='admin_logs', as_user=as_user, limit=max_results,
                                  created_after=created_after)
+    if not results:
+        demisto.debug("client.list_events returned None or an empty response. Initializing an empty dictionary for results.")
+        results = {}
     raw_incidents = results.get('entries', [])
+    demisto.debug(f"Extracted {len(raw_incidents)} raw incidents from the results.")
     next_run = datetime.now(tz=UTC).strftime(DATE_FORMAT)
     for raw_incident in raw_incidents:
         event = Event(raw_input=raw_incident)
