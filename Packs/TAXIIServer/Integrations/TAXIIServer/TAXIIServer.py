@@ -930,7 +930,7 @@ def main():
         http_server = False
 
     demisto.debug(f'Command being called is {command}')
-    commands = {}
+    commands: dict = {}
     try:
         port = get_port(params)
         collections = get_collections(params)
