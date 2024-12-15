@@ -42,4 +42,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Uptycs_Outbound_Connection_to_Threat_IOC_Incident](../doc_files/Uptycs_Outbound_Connection_to_Threat_IOC_Incident.png)
+![Uptycs_Outbound_Connection_to_Threat_IOC_Incident](../doc_files/playbook-Uptycs_-_Outbound_Connection_to_Threat_IOC_Incident.png)
