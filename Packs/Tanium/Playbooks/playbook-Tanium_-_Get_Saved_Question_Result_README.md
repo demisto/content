@@ -32,4 +32,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Tanium_Get_Saved_Question_Result](../doc_files/Tanium_Get_Saved_Question_Result.png)
+![Tanium_Get_Saved_Question_Result](../doc_files/playbook-Tanium_-_Get_Saved_Question_Result.png)
