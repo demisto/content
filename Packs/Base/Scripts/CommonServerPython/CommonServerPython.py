@@ -56,7 +56,7 @@ MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
-NUM_OF_WORKERS = 100
+NUM_OF_WORKERS = 20
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -12293,13 +12293,16 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         return chunk_size
 
     if multiple_threads:
-        demisto.info("Sending events to xsiam with multiple threads.")
+        demisto.info(f"[test] Sending events to xsiam with {NUM_OF_WORKERS} threads.")
 
         support_multithreading()
+        future_to_data = []
         executor = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
-        future_to_data = [executor.submit(send_events, chunk) for chunk in data_chunks]
+        for chunk in data_chunks:
+            future = executor.submit(send_events, chunk)
+            future_to_data.append(future)
 
-        demisto.info(f'Finished submiting {len(future_to_data)} Futures.')
+        demisto.info(f'[test] Finished submiting {len(future_to_data)} Futures.')
         return future_to_data
     else:
         for chunk in data_chunks:

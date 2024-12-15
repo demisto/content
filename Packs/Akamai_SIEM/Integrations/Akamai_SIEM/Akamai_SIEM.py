@@ -703,7 +703,7 @@ def main():  # pragma: no cover
                     futures = send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
                                                    chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE,
                                                    multiple_threads=True)
-                    demisto.info("[test] Finished executing send_events_to_xsiam, waiting for futures to end.")
+                    demisto.info("Finished executing send_events_to_xsiam, waiting for futures to end.")
                     data_size = 0
                     for future in concurrent.futures.as_completed(futures):
                         data_size += future.result()
