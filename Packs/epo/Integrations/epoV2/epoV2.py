@@ -176,8 +176,14 @@ class Client(BaseClient):
 
             if 'objectId' in json_response:
                 object_id = json_response['objectId']
+            else:
+                object_id = ""
+                demisto.debug("no objectId in json_response")
             if 'productId' in json_response:
                 product_id = json_response['productId']
+            else:
+                product_id = ""
+                demisto.debug("no productId in json_response")
 
             return object_id, product_id
         else:
