@@ -10009,10 +10009,10 @@ def test_replace_sensitive_text(input_text, expected_output, mocker):
     """
         Given:
         - Input text containing sensitive information.
-    
+
         When:
         - Calling replace_sensitive_text() method with a regex pattern to find the sensitive information and a mask to replace it.
-    
+
         Then:
         - Ensure the sensitive information is replaced with the mask if it exists.
     """
