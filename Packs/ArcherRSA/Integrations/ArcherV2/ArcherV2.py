@@ -302,7 +302,7 @@ def construct_operator_logic(logical_operator: str | None, conditions_count: int
     if not logical_operator or not logical_operator.strip():
         return ''
 
-    # Only relevant if there are two or more conditions
+    # Only two or more conditions can be joined by a logical operator (e.g. '1 AND 2', '1 OR 2 OR 3')
     if conditions_count < 2:
         return ''
 
