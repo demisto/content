@@ -1,4 +1,4 @@
-This playbook addresses the following alerts:
+**This playbook addresses the following alerts**:
 - Rare successful guest invitation in the organization
 
 **Playbook Stages**:
