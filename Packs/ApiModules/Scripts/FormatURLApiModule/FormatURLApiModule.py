@@ -71,7 +71,7 @@ class URLCheck:
         self.base = 0  # This attribute increases as the url is being parsed
         self.output = ''
 
-        self.inside_brackets = False
+        self.inside_brackets = 0
         self.opening_bracket = ''
         self.port = False
         self.query = False
@@ -244,14 +244,14 @@ class URLCheck:
             elif self.modified_url[index] == "%" and not self.hex_check(index):
                 raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
 
-            elif self.modified_url[index] == ":" and not self.inside_brackets:
+            elif self.modified_url[index] == ":" and self.inside_brackets == 0:
                 # ":" are only allowed if host is ipv6 in which case inside_brackets equals True
                 if index == len(self.modified_url) - 1:
                     raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
 
                 elif index <= 4:
                     # This might be an IPv6 with no scheme
-                    self.inside_brackets = True
+                    self.inside_brackets += 1
                     self.output = f"[{self.output}"  # Reading the bracket that was removed by the cleaner
 
                 else:
@@ -263,18 +263,18 @@ class URLCheck:
                     return  # Going back to main to handle port part
 
             elif self.modified_url[index] == "[":
-                if not self.inside_brackets and index == self.base:
+                if self.inside_brackets == 0 and index == self.base:
                     # if index==base we're at the first char of the host in which "[" is ok
                     self.output += self.modified_url[index]
                     index += 1
-                    self.inside_brackets = True
+                    self.inside_brackets += 1
 
                 else:
                     raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
 
             elif self.modified_url[index] == "]":
 
-                if not self.inside_brackets:
+                if self.inside_brackets == 0:
                     if self.check_domain(host) and all(char in self.brackets for char in self.modified_url[index:]):
                         # Domain is valid with trailing "]" and brackets, the formatter will remove the extra chars
                         self.done = True
@@ -291,10 +291,10 @@ class URLCheck:
                     except ValueError:
                         raise URLError(f"Only IPv6 is allowed within square brackets, not {host}")
 
-                    if self.inside_brackets and ip.version == 6:
+                    if self.inside_brackets != 0 and ip.version == 6:
                         self.output += self.modified_url[index]
                         index += 1
-                        self.inside_brackets = False
+                        self.inside_brackets -= 1
                         break
 
                     raise URLError(f"Only IPv6 is allowed within square brackets, not {host}")
@@ -430,19 +430,19 @@ class URLCheck:
         elif char in self.brackets:
             # char is a type of bracket or quotation mark
 
-            if index == len(self.modified_url) - 1 and not self.inside_brackets:
+            if index == len(self.modified_url) - 1 and self.inside_brackets == 0:
                 # Edge case of a bracket or quote at the end of the URL but not part of it
                 return len(self.modified_url), part
 
-            elif self.inside_brackets and char == self.bracket_pairs[self.opening_bracket]:
+            elif self.inside_brackets != 0 and char == self.bracket_pairs.get(self.opening_bracket, ''):
                 # If the char is a closing bracket check that it matches the opening one.
-                self.inside_brackets = False
+                self.inside_brackets -= 1
                 part += char
                 index += 1
 
             elif char in self.bracket_pairs:
                 # If the char is an opening bracket set `inside_brackets` flag to True
-                self.inside_brackets = True
+                self.inside_brackets += 1
                 self.opening_bracket = char
                 part += char
                 index += 1
