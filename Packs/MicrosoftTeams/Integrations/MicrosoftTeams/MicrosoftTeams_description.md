@@ -5,7 +5,7 @@ Note: The integration is supported in Cortex XSOAR 8 and Cortex XSIAM without us
 
 1. Create the Demisto Bot in Microsoft Teams
 2. Grant the Demisto Bot Permissions in Microsoft Graph
-3. Configure Microsoft Teams on Demisto
+3. Configure Microsoft Teams on Cortex XSOAR or Cortex XSIAM
 4. Add the Demisto Bot to a Team
  
 Important note: resetting the integration cache removes all data about teams, channels, members saved in the integration context. Performing this step requires removing the bot from all teams it was added to.
