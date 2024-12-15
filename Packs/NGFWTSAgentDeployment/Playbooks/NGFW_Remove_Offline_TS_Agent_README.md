@@ -29,4 +29,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![NGFW Remove Offline TS Agent](../doc_files/NGFW_Remove_Offline_TS_Agent_Fri_Feb_04_2022.png)
+![NGFW Remove Offline TS Agent](../doc_files/NGFW_Remove_Offline_TS_Agent.png)

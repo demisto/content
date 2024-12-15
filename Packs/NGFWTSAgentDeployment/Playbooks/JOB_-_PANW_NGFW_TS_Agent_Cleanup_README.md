@@ -27,4 +27,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![JOB - PANW NGFW TS Agent Cleanup](../doc_files/JOB_-_PANW_NGFW_TS_Agent_Cleanup_Fri_Feb_04_2022.png)
+![JOB - PANW NGFW TS Agent Cleanup](../doc_files/JOB_-_PANW_NGFW_TS_Agent_Cleanup.png)
