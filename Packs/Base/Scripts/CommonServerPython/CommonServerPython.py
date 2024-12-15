@@ -12293,17 +12293,18 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         return chunk_size
 
     if multiple_threads:
-        demisto.info(f"[test] Sending events to xsiam with {NUM_OF_WORKERS} threads.")
-
+        demisto.info(f"Sending events to xsiam with {NUM_OF_WORKERS} threads.")
+        all_chunks = [chunk for chunk in data_chunks]
+        demisto.info(f"Finished appending all data_chunks to a list.")
         support_multithreading()
-        future_to_data = []
+        futures = []
         executor = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
-        for chunk in data_chunks:
+        for chunk in all_chunks:
             future = executor.submit(send_events, chunk)
-            future_to_data.append(future)
+            futures.append(future)
 
-        demisto.info(f'[test] Finished submiting {len(future_to_data)} Futures.')
-        return future_to_data
+        demisto.info(f'Finished submiting {len(futures)} Futures.')
+        return futures
     else:
         for chunk in data_chunks:
             data_size += send_events(chunk)
