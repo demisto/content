@@ -2,7 +2,7 @@
     "name": "CaseManagement-Generic",
     "description": "Case Management - Generic\n\nBuilt by the Cortex Customer Success Team to provide quick deployment of Case Management with XSOAR",
     "support": "community",
-    "currentVersion": "1.4.9",
+    "currentVersion": "1.4.10",
     "author": "Cortex XSOAR Customer Success",
     "url": "",
     "email": "",
