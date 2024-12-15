@@ -129,13 +129,13 @@ class EWSClient:
         version: str = '',
         folder: str = 'Inbox',
         is_public_folder: bool = False,
-        request_timeout: str = '120',
+        request_timeout: int = 120,
         mark_as_read: bool = False,
         legacy_name: bool = False,
         incident_filter: IncidentFilter = IncidentFilter.RECEIVED_FILTER,
         azure_cloud: Optional[AzureCloud] = None,
         tenant_id: str = '',
-        self_deployed: bool = True,
+        self_deployed: bool = False,
         manual_username: Optional[str] = None,
         log_memory: bool = False,
         app_name: str = 'EWS',
@@ -174,7 +174,7 @@ class EWSClient:
         if ews_server and not version:
             raise ValueError('Version must be provided if EWS Server is specified.')
 
-        BaseProtocol.TIMEOUT = int(request_timeout)  # type: ignore
+        BaseProtocol.TIMEOUT = request_timeout  # type: ignore
         self.client_id = client_id
         self.client_secret = client_secret
         self.access_type = access_type.lower()
@@ -200,6 +200,7 @@ class EWSClient:
         self.auto_discover = not ews_server
 
         self.config, self.credentials, self.server_build = self.configure_auth()
+        self._protocol = Protocol(config=self.config) if self.config else None
 
 
     def configure_auth(self) -> tuple[Optional[Configuration], BaseCredentials, Optional[Build]]:
@@ -228,7 +229,7 @@ class EWSClient:
 
         BaseProtocol.HTTP_ADAPTER_CLS = InsecureProxyAdapter if self.insecure else ProxyAdapter
 
-        ms_client = MicrosoftClient(
+        self.ms_client = ms_client = MicrosoftClient(
             tenant_id=self.tenant_id,
             auth_id=self.client_id,
             enc_key=self.client_secret,
@@ -344,7 +345,7 @@ class EWSClient:
         if self.auto_discover:
             return self.get_account_autodiscover(self.account_email).protocol
 
-        return Protocol(config=self.config)
+        return self._protocol
 
     def get_account(self, target_mailbox: Optional[str]=None, time_zone=None) -> Account:
         """
@@ -460,7 +461,7 @@ class EWSClient:
 
         :param item_id: item_id of the item to retrieve attachments from
         :param account: EWS account or target_mailbox associated with that account
-        :param (Optional) attachment_ids: attachment_ids to retrieve
+        :param (Optional) attachment_ids: attachment_ids to retrieve, empty list will get all available attachments
 
         :return: list of exchangelib Item.attachments
         """
@@ -473,8 +474,7 @@ class EWSClient:
             if attachment is None:
                 continue
 
-            attachment.parent_item = item
-            if attachment.attachment_id.id in attachment_ids:
+            if not attachment_ids or attachment.attachment_id.id in attachment_ids:
                 attachments.append(attachment)
 
         if attachment_ids and len(attachments) < len(attachment_ids):
@@ -547,7 +547,8 @@ class EWSClient:
         message.account = account
         message.send_and_save()
 
-    def reply_email(self, inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments, from_mailbox=None):
+    def reply_email(self, inReplyTo: str, to: list[str], body: str, subject: str, bcc: list[str], cc: list[str],
+                    htmlBody: Optional[str], attachments: list, from_mailbox: Optional[str]=None) -> Message:
         """
         Send a reply email using the EWS account associated with this client, based on the provided parameters.
         
@@ -572,19 +573,19 @@ class EWSClient:
         htmlBody, htmlAttachments = handle_html(htmlBody) if htmlBody else (None, [])
         message_body = HTMLBody(htmlBody) if htmlBody else body
         reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to,
-                                              cc_recipients=cc,
-                                              bcc_recipients=bcc, author=from_mailbox)
+                                              cc_recipients=cc, bcc_recipients=bcc, author=from_mailbox)
         reply = reply.save(account.drafts)
-        m = account.inbox.get(id=reply.id)  # type: ignore
+        m = account.inbox.get(id=reply.id)
 
         attachments += htmlAttachments
         for attachment in attachments:
-            if not attachment.get('cid'):
-                new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'))
-            else:
-                new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
-                                                is_inline=True, content_id=attachment.get('cid'))
-            m.attach(new_attachment)
+            if not isinstance(attachment, FileAttachment):
+                if not attachment.get('cid'):
+                    attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'))
+                else:
+                    attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
+                                                    is_inline=True, content_id=attachment.get('cid'))
+            m.attach(attachment)
         m.send()
 
         return m
