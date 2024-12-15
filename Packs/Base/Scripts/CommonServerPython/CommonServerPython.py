@@ -47,7 +47,8 @@ _MODULES_LINE_MAPPING = {
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
-XSIAM_EVENT_CHUNK_SIZE_LIMIT = 4 * (10 ** 6)  # 4 MB
+XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB, note that the allowed max size for 1 entry is 5MB.
+# So if you're using a "heavy" API it is recommended to use maximum of 4MB chunk size.
 ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
@@ -55,7 +56,7 @@ MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
-NUM_OF_WORKERS = 10
+NUM_OF_WORKERS = 100
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -11951,22 +11952,21 @@ def split_data_to_chunks(data, target_chunk_size):
     :rtype: ``collections.Iterable[list]``
     """
     target_chunk_size = min(target_chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
-    chunks = []
-    chunk = []
+    chunk = []  # type: ignore[var-annotated]
     chunk_size = 0
     if isinstance(data, str):
         data = data.split('\n')
     for data_part in data:
         if chunk_size >= target_chunk_size:
             demisto.debug("reached max chunk size, sending chunk with size: {size}".format(size=chunk_size))
-            chunks.append(chunk)
+            yield chunk
             chunk = []
             chunk_size = 0
         chunk.append(data_part)
         chunk_size += sys.getsizeof(data_part)
     if chunk_size != 0:
-        chunks.append(chunk)
-    return chunks
+        demisto.debug("sending the remaining chunk with size: {size}".format(size=chunk_size))
+        yield chunk
 
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
