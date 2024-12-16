@@ -27,6 +27,7 @@ IDP_DETECTION_FETCH_TYPE = "IDP Detection"
 MOBILE_DETECTION_FETCH_TYPE = "Mobile Detection"
 ON_DEMAND_SCANS_DETECTION_TYPE = "On-Demand Scans Detection"
 ON_DEMAND_SCANS_DETECTION = "On-Demand Scans detection"
+OFP_DETECTION = "OFP Detection"
 PARAMS = demisto.params()
 CLIENT_ID = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('client_id')
 SECRET = PARAMS.get('credentials', {}).get('password') or PARAMS.get('secret')
