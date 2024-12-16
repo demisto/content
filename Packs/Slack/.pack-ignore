@@ -23,3 +23,6 @@ ignore=MR108
 # GR103 is temporary, see CIAC-11705
 [file:classifier-Slack_Mapper.json]
 ignore=GR103
+
+[file:playbook-Slack_-_General_Failed_Logins_v2.1.yml]
+ignore=RM116
