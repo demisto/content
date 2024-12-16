@@ -74,7 +74,8 @@
     "sla": 0,
     "system": false,
     "systemAssociatedTypes": [
-        "Prisma Cloud - VM Alert Prioritization"
+        "Prisma Cloud - VM Alert Prioritization",
+        "CrowdStrike Falcon OFP Detection"
     ],
     "threshold": 72,
     "toServerVersion": "",
