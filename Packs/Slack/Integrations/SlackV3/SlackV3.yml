@@ -50,6 +50,8 @@ configuration:
   name: permitted_notifications
   type: 16
   section: Collect
+  deprecated: true
+  hidden: true
   required: false
   options:
   - incidentAssigned
