@@ -5,23 +5,24 @@ import re
 import ipaddress
 import json
 
-def is_base64(s):
+def is_base64(base64_string: str) -> bool:
     """
     Validates if the provided string is a Base64-encoded string.
     """
     try:
-        if isinstance(s, str):
-            s = s.encode('ascii')
+        if isinstance(base64_string, str):
+            base64_string = base64_string.encode('ascii')
         # Validate Base64
-        padding = len(s) % 4
+        padding = len(base64_string) % 4
         if padding:
-            s += b'=' * (4 - padding)  # Add missing padding
-        base64.b64decode(s, validate=True)  # Use strict validation
+            base64_string += b'=' * (4 - padding)  # Add missing padding
+        base64.b64decode(base64_string, validate=True)  # Use strict validation
         return True
     except Exception as e:
+        demisto.debug(f"Error validating Base64: {e}")
         return False
 
-def clean_non_base64_chars(encoded_str):
+def clean_non_base64_chars(encoded_str: str) -> str:
     """
     Cleans and ensures the Base64 string contains only valid Base64 characters.
     Adds proper padding if necessary.
@@ -35,13 +36,13 @@ def clean_non_base64_chars(encoded_str):
     return cleaned_str
 
 
-def remove_null_bytes(decoded_str):
+def remove_null_bytes(decoded_str: str) -> str:
     """
     Removes null bytes from the decoded string.
     """
     return decoded_str.replace("\x00", "")
 
-def decode_base64(encoded_str, max_recursions=5):
+def decode_base64(encoded_str: str, max_recursions: int = 5) -> Tuple[Optional[str], bool]:
     """
     Decodes a Base64-encoded string recursively up to a defined limit.
     """
@@ -58,11 +59,11 @@ def decode_base64(encoded_str, max_recursions=5):
             recursion_depth += 1
         return encoded_str, recursion_depth > 1  # Return decoded string and if double encoding was detected
     except Exception as e:
-        print(f"Error decoding base64: {e}")
+        demisto.debug(f"Error decoding base64: {e}")
         return None, False
 
 
-def identify_and_decode_base64(command_line):
+def identify_and_decode_base64(command_line: str) -> Tuple[str, bool]:
     """
     Identifies and decodes all Base64 occurrences in a command line,
     returning the original command line, the fully decoded content, and a flag for double encoding.
@@ -96,7 +97,7 @@ def identify_and_decode_base64(command_line):
     return decoded_command_line, double_encoded_detected
 
 
-def reverse_command(command_line):
+def reverse_command(command_line: str) -> Tuple[str, bool]:
     """
     Detects if the command line contains a reversed PowerShell string and reverses it.
     """
@@ -104,7 +105,7 @@ def reverse_command(command_line):
         return command_line[::-1], True
     return command_line, False
 
-def check_malicious_commands(command_line):
+def check_malicious_commands(command_line: str) -> List[str]:
     patterns = [
         r'\bmimikatz\b',
         r'\bLaZagne\.exe\b',
@@ -160,7 +161,7 @@ def check_malicious_commands(command_line):
 
     return matches
 
-def check_reconnaissance_temp(command_line):
+def check_reconnaissance(command_line: str) -> List[str]:
     patterns = [
         r'\bipconfig\b',
         r'\bnetstat\b',
@@ -193,7 +194,7 @@ def check_reconnaissance_temp(command_line):
 
     return matches
 
-def check_windows_temp_paths(command_line):
+def check_windows_temp_paths(command_line: str) -> List[str]:
     """
     Identifies all occurrences of temporary paths in the given command line.
     """
@@ -219,7 +220,7 @@ def check_windows_temp_paths(command_line):
     return matches
 
 
-def check_suspicious_content(command_line):
+def check_suspicious_content(command_line: str) -> List[str]:
     patterns = [
         r'\-w\s+hidden\b',
         r'\-WindowStyle\s+Hidden\b',
@@ -252,7 +253,7 @@ def check_suspicious_content(command_line):
 
     return matches
 
-def check_amsi(command_line):
+def check_amsi(command_line: str) -> List[str]:
     patterns = [
         r'\bSystem\.Management\.Automation\.AmsiUtils\b',
         r'\bamsiInitFailed\b',
@@ -266,7 +267,7 @@ def check_amsi(command_line):
 
     return matches
 
-def check_mixed_case_powershell(command_line):
+def check_mixed_case_powershell(command_line: str) -> List[str]:
     mixed_case_powershell_regex = re.compile(
         r'\b(?=.*[a-z])(?=.*[A-Z])[pP][oO][wW][eE][rR][sS][hH][eE][lL]{2}(\.exe)?\b'
     )
@@ -280,7 +281,7 @@ def check_mixed_case_powershell(command_line):
 
 
 
-def check_powershell_suspicious_patterns(command_line):
+def check_powershell_suspicious_patterns(command_line: str) -> List[str]:
     """
     Detects potential obfuscation, backdoor mechanisms and Command-and-Control (C2) communication
     implemented using PowerShell.
@@ -317,7 +318,7 @@ def check_powershell_suspicious_patterns(command_line):
 
     return matches
 
-def check_credential_dumping(command_line):
+def check_credential_dumping(command_line: str) -> List[str]:
     """
     Detects credential dumping techniques.
     """
@@ -352,7 +353,7 @@ def check_credential_dumping(command_line):
 
     return matches
 
-def check_lateral_movement(command_line):
+def check_lateral_movement(command_line: str) -> List[str]:
     """
     Detects potential lateral movement techniques from a given command line.
     """
@@ -383,7 +384,7 @@ def check_lateral_movement(command_line):
 
     return matches
 
-def check_data_exfiltration(command_line):
+def check_data_exfiltration(command_line: str) -> List[str]:
     """
     Detects potential data exfiltration techniques from a given command line.
     """
@@ -406,7 +407,7 @@ def check_data_exfiltration(command_line):
 
     return matches
 
-def check_custom_patterns(command_line, custom_patterns=None):
+def check_custom_patterns(command_line: str, custom_patterns: Optional[List[str]] = None) -> List[str]:
 
     matches = []
     for pattern in custom_patterns:
@@ -414,7 +415,7 @@ def check_custom_patterns(command_line, custom_patterns=None):
 
     return matches
 
-def is_reserved_ip(ip_str):
+def is_reserved_ip(ip_str: str) -> bool:
     try:
         ip_obj = ipaddress.ip_address(ip_str)
         return (
@@ -427,32 +428,49 @@ def is_reserved_ip(ip_str):
     except ValueError:
         return False
 
-def extract_indicators(command_line):
+def extract_indicators(command_line: str) -> List[str]:
+    """
+    Extracts indicators like IPs and other data from the command line.
+
+    Args:
+        command_line (str): The command line input to analyze.
+
+    Returns:
+        List[str]: A list of extracted indicators (e.g., IPs) that are not reserved.
+    """
     try:
         indicators = demisto.executeCommand("extractIndicators", {"text": command_line})
         if indicators and isinstance(indicators, list):
-            contents = indicators[0].get('Contents', {})
-
-            # Parse contents if it's a JSON string
+            contents = indicators[0].get("Contents", {})
             if isinstance(contents, str):
                 try:
                     contents = json.loads(contents)
-                except json.JSONDecodeError:
+                except json.JSONDecodeError as json_err:
+                    demisto.debug(f"JSON parsing failed: {str(json_err)}")
                     return []
-
-            if isinstance(contents, dict) and "IP" in contents:
-                return [ip for ip in contents["IP"] if not is_reserved_ip(ip)]
-            elif isinstance(contents, dict) and "IP" not in contents:
-                for key in contents:
-                    return [value for value in contents[key]]
+            if isinstance(contents, dict):
+                if "IP" in contents:
+                    return [ip for ip in contents["IP"] if not is_reserved_ip(ip)]
+                else:
+                    return [value for key in contents for value in contents[key]]
+    except ValueError as ve:
+        demisto.debug(f"Value error encountered: {str(ve)}")
     except Exception as e:
         demisto.debug(f"Failed to extract indicators: {str(e)}")
+
     return []
+def calculate_score(results: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Calculates a risk score based on analysis results.
 
+    Args:
+        results (Dict[str, Any]): The analysis results containing original and decoded findings.
 
-def calculate_score(results):
+    Returns:
+        Dict[str, Any]: A dictionary containing the score, findings, and risk level.
+    """
     # Define weights for base scoring
-    weights = {
+    weights: Dict[str, int] = {
         "mixed_case_powershell": 25,
         "reversed_command": 25,
         "powershell_suspicious_patterns": 25,
@@ -470,52 +488,60 @@ def calculate_score(results):
         "suspicious_parameters": 5,
     }
 
-    # Initialize findings and scores for original and decoded
-    findings = {"original": [], "decoded": []}
-    scores = {"original": 0, "decoded": 0}
-
-    # Define risk groups and bonus scores
-    high_risk_keys = {
-        "mixed_case_powershell", "double_encoding", "amsi_techniques",
-        "malicious_commands", "powershell_suspicious_patterns",
-        "credential_dumping", "reversed_command", "custom_patterns"
-    }
-    medium_risk_keys = {
-        "data_exfiltration", "lateral_movement", "indicators",
-    }
-    low_risk_keys = {
-        "suspicious_parameters", "windows_temp_path", "reconnaissance", "base64_encoding",
-    }
-
-    risk_bonuses = {
+    # Risk bonuses for detected combinations
+    risk_bonuses: Dict[str, int] = {
         "high": 30,
         "medium": 20,
         "low": 10,
     }
 
-    # Define the fixed theoretical maximum score
-    theoretical_max = 120
+    # Group risk categories
+    high_risk_keys: set = {
+        "mixed_case_powershell", "double_encoding", "amsi_techniques",
+        "malicious_commands", "powershell_suspicious_patterns",
+        "credential_dumping", "reversed_command", "custom_patterns"
+    }
+    medium_risk_keys: set = {
+        "data_exfiltration", "lateral_movement", "indicators",
+    }
+    low_risk_keys: set = {
+        "suspicious_parameters", "windows_temp_path", "reconnaissance", "base64_encoding",
+    }
 
-    # Helper function to calculate score and detect combinations
-    def process_context(context_name, context_results):
-        context_score = 0
-        context_findings = []
-        context_keys_detected = set()
+    # Define findings and scores containers
+    findings: Dict[str, List[str]] = {"original": [], "decoded": []}
+    scores: Dict[str, int] = {"original": 0, "decoded": 0}
 
-        # Calculate base score for each key (count each category once)
+    # Fixed theoretical maximum score for normalization
+    theoretical_max: int = 120
+
+    def process_context(context_name: str, context_results: Dict[str, Any]) -> Tuple[int, List[str]]:
+        """
+        Calculates the score and findings for a specific context (original/decoded).
+
+        Args:
+            context_name (str): Name of the context (e.g., "original", "decoded").
+            context_results (Dict[str, Any]): Analysis results for the context.
+
+        Returns:
+            Tuple[int, List[str]]: The score and findings for the context.
+        """
+        context_score: int = 0
+        context_findings: List[str] = []
+        context_keys_detected: set = set()
+
         for key, value in context_results.items():
-            if value and value != "{}":
+            if value:  # Ensure key has non-empty results
                 context_keys_detected.add(key)
                 if isinstance(value, list) and len(value) > 0:
-                    # Add weight once, report how many instances were found
+                    # Add weight and track instances found
                     context_score += weights.get(key, 0)
                     context_findings.append(f"{key.replace('_', ' ')} detected ({len(value)} instances)")
                 else:
-                    # Not a list or empty list, just count once
                     context_score += weights.get(key, 0)
                     context_findings.append(f"{key.replace('_', ' ')} detected")
 
-        # Apply combination bonuses based on detected keys
+        # Apply risk bonuses based on detected combinations
         if (high_risk_keys & context_keys_detected) and len(context_keys_detected) > 1:
             context_score += risk_bonuses["high"]
             context_findings.append("High-risk combination detected")
@@ -528,24 +554,22 @@ def calculate_score(results):
 
         return context_score, context_findings
 
-    # Process original and decoded findings
+    # Process scores for "original" and "decoded" contexts
     scores["original"], findings["original"] = process_context("original", results.get("analysis", {}).get("original", {}))
     scores["decoded"], findings["decoded"] = process_context("decoded", results.get("analysis", {}).get("decoded", {}))
 
-    # Check global combinations (e.g., double encoding globally)
+    # Check global combinations (e.g., double encoding detected)
     if results.get("Double Encoding Detected"):
-        # Add the double_encoding weight once if detected
         scores["decoded"] += weights["double_encoding"]
         findings["decoded"].append("Double encoding detected")
 
-    # Calculate total raw score
-    total_raw_score = scores["original"] + scores["decoded"]
-    # Normalize the score to fit within 0-100 based on the fixed theoretical max
-    normalized_score = (total_raw_score / theoretical_max) * 100
-    normalized_score = min(normalized_score, 100)  # Cap at 100
+    # Calculate total score and normalize it
+    total_raw_score: int = scores["original"] + scores["decoded"]
+    normalized_score: float = (total_raw_score / theoretical_max) * 100
+    normalized_score = min(normalized_score, 100)  # Cap the score at 100
 
-    # Determine overall risk level
-    risk = "Low Risk"
+    # Determine risk level
+    risk: str = "Low Risk"
     if normalized_score > 90:
         risk = "Critical Risk"
     elif normalized_score > 50:
@@ -558,8 +582,6 @@ def calculate_score(results):
         "findings": findings,
         "risk": risk,
     }
-
-
 def analyze_command_line(command_line, custom_patterns=None):
     """
     Analyzes the given command line for suspicious patterns, indicators, and encodings.
@@ -584,7 +606,7 @@ def analyze_command_line(command_line, custom_patterns=None):
         "powershell_suspicious_patterns": check_powershell_suspicious_patterns(command_line),
         "credential_dumping": check_credential_dumping(command_line),
         "custom_patterns": check_custom_patterns(command_line, custom_patterns) if custom_patterns else [],
-        "reconnaissance": check_reconnaissance_temp(command_line),
+        "reconnaissance": check_reconnaissance(command_line),
         "lateral_movement": check_lateral_movement(command_line),
         "data_exfiltration": check_data_exfiltration(command_line),
         "amsi_techniques": check_amsi(command_line),
@@ -606,7 +628,7 @@ def analyze_command_line(command_line, custom_patterns=None):
             "powershell_suspicious_patterns": check_powershell_suspicious_patterns(decoded_command_line),
             "credential_dumping": check_credential_dumping(decoded_command_line),
             "custom_patterns": check_custom_patterns(decoded_command_line, custom_patterns) if custom_patterns else [],
-            "reconnaissance": check_reconnaissance_temp(decoded_command_line),
+            "reconnaissance": check_reconnaissance(decoded_command_line),
             "lateral_movement": check_lateral_movement(decoded_command_line),
             "data_exfiltration": check_data_exfiltration(decoded_command_line),
             "amsi_techniques": check_amsi(decoded_command_line),
