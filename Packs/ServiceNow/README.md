@@ -31,7 +31,7 @@ The Create ServiceNow Ticket playbook provides an example for how to use the Mir
 - Insert ServiceNow URL
 - Insert your credentials (user name and password)
 - Scroll down to `Collect` section
-- Mark `Fetch Events` and select the desire event types to fetch (Audit and Syslog Transactions)
+7. Mark **Fetch Events** and select the desire event types to fetch (Audit and Syslog Transactions).
 
 
 ### For more information on ServiceNow platform
