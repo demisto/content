@@ -523,7 +523,7 @@
                 "Description": {
                     "simple": "description"
                 },
-                "Data Domains": {
+                "CrowdStrike Falcon Data Domains": {
                     "simple": "data_domains"
                 },
 				"OS Version": {
