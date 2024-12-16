@@ -130,11 +130,7 @@ def test_module(client: Client, export_profiles: list[str]) -> str:
             client.export_events(export_profile)
 
         except DemistoException as e:
-            error_status_code = (
-                e.exception.response.status_code
-                if isinstance(e.exception, requests.exceptions.HTTPError)
-                else None
-            )
+            error_status_code = e.res.status_code if isinstance(e.res, requests.Response) else None
 
             if error_status_code in (HTTPStatus.UNAUTHORIZED, HTTPStatus.FORBIDDEN):
                 return 'Authorization Error: Make sure client credentials are correctly set'
