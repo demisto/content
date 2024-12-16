@@ -559,13 +559,13 @@
                 "Device Local IP": {
                     "simple": "device.local_ip"
                 },
-                "MAC Address": {
+                "Device MAC Address": {
                     "simple": "device.mac_address"
                 },
                 "Device OS Version": {
                     "simple": "device.os_version"
                 },
-                "Platform Name": {
+                "CrowdStrike Falcon Platform Name": {
                     "simple": "device.platform_name"
                 },
                 "Product Type Description": {
