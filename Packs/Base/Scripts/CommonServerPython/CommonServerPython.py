@@ -33,7 +33,6 @@ from inspect import currentframe
 
 import demistomock as demisto
 import warnings
-import concurrent.futures
 
 
 def __line__():
@@ -43,7 +42,7 @@ def __line__():
 
 # The number is the line offset from the beginning of the file. If you added an import, update this number accordingly.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 46, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 45, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -236,6 +235,7 @@ PROFILING_DUMP_ROWS_LIMIT = 20
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
     STRING_OBJ_TYPES = (str,)
+    import concurrent.futures
 
 else:
     STRING_TYPES = (str, unicode)  # type: ignore # noqa: F821
