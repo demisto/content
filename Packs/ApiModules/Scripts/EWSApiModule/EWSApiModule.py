@@ -3,7 +3,7 @@ import uuid
 
 from CommonServerPython import *  # noqa: F401
 
-from MicrosoftApiModule import MicrosoftClient, AzureCloud
+from MicrosoftApiModule import *
 from exchangelib import (
     OAUTH2,
     BASIC,

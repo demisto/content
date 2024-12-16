@@ -1,4 +1,3 @@
-from EWSApiModule import EWSClient, IncidentFilter, CustomDomainOAuth2Credentials
 import email
 import hashlib
 import json
@@ -47,7 +46,7 @@ from requests.exceptions import ConnectionError
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from MicrosoftApiModule import *
+from EWSApiModule import *
 
 # Ignore warnings print to stdout
 warnings.filterwarnings("ignore")
