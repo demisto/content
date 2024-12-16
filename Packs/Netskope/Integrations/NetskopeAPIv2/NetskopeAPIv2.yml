@@ -1151,8 +1151,14 @@ script:
           description: Netskope URL list name.
           type: String
     - arguments:
-        - description: 'Filter the Netskope user by ''key eq value'' template. For example: userName eq "someUserName" OR externalId eq "User-Ext_id".'
+        - description: 'Filter the Netskope user by ''key eq value'' template. Filter by the given predefined values. For example: "userName eq someUserName" OR "externalId eq User-Ext_id".'
           name: filter
+          auto: PREDEFINED
+          predefined:
+          - 'active'
+          - 'emails.value'
+          - 'externalId'
+          - 'userName'
         - description: "Page number of paginated results. Minimum value: 1."
           name: page
         - defaultValue: "50"
@@ -1166,6 +1172,11 @@ script:
           type: Number
         - contextPath: Netskope.Client.name
           description: Netskope client name.
+        - contextPath: Netskope.Client.given_name
+          description: Netskope client first_name of the SCIM User.
+          type: String
+        - contextPath: Netskope.Client.family_name
+          description: Netskope client last_name of the SCIM User..
           type: String
         - contextPath: Netskope.Client.userName
           description: Netskope client username.
