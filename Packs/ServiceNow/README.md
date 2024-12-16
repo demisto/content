@@ -6,7 +6,7 @@ You can also provide comments or attachments in Cortex XSOAR which will appear i
 
 # What does this pack do?
 
-- View, create, update, or delete a ServiceNow ticket directly from the Cortex XSOAR and enrich it with Cortex XSOAR data.
+- View, create, update, or delete a ServiceNow ticket directly from Cortex XSOAR and enrich it with Cortex XSOAR data.
 - View, create, update, and delete records from any ServiceNow table.
 - Query ServiceNow data with the ServiceNow query syntax.
 
