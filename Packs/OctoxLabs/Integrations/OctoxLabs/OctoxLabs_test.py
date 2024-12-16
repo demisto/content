@@ -459,3 +459,15 @@ def test_get_application_detail(requests_mock, octox_client):
     first_data = result.outputs
 
     assert first_data["Count"] == 1174
+
+
+def test_get_device_detail(requests_mock, octox_client):
+    device_data = util_load_json(path="test_data/get_device_detail.json")
+    requests_mock.post("/devices/devices/None", json=device_data)
+    requests_mock.get("/discoveries/last", json={"id": 1})
+    result = run_command(
+        octox=octox_client, command_name="octoxlabs-get-device", args={}
+    )
+    first_data = result.outputs
+
+    assert first_data["Hostname"] == "dev-1"
