@@ -1,7 +1,10 @@
 [file:README.md]
 ignore=RM106
 
-[file:MicrosoftTeams.yml,MicrosoftTeams_description.md]
+[file:MicrosoftTeams.yml]
+ignore=DS107
+
+[file:MicrosoftTeams_description.md]
 ignore=DS107
 
 [known_words]
