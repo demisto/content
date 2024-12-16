@@ -11,26 +11,27 @@ from typing import Any, TypeVar
 
 import pytmv1
 import urllib3
-from pytmv1 import (
-    AccountRequest,
+from pytmv1 import (  # noqa: E402
+    TiAlert,
+    SaeAlert,
+    ObjectType,
+    ResultCode,
     AlertStatus,
+    ObjectRequest,
+    EmailActivity,
+    AccountRequest,
+    EndpointRequest,
+    ExceptionObject,
+    SuspiciousObject,
+    EndpointActivity,
     CollectFileRequest,
     CollectFileTaskResp,
     CustomScriptRequest,
-    EmailActivity,
+    InvestigationResult,
     EmailMessageIdRequest,
     EmailMessageUIdRequest,
-    EndpointActivity,
-    EndpointRequest,
-    ExceptionObject,
-    ObjectRequest,
-    ObjectType,
-    ResultCode,
-    SaeAlert,
-    SuspiciousObject,
     SuspiciousObjectRequest,
     TerminateProcessRequest,
-    TiAlert,
 )
 
 """CONSTANTS"""
@@ -2429,20 +2430,19 @@ def update_status(
     workbench_id = args.get(WORKBENCH_ID, EMPTY_STRING)
     status = args.get(STATUS, EMPTY_STRING)
     if_match = args.get(IF_MATCH, EMPTY_STRING)
-    inv_res = args.get(INV_RESULT, None)
-    inv_sts = args.get(INV_STATUS, None)
+    inv_res = args.get(INV_RESULT, EMPTY_STRING)
+    # inv_sts = args.get(INV_STATUS, EMPTY_STRING)    # Deprecated
     message: dict[str, Any] = {}
-    # Choose Status Enum
-    sts = status.upper()
     # Assign enum status
-    status = AlertStatus[sts]
+    sts = AlertStatus[status.upper()]
+    inv_result = InvestigationResult[inv_res.upper()]
     # Make rest call
     resp = v1_client.alert.update_status(
         alert_id=workbench_id,
-        status=status,
+        status=sts,
         etag=if_match,
-        inv_result=inv_res,
-        inv_status=inv_sts,
+        inv_result=inv_result,
+        # inv_status=inv_status,  # DEPRECATED
     )
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
