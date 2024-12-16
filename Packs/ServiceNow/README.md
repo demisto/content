@@ -14,3 +14,29 @@ As part of this pack, you will also get 2 out-of-the-box layouts so that you can
 
 
 The Create ServiceNow Ticket playbook provides an example for how to use the Mirror ServiceNow Ticket playbook to mirror data and ServiceNow Ticket State Polling sub-playbook to track when the ticket closes.
+
+<~XSIAM>
+
+### Supported Event Types:
+
+* Audit
+* Syslog Transactions
+
+
+### Configure ServiceNow Event Collector on XSIAM Tenant
+
+- Go to Settings -> Configurations -> Automation & Feed Integrations
+- Search for ServiceNow Event Collector
+- Click on `Add instance`
+- Insert ServiceNow URL
+- Insert your credentials (user name and password)
+- Scroll down to `Collect` section
+- Mark `Fetch Events` and select the desire event types to fetch (Audit and Syslog Transactions)
+
+
+### For more information on ServiceNow platform
+
+[Visit ServiceNow website](https://www.servicenow.com/docs/)
+[Visit ServiceNow Transaction documentations](https://www.servicenow.com/docs/bundle/utah-platform-security/page/administer/time/reference/r_TransactionLogs.html)
+
+</~XSIAM>

@@ -25,14 +25,14 @@ filter source_log_type = "syslog transactions"
         protocol_layer = protocol ,
         is_truncated = to_boolean(gzip) ,
         tmp_origin_scope_val = origin_scope ->value,
-        tmp_trim_url = arrayindex(regextract(url,"table\/(\w+)\?"),0),//arraystring(regextract(url,"table\/(\w+)\?"),",")//arrayindex(regextract(url,"table\/(\w+)\?"),0),//to_string(regextract(url,"table\/(\w+)\?")), 
+        tmp_trim_url = arrayindex(regextract(url,"table\/(\w+)\?"),0),
 
         //database
         db_name = db_pool ,
         response_time = to_integer(multiply(to_integer(sql_time),1000)) // Convert from ms to s
 
 |alter 
-        table_name = if(len(`table`) >=1, `table` , tmp_trim_url )
+        table_name = to_string(if(len(`table`) >=1, `table` , tmp_trim_url ))
         
 | alter event_duration = to_integer(add(event_duration_1 , event_duration_2 )),
         application_name = if(tmp_origin_scope_val="global", "Display Name: Global", concat("Display Name: ",app_scope ," ,ID: ",tmp_origin_scope_val ))
@@ -51,7 +51,7 @@ filter source_log_type = "syslog transactions"
         xdm.source.ipv4 = remote_ip_ipv4 ,
         xdm.source.ipv6 = remote_ip_ipv6, 
         xdm.target.url = target_url ,
-        xdm.database.tables = arraycreate(table_name) , 
+        xdm.database.tables = arraycreate(table_name), 
         xdm.database.response_time = response_time  , 
         xdm.database.name = db_name , 
         xdm.network.dns.is_truncated = is_truncated , 
