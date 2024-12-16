@@ -62,6 +62,7 @@ configuration:
   - malicious_powershell_detect
   - sigflow_alert
   - dga_detect
+  - active_cti
   - retrohunt
   - ransomware_detect
   - beacon_detect  

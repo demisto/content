@@ -707,6 +707,8 @@ def fix_broken_list(params: dict) -> list:
         e_s.append("sigflow_alert")
     if "dga_detect" in str(bdl):
         e_s.append("dga_detect")
+    if "active_cti" in str(bdl):
+        e_s.append("ioc")
     if "retrohunt" in str(bdl):
         e_s.append("retrohunt")
     if "ransomware_detect" in str(bdl):
