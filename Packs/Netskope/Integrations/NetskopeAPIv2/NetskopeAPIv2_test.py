@@ -2,9 +2,9 @@ import json
 import os
 from unittest.mock import patch
 
-import freezegun
 import pytest
 from CommonServerPython import *
+from freezegun import freeze_time
 from NetskopeAPIv2 import Client
 
 SERVER_URL = "https://test_url.com/"
@@ -490,11 +490,11 @@ def test_get_updated_url_list():
                 "insertion_start_time": None,
                 "insertion_end_time": None,
             },
-            (1673042400, 1690880400, None, None),
+            (1673042400, 1605698400, None, None),
         ),
     ],
 )
-@freezegun.freeze_time(datetime(2023, 8, 1, 12))
+@freeze_time("2020-11-18T13:20:00.00000", tz_offset=0)
 def test_convert_time_args_to_num(args, expected_output):
     """
     Scenario: Test the convert_time_args_to_num function.
