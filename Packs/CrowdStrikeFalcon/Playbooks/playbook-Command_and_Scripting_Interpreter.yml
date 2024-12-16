@@ -1,0 +1,1674 @@
+id: T1059 - Command and Scripting Interpreter
+version: 121
+contentitemexportablefields:
+  contentitemfields:
+    packID: ""
+    packName: Core - Investigation and Response
+    itemVersion: 3.0.94
+    fromServerVersion: 6.6.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
+name: T1059 - Command and Scripting Interpreter
+description: "This playbook handles command and scripting interpreter alerts based
+  on the MITRE T1059 technique.\nAn attacker might abuse command and script interpreters
+  to execute commands, scripts, or binaries.\nMost systems come with some kind of
+  built-in command line interface and scripting capabilities. For example, macOS and
+  Linux distributions include some form of Unix Shell while Windows installations
+  include the Windows Command Shell and PowerShell.\n\n\n**Attacker's Goals:**\n\nAn
+  attacker can abuse these technologies in various ways as a means of executing arbitrary
+  commands. Commands and scripts can be embedded in initial access payloads delivered
+  to victims as lure documents or as secondary payloads downloaded from an existing
+  C2. An attacker may also execute commands through interactive terminals/shells,
+  as well as utilize various remote services to achieve remote execution.\n\n**Analysis**\n\nDue
+  to the nature of this technique and the usage of built-in command line interfaces,
+  the first step of the playbook is to analyze the command line. \nThe command line
+  analysis does the following:\n- Checks and decodes base64\n- Extracts and enriches
+  indicators from the command line\n- Checks specific arguments for malicious usage
+  \n\n**Investigative Actions:**\nThe playbook checks for additional activity using
+  the 'Endpoint Investigation Plan' playbook and utilizes the power of insight alerts.\n\n**Response
+  Actions**\n\nAfter analyzing the data, the playbook's first response action is to
+  contain the threat based on the initial data provided within the alert. In this
+  phase, the playbook will:\n\n* Isolate the endpoint based on playbook inputs.\n\nWhen
+  the playbook proceeds, it checks for additional activity using the 'Endpoint Investigation
+  Plan' playbook. It then continues with the next stage, which includes, containment
+  and eradication.\n\nThis phase executes the following containment actions:\n\n*
+  Automatically isolates the endpoint\n\nIt then continues with the following eradication
+  actions:\n\n* process termination"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 406f2ce0-3535-471d-836d-1bbbae057971
+    type: start
+    task:
+      id: 406f2ce0-3535-471d-836d-1bbbae057971
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "96"
+      - "97"
+      - "98"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": -760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 0b781a8b-1626-4995-8b19-723b7a7a68fd
+    type: title
+    task:
+      id: 0b781a8b-1626-4995-8b19-723b7a7a68fd
+      version: -1
+      name: Analysis
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": -425
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 845447d3-682b-47c8-8f7f-47e426135115
+    type: regular
+    task:
+      id: 845447d3-682b-47c8-8f7f-47e426135115
+      version: -1
+      name: Close Alert - True Positive
+      description: Closes the alert in Cortex XSIAM
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      closeReason:
+        simple: Resolved - Threat Handled
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 2990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: dfb7dad8-f1dd-488d-8430-399dfab6fe01
+    type: title
+    task:
+      id: dfb7dad8-f1dd-488d-8430-399dfab6fe01
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 9e661cc1-2b64-490e-86b3-21eb7f296429
+    type: condition
+    task:
+      id: 9e661cc1-2b64-490e-86b3-21eb7f296429
+      version: -1
+      name: 'Found any malicious behavior? '
+      description: Checks if malicious behavior was found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "91"
+      "yes":
+      - "89"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CommandLineAnalysis.score
+            iscontext: true
+          right:
+            value:
+              simple: "26"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 30b67264-bde1-4446-86b9-51bd4e6fcef6
+    type: title
+    task:
+      id: 30b67264-bde1-4446-86b9-51bd4e6fcef6
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "80"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 8a9a3810-e0df-4ab7-80c3-922700ea2350
+    type: condition
+    task:
+      id: 8a9a3810-e0df-4ab7-80c3-922700ea2350
+      version: -1
+      name: Is the CMD defined?
+      description: Checks the existence of the command line parameters.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "62"
+      "yes":
+      - "100"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.CommandLines
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: d1d68067-7d95-44f3-82cc-b4117b19d5d5
+    type: title
+    task:
+      id: d1d68067-7d95-44f3-82cc-b4117b19d5d5
+      version: -1
+      name: No CMD Parameters found
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: a7aaf887-5ebb-4d3b-8e09-ba59559d9758
+    type: condition
+    task:
+      id: a7aaf887-5ebb-4d3b-8e09-ba59559d9758
+      version: -1
+      name: Is the process blocked?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      Automated Remediation:
+      - "77"
+      'Manual Remediation  ':
+      - "78"
+    separatecontext: false
+    conditions:
+    - label: 'Manual Remediation  '
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: CrowdStrike.Detection.policyactions.process_blocked
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+        - operator: in
+          left:
+            value:
+              simple: CrowdStrike.Detection.policyactions.operation_blocked
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Endpoint
+                filters:
+                - - operator: in
+                    left:
+                      value:
+                        simple: Endpoint.ID
+                      iscontext: true
+                    right:
+                      value:
+                        simple: incident.agentsid
+                      iscontext: true
+                    ignorecase: true
+                accessor: Status
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: Online
+          ignorecase: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: CommandLineAnalysis
+                filters:
+                - - operator: in
+                    left:
+                      value:
+                        simple: CommandLineAnalysis.original_command
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdStrike.Detection.parentprocess.cmdline
+                      iscontext: true
+                accessor: score
+            iscontext: true
+          right:
+            value:
+              simple: "26"
+    - label: Automated Remediation
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: CrowdStrike.Detection.policyactions.process_blocked
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+          ignorecase: true
+      - - operator: in
+          left:
+            value:
+              simple: CrowdStrike.Detection.policyactions.operation_blocked
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Endpoint
+                filters:
+                - - operator: in
+                    left:
+                      value:
+                        simple: Endpoint.ID
+                      iscontext: true
+                    right:
+                      value:
+                        simple: incident.agentsid
+                      iscontext: true
+                accessor: Status
+            iscontext: true
+          right:
+            value:
+              simple: Online
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: CommandLineAnalysis
+                filters:
+                - - operator: in
+                    left:
+                      value:
+                        simple: CommandLineAnalysis.original_command
+                      iscontext: true
+                    right:
+                      value:
+                        simple: incident.cmdline
+                      iscontext: true
+                accessor: score
+            iscontext: true
+          right:
+            value:
+              simple: "26"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 2bf225f1-f4b7-49fd-8309-e857501d789c
+    type: regular
+    task:
+      id: 2bf225f1-f4b7-49fd-8309-e857501d789c
+      version: -1
+      name: Terminate Process
+      description: Execute an active responder kill command on a single host.
+      script: '|||cs-falcon-rtr-kill-process'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "78"
+      '#none#':
+      - "17"
+    scriptarguments:
+      host_id:
+        complex:
+          root: incident
+          accessor: agentsid
+          transformers:
+          - operator: uniq
+          - operator: FirstArrayElement
+      process_ids:
+        complex:
+          root: incident
+          accessor: pid
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 2020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: ee0c5d4f-5070-4a06-8c52-6e026f29e6c9
+    type: condition
+    task:
+      id: ee0c5d4f-5070-4a06-8c52-6e026f29e6c9
+      version: -1
+      name: Manual Response
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      Isolate Endpoint:
+      - "81"
+      Terminate Parent Process:
+      - "104"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 2250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: The Terminate Process task failed, would you like to isolate the endpoint?
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Isolate Endpoint
+      - Terminate Parent Process
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 7792b4f1-1589-4178-8200-dc3018b3f0d5
+    type: regular
+    task:
+      id: 7792b4f1-1589-4178-8200-dc3018b3f0d5
+      version: -1
+      name: Get Endpoint Status Endpoint
+      description: Returns information about an endpoint. Does not support regex.
+      script: CrowdstrikeFalcon|||endpoint
+      type: regular
+      iscommand: true
+      brand: CrowdstrikeFalcon
+    nexttasks:
+      '#none#':
+      - "76"
+    scriptarguments:
+      id:
+        complex:
+          root: incident
+          accessor: agentsid
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 9793d56b-9b39-491c-8c84-0281dd229584
+    type: playbook
+    task:
+      id: 9793d56b-9b39-491c-8c84-0281dd229584
+      version: -1
+      name: Crowdstrike Falcon - Isolate Endpoint
+      description: This playbook will auto isolate endpoints by the device ID that
+        was provided in the playbook.
+      playbookName: Crowdstrike Falcon - Isolate Endpoint
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      Device_id:
+        complex:
+          root: incident
+          accessor: agentsid
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: 911e04b5-8fb8-4720-8b52-12b65486e0f6
+    type: regular
+    task:
+      id: 911e04b5-8fb8-4720-8b52-12b65486e0f6
+      version: -1
+      name: Close Alert - False Positive
+      description: Closes the alert in Cortex XSIAM
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      closeReason:
+        simple: Resolved - False Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1720,
+          "y": 2990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: 0e60cbd9-4688-42a6-85c7-b8c4f13acda2
+    type: title
+    task:
+      id: 0e60cbd9-4688-42a6-85c7-b8c4f13acda2
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "107"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 425
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: 95015e7c-df77-4ea0-8491-73275c39e803
+    type: condition
+    task:
+      id: 95015e7c-df77-4ea0-8491-73275c39e803
+      version: -1
+      name: No suspicious artifacts were found - How would you like to proceed?
+      description: "Dear Analyst, \n\nWe've performed several operations and found
+        no suspicious activity. \n\nThe Process Chain we've received is:\n${CrowdStrike.Detection.grandparentprocess=val.filename
+        +' --> ' }${CrowdStrike.Detection.parentprocess=val.filename +' --> ' } \n${incident.filenames.[0]}\n\n\n**Please
+        Choose how would you should this incident be classified:**\n#### Option 1:
+        True Positive   \n-> This action will go ahead and try to terminate the process
+        in case it is still running, If not, you will be promoted with an additional
+        manual task to choose from  if you want to isolate the machine or kill the
+        parent process in the alert\n\n--- \n\n\n#### Option 2: False Positive  \n->
+        The incident will be closed and classified as False Positive\n\n"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      False Positive:
+      - "92"
+      True Positive:
+      - "49"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1720,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: How would you like to proceed?
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - True Positive
+      - False Positive
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: 335de802-9d1c-4ac7-8550-5582ae6ae44b
+    type: title
+    task:
+      id: 335de802-9d1c-4ac7-8550-5582ae6ae44b
+      version: -1
+      name: False Positive
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1720,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: 857e3a9e-27db-4941-8c46-dcafd23d65a7
+    type: condition
+    task:
+      id: 857e3a9e-27db-4941-8c46-dcafd23d65a7
+      version: -1
+      name: Are there any additional affected endpoints?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "49"
+      "yes":
+      - "95"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.DeviceID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: 357fd085-d90a-4565-87f4-097dd68ddd6b
+    type: playbook
+    task:
+      id: 357fd085-d90a-4565-87f4-097dd68ddd6b
+      version: -1
+      name: CrowdStrike Falcon - Search Endpoints By Indicators
+      playbookName: CrowdStrike Falcon - Search Endpoints By Indicators
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      Domain:
+        complex:
+          root: Indicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Indicators.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Domain
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: Indicators.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+              ignorecase: true
+          accessor: Value
+          transformers:
+          - operator: uniq
+      FileSha256:
+        complex:
+          root: Indicators.Value
+          filters:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: Indicators.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Indicators.Value
+                iscontext: true
+              right:
+                value:
+                  simple: file
+              ignorecase: true
+          - - operator: hasLength
+              left:
+                value:
+                  simple: Indicators.Value
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          transformers:
+          - operator: uniq
+      HostId:
+        complex:
+          root: incident
+          accessor: agentsid
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: Indicators
+          filters:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: Indicators.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Indicators.Type
+                iscontext: true
+              right:
+                value:
+                  simple: IP
+              ignorecase: true
+          accessor: Value
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: Indicators.Value
+          filters:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: Indicators.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Indicators.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+              ignorecase: true
+          - - operator: hasLength
+              left:
+                value:
+                  simple: Indicators.Value
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          transformers:
+          - operator: uniq
+      SHA1:
+        complex:
+          root: Indicators.Value
+          filters:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: Indicators.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Indicators.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+              ignorecase: true
+          - - operator: hasLength
+              left:
+                value:
+                  simple: Indicators.Value
+                iscontext: true
+              right:
+                value:
+                  simple: "40"
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: ca2d86a4-42da-42a0-89ab-b39a99ca5853
+    type: regular
+    task:
+      id: ca2d86a4-42da-42a0-89ab-b39a99ca5853
+      version: -1
+      name: Updated the affected hosts by IOC field
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "102"
+    scriptarguments:
+      affectedhosts:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: RemoveEmpty
+            args:
+              empty_values:
+                value:
+                  simple: incident.hostnames
+                iscontext: true
+              remove_keys:
+                value:
+                  simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: 85e87faa-6f4e-4433-859e-de6ac50a79f5
+    type: regular
+    task:
+      id: 85e87faa-6f4e-4433-859e-de6ac50a79f5
+      version: -1
+      name: Set the Grand Parent Details into context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: CrowdStrike.Detection.grandparentprocess
+      value:
+        simple: ${incident.grandparentprocess}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1810,
+          "y": -610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: 7a918996-edd9-4e76-872e-18b104c0f7c2
+    type: regular
+    task:
+      id: 7a918996-edd9-4e76-872e-18b104c0f7c2
+      version: -1
+      name: Set the parent Process Details
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: CrowdStrike.Detection
+      value:
+        complex:
+          root: incident
+          accessor: parentprocess
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '{"parentprocess":'
+              suffix:
+                value:
+                  simple: '}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": -610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: c165d836-695b-4a31-8fe0-3d5fac6bef82
+    type: regular
+    task:
+      id: c165d836-695b-4a31-8fe0-3d5fac6bef82
+      version: -1
+      name: Set the Policy Actions
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: CrowdStrike.Detection
+      value:
+        complex:
+          root: incident
+          accessor: policyactions
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '{"policyactions":'
+              suffix:
+                value:
+                  simple: '}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": -610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: de0ed1c3-2220-410b-8677-4eeae424d06d
+    type: regular
+    task:
+      id: de0ed1c3-2220-410b-8677-4eeae424d06d
+      version: -1
+      name: CommandLine Analysis
+      description: This script analyses a command line and provide a score based on
+        the matched profiles.
+      scriptName: CommandLineAnalysis
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "101"
+    scriptarguments:
+      command_line:
+        simple: ${inputs.CommandLines}
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: 8317cebf-6485-4687-8ef6-9f43ac3cb36b
+    type: regular
+    task:
+      id: 8317cebf-6485-4687-8ef6-9f43ac3cb36b
+      version: -1
+      name: Enrich Indicators Extracted From CommandLine
+      description: commands.local.cmd.enrich.indicators
+      script: Builtin|||enrichIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: CommandLineAnalysis.analysis.original
+          accessor: indicators
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: CommandLineAnalysis.analysis.decoded.indicators
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "102":
+    id: "102"
+    taskid: 45585eb8-b5bf-4056-8efa-158221f79f0e
+    type: regular
+    task:
+      id: 45585eb8-b5bf-4056-8efa-158221f79f0e
+      version: -1
+      name: Create new incident for investigating the indicators
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "106"
+    scriptarguments:
+      description:
+        simple: "We've identified the following hostnames being associated with malicious
+          indicators. \nThe list of the endpoints:\n${Endpoint.ID}\n\nThe list of
+          malicious indicators associated with those endpoint from above:\n${Indicators(val.Score>2).Value}\n\nPlease
+          check the investigation id: ${incident.id}"
+      details:
+        simple: "We've identified the following hostnames being associated with malicious
+          indicators. \nThe list of the endpoints:\n${Endpoint.ID}\n\nThe list of
+          malicious indicators associated with those endpoint from above:\n${Indicators(val.Score>2).Value}\n\nPlease
+          check the investigation id: ${incident.id}"
+      name:
+        simple: Malicious Indicators were found on the following hosts
+      type:
+        simple: Default
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: a23a4202-3cfc-4890-869b-f4456d74b1e5
+    type: regular
+    task:
+      id: a23a4202-3cfc-4890-869b-f4456d74b1e5
+      version: -1
+      name: Terminate Parent Process
+      description: Execute an active responder kill command on a single host.
+      script: '|||cs-falcon-rtr-kill-process'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      host_id:
+        complex:
+          root: incident
+          accessor: agentsid
+          transformers:
+          - operator: uniq
+          - operator: FirstArrayElement
+      process_ids:
+        complex:
+          root: CrowdStrike.Detection.parentprocess
+          accessor: local_process_id
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 2810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "104":
+    id: "104"
+    taskid: 13850e38-2cc0-491a-8e88-87a32e5fb945
+    type: regular
+    task:
+      id: 13850e38-2cc0-491a-8e88-87a32e5fb945
+      version: -1
+      name: Get Endpoint Status Endpoint
+      description: Returns information about an endpoint. Does not support regex.
+      script: CrowdstrikeFalcon|||endpoint
+      type: regular
+      iscommand: true
+      brand: CrowdstrikeFalcon
+    nexttasks:
+      '#none#':
+      - "105"
+    scriptarguments:
+      id:
+        complex:
+          root: incident
+          accessor: agentsid
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "105":
+    id: "105"
+    taskid: 622eab6e-6d25-4ca0-800b-e75f0621661c
+    type: condition
+    task:
+      id: 622eab6e-6d25-4ca0-800b-e75f0621661c
+      version: -1
+      name: Is there a process to terminate?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "103"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Detection.parentprocess.local_process_id
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Endpoint.Status
+            iscontext: true
+          right:
+            value:
+              simple: Online
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "106":
+    id: "106"
+    taskid: 89483a13-735f-4ba3-8472-68463c4b597a
+    type: regular
+    task:
+      id: 89483a13-735f-4ba3-8472-68463c4b597a
+      version: -1
+      name: Linked current incident to the new one
+      description: commands.local.cmd.linkIncidents
+      script: Builtin|||linkIncidents
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      incidentId:
+        complex:
+          root: incident
+          accessor: id
+      linkedIncidentIDs:
+        simple: ${CreatedIncidentID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "107":
+    id: "107"
+    taskid: 1d6d47c6-9981-4315-88d3-3aa34c73fd9e
+    type: condition
+    task:
+      id: 1d6d47c6-9981-4315-88d3-3aa34c73fd9e
+      version: -1
+      name: Are there any malicious indicators?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "49"
+      "yes":
+      - "94"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Indicators
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: Indicators.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Attack Pattern
+                    ignorecase: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "105_17_#default#": 0.81,
+      "61_62_#default#": 0.52,
+      "76_78_Manual Remediation  ": 0.51,
+      "77_78_#error#": 0.49,
+      "91_49_True Positive": 0.46,
+      "91_92_False Positive": 0.54
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3995,
+        "width": 1840,
+        "x": 350,
+        "y": -760
+      }
+    }
+  }
+inputs:
+- key: CommandLines
+  value:
+    complex:
+      root: incident
+      accessor: commandline
+      transformers:
+      - operator: append
+        args:
+          item:
+            value:
+              simple: incident.cmdline
+            iscontext: true
+      - operator: append
+        args:
+          item:
+            value:
+              simple: incident.parentcmdline
+            iscontext: true
+      - operator: append
+        args:
+          item:
+            value:
+              simple: incident.parentprocesscmd
+            iscontext: true
+      - operator: RemoveEmpty
+        args:
+          empty_values: {}
+          remove_keys: {}
+      - operator: uniq
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: CreateNewIncidnetForIndicators
+  value:
+    simple: "True"
+  required: false
+  description: ""
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - CommandLines
+  - CreateNewIncidnetForIndicators
+  name: General
+  description: ""
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+dirtyInputs: true
