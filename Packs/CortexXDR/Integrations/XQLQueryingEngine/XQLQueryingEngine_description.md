@@ -1,25 +1,28 @@
-## Palo Alto Networks Cortex XDR - XQL Query Engine
-Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
-XQL Query Engine enables you to run XQL queries on your data sources.
-
-### Generate an API Key and API Key ID
-
-1. In your Cortex XDR platform, go to **Settings**.
-
-2. Click the **+New Key** button in the top right corner.
-
-3. Generate a key of type **Advanced**.
-
-4. Copy and paste the key.
-
-5. From the ID column, copy the Key ID.
-
-### URL
-1. In your Cortex XDR platform, go to **Settings**.
-2. Click the **Copy URL** button in the top right corner.
-
-### Note
-If you choose to use the credentials from XSOAR credential manager, create two credentials, one for the api-key and one for the api-key-id, then enter the key in the password field.
+## Configuration
 
 ---
+
+### Generate an API Key and Key ID
+
+To enable secure communication with Cortex XDR, you need to generate an API Key and Key ID. Follow these steps:
+
+1. In your Cortex XDR platform, go to **Settings** > **Configurations** > **API Keys**.
+2. Click the **+New Key** button in the top right corner.
+3. Set the **Security Level** to **Advanced** and select a **Role** appropriate for your permissions.
+4. Copy the API Key displayed in the **Generated Key** field.
+5. From the **ID** column, copy the Key ID.
+
+#### Note 1:
+
+When configuring a role for the API Key's permission you can create a custom role or use a built-in role. The highest privileged built-in role is the Instance Admin. If you wish to use a built-in role with less permission but maximum command capabilities, use the Privileged Responder role.
+
+#### Note 2:
+
+Securely store the API Key, as it will not be displayed again.
+
+### Retrieve API URL
+
+1. In the Cortex XDR platform, go to **Settings**> **Configurations** > **API Keys**.
+2. Click the **Copy API URL** button in the top-right corner.
+
 [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/cortex-xdr---xql-query-engine)

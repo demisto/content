@@ -7,19 +7,19 @@ configuration:
   name: url
   required: true
   type: 0
-  additionalinfo: Copy API URL from XDR
+  additionalinfo: Copy API URL from Cortex XDR
 - display: ''
   name: apikey_id_creds
   type: 9
   displaypassword: API Key ID
   hiddenusername: true
-  required: false
+  required: true
 - display: ''
   name: apikey_creds
   type: 9
   displaypassword: API Key
   hiddenusername: true
-  required: false
+  required: true
 - display: API Key ID
   name: apikey_id
   type: 4

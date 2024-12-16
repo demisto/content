@@ -1,17 +1,24 @@
-Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
+## Overview
 
-Use the Cortex XDR - IOCs feed integration to sync indicators between Cortex XSOAR and Cortex XDR. The integration will sync indicators according to the defined fetch interval. At each interval, the integration will push new and modified indicators defined in the **Sync Query** from Cortex XSOAR to Cortex XDR. Additionally, the integration will check if there are manual modifications of indicators on Cortex XDR and sync back to Cortex XSOAR. Once per day, the integration will perform a *complete sync* which will also remove indicators that have been deleted/expired in Cortex XSOAR, from Cortex XDR. 
+---
+The Cortex XDR - IOC integration allows you to manage Indicators of Compromise (IOCs) seamlessly within Cortex XDR from Cortex XSOAR. This integration enables security teams to add, update, and remove IOCs efficiently, streamlining threat intelligence workflows and bolstering incident response capabilities.
 
+### Key Features:
 
-This integration was integrated and tested with Branch: stable-50 of XDR.
+- Add IOCs (e.g., IPs, domains, hashes) to Cortex XDR.
+- Retrieve and update existing IOCs.
+- Delete IOCs when no longer relevant (currently not supported).
+- Automate threat intelligence management through playbooks and incident workflows.
 
-## Prerequisites
+## Use Cases
 
-An API key of type **Advanced** with an **Administrator** role.
+- Automatically enrich incidents with IOCs by fetching data from Cortex XDR.
+- Block malicious IPs, domains, or file hashes in real time using the Cortex XDR threat intelligence engine.
+- Streamline threat intelligence sharing between XSOAR and Cortex XDR.
+- Simplify IOC lifecycle management with automated workflows for creation, updates, and removal.
 
 ## Configure Cortex XDR - IOC in Cortex
-  
-  
+
 | **Parameter** | **Description** | **Required** |  
 | --- | --- | --- |  
 | Server URL | In Cortex XDR, navigate to Settings > Configurations > API Keys and click Copy API URL| True |  
@@ -143,7 +150,7 @@ There is no context output for this command.
 >indicators 22.22.22.22 disabled.  
 ### xdr-iocs-set-sync-time
 ***
-Set sync time manually (Do not use this command unless you unredstandard the consequences).
+Deprecated. Set sync time manually (Do not use this command unless you unredstandard the consequences).
 
 
 #### Base Command
@@ -189,3 +196,16 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+## Troubleshooting
+
+### Outgoing IOCs
+
+1. **Performance Issues**:
+    - Reduce the frequency of indicators fetch to manage system load (recommended above 20 minutes).
+    - Review Cortex XDR API rate limit logs to ensure compliance with API thresholds.
+2. **Missing IOCs**:
+    - Please make sure all IOC are in a supported format both in Cortex XSOAR and Cortex XDR.
+    - If using the **xdr-iocs-push** command, please go over the warnings in the war room.
+3. **Indicator Severity**:
+    - In order to override severity, please enable the ***Override severity*** parameter and also choose a severity under ***Overriding severity value***.

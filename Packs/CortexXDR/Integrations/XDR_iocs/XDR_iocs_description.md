@@ -43,3 +43,5 @@ The severity field must be one of the following:
 - Using an invalid field (or one that is not present in the indicator) may cause fetching to stop working.
 
 - Due to XSOAR system limitations, once the severity is manually changed within XSOAR, it is excluded from being updated by the fetching process.
+
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/cortex-xdr---ioc)
